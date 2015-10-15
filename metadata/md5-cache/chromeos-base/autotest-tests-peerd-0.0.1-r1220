@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=dev-python/dpkt dev-vcs/git
+DESCRIPTION=peerd autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_peerd_AdvertiseServices +tests_peerd_DiscoverServices +tests_peerd_HandlesNameConflicts +tests_peerd_MonitorsDBusConnections cros_host cros_workon_tree_a05464697daf373fd8ddf0478abe7e33d7e31616 profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-python/dpkt ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	e66d279b71231f78d09ad6fea9efc834	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
+_md5_=aaafb284c0015f9ad7d1db5ce2ba41ad
