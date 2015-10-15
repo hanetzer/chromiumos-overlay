@@ -11,7 +11,7 @@ CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://weave.googlesourc
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/weave/libweave")
 
 PLATFORM_SUBDIR="libweave"
-PLATFORM_GYP_FILE="platform2.gyp"
+PLATFORM_GYP_FILE="libweave.gyp"
 
 inherit cros-workon libchrome platform
 
@@ -38,6 +38,7 @@ DEPEND="
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
+	cp -al "${s}"/platform2/libweave/libweave.gyp "${s}"/weave/libweave/libweave/
 	S="${s}/weave/libweave/libweave"
 }
 
@@ -47,7 +48,7 @@ src_install() {
 	# Install libraries.
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
-		./platform2_preinstall.sh "${OUT}" "${v}"
+		../../../platform2/libweave/preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/libweave-"${v}".so
 		doins "${OUT}"/lib/libweave-*"${v}".pc
 		dolib.a "${OUT}"/libweave-test-"${v}".a
