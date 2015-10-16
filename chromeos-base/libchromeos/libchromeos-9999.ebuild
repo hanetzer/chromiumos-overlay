@@ -61,13 +61,13 @@ src_install() {
 		doins "${OUT}"/lib/libchromeos*-"${v}".pc
 	done
 
-	# Install all the header files from libchromeos/chromeos/*.h into
-	# /usr/include/chromeos (recursively, with sub-directories).
+	# Install all the header files from libchromeos/brillo/*.h into
+	# /usr/include/brillo (recursively, with sub-directories).
 	local dir
 	while read -d $'\0' -r dir; do
 		insinto "/usr/include/${dir}"
 		doins "${dir}"/*.h
-	done < <(find chromeos -type d -print0)
+	done < <(find brillo -type d -print0)
 
 	insinto /usr/include/policy
 	doins policy/*.h
