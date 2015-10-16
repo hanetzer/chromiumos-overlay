@@ -31,7 +31,8 @@ RDEPEND=">=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
 	abi_x86_32? (
 		!<=app-emulation/emul-linux-x86-baselibs-20140508-r12
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-	)"
+	)
+	!<app-crypt/nss-${PV}[${MULTILIB_USEDEP}]"
 
 RESTRICT="test"
 
@@ -55,7 +56,18 @@ src_prepare() {
 	use cacert && epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
 	use nss-pem && epatch "${FILESDIR}/${PN}-3.15.4-enable-pem.patch"
 	epatch "${FILESDIR}/nss-3.14.2-solaris-gcc.patch"
-	epatch "${FILESDIR}/${PN}-cacert-class3.patch" # 521462
+	use cacert && epatch "${FILESDIR}/${PN}-cacert-class3.patch" # 521462
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
+	# Backport patches from NSS 3.20.1 for https://bugzil.la/1202868 and
+	# https://bugzil.la/1192028
+	epatch "${FILESDIR}"/${PN}-3.20-chromeos-backport.patch
 
 	pushd coreconf >/dev/null || die
 	# hack nspr paths
@@ -286,7 +298,9 @@ multilib_src_install() {
 		fi
 		pushd dist/*/bin >/dev/null || die
 		for f in ${nssutils}; do
+			#TODO(cmasone): switch to normal nss tool names
 			dobin ${f}
+			dosym ${f} /usr/bin/nss${f}
 		done
 		popd >/dev/null || die
 	fi

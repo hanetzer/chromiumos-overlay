@@ -1,0 +1,110 @@
+Backport of upstream revisions c9c965b2b19c and bd8fb4498fa6
+from the NSPR 4.10.10 branch
+
+https://hg.mozilla.org/projects/nspr/rev/c9c965b2b19c
+https://hg.mozilla.org/projects/nspr/rev/bd8fb4498fa6
+
+diff -aurN nspr.bak/lib/ds/plarena.c nspr/lib/ds/plarena.c
+--- nspr.bak/lib/ds/plarena.c	2015-10-16 15:37:24.280125362 -0700
++++ nspr/lib/ds/plarena.c	2015-10-16 15:37:49.264402351 -0700
+@@ -93,6 +93,9 @@
+         pool->mask = PR_BITMASK(PR_CeilingLog2(align));
+ 
+     pool->first.next = NULL;
++    /* Set all three addresses in pool->first to the same dummy value.
++     * These addresses are only compared with each other, but never
++     * dereferenced. */
+     pool->first.base = pool->first.avail = pool->first.limit =
+         (PRUword)PL_ARENA_ALIGN(pool, &pool->first + 1);
+     pool->current = &pool->first;
+@@ -144,10 +147,14 @@
+ {
+     PLArena *a;   
+     char *rp;     /* returned pointer */
++    PRUint32 nbOld;
+ 
+     PR_ASSERT((nb & pool->mask) == 0);
+     
++    nbOld = nb;
+     nb = (PRUword)PL_ARENA_ALIGN(pool, nb); /* force alignment */
++    if (nb < nbOld)
++        return NULL;
+ 
+     /* attempt to allocate from arenas at pool->current */
+     {
+@@ -208,6 +215,7 @@
+             PL_MAKE_MEM_NOACCESS((void*)a->avail, a->limit - a->avail);
+             rp = (char *)a->avail;
+             a->avail += nb;
++            PR_ASSERT(a->avail <= a->limit);
+             /* the newly allocated arena is linked after pool->current 
+             *  and becomes pool->current */
+             a->next = pool->current->next;
+@@ -230,6 +238,8 @@
+ {
+     void *newp;
+ 
++    if (PR_UINT32_MAX - size < incr)
++        return NULL;
+     PL_ARENA_ALLOCATE(newp, pool, size + incr);
+     if (newp)
+         memcpy(newp, p, size);
+diff -aurN nspr.bak/lib/ds/plarena.h nspr/lib/ds/plarena.h
+--- nspr.bak/lib/ds/plarena.h	2015-10-16 15:37:24.280125362 -0700
++++ nspr/lib/ds/plarena.h	2015-10-16 15:38:43.036997589 -0700
+@@ -137,34 +137,39 @@
+ #define PL_ARENA_ALLOCATE(p, pool, nb) \
+     PR_BEGIN_MACRO \
+         PLArena *_a = (pool)->current; \
+-        PRUint32 _nb = PL_ARENA_ALIGN(pool, nb); \
++        PRUint32 _nb = PL_ARENA_ALIGN(pool, (PRUint32)nb); \
+         PRUword _p = _a->avail; \
+-        PRUword _q = _p + _nb; \
+-        if (_q > _a->limit) { \
++        if (_nb < (PRUint32)nb) { \
++            _p = 0; \
++        } else if (_nb > (_a->limit - _a->avail)) { \
+             _p = (PRUword)PL_ArenaAllocate(pool, _nb); \
+         } else { \
+-            _a->avail = _q; \
++            _a->avail += _nb; \
+         } \
+         p = (void *)_p; \
+-        PL_MAKE_MEM_UNDEFINED(p, nb); \
+-        PL_ArenaCountAllocation(pool, nb); \
++        if (p) { \
++            PL_MAKE_MEM_UNDEFINED(p, (PRUint32)nb); \
++            PL_ArenaCountAllocation(pool, (PRUint32)nb); \
++        } \
+     PR_END_MACRO
+ 
+ #define PL_ARENA_GROW(p, pool, size, incr) \
+     PR_BEGIN_MACRO \
+         PLArena *_a = (pool)->current; \
+-        PRUint32 _incr = PL_ARENA_ALIGN(pool, incr); \
+-        PRUword _p = _a->avail; \
+-        PRUword _q = _p + _incr; \
+-        if (_p == (PRUword)(p) + PL_ARENA_ALIGN(pool, size) && \
+-            _q <= _a->limit) { \
+-            PL_MAKE_MEM_UNDEFINED((unsigned char *)(p) + size, incr); \
+-            _a->avail = _q; \
+-            PL_ArenaCountInplaceGrowth(pool, size, incr); \
++        PRUint32 _incr = PL_ARENA_ALIGN(pool, (PRUint32)incr); \
++        if (_incr < (PRUint32)incr) { \
++            p = NULL; \
++        } else if (_a->avail == (PRUword)(p) + PL_ARENA_ALIGN(pool, size) && \
++            _incr <= (_a->limit - _a->avail)) { \
++            PL_MAKE_MEM_UNDEFINED((unsigned char *)(p) + size, (PRUint32)incr); \
++            _a->avail += _incr; \
++            PL_ArenaCountInplaceGrowth(pool, size, (PRUint32)incr); \
+         } else { \
+-            p = PL_ArenaGrow(pool, p, size, incr); \
++            p = PL_ArenaGrow(pool, p, size, (PRUint32)incr); \
++        } \
++        if (p) {\
++            PL_ArenaCountGrowth(pool, size, (PRUint32)incr); \
+         } \
+-        PL_ArenaCountGrowth(pool, size, incr); \
+     PR_END_MACRO
+ 
+ #define PL_ARENA_MARK(pool) ((void *) (pool)->current->avail)

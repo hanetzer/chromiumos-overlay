@@ -38,6 +38,9 @@ src_prepare() {
 	# We do not need to pass -L$libdir via nspr-config --libs
 	epatch "${FILESDIR}"/${PN}-4.9.5_nspr_config.patch
 
+	# Backport patches from NSPR 4.10.9 for https://bugzil.la/1205157
+	epatch "${FILESDIR}"/${PN}-4.10.8-chromeos-backport.patch
+
 	# rename configure.in to configure.ac for new autotools compatibility
 	if [[ -e "${S}"/nspr/configure.in ]] ; then
 		einfo "Renaming configure.in to configure.ac"
