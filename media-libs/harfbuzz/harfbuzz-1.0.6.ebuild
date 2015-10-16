@@ -88,7 +88,7 @@ multilib_src_configure() {
 		$(use_with truetype freetype)
 
 	if multilib_is_native_abi; then
-		ln -s "${S}"/docs/reference/html docs/reference/html || die
+		ln -s "${S}"/docs/html docs/html || die
 	fi
 }
 
