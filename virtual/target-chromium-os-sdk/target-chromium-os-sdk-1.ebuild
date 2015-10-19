@@ -144,9 +144,11 @@ RDEPEND="${RDEPEND}
 	dev-python/dbus-python
 	dev-python/dpkt
 	dev-python/imaging
+	dev-python/intelhex
 	dev-python/m2crypto
 	dev-python/mako
 	dev-python/netifaces
+	dev-python/pexpect
 	dev-python/py
 	dev-python/pycairo
 	dev-python/pycparser
