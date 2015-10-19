@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("1a43bce3beb3574c4dbc188af8a38f6649fea5f8" "eb5b42f8c442031c15b6e59f8e66a580027c2724")
-CROS_WORKON_TREE=("8f19b3b4a616725a7f9bebbfdf2e64450e4655cd" "75e65b4ee9199c6f06456343ff8436a9af758ea0")
+CROS_WORKON_COMMIT=("eba252986bb4c3366cd0a3b0d9a890e4a38d77d3" "b213545b6f9a0b873e763da0ce4f03a977f85d2a")
+CROS_WORKON_TREE=("6b1459141017865ccb9930d8f78b20897ad35588" "674487be428e0950adfd95b8407d91939a375128")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
@@ -63,13 +63,13 @@ src_install() {
 		doins "${OUT}"/lib/libchromeos*-"${v}".pc
 	done
 
-	# Install all the header files from libchromeos/chromeos/*.h into
-	# /usr/include/chromeos (recursively, with sub-directories).
+	# Install all the header files from libchromeos/brillo/*.h into
+	# /usr/include/brillo (recursively, with sub-directories).
 	local dir
 	while read -d $'\0' -r dir; do
 		insinto "/usr/include/${dir}"
 		doins "${dir}"/*.h
-	done < <(find chromeos -type d -print0)
+	done < <(find brillo -type d -print0)
 
 	insinto /usr/include/policy
 	doins policy/*.h
