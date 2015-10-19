@@ -300,7 +300,10 @@ src_compile_depthcharge() {
 		# command line, cros_bundle_firmware assumes implicit
 		# "--uboot /buils/<board>/fimrware/u-boot.bin"
 		# which messes up the multicbfs case.
-		common+=( -D ) # Do not bundle defaults.
+		#
+		# Do not bundle defaults, but state the "skeleton" from which to take
+		# IFD data and non-BIOS partitions on x86.
+		common+=( -D --skeleton=${froot}/coreboot.rom )
 	fi
 
 	local legacy_file=""
