@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("eba252986bb4c3366cd0a3b0d9a890e4a38d77d3" "6f035c433ab3ed2992b2d187b35ef7715f80e9a6")
-CROS_WORKON_TREE=("6b1459141017865ccb9930d8f78b20897ad35588" "81f1fcb96c263168c881c7fda7e7e885d8d47e41")
+CROS_WORKON_COMMIT=("e76965351c043be2e29ec97d5795392c812ea7ed" "6f035c433ab3ed2992b2d187b35ef7715f80e9a6")
+CROS_WORKON_TREE=("807b98e0721b6bb98c619bafafbe03dac2bcc018" "81f1fcb96c263168c881c7fda7e7e885d8d47e41")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/attestation")
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -47,11 +47,6 @@ src_unpack() {
 	local s="${S}"
 	platform_src_unpack
 	S="${s}/aosp/system/attestation"
-}
-
-src_prepare() {
-	cd "${S}"/../../../platform2
-	epatch "${FILESDIR}"/chaps.patch
 }
 
 src_install() {
