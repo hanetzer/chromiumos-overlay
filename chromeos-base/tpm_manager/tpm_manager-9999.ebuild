@@ -71,10 +71,13 @@ src_install() {
 
 	# Install header files.
 	insinto /usr/include/tpm_manager/tpm_manager_client
-	doins client/dbus_proxy.h
+	doins client/tpm_nvram_dbus_proxy.h
+	doins client/tpm_ownership_dbus_proxy.h
 	insinto /usr/include/tpm_manager/common
 	doins common/export.h
-	doins common/tpm_manager_interface.h
+	doins common/tpm_manager_constants.h
+	doins common/tpm_nvram_interface.h
+	doins common/tpm_ownership_interface.h
 }
 
 platform_pkg_test() {
