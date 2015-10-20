@@ -1024,7 +1024,7 @@ install_telemetry_dep_resources() {
 			chrome/test/data/image_decoding \
 			content/test/data/gpu \
 			content/test/data/media \
-			content/test/gpu/run_gpu_test.py
+			content/test/gpu
 	fi
 
 	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
