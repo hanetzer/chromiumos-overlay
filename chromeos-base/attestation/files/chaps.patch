@@ -1,0 +1,3966 @@
+From d1434bfb0b69fd116d0ca1be9f7cd1f1e1b6edb3 Mon Sep 17 00:00:00 2001
+From: Alex Vakulenko <avakulenko@google.com>
+Date: Tue, 20 Oct 2015 07:38:48 -0700
+Subject: [PATCH] temporary chaps sweep
+
+Change-Id: Id86a7d68a6d6007cbc6687fb09812f228bd2dd57
+---
+ chaps/chaps.cc                       |   6 +-
+ chaps/chaps_adaptor.cc               |   2 +-
+ chaps/chaps_client.cc                |   6 +-
+ chaps/chaps_interface.h              | 134 ++++++++++++++++----------------
+ chaps/chaps_pam_module.cc            |   4 +-
+ chaps/chaps_pam_module_test.cc       |   4 +-
+ chaps/chaps_proxy.cc                 |   2 +-
+ chaps/chaps_proxy.h                  | 144 +++++++++++++++++------------------
+ chaps/chaps_proxy_mock.h             | 138 ++++++++++++++++-----------------
+ chaps/chaps_service.cc               |   2 +-
+ chaps/chaps_service.h                | 132 ++++++++++++++++----------------
+ chaps/chaps_service_redirect.cc      |   4 +-
+ chaps/chaps_service_redirect.h       | 132 ++++++++++++++++----------------
+ chaps/chaps_service_test.cc          |   2 +-
+ chaps/chaps_utility.cc               |  12 +--
+ chaps/chaps_utility.h                |  16 ++--
+ chaps/chapsd.cc                      |   4 +-
+ chaps/chapsd_test.cc                 |   4 +-
+ chaps/isolate.h                      |  12 +--
+ chaps/isolate_chromeos.cc            |   4 +-
+ chaps/isolate_linux.cc               |   4 +-
+ chaps/isolate_login_client.cc        |   4 +-
+ chaps/isolate_login_client.h         |   8 +-
+ chaps/isolate_login_client_mock.h    |   8 +-
+ chaps/isolate_login_client_test.cc   |   4 +-
+ chaps/isolate_mock.h                 |   8 +-
+ chaps/object_pool.h                  |   4 +-
+ chaps/object_pool_impl.cc            |   2 +-
+ chaps/object_pool_impl.h             |   2 +-
+ chaps/object_pool_mock.h             |   2 +-
+ chaps/object_pool_test.cc            |   2 +-
+ chaps/object_store.h                 |   4 +-
+ chaps/object_store_fake.h            |   2 +-
+ chaps/object_store_impl.cc           |   6 +-
+ chaps/object_store_impl.h            |  10 +--
+ chaps/object_store_mock.h            |   2 +-
+ chaps/object_store_test.cc           |   2 +-
+ chaps/opencryptoki_importer.cc       |   2 +-
+ chaps/opencryptoki_importer.h        |   6 +-
+ chaps/p11_replay.cc                  |   4 +-
+ chaps/pam_helper.cc                  |   4 +-
+ chaps/pam_helper.h                   |   8 +-
+ chaps/pam_helper_mock.h              |   6 +-
+ chaps/session_impl.cc                |   8 +-
+ chaps/slot_manager.h                 |  20 ++---
+ chaps/slot_manager_impl.cc           |   4 +-
+ chaps/slot_manager_impl.h            |  48 ++++++------
+ chaps/slot_manager_mock.h            |  18 ++---
+ chaps/slot_manager_test.cc           |   4 +-
+ chaps/token_file_manager.h           |   6 +-
+ chaps/token_file_manager_chromeos.cc |   4 +-
+ chaps/token_file_manager_linux.cc    |   4 +-
+ chaps/token_file_manager_mock.h      |   6 +-
+ chaps/token_manager_client.cc        |   4 +-
+ chaps/token_manager_client.h         |  20 ++---
+ chaps/token_manager_client_mock.h    |  20 ++---
+ chaps/token_manager_interface.h      |  18 ++---
+ chaps/tpm2_utility_impl.cc           |   2 +-
+ chaps/tpm2_utility_impl.h            |  18 ++---
+ chaps/tpm2_utility_test.cc           |   2 +-
+ chaps/tpm_utility.h                  |  18 ++---
+ chaps/tpm_utility_impl.cc            |   6 +-
+ chaps/tpm_utility_impl.h             |  24 +++---
+ chaps/tpm_utility_mock.h             |  16 ++--
+ chaps/tpm_utility_test.cc            |  14 ++--
+ 65 files changed, 576 insertions(+), 576 deletions(-)
+
+diff --git a/chaps/chaps.cc b/chaps/chaps.cc
+index 15bc0e1..ecfa804 100644
+--- a/chaps/chaps.cc
++++ b/chaps/chaps.cc
+@@ -39,7 +39,7 @@ static bool g_is_initialized = false;
+ 
+ // Set to the user's isolate credential (if it exists) in C_Initialize in order
+ // to provide access to the user's private slots.
+-static chromeos::SecureBlob* g_user_isolate = NULL;
++static brillo::SecureBlob* g_user_isolate = NULL;
+ 
+ // Tear down helper.
+ static void TearDown() {
+@@ -87,7 +87,7 @@ namespace chaps {
+ 
+ // Helpers to support a mock proxy and isolate credential (useful in testing).
+ EXPORT_SPEC void EnableMockProxy(ChapsInterface* proxy,
+-                                 chromeos::SecureBlob* isolate_credential,
++                                 brillo::SecureBlob* isolate_credential,
+                                  bool is_initialized) {
+   g_proxy = proxy;
+   g_user_isolate = isolate_credential;
+@@ -138,7 +138,7 @@ CK_RV C_Initialize(CK_VOID_PTR pInitArgs) {
+       LOG_CK_RV_AND_RETURN(CKR_GENERAL_ERROR);
+     g_proxy = proxy.release();
+ 
+-    g_user_isolate = new chromeos::SecureBlob();
++    g_user_isolate = new brillo::SecureBlob();
+     chaps::IsolateCredentialManager isolate_manager;
+     if (!isolate_manager.GetCurrentUserIsolateCredential(g_user_isolate))
+       *g_user_isolate = isolate_manager.GetDefaultIsolateCredential();
+diff --git a/chaps/chaps_adaptor.cc b/chaps/chaps_adaptor.cc
+index e0d7a81..4d206f8 100644
+--- a/chaps/chaps_adaptor.cc
++++ b/chaps/chaps_adaptor.cc
+@@ -16,7 +16,7 @@
+ using base::AutoLock;
+ using base::FilePath;
+ using base::Lock;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using std::vector;
+ 
+diff --git a/chaps/chaps_client.cc b/chaps/chaps_client.cc
+index 1573b22..3ce0ed1 100644
+--- a/chaps/chaps_client.cc
++++ b/chaps/chaps_client.cc
+@@ -14,7 +14,7 @@
+ #include <base/logging.h>
+ #include <base/strings/string_number_conversions.h>
+ #include <base/time/time.h>
+-#include <chromeos/syslog_logging.h>
++#include <brillo/syslog_logging.h>
+ 
+ #include "chaps/chaps_proxy.h"
+ #include "chaps/chaps_utility.h"
+@@ -23,7 +23,7 @@
+ 
+ using base::FilePath;
+ using chaps::IsolateCredentialManager;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using std::vector;
+ 
+@@ -132,7 +132,7 @@ void ListTokens() {
+ int main(int argc, char** argv) {
+   base::CommandLine::Init(argc, argv);
+   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+-  chromeos::InitLog(chromeos::kLogToSyslog | chromeos::kLogToStderr);
++  brillo::InitLog(brillo::kLogToSyslog | brillo::kLogToStderr);
+ 
+   bool ping = cl->HasSwitch("ping");
+   bool load = (cl->HasSwitch("load") &&
+diff --git a/chaps/chaps_interface.h b/chaps/chaps_interface.h
+index 4b8af8c..c3a9a86 100644
+--- a/chaps/chaps_interface.h
++++ b/chaps/chaps_interface.h
+@@ -10,7 +10,7 @@
+ #include <vector>
+ 
+ #include <base/macros.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps.h"
+ 
+@@ -35,11 +35,11 @@ class ChapsInterface {
+   // to the corresponding PKCS #11 function name except for the "C_" prefix.
+ 
+   // PKCS #11 v2.20 section 11.5 page 106.
+-  virtual uint32_t GetSlotList(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotList(const brillo::SecureBlob& isolate_credential,
+                                bool token_present,
+                                std::vector<uint64_t>* slot_list) = 0;
+   // PKCS #11 v2.20 section 11.5 page 108.
+-  virtual uint32_t GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id,
+                                std::vector<uint8_t>* slot_description,
+                                std::vector<uint8_t>* manufacturer_id,
+@@ -49,7 +49,7 @@ class ChapsInterface {
+                                uint8_t* firmware_version_major,
+                                uint8_t* firmware_version_minor) = 0;
+   // PKCS #11 v2.20 section 11.5 page 109.
+-  virtual uint32_t GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t slot_id,
+                                 std::vector<uint8_t>* label,
+                                 std::vector<uint8_t>* manufacturer_id,
+@@ -72,44 +72,44 @@ class ChapsInterface {
+                                 uint8_t* firmware_version_minor) = 0;
+   // PKCS #11 v2.20 section 11.5 page 111.
+   virtual uint32_t GetMechanismList(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       std::vector<uint64_t>* mechanism_list) = 0;
+   // PKCS #11 v2.20 section 11.5 page 112.
+   virtual uint32_t GetMechanismInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       uint64_t mechanism_type,
+       uint64_t* min_key_size,
+       uint64_t* max_key_size,
+       uint64_t* flags) = 0;
+   // PKCS #11 v2.20 section 11.5 page 113.
+-  virtual uint32_t InitToken(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitToken(const brillo::SecureBlob& isolate_credential,
+                              uint64_t slot_id,
+                              const std::string* so_pin,
+                              const std::vector<uint8_t>& label) = 0;
+   // PKCS #11 v2.20 section 11.5 page 115.
+-  virtual uint32_t InitPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitPIN(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id, const std::string* pin) = 0;
+   // PKCS #11 v2.20 section 11.5 page 116.
+-  virtual uint32_t SetPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SetPIN(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::string* old_pin,
+                           const std::string* new_pin) = 0;
+   // PKCS #11 v2.20 section 11.6 page 117.
+-  virtual uint32_t OpenSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t OpenSession(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id, uint64_t flags,
+                                uint64_t* session) = 0;
+   // PKCS #11 v2.20 section 11.6 page 118.
+-  virtual uint32_t CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CloseSession(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session) = 0;
+   // PKCS #11 v2.20 section 11.6 page 120.
+   virtual uint32_t CloseAllSessions(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id) = 0;
+   // PKCS #11 v2.20 section 11.6 page 120.
+   virtual uint32_t GetSessionInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t* slot_id,
+       uint64_t* state,
+@@ -117,235 +117,235 @@ class ChapsInterface {
+       uint64_t* device_error) = 0;
+   // PKCS #11 v2.20 section 11.6 page 121.
+   virtual uint32_t GetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       std::vector<uint8_t>* operation_state) = 0;
+   // PKCS #11 v2.20 section 11.6 page 123.
+   virtual uint32_t SetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& operation_state,
+       uint64_t encryption_key_handle,
+       uint64_t authentication_key_handle) = 0;
+   // PKCS #11 v2.20 section 11.6 page 125.
+-  virtual uint32_t Login(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Login(const brillo::SecureBlob& isolate_credential,
+                          uint64_t session_id,
+                          uint64_t user_type,
+                          const std::string* pin) = 0;
+   // PKCS #11 v2.20 section 11.6 page 127.
+-  virtual uint32_t Logout(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Logout(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.7 page 128.
+-  virtual uint32_t CreateObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CreateObject(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& attributes,
+                                 uint64_t* new_object_handle) = 0;
+   // PKCS #11 v2.20 section 11.7 page 130.
+-  virtual uint32_t CopyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CopyObject(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t object_handle,
+                               const std::vector<uint8_t>& attributes,
+                               uint64_t* new_object_handle) = 0;
+   // PKCS #11 v2.20 section 11.7 page 131.
+-  virtual uint32_t DestroyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DestroyObject(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle) = 0;
+   // PKCS #11 v2.20 section 11.7 page 132.
+-  virtual uint32_t GetObjectSize(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetObjectSize(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle,
+                                  uint64_t* object_size) = 0;
+   // PKCS #11 v2.20 section 11.7 page 133.
+   virtual uint32_t GetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes_in,
+       std::vector<uint8_t>* attributes_out) = 0;
+   // PKCS #11 v2.20 section 11.7 page 135.
+   virtual uint32_t SetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes) = 0;
+   // PKCS #11 v2.20 section 11.7 page 136.
+   virtual uint32_t FindObjectsInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& attributes) = 0;
+   // PKCS #11 v2.20 section 11.7 page 137.
+-  virtual uint32_t FindObjects(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t FindObjects(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_object_count,
+                                std::vector<uint64_t>* object_list) = 0;
+   // PKCS #11 v2.20 section 11.7 page 138.
+   virtual uint32_t FindObjectsFinal(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.8 page 139.
+-  virtual uint32_t EncryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.8 page 140.
+-  virtual uint32_t Encrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Encrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.8 page 141.
+-  virtual uint32_t EncryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.8 page 141.
+-  virtual uint32_t EncryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.8 page 140,142: any errors terminate the active
+   // encryption operation.
+-  virtual void EncryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void EncryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.9 page 144.
+-  virtual uint32_t DecryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.9 page 145.
+-  virtual uint32_t Decrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Decrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.9 page 146.
+-  virtual uint32_t DecryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.9 page 146.
+-  virtual uint32_t DecryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.9 page 145,146: any errors terminate the active
+   // decryption operation.
+-  virtual void DecryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DecryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.10 page 148.
+   virtual uint32_t DigestInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter) = 0;
+   // PKCS #11 v2.20 section 11.10 page 149.
+-  virtual uint32_t Digest(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Digest(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data_in,
+                           uint64_t max_out_length,
+                           uint64_t* actual_out_length,
+                           std::vector<uint8_t>* digest) = 0;
+   // PKCS #11 v2.20 section 11.10 page 150.
+-  virtual uint32_t DigestUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_in) = 0;
+   // PKCS #11 v2.20 section 11.10 page 150.
+-  virtual uint32_t DigestKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.10 page 151.
+-  virtual uint32_t DigestFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* digest) = 0;
+   // PKCS #11 v2.20 section 11.10 page 149,151: any errors terminate the active
+   // digest operation.
+-  virtual void DigestCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DigestCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.11 page 152.
+-  virtual uint32_t SignInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignInit(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id,
+                             uint64_t mechanism_type,
+                             const std::vector<uint8_t>& mechanism_parameter,
+                             uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.11 page 153.
+-  virtual uint32_t Sign(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Sign(const brillo::SecureBlob& isolate_credential,
+                         uint64_t session_id,
+                         const std::vector<uint8_t>& data,
+                         uint64_t max_out_length,
+                         uint64_t* actual_out_length,
+                         std::vector<uint8_t>* signature) = 0;
+   // PKCS #11 v2.20 section 11.11 page 154.
+-  virtual uint32_t SignUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignUpdate(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& data_part) = 0;
+   // PKCS #11 v2.20 section 11.11 page 154.
+-  virtual uint32_t SignFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignFinal(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t max_out_length,
+                              uint64_t* actual_out_length,
+                              std::vector<uint8_t>* signature) = 0;
+   // PKCS #11 v2.20 section 11.11 page 153,154: any errors terminate the active
+   // signing operation.
+-  virtual void SignCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void SignCancel(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.11 page 155.
+   virtual uint32_t SignRecoverInit(
+-     const chromeos::SecureBlob& isolate_credential,
++     const brillo::SecureBlob& isolate_credential,
+      uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.11 page 156.
+-  virtual uint32_t SignRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignRecover(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& data,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* signature) = 0;
+   // PKCS #11 v2.20 section 11.12 page 157.
+-  virtual uint32_t VerifyInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter,
+                               uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.12 page 158.
+-  virtual uint32_t Verify(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Verify(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data,
+                           const std::vector<uint8_t>& signature) = 0;
+   // PKCS #11 v2.20 section 11.12 page 159.
+-  virtual uint32_t VerifyUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_part) = 0;
+   // PKCS #11 v2.20 section 11.12 page 159.
+-  virtual uint32_t VerifyFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& signature) = 0;
+   // PKCS #11 v2.20 section 11.12 page 159: any errors terminate the active
+   // verification operation.
+-  virtual void VerifyCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void VerifyCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id) = 0;
+   // PKCS #11 v2.20 section 11.12 page 161.
+   virtual uint32_t VerifyRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle) = 0;
+   // PKCS #11 v2.20 section 11.12 page 161.
+-  virtual uint32_t VerifyRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyRecover(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& signature,
+                                  uint64_t max_out_length,
+@@ -353,7 +353,7 @@ class ChapsInterface {
+                                  std::vector<uint8_t>* data) = 0;
+   // PKCS #11 v2.20 section 11.13 page 163.
+   virtual uint32_t DigestEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+@@ -361,7 +361,7 @@ class ChapsInterface {
+       std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.13 page 165.
+   virtual uint32_t DecryptDigestUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+@@ -369,7 +369,7 @@ class ChapsInterface {
+       std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.13 page 169.
+   virtual uint32_t SignEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+@@ -377,14 +377,14 @@ class ChapsInterface {
+       std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.13 page 171.
+   virtual uint32_t DecryptVerifyUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out) = 0;
+   // PKCS #11 v2.20 section 11.14 page 175.
+-  virtual uint32_t GenerateKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GenerateKey(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+@@ -392,7 +392,7 @@ class ChapsInterface {
+                                uint64_t* key_handle) = 0;
+   // PKCS #11 v2.20 section 11.14 page 176.
+   virtual uint32_t GenerateKeyPair(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+@@ -401,7 +401,7 @@ class ChapsInterface {
+       uint64_t* public_key_handle,
+       uint64_t* private_key_handle) = 0;
+   // PKCS #11 v2.20 section 11.14 page 178.
+-  virtual uint32_t WrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t WrapKey(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            uint64_t mechanism_type,
+                            const std::vector<uint8_t>& mechanism_parameter,
+@@ -411,7 +411,7 @@ class ChapsInterface {
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* wrapped_key) = 0;
+   // PKCS #11 v2.20 section 11.14 page 180.
+-  virtual uint32_t UnwrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t UnwrapKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+@@ -420,7 +420,7 @@ class ChapsInterface {
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle) = 0;
+   // PKCS #11 v2.20 section 11.14 page 182.
+-  virtual uint32_t DeriveKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DeriveKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+@@ -428,12 +428,12 @@ class ChapsInterface {
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle) = 0;
+   // PKCS #11 v2.20 section 11.15 page 184.
+-  virtual uint32_t SeedRandom(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SeedRandom(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& seed) = 0;
+   // PKCS #11 v2.20 section 11.15 page 184.
+   virtual uint32_t GenerateRandom(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t num_bytes,
+       std::vector<uint8_t>* random_data) = 0;
+diff --git a/chaps/chaps_pam_module.cc b/chaps/chaps_pam_module.cc
+index ed6a125..d8b3a14 100644
+--- a/chaps/chaps_pam_module.cc
++++ b/chaps/chaps_pam_module.cc
+@@ -15,7 +15,7 @@
+ #include <base/files/file_path.h>
+ #include <base/files/file_util.h>
+ #include <base/logging.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_utility.h"
+ #include "chaps/isolate.h"
+@@ -26,7 +26,7 @@
+ #include "chaps/token_manager_client.h"
+ 
+ using std::string;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ #define PAM_EXPORT_SPEC EXPORT_SPEC PAM_EXTERN
+ 
+diff --git a/chaps/chaps_pam_module_test.cc b/chaps/chaps_pam_module_test.cc
+index eb0e6b5..ba8f21b 100644
+--- a/chaps/chaps_pam_module_test.cc
++++ b/chaps/chaps_pam_module_test.cc
+@@ -12,7 +12,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -22,7 +22,7 @@
+ 
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using ::testing::_;
+ using ::testing::DoAll;
+ using ::testing::Eq;
+diff --git a/chaps/chaps_proxy.cc b/chaps/chaps_proxy.cc
+index 09d4769..08bdfa7 100644
+--- a/chaps/chaps_proxy.cc
++++ b/chaps/chaps_proxy.cc
+@@ -14,7 +14,7 @@
+ using base::AutoLock;
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/chaps_proxy.h b/chaps/chaps_proxy.h
+index 83226f3..91f10d8 100644
+--- a/chaps/chaps_proxy.h
++++ b/chaps/chaps_proxy.h
+@@ -11,7 +11,7 @@
+ 
+ #include <base/memory/scoped_ptr.h>
+ #include <base/synchronization/lock.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_interface.h"
+ #include "chaps/dbus_proxies/chaps_interface.h"
+@@ -31,30 +31,30 @@ class ChapsProxyImpl : public ChapsInterface {
+   virtual ~ChapsProxyImpl();
+   virtual bool Init();
+ 
+-  virtual bool OpenIsolate(chromeos::SecureBlob* isolate_credential,
++  virtual bool OpenIsolate(brillo::SecureBlob* isolate_credential,
+                            bool* new_isolate_created);
+-  virtual void CloseIsolate(const chromeos::SecureBlob& isolate_credential);
+-  virtual bool LoadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void CloseIsolate(const brillo::SecureBlob& isolate_credential);
++  virtual bool LoadToken(const brillo::SecureBlob& isolate_credential,
+                          const std::string& path,
+                          const std::vector<uint8_t>& auth_data,
+                          const std::string& label,
+                          uint64_t* slot_id);
+-  virtual void UnloadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void UnloadToken(const brillo::SecureBlob& isolate_credential,
+                            const std::string& path);
+   virtual void ChangeTokenAuthData(const std::string& path,
+                                    const std::vector<uint8_t>& old_auth_data,
+                                    const std::vector<uint8_t>& new_auth_data);
+-  virtual bool GetTokenPath(const chromeos::SecureBlob& isolate_credential,
++  virtual bool GetTokenPath(const brillo::SecureBlob& isolate_credential,
+                             uint64_t slot_id,
+                             std::string* path);
+ 
+   virtual void SetLogLevel(const int32_t& level);
+ 
+   // ChapsInterface methods.
+-  virtual uint32_t GetSlotList(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotList(const brillo::SecureBlob& isolate_credential,
+                                bool token_present,
+                                std::vector<uint64_t>* slot_list);
+-  virtual uint32_t GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id,
+                                std::vector<uint8_t>* slot_description,
+                                std::vector<uint8_t>* manufacturer_id,
+@@ -63,7 +63,7 @@ class ChapsProxyImpl : public ChapsInterface {
+                                uint8_t* hardware_version_minor,
+                                uint8_t* firmware_version_major,
+                                uint8_t* firmware_version_minor);
+-  virtual uint32_t GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t slot_id,
+                                 std::vector<uint8_t>* label,
+                                 std::vector<uint8_t>* manufacturer_id,
+@@ -85,266 +85,266 @@ class ChapsProxyImpl : public ChapsInterface {
+                                 uint8_t* firmware_version_major,
+                                 uint8_t* firmware_version_minor);
+   virtual uint32_t GetMechanismList(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       std::vector<uint64_t>* mechanism_list);
+   virtual uint32_t GetMechanismInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       uint64_t mechanism_type,
+       uint64_t* min_key_size,
+       uint64_t* max_key_size,
+       uint64_t* flags);
+-  virtual uint32_t InitToken(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitToken(const brillo::SecureBlob& isolate_credential,
+                              uint64_t slot_id,
+                              const std::string* so_pin,
+                              const std::vector<uint8_t>& label);
+-  virtual uint32_t InitPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitPIN(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id, const std::string* pin);
+-  virtual uint32_t SetPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SetPIN(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::string* old_pin,
+                           const std::string* new_pin);
+-  virtual uint32_t OpenSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t OpenSession(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id, uint64_t flags,
+                                uint64_t* session_id);
+-  virtual uint32_t CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CloseSession(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id);
+   virtual uint32_t CloseAllSessions(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id);
+   virtual uint32_t GetSessionInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t* slot_id,
+       uint64_t* state,
+       uint64_t* flags,
+       uint64_t* device_error);
+   virtual uint32_t GetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       std::vector<uint8_t>* operation_state);
+   virtual uint32_t SetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& operation_state,
+       uint64_t encryption_key_handle,
+       uint64_t authentication_key_handle);
+-  virtual uint32_t Login(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Login(const brillo::SecureBlob& isolate_credential,
+                          uint64_t session_id,
+                          uint64_t user_type,
+                          const std::string* pin);
+-  virtual uint32_t Logout(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Logout(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+-  virtual uint32_t CreateObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CreateObject(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& attributes,
+                                 uint64_t* new_object_handle);
+-  virtual uint32_t CopyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CopyObject(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t object_handle,
+                               const std::vector<uint8_t>& attributes,
+                               uint64_t* new_object_handle);
+-  virtual uint32_t DestroyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DestroyObject(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle);
+-  virtual uint32_t GetObjectSize(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetObjectSize(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle,
+                                  uint64_t* object_size);
+   virtual uint32_t GetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes_in,
+       std::vector<uint8_t>* attributes_out);
+   virtual uint32_t SetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes);
+   virtual uint32_t FindObjectsInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& attributes);
+   virtual uint32_t FindObjects(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t max_object_count,
+       std::vector<uint64_t>* object_list);
+   virtual uint32_t FindObjectsFinal(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id);
+-  virtual uint32_t EncryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Encrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Encrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void EncryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void EncryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DecryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Decrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Decrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void DecryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DecryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DigestInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter);
+-  virtual uint32_t Digest(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Digest(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data_in,
+                           uint64_t max_out_length,
+                           uint64_t* actual_out_length,
+                           std::vector<uint8_t>* digest);
+-  virtual uint32_t DigestUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_in);
+-  virtual uint32_t DigestKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t key_handle);
+-  virtual uint32_t DigestFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* digest);
+-  virtual void DigestCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DigestCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+-  virtual uint32_t SignInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignInit(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id,
+                             uint64_t mechanism_type,
+                             const std::vector<uint8_t>& mechanism_parameter,
+                             uint64_t key_handle);
+-  virtual uint32_t Sign(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Sign(const brillo::SecureBlob& isolate_credential,
+                         uint64_t session_id,
+                         const std::vector<uint8_t>& data,
+                         uint64_t max_out_length,
+                         uint64_t* actual_out_length,
+                         std::vector<uint8_t>* signature);
+-  virtual uint32_t SignUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignUpdate(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& data_part);
+-  virtual uint32_t SignFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignFinal(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t max_out_length,
+                              uint64_t* actual_out_length,
+                              std::vector<uint8_t>* signature);
+-  virtual void SignCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void SignCancel(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+   virtual uint32_t SignRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+-  virtual uint32_t SignRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignRecover(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& data,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* signature);
+-  virtual uint32_t VerifyInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter,
+                               uint64_t key_handle);
+-  virtual uint32_t Verify(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Verify(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data,
+                           const std::vector<uint8_t>& signature);
+-  virtual uint32_t VerifyUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_part);
+-  virtual uint32_t VerifyFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& signature);
+-  virtual void VerifyCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void VerifyCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+   virtual uint32_t VerifyRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+   virtual uint32_t VerifyRecover(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& signature,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data);
+   virtual uint32_t DigestEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptDigestUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t SignEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptVerifyUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+-  virtual uint32_t GenerateKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GenerateKey(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                const std::vector<uint8_t>& attributes,
+                                uint64_t* key_handle);
+   virtual uint32_t GenerateKeyPair(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+@@ -352,7 +352,7 @@ class ChapsProxyImpl : public ChapsInterface {
+       const std::vector<uint8_t>& private_attributes,
+       uint64_t* public_key_handle,
+       uint64_t* private_key_handle);
+-  virtual uint32_t WrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t WrapKey(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            uint64_t mechanism_type,
+                            const std::vector<uint8_t>& mechanism_parameter,
+@@ -361,7 +361,7 @@ class ChapsProxyImpl : public ChapsInterface {
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* wrapped_key);
+-  virtual uint32_t UnwrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t UnwrapKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+@@ -369,18 +369,18 @@ class ChapsProxyImpl : public ChapsInterface {
+                              const std::vector<uint8_t>& wrapped_key,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t DeriveKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DeriveKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+                              uint64_t base_key_handle,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t SeedRandom(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SeedRandom(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& seed);
+   virtual uint32_t GenerateRandom(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t num_bytes,
+       std::vector<uint8_t>* random_data);
+diff --git a/chaps/chaps_proxy_mock.h b/chaps/chaps_proxy_mock.h
+index 7d5ad32..0668c17 100644
+--- a/chaps/chaps_proxy_mock.h
++++ b/chaps/chaps_proxy_mock.h
+@@ -8,7 +8,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -19,7 +19,7 @@ namespace chaps {
+ 
+ // Defined in chaps.cc.
+ extern void EnableMockProxy(ChapsInterface* proxy,
+-                            chromeos::SecureBlob* isolate_credential,
++                            brillo::SecureBlob* isolate_credential,
+                             bool is_initialized);
+ extern void DisableMockProxy();
+ 
+@@ -36,16 +36,16 @@ class ChapsProxyMock : public ChapsInterface {
+     DisableMockProxy();
+   }
+ 
+-  MOCK_METHOD3(GetSlotList, uint32_t(const chromeos::SecureBlob&, bool,
++  MOCK_METHOD3(GetSlotList, uint32_t(const brillo::SecureBlob&, bool,
+                                      std::vector<uint64_t>*));
+-  MOCK_METHOD9(GetSlotInfo, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD9(GetSlotInfo, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      std::vector<uint8_t>*,
+                                      std::vector<uint8_t>*,
+                                      uint64_t*,
+                                      uint8_t*, uint8_t*,
+                                      uint8_t*, uint8_t*));
+-  virtual uint32_t GetTokenInfo(const chromeos::SecureBlob&,
++  virtual uint32_t GetTokenInfo(const brillo::SecureBlob&,
+                                 uint64_t slot_id,
+                                 std::vector<uint8_t>* label,
+                                 std::vector<uint8_t>* manufacturer_id,
+@@ -69,226 +69,226 @@ class ChapsProxyMock : public ChapsInterface {
+     *flags = 1;
+     return 0;
+   }
+-  MOCK_METHOD3(GetMechanismList, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(GetMechanismList, uint32_t(const brillo::SecureBlob&,
+                                           uint64_t, std::vector<uint64_t>*));
+-  MOCK_METHOD6(GetMechanismInfo, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(GetMechanismInfo, uint32_t(const brillo::SecureBlob&,
+                                           uint64_t, uint64_t, uint64_t*,
+                                           uint64_t*, uint64_t*));
+-  MOCK_METHOD4(InitToken, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD4(InitToken, uint32_t(const brillo::SecureBlob&,
+                                    uint64_t,
+                                    const std::string*,
+                                    const std::vector<uint8_t>&));
+-  MOCK_METHOD3(InitPIN, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD3(InitPIN, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                  const std::string*));
+-  MOCK_METHOD4(SetPIN, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD4(SetPIN, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                 const std::string*,
+                                 const std::string*));
+-  MOCK_METHOD4(OpenSession, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD4(OpenSession, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                      uint64_t, uint64_t*));
+-  MOCK_METHOD2(CloseSession, uint32_t(const chromeos::SecureBlob&, uint64_t));
+-  MOCK_METHOD2(CloseAllSessions, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD2(CloseSession, uint32_t(const brillo::SecureBlob&, uint64_t));
++  MOCK_METHOD2(CloseAllSessions, uint32_t(const brillo::SecureBlob&,
+                                           uint64_t));
+-  MOCK_METHOD6(GetSessionInfo, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD6(GetSessionInfo, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                         uint64_t*, uint64_t*, uint64_t*,
+                                         uint64_t*));
+-  MOCK_METHOD3(GetOperationState, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(GetOperationState, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t, std::vector<uint8_t>*));
+-  MOCK_METHOD5(SetOperationState, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(SetOperationState, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t,
+                                            const std::vector<uint8_t>&,
+                                            uint64_t,
+                                            uint64_t));
+-  MOCK_METHOD4(Login, uint32_t(const chromeos::SecureBlob&, uint64_t, uint64_t,
++  MOCK_METHOD4(Login, uint32_t(const brillo::SecureBlob&, uint64_t, uint64_t,
+                                const std::string*));
+-  MOCK_METHOD2(Logout, uint32_t(const chromeos::SecureBlob&, uint64_t));
+-  MOCK_METHOD4(CreateObject, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD2(Logout, uint32_t(const brillo::SecureBlob&, uint64_t));
++  MOCK_METHOD4(CreateObject, uint32_t(const brillo::SecureBlob&,
+                                       uint64_t,
+                                       const std::vector<uint8_t>&,
+                                       uint64_t*));
+-  MOCK_METHOD5(CopyObject, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD5(CopyObject, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                     uint64_t, const std::vector<uint8_t>&,
+                                     uint64_t*));
+-  MOCK_METHOD3(DestroyObject, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD3(DestroyObject, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                        uint64_t));
+-  MOCK_METHOD4(GetObjectSize, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD4(GetObjectSize, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                        uint64_t, uint64_t*));
+-  MOCK_METHOD5(GetAttributeValue, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(GetAttributeValue, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t,
+                                            uint64_t,
+                                            const std::vector<uint8_t>&,
+                                            std::vector<uint8_t>*));
+-  MOCK_METHOD4(SetAttributeValue, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD4(SetAttributeValue, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t,
+                                            uint64_t,
+                                            const std::vector<uint8_t>&));
+-  MOCK_METHOD3(FindObjectsInit, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD3(FindObjectsInit, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                          const std::vector<uint8_t>&));
+-  MOCK_METHOD4(FindObjects, uint32_t(const chromeos::SecureBlob&, uint64_t,
++  MOCK_METHOD4(FindObjects, uint32_t(const brillo::SecureBlob&, uint64_t,
+                                      uint64_t, std::vector<uint64_t>*));
+-  MOCK_METHOD2(FindObjectsFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD2(FindObjectsFinal, uint32_t(const brillo::SecureBlob&,
+                                           uint64_t));
+-  MOCK_METHOD5(EncryptInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(EncryptInit, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      uint64_t,
+                                      const std::vector<uint8_t>&,
+                                      uint64_t key_handle));
+-  MOCK_METHOD6(Encrypt, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(Encrypt, uint32_t(const brillo::SecureBlob&,
+                                  uint64_t,
+                                  const std::vector<uint8_t>&,
+                                  uint64_t,
+                                  uint64_t*,
+                                  std::vector<uint8_t>*));
+-  MOCK_METHOD6(EncryptUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(EncryptUpdate, uint32_t(const brillo::SecureBlob&,
+                                        uint64_t,
+                                        const std::vector<uint8_t>&,
+                                        uint64_t,
+                                        uint64_t*,
+                                        std::vector<uint8_t>*));
+-  MOCK_METHOD5(EncryptFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(EncryptFinal, uint32_t(const brillo::SecureBlob&,
+                                       uint64_t,
+                                       uint64_t,
+                                       uint64_t*,
+                                       std::vector<uint8_t>*));
+-  MOCK_METHOD2(EncryptCancel, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(EncryptCancel, void(const brillo::SecureBlob&,
+                                    uint64_t));
+-  MOCK_METHOD5(DecryptInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(DecryptInit, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      uint64_t,
+                                      const std::vector<uint8_t>&,
+                                      uint64_t));
+-  MOCK_METHOD6(Decrypt, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(Decrypt, uint32_t(const brillo::SecureBlob&,
+                                  uint64_t,
+                                  const std::vector<uint8_t>&,
+                                  uint64_t,
+                                  uint64_t*,
+                                  std::vector<uint8_t>*));
+-  MOCK_METHOD6(DecryptUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(DecryptUpdate, uint32_t(const brillo::SecureBlob&,
+                                        uint64_t,
+                                        const std::vector<uint8_t>&,
+                                        uint64_t,
+                                        uint64_t*,
+                                        std::vector<uint8_t>*));
+-  MOCK_METHOD5(DecryptFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(DecryptFinal, uint32_t(const brillo::SecureBlob&,
+                                       uint64_t,
+                                       uint64_t,
+                                       uint64_t*,
+                                       std::vector<uint8_t>*));
+-  MOCK_METHOD2(DecryptCancel, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(DecryptCancel, void(const brillo::SecureBlob&,
+                                    uint64_t));
+-  MOCK_METHOD4(DigestInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD4(DigestInit, uint32_t(const brillo::SecureBlob&,
+                                     uint64_t,
+                                     uint64_t,
+                                     const std::vector<uint8_t>&));
+-  MOCK_METHOD6(Digest, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(Digest, uint32_t(const brillo::SecureBlob&,
+                                 uint64_t,
+                                 const std::vector<uint8_t>&,
+                                 uint64_t,
+                                 uint64_t*,
+                                 std::vector<uint8_t>*));
+-  MOCK_METHOD3(DigestUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(DigestUpdate, uint32_t(const brillo::SecureBlob&,
+                                       uint64_t,
+                                       const std::vector<uint8_t>&));
+-  MOCK_METHOD3(DigestKey, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(DigestKey, uint32_t(const brillo::SecureBlob&,
+                                    uint64_t,
+                                    uint64_t));
+-  MOCK_METHOD5(DigestFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(DigestFinal, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      uint64_t,
+                                      uint64_t*,
+                                      std::vector<uint8_t>*));
+-  MOCK_METHOD2(DigestCancel, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(DigestCancel, void(const brillo::SecureBlob&,
+                                   uint64_t));
+-  MOCK_METHOD5(SignInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(SignInit, uint32_t(const brillo::SecureBlob&,
+                                   uint64_t,
+                                   uint64_t,
+                                   const std::vector<uint8_t>&,
+                                   uint64_t));
+-  MOCK_METHOD6(Sign, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(Sign, uint32_t(const brillo::SecureBlob&,
+                               uint64_t,
+                               const std::vector<uint8_t>&,
+                               uint64_t,
+                               uint64_t*,
+                               std::vector<uint8_t>*));
+-  MOCK_METHOD3(SignUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(SignUpdate, uint32_t(const brillo::SecureBlob&,
+                                     uint64_t,
+                                     const std::vector<uint8_t>&));
+-  MOCK_METHOD5(SignFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(SignFinal, uint32_t(const brillo::SecureBlob&,
+                                    uint64_t,
+                                    uint64_t,
+                                    uint64_t*,
+                                    std::vector<uint8_t>*));
+-  MOCK_METHOD2(SignCancel, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(SignCancel, void(const brillo::SecureBlob&,
+                                 uint64_t));
+-  MOCK_METHOD5(SignRecoverInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(SignRecoverInit, uint32_t(const brillo::SecureBlob&,
+                                          uint64_t,
+                                          uint64_t,
+                                          const std::vector<uint8_t>&,
+                                          uint64_t));
+-  MOCK_METHOD6(SignRecover, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(SignRecover, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      const std::vector<uint8_t>&,
+                                      uint64_t,
+                                      uint64_t*,
+                                      std::vector<uint8_t>*));
+-  MOCK_METHOD5(VerifyInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(VerifyInit, uint32_t(const brillo::SecureBlob&,
+                                     uint64_t,
+                                     uint64_t,
+                                     const std::vector<uint8_t>&,
+                                     uint64_t));
+-  MOCK_METHOD4(Verify, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD4(Verify, uint32_t(const brillo::SecureBlob&,
+                                 uint64_t,
+                                 const std::vector<uint8_t>&,
+                                 const std::vector<uint8_t>&));
+-  MOCK_METHOD3(VerifyUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(VerifyUpdate, uint32_t(const brillo::SecureBlob&,
+                                       uint64_t,
+                                       const std::vector<uint8_t>&));
+-  MOCK_METHOD3(VerifyFinal, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(VerifyFinal, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      const std::vector<uint8_t>&));
+-  MOCK_METHOD2(VerifyCancel, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(VerifyCancel, void(const brillo::SecureBlob&,
+                                   uint64_t));
+-  MOCK_METHOD5(VerifyRecoverInit, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD5(VerifyRecoverInit, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t,
+                                            uint64_t,
+                                            const std::vector<uint8_t>&,
+                                            uint64_t));
+-  MOCK_METHOD6(VerifyRecover, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(VerifyRecover, uint32_t(const brillo::SecureBlob&,
+                                        uint64_t,
+                                        const std::vector<uint8_t>&,
+                                        uint64_t,
+                                        uint64_t*,
+                                        std::vector<uint8_t>*));
+-  MOCK_METHOD6(DigestEncryptUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(DigestEncryptUpdate, uint32_t(const brillo::SecureBlob&,
+                                              uint64_t,
+                                              const std::vector<uint8_t>&,
+                                              uint64_t,
+                                              uint64_t*,
+                                              std::vector<uint8_t>*));
+-  MOCK_METHOD6(DecryptDigestUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(DecryptDigestUpdate, uint32_t(const brillo::SecureBlob&,
+                                              uint64_t,
+                                              const std::vector<uint8_t>&,
+                                              uint64_t,
+                                              uint64_t*,
+                                              std::vector<uint8_t>*));
+-  MOCK_METHOD6(SignEncryptUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(SignEncryptUpdate, uint32_t(const brillo::SecureBlob&,
+                                            uint64_t,
+                                            const std::vector<uint8_t>&,
+                                            uint64_t,
+                                            uint64_t*,
+                                            std::vector<uint8_t>*));
+-  MOCK_METHOD6(DecryptVerifyUpdate, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(DecryptVerifyUpdate, uint32_t(const brillo::SecureBlob&,
+                                              uint64_t,
+                                              const std::vector<uint8_t>&,
+                                              uint64_t,
+                                              uint64_t*,
+                                              std::vector<uint8_t>*));
+-  MOCK_METHOD6(GenerateKey, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD6(GenerateKey, uint32_t(const brillo::SecureBlob&,
+                                      uint64_t,
+                                      uint64_t,
+                                      const std::vector<uint8_t>&,
+                                      const std::vector<uint8_t>&,
+                                      uint64_t*));
+-  MOCK_METHOD8(GenerateKeyPair, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD8(GenerateKeyPair, uint32_t(const brillo::SecureBlob&,
+                                          uint64_t,
+                                          uint64_t,
+                                          const std::vector<uint8_t>&,
+@@ -296,7 +296,7 @@ class ChapsProxyMock : public ChapsInterface {
+                                          const std::vector<uint8_t>&,
+                                          uint64_t*,
+                                          uint64_t*));
+-  MOCK_METHOD9(WrapKey, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD9(WrapKey, uint32_t(const brillo::SecureBlob&,
+                                  uint64_t,
+                                  uint64_t,
+                                  const std::vector<uint8_t>&,
+@@ -305,7 +305,7 @@ class ChapsProxyMock : public ChapsInterface {
+                                  uint64_t,
+                                  uint64_t*,
+                                  std::vector<uint8_t>*));
+-  MOCK_METHOD8(UnwrapKey, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD8(UnwrapKey, uint32_t(const brillo::SecureBlob&,
+                                    uint64_t,
+                                    uint64_t,
+                                    const std::vector<uint8_t>&,
+@@ -313,23 +313,23 @@ class ChapsProxyMock : public ChapsInterface {
+                                    const std::vector<uint8_t>&,
+                                    const std::vector<uint8_t>&,
+                                    uint64_t*));
+-  MOCK_METHOD7(DeriveKey, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD7(DeriveKey, uint32_t(const brillo::SecureBlob&,
+                                    uint64_t,
+                                    uint64_t,
+                                    const std::vector<uint8_t>&,
+                                    uint64_t,
+                                    const std::vector<uint8_t>&,
+                                    uint64_t*));
+-  MOCK_METHOD3(SeedRandom, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD3(SeedRandom, uint32_t(const brillo::SecureBlob&,
+                                     uint64_t,
+                                     const std::vector<uint8_t>&));
+-  MOCK_METHOD4(GenerateRandom, uint32_t(const chromeos::SecureBlob&,
++  MOCK_METHOD4(GenerateRandom, uint32_t(const brillo::SecureBlob&,
+                                         uint64_t,
+                                         uint64_t,
+                                         std::vector<uint8_t>*));
+ 
+  private:
+-  chromeos::SecureBlob isolate_credential_;
++  brillo::SecureBlob isolate_credential_;
+ 
+   DISALLOW_COPY_AND_ASSIGN(ChapsProxyMock);
+ };
+diff --git a/chaps/chaps_service.cc b/chaps/chaps_service.cc
+index 027832f..72502ca 100644
+--- a/chaps/chaps_service.cc
++++ b/chaps/chaps_service.cc
+@@ -16,7 +16,7 @@
+ 
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/chaps_service.h b/chaps/chaps_service.h
+index 46b462c..2361b0f 100644
+--- a/chaps/chaps_service.h
++++ b/chaps/chaps_service.h
+@@ -28,10 +28,10 @@ class ChapsServiceImpl : public ChapsInterface {
+   bool Init();
+   void TearDown();
+   // ChapsInterface methods
+-  virtual uint32_t GetSlotList(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotList(const brillo::SecureBlob& isolate_credential,
+                                bool token_present,
+                                std::vector<uint64_t>* slot_list);
+-  virtual uint32_t GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id,
+                                std::vector<uint8_t>* slot_description,
+                                std::vector<uint8_t>* manufacturer_id,
+@@ -40,7 +40,7 @@ class ChapsServiceImpl : public ChapsInterface {
+                                uint8_t* hardware_version_minor,
+                                uint8_t* firmware_version_major,
+                                uint8_t* firmware_version_minor);
+-  virtual uint32_t GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t slot_id,
+                                 std::vector<uint8_t>* label,
+                                 std::vector<uint8_t>* manufacturer_id,
+@@ -62,264 +62,264 @@ class ChapsServiceImpl : public ChapsInterface {
+                                 uint8_t* firmware_version_major,
+                                 uint8_t* firmware_version_minor);
+   virtual uint32_t GetMechanismList(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       std::vector<uint64_t>* mechanism_list);
+   virtual uint32_t GetMechanismInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       uint64_t mechanism_type,
+       uint64_t* min_key_size,
+       uint64_t* max_key_size,
+       uint64_t* flags);
+-  virtual uint32_t InitToken(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitToken(const brillo::SecureBlob& isolate_credential,
+                              uint64_t slot_id,
+                              const std::string* so_pin,
+                              const std::vector<uint8_t>& label);
+-  virtual uint32_t InitPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitPIN(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id, const std::string* pin);
+-  virtual uint32_t SetPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SetPIN(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::string* old_pin,
+                           const std::string* new_pin);
+-  virtual uint32_t OpenSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t OpenSession(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id, uint64_t flags,
+                                uint64_t* session_id);
+-  virtual uint32_t CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CloseSession(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id);
+   virtual uint32_t CloseAllSessions(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id);
+   virtual uint32_t GetSessionInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t* slot_id,
+       uint64_t* state,
+       uint64_t* flags,
+       uint64_t* device_error);
+   virtual uint32_t GetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       std::vector<uint8_t>* operation_state);
+   virtual uint32_t SetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& operation_state,
+       uint64_t encryption_key_handle,
+       uint64_t authentication_key_handle);
+-  virtual uint32_t Login(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Login(const brillo::SecureBlob& isolate_credential,
+                          uint64_t session_id,
+                          uint64_t user_type,
+                          const std::string* pin);
+-  virtual uint32_t Logout(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Logout(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+-  virtual uint32_t CreateObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CreateObject(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& attributes,
+                                 uint64_t* new_object_handle);
+-  virtual uint32_t CopyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CopyObject(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t object_handle,
+                               const std::vector<uint8_t>& attributes,
+                               uint64_t* new_object_handle);
+-  virtual uint32_t DestroyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DestroyObject(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle);
+-  virtual uint32_t GetObjectSize(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetObjectSize(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle,
+                                  uint64_t* object_size);
+   virtual uint32_t GetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes_in,
+       std::vector<uint8_t>* attributes_out);
+   virtual uint32_t SetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes);
+   virtual uint32_t FindObjectsInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& attributes);
+-  virtual uint32_t FindObjects(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t FindObjects(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_object_count,
+                                std::vector<uint64_t>* object_list);
+   virtual uint32_t FindObjectsFinal(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id);
+-  virtual uint32_t EncryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Encrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Encrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void EncryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void EncryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DecryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Decrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Decrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void DecryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DecryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DigestInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter);
+-  virtual uint32_t Digest(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Digest(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data_in,
+                           uint64_t max_out_length,
+                           uint64_t* actual_out_length,
+                           std::vector<uint8_t>* digest);
+-  virtual uint32_t DigestUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_in);
+-  virtual uint32_t DigestKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t key_handle);
+-  virtual uint32_t DigestFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* digest);
+-  virtual void DigestCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DigestCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+-  virtual uint32_t SignInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignInit(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id,
+                             uint64_t mechanism_type,
+                             const std::vector<uint8_t>& mechanism_parameter,
+                             uint64_t key_handle);
+-  virtual uint32_t Sign(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Sign(const brillo::SecureBlob& isolate_credential,
+                         uint64_t session_id,
+                         const std::vector<uint8_t>& data,
+                         uint64_t max_out_length,
+                         uint64_t* actual_out_length,
+                         std::vector<uint8_t>* signature);
+-  virtual uint32_t SignUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignUpdate(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& data_part);
+-  virtual uint32_t SignFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignFinal(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t max_out_length,
+                              uint64_t* actual_out_length,
+                              std::vector<uint8_t>* signature);
+-  virtual void SignCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void SignCancel(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+   virtual uint32_t SignRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+-  virtual uint32_t SignRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignRecover(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& data,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* signature);
+-  virtual uint32_t VerifyInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter,
+                               uint64_t key_handle);
+-  virtual uint32_t Verify(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Verify(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data,
+                           const std::vector<uint8_t>& signature);
+-  virtual uint32_t VerifyUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_part);
+-  virtual uint32_t VerifyFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& signature);
+-  virtual void VerifyCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void VerifyCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+   virtual uint32_t VerifyRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+-  virtual uint32_t VerifyRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyRecover(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& signature,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data);
+   virtual uint32_t DigestEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptDigestUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t SignEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptVerifyUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+-  virtual uint32_t GenerateKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GenerateKey(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                const std::vector<uint8_t>& attributes,
+                                uint64_t* key_handle);
+   virtual uint32_t GenerateKeyPair(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+@@ -327,7 +327,7 @@ class ChapsServiceImpl : public ChapsInterface {
+       const std::vector<uint8_t>& private_attributes,
+       uint64_t* public_key_handle,
+       uint64_t* private_key_handle);
+-  virtual uint32_t WrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t WrapKey(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            uint64_t mechanism_type,
+                            const std::vector<uint8_t>& mechanism_parameter,
+@@ -336,7 +336,7 @@ class ChapsServiceImpl : public ChapsInterface {
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* wrapped_key);
+-  virtual uint32_t UnwrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t UnwrapKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+@@ -344,18 +344,18 @@ class ChapsServiceImpl : public ChapsInterface {
+                              const std::vector<uint8_t>& wrapped_key,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t DeriveKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DeriveKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+                              uint64_t base_key_handle,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t SeedRandom(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SeedRandom(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& seed);
+   virtual uint32_t GenerateRandom(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t num_bytes,
+       std::vector<uint8_t>* random_data);
+diff --git a/chaps/chaps_service_redirect.cc b/chaps/chaps_service_redirect.cc
+index 507d96e..f4944a1 100644
+--- a/chaps/chaps_service_redirect.cc
++++ b/chaps/chaps_service_redirect.cc
+@@ -9,7 +9,7 @@
+ 
+ #include <base/logging.h>
+ #include <base/memory/scoped_ptr.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/attributes.h"
+ #include "chaps/chaps.h"
+@@ -18,7 +18,7 @@
+ 
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ typedef CK_RV (*GetFunctionList)(CK_FUNCTION_LIST_PTR_PTR);
+ 
+diff --git a/chaps/chaps_service_redirect.h b/chaps/chaps_service_redirect.h
+index daedd17..df6f408 100644
+--- a/chaps/chaps_service_redirect.h
++++ b/chaps/chaps_service_redirect.h
+@@ -29,10 +29,10 @@ class ChapsServiceRedirect : public ChapsInterface {
+   bool Init();
+   void TearDown();
+   // ChapsInterface methods
+-  virtual uint32_t GetSlotList(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotList(const brillo::SecureBlob& isolate_credential,
+                                bool token_present,
+                                std::vector<uint64_t>* slot_list);
+-  virtual uint32_t GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id,
+                                std::vector<uint8_t>* slot_description,
+                                std::vector<uint8_t>* manufacturer_id,
+@@ -41,7 +41,7 @@ class ChapsServiceRedirect : public ChapsInterface {
+                                uint8_t* hardware_version_minor,
+                                uint8_t* firmware_version_major,
+                                uint8_t* firmware_version_minor);
+-  virtual uint32_t GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t slot_id,
+                                 std::vector<uint8_t>* label,
+                                 std::vector<uint8_t>* manufacturer_id,
+@@ -63,265 +63,265 @@ class ChapsServiceRedirect : public ChapsInterface {
+                                 uint8_t* firmware_version_major,
+                                 uint8_t* firmware_version_minor);
+   virtual uint32_t GetMechanismList(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       std::vector<uint64_t>* mechanism_list);
+   virtual uint32_t GetMechanismInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id,
+       uint64_t mechanism_type,
+       uint64_t* min_key_size,
+       uint64_t* max_key_size,
+       uint64_t* flags);
+-  virtual uint32_t InitToken(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitToken(const brillo::SecureBlob& isolate_credential,
+                              uint64_t slot_id,
+                              const std::string* so_pin,
+                              const std::vector<uint8_t>& label);
+-  virtual uint32_t InitPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t InitPIN(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id, const std::string* pin);
+-  virtual uint32_t SetPIN(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SetPIN(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::string* old_pin,
+                           const std::string* new_pin);
+-  virtual uint32_t OpenSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t OpenSession(const brillo::SecureBlob& isolate_credential,
+                                uint64_t slot_id, uint64_t flags,
+                                uint64_t* session_id);
+-  virtual uint32_t CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CloseSession(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id);
+   virtual uint32_t CloseAllSessions(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t slot_id);
+   virtual uint32_t GetSessionInfo(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t* slot_id,
+       uint64_t* state,
+       uint64_t* flags,
+       uint64_t* device_error);
+   virtual uint32_t GetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       std::vector<uint8_t>* operation_state);
+   virtual uint32_t SetOperationState(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& operation_state,
+       uint64_t encryption_key_handle,
+       uint64_t authentication_key_handle);
+-  virtual uint32_t Login(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Login(const brillo::SecureBlob& isolate_credential,
+                          uint64_t session_id,
+                          uint64_t user_type,
+                          const std::string* pin);
+-  virtual uint32_t Logout(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Logout(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+-  virtual uint32_t CreateObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CreateObject(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& attributes,
+                                 uint64_t* new_object_handle);
+-  virtual uint32_t CopyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t CopyObject(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t object_handle,
+                               const std::vector<uint8_t>& attributes,
+                               uint64_t* new_object_handle);
+-  virtual uint32_t DestroyObject(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DestroyObject(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle);
+-  virtual uint32_t GetObjectSize(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GetObjectSize(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  uint64_t object_handle,
+                                  uint64_t* object_size);
+   virtual uint32_t GetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes_in,
+       std::vector<uint8_t>* attributes_out);
+   virtual uint32_t SetAttributeValue(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t object_handle,
+       const std::vector<uint8_t>& attributes);
+   virtual uint32_t FindObjectsInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& attributes);
+   virtual uint32_t FindObjects(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t max_object_count,
+       std::vector<uint64_t>* object_list);
+   virtual uint32_t FindObjectsFinal(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id);
+-  virtual uint32_t EncryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Encrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Encrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t EncryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t EncryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void EncryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void EncryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DecryptInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptInit(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                uint64_t key_handle);
+-  virtual uint32_t Decrypt(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Decrypt(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            const std::vector<uint8_t>& data_in,
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptUpdate(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& data_in,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data_out);
+-  virtual uint32_t DecryptFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DecryptFinal(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 uint64_t max_out_length,
+                                 uint64_t* actual_out_length,
+                                 std::vector<uint8_t>* data_out);
+-  virtual void DecryptCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DecryptCancel(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id);
+-  virtual uint32_t DigestInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter);
+-  virtual uint32_t Digest(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Digest(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data_in,
+                           uint64_t max_out_length,
+                           uint64_t* actual_out_length,
+                           std::vector<uint8_t>* digest);
+-  virtual uint32_t DigestUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_in);
+-  virtual uint32_t DigestKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t key_handle);
+-  virtual uint32_t DigestFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DigestFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* digest);
+-  virtual void DigestCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void DigestCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+-  virtual uint32_t SignInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignInit(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id,
+                             uint64_t mechanism_type,
+                             const std::vector<uint8_t>& mechanism_parameter,
+                             uint64_t key_handle);
+-  virtual uint32_t Sign(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Sign(const brillo::SecureBlob& isolate_credential,
+                         uint64_t session_id,
+                         const std::vector<uint8_t>& data,
+                         uint64_t max_out_length,
+                         uint64_t* actual_out_length,
+                         std::vector<uint8_t>* signature);
+-  virtual uint32_t SignUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignUpdate(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& data_part);
+-  virtual uint32_t SignFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignFinal(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t max_out_length,
+                              uint64_t* actual_out_length,
+                              std::vector<uint8_t>* signature);
+-  virtual void SignCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void SignCancel(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id);
+   virtual uint32_t SignRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+-  virtual uint32_t SignRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SignRecover(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& data,
+                                uint64_t max_out_length,
+                                uint64_t* actual_out_length,
+                                std::vector<uint8_t>* signature);
+-  virtual uint32_t VerifyInit(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyInit(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               uint64_t mechanism_type,
+                               const std::vector<uint8_t>& mechanism_parameter,
+                               uint64_t key_handle);
+-  virtual uint32_t Verify(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t Verify(const brillo::SecureBlob& isolate_credential,
+                           uint64_t session_id,
+                           const std::vector<uint8_t>& data,
+                           const std::vector<uint8_t>& signature);
+-  virtual uint32_t VerifyUpdate(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyUpdate(const brillo::SecureBlob& isolate_credential,
+                                 uint64_t session_id,
+                                 const std::vector<uint8_t>& data_part);
+-  virtual uint32_t VerifyFinal(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyFinal(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                const std::vector<uint8_t>& signature);
+-  virtual void VerifyCancel(const chromeos::SecureBlob& isolate_credential,
++  virtual void VerifyCancel(const brillo::SecureBlob& isolate_credential,
+                             uint64_t session_id);
+   virtual uint32_t VerifyRecoverInit(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+       uint64_t key_handle);
+-  virtual uint32_t VerifyRecover(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t VerifyRecover(const brillo::SecureBlob& isolate_credential,
+                                  uint64_t session_id,
+                                  const std::vector<uint8_t>& signature,
+                                  uint64_t max_out_length,
+                                  uint64_t* actual_out_length,
+                                  std::vector<uint8_t>* data);
+   virtual uint32_t DigestEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptDigestUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t SignEncryptUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+   virtual uint32_t DecryptVerifyUpdate(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       const std::vector<uint8_t>& data_in,
+       uint64_t max_out_length,
+       uint64_t* actual_out_length,
+       std::vector<uint8_t>* data_out);
+-  virtual uint32_t GenerateKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t GenerateKey(const brillo::SecureBlob& isolate_credential,
+                                uint64_t session_id,
+                                uint64_t mechanism_type,
+                                const std::vector<uint8_t>& mechanism_parameter,
+                                const std::vector<uint8_t>& attributes,
+                                uint64_t* key_handle);
+   virtual uint32_t GenerateKeyPair(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t mechanism_type,
+       const std::vector<uint8_t>& mechanism_parameter,
+@@ -329,7 +329,7 @@ class ChapsServiceRedirect : public ChapsInterface {
+       const std::vector<uint8_t>& private_attributes,
+       uint64_t* public_key_handle,
+       uint64_t* private_key_handle);
+-  virtual uint32_t WrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t WrapKey(const brillo::SecureBlob& isolate_credential,
+                            uint64_t session_id,
+                            uint64_t mechanism_type,
+                            const std::vector<uint8_t>& mechanism_parameter,
+@@ -338,7 +338,7 @@ class ChapsServiceRedirect : public ChapsInterface {
+                            uint64_t max_out_length,
+                            uint64_t* actual_out_length,
+                            std::vector<uint8_t>* wrapped_key);
+-  virtual uint32_t UnwrapKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t UnwrapKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+@@ -346,18 +346,18 @@ class ChapsServiceRedirect : public ChapsInterface {
+                              const std::vector<uint8_t>& wrapped_key,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t DeriveKey(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t DeriveKey(const brillo::SecureBlob& isolate_credential,
+                              uint64_t session_id,
+                              uint64_t mechanism_type,
+                              const std::vector<uint8_t>& mechanism_parameter,
+                              uint64_t base_key_handle,
+                              const std::vector<uint8_t>& attributes,
+                              uint64_t* key_handle);
+-  virtual uint32_t SeedRandom(const chromeos::SecureBlob& isolate_credential,
++  virtual uint32_t SeedRandom(const brillo::SecureBlob& isolate_credential,
+                               uint64_t session_id,
+                               const std::vector<uint8_t>& seed);
+   virtual uint32_t GenerateRandom(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       uint64_t session_id,
+       uint64_t num_bytes,
+       std::vector<uint8_t>* random_data);
+diff --git a/chaps/chaps_service_test.cc b/chaps/chaps_service_test.cc
+index 3ae5a6c..0e7ae3b 100644
+--- a/chaps/chaps_service_test.cc
++++ b/chaps/chaps_service_test.cc
+@@ -17,7 +17,7 @@
+ 
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using ::testing::_;
+ using ::testing::AnyNumber;
+ using ::testing::Return;
+diff --git a/chaps/chaps_utility.cc b/chaps/chaps_utility.cc
+index 5af309f..c876268 100644
+--- a/chaps/chaps_utility.cc
++++ b/chaps/chaps_utility.cc
+@@ -15,7 +15,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <openssl/bio.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+@@ -27,7 +27,7 @@
+ #include "chaps/chaps.h"
+ #include "pkcs11/cryptoki.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using std::stringstream;
+ using std::vector;
+@@ -539,7 +539,7 @@ SecureBlob Sha1(const SecureBlob& input) {
+   unsigned char digest[SHA_DIGEST_LENGTH];
+   SHA1(input.data(), input.size(), digest);
+   SecureBlob hash(std::begin(digest), std::end(digest));
+-  chromeos::SecureMemset(digest, 0, SHA_DIGEST_LENGTH);
++  brillo::SecureMemset(digest, 0, SHA_DIGEST_LENGTH);
+   return hash;
+ }
+ 
+@@ -547,7 +547,7 @@ SecureBlob Sha256(const SecureBlob& input) {
+   unsigned char digest[SHA256_DIGEST_LENGTH];
+   SHA256(input.data(), input.size(), digest);
+   SecureBlob hash(std::begin(digest), std::end(digest));
+-  chromeos::SecureMemset(digest, 0, SHA256_DIGEST_LENGTH);
++  brillo::SecureMemset(digest, 0, SHA256_DIGEST_LENGTH);
+   return hash;
+ }
+ 
+@@ -555,7 +555,7 @@ SecureBlob Sha512(const SecureBlob& input) {
+   unsigned char digest[SHA512_DIGEST_LENGTH];
+   SHA512(input.data(), input.size(), digest);
+   SecureBlob hash(std::begin(digest), std::end(digest));
+-  chromeos::SecureMemset(digest, 0, SHA512_DIGEST_LENGTH);
++  brillo::SecureMemset(digest, 0, SHA512_DIGEST_LENGTH);
+   return hash;
+ }
+ 
+@@ -580,7 +580,7 @@ std::string GetOpenSSLError() {
+ }
+ 
+ std::string HmacSha512(const std::string& input,
+-                       const chromeos::SecureBlob& key) {
++                       const brillo::SecureBlob& key) {
+   const int kSha512OutputSize = 64;
+   unsigned char mac[kSha512OutputSize];
+   HMAC(EVP_sha512(),
+diff --git a/chaps/chaps_utility.h b/chaps/chaps_utility.h
+index 9ae6ef6..fff48c2 100644
+--- a/chaps/chaps_utility.h
++++ b/chaps/chaps_utility.h
+@@ -11,7 +11,7 @@
+ 
+ #include <base/logging.h>
+ #include <base/stl_util.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps.h"
+ #include "pkcs11/cryptoki.h"
+@@ -194,13 +194,13 @@ class PreservedByteVector {
+ 
+ // Computes and returns a SHA-1 hash of the given input.
+ std::string Sha1(const std::string& input);
+-chromeos::SecureBlob Sha1(const chromeos::SecureBlob& input);
++brillo::SecureBlob Sha1(const brillo::SecureBlob& input);
+ 
+ // Computes and returns a SHA-256 hash of the given input.
+-chromeos::SecureBlob Sha256(const chromeos::SecureBlob& input);
++brillo::SecureBlob Sha256(const brillo::SecureBlob& input);
+ 
+ // Computes and returns a SHA-512 hash of the given input.
+-chromeos::SecureBlob Sha512(const chromeos::SecureBlob& input);
++brillo::SecureBlob Sha512(const brillo::SecureBlob& input);
+ 
+ // Initializes the OpenSSL library on construction and terminates the library on
+ // destruction.
+@@ -215,7 +215,7 @@ std::string GetOpenSSLError();
+ 
+ // Computes a message authentication code using HMAC and SHA-512.
+ std::string HmacSha512(const std::string& input,
+-                       const chromeos::SecureBlob& key);
++                       const brillo::SecureBlob& key);
+ 
+ // Sets the user and group for the current process. If 'real' is set to true,
+ // the supplementary group list is initialized before changing the uid. The real
+@@ -232,7 +232,7 @@ bool SetProcessUserAndGroup(const char* user, const char* group, bool real);
+ // 'iv' is left empty, a random IV will be generated and appended to the cipher-
+ // text on encryption.
+ bool RunCipher(bool is_encrypt,
+-               const chromeos::SecureBlob& key,
++               const brillo::SecureBlob& key,
+                const std::string& iv,
+                const std::string& input,
+                std::string* output);
+@@ -241,11 +241,11 @@ bool RunCipher(bool is_encrypt,
+ bool IsIntegralAttribute(CK_ATTRIBUTE_TYPE type);
+ 
+ inline void ClearString(std::string* str) {
+-  chromeos::SecureMemset(string_as_array(str), 0, str->length());
++  brillo::SecureMemset(string_as_array(str), 0, str->length());
+ }
+ 
+ inline void ClearVector(std::vector<uint8_t>* vector) {
+-  chromeos::SecureMemset(vector->data(), 0, vector->size());
++  brillo::SecureMemset(vector->data(), 0, vector->size());
+ }
+ 
+ }  // namespace chaps
+diff --git a/chaps/chapsd.cc b/chaps/chapsd.cc
+index 9e84a3b..bd6b6a2 100644
+--- a/chaps/chapsd.cc
++++ b/chaps/chapsd.cc
+@@ -16,7 +16,7 @@
+ #include <base/synchronization/lock.h>
+ #include <base/synchronization/waitable_event.h>
+ #include <base/threading/platform_thread.h>
+-#include <chromeos/syslog_logging.h>
++#include <brillo/syslog_logging.h>
+ #include <dbus-c++/dbus.h>
+ 
+ #include "chaps/chaps_adaptor.h"
+@@ -103,7 +103,7 @@ void RunDispatcher(Lock* lock,
+ int main(int argc, char** argv) {
+   base::CommandLine::Init(argc, argv);
+   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+-  chromeos::InitLog(chromeos::kLogToSyslog | chromeos::kLogToStderr);
++  brillo::InitLog(brillo::kLogToSyslog | brillo::kLogToStderr);
+   chaps::ScopedOpenSSL openssl;
+   chaps::g_dispatcher.reset(new DBus::BusDispatcher());
+   CHECK(chaps::g_dispatcher.get());
+diff --git a/chaps/chapsd_test.cc b/chaps/chapsd_test.cc
+index 5716b53..959cd70 100644
+--- a/chaps/chapsd_test.cc
++++ b/chaps/chapsd_test.cc
+@@ -6,7 +6,7 @@
+ #include <vector>
+ 
+ #include <base/command_line.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gtest/gtest.h>
+ 
+ #include "chaps/attributes.h"
+@@ -16,7 +16,7 @@
+ #include "chaps/chaps_utility.h"
+ #include "chaps/isolate.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using std::vector;
+ 
+diff --git a/chaps/isolate.h b/chaps/isolate.h
+index b40efca..6dbaa10 100644
+--- a/chaps/isolate.h
++++ b/chaps/isolate.h
+@@ -8,7 +8,7 @@
+ #include <string>
+ 
+ #include <base/macros.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps.h"
+ 
+@@ -29,27 +29,27 @@ class IsolateCredentialManager {
+   virtual ~IsolateCredentialManager();
+ 
+   // Get the well known credential for the default isolate.
+-  static chromeos::SecureBlob GetDefaultIsolateCredential() {
++  static brillo::SecureBlob GetDefaultIsolateCredential() {
+     // Default isolate credential is all zeros.
+-    return chromeos::SecureBlob(kIsolateCredentialBytes);
++    return brillo::SecureBlob(kIsolateCredentialBytes);
+   }
+ 
+   // Get the isolate credential for the current user, returning true if it
+   // exists.
+   virtual bool GetCurrentUserIsolateCredential(
+-      chromeos::SecureBlob* isolate_credential);
++      brillo::SecureBlob* isolate_credential);
+ 
+   // Get the isolate credential for the given user name, returning true if it
+   // exists.
+   virtual bool GetUserIsolateCredential(
+       const std::string& user,
+-      chromeos::SecureBlob* isolate_credential);
++      brillo::SecureBlob* isolate_credential);
+ 
+   // Save the isolate credential such that it can be retrieved with
+   // GetUserIsolateCredential. Return true on success and false on failure.
+   virtual bool SaveIsolateCredential(
+       const std::string& user,
+-      const chromeos::SecureBlob& isolate_credential);
++      const brillo::SecureBlob& isolate_credential);
+ 
+  private:
+   DISALLOW_COPY_AND_ASSIGN(IsolateCredentialManager);
+diff --git a/chaps/isolate_chromeos.cc b/chaps/isolate_chromeos.cc
+index ed9eb96..e403d77 100644
+--- a/chaps/isolate_chromeos.cc
++++ b/chaps/isolate_chromeos.cc
+@@ -8,10 +8,10 @@
+ 
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ using std::string;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/isolate_linux.cc b/chaps/isolate_linux.cc
+index 4a4b4ff..6e101ac 100644
+--- a/chaps/isolate_linux.cc
++++ b/chaps/isolate_linux.cc
+@@ -13,11 +13,11 @@
+ 
+ #include <base/files/file_path.h>
+ #include <base/files/file_util.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ using std::string;
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/isolate_login_client.cc b/chaps/isolate_login_client.cc
+index 99a52fe..983b790 100644
+--- a/chaps/isolate_login_client.cc
++++ b/chaps/isolate_login_client.cc
+@@ -11,7 +11,7 @@
+ 
+ #include <base/files/file_path.h>
+ #include <base/files/file_util.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_utility.h"
+ #include "chaps/isolate.h"
+@@ -19,7 +19,7 @@
+ #include "chaps/token_manager_client.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ 
+ namespace chaps {
+diff --git a/chaps/isolate_login_client.h b/chaps/isolate_login_client.h
+index 30146d1..5d620ca 100644
+--- a/chaps/isolate_login_client.h
++++ b/chaps/isolate_login_client.h
+@@ -9,7 +9,7 @@
+ 
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <base/files/file_path.h>
+ 
+ #include "chaps/isolate.h"
+@@ -40,7 +40,7 @@ class IsolateLoginClient {
+   // with access to their TPM protected keys.  Return true on success and
+   // false on failure.
+   virtual bool LoginUser(const std::string& user,
+-                         const chromeos::SecureBlob& auth_data);
++                         const brillo::SecureBlob& auth_data);
+ 
+   // Should be called whenever a user logs out of a session. If the user has
+   // logged out of all sessions, this will close their isolate and unload
+@@ -50,8 +50,8 @@ class IsolateLoginClient {
+   // Change the authorization data used to secure the users token.
+   // Return true on success and false on failure.
+   virtual bool ChangeUserAuth(const std::string& user,
+-                              const chromeos::SecureBlob& old_auth_data,
+-                              const chromeos::SecureBlob& new_auth_data);
++                              const brillo::SecureBlob& old_auth_data,
++                              const brillo::SecureBlob& new_auth_data);
+ 
+  private:
+   IsolateCredentialManager* isolate_manager_;
+diff --git a/chaps/isolate_login_client_mock.h b/chaps/isolate_login_client_mock.h
+index 9ee746a..dda9704 100644
+--- a/chaps/isolate_login_client_mock.h
++++ b/chaps/isolate_login_client_mock.h
+@@ -10,7 +10,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -21,11 +21,11 @@ class IsolateLoginClientMock : public IsolateLoginClient {
+   IsolateLoginClientMock() : IsolateLoginClient(NULL, NULL, NULL) { }
+ 
+   MOCK_METHOD2(LoginUser, bool(const std::string&,
+-                               const chromeos::SecureBlob&));
++                               const brillo::SecureBlob&));
+   MOCK_METHOD1(LogoutUser, bool(const std::string&));
+   MOCK_METHOD3(ChangeUserAuth, bool(const std::string&,
+-                                    const chromeos::SecureBlob&,
+-                                    const chromeos::SecureBlob&));
++                                    const brillo::SecureBlob&,
++                                    const brillo::SecureBlob&));
+ };
+ 
+ }  // namespace chaps
+diff --git a/chaps/isolate_login_client_test.cc b/chaps/isolate_login_client_test.cc
+index 35125f1..716f283 100644
+--- a/chaps/isolate_login_client_test.cc
++++ b/chaps/isolate_login_client_test.cc
+@@ -8,7 +8,7 @@
+ #include <string>
+ 
+ #include <base/files/file_path.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -18,7 +18,7 @@
+ #include "chaps/token_manager_client_mock.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using std::vector;
+ using ::testing::_;
+diff --git a/chaps/isolate_mock.h b/chaps/isolate_mock.h
+index 66fb362..09295e6 100644
+--- a/chaps/isolate_mock.h
++++ b/chaps/isolate_mock.h
+@@ -9,7 +9,7 @@
+ 
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -17,11 +17,11 @@ namespace chaps {
+ 
+ class IsolateCredentialManagerMock : public IsolateCredentialManager {
+  public:
+-  MOCK_METHOD1(GetCurrentUserIsolateCredential, bool(chromeos::SecureBlob*));
++  MOCK_METHOD1(GetCurrentUserIsolateCredential, bool(brillo::SecureBlob*));
+   MOCK_METHOD2(GetUserIsolateCredential, bool(const std::string&,
+-                                              chromeos::SecureBlob*));
++                                              brillo::SecureBlob*));
+   MOCK_METHOD2(SaveIsolateCredential, bool(const std::string&,
+-                                           const chromeos::SecureBlob&));
++                                           const brillo::SecureBlob&));
+ };
+ 
+ }  // namespace chaps
+diff --git a/chaps/object_pool.h b/chaps/object_pool.h
+index dc4a555..8216e8f 100644
+--- a/chaps/object_pool.h
++++ b/chaps/object_pool.h
+@@ -8,7 +8,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ namespace chaps {
+ 
+@@ -54,7 +54,7 @@ class ObjectPool {
+   // object data in memory and no obligation to encrypt public object blobs.
+   // If the encryption key is not available and will not be available during the
+   // lifetime of the pool, this method should be called with zero-length key.
+-  virtual bool SetEncryptionKey(const chromeos::SecureBlob& key) = 0;
++  virtual bool SetEncryptionKey(const brillo::SecureBlob& key) = 0;
+   // This method takes ownership of the 'object' pointer on success.
+   virtual bool Insert(Object* object) = 0;
+   // Imports an object from an external source. Like 'Insert', this method takes
+diff --git a/chaps/object_pool_impl.cc b/chaps/object_pool_impl.cc
+index d8c972d..b0f4941 100644
+--- a/chaps/object_pool_impl.cc
++++ b/chaps/object_pool_impl.cc
+@@ -24,7 +24,7 @@
+ 
+ using base::AutoLock;
+ using base::AutoUnlock;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ using std::shared_ptr;
+diff --git a/chaps/object_pool_impl.h b/chaps/object_pool_impl.h
+index b663966..71d437a 100644
+--- a/chaps/object_pool_impl.h
++++ b/chaps/object_pool_impl.h
+@@ -45,7 +45,7 @@ class ObjectPoolImpl : public ObjectPool {
+   virtual bool Init();
+   virtual bool GetInternalBlob(int blob_id, std::string* blob);
+   virtual bool SetInternalBlob(int blob_id, const std::string& blob);
+-  virtual bool SetEncryptionKey(const chromeos::SecureBlob& key);
++  virtual bool SetEncryptionKey(const brillo::SecureBlob& key);
+   virtual bool Insert(Object* object);
+   virtual bool Import(Object* object);
+   virtual bool Delete(const Object* object);
+diff --git a/chaps/object_pool_mock.h b/chaps/object_pool_mock.h
+index 4998144..c1a460b 100644
+--- a/chaps/object_pool_mock.h
++++ b/chaps/object_pool_mock.h
+@@ -24,7 +24,7 @@ class ObjectPoolMock : public ObjectPool {
+ 
+   MOCK_METHOD2(GetInternalBlob, bool(int, std::string*));
+   MOCK_METHOD2(SetInternalBlob, bool(int, const std::string&));
+-  MOCK_METHOD1(SetEncryptionKey, bool(const chromeos::SecureBlob&));
++  MOCK_METHOD1(SetEncryptionKey, bool(const brillo::SecureBlob&));
+   MOCK_METHOD1(Insert, bool(Object*));  // NOLINT(readability/function)
+   MOCK_METHOD1(Import, bool(Object*));  // NOLINT(readability/function)
+   MOCK_METHOD1(Delete, bool(const Object*));
+diff --git a/chaps/object_pool_test.cc b/chaps/object_pool_test.cc
+index 020d1dc..102bb1b 100644
+--- a/chaps/object_pool_test.cc
++++ b/chaps/object_pool_test.cc
+@@ -19,7 +19,7 @@
+ #include "chaps/object_store_mock.h"
+ #include "chaps/proto_bindings/attributes.pb.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ using std::vector;
+diff --git a/chaps/object_store.h b/chaps/object_store.h
+index 8b5cb90..d20e789 100644
+--- a/chaps/object_store.h
++++ b/chaps/object_store.h
+@@ -8,7 +8,7 @@
+ #include <map>
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "pkcs11/cryptoki.h"
+ 
+@@ -42,7 +42,7 @@ class ObjectStore {
+   // SetEncryptionKey sets the encryption key used to encrypt all private object
+   // blobs. This method must be called before any object blob methods (e.g.
+   // InsertObjectBlob, DeleteObjectBlob, ...) can proceed successfully.
+-  virtual bool SetEncryptionKey(const chromeos::SecureBlob& key) = 0;
++  virtual bool SetEncryptionKey(const brillo::SecureBlob& key) = 0;
+   // Inserts a new blob.
+   virtual bool InsertObjectBlob(const ObjectBlob& blob,
+                                 int* blob_id) = 0;
+diff --git a/chaps/object_store_fake.h b/chaps/object_store_fake.h
+index b027f0d..ed60cd4 100644
+--- a/chaps/object_store_fake.h
++++ b/chaps/object_store_fake.h
+@@ -27,7 +27,7 @@ class ObjectStoreFake : public ObjectStore {
+     internal_blobs_[blob_id] = blob;
+     return true;
+   }
+-  virtual bool SetEncryptionKey(const chromeos::SecureBlob& key) {
++  virtual bool SetEncryptionKey(const brillo::SecureBlob& key) {
+     return true;
+   }
+   virtual bool InsertObjectBlob(const ObjectBlob& blob,
+diff --git a/chaps/object_store_impl.cc b/chaps/object_store_impl.cc
+index 605366d..b073c25 100644
+--- a/chaps/object_store_impl.cc
++++ b/chaps/object_store_impl.cc
+@@ -14,7 +14,7 @@
+ #include <base/strings/string_piece.h>
+ #include <base/strings/string_util.h>
+ #include <base/strings/stringprintf.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <leveldb/db.h>
+ #include <leveldb/env.h>
+ #ifndef NO_MEMENV
+@@ -28,7 +28,7 @@
+ #include "pkcs11/cryptoki.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ using std::vector;
+@@ -341,7 +341,7 @@ bool ObjectStoreImpl::VerifyAndStripHMAC(const string& input,
+   string hmac = input.substr(input.size() - kHMACSizeBytes);
+   string computed_hmac = HmacSha512(*stripped, key);
+   if ((hmac.size() != computed_hmac.size()) ||
+-      (0 != chromeos::SecureMemcmp(hmac.data(),
++      (0 != brillo::SecureMemcmp(hmac.data(),
+                                    computed_hmac.data(),
+                                    hmac.size()))) {
+     LOG(ERROR) << "Failed to verify blob integrity.";
+diff --git a/chaps/object_store_impl.h b/chaps/object_store_impl.h
+index 757a337..dbc5b81 100644
+--- a/chaps/object_store_impl.h
++++ b/chaps/object_store_impl.h
+@@ -13,7 +13,7 @@
+ #include <base/files/file_path.h>
+ #include <base/macros.h>
+ #include <base/memory/scoped_ptr.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gtest/gtest_prod.h>
+ #include <leveldb/db.h>
+ #include <leveldb/env.h>
+@@ -34,7 +34,7 @@ class ObjectStoreImpl : public ObjectStore {
+   // ObjectStore methods.
+   virtual bool GetInternalBlob(int blob_id, std::string* blob);
+   virtual bool SetInternalBlob(int blob_id, const std::string& blob);
+-  virtual bool SetEncryptionKey(const chromeos::SecureBlob& key);
++  virtual bool SetEncryptionKey(const brillo::SecureBlob& key);
+   virtual bool InsertObjectBlob(const ObjectBlob& blob, int* handle);
+   virtual bool DeleteObjectBlob(int handle);
+   virtual bool DeleteAllObjectBlobs();
+@@ -62,11 +62,11 @@ class ObjectStoreImpl : public ObjectStore {
+ 
+   // Computes an HMAC and appends it to the given input.
+   std::string AppendHMAC(const std::string& input,
+-                         const chromeos::SecureBlob& key);
++                         const brillo::SecureBlob& key);
+ 
+   // Verifies an appended HMAC and strips it from the given input.
+   bool VerifyAndStripHMAC(const std::string& input,
+-                          const chromeos::SecureBlob& key,
++                          const brillo::SecureBlob& key,
+                           std::string* stripped);
+ 
+   // Creates and returns a unique database key for a blob.
+@@ -119,7 +119,7 @@ class ObjectStoreImpl : public ObjectStore {
+   // The current blob format version.
+   static const int kBlobVersion;
+ 
+-  chromeos::SecureBlob key_;
++  brillo::SecureBlob key_;
+   scoped_ptr<leveldb::Env> env_;
+   scoped_ptr<leveldb::DB> db_;
+   std::map<int, BlobType> blob_type_map_;
+diff --git a/chaps/object_store_mock.h b/chaps/object_store_mock.h
+index 6a0c410..b53b81b 100644
+--- a/chaps/object_store_mock.h
++++ b/chaps/object_store_mock.h
+@@ -23,7 +23,7 @@ class ObjectStoreMock : public ObjectStore {
+   MOCK_METHOD2(SetInternalBlob,
+       bool(int blob_id, const std::string& blob));
+   MOCK_METHOD1(SetEncryptionKey,
+-      bool(const chromeos::SecureBlob& key));
++      bool(const brillo::SecureBlob& key));
+   MOCK_METHOD2(InsertObjectBlob,
+       bool(const ObjectBlob& blob, int* blob_id));
+   MOCK_METHOD1(DeleteObjectBlob,
+diff --git a/chaps/object_store_test.cc b/chaps/object_store_test.cc
+index c7479a2..ad89cc1 100644
+--- a/chaps/object_store_test.cc
++++ b/chaps/object_store_test.cc
+@@ -13,7 +13,7 @@
+ #include <openssl/rand.h>
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ 
+diff --git a/chaps/opencryptoki_importer.cc b/chaps/opencryptoki_importer.cc
+index 473e749..cc7a31b 100644
+--- a/chaps/opencryptoki_importer.cc
++++ b/chaps/opencryptoki_importer.cc
+@@ -21,7 +21,7 @@
+ #include "pkcs11/cryptoki.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ using std::vector;
+diff --git a/chaps/opencryptoki_importer.h b/chaps/opencryptoki_importer.h
+index 3dc3895..1aabd4c 100644
+--- a/chaps/opencryptoki_importer.h
++++ b/chaps/opencryptoki_importer.h
+@@ -12,7 +12,7 @@
+ #include <vector>
+ 
+ #include <base/files/file_path.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/object.h"
+ 
+@@ -64,11 +64,11 @@ class OpencryptokiImporter : public ObjectImporter {
+   // Uses the TPM to decrypt the opencryptoki master key. Returns true on
+   // success.
+   bool DecryptMasterKey(const std::string& encrypted_master_key,
+-                        chromeos::SecureBlob* master_key);
++                        brillo::SecureBlob* master_key);
+ 
+   // Decrypts an object that was encrypted with the opencryptoki master key.
+   // Returns true on success.
+-  bool DecryptObject(const chromeos::SecureBlob& key,
++  bool DecryptObject(const brillo::SecureBlob& key,
+                      const std::string& encrypted_object_data,
+                      std::string* object_data);
+ 
+diff --git a/chaps/p11_replay.cc b/chaps/p11_replay.cc
+index bf859c2..63a0924 100644
+--- a/chaps/p11_replay.cc
++++ b/chaps/p11_replay.cc
+@@ -21,7 +21,7 @@
+ #include <base/strings/string_util.h>
+ #include <base/threading/platform_thread.h>
+ #include <base/time/time.h>
+-#include <chromeos/syslog_logging.h>
++#include <brillo/syslog_logging.h>
+ #include <openssl/rsa.h>
+ #include <openssl/x509.h>
+ 
+@@ -607,7 +607,7 @@ int main(int argc, char** argv) {
+     return 0;
+   }
+ 
+-  chromeos::InitLog(chromeos::kLogToSyslog | chromeos::kLogToStderr);
++  brillo::InitLog(brillo::kLogToSyslog | brillo::kLogToStderr);
+   base::TimeTicks start_ticks = base::TimeTicks::Now();
+   CK_SLOT_ID slot = Initialize();
+   int tmp_slot = 0;
+diff --git a/chaps/pam_helper.cc b/chaps/pam_helper.cc
+index 11d86d8..5466eaf 100644
+--- a/chaps/pam_helper.cc
++++ b/chaps/pam_helper.cc
+@@ -12,13 +12,13 @@
+ #include <vector>
+ 
+ #include <base/logging.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_utility.h"
+ 
+ using std::string;
+ using std::vector;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/pam_helper.h b/chaps/pam_helper.h
+index d504394..adc753a 100644
+--- a/chaps/pam_helper.h
++++ b/chaps/pam_helper.h
+@@ -12,7 +12,7 @@
+ 
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ namespace chaps {
+ 
+@@ -34,7 +34,7 @@ class PamHelper {
+   //  data: Returns the users password.
+   virtual bool GetPamPassword(pam_handle_t* pam_handle,
+                               bool old_password,
+-                              chromeos::SecureBlob* data);
++                              brillo::SecureBlob* data);
+ 
+   // Saves the username and password in the pam_handle such that it can be
+   // retrieved by RetrieveUserAndPassword() at a later point.
+@@ -43,7 +43,7 @@ class PamHelper {
+   //  password: Password to save.
+   virtual bool SaveUserAndPassword(pam_handle_t* pam_handle,
+                                    const std::string& user,
+-                                   const chromeos::SecureBlob& password);
++                                   const brillo::SecureBlob& password);
+ 
+   // Retrieves the username and password previously saved in the pam_handle.
+   // Returns true on success.
+@@ -52,7 +52,7 @@ class PamHelper {
+   //  password: Returns the saved password.
+   virtual bool RetrieveUserAndPassword(pam_handle_t* pam_handle,
+                                        std::string* user,
+-                                       chromeos::SecureBlob* password);
++                                       brillo::SecureBlob* password);
+ 
+   // Updates the PAM environment to add an environment variable with the given
+   // value.
+diff --git a/chaps/pam_helper_mock.h b/chaps/pam_helper_mock.h
+index 4e40c98..9144176 100644
+--- a/chaps/pam_helper_mock.h
++++ b/chaps/pam_helper_mock.h
+@@ -23,13 +23,13 @@ class PamHelperMock : public PamHelper {
+ 
+   MOCK_METHOD3(GetPamPassword, bool(pam_handle_t*,
+                                     bool old_password,
+-                                    chromeos::SecureBlob*));
++                                    brillo::SecureBlob*));
+   MOCK_METHOD3(SaveUserAndPassword, bool(pam_handle_t*,
+                                          const std::string&,
+-                                         const chromeos::SecureBlob&));
++                                         const brillo::SecureBlob&));
+   MOCK_METHOD3(RetrieveUserAndPassword, bool(pam_handle_t*,
+                                              std::string*,
+-                                             chromeos::SecureBlob*));
++                                             brillo::SecureBlob*));
+   MOCK_METHOD3(PutEnvironmentVariable, bool(pam_handle_t*,
+                                             const std::string&,
+                                             const std::string&));
+diff --git a/chaps/session_impl.cc b/chaps/session_impl.cc
+index fabaedc..0e5a29f 100644
+--- a/chaps/session_impl.cc
++++ b/chaps/session_impl.cc
+@@ -10,7 +10,7 @@
+ #include <vector>
+ 
+ #include <base/logging.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <openssl/bio.h>
+ #include <openssl/des.h>
+ #include <openssl/err.h>
+@@ -27,7 +27,7 @@
+ #include "chaps/tpm_utility.h"
+ #include "pkcs11/cryptoki.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::hex;
+ using std::map;
+ using std::set;
+@@ -416,7 +416,7 @@ CK_RV SessionImpl::VerifyFinal(const string& signature) {
+     // recomputed and literally compared.
+     if (signature.length() != data_out.length())
+       return CKR_SIGNATURE_LEN_RANGE;
+-    if (0 != chromeos::SecureMemcmp(signature.data(),
++    if (0 != brillo::SecureMemcmp(signature.data(),
+                                     data_out.data(),
+                                     signature.length()))
+       return CKR_SIGNATURE_INVALID;
+@@ -1311,7 +1311,7 @@ CK_RV SessionImpl::RSAVerify(OperationContext* context,
+   }
+   string signed_data = GetDERDigestInfo(context->mechanism_) + digest;
+   if (static_cast<size_t>(length) != signed_data.length() ||
+-      0 != chromeos::SecureMemcmp(buffer, signed_data.data(), length))
++      0 != brillo::SecureMemcmp(buffer, signed_data.data(), length))
+     return CKR_SIGNATURE_INVALID;
+   return CKR_OK;
+ }
+diff --git a/chaps/slot_manager.h b/chaps/slot_manager.h
+index 196fb70..18441fb 100644
+--- a/chaps/slot_manager.h
++++ b/chaps/slot_manager.h
+@@ -8,7 +8,7 @@
+ #include <map>
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "pkcs11/cryptoki.h"
+ 
+@@ -34,27 +34,27 @@ class SlotManager {
+   // using the ID with other methods. This method is not const because
+   // implementations may refresh internal slot information when this is called.
+   virtual int GetSlotCount() = 0;
+-  virtual bool IsTokenAccessible(const chromeos::SecureBlob& isolate_credential,
++  virtual bool IsTokenAccessible(const brillo::SecureBlob& isolate_credential,
+                                  int slot_id) const = 0;
+-  virtual bool IsTokenPresent(const chromeos::SecureBlob& isolate_credential,
++  virtual bool IsTokenPresent(const brillo::SecureBlob& isolate_credential,
+                               int slot_id) const = 0;
+-  virtual void GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual void GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                            int slot_id, CK_SLOT_INFO* slot_info) const = 0;
+-  virtual void GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual void GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                             int slot_id, CK_TOKEN_INFO* token_info) const = 0;
+   virtual const MechanismMap* GetMechanismInfo(
+-      const chromeos::SecureBlob& isolate_credential, int slot_id) const = 0;
++      const brillo::SecureBlob& isolate_credential, int slot_id) const = 0;
+   // Opens a new session with the token in the given slot. A token must be
+   // present. A new and unique session identifier is returned.
+   virtual int OpenSession(
+-      const chromeos::SecureBlob& isolate_credential,
++      const brillo::SecureBlob& isolate_credential,
+       int slot_id,
+       bool is_read_only) = 0;
+-  virtual bool CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual bool CloseSession(const brillo::SecureBlob& isolate_credential,
+       int session_id) = 0;
+-  virtual void CloseAllSessions(const chromeos::SecureBlob& isolate_credential,
++  virtual void CloseAllSessions(const brillo::SecureBlob& isolate_credential,
+       int slot_id) = 0;
+-  virtual bool GetSession(const chromeos::SecureBlob& isolate_credential,
++  virtual bool GetSession(const brillo::SecureBlob& isolate_credential,
+       int session_id, Session** session) const = 0;
+ };
+ 
+diff --git a/chaps/slot_manager_impl.cc b/chaps/slot_manager_impl.cc
+index 642c0b2..97f9dfd 100644
+--- a/chaps/slot_manager_impl.cc
++++ b/chaps/slot_manager_impl.cc
+@@ -16,7 +16,7 @@
+ #include <base/files/file_util.h>
+ #include <base/logging.h>
+ #include <base/memory/scoped_ptr.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <openssl/rand.h>
+ #include <openssl/sha.h>
+ 
+@@ -29,7 +29,7 @@
+ 
+ using base::AutoLock;
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::string;
+ using std::shared_ptr;
+diff --git a/chaps/slot_manager_impl.h b/chaps/slot_manager_impl.h
+index 3bbc618..0da55fc 100644
+--- a/chaps/slot_manager_impl.h
++++ b/chaps/slot_manager_impl.h
+@@ -48,44 +48,44 @@ class SlotManagerImpl : public SlotManager,
+ 
+   // SlotManager methods.
+   virtual int GetSlotCount();
+-  virtual bool IsTokenAccessible(const chromeos::SecureBlob& isolate_credential,
++  virtual bool IsTokenAccessible(const brillo::SecureBlob& isolate_credential,
+                                  int slot_id) const;
+-  virtual bool IsTokenPresent(const chromeos::SecureBlob& isolate_credential,
++  virtual bool IsTokenPresent(const brillo::SecureBlob& isolate_credential,
+                               int slot_id) const;
+-  virtual void GetSlotInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual void GetSlotInfo(const brillo::SecureBlob& isolate_credential,
+                            int slot_id,
+                            CK_SLOT_INFO* slot_info) const;
+-  virtual void GetTokenInfo(const chromeos::SecureBlob& isolate_credential,
++  virtual void GetTokenInfo(const brillo::SecureBlob& isolate_credential,
+                             int slot_id,
+                             CK_TOKEN_INFO* token_info) const;
+   virtual const MechanismMap* GetMechanismInfo(
+-                            const chromeos::SecureBlob& isolate_credential,
++                            const brillo::SecureBlob& isolate_credential,
+                             int slot_id) const;
+-  virtual int OpenSession(const chromeos::SecureBlob& isolate_credential,
++  virtual int OpenSession(const brillo::SecureBlob& isolate_credential,
+                           int slot_id,
+                           bool is_read_only);
+-  virtual bool CloseSession(const chromeos::SecureBlob& isolate_credential,
++  virtual bool CloseSession(const brillo::SecureBlob& isolate_credential,
+                             int session_id);
+-  virtual void CloseAllSessions(const chromeos::SecureBlob& isolate_credential,
++  virtual void CloseAllSessions(const brillo::SecureBlob& isolate_credential,
+                                 int slot_id);
+-  virtual bool GetSession(const chromeos::SecureBlob& isolate_credential,
++  virtual bool GetSession(const brillo::SecureBlob& isolate_credential,
+                           int session_id, Session** session) const;
+ 
+   // TokenManagerInterface methods.
+-  virtual bool OpenIsolate(chromeos::SecureBlob* isolate_credential,
++  virtual bool OpenIsolate(brillo::SecureBlob* isolate_credential,
+                            bool* new_isolate_created);
+-  virtual void CloseIsolate(const chromeos::SecureBlob& isolate_credential);
+-  virtual bool LoadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void CloseIsolate(const brillo::SecureBlob& isolate_credential);
++  virtual bool LoadToken(const brillo::SecureBlob& isolate_credential,
+                          const base::FilePath& path,
+-                         const chromeos::SecureBlob& auth_data,
++                         const brillo::SecureBlob& auth_data,
+                          const std::string& label,
+                          int* slot_id);
+-  virtual void UnloadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void UnloadToken(const brillo::SecureBlob& isolate_credential,
+                            const base::FilePath& path);
+   virtual void ChangeTokenAuthData(const base::FilePath& path,
+-                                   const chromeos::SecureBlob& old_auth_data,
+-                                   const chromeos::SecureBlob& new_auth_data);
+-  virtual bool GetTokenPath(const chromeos::SecureBlob& isolate_credential,
++                                   const brillo::SecureBlob& old_auth_data,
++                                   const brillo::SecureBlob& new_auth_data);
++  virtual bool GetTokenPath(const brillo::SecureBlob& isolate_credential,
+                             int slot_id,
+                             base::FilePath* path);
+ 
+@@ -95,7 +95,7 @@ class SlotManagerImpl : public SlotManager,
+  private:
+   // Holds all information associated with a particular isolate.
+   struct Isolate {
+-    chromeos::SecureBlob credential;
++    brillo::SecureBlob credential;
+     int open_count;
+     // The set of slots accessible through this isolate.
+     std::set<int> slot_ids;
+@@ -144,7 +144,7 @@ class SlotManagerImpl : public SlotManager,
+   void AddSlots(int num_slots);
+ 
+   // Creates a new isolate with the given isolate credential.
+-  void AddIsolate(const chromeos::SecureBlob& isolate_credential);
++  void AddIsolate(const brillo::SecureBlob& isolate_credential);
+ 
+   // Destroy isolate and unload any tokens in that isolate.
+   void DestroyIsolate(const Isolate& isolate);
+@@ -158,18 +158,18 @@ class SlotManagerImpl : public SlotManager,
+   bool InitStage2();
+ 
+   // LoadToken for internal callers.
+-  bool LoadTokenInternal(const chromeos::SecureBlob& isolate_credential,
++  bool LoadTokenInternal(const brillo::SecureBlob& isolate_credential,
+                          const base::FilePath& path,
+-                         const chromeos::SecureBlob& auth_data,
++                         const brillo::SecureBlob& auth_data,
+                          const std::string& label,
+                          int* slot_id);
+ 
+   // Loads the master key for a software-only token.
+-  bool LoadSoftwareToken(const chromeos::SecureBlob& auth_data,
++  bool LoadSoftwareToken(const brillo::SecureBlob& auth_data,
+                          ObjectPool* object_pool);
+ 
+   // Initializes a new software-only token.
+-  bool InitializeSoftwareToken(const chromeos::SecureBlob& auth_data,
++  bool InitializeSoftwareToken(const brillo::SecureBlob& auth_data,
+                                ObjectPool* object_pool);
+ 
+   ChapsFactory* factory_;
+@@ -182,7 +182,7 @@ class SlotManagerImpl : public SlotManager,
+   // Key: A session identifier.
+   // Value: The identifier of the associated slot.
+   std::map<int, int> session_slot_map_;
+-  std::map<chromeos::SecureBlob, Isolate> isolate_map_;
++  std::map<brillo::SecureBlob, Isolate> isolate_map_;
+   TPMUtility* tpm_utility_;
+   base::Lock handle_generator_lock_;
+   bool auto_load_system_token_;
+diff --git a/chaps/slot_manager_mock.h b/chaps/slot_manager_mock.h
+index a5707c4..1d09208 100644
+--- a/chaps/slot_manager_mock.h
++++ b/chaps/slot_manager_mock.h
+@@ -23,19 +23,19 @@ class SlotManagerMock : public SlotManager {
+   virtual ~SlotManagerMock();
+ 
+   MOCK_METHOD0(GetSlotCount, int());
+-  MOCK_CONST_METHOD2(IsTokenPresent, bool(const chromeos::SecureBlob&, int));
+-  MOCK_CONST_METHOD2(IsTokenAccessible, bool(const chromeos::SecureBlob&,
++  MOCK_CONST_METHOD2(IsTokenPresent, bool(const brillo::SecureBlob&, int));
++  MOCK_CONST_METHOD2(IsTokenAccessible, bool(const brillo::SecureBlob&,
+                                              int));
+-  MOCK_CONST_METHOD3(GetSlotInfo, void(const chromeos::SecureBlob&, int,
++  MOCK_CONST_METHOD3(GetSlotInfo, void(const brillo::SecureBlob&, int,
+                                        CK_SLOT_INFO*));
+-  MOCK_CONST_METHOD3(GetTokenInfo, void(const chromeos::SecureBlob&, int,
++  MOCK_CONST_METHOD3(GetTokenInfo, void(const brillo::SecureBlob&, int,
+                                         CK_TOKEN_INFO*));
+   MOCK_CONST_METHOD2(GetMechanismInfo, MechanismMap* (
+-      const chromeos::SecureBlob&, int));
+-  MOCK_METHOD3(OpenSession, int(const chromeos::SecureBlob&, int, bool));
+-  MOCK_METHOD2(CloseSession, bool(const chromeos::SecureBlob&, int));
+-  MOCK_METHOD2(CloseAllSessions, void(const chromeos::SecureBlob&, int));
+-  MOCK_CONST_METHOD3(GetSession, bool(const chromeos::SecureBlob&, int,
++      const brillo::SecureBlob&, int));
++  MOCK_METHOD3(OpenSession, int(const brillo::SecureBlob&, int, bool));
++  MOCK_METHOD2(CloseSession, bool(const brillo::SecureBlob&, int));
++  MOCK_METHOD2(CloseAllSessions, void(const brillo::SecureBlob&, int));
++  MOCK_CONST_METHOD3(GetSession, bool(const brillo::SecureBlob&, int,
+                                       Session**));
+ 
+  private:
+diff --git a/chaps/slot_manager_test.cc b/chaps/slot_manager_test.cc
+index 01eca19..5a9d432 100644
+--- a/chaps/slot_manager_test.cc
++++ b/chaps/slot_manager_test.cc
+@@ -25,7 +25,7 @@
+ #include "chaps/tpm_utility_mock.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::string;
+ using ::testing::_;
+ using ::testing::AnyNumber;
+@@ -578,7 +578,7 @@ class SoftwareOnlyTest : public TestSlotManager {
+     return pool_write_result_;
+   }
+ 
+-  bool FakeSetEncryptionKey(const chromeos::SecureBlob& key) {
++  bool FakeSetEncryptionKey(const brillo::SecureBlob& key) {
+     set_encryption_key_num_calls_++;
+     return pool_write_result_;
+   }
+diff --git a/chaps/token_file_manager.h b/chaps/token_file_manager.h
+index 646724b..59a9e75 100644
+--- a/chaps/token_file_manager.h
++++ b/chaps/token_file_manager.h
+@@ -11,7 +11,7 @@
+ #include <string>
+ 
+ #include <base/files/file_path.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ namespace chaps {
+ 
+@@ -43,8 +43,8 @@ class TokenFileManager {
+   //  auth_data: The authorization data to salt.
+   //  salted_auth_data: Returns the salted authorization data.
+   virtual bool SaltAuthData(const base::FilePath& token_path,
+-                            const chromeos::SecureBlob& auth_data,
+-                            chromeos::SecureBlob* salted_auth_data);
++                            const brillo::SecureBlob& auth_data,
++                            brillo::SecureBlob* salted_auth_data);
+ 
+  private:
+   uid_t chapsd_uid_;
+diff --git a/chaps/token_file_manager_chromeos.cc b/chaps/token_file_manager_chromeos.cc
+index 0d07185..aebaf90 100644
+--- a/chaps/token_file_manager_chromeos.cc
++++ b/chaps/token_file_manager_chromeos.cc
+@@ -11,13 +11,13 @@
+ #include <string>
+ 
+ #include <base/logging.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_utility.h"
+ 
+ using std::string;
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/token_file_manager_linux.cc b/chaps/token_file_manager_linux.cc
+index 00ba1c9..35dc30a 100644
+--- a/chaps/token_file_manager_linux.cc
++++ b/chaps/token_file_manager_linux.cc
+@@ -15,7 +15,7 @@
+ 
+ #include <base/files/file_path.h>
+ #include <base/files/file_util.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <openssl/evp.h>
+ #include <openssl/rand.h>
+ 
+@@ -23,7 +23,7 @@
+ 
+ using std::string;
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ 
+ namespace chaps {
+ 
+diff --git a/chaps/token_file_manager_mock.h b/chaps/token_file_manager_mock.h
+index ff68c6f..318a6db 100644
+--- a/chaps/token_file_manager_mock.h
++++ b/chaps/token_file_manager_mock.h
+@@ -12,7 +12,7 @@
+ #include <string>
+ 
+ #include <base/files/file_path.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -26,8 +26,8 @@ class TokenFileManagerMock : public TokenFileManager {
+   MOCK_METHOD1(CreateUserTokenDirectory, bool(const base::FilePath&));
+   MOCK_METHOD1(CheckUserTokenPermissions, bool(const base::FilePath&));
+   MOCK_METHOD3(SaltAuthData, bool(const base::FilePath&,
+-                                  const chromeos::SecureBlob&,
+-                                  chromeos::SecureBlob*));
++                                  const brillo::SecureBlob&,
++                                  brillo::SecureBlob*));
+ };
+ 
+ }  // namespace chaps
+diff --git a/chaps/token_manager_client.cc b/chaps/token_manager_client.cc
+index 6bed4af..a8cfa6b 100644
+--- a/chaps/token_manager_client.cc
++++ b/chaps/token_manager_client.cc
+@@ -5,13 +5,13 @@
+ #include "chaps/token_manager_client.h"
+ 
+ #include <base/logging.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ #include "chaps/chaps_proxy.h"
+ #include "chaps/chaps_utility.h"
+ 
+ using base::FilePath;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::vector;
+ using std::string;
+ 
+diff --git a/chaps/token_manager_client.h b/chaps/token_manager_client.h
+index d3240dd..7370d42 100644
+--- a/chaps/token_manager_client.h
++++ b/chaps/token_manager_client.h
+@@ -13,7 +13,7 @@
+ 
+ #include "chaps/chaps.h"
+ #include "chaps/token_manager_interface.h"
+-#include "chromeos/secure_blob.h"
++#include "brillo/secure_blob.h"
+ #include "pkcs11/cryptoki.h"
+ 
+ namespace chaps {
+@@ -35,27 +35,27 @@ class EXPORT_SPEC TokenManagerClient : public TokenManagerInterface {
+   virtual ~TokenManagerClient();
+ 
+   // TokenManagerInterface methods.
+-  virtual bool OpenIsolate(chromeos::SecureBlob* isolate_credential,
++  virtual bool OpenIsolate(brillo::SecureBlob* isolate_credential,
+                            bool* new_isolate_created);
+-  virtual void CloseIsolate(const chromeos::SecureBlob& isolate_credential);
+-  virtual bool LoadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void CloseIsolate(const brillo::SecureBlob& isolate_credential);
++  virtual bool LoadToken(const brillo::SecureBlob& isolate_credential,
+                          const base::FilePath& path,
+-                         const chromeos::SecureBlob& auth_data,
++                         const brillo::SecureBlob& auth_data,
+                          const std::string& label,
+                          int* slot_id);
+-  virtual void UnloadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void UnloadToken(const brillo::SecureBlob& isolate_credential,
+                            const base::FilePath& path);
+   virtual void ChangeTokenAuthData(const base::FilePath& path,
+-                                   const chromeos::SecureBlob& old_auth_data,
+-                                   const chromeos::SecureBlob& new_auth_data);
+-  virtual bool GetTokenPath(const chromeos::SecureBlob& isolate_credential,
++                                   const brillo::SecureBlob& old_auth_data,
++                                   const brillo::SecureBlob& new_auth_data);
++  virtual bool GetTokenPath(const brillo::SecureBlob& isolate_credential,
+                             int slot_id,
+                             base::FilePath* path);
+ 
+   // Convenience method, not on TokenManagerInterface.
+   // Returns true on success, false on failure. If it succeeds, stores a list of
+   // the paths of all loaded tokens in |results|.
+-  virtual bool GetTokenList(const chromeos::SecureBlob& isolate_credential,
++  virtual bool GetTokenList(const brillo::SecureBlob& isolate_credential,
+                             std::vector<std::string>* results);
+ 
+  private:
+diff --git a/chaps/token_manager_client_mock.h b/chaps/token_manager_client_mock.h
+index e98373c..ed08a8d 100644
+--- a/chaps/token_manager_client_mock.h
++++ b/chaps/token_manager_client_mock.h
+@@ -10,7 +10,7 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ 
+@@ -18,22 +18,22 @@ namespace chaps {
+ 
+ class TokenManagerClientMock : public TokenManagerClient {
+  public:
+-  MOCK_METHOD2(OpenIsolate, bool(chromeos::SecureBlob*, bool*));
+-  MOCK_METHOD1(CloseIsolate, void(const chromeos::SecureBlob&));
+-  MOCK_METHOD5(LoadToken, bool(const chromeos::SecureBlob&,
++  MOCK_METHOD2(OpenIsolate, bool(brillo::SecureBlob*, bool*));
++  MOCK_METHOD1(CloseIsolate, void(const brillo::SecureBlob&));
++  MOCK_METHOD5(LoadToken, bool(const brillo::SecureBlob&,
+                                const base::FilePath&,
+-                               const chromeos::SecureBlob&,
++                               const brillo::SecureBlob&,
+                                const std::string&,
+                                int*));
+-  MOCK_METHOD2(UnloadToken, void(const chromeos::SecureBlob&,
++  MOCK_METHOD2(UnloadToken, void(const brillo::SecureBlob&,
+                                  const base::FilePath&));
+   MOCK_METHOD3(ChangeTokenAuthData, void(const base::FilePath&,
+-                                         const chromeos::SecureBlob&,
+-                                         const chromeos::SecureBlob&));
+-  MOCK_METHOD3(GetTokenPath, bool(const chromeos::SecureBlob&,
++                                         const brillo::SecureBlob&,
++                                         const brillo::SecureBlob&));
++  MOCK_METHOD3(GetTokenPath, bool(const brillo::SecureBlob&,
+                                   int,
+                                   base::FilePath*));
+-  MOCK_METHOD2(GetTokenList, bool(const chromeos::SecureBlob&,
++  MOCK_METHOD2(GetTokenList, bool(const brillo::SecureBlob&,
+                                   std::vector<std::string>*));
+ };
+ 
+diff --git a/chaps/token_manager_interface.h b/chaps/token_manager_interface.h
+index 8d3724d..4b7d04c 100644
+--- a/chaps/token_manager_interface.h
++++ b/chaps/token_manager_interface.h
+@@ -8,7 +8,7 @@
+ #include <string>
+ 
+ #include <base/files/file_path.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ namespace chaps {
+ 
+@@ -35,7 +35,7 @@ class TokenManagerInterface {
+   //                        case isolate_credential will be set to the new
+   //                        isolate's credential), or false if the call
+   //                        succeeded in opening the existing isolate.
+-  virtual bool OpenIsolate(chromeos::SecureBlob* isolate_credential,
++  virtual bool OpenIsolate(brillo::SecureBlob* isolate_credential,
+                            bool* new_isolate_created) = 0;
+ 
+   // Close a given isolate. If all outstanding OpenIsolate calls have been
+@@ -43,7 +43,7 @@ class TokenManagerInterface {
+   // will be destroyed.
+   //
+   //  isolate_credential - The isolate into which they are logging out from.
+-  virtual void CloseIsolate(const chromeos::SecureBlob& isolate_credential) = 0;
++  virtual void CloseIsolate(const brillo::SecureBlob& isolate_credential) = 0;
+ 
+   // Loads a token into the given isolate.  Returns true on success.
+   //
+@@ -51,9 +51,9 @@ class TokenManagerInterface {
+   //  path - The path to the token directory.
+   //  auth_data - Authorization data to unlock the token.
+   //  slot_id - On success, will be set to the loaded token's slot ID.
+-  virtual bool LoadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual bool LoadToken(const brillo::SecureBlob& isolate_credential,
+                          const base::FilePath& path,
+-                         const chromeos::SecureBlob& auth_data,
++                         const brillo::SecureBlob& auth_data,
+                          const std::string& label,
+                          int* slot_id) = 0;
+ 
+@@ -61,7 +61,7 @@ class TokenManagerInterface {
+   //
+   //  isolate_credential - The isolate from which the token should be unloaded.
+   //  path - The path to the token directory.
+-  virtual void UnloadToken(const chromeos::SecureBlob& isolate_credential,
++  virtual void UnloadToken(const brillo::SecureBlob& isolate_credential,
+                            const base::FilePath& path) = 0;
+ 
+   // Changes authorization data for a token.
+@@ -71,8 +71,8 @@ class TokenManagerInterface {
+   //  new_auth_data - The new authorization data.
+   virtual void ChangeTokenAuthData(
+       const base::FilePath& path,
+-      const chromeos::SecureBlob& old_auth_data,
+-      const chromeos::SecureBlob& new_auth_data) = 0;
++      const brillo::SecureBlob& old_auth_data,
++      const brillo::SecureBlob& new_auth_data) = 0;
+ 
+   // Provides the token path associated with the given slot.  Returns true on
+   // success.  Returns false if the slot does not exist in the given isolate or
+@@ -81,7 +81,7 @@ class TokenManagerInterface {
+   // isolate_credentials - The isolate associated with the slot.
+   // slot_id - Identifies the slot.
+   // path - On success, will be set to the token path for the slot.
+-  virtual bool GetTokenPath(const chromeos::SecureBlob& isolate_credential,
++  virtual bool GetTokenPath(const brillo::SecureBlob& isolate_credential,
+                             int slot_id,
+                             base::FilePath* path) = 0;
+ };
+diff --git a/chaps/tpm2_utility_impl.cc b/chaps/tpm2_utility_impl.cc
+index da005b8..b58e9a6 100644
+--- a/chaps/tpm2_utility_impl.cc
++++ b/chaps/tpm2_utility_impl.cc
+@@ -18,7 +18,7 @@
+ #include "trunks/tpm_state.h"
+ #include "trunks/trunks_factory_impl.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using std::map;
+ using std::set;
+ using trunks::kRSAStorageRootKey;
+diff --git a/chaps/tpm2_utility_impl.h b/chaps/tpm2_utility_impl.h
+index d0dfdb2..580f4c9 100644
+--- a/chaps/tpm2_utility_impl.h
++++ b/chaps/tpm2_utility_impl.h
+@@ -33,13 +33,13 @@ class TPM2UtilityImpl : public TPMUtility {
+   bool Init() override;
+   bool IsTPMAvailable() override;
+   bool Authenticate(int slot_id,
+-                    const chromeos::SecureBlob& auth_data,
++                    const brillo::SecureBlob& auth_data,
+                     const std::string& auth_key_blob,
+                     const std::string& encrypted_master_key,
+-                    chromeos::SecureBlob* master_key) override;
++                    brillo::SecureBlob* master_key) override;
+   bool ChangeAuthData(int slot_id,
+-                      const chromeos::SecureBlob& old_auth_data,
+-                      const chromeos::SecureBlob& new_auth_data,
++                      const brillo::SecureBlob& old_auth_data,
++                      const brillo::SecureBlob& new_auth_data,
+                       const std::string& old_auth_key_blob,
+                       std::string* new_auth_key_blob) override;
+   bool GenerateRandom(int num_bytes, std::string* random_data) override;
+@@ -47,7 +47,7 @@ class TPM2UtilityImpl : public TPMUtility {
+   bool GenerateKey(int slot,
+                    int modulus_bits,
+                    const std::string& public_exponent,
+-                   const chromeos::SecureBlob& auth_data,
++                   const brillo::SecureBlob& auth_data,
+                    std::string* key_blob,
+                    int* key_handle) override;
+   bool GetPublicKey(int key_handle,
+@@ -57,16 +57,16 @@ class TPM2UtilityImpl : public TPMUtility {
+                const std::string& public_exponent,
+                const std::string& modulus,
+                const std::string& prime_factor,
+-               const chromeos::SecureBlob& auth_data,
++               const brillo::SecureBlob& auth_data,
+                std::string* key_blob,
+                int* key_handle) override;
+   bool LoadKey(int slot,
+                const std::string& key_blob,
+-               const chromeos::SecureBlob& auth_data,
++               const brillo::SecureBlob& auth_data,
+                int* key_handle) override;
+   bool LoadKeyWithParent(int slot,
+                          const std::string& key_blob,
+-                         const chromeos::SecureBlob& auth_data,
++                         const brillo::SecureBlob& auth_data,
+                          int parent_key_handle,
+                          int* key_handle) override;
+   void UnloadKeysForSlot(int slot) override;
+@@ -93,7 +93,7 @@ class TPM2UtilityImpl : public TPMUtility {
+   scoped_ptr<trunks::HmacSession> session_;
+   scoped_ptr<trunks::TpmUtility> trunks_tpm_utility_;
+   std::map<int, std::set<int>> slot_handles_;
+-  std::map<int, chromeos::SecureBlob> handle_auth_data_;
++  std::map<int, brillo::SecureBlob> handle_auth_data_;
+   std::map<int, std::string> handle_name_;
+ 
+   FRIEND_TEST(TPM2UtilityTest, IsTPMAvailable);
+diff --git a/chaps/tpm2_utility_test.cc b/chaps/tpm2_utility_test.cc
+index 63bc2da..3e644ee 100644
+--- a/chaps/tpm2_utility_test.cc
++++ b/chaps/tpm2_utility_test.cc
+@@ -19,7 +19,7 @@
+ 
+ #include "chaps/chaps_utility.h"
+ 
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using testing::_;
+ using testing::DoAll;
+ using testing::SetArgPointee;
+diff --git a/chaps/tpm_utility.h b/chaps/tpm_utility.h
+index 1039c9b..60d559e 100644
+--- a/chaps/tpm_utility.h
++++ b/chaps/tpm_utility.h
+@@ -7,7 +7,7 @@
+ 
+ #include <string>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ 
+ namespace chaps {
+ 
+@@ -37,16 +37,16 @@ class TPMUtility {
+   //   master_key - Will be populated with the decrypted master key.
+   // Returns true on success.
+   virtual bool Authenticate(int slot_id,
+-                            const chromeos::SecureBlob& auth_data,
++                            const brillo::SecureBlob& auth_data,
+                             const std::string& auth_key_blob,
+                             const std::string& encrypted_master_key,
+-                            chromeos::SecureBlob* master_key) = 0;
++                            brillo::SecureBlob* master_key) = 0;
+ 
+   // Changes authorization data for a user's authorization key. Returns true on
+   // success.
+   virtual bool ChangeAuthData(int slot_id,
+-                              const chromeos::SecureBlob& old_auth_data,
+-                              const chromeos::SecureBlob& new_auth_data,
++                              const brillo::SecureBlob& old_auth_data,
++                              const brillo::SecureBlob& new_auth_data,
+                               const std::string& old_auth_key_blob,
+                               std::string* new_auth_key_blob) = 0;
+ 
+@@ -75,7 +75,7 @@ class TPMUtility {
+   virtual bool GenerateKey(int slot,
+                            int modulus_bits,
+                            const std::string& public_exponent,
+-                           const chromeos::SecureBlob& auth_data,
++                           const brillo::SecureBlob& auth_data,
+                            std::string* key_blob,
+                            int* key_handle) = 0;
+ 
+@@ -102,7 +102,7 @@ class TPMUtility {
+                        const std::string& public_exponent,
+                        const std::string& modulus,
+                        const std::string& prime_factor,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        std::string* key_blob,
+                        int* key_handle) = 0;
+ 
+@@ -115,7 +115,7 @@ class TPMUtility {
+   // Returns true on success.
+   virtual bool LoadKey(int slot,
+                        const std::string& key_blob,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        int* key_handle) = 0;
+ 
+   // Loads a key by blob into the TPM that has a parent key that is not the SRK.
+@@ -128,7 +128,7 @@ class TPMUtility {
+   // Returns true on success.
+   virtual bool LoadKeyWithParent(int slot,
+                                  const std::string& key_blob,
+-                                 const chromeos::SecureBlob& auth_data,
++                                 const brillo::SecureBlob& auth_data,
+                                  int parent_key_handle,
+                                  int* key_handle) = 0;
+ 
+diff --git a/chaps/tpm_utility_impl.cc b/chaps/tpm_utility_impl.cc
+index 0237a2d..b0053e4 100644
+--- a/chaps/tpm_utility_impl.cc
++++ b/chaps/tpm_utility_impl.cc
+@@ -13,7 +13,7 @@
+ #include <base/files/file_util.h>
+ #include <base/logging.h>
+ #include <base/synchronization/lock.h>
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <openssl/rand.h>
+ #include <trousers/scoped_tss_type.h>
+ #include <trousers/tss.h>
+@@ -21,7 +21,7 @@
+ #include "chaps/chaps_utility.h"
+ 
+ using base::AutoLock;
+-using chromeos::SecureBlob;
++using brillo::SecureBlob;
+ using trousers::ScopedTssContext;
+ using trousers::ScopedTssKey;
+ using trousers::ScopedTssObject;
+@@ -791,7 +791,7 @@ bool TPMUtilityImpl::CreateKeyPolicy(TSS_HKEY key,
+                                    TSS_SECRET_MODE_SHA1,
+                                    kSha1OutputBytes,
+                                    discard);
+-    chromeos::SecureMemset(discard, 0, kSha1OutputBytes);
++    brillo::SecureMemset(discard, 0, kSha1OutputBytes);
+     if (result != TSS_SUCCESS) {
+       LOG(ERROR) << "Tspi_Policy_SetSecret - " << ResultToString(result);
+       return false;
+diff --git a/chaps/tpm_utility_impl.h b/chaps/tpm_utility_impl.h
+index c78c1e6..9dfe5a0 100644
+--- a/chaps/tpm_utility_impl.h
++++ b/chaps/tpm_utility_impl.h
+@@ -25,13 +25,13 @@ class TPMUtilityImpl : public TPMUtility {
+   virtual bool Init();
+   virtual bool IsTPMAvailable();
+   virtual bool Authenticate(int slot_id,
+-                            const chromeos::SecureBlob& auth_data,
++                            const brillo::SecureBlob& auth_data,
+                             const std::string& auth_key_blob,
+                             const std::string& encrypted_master_key,
+-                            chromeos::SecureBlob* master_key);
++                            brillo::SecureBlob* master_key);
+   virtual bool ChangeAuthData(int slot_id,
+-                              const chromeos::SecureBlob& old_auth_data,
+-                              const chromeos::SecureBlob& new_auth_data,
++                              const brillo::SecureBlob& old_auth_data,
++                              const brillo::SecureBlob& new_auth_data,
+                               const std::string& old_auth_key_blob,
+                               std::string* new_auth_key_blob);
+   virtual bool GenerateRandom(int num_bytes, std::string* random_data);
+@@ -39,7 +39,7 @@ class TPMUtilityImpl : public TPMUtility {
+   virtual bool GenerateKey(int slot,
+                            int modulus_bits,
+                            const std::string& public_exponent,
+-                           const chromeos::SecureBlob& auth_data,
++                           const brillo::SecureBlob& auth_data,
+                            std::string* key_blob,
+                            int* key_handle);
+   virtual bool GetPublicKey(int key_handle,
+@@ -49,16 +49,16 @@ class TPMUtilityImpl : public TPMUtility {
+                        const std::string& public_exponent,
+                        const std::string& modulus,
+                        const std::string& prime_factor,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        std::string* key_blob,
+                        int* key_handle);
+   virtual bool LoadKey(int slot,
+                        const std::string& key_blob,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        int* key_handle);
+   virtual bool LoadKeyWithParent(int slot,
+                                  const std::string& key_blob,
+-                                 const chromeos::SecureBlob& auth_data,
++                                 const brillo::SecureBlob& auth_data,
+                                  int parent_key_handle,
+                                  int* key_handle);
+   virtual void UnloadKeysForSlot(int slot);
+@@ -91,15 +91,15 @@ class TPMUtilityImpl : public TPMUtility {
+   struct KeyInfo {
+     TSS_HKEY tss_handle;
+     std::string blob;
+-    chromeos::SecureBlob auth_data;
++    brillo::SecureBlob auth_data;
+   };
+ 
+   int CreateHandle(int slot,
+                    TSS_HKEY key,
+                    const std::string& key_blob,
+-                   const chromeos::SecureBlob& auth_data);
++                   const brillo::SecureBlob& auth_data);
+   bool CreateKeyPolicy(TSS_HKEY key,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        bool auth_only);
+   bool GetKeyAttributeData(TSS_HKEY key,
+                            TSS_FLAG flag,
+@@ -112,7 +112,7 @@ class TPMUtilityImpl : public TPMUtility {
+   bool IsAlreadyLoaded(int slot, const std::string& key_blob, int* key_handle);
+   bool LoadKeyInternal(TSS_HKEY parent,
+                        const std::string& key_blob,
+-                       const chromeos::SecureBlob& auth_data,
++                       const brillo::SecureBlob& auth_data,
+                        TSS_HKEY* key);
+   bool ReloadKey(int key_handle);
+   bool InitSRK();
+diff --git a/chaps/tpm_utility_mock.h b/chaps/tpm_utility_mock.h
+index 1d5a912..cdecb7f 100644
+--- a/chaps/tpm_utility_mock.h
++++ b/chaps/tpm_utility_mock.h
+@@ -22,13 +22,13 @@ class TPMUtilityMock : public TPMUtility {
+   MOCK_METHOD0(Init, bool());
+   MOCK_METHOD0(IsTPMAvailable, bool());
+   MOCK_METHOD5(Authenticate, bool(int,
+-                                  const chromeos::SecureBlob&,
++                                  const brillo::SecureBlob&,
+                                   const std::string&,
+                                   const std::string&,
+-                                  chromeos::SecureBlob*));
++                                  brillo::SecureBlob*));
+   MOCK_METHOD5(ChangeAuthData, bool(int,
+-                                    const chromeos::SecureBlob&,
+-                                    const chromeos::SecureBlob&,
++                                    const brillo::SecureBlob&,
++                                    const brillo::SecureBlob&,
+                                     const std::string&,
+                                     std::string*));
+   MOCK_METHOD2(GenerateRandom, bool(int, std::string*));
+@@ -36,7 +36,7 @@ class TPMUtilityMock : public TPMUtility {
+   MOCK_METHOD6(GenerateKey, bool(int,
+                                  int,
+                                  const std::string&,
+-                                 const chromeos::SecureBlob&,
++                                 const brillo::SecureBlob&,
+                                  std::string*,
+                                  int*));
+   MOCK_METHOD3(GetPublicKey, bool(int, std::string*, std::string*));
+@@ -44,16 +44,16 @@ class TPMUtilityMock : public TPMUtility {
+                              const std::string&,
+                              const std::string&,
+                              const std::string&,
+-                             const chromeos::SecureBlob&,
++                             const brillo::SecureBlob&,
+                              std::string*,
+                              int*));
+   MOCK_METHOD4(LoadKey, bool(int,
+                              const std::string&,
+-                             const chromeos::SecureBlob&,
++                             const brillo::SecureBlob&,
+                              int*));
+   MOCK_METHOD5(LoadKeyWithParent, bool(int,
+                                        const std::string&,
+-                                       const chromeos::SecureBlob&,
++                                       const brillo::SecureBlob&,
+                                        int,
+                                        int*));
+   MOCK_METHOD1(UnloadKeysForSlot, void(int));
+diff --git a/chaps/tpm_utility_test.cc b/chaps/tpm_utility_test.cc
+index 7b098869..5f16cff 100644
+--- a/chaps/tpm_utility_test.cc
++++ b/chaps/tpm_utility_test.cc
+@@ -11,7 +11,7 @@
+ 
+ #include <memory>
+ 
+-#include <chromeos/secure_blob.h>
++#include <brillo/secure_blob.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ #include <openssl/rand.h>
+@@ -65,7 +65,7 @@ class TestTPMUtility: public ::testing::Test {
+     e_ = string("\x1\x0\x1", 3);
+     unsigned char random[20];
+     RAND_bytes(random, 20);
+-    auth_ = chromeos::SecureBlob(std::begin(random), std::end(random));
++    auth_ = brillo::SecureBlob(std::begin(random), std::end(random));
+     EXPECT_TRUE(tpm_->Init());
+   }
+ 
+@@ -98,7 +98,7 @@ class TestTPMUtility: public ::testing::Test {
+   unique_ptr<TPMUtility> tpm_;
+   int size_;
+   string e_;
+-  chromeos::SecureBlob auth_;
++  brillo::SecureBlob auth_;
+   int key_ = 0;
+   string blob_;
+ };
+@@ -110,14 +110,14 @@ TEST_F(TestTPMUtility, Authenticate) {
+   string encrypted_master;
+   EXPECT_TRUE(tpm_->Bind(key_, master, &encrypted_master));
+   // Successful authentication.
+-  chromeos::SecureBlob master2;
++  brillo::SecureBlob master2;
+   EXPECT_TRUE(tpm_->Authenticate(0, auth_, blob_, encrypted_master, &master2));
+   EXPECT_TRUE(master == master2.to_string());
+   tpm_->UnloadKeysForSlot(0);
+   // Change password.
+   unsigned char random[20];
+   RAND_bytes(random, 20);
+-  chromeos::SecureBlob auth2(std::begin(random), std::end(random));
++  brillo::SecureBlob auth2(std::begin(random), std::end(random));
+   string blob2;
+   EXPECT_TRUE(tpm_->ChangeAuthData(0, auth_, auth2, blob_, &blob2));
+   tpm_->UnloadKeysForSlot(0);
+@@ -157,8 +157,8 @@ TEST_F(TestTPMUtility, WrappedKey) {
+ 
+ TEST_F(TestTPMUtility, BadAuthSize) {
+   EXPECT_TRUE(InjectKey());
+-  chromeos::SecureBlob bad(48);
+-  chromeos::SecureBlob tmp;
++  brillo::SecureBlob bad(48);
++  brillo::SecureBlob tmp;
+   string master("master"), encrypted;
+   EXPECT_TRUE(tpm_->Bind(key_, master, &encrypted));
+   tpm_->UnloadKeysForSlot(0);
+-- 
+2.1.2
+

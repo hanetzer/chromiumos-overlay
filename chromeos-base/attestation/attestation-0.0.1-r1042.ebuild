@@ -49,6 +49,11 @@ src_unpack() {
 	S="${s}/aosp/system/attestation"
 }
 
+src_prepare() {
+	cd "${S}"/../../../platform2
+	epatch "${FILESDIR}"/chaps.patch
+}
+
 src_install() {
 	insinto /etc/dbus-1/system.d
 	doins server/org.chromium.Attestation.conf
