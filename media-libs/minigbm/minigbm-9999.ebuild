@@ -47,3 +47,12 @@ src_configure() {
 src_compile() {
 	cros-workon_src_compile
 }
+
+src_install() {
+	cros-workon_src_install
+
+	insinto "${EPREFIX}/etc/udev/rules.d"
+	doins "${FILESDIR}/50-vgem.rules"
+
+	default
+}
