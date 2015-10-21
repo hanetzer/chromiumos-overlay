@@ -209,6 +209,10 @@ src_install() {
 			newins "build/${stage}.stage" "${stage}.stage"
 			newins "build_serial/${stage}.stage" "${stage}.stage.serial"
 		fi
+		if [[ -f "build/cbfs/fallback/${stage}.elf" ]]; then
+			newins "build/cbfs/fallback/${stage}.elf" "${stage}.elf"
+			newins "build_serial/cbfs/fallback/${stage}.elf" "${stage}.elf.serial"
+		fi
 	done
 
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
