@@ -35,6 +35,7 @@ SERVER_IUSE_TESTS="
 	+tests_audio_AudioBasicInternalMicrophone
 	+tests_audio_AudioBasicInternalSpeaker
 	+tests_audio_AudioBasicUSBPlayback
+	+tests_audio_AudioBasicUSBPlaybackRecord
 	+tests_audio_AudioBasicUSBRecord
 	+tests_audio_AudioNodeSwitch
         +tests_audio_InternalCardNodes
