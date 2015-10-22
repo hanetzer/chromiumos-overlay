@@ -68,11 +68,11 @@ src_install() {
 	# Install helper to run periodic tasks.
 	dobin periodic_scheduler
 
-	# Install log cleaning script and run it daily.
-	dosbin chromeos-cleanup-logs
-	dosbin simple-rotate
-
 	if use syslog; then
+		# Install log cleaning script and run it daily.
+		dosbin chromeos-cleanup-logs
+		dosbin simple-rotate
+
 		insinto /etc
 		doins rsyslog.chromeos
 	fi
@@ -102,13 +102,12 @@ src_install() {
 
 		doins report-boot-complete.conf
 		doins failsafe-delay.conf failsafe.conf
-		doins log-rotate.conf
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
 		doins system-services.conf
 		doins uinput.conf
 
 		if use syslog; then
-			doins syslog.conf
+			doins log-rotate.conf syslog.conf
 		fi
 		if use !systemd; then
 			doins cgroups.conf
