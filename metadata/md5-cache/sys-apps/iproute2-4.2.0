@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=!net-misc/arpd !minimal? ( net-libs/libmnl ) iptables? ( >=net-firewall/iptables-1.4.20:= ) berkdb? ( sys-libs/db:= ) atm? ( net-dialup/linux-atm ) selinux? ( sys-libs/libselinux ) app-arch/xz-utils iptables? ( virtual/pkgconfig ) sys-devel/bison sys-devel/flex >=sys-kernel/linux-headers-3.16 elibc_glibc? ( >=sys-libs/glibc-2.7 )
+DESCRIPTION=kernel routing and traffic control utilities
+EAPI=5
+HOMEPAGE=http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+IUSE=atm berkdb +iptables ipv6 minimal selinux
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!net-misc/arpd !minimal? ( net-libs/libmnl ) iptables? ( >=net-firewall/iptables-1.4.20:= ) berkdb? ( sys-libs/db:= ) atm? ( net-dialup/linux-atm ) selinux? ( sys-libs/libselinux )
+SLOT=0
+SRC_URI=mirror://kernel/linux/utils/net/iproute2/iproute2-4.2.0.tar.xz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
+_md5_=5684208a12b5987305006a94499394e1
