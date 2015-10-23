@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="static"
 
 # util-linux is for libuuid.
 DEPEND="sys-apps/util-linux"
@@ -31,6 +31,7 @@ src_configure() {
 
 src_compile() {
 	tc-export CC
+	use static && append-ldflags -static
 	emake all
 }
 
