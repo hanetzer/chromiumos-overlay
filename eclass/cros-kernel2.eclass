@@ -21,7 +21,7 @@ DEPEND="sys-apps/debianutils
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 "
 
-WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 )
+WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 4.2 )
 WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 
 IUSE="
