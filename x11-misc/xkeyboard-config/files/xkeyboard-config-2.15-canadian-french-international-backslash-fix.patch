@@ -1,7 +1,6 @@
-diff -urN xkeyboard-config-2.4.1.orig/symbols/ca xkeyboard-config-2.4.1/symbols/ca
---- xkeyboard-config-2.4.1.orig/symbols/ca	2013-02-12 14:54:38.080613910 +0900
-+++ xkeyboard-config-2.4.1/symbols/ca	2013-02-12 22:33:16.644842749 +0900
-@@ -386,8 +386,8 @@
+--- xkeyboard-config-2.15.orig/symbols/ca	2015-10-26 14:56:30.780984562 -0700
++++ xkeyboard-config-2.15/symbols/ca	2015-10-26 14:57:53.124666779 -0700
+@@ -383,8 +383,8 @@
      			NoSymbol, dead_abovering ]	};
  
      key.type[group1]="EIGHT_LEVEL_SEMIALPHABETIC";
@@ -12,10 +11,10 @@ diff -urN xkeyboard-config-2.4.1.orig/symbols/ca xkeyboard-config-2.4.1/symbols/
  
      key <AC01>	{ [         a,          A,     NoSymbol, NoSymbol,
      			   ae,         AE ]	};
-@@ -470,6 +470,10 @@
+@@ -467,6 +467,10 @@
  xkb_symbols "eng" {
-     name[Group1] = "English (Canada)";
      include "us(basic)"
+     name[Group1] = "English (Canada)";
 +
 +    // Remap international-backslash key as backslash/bar instead of
 +    // less/greater to meet key top indicator.

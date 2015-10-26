@@ -1,0 +1,20 @@
+--- xkeyboard-config-2.15.orig/symbols/tr	2015-10-26 15:03:46.839297988 -0700
++++ xkeyboard-config-2.15/symbols/tr	2015-10-26 15:04:43.839076891 -0700
+@@ -24,7 +24,7 @@
+ 
+     key <AD02>  { [         w,          W,    VoidSymbol,    VoidSymbol ] };
+     key <AD03>  { [         e,          E,      EuroSign,    VoidSymbol ] };
+-    key <AD05>  { [         t,          T,     trademark,    VoidSymbol ] };
++    key <AD05>  { [         t,          T,         U20BA,    VoidSymbol ] };
+     key <AD07>  { [         u,          U,   ucircumflex,   Ucircumflex ] };
+     key <AD08>  { type[group1] = "FOUR_LEVEL_ALPHABETIC",
+                   [  idotless,          I,   icircumflex,   Icircumflex ] };
+@@ -97,7 +97,7 @@
+     key <AC03>  { [         e,          E,      EuroSign,    VoidSymbol ] };
+     key <AC04>  { [         a,          A,   acircumflex,   Acircumflex ] };
+     key <AC05>  { [udiaeresis, Udiaeresis,   ucircumflex,   Ucircumflex ] };
+-    key <AC06>  { [         t,          T,     trademark,    VoidSymbol ] };
++    key <AC06>  { [         t,          T,         U20BA,    VoidSymbol ] };
+     key <AC07>  { [         k,          K,    VoidSymbol,    VoidSymbol ] };
+     key <AC08>  { [         m,          M,            mu,    VoidSymbol ] };
+     key <AC09>  { [         l,          L,    VoidSymbol,    VoidSymbol ] };

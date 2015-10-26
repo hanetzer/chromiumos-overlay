@@ -1,8 +1,8 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-misc/xkeyboard-config/xkeyboard-config-2.4.1-r3.ebuild,v 1.5 2012/01/24 12:52:59 jer Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-misc/xkeyboard-config/xkeyboard-config-2.15.ebuild,v 1.1 2015/07/04 10:00:59 mrueg Exp $
 
-EAPI=4
+EAPI=5
 
 XORG_STATIC=no
 inherit xorg-2
@@ -11,7 +11,7 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/git/xkeyboard-config"
 
 DESCRIPTION="X keyboard configuration database"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
-[[ ${PV} == *9999* ]] || SRC_URI="${XORG_BASE_INDIVIDUAL_URI}/data/${P}.tar.bz2"
+[[ ${PV} == *9999* ]] || SRC_URI="${XORG_BASE_INDIVIDUAL_URI}/data/${PN}/${P}.tar.bz2"
 
 KEYWORDS="*"
 IUSE="cros_host parrot"
@@ -20,8 +20,8 @@ LICENSE="MIT"
 SLOT="0"
 
 DEPEND="cros_host? ( >=x11-apps/xkbcomp-1.2.3 )
-	>=dev-util/intltool-0.30
-	dev-perl/XML-Parser"
+	dev-util/intltool
+	>=x11-proto/xproto-7.0.20"
 
 XORG_CONFIGURE_OPTIONS=(
 	--with-xkb-base="${EPREFIX}/usr/share/X11/xkb"
@@ -32,10 +32,7 @@ XORG_CONFIGURE_OPTIONS=(
 )
 
 PATCHES=(
-	"${FILESDIR}"/${P}-extended-function-keys.patch
-	"${FILESDIR}"/xorg-cve-2012-0064.patch
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
-	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
 	"${FILESDIR}"/${P}-remap-capslock.patch
 	"${FILESDIR}"/${P}-add-f19-24.patch
