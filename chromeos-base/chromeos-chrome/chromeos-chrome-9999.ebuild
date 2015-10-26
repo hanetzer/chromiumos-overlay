@@ -975,7 +975,7 @@ install_chrome_test_resources() {
 	fi
 
 	# Add the khronos_glcts test data if needed.
-	if use chrome_internal || internal_khronos_glcts; then
+	if use chrome_internal || use internal_khronos_glcts; then
 		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
