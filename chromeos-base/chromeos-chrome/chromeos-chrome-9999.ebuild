@@ -1014,7 +1014,7 @@ install_telemetry_dep_resources() {
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
 		# Get deps from Chrome.
-		FIND_DEPS=${CHROME_ROOT}/src/tools/telemetry/find_dependencies
+		FIND_DEPS=${CHROME_ROOT}/src/tools/perf/find_dependencies
 		PERF_DEPS=${CHROME_ROOT}/src/tools/perf/bootstrap_deps
 		CROS_DEPS=${CHROME_ROOT}/src/tools/cros/bootstrap_deps
 		# sed removes the leading path including src/ converting it to relative.
