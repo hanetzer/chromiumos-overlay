@@ -91,6 +91,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_ECHash
 	+tests_firmware_ECKeyboard
 	+tests_firmware_ECKeyboardReboot
+	+tests_firmware_ECLidShutdown
 	+tests_firmware_ECLidSwitch
 	+tests_firmware_ECPeci
 	+tests_firmware_ECPowerButton
