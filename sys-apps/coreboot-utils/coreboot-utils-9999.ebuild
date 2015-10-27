@@ -3,8 +3,18 @@
 # $Header:
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
-CROS_WORKON_LOCALNAME="coreboot"
+CROS_WORKON_PROJECT=(
+	"chromiumos/third_party/coreboot"
+	"chromiumos/platform/vboot_reference"
+)
+CROS_WORKON_LOCALNAME=(
+	"coreboot"
+	"../platform/vboot_reference"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${S}/3rdparty/vboot"
+)
 
 inherit cros-workon toolchain-funcs
 
