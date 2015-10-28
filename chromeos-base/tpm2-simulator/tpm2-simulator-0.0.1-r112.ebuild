@@ -1,0 +1,36 @@
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+
+CROS_WORKON_COMMIT="d3174f9d9a710973b8bacd762eef19ca7638ad8d"
+CROS_WORKON_TREE="65d3d479096404f0a78522357d2e3babc73da42b"
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+PLATFORM_SUBDIR="tpm2-simulator"
+
+inherit cros-workon platform user
+
+DESCRIPTION="TPM 2.0 Simulator"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+
+RDEPEND="
+	dev-libs/openssl
+	chromeos-base/libchromeos
+	"
+
+DEPEND="
+	chromeos-base/tpm2
+	${RDEPEND}
+	"
+
+src_install() {
+	dobin "${OUT}"/tpm2-simulator
+}
