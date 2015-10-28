@@ -1,0 +1,971 @@
+This patch has also been submitted upstream:
+
+http://marc.info/?l=netfilter-devel&m=144606523930462&w=2
+
+This patch is to allow this package to compile properly with LLVM, which does not
+recognize file attributes that get applied after function definitions (GCC does
+allow this).  The patch moves the macro EXPORT_SYMBOL, which redefines the
+function's visibility attribute, from after the function defintion to before the
+function definition). See
+https://code.google.com/p/chromium/issues/detail?id=548786 for more details.
+
+--- a/build/daisy/tmp/portage/net-libs/libmnl-1.0.3-r1/work/libmnl-1.0.3/src/attr.c
++++ b/home/cmtice/libmnl/src/attr.c
+@@ -35,11 +35,11 @@
+  *
+  * This function returns the attribute type.
+  */
++EXPORT_SYMBOL(mnl_attr_get_type);
+ uint16_t mnl_attr_get_type(const struct nlattr *attr)
+ {
+ 	return attr->nla_type & NLA_TYPE_MASK;
+ }
+-EXPORT_SYMBOL(mnl_attr_get_type);
+
+ /**
+  * mnl_attr_get_len - get length of netlink attribute
+@@ -48,11 +48,11 @@ EXPORT_SYMBOL(mnl_attr_get_type);
+  * This function returns the attribute length that is the attribute header
+  * plus the attribute payload.
+  */
++EXPORT_SYMBOL(mnl_attr_get_len);
+ uint16_t mnl_attr_get_len(const struct nlattr *attr)
+ {
+ 	return attr->nla_len;
+ }
+-EXPORT_SYMBOL(mnl_attr_get_len);
+
+ /**
+  * mnl_attr_get_payload_len - get the attribute payload-value length
+@@ -60,11 +60,11 @@ EXPORT_SYMBOL(mnl_attr_get_len);
+  *
+  * This function returns the attribute payload-value length.
+  */
++EXPORT_SYMBOL(mnl_attr_get_payload_len);
+ uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
+ {
+ 	return attr->nla_len - MNL_ATTR_HDRLEN;
+ }
+-EXPORT_SYMBOL(mnl_attr_get_payload_len);
+
+ /**
+  * mnl_attr_get_payload - get pointer to the attribute payload
+@@ -72,11 +72,11 @@ EXPORT_SYMBOL(mnl_attr_get_payload_len);
+  *
+  * This function return a pointer to the attribute payload.
+  */
++EXPORT_SYMBOL(mnl_attr_get_payload);
+ void *mnl_attr_get_payload(const struct nlattr *attr)
+ {
+ 	return (void *)attr + MNL_ATTR_HDRLEN;
+ }
+-EXPORT_SYMBOL(mnl_attr_get_payload);
+
+ /**
+  * mnl_attr_ok - check if there is room for an attribute in a buffer
+@@ -94,13 +94,13 @@ EXPORT_SYMBOL(mnl_attr_get_payload);
+  * The len parameter may be negative in the case of malformed messages during
+  * attribute iteration, that is why we use a signed integer.
+  */
++EXPORT_SYMBOL(mnl_attr_ok);
+ bool mnl_attr_ok(const struct nlattr *attr, int len)
+ {
+ 	return len >= (int)sizeof(struct nlattr) &&
+ 	       attr->nla_len >= sizeof(struct nlattr) &&
+ 	       (int)attr->nla_len <= len;
+ }
+-EXPORT_SYMBOL(mnl_attr_ok);
+
+ /**
+  * mnl_attr_next - get the next attribute in the payload of a netlink message
+@@ -111,11 +111,11 @@ EXPORT_SYMBOL(mnl_attr_ok);
+  * as parameter. You have to use mnl_attr_ok() to ensure that the next
+  * attribute is valid.
+  */
++EXPORT_SYMBOL(mnl_attr_next);
+ struct nlattr *mnl_attr_next(const struct nlattr *attr)
+ {
+ 	return (struct nlattr *)((void *)attr + MNL_ALIGN(attr->nla_len));
+ }
+-EXPORT_SYMBOL(mnl_attr_next);
+
+ /**
+  * mnl_attr_type_valid - check if the attribute type is valid
+@@ -131,6 +131,7 @@ EXPORT_SYMBOL(mnl_attr_next);
+  * This leads to backward compatibility breakages in user-space. Better check
+  * if you support an attribute, if not, skip it.
+  */
++EXPORT_SYMBOL(mnl_attr_type_valid);
+ int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
+ {
+ 	if (mnl_attr_get_type(attr) > max) {
+@@ -139,7 +140,6 @@ int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
+ 	}
+ 	return 1;
+ }
+-EXPORT_SYMBOL(mnl_attr_type_valid);
+
+ static int __mnl_attr_validate(const struct nlattr *attr,
+ 			       enum mnl_attr_data_type type, size_t exp_len)
+@@ -211,6 +211,7 @@ static const size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
+  * integers (u8, u16, u32 and u64) have enough room for them. This function
+  * returns -1 in case of error, and errno is explicitly set.
+  */
++EXPORT_SYMBOL(mnl_attr_validate);
+ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
+ {
+ 	int exp_len;
+@@ -222,7 +223,6 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
+ 	exp_len = mnl_attr_data_type_len[type];
+ 	return __mnl_attr_validate(attr, type, exp_len);
+ }
+-EXPORT_SYMBOL(mnl_attr_validate);
+
+ /**
+  * mnl_attr_validate2 - validate netlink attribute (extended version)
+@@ -234,6 +234,7 @@ EXPORT_SYMBOL(mnl_attr_validate);
+  * whose size is variable. If the size of the attribute is not what we expect,
+  * this functions returns -1 and errno is explicitly set.
+  */
++EXPORT_SYMBOL(mnl_attr_validate2);
+ int
+ mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type,
+ 		   size_t exp_len)
+@@ -244,7 +245,6 @@ mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type,
+ 	}
+ 	return __mnl_attr_validate(attr, type, exp_len);
+ }
+-EXPORT_SYMBOL(mnl_attr_validate2);
+
+ /**
+  * mnl_attr_parse - parse attributes
+@@ -261,6 +261,7 @@ EXPORT_SYMBOL(mnl_attr_validate2);
+  * This function propagates the return value of the callback, which can be
+  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
+  */
++EXPORT_SYMBOL(mnl_attr_parse);
+ int
+ mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
+ 	       mnl_attr_cb_t cb, void *data)
+@@ -273,7 +274,6 @@ mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
+ 			return ret;
+ 	return ret;
+ }
+-EXPORT_SYMBOL(mnl_attr_parse);
+
+ /**
+  * mnl_attr_parse_nested - parse attributes inside a nest
+@@ -289,6 +289,7 @@ EXPORT_SYMBOL(mnl_attr_parse);
+  * This function propagates the return value of the callback, which can be
+  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
+  */
++EXPORT_SYMBOL(mnl_attr_parse_nested);
+ int
+ mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
+ 		      void *data)
+@@ -301,7 +302,6 @@ mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
+ 			return ret;
+ 	return ret;
+ }
+-EXPORT_SYMBOL(mnl_attr_parse_nested);
+
+ /**
+  * mnl_attr_parse_payload - parse attributes in payload of Netlink message
+@@ -322,6 +322,7 @@ EXPORT_SYMBOL(mnl_attr_parse_nested);
+  * This function propagates the return value of the callback, which can be
+  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
+  */
++EXPORT_SYMBOL(mnl_attr_parse_payload);
+ int
+ mnl_attr_parse_payload(const void *payload, size_t payload_len,
+ 		       mnl_attr_cb_t cb, void *data)
+@@ -334,7 +335,6 @@ mnl_attr_parse_payload(const void *payload, size_t payload_len,
+ 			return ret;
+ 	return ret;
+ }
+-EXPORT_SYMBOL(mnl_attr_parse_payload);
+
+ /**
+  * mnl_attr_get_u8 - returns 8-bit unsigned integer attribute payload
+@@ -342,11 +342,11 @@ EXPORT_SYMBOL(mnl_attr_parse_payload);
+  *
+  * This function returns the 8-bit value of the attribute payload.
+  */
++EXPORT_SYMBOL(mnl_attr_get_u8);
+ uint8_t mnl_attr_get_u8(const struct nlattr *attr)
+ {
+ 	return *((uint8_t *)mnl_attr_get_payload(attr));
+ }
+-EXPORT_SYMBOL(mnl_attr_get_u8);
+
+ /**
+  * mnl_attr_get_u16 - returns 16-bit unsigned integer attribute payload
+@@ -354,11 +354,11 @@ EXPORT_SYMBOL(mnl_attr_get_u8);
+  *
+  * This function returns the 16-bit value of the attribute payload.
+  */
++EXPORT_SYMBOL(mnl_attr_get_u16);
+ uint16_t mnl_attr_get_u16(const struct nlattr *attr)
+ {
+ 	return *((uint16_t *)mnl_attr_get_payload(attr));
+ }
+-EXPORT_SYMBOL(mnl_attr_get_u16);
+
+ /**
+  * mnl_attr_get_u32 - returns 32-bit unsigned integer attribute payload
+@@ -366,11 +366,11 @@ EXPORT_SYMBOL(mnl_attr_get_u16);
+  *
+  * This function returns the 32-bit value of the attribute payload.
+  */
++EXPORT_SYMBOL(mnl_attr_get_u32);
+ uint32_t mnl_attr_get_u32(const struct nlattr *attr)
+ {
+ 	return *((uint32_t *)mnl_attr_get_payload(attr));
+ }
+-EXPORT_SYMBOL(mnl_attr_get_u32);
+
+ /**
+  * mnl_attr_get_u64 - returns 64-bit unsigned integer attribute.
+@@ -380,13 +380,13 @@ EXPORT_SYMBOL(mnl_attr_get_u32);
+  * function is align-safe, since accessing 64-bit Netlink attributes is a
+  * common source of alignment issues.
+  */
++EXPORT_SYMBOL(mnl_attr_get_u64);
+ uint64_t mnl_attr_get_u64(const struct nlattr *attr)
+ {
+ 	uint64_t tmp;
+ 	memcpy(&tmp, mnl_attr_get_payload(attr), sizeof(tmp));
+ 	return tmp;
+ }
+-EXPORT_SYMBOL(mnl_attr_get_u64);
+
+ /**
+  * mnl_attr_get_str - returns pointer to string attribute.
+@@ -394,11 +394,11 @@ EXPORT_SYMBOL(mnl_attr_get_u64);
+  *
+  * This function returns the payload of string attribute value.
+  */
++EXPORT_SYMBOL(mnl_attr_get_str);
+ const char *mnl_attr_get_str(const struct nlattr *attr)
+ {
+ 	return mnl_attr_get_payload(attr);
+ }
+-EXPORT_SYMBOL(mnl_attr_get_str);
+
+ /**
+  * mnl_attr_put - add an attribute to netlink message
+@@ -410,6 +410,7 @@ EXPORT_SYMBOL(mnl_attr_get_str);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put);
+ void
+ mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
+ {
+@@ -421,7 +422,6 @@ mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
+ 	memcpy(mnl_attr_get_payload(attr), data, len);
+ 	nlh->nlmsg_len += MNL_ALIGN(payload_len);
+ }
+-EXPORT_SYMBOL(mnl_attr_put);
+
+ /**
+  * mnl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message
+@@ -433,11 +433,11 @@ EXPORT_SYMBOL(mnl_attr_put);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u8);
+ void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
+ {
+ 	mnl_attr_put(nlh, type, sizeof(uint8_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u8);
+
+ /**
+  * mnl_attr_put_u16 - add 16-bit unsigned integer attribute to netlink message
+@@ -448,11 +448,11 @@ EXPORT_SYMBOL(mnl_attr_put_u8);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u16);
+ void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
+ {
+ 	mnl_attr_put(nlh, type, sizeof(uint16_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u16);
+
+ /**
+  * mnl_attr_put_u32 - add 32-bit unsigned integer attribute to netlink message
+@@ -463,11 +463,11 @@ EXPORT_SYMBOL(mnl_attr_put_u16);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u32);
+ void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
+ {
+ 	mnl_attr_put(nlh, type, sizeof(uint32_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u32);
+
+ /**
+  * mnl_attr_put_u64 - add 64-bit unsigned integer attribute to netlink message
+@@ -478,11 +478,11 @@ EXPORT_SYMBOL(mnl_attr_put_u32);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u64);
+ void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
+ {
+ 	mnl_attr_put(nlh, type, sizeof(uint64_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u64);
+
+ /**
+  * mnl_attr_put_str - add string attribute to netlink message
+@@ -493,11 +493,11 @@ EXPORT_SYMBOL(mnl_attr_put_u64);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_str);
+ void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
+ {
+ 	mnl_attr_put(nlh, type, strlen(data), data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_str);
+
+ /**
+  * mnl_attr_put_strz - add string attribute to netlink message
+@@ -511,11 +511,11 @@ EXPORT_SYMBOL(mnl_attr_put_str);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_strz);
+ void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
+ {
+ 	mnl_attr_put(nlh, type, strlen(data)+1, data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_strz);
+
+ /**
+  * mnl_attr_nest_start - start an attribute nest
+@@ -526,6 +526,7 @@ EXPORT_SYMBOL(mnl_attr_put_strz);
+  * an attribute nest. This function always returns a valid pointer to the
+  * beginning of the nest.
+  */
++EXPORT_SYMBOL(mnl_attr_nest_start);
+ struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
+ {
+ 	struct nlattr *start = mnl_nlmsg_get_payload_tail(nlh);
+@@ -536,7 +537,6 @@ struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
+
+ 	return start;
+ }
+-EXPORT_SYMBOL(mnl_attr_nest_start);
+
+ /**
+  * mnl_attr_put_check - add an attribute to netlink message
+@@ -552,6 +552,7 @@ EXPORT_SYMBOL(mnl_attr_nest_start);
+  * attribute. The function returns true if the attribute could be added
+  * to the message, otherwise false is returned.
+  */
++EXPORT_SYMBOL(mnl_attr_put_check);
+ bool
+ mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+ 		   uint16_t type, size_t len, const void *data)
+@@ -561,7 +562,6 @@ mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+ 	mnl_attr_put(nlh, type, len, data);
+ 	return true;
+ }
+-EXPORT_SYMBOL(mnl_attr_put_check);
+
+ /**
+  * mnl_attr_put_u8_check - add 8-bit unsigned int attribute to netlink message
+@@ -577,13 +577,13 @@ EXPORT_SYMBOL(mnl_attr_put_check);
+  * attribute. The function returns true if the attribute could be added
+  * to the message, otherwise false is returned.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u8_check);
+ bool
+ mnl_attr_put_u8_check(struct nlmsghdr *nlh, size_t buflen,
+ 		      uint16_t type, uint8_t data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint8_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u8_check);
+
+ /**
+  * mnl_attr_put_u16_check - add 16-bit unsigned int attribute to netlink message
+@@ -600,13 +600,13 @@ EXPORT_SYMBOL(mnl_attr_put_u8_check);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u16_check);
+ bool
+ mnl_attr_put_u16_check(struct nlmsghdr *nlh, size_t buflen,
+ 		       uint16_t type, uint16_t data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint16_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u16_check);
+
+ /**
+  * mnl_attr_put_u32_check - add 32-bit unsigned int attribute to netlink message
+@@ -623,13 +623,13 @@ EXPORT_SYMBOL(mnl_attr_put_u16_check);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u32_check);
+ bool
+ mnl_attr_put_u32_check(struct nlmsghdr *nlh, size_t buflen,
+ 		       uint16_t type, uint32_t data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint32_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u32_check);
+
+ /**
+  * mnl_attr_put_u64_check - add 64-bit unsigned int attribute to netlink message
+@@ -646,13 +646,13 @@ EXPORT_SYMBOL(mnl_attr_put_u32_check);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_u64_check);
+ bool
+ mnl_attr_put_u64_check(struct nlmsghdr *nlh, size_t buflen,
+ 		       uint16_t type, uint64_t data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint64_t), &data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_u64_check);
+
+ /**
+  * mnl_attr_put_str_check - add string attribute to netlink message
+@@ -669,13 +669,13 @@ EXPORT_SYMBOL(mnl_attr_put_u64_check);
+  * This function updates the length field of the Netlink message (nlmsg_len)
+  * by adding the size (header + payload) of the new attribute.
+  */
++EXPORT_SYMBOL(mnl_attr_put_str_check);
+ bool
+ mnl_attr_put_str_check(struct nlmsghdr *nlh, size_t buflen,
+ 		       uint16_t type, const char *data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, strlen(data), data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_str_check);
+
+ /**
+  * mnl_attr_put_strz_check - add string attribute to netlink message
+@@ -693,13 +693,13 @@ EXPORT_SYMBOL(mnl_attr_put_str_check);
+  * attribute. The function returns true if the attribute could be added
+  * to the message, otherwise false is returned.
+  */
++EXPORT_SYMBOL(mnl_attr_put_strz_check);
+ bool
+ mnl_attr_put_strz_check(struct nlmsghdr *nlh, size_t buflen,
+ 			uint16_t type, const char *data)
+ {
+ 	return mnl_attr_put_check(nlh, buflen, type, strlen(data)+1, data);
+ }
+-EXPORT_SYMBOL(mnl_attr_put_strz_check);
+
+ /**
+  * mnl_attr_nest_start_check - start an attribute nest
+@@ -711,6 +711,7 @@ EXPORT_SYMBOL(mnl_attr_put_strz_check);
+  * an attribute nest. If the nested attribute cannot be added then NULL,
+  * otherwise valid pointer to the beginning of the nest is returned.
+  */
++EXPORT_SYMBOL(mnl_attr_nest_start_check);
+ struct nlattr *
+ mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type)
+ {
+@@ -718,7 +719,6 @@ mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type)
+ 		return NULL;
+ 	return mnl_attr_nest_start(nlh, type);
+ }
+-EXPORT_SYMBOL(mnl_attr_nest_start_check);
+
+ /**
+  * mnl_attr_nest_end - end an attribute nest
+@@ -727,12 +727,12 @@ EXPORT_SYMBOL(mnl_attr_nest_start_check);
+  *
+  * This function updates the attribute header that identifies the nest.
+  */
++EXPORT_SYMBOL(mnl_attr_nest_end);
+ void
+ mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
+ {
+ 	start->nla_len = mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
+ }
+-EXPORT_SYMBOL(mnl_attr_nest_end);
+
+ /**
+  * mnl_attr_nest_cancel - cancel an attribute nest
+@@ -741,12 +741,12 @@ EXPORT_SYMBOL(mnl_attr_nest_end);
+  *
+  * This function updates the attribute header that identifies the nest.
+  */
++EXPORT_SYMBOL(mnl_attr_nest_cancel);
+ void
+ mnl_attr_nest_cancel(struct nlmsghdr *nlh, struct nlattr *start)
+ {
+ 	nlh->nlmsg_len -= mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
+ }
+-EXPORT_SYMBOL(mnl_attr_nest_cancel);
+
+ /**
+  * @}
+--- a/build/daisy/tmp/portage/net-libs/libmnl-1.0.3-r1/work/libmnl-1.0.3/src/callback.c
++++ b/home/cmtice/libmnl/src/callback.c
+@@ -119,6 +119,7 @@ out:
+  * is set to ESRCH. If the sequence number is not the expected, errno is set
+  * to EPROTO.
+  */
++EXPORT_SYMBOL(mnl_cb_run2);
+ int
+ mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
+ 	    unsigned int portid, mnl_cb_t cb_data, void *data,
+@@ -127,7 +128,6 @@ mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
+ 	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data,
+ 			    cb_ctl_array, cb_ctl_array_len);
+ }
+-EXPORT_SYMBOL(mnl_cb_run2);
+
+ /**
+  * mnl_cb_run - callback runqueue for netlink messages (simplified version)
+@@ -148,13 +148,13 @@ EXPORT_SYMBOL(mnl_cb_run2);
+  *
+  * This function propagates the callback return value.
+  */
++EXPORT_SYMBOL(mnl_cb_run);
+ int
+ mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
+ 	   unsigned int portid, mnl_cb_t cb_data, void *data)
+ {
+ 	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data, NULL, 0);
+ }
+-EXPORT_SYMBOL(mnl_cb_run);
+
+ /**
+  * @}
+--- a/build/daisy/tmp/portage/net-libs/libmnl-1.0.3-r1/work/libmnl-1.0.3/src/nlmsg.c
++++ b/home/cmtice/libmnl/src/nlmsg.c
+@@ -51,11 +51,11 @@
+  * This function returns the size of a netlink message (header plus payload)
+  * without alignment.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_size);
+ size_t mnl_nlmsg_size(size_t len)
+ {
+ 	return len + MNL_NLMSG_HDRLEN;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_size);
+
+ /**
+  * mnl_nlmsg_get_payload_len - get the length of the Netlink payload
+@@ -64,11 +64,11 @@ EXPORT_SYMBOL(mnl_nlmsg_size);
+  * This function returns the Length of the netlink payload, ie. the length
+  * of the full message minus the size of the Netlink header.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_get_payload_len);
+ size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
+ {
+ 	return nlh->nlmsg_len - MNL_NLMSG_HDRLEN;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_get_payload_len);
+
+ /**
+  * mnl_nlmsg_put_header - reserve and prepare room for Netlink header
+@@ -79,6 +79,7 @@ EXPORT_SYMBOL(mnl_nlmsg_get_payload_len);
+  * initializes the nlmsg_len field to the size of the Netlink header. This
+  * function returns a pointer to the Netlink header structure.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_put_header);
+ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
+ {
+ 	int len = MNL_ALIGN(sizeof(struct nlmsghdr));
+@@ -88,7 +89,6 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
+ 	nlh->nlmsg_len = len;
+ 	return nlh;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_put_header);
+
+ /**
+  * mnl_nlmsg_put_extra_header - reserve and prepare room for an extra header
+@@ -101,6 +101,7 @@ EXPORT_SYMBOL(mnl_nlmsg_put_header);
+  * you call this function. This function returns a pointer to the extra
+  * header.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_put_extra_header);
+ void *
+ mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
+ {
+@@ -110,7 +111,6 @@ mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
+ 	memset(ptr, 0, len);
+ 	return ptr;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_put_extra_header);
+
+ /**
+  * mnl_nlmsg_get_payload - get a pointer to the payload of the netlink message
+@@ -118,11 +118,11 @@ EXPORT_SYMBOL(mnl_nlmsg_put_extra_header);
+  *
+  * This function returns a pointer to the payload of the netlink message.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_get_payload);
+ void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
+ {
+ 	return (void *)nlh + MNL_NLMSG_HDRLEN;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_get_payload);
+
+ /**
+  * mnl_nlmsg_get_payload_offset - get a pointer to the payload of the message
+@@ -132,12 +132,12 @@ EXPORT_SYMBOL(mnl_nlmsg_get_payload);
+  * This function returns a pointer to the payload of the netlink message plus
+  * a given offset.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_get_payload_offset);
+ void *
+ mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
+ {
+ 	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_get_payload_offset);
+
+ /**
+  * mnl_nlmsg_ok - check a there is room for netlink message
+@@ -155,13 +155,13 @@ EXPORT_SYMBOL(mnl_nlmsg_get_payload_offset);
+  * The len parameter may become negative in malformed messages during message
+  * iteration, that is why we use a signed integer.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_ok);
+ bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
+ {
+ 	return len >= (int)sizeof(struct nlmsghdr) &&
+ 	       nlh->nlmsg_len >= sizeof(struct nlmsghdr) &&
+ 	       (int)nlh->nlmsg_len <= len;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_ok);
+
+ /**
+  * mnl_nlmsg_next - get the next netlink message in a multipart message
+@@ -176,13 +176,13 @@ EXPORT_SYMBOL(mnl_nlmsg_ok);
+  * You have to use mnl_nlmsg_ok() to check if the next Netlink message is
+  * valid.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_next);
+ struct nlmsghdr *
+ mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
+ {
+ 	*len -= MNL_ALIGN(nlh->nlmsg_len);
+ 	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_next);
+
+ /**
+  * mnl_nlmsg_get_payload_tail - get the ending of the netlink message
+@@ -192,11 +192,11 @@ EXPORT_SYMBOL(mnl_nlmsg_next);
+  * to build a message since we continue adding attributes at the end of the
+  * message.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_get_payload_tail);
+ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
+ {
+ 	return (void *)nlh + MNL_ALIGN(nlh->nlmsg_len);
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_get_payload_tail);
+
+ /**
+  * mnl_nlmsg_seq_ok - perform sequence tracking
+@@ -212,12 +212,12 @@ EXPORT_SYMBOL(mnl_nlmsg_get_payload_tail);
+  * socket to send commands to kernel-space (that we want to track) and to
+  * listen to events (that we do not track).
+  */
++EXPORT_SYMBOL(mnl_nlmsg_seq_ok);
+ bool
+ mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
+ {
+ 	return nlh->nlmsg_seq && seq ? nlh->nlmsg_seq == seq : true;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_seq_ok);
+
+ /**
+  * mnl_nlmsg_portid_ok - perform portID origin check
+@@ -233,12 +233,12 @@ EXPORT_SYMBOL(mnl_nlmsg_seq_ok);
+  * to kernel-space (that we want to track) and to listen to events (that we
+  * do not track).
+  */
++EXPORT_SYMBOL(mnl_nlmsg_portid_ok);
+ bool
+ mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
+ {
+ 	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : true;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_portid_ok);
+
+ static void mnl_nlmsg_fprintf_header(FILE *fd, const struct nlmsghdr *nlh)
+ {
+@@ -369,6 +369,7 @@ mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
+  * - N, that indicates that NLA_F_NESTED is set.
+  * - B, that indicates that NLA_F_NET_BYTEORDER is set.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_fprintf);
+ void
+ mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
+ 		  size_t extra_header_size)
+@@ -382,7 +383,6 @@ mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
+ 		nlh = mnl_nlmsg_next(nlh, &len);
+ 	}
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_fprintf);
+
+ /**
+  * \defgroup batch Netlink message batch helpers
+@@ -440,6 +440,7 @@ struct mnl_nlmsg_batch {
+  * the heap, no restrictions in this regard. This function returns NULL on
+  * error.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_start);
+ struct mnl_nlmsg_batch *mnl_nlmsg_batch_start(void *buf, size_t limit)
+ {
+ 	struct mnl_nlmsg_batch *b;
+@@ -456,7 +457,6 @@ struct mnl_nlmsg_batch *mnl_nlmsg_batch_start(void *buf, size_t limit)
+
+ 	return b;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_start);
+
+ /**
+  * mnl_nlmsg_batch_stop - release a batch
+@@ -464,11 +464,11 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_start);
+  *
+  * This function returns the amount of data that is part of this batch.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_stop);
+ void mnl_nlmsg_batch_stop(struct mnl_nlmsg_batch *b)
+ {
+ 	free(b);
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_stop);
+
+ /**
+  * mnl_nlmsg_batch_next - get room for the next message in the batch
+@@ -481,6 +481,7 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_stop);
+  * You have to put at least one message in the batch before calling this
+  * function, otherwise your application is likely to crash.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_next);
+ bool mnl_nlmsg_batch_next(struct mnl_nlmsg_batch *b)
+ {
+ 	struct nlmsghdr *nlh = b->cur;
+@@ -493,7 +494,6 @@ bool mnl_nlmsg_batch_next(struct mnl_nlmsg_batch *b)
+ 	b->buflen += nlh->nlmsg_len;
+ 	return true;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_next);
+
+ /**
+  * mnl_nlmsg_batch_reset - reset the batch
+@@ -503,6 +503,7 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_next);
+  * new one. This function moves the last message which does not fit the
+  * batch to the head of the buffer, if any.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_reset);
+ void mnl_nlmsg_batch_reset(struct mnl_nlmsg_batch *b)
+ {
+ 	if (b->overflow) {
+@@ -516,7 +517,6 @@ void mnl_nlmsg_batch_reset(struct mnl_nlmsg_batch *b)
+ 		b->cur = b->buf;
+ 	}
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_reset);
+
+ /**
+  * mnl_nlmsg_batch_size - get current size of the batch
+@@ -524,11 +524,11 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_reset);
+  *
+  * This function returns the current size of the batch.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_size);
+ size_t mnl_nlmsg_batch_size(struct mnl_nlmsg_batch *b)
+ {
+ 	return b->buflen;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_size);
+
+ /**
+  * mnl_nlmsg_batch_head - get head of this batch
+@@ -537,11 +537,11 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_size);
+  * This function returns a pointer to the head of the batch, which is the
+  * beginning of the buffer that is used.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_head);
+ void *mnl_nlmsg_batch_head(struct mnl_nlmsg_batch *b)
+ {
+ 	return b->buf;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_head);
+
+ /**
+  * mnl_nlmsg_batch_current - returns current position in the batch
+@@ -550,11 +550,11 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_head);
+  * This function returns a pointer to the current position in the buffer
+  * that is used to store the batch.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_current);
+ void *mnl_nlmsg_batch_current(struct mnl_nlmsg_batch *b)
+ {
+ 	return b->cur;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_current);
+
+ /**
+  * mnl_nlmsg_batch_is_empty - check if there is any message in the batch
+@@ -562,11 +562,11 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_current);
+  *
+  * This function returns true if the batch is empty.
+  */
++EXPORT_SYMBOL(mnl_nlmsg_batch_is_empty);
+ bool mnl_nlmsg_batch_is_empty(struct mnl_nlmsg_batch *b)
+ {
+ 	return b->buflen == 0;
+ }
+-EXPORT_SYMBOL(mnl_nlmsg_batch_is_empty);
+
+ /**
+  * @}
+--- a/build/daisy/tmp/portage/net-libs/libmnl-1.0.3-r1/work/libmnl-1.0.3/src/socket.c
++++ b/home/cmtice/libmnl/src/socket.c
+@@ -82,11 +82,11 @@ struct mnl_socket {
+  *
+  * This function returns the file descriptor of a given netlink socket.
+  */
++EXPORT_SYMBOL(mnl_socket_get_fd);
+ int mnl_socket_get_fd(const struct mnl_socket *nl)
+ {
+ 	return nl->fd;
+ }
+-EXPORT_SYMBOL(mnl_socket_get_fd);
+
+ /**
+  * mnl_socket_get_portid - obtain Netlink PortID from netlink socket
+@@ -97,11 +97,11 @@ EXPORT_SYMBOL(mnl_socket_get_fd);
+  * which is not always true. This is the case if you open more than one
+  * socket that is binded to the same Netlink subsystem from the same process.
+  */
++EXPORT_SYMBOL(mnl_socket_get_portid);
+ unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
+ {
+ 	return nl->addr.nl_pid;
+ }
+-EXPORT_SYMBOL(mnl_socket_get_portid);
+
+ /**
+  * mnl_socket_open - open a netlink socket
+@@ -110,6 +110,7 @@ EXPORT_SYMBOL(mnl_socket_get_portid);
+  * On error, it returns -1 and errno is appropriately set. Otherwise, it
+  * returns a valid pointer to the mnl_socket structure.
+  */
++EXPORT_SYMBOL(mnl_socket_open);
+ struct mnl_socket *mnl_socket_open(int bus)
+ {
+ 	struct mnl_socket *nl;
+@@ -126,7 +127,6 @@ struct mnl_socket *mnl_socket_open(int bus)
+
+ 	return nl;
+ }
+-EXPORT_SYMBOL(mnl_socket_open);
+
+ /**
+  * mnl_socket_bind - bind netlink socket
+@@ -138,6 +138,7 @@ EXPORT_SYMBOL(mnl_socket_open);
+  * success, 0 is returned. You can use MNL_SOCKET_AUTOPID which is 0 for
+  * automatic port ID selection.
+  */
++EXPORT_SYMBOL(mnl_socket_bind);
+ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
+ {
+ 	int ret;
+@@ -166,7 +167,6 @@ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL(mnl_socket_bind);
+
+ /**
+  * mnl_socket_sendto - send a netlink message of a certain size
+@@ -177,6 +177,7 @@ EXPORT_SYMBOL(mnl_socket_bind);
+  * On error, it returns -1 and errno is appropriately set. Otherwise, it
+  * returns the number of bytes sent.
+  */
++EXPORT_SYMBOL(mnl_socket_sendto);
+ ssize_t
+ mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
+ {
+@@ -186,7 +187,6 @@ mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
+ 	return sendto(nl->fd, buf, len, 0,
+ 		      (struct sockaddr *) &snl, sizeof(snl));
+ }
+-EXPORT_SYMBOL(mnl_socket_sendto);
+
+ /**
+  * mnl_socket_recvfrom - receive a netlink message
+@@ -202,6 +202,7 @@ EXPORT_SYMBOL(mnl_socket_sendto);
+  * buffer size ensures that your buffer is big enough to store the netlink
+  * message without truncating it.
+  */
++EXPORT_SYMBOL(mnl_socket_recvfrom);
+ ssize_t
+ mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
+ {
+@@ -234,7 +235,6 @@ mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
+ 	}
+ 	return ret;
+ }
+-EXPORT_SYMBOL(mnl_socket_recvfrom);
+
+ /**
+  * mnl_socket_close - close a given netlink socket
+@@ -243,13 +243,13 @@ EXPORT_SYMBOL(mnl_socket_recvfrom);
+  * On error, this function returns -1 and errno is appropriately set.
+  * On success, it returns 0.
+  */
++EXPORT_SYMBOL(mnl_socket_close);
+ int mnl_socket_close(struct mnl_socket *nl)
+ {
+ 	int ret = close(nl->fd);
+ 	free(nl);
+ 	return ret;
+ }
+-EXPORT_SYMBOL(mnl_socket_close);
+
+ /**
+  * mnl_socket_setsockopt - set Netlink socket option
+@@ -276,12 +276,12 @@ EXPORT_SYMBOL(mnl_socket_close);
+  *
+  * On error, this function returns -1 and errno is appropriately set.
+  */
++EXPORT_SYMBOL(mnl_socket_setsockopt);
+ int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
+ 			  void *buf, socklen_t len)
+ {
+ 	return setsockopt(nl->fd, SOL_NETLINK, type, buf, len);
+ }
+-EXPORT_SYMBOL(mnl_socket_setsockopt);
+
+ /**
+  * mnl_socket_getsockopt - get a Netlink socket option
+@@ -292,12 +292,12 @@ EXPORT_SYMBOL(mnl_socket_setsockopt);
+  *
+  * On error, this function returns -1 and errno is appropriately set.
+  */
++EXPORT_SYMBOL(mnl_socket_getsockopt);
+ int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
+ 			  void *buf, socklen_t *len)
+ {
+ 	return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
+ }
+-EXPORT_SYMBOL(mnl_socket_getsockopt);
+
+ /**
+  * @}
