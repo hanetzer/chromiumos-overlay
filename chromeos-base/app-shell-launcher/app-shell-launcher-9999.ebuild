@@ -21,7 +21,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 DEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/libchromeos-ui
 	"
 

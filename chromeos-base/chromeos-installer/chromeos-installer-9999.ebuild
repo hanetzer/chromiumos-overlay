@@ -34,7 +34,7 @@ DEPEND="
 	)"
 RDEPEND="
 	pam? ( app-admin/sudo )
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/vboot_reference[32bit_au=]
 	dev-util/shflags
 	sys-apps/rootdev

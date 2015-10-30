@@ -20,7 +20,7 @@ SLOT=0
 KEYWORDS="~*"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/permission_broker
 	net-libs/libmicrohttpd
 	!chromeos-base/libwebserv

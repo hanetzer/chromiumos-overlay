@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "c9429017d51d78d516ac40531ce83fe35c48524c")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "3b891853186d1705791655c84bae74773ee7378f")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "cabb381ef2970e1be85b1678381f8cac1b731401")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "9c2a109855c9657b577041f3e09da5d2edfb60a3")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm_manager")
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -33,7 +33,7 @@ RDEPEND="
 		chromeos-base/trunks
 	)
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	"
 
 DEPEND="
@@ -73,10 +73,13 @@ src_install() {
 
 	# Install header files.
 	insinto /usr/include/tpm_manager/tpm_manager_client
-	doins client/dbus_proxy.h
+	doins client/tpm_nvram_dbus_proxy.h
+	doins client/tpm_ownership_dbus_proxy.h
 	insinto /usr/include/tpm_manager/common
 	doins common/export.h
-	doins common/tpm_manager_interface.h
+	doins common/tpm_manager_constants.h
+	doins common/tpm_nvram_interface.h
+	doins common/tpm_ownership_interface.h
 }
 
 platform_pkg_test() {

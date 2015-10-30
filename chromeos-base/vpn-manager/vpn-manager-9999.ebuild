@@ -19,7 +19,7 @@ IUSE="test"
 KEYWORDS="~*"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	net-dialup/ppp
 	net-dialup/xl2tpd
 	net-misc/strongswan

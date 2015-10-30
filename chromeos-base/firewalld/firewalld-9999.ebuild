@@ -23,7 +23,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	sys-apps/dbus
 "
 

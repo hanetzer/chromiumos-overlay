@@ -31,7 +31,7 @@ RDEPEND="
 		chromeos-base/trunks
 	)
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	"
 
 DEPEND="

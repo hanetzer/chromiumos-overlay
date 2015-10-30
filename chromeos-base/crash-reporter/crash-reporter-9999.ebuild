@@ -27,7 +27,7 @@ REQUIRE_USE="!cros_host"
 RDEPEND="
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/google-breakpad
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	dev-libs/libpcre
 	net-misc/curl

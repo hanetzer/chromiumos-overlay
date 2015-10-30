@@ -20,7 +20,7 @@ KEYWORDS="~*"
 IUSE="wifi_bootstrapping"
 
 COMMON_DEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/libweave
 	chromeos-base/webserver
 "

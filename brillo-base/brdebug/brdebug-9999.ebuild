@@ -22,7 +22,7 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/peerd
 "
 

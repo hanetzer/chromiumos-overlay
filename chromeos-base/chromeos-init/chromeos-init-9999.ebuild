@@ -21,7 +21,7 @@ IUSE="cros_embedded +encrypted_stateful frecon -s3halt +syslog systemd +udev vtc
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
-DEPEND="chromeos-base/libchromeos
+DEPEND="chromeos-base/libbrillo
 	dev-util/shunit2
 "
 # vboot_reference for crossystem

@@ -26,7 +26,7 @@ RDEPEND="
 	sys-apps/rootdev
 "
 DEPEND="${RDEPEND}
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock

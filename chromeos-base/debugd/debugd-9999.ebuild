@@ -23,7 +23,7 @@ RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/chromeos-ssh-testkeys
 	chromeos-base/chromeos-sshd-init
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/shill
 	chromeos-base/system_api
 	chromeos-base/vboot_reference

@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "ecb0a2a4cea6ceb2e8c0d587a95f5229a2be1f99")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "be498a3390db947c3d6ab1ec212c89665da7f76f")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "22ab6f06d0fc3e98ee51745cb5d4b902453ab7f5")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "435287fe6d60fdcb66737476fee580968e9bd829")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/trunks")
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -27,7 +27,7 @@ IUSE="ftdi_tpm test"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	ftdi_tpm? ( dev-embedded/libftdi )
 	"
 

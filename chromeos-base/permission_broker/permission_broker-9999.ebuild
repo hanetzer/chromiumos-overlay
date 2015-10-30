@@ -23,7 +23,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/firewalld
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	dev-libs/glib
 	sys-apps/dbus
 	dev-libs/dbus-glib

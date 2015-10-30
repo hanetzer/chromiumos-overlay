@@ -22,7 +22,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/bootstat
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	"
 
 DEPEND="

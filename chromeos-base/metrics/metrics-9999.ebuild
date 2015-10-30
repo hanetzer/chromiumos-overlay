@@ -21,7 +21,7 @@ KEYWORDS="~*"
 IUSE="metrics_uploader +passive_metrics"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/system_api
 	dev-libs/dbus-glib
 	dev-libs/protobuf

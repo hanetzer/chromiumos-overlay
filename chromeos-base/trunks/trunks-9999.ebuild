@@ -25,7 +25,7 @@ IUSE="ftdi_tpm test"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	ftdi_tpm? ( dev-embedded/libftdi )
 	"
 

@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "c8f6b7a7bc43d48ccd7a11f7aba91742c87f8b1c")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "48fef855aec5ea23cf5b8512e7475979ad8d9731")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "4cf1402b6245f1606788b1850b1a9c3571b0d27b")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "463b9b64eef03f310cec68b77c7f87c85b94f8b6")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
@@ -29,7 +29,7 @@ IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
 COMMON_DEPEND="
 	app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
 	cros_p2p? ( chromeos-base/p2p )

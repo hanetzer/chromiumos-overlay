@@ -29,7 +29,7 @@ RDEPEND="
 	tpm2? (
 		chromeos-base/trunks
 	)
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	!dev-db/leveldb
 	dev-libs/dbus-c++

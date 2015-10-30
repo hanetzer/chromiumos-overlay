@@ -18,7 +18,7 @@ IUSE="-asan -clang +seccomp test"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf

@@ -24,7 +24,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/permission_broker
 	net-dns/dnsmasq
 	net-wireless/hostapd

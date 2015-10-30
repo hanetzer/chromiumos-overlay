@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "e478a11fbfb297ce3bb3da1dc6ec16a0da6c997f")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "2fad4b0dfed7132ed60647dc3506db7dc33a45ab")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "d6fef92a939f80aa4c7e04612b82330d82863a5f")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "dd6a2d373cb5808b4db5bf951373ec830480b5f2")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/firewalld")
@@ -25,7 +25,7 @@ KEYWORDS="*"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	sys-apps/dbus
 "
 

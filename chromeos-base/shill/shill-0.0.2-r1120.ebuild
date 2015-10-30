@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "ab2a8ad501e0845bcf9944c34cf10ff782afdc36")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "2ee114ad83024ae36a176ee3253fb926c5d951c2")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "02244d42e5f6a195a41984cf40346a1b07b4c9a0")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "997493432558cd3ab075ff871bbf4c2a56511bce")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
@@ -28,7 +28,7 @@ RDEPEND="
 	chromeos-base/bootstat
 	tpm? ( chromeos-base/chaps )
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	wimax? ( chromeos-base/wimax_manager )
 	dev-libs/dbus-c++

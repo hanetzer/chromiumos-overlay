@@ -23,7 +23,6 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	sys-apps/rootdev
-	!<chromeos-base/libchromeos-0.0.2
 	"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"

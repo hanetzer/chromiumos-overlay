@@ -19,7 +19,7 @@ SLOT=0
 KEYWORDS="~*"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 "
 
 DEPEND="${RDEPEND}"

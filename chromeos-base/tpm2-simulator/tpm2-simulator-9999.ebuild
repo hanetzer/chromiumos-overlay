@@ -21,7 +21,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	dev-libs/openssl
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	"
 
 DEPEND="

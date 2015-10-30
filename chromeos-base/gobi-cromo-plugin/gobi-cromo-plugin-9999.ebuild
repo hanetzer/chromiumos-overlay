@@ -27,7 +27,7 @@ RDEPEND="
 		!internal? ( chromeos-base/gobi3k-lib-bin )
 		chromeos-base/gobi3k-lib
 	)
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	install_tests? ( dev-cpp/gmock dev-cpp/gtest )
 "

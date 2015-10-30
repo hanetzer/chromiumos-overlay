@@ -24,7 +24,7 @@ IUSE="test"
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
 	chromeos-base/cryptohome
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/libchromeos-ui
 	chromeos-base/metrics
 	dev-libs/nss

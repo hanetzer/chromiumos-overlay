@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "6f035c433ab3ed2992b2d187b35ef7715f80e9a6")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "81f1fcb96c263168c881c7fda7e7e885d8d47e41")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "f534acf6cc48569ab51bde986fec1c931e26ee78")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "ff26e98398fa26514b9c659516cbd8aa95071016")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/attestation")
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -28,7 +28,7 @@ RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chaps
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	"
 
 DEPEND="

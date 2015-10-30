@@ -29,7 +29,7 @@ RDEPEND="
 		chromeos-base/trunks
 	)
 	chromeos-base/chaps
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/libscrypt
 	chromeos-base/metrics
 	dev-libs/dbus-glib

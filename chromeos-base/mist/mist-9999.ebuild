@@ -20,7 +20,7 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	dev-libs/protobuf
 	net-dialup/ppp

@@ -26,7 +26,7 @@ RDEPEND="
 	chromeos-base/bootstat
 	tpm? ( chromeos-base/chaps )
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	wimax? ( chromeos-base/wimax_manager )
 	dev-libs/dbus-c++

@@ -25,7 +25,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND="chromeos-base/libchromeos
+RDEPEND="chromeos-base/libbrillo
 	dev-libs/expat
 	sys-apps/dbus"
 DEPEND="

@@ -22,7 +22,7 @@ IUSE="test"
 
 RDEPEND="
 	chromeos-base/easy-unlock-crypto
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 "
 
 DEPEND="

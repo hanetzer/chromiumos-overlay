@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "ef560023bf36034dacf1fe3054d4a096dc23e9d3")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "e20879fd3e020ea8033eef123a19a8bb9f894aa1")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "7dee8db91c5899c06f02f68c350db7c068d3dde5")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "3a2bbf6a21bdb8a86a74dbb982e89df4bb6becb1")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/webservd")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/webservd")
@@ -22,7 +22,7 @@ SLOT=0
 KEYWORDS="*"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/permission_broker
 	net-libs/libmicrohttpd
 	!chromeos-base/libwebserv

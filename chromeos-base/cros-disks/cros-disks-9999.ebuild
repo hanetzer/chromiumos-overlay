@@ -21,7 +21,7 @@ KEYWORDS="~*"
 RDEPEND="
 	app-arch/unrar
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	dev-libs/dbus-c++
 	dev-libs/glib

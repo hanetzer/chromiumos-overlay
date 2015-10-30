@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "be6240db3b8a0981ce0f800247105154ff8e4960")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "2ad8bbd69c4c7f00895eb7faad4412f72b302337")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "ea3c168b5b00783acac87d7fb453583981ce5cf3")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "80a677c3aff42b59d3201f9d8eb36f46c262da90")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/dbus-binding-generator")
@@ -27,7 +27,7 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="test"
 
-RDEPEND="chromeos-base/libchromeos
+RDEPEND="chromeos-base/libbrillo
 	dev-libs/expat
 	sys-apps/dbus"
 DEPEND="

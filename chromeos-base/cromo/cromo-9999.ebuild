@@ -22,7 +22,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/metrics
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-c++

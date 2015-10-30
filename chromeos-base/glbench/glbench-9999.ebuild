@@ -22,7 +22,7 @@ IUSE="opengles"
 
 RDEPEND="
 	>=dev-cpp/gflags-2.0
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	media-libs/libpng
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )

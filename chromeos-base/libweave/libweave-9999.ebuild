@@ -21,16 +21,10 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-COMMON_DEPEND="
-	chromeos-base/libchromeos
-"
-
 RDEPEND="
-	${COMMON_DEPEND}
 "
 
 DEPEND="
-	${COMMON_DEPEND}
 	dev-cpp/gmock
 	dev-cpp/gtest
 "

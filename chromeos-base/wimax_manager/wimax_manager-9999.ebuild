@@ -25,7 +25,7 @@ IUSE="gdmwimax test"
 RDEPEND="
 	dev-libs/dbus-c++
 	gdmwimax? (
-		chromeos-base/libchromeos
+		chromeos-base/libbrillo
 		chromeos-base/metrics
 		>=dev-libs/glib-2.30
 		dev-libs/protobuf

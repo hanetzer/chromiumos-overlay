@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("89e8bbb176c0af904370abd81886ecbffc6da911" "6789bcbfbc2cbc7eec7713513b4b2038f7f8c52c")
-CROS_WORKON_TREE=("3d62fdefe82d81910f97f1aaaf538380c344c304" "72f15b6d4043abd8ec0f7010854098db11712651")
+CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "02bc8998fdfaa09cc9362c3ba231bca68c292a8b")
+CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "dab3ebf437980ecadc1dbf9e33fd63bfc9a94a13")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/apmanager")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/apmanager")
@@ -26,7 +26,7 @@ KEYWORDS="*"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchromeos
+	chromeos-base/libbrillo
 	chromeos-base/permission_broker
 	net-dns/dnsmasq
 	net-wireless/hostapd
