@@ -3,10 +3,20 @@
 # $Header:
 
 EAPI="4"
-CROS_WORKON_COMMIT="82ae11643ca23e65780006f3890f1d173363b8af"
-CROS_WORKON_TREE="b5a4303f065a329de1e7152d4f4d1b5aa9488ed7"
-CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
-CROS_WORKON_LOCALNAME="coreboot"
+CROS_WORKON_COMMIT=("82ae11643ca23e65780006f3890f1d173363b8af" "b491bc8bb1499452536eb140c22f749d1c9f9fc3")
+CROS_WORKON_TREE=("b5a4303f065a329de1e7152d4f4d1b5aa9488ed7" "08ea69814d669670fa225c75de11c44f0c19efe8")
+CROS_WORKON_PROJECT=(
+	"chromiumos/third_party/coreboot"
+	"chromiumos/platform/vboot_reference"
+)
+CROS_WORKON_LOCALNAME=(
+	"coreboot"
+	"../platform/vboot_reference"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${S}/3rdparty/vboot"
+)
 
 inherit cros-workon toolchain-funcs
 
