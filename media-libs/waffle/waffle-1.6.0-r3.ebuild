@@ -54,6 +54,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/0001-Support-oak-board.patch
+	"${FILESDIR}"/0001-null-use-EGL_DEFAULT_DISPLAY.patch
 )
 
 src_configure() {
