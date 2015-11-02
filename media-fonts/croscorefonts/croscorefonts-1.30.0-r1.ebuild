@@ -1,1 +1,0 @@
-croscorefonts-1.30.0.ebuild
