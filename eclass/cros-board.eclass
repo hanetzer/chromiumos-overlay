@@ -182,6 +182,7 @@ ALL_BOARDS=(
 	rush_ryu
 	sama5d3
 	samus
+	samus-cheets
 	shogun
 	sklrvp
 	slippy
