@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/bluez/bluez-4.99.ebuild,v 1.7 2012/04/15 16:53:41 maekke Exp $
 
 EAPI="4"
-CROS_WORKON_COMMIT="3cc29b0281e14f1bb5b36e9a569c663cc54db970"
-CROS_WORKON_TREE="4fc5643f76afb6bdf22072833b207087aa34dcd8"
+CROS_WORKON_COMMIT="4c1485b4b211eab48baf22a449673fcc5928fe17"
+CROS_WORKON_TREE="3a1536e89d6565df02518a22870a8d9d04eb697d"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
 
