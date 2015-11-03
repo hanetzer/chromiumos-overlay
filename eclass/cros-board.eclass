@@ -109,6 +109,7 @@ ALL_BOARDS=(
 	#jaguar
 	jecht
 	kayle
+	kblrvp
 	#kennet
 	#kiev
 	kip
