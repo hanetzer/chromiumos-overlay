@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="test arc"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
