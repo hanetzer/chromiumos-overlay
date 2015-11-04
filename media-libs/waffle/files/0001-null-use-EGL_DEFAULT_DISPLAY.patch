@@ -21,7 +21,7 @@ index 5ed621d..210d208 100644
  
 -    if (!wegl_display_init(&self->wegl, wc_plat,
 -                           (intptr_t) self->drm->gbm_device))
-+    if (!wegl_display_init(&self->wegl, wc_plat, EGL_DEFAULT_DISPLAY))
++    if (!wegl_display_init(&self->wegl, wc_plat, (intptr_t)EGL_DEFAULT_DISPLAY))
          goto error;
  
      self->param.width = self->drm->width;
