@@ -123,7 +123,7 @@ pkg_postinst() {
 	enewuser "bluetooth" "218"
 	enewgroup "bluetooth" "218"
 
-	udevadm control --reload-rules && udevadm trigger --subsystem-match=bluetooth
+	udev_reload
 
 	if ! has_version "net-dialup/ppp"; then
 		elog "To use dial up networking you must install net-dialup/ppp."
