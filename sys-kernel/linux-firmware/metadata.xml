@@ -3,6 +3,9 @@
 <pkgmetadata>
 <herd>kernel</herd>
 <use>
+	<flag name='linux_firmware_adsp_skl'>
+		Install SKL static firmware binary for audio
+	</flag>
 	<flag name='linux_firmware_ath3k-all'>
 		Install all revisions of firmware for the ath3k driver;
 		otherwise see the individual ath3k-xxx flags
