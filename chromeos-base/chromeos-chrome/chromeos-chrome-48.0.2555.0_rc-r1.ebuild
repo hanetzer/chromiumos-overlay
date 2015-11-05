@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-48.0.2547.0_rc-r2.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-48.0.2547.0_rc-r2.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-48.0.2547.0_rc-r2.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-48.0.2555.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-48.0.2555.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-48.0.2555.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -975,7 +975,7 @@ install_chrome_test_resources() {
 	fi
 
 	# Add the khronos_glcts test data if needed.
-	if use chrome_internal || internal_khronos_glcts; then
+	if use chrome_internal || use internal_khronos_glcts; then
 		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
