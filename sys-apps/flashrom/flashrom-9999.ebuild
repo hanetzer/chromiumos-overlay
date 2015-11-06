@@ -99,9 +99,15 @@ src_compile() {
 		args+=" CONFIG_USE_OS_TIMER=no"
 	fi
 
+	# Suppress -Wunused-function since we will see a lot of PCI-related
+	# warnings on non-x86 platforms (PCI structs are pervasive in the code).
+	append-flags "-Wall -Wno-unused-function"
+
 	# WARNERROR=no, bug 347879
+	# FIXME(dhendrix): Actually, we want -Werror for CrOS.
 	tc-export AR CC RANLIB
-	emake WARNERROR=no ${args}
+	# emake WARNERROR=no ${args}	# upstream gentoo
+	emake ${args}			# cros
 }
 
 src_test() {
