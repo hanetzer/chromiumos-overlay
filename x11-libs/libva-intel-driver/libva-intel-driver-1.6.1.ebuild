@@ -46,6 +46,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
+	epatch "${FILESDIR}"/gen789-use-coefficient-matrix-to-convert-yuv-to-rgb.patch
 	eautoreconf
 }
 
