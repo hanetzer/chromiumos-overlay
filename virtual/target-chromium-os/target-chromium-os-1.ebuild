@@ -13,7 +13,7 @@ KEYWORDS="*"
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	feedback +fonts gobi mtd +network_time nfc pam peerd
-	+power_management +profile +readahead scanner +shill +syslog touchview
+	+power_management +profile +readahead scanner +shill intel_lpe +syslog touchview
 	+tpm +trim_supported +vpn watchdog wifi_bootstrapping
 	wimax X"
 
@@ -183,6 +183,7 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 
 CROS_X86_RDEPEND="
 	dptf? ( virtual/dptf )
+	intel_lpe? ( virtual/lpe-support )
 "
 CROS_ARM_RDEPEND="
 	chromeos-base/u-boot-scripts
