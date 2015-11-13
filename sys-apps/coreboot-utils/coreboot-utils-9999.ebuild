@@ -26,7 +26,7 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host mma"
+IUSE="cros_host mma bitmap_in_cbfs"
 
 src_configure() {
 	cros-workon_src_configure
@@ -56,6 +56,7 @@ src_compile() {
 			emake -C util/cbmem CC="${CC}"
 		fi
 	fi
+	use bitmap_in_cbfs && emake -C util/archive CC="${CC}"
 }
 
 src_install() {
@@ -78,4 +79,5 @@ src_install() {
 			dobin util/cbfstool/cbfstool
 		fi
 	fi
+	use bitmap_in_cbfs && dobin util/archive/archive
 }
