@@ -77,3 +77,4 @@ CONFIG_MMCONF_BASE_ADDRESS=0xe0000000
 # CONFIG_PCI_ROM_RUN is not set
 # CONFIG_ON_DEVICE_ROM_RUN is not set
 # CONFIG_S3_VGA_ROM_RUN is not set
+CONFIG_MMA_BLOBS_PATH="3rdparty/blobs/mainboard/google/lars/mma"
