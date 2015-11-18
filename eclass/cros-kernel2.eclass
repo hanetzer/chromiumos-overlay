@@ -74,6 +74,7 @@ CONFIG_FRAGMENTS=(
 	gobi
 	highmem
 	i2cdev
+	kasan
 	kgdb
 	kvm
 	loader_kernel_ramfs
@@ -234,6 +235,13 @@ CONFIG_I2C_CHARDEV=y
 debug_desc="Miscellaneous debug extensions"
 debug_config="
 CONFIG_DRM_POWERVR_ROGUE_DEBUG=y
+"
+
+kasan_desc="Enable KASAN"
+kasan_config="
+CONFIG_KASAN=y
+CONFIG_KASAN_INLINE=y
+CONFIG_TEST_KASAN=m
 "
 
 kgdb_desc="Enable kgdb"
