@@ -76,7 +76,10 @@ src_install() {
 		if use mma; then
 			dobin util/mma/mma_setup_test.sh
 			dobin util/mma/mma_get_result.sh
+			dobin util/mma/mma_automated_test.sh
 			dobin util/cbfstool/cbfstool
+			insinto /etc/init
+			doins util/mma/mma.conf
 		fi
 	fi
 	use bitmap_in_cbfs && dobin util/archive/archive
