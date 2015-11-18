@@ -36,6 +36,7 @@ IUSE_TESTS="
 		+tests_security_SeccompSyscallFilters
 	)
 	+tests_security_AccountsBaseline
+	+tests_security_AltSyscall
 	+tests_security_ASLR
 	+tests_security_ChromiumOSLSM
 	+tests_security_DbusMap
