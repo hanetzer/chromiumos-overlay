@@ -23,5 +23,8 @@ PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /mnt/host/source/chromite/bin/gs_fetch_binpkg \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 RESUMECOMMAND_GS="${FETCHCOMMAND_GS}"
 
+FETCHCOMMAND_AB='/mnt/host/source/chromite/bin/abutil fetch "\${URI}" "\${DISTDIR}/\${FILE}"'
+RESUMECOMMAND_AB="${FETCHCOMMAND_AB}"
+
 FETCHCOMMAND='curl --ipv4 -y 30 -f --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
 RESUMECOMMAND='curl --ipv4 -y 30 -f -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
