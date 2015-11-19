@@ -21,9 +21,15 @@ board_setup_32bit_au_env()
 	__AU_OLD_ARCH=${ARCH}
 	__AU_OLD_ABI=${ABI}
 	__AU_OLD_LIBDIR_x86=${LIBDIR_x86}
+	__AU_OLD_CC=${CC}
+	__AU_OLD_CXX=${CXX}
 	export ARCH=x86 ABI=x86 LIBDIR_x86="lib"
 	__AU_OLD_CHOST=${CHOST}
 	export CHOST=i686-pc-linux-gnu
+	if [[ ${CC} == *"clang"* ]]; then
+		export CC=${CHOST}-clang
+		export CXX=${CHOST}-clang++
+	fi
 	__AU_OLD_SYSROOT=${SYSROOT}
 	export SYSROOT=/usr/${CHOST}
 	append-ldflags -L"${__AU_OLD_SYSROOT}"/usr/lib
@@ -44,4 +50,8 @@ board_teardown_32bit_au_env()
 	export LIBDIR_x86=${__AU_OLD_LIBDIR_x86}
 	export ABI=${__AU_OLD_ABI}
 	export ARCH=${__AU_OLD_ARCH}
+	if [[ ${CC} == *"clang"* ]]; then
+		export CC=${__AU_OLD_CC}
+		export CXX=${__AU_OLD_CXX}
+	fi
 }
