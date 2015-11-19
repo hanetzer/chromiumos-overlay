@@ -343,6 +343,7 @@ src_compile_depthcharge() {
 	fi
 
 	common+=( --cbfs-files "${froot}/cbfs" )
+	serial+=( --gbb-flags "+enable-serial" )
 
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
