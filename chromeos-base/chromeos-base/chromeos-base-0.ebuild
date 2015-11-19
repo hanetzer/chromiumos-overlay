@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="chromeless_tty cros_embedded cros_host pam vtconsole"
+IUSE="ac_only chromeless_tty cros_embedded cros_host pam vtconsole"
 
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
@@ -107,8 +107,14 @@ pkg_preinst() {
 
 src_install() {
 	insinto /etc
-	doins "${FILESDIR}"/sysctl.conf
 	doins "${FILESDIR}"/issue
+
+	insinto /etc/sysctl.d
+	doins "${FILESDIR}"/00-sysctl.conf
+
+	if use ac_only ; then
+		doins "${FILESDIR}"/10-ac-only.conf
+	fi
 
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh
