@@ -2,19 +2,19 @@ use the host python when running the h2py code, and have that search sysroot
 
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -431,10 +431,10 @@
+@@ -1082,10 +1082,10 @@
  $(srcdir)/Lib/$(PLATDIR):
  	mkdir $(srcdir)/Lib/$(PLATDIR)
  	cp $(srcdir)/Lib/plat-generic/regen $(srcdir)/Lib/$(PLATDIR)/regen
 -	export PATH; PATH="`pwd`:$$PATH"; \
 +	export INCLUDE="$(SYSROOT)$(INCLUDEDIR)"; \
- 	export PYTHONPATH; PYTHONPATH="`pwd`/Lib"; \
+ 	export PYTHONPATH; PYTHONPATH="$(srcdir)/Lib:$(abs_builddir)/`cat pybuilddir.txt`"; \
  	export DYLD_FRAMEWORK_PATH; DYLD_FRAMEWORK_PATH="`pwd`"; \
 -	export EXE; EXE="$(BUILDEXE)"; \
 +	export HOSTPYTHON="`realpath $(HOSTPYTHON)`"; \
- 	cd $(srcdir)/Lib/$(PLATDIR); $(RUNSHARED) ./regen
- 
- python-config: $(srcdir)/Misc/python-config.in
+ 	if [ -n "$(MULTIARCH)" ]; then export MULTIARCH; MULTIARCH=$(MULTIARCH); fi; \
+ 	export PYTHON_FOR_BUILD; \
+ 	if [ "$(build)" = "$(host)" ]; then \
 --- a/Tools/scripts/h2py.py
 +++ b/Tools/scripts/h2py.py
 @@ -60,6 +60,7 @@ except KeyError:
