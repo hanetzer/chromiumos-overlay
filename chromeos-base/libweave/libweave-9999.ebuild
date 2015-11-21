@@ -32,8 +32,8 @@ DEPEND="
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	cp -al "${s}"/platform2/libweave/libweave.gyp "${s}"/weave/libweave/libweave/
-	S="${s}/weave/libweave/libweave"
+	cp -al "${s}"/platform2/libweave/libweave.gyp "${s}"/weave/libweave/
+	S="${s}/weave/libweave/"
 }
 
 src_install() {
@@ -42,7 +42,7 @@ src_install() {
 	# Install libraries.
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
-		../../../platform2/libweave/preinstall.sh "${OUT}" "${v}"
+		../../platform2/libweave/preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/libweave-"${v}".so
 		doins "${OUT}"/lib/libweave-*"${v}".pc
 		dolib.a "${OUT}"/libweave-test-"${v}".a
