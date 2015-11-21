@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("ecb08355b44f255feb0bdaa0d19ab2af56c0df4b" "35fb87b830270adaf3b24b18cb43db8debb62bd8")
-CROS_WORKON_TREE=("8f3c9c08f382897a89b9dcc65e807c9a9e1ed05b" "62157f29289248104185d26f244e2b1c3b51ab55")
+CROS_WORKON_COMMIT=("d16b14fd41c8070b58f95f85c2f3ef4bfbff9f85" "4bbb8ff94abf5db26396db9fac5c1df2c998a54a")
+CROS_WORKON_TREE=("2ce7af79d008200663b8ad433a9bfcb52bd1e1a9" "f9e10ea4218ad59cfa7ba41fc35e23289ff0a115")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
@@ -34,8 +34,8 @@ DEPEND="
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	cp -al "${s}"/platform2/libweave/libweave.gyp "${s}"/weave/libweave/libweave/
-	S="${s}/weave/libweave/libweave"
+	cp -al "${s}"/platform2/libweave/libweave.gyp "${s}"/weave/libweave/
+	S="${s}/weave/libweave/"
 }
 
 src_install() {
@@ -44,7 +44,7 @@ src_install() {
 	# Install libraries.
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
-		../../../platform2/libweave/preinstall.sh "${OUT}" "${v}"
+		../../platform2/libweave/preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/libweave-"${v}".so
 		doins "${OUT}"/lib/libweave-*"${v}".pc
 		dolib.a "${OUT}"/libweave-test-"${v}".a
