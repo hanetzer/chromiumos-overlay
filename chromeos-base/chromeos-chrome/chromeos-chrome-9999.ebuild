@@ -1029,6 +1029,12 @@ install_telemetry_dep_resources() {
 			content/test/data/gpu \
 			content/test/data/media \
 			content/test/gpu
+		# For crosperf, which uses some tests only available on internal builds.
+		if use chrome_internal; then
+			install_test_resources "${test_dir}" \
+				data/page_cycler/morejs \
+				data/page_cycler/moz
+		fi
 	fi
 
 	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
