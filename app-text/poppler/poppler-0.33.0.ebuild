@@ -96,6 +96,16 @@ src_configure() {
 		mycmakeargs+=(-DENABLE_CMS=)
 	fi
 
+	# cmake cannot figure out that our cross compilers are based on gcc,
+	# which prevents it from setting correct shared library build options.
+	# So we need to help it out here.
+	mycmakeargs+=(-DCMAKE_C_COMPILER_ID=GNU)
+
+	# cmake looks for freetype using the FindFreetype.cmake module, which
+	# does not call pkg-config.  Setting FREETYPE_DIR to /build/$board/usr
+	# helps FindFreetype.cmake find the right cross-build dependencies.
+	export FREETYPE_DIR="/$($(tc-getPKG_CONFIG) --cflags-only-I freetype2 | cut -d/ -f 2-4)"
+
 	cmake-utils_src_configure
 }
 
