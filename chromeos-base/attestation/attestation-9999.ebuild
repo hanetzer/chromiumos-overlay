@@ -4,10 +4,10 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/attestation")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/attestation")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/attestation")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/tpm")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 
 PLATFORM_SUBDIR="attestation"
@@ -44,7 +44,7 @@ pkg_preinst() {
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	S="${s}/aosp/system/attestation"
+	S="${s}/aosp/system/tpm/attestation"
 }
 
 src_install() {
