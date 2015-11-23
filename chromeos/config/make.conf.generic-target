@@ -69,7 +69,7 @@ MARCH_TUNE=""
 
 # Allow a board to override or define additional settings.
 source make.conf.board
-CFLAGS="${CFLAGS} -O2 -pipe ${MARCH_TUNE} -g ${CXXEXCEPTIONS_FLAGS}"
+CFLAGS="${CFLAGS} -O2 -pipe ${MARCH_TUNE} -g ${CXXEXCEPTIONS_FLAGS} -clang-syntax"
 CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 
 # Allow the user to override or define additional settings.
