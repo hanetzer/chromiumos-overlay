@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 # libvorbis cannot be built from clang. See crosbug.com/534997
+# upstream bug https://llvm.org/bugs/show_bug.cgi?id=25615
 cros_pre_src_prepare_use_gcc() {
 	cros_use_gcc
+	filter_clang_syntax
 }
