@@ -92,6 +92,7 @@ IUSE_TESTS=(
 	+tests_policy_ImagesAllowedForUrls
 	+tests_policy_ImagesBlockedForUrls
 	+tests_policy_JavaScriptAllowedForUrls
+	+tests_policy_JavaScriptBlockedForUrls
 	+tests_policy_RestoreOnStartupURLs
 	+tests_policy_URLBlacklist
 	+tests_power_AudioDetector
