@@ -31,7 +31,6 @@ IUSE="
 	afdo_use
 	+accessibility
 	app_shell
-	arc
 	asan
 	+build_tests
 	+chrome_debug
@@ -286,7 +285,6 @@ set_build_defines() {
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 		"use_system_minigbm=1"
-		"enable_arc=$(use10 arc)"
 
 		# Clang features.
 		asan=$(use10 asan)
