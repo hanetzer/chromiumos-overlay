@@ -45,7 +45,7 @@ index 0c9eb44..8b5ac2b 100644
      RETRIEVE_EGL_SYMBOL(eglSwapBuffers);
  
 +#define OPTIONAL_EGL_SYMBOL(function)                                  \
-+    self->function = self->eglGetProcAddress(#function);
++    self->function = (void*)self->eglGetProcAddress(#function);
 +
 +    OPTIONAL_EGL_SYMBOL(eglCreateImageKHR);
 +    OPTIONAL_EGL_SYMBOL(eglDestroyImageKHR);
