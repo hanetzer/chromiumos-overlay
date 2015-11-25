@@ -42,8 +42,8 @@ RDEPEND="
 	net-misc/dhcpcd
 	dhcpv6? ( net-misc/dhcpcd[ipv6] )
 	vpn? ( net-misc/openvpn )
-	wifi? ( net-wireless/wpa_supplicant[dbus] )
-	wired_8021x? ( net-wireless/wpa_supplicant[dbus] )
+	wifi? ( =net-wireless/wpa_supplicant-2.3[dbus] )
+	wired_8021x? ( =net-wireless/wpa_supplicant-2.3[dbus] )
 	sys-apps/rootdev
 	cellular? ( virtual/modemmanager )
 "
