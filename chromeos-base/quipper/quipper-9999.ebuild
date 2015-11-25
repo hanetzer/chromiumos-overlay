@@ -46,6 +46,16 @@ src_unpack() {
 	popd >/dev/null
 }
 
+src_compile() {
+	# ARM tests run on qemu which is much slower. Exclude some large test
+	# data files for non-x86 boards.
+	if use x86 || use amd64 ; then
+		append-cppflags -DTEST_LARGE_PERF_DATA
+	fi
+
+	platform_src_compile
+}
+
 src_install() {
 	dobin "${OUT}"/quipper
 }
