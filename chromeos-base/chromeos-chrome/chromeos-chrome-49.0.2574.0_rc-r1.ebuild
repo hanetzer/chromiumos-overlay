@@ -31,6 +31,7 @@ IUSE="
 	afdo_use
 	+accessibility
 	app_shell
+	arc
 	asan
 	+build_tests
 	+chrome_debug
@@ -128,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-49.0.2567.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-49.0.2567.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-49.0.2567.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-49.0.2574.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-49.0.2574.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-49.0.2574.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -285,6 +286,7 @@ set_build_defines() {
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 		"use_system_minigbm=1"
+		"enable_arc=$(use10 arc)"
 
 		# Clang features.
 		asan=$(use10 asan)
@@ -392,6 +394,8 @@ set_build_defines() {
 		# The chrome build system will add -m32 for 32bit arches, and
 		# clang defaults to 64bit because our cros_sdk is 64bit default.
 		export CC="clang" CXX="clang++"
+	else
+		cros_use_gcc
 	fi
 
 	use component_build && BUILD_DEFINES+=( component=shared_library )
@@ -1025,6 +1029,12 @@ install_telemetry_dep_resources() {
 			content/test/data/gpu \
 			content/test/data/media \
 			content/test/gpu
+		# For crosperf, which uses some tests only available on internal builds.
+		if use chrome_internal; then
+			install_test_resources "${test_dir}" \
+				data/page_cycler/morejs \
+				data/page_cycler/moz
+		fi
 	fi
 
 	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
