@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python2_{6,7} )
 inherit cros-workon distutils-r1 toolchain-funcs multilib udev
 
 DESCRIPTION="Software to communicate with servo/miniservo debug boards"
-HOMEPAGE=""
+HOMEPAGE="https://www.chromium.org/chromium-os/servo"
 
 LICENSE="BSD-Google"
 SLOT="0"

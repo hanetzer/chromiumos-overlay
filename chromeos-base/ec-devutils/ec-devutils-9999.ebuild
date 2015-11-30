@@ -8,7 +8,7 @@ CROS_WORKON_LOCALNAME="ec"
 inherit cros-workon
 
 DESCRIPTION="Host development utilities for Chromium OS EC"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
 LICENSE="BSD-Google"
 SLOT="0"

@@ -9,7 +9,7 @@ CROS_WORKON_LOCALNAME="ec"
 inherit toolchain-funcs cros-ec-board cros-workon
 
 DESCRIPTION="Embedded Controller firmware code"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 SRC_URI=""
 
 LICENSE="BSD-Google"
