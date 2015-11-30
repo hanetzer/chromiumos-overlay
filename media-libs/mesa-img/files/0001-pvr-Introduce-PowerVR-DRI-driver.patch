@@ -1,7 +1,65 @@
-diff -Naur a/configure.ac b/configure.ac
---- a/configure.ac	2015-08-11 15:34:31.000000000 +0000
-+++ b/configure.ac	2015-09-08 17:22:29.996855282 +0000
-@@ -70,6 +70,7 @@
+From 02e6d70c83a44d59c985395af3260a275c46e779 Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Mon, 30 Nov 2015 10:46:46 +0000
+Subject: [PATCH] pvr: Introduce PowerVR DRI driver.
+
+Change-Id: Icc6e3f1117ad8dbfee305dbbec33b2ef152166e4
+---
+ configure.ac                                       |    8 +
+ src/mesa/drivers/dri/Makefile.am                   |    6 +
+ src/mesa/drivers/dri/pvr/Makefile.am               |   24 +
+ src/mesa/drivers/dri/pvr/Makefile.sources          |   13 +
+ src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h | 1130 +++++++++++++++
+ .../drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h   |  364 +++++
+ .../drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h   |  758 ++++++++++
+ src/mesa/drivers/dri/pvr/imgpixfmts.h              |   67 +
+ src/mesa/drivers/dri/pvr/imgyuv.h                  |   58 +
+ src/mesa/drivers/dri/pvr/mesa_context.c            |  217 +++
+ src/mesa/drivers/dri/pvr/pvr_dri_support.h         |  345 +++++
+ src/mesa/drivers/dri/pvr/pvr_mesa_version.h        |   39 +
+ src/mesa/drivers/dri/pvr/pvr_object_cache.c        |  311 ++++
+ src/mesa/drivers/dri/pvr/pvr_object_cache.h        |  137 ++
+ src/mesa/drivers/dri/pvr/pvrdrawable.c             |  680 +++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.c                  | 1502 ++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.h                  |  274 ++++
+ src/mesa/drivers/dri/pvr/pvrext.c                  |  287 ++++
+ src/mesa/drivers/dri/pvr/pvrimage.c                | 1068 ++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.h                |   96 ++
+ src/mesa/drivers/dri/pvr/pvrmesa.h                 |   43 +
+ src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
+ src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  183 +++
+ src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
+ src/mesa/drivers/dri/pvr/pvrutil.c                 |  519 +++++++
+ 25 files changed, 8251 insertions(+)
+ create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
+ create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
+ create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
+ create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
+ create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
+ create mode 100644 src/mesa/drivers/dri/pvr/imgpixfmts.h
+ create mode 100644 src/mesa/drivers/dri/pvr/imgyuv.h
+ create mode 100644 src/mesa/drivers/dri/pvr/mesa_context.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvr_dri_support.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvr_mesa_version.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrdrawable.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrdri.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrdri.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrext.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrimage.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrimage.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrmesa.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrqueue.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrsyncobj.c
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrsyncobj.h
+ create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
+
+diff --git a/configure.ac b/configure.ac
+index 4ed4b74..3968619 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -69,6 +69,7 @@ dnl Versions for external dependencies
  LIBDRM_REQUIRED=2.4.38
  LIBDRM_RADEON_REQUIRED=2.4.56
  LIBDRM_INTEL_REQUIRED=2.4.60
@@ -9,7 +67,7 @@ diff -Naur a/configure.ac b/configure.ac
  LIBDRM_NVVIEUX_REQUIRED=2.4.33
  LIBDRM_NOUVEAU_REQUIRED="2.4.33 libdrm >= 2.4.41"
  LIBDRM_FREEDRENO_REQUIRED=2.4.57
-@@ -1300,6 +1301,11 @@
+@@ -1436,6 +1437,11 @@ if test -n "$with_dri_drivers"; then
              HAVE_R200_DRI=yes;
              PKG_CHECK_MODULES([RADEON], [libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
              ;;
@@ -21,7 +79,7 @@ diff -Naur a/configure.ac b/configure.ac
          xswrast)
              HAVE_SWRAST_DRI=yes;
              ;;
-@@ -2130,6 +2136,7 @@
+@@ -2279,6 +2285,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
@@ -29,7 +87,7 @@ diff -Naur a/configure.ac b/configure.ac
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
  AM_CONDITIONAL(NEED_RADEON_DRM_WINSYS, test "x$HAVE_GALLIUM_R300" = xyes -o \
-@@ -2289,6 +2296,7 @@
+@@ -2437,6 +2444,7 @@ AC_CONFIG_FILES([Makefile
  		src/mesa/drivers/dri/nouveau/Makefile
  		src/mesa/drivers/dri/r200/Makefile
  		src/mesa/drivers/dri/radeon/Makefile
@@ -37,10 +95,11 @@ diff -Naur a/configure.ac b/configure.ac
  		src/mesa/drivers/dri/swrast/Makefile
  		src/mesa/drivers/osmesa/Makefile
  		src/mesa/drivers/osmesa/osmesa.pc
-diff -Naur a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
---- a/src/mesa/drivers/dri/Makefile.am	2015-08-07 17:36:03.000000000 +0000
-+++ b/src/mesa/drivers/dri/Makefile.am	2015-09-08 17:22:29.996855282 +0000
-@@ -36,6 +36,12 @@
+diff --git a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
+index fa1de10..fd7d9c0 100644
+--- a/src/mesa/drivers/dri/Makefile.am
++++ b/src/mesa/drivers/dri/Makefile.am
+@@ -36,6 +36,12 @@ MEGADRIVERS_DEPS += radeon/libradeon_dri.la
  MEGADRIVERS += radeon_dri.so
  endif
  
@@ -53,9 +112,11 @@ diff -Naur a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
  if HAVE_SWRAST_DRI
  SUBDIRS += swrast
  MEGADRIVERS_DEPS += swrast/libswrast_dri.la
-diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
---- a/src/mesa/drivers/dri/pvr/Makefile.am	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/Makefile.am	2015-09-08 17:22:30.109884884 +0000
+diff --git a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
+new file mode 100644
+index 0000000..c3004da
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/Makefile.am
 @@ -0,0 +1,24 @@
 +
 +include Makefile.sources
@@ -81,9 +142,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Mak
 +libpvr_dri_la_SOURCES = $(pvr_FILES)
 +libpvr_dri_la_LIBADD = $(INTEL_LIBS)
 +
-diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pvr/Makefile.sources
---- a/src/mesa/drivers/dri/pvr/Makefile.sources	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/Makefile.sources	2015-09-08 17:22:30.113885184 +0000
+diff --git a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pvr/Makefile.sources
+new file mode 100644
+index 0000000..2458b38
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/Makefile.sources
 @@ -0,0 +1,13 @@
 +pvr_INCLUDES = \
 +	$(MESA_TOP)/src \
@@ -98,9 +161,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pv
 + pvrsyncobj.c \
 + pvrutil.c \
 + pvr_object_cache.c
-diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	2015-09-08 17:22:30.104884385 +0000
+diff --git a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
+new file mode 100644
+index 0000000..1949521
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
 @@ -0,0 +1,1130 @@
 +#ifndef __g_pvrogl_set_mesa_dispatch_h_
 +#define __g_pvrogl_set_mesa_dispatch_h_
@@ -1232,9 +1297,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h b/src/mesa/drive
 +}
 +
 +#endif /* __g_pvrogl_set_mesa_dispatch_h_ */
-diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	2015-09-08 17:22:30.114886184 +0000
+diff --git a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
+new file mode 100644
+index 0000000..31abe40
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
 @@ -0,0 +1,364 @@
 +#ifndef __g_pvrogles1_set_mesa_dispatch_h_
 +#define __g_pvrogles1_set_mesa_dispatch_h_
@@ -1600,9 +1667,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h b/src/mesa/dr
 +}
 +
 +#endif /* __g_pvrogles1_set_mesa_dispatch_h_ */
-diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	2015-09-08 17:22:30.107885085 +0000
+diff --git a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
+new file mode 100644
+index 0000000..4f24ec0
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
 @@ -0,0 +1,758 @@
 +#ifndef __g_pvrogles2_set_mesa_dispatch_h_
 +#define __g_pvrogles2_set_mesa_dispatch_h_
@@ -2362,9 +2431,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/dr
 +}
 +
 +#endif /* __g_pvrogles2_set_mesa_dispatch_h_ */
-diff -Naur a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/imgpixfmts.h
---- a/src/mesa/drivers/dri/pvr/imgpixfmts.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/imgpixfmts.h	2015-09-08 17:22:30.100885383 +0000
+diff --git a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/imgpixfmts.h
+new file mode 100644
+index 0000000..ddc7acb
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/imgpixfmts.h
 @@ -0,0 +1,67 @@
 +/*************************************************************************/ /*!
 +@File           imgpixfmts_km.h
@@ -2433,9 +2504,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/im
 +}	IMG_PIXFMT;
 +
 +#endif /* _IMGPIXFMTS_KM_H_ */
-diff -Naur a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv.h
---- a/src/mesa/drivers/dri/pvr/imgyuv.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/imgyuv.h	2015-09-08 17:22:30.100885383 +0000
+diff --git a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv.h
+new file mode 100644
+index 0000000..a91ee10
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/imgyuv.h
 @@ -0,0 +1,58 @@
 +/*************************************************************************/ /*!
 +@File
@@ -2495,9 +2568,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv
 +
 +
 +#endif /* _IMGYUV_H_ */
-diff -Naur a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
---- a/src/mesa/drivers/dri/pvr/mesa_context.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/mesa_context.c	2015-09-08 17:22:30.101885281 +0000
+diff --git a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
+new file mode 100644
+index 0000000..a6e9625
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/mesa_context.c
 @@ -0,0 +1,217 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -2716,9 +2791,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/
 +
 +	_glapi_set_dispatch((struct _glapi_table *)psTable);
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
---- a/src/mesa/drivers/dri/pvr/pvr_dri_support.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h	2015-09-08 17:22:30.110884683 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+new file mode 100644
+index 0000000..46df52b
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
 @@ -0,0 +1,345 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -3065,9 +3142,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/p
 +void PVRDRIRegisterCallbacks(PVRDRICallbacks *callbacks);
 +
 +#endif /* defined(__PVRDRIIFCE_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
---- a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	2015-09-08 17:22:30.100885383 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
+new file mode 100644
+index 0000000..4da617e
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
 @@ -0,0 +1,39 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -3108,9 +3187,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/
 +#endif
 +
 +#endif /* defined(__PVR_MESA_VERSION_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
---- a/src/mesa/drivers/dri/pvr/pvr_object_cache.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c	2015-09-08 17:22:30.102885480 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
+new file mode 100644
+index 0000000..0ce43e3
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
 @@ -0,0 +1,311 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -3423,9 +3504,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/
 +
 +	return NULL;
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
---- a/src/mesa/drivers/dri/pvr/pvr_object_cache.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.h	2015-09-08 17:22:30.105885686 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
+new file mode 100644
+index 0000000..6aaa361
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
 @@ -0,0 +1,137 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -3564,9 +3647,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/
 +IMG_INTERNAL void PVRObjectCacheDestroy(PVRObjectCache hObjectCache);
 +
 +#endif /* defined(__PVR_OBJECT_CACHE_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
---- a/src/mesa/drivers/dri/pvr/pvrdrawable.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c	2015-09-08 17:22:30.111885382 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+new file mode 100644
+index 0000000..cbbca11
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
 @@ -0,0 +1,680 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -4248,9 +4333,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/p
 +
 +	return true;
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
---- a/src/mesa/drivers/dri/pvr/pvrdri.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdri.c	2015-09-08 17:22:30.109884884 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
+new file mode 100644
+index 0000000..fb66e50
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrdri.c
 @@ -0,0 +1,1502 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -5754,9 +5841,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri
 +{
 +	return gpsPVRScreen;
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
---- a/src/mesa/drivers/dri/pvr/pvrdri.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdri.h	2015-09-08 17:22:30.102885480 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
+new file mode 100644
+index 0000000..e55893c
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrdri.h
 @@ -0,0 +1,274 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -6032,9 +6121,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri
 +void PVRDRIUnrefImage(__DRIimage *image);
 +
 +#endif /* defined(__PVRDRI2_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
---- a/src/mesa/drivers/dri/pvr/pvrext.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrext.c	2015-09-08 17:22:30.113885184 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
+new file mode 100644
+index 0000000..2f53ca1
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrext.c
 @@ -0,0 +1,287 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -6323,9 +6414,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext
 +#endif
 +	{ .name = NULL, .version = 0 },
 +};
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
---- a/src/mesa/drivers/dri/pvr/pvrimage.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrimage.c	2015-09-08 17:22:30.112886483 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
+new file mode 100644
+index 0000000..2cac663
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrimage.c
 @@ -0,0 +1,1068 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7395,9 +7488,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +	      hEGLImage,
 +	      psPVRScreen->psDRIScreen->loaderPrivate);
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvrimage.h
---- a/src/mesa/drivers/dri/pvr/pvrimage.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrimage.h	2015-09-08 17:22:30.100885383 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvrimage.h
+new file mode 100644
+index 0000000..773ccb4
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrimage.h
 @@ -0,0 +1,96 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7495,9 +7590,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvri
 +                                         void *loaderPrivate);
 +
 +#endif /* !defined(__PVRIMAGE_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrmesa.h
---- a/src/mesa/drivers/dri/pvr/pvrmesa.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrmesa.h	2015-09-08 17:22:30.109884884 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrmesa.h
+new file mode 100644
+index 0000000..f01704b
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrmesa.h
 @@ -0,0 +1,43 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7542,9 +7639,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrme
 +void pvrdri_set_dispatch_table(PVRDRIContext *psPVRContext);
 +
 +#endif /* !defined(__PVRMESA_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrqueue.h b/src/mesa/drivers/dri/pvr/pvrqueue.h
---- a/src/mesa/drivers/dri/pvr/pvrqueue.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrqueue.h	2015-09-08 17:22:30.109884884 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrqueue.h b/src/mesa/drivers/dri/pvr/pvrqueue.h
+new file mode 100644
+index 0000000..3fdc0a8
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrqueue.h
 @@ -0,0 +1,74 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7620,9 +7719,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrqueue.h b/src/mesa/drivers/dri/pvr/pvrq
 +}
 +
 +#endif /* defined(__PVRQUEUE_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
---- a/src/mesa/drivers/dri/pvr/pvrsyncobj.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c	2015-09-08 17:22:30.101885281 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
+new file mode 100644
+index 0000000..87cbd0a
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
 @@ -0,0 +1,183 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7807,9 +7908,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pv
 +}
 +
 +#endif /* defined(__DRI2_FENCE) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
---- a/src/mesa/drivers/dri/pvr/pvrsyncobj.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.h	2015-09-08 17:22:30.113885184 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
+new file mode 100644
+index 0000000..a850170
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
 @@ -0,0 +1,48 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -7859,9 +7962,11 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pv
 +
 +#endif /* defined(__DRI2_FENCE) */
 +#endif /* !defined(__PVRSYNCOBJ_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
---- a/src/mesa/drivers/dri/pvr/pvrutil.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrutil.c	2015-09-08 17:22:30.105885686 +0000
+diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
+new file mode 100644
+index 0000000..b4afd4f
+--- /dev/null
++++ b/src/mesa/drivers/dri/pvr/pvrutil.c
 @@ -0,0 +1,519 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
@@ -8382,3 +8487,6 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrut
 +			return IMG_CHROMA_INTERP_UNDEFINED;
 +	}
 +}
+-- 
+1.9.1
+
