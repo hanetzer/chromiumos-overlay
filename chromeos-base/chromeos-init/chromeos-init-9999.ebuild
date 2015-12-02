@@ -78,7 +78,7 @@ src_install() {
 	fi
 
 	insinto /usr/share/cros
-	doins factory_utils.sh
+	doins *_utils.sh
 
 	into /	# We want /sbin, not /usr/sbin, etc.
 
