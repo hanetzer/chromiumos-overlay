@@ -14,7 +14,7 @@ IUSE="bluetooth bootchart bootimage buffet +cellular coreboot
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	feedback +fonts gobi mtd +network_time nfc pam peerd
 	+power_management +profile +readahead scanner +shill +syslog touchview
-	+tpm +vpn watchdog wifi_bootstrapping
+	+tpm +trim_supported +vpn watchdog wifi_bootstrapping
 	wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
@@ -119,6 +119,7 @@ CROS_COMMON_RDEPEND+="
 	wifi_bootstrapping? ( chromeos-base/buffet )
 	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
+	trim_supported? ( chromeos-base/chromeos-trim )
 	network_time? ( net-misc/tlsdate )
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
 	readahead? ( sys-apps/ureadahead )
