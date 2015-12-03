@@ -19,6 +19,7 @@ DEPEND="sys-apps/debianutils
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs[netboot_ramfs] )
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
+	builtin_fw_t210_bpmp? ( sys-kernel/tegra_bpmp-t210 )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 4.2 )
@@ -501,6 +502,7 @@ FIRMWARE_BINARIES=(
 	builtin_fw_t124_xusb
 	builtin_fw_t210_xusb
 	builtin_fw_t210_nouveau
+	builtin_fw_t210_bpmp
 )
 
 builtin_fw_t124_xusb_desc="Tegra124 XHCI controller"
@@ -530,6 +532,11 @@ builtin_fw_t210_nouveau_files=(
 	nouveau/nv12b_sw_nonctx
 	nouveau/pmu_bl.bin
 	nouveau/pmu_sig.bin
+)
+
+builtin_fw_t210_bpmp_desc="Tegra210 BPMP"
+builtin_fw_t210_bpmp_files=(
+	nvidia/tegra210/bpmp.bin
 )
 
 extra_fw_config="
