@@ -39,6 +39,8 @@ pkg_preinst() {
 	# Create user and group for attestation.
 	enewuser "attestation"
 	enewgroup "attestation"
+	# Create group for /mnt/stateful_partition/unencrypted/preserve.
+	enewgroup "preserve"
 }
 
 src_unpack() {
