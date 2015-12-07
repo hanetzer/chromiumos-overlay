@@ -45,7 +45,6 @@ src_prepare()
 	epatch "${FILESDIR}"/patches/${P}-ChromiumOS-DHCPv6-support.patch
 	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Zero-Length-Embedded-Option.patch
 	epatch "${FILESDIR}"/patches/${P}-DHCPv6-Fix-prefix-delegation-lease-file-name.patch
-	epatch "${FILESDIR}"/patches/${P}-ChromiumOS-DHCPv6-remove-ia_na-request.patch
 	epatch "${FILESDIR}"/patches/${P}-Ensure-Gateway-Probe-Is-Broadcast.patch
 }
 
