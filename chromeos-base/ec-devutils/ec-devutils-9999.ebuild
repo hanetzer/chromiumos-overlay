@@ -4,8 +4,9 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
+PYTHON_COMPAT=( python2_7 )
 
-inherit cros-workon
+inherit cros-workon distutils-r1
 
 DESCRIPTION="Host development utilities for Chromium OS EC"
 HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
@@ -16,7 +17,7 @@ KEYWORDS="~*"
 ISUE=""
 
 RDEPEND="sys-apps/flashrom"
-DEPEND=""
+DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
 
 set_board() {
 	# No need to be board specific, no tools below build code that is
@@ -26,6 +27,7 @@ set_board() {
 
 src_configure() {
 	cros-workon_src_configure
+	distutils-r1_src_configure
 }
 
 src_compile() {
@@ -40,6 +42,7 @@ src_compile() {
 	export HOSTCC="${CC}"
 	set_board
 	emake utils-host
+	distutils-r1_src_compile
 }
 
 src_install() {
@@ -49,4 +52,6 @@ src_install() {
 	dobin "util/flash_ec"
 	insinto /usr/bin/lib
 	doins util/openocd/*
+
+	distutils-r1_src_install
 }
