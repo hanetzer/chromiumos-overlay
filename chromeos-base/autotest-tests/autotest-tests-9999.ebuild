@@ -128,6 +128,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_VideoDecodeCapable
 	+tests_hardware_VideoOutSemiAuto
 	+tests_kernel_AsyncDriverProbe
+	+tests_kernel_FirmwareRequest
 	+tests_kernel_Bootcache
 	+tests_kernel_ConfigVerify
 	ppp? ( +tests_kernel_ConfigVerifyPPP )
