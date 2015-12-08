@@ -101,6 +101,10 @@ print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = clang_flags + list(flags_to_add)
 gcc_flags += list(flags_to_add)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
+if '-fstack-check' in myargs:
+  print('Option "-fstack-check" is not supported. See crbug.com/485492',
+        file=sys.stderr)
+  sys.exit(1)
 
 # We will start to enable ASAN for cros-workon packages.
 # For ASAN, if a library is built with ASAN, then all the binaries that use
