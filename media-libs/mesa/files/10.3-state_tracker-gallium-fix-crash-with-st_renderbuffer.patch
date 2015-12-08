@@ -26,8 +26,10 @@ Signed-off-by: James Ausmus <james.ausmus@intel.com>
  src/gallium/drivers/r600/r600_state.c           | 1 +
  src/gallium/drivers/r600/r600_state_common.c    | 4 ++--
  src/gallium/drivers/radeon/r600_texture.c       | 1 +
+ src/gallium/drivers/softpipe/sp_tex_sample.c    | 1 +
+ src/gallium/drivers/softpipe/sp_texture.c       | 1 +
  src/gallium/include/pipe/p_state.h              | 6 ++++++
- 12 files changed, 32 insertions(+), 4 deletions(-)
+ 14 files changed, 34 insertions(+), 4 deletions(-)
 
 diff --git a/src/gallium/auxiliary/util/u_inlines.h b/src/gallium/auxiliary/util/u_inlines.h
 index bb99a02ce49a..3bdf5b0635e4 100644
@@ -215,6 +217,30 @@ index 54696910e43b..7e9c0614b0d3 100644
  	surface->base.format = templ->format;
  	surface->base.width = width;
  	surface->base.height = height;
+diff --git a/src/gallium/drivers/softpipe/sp_tex_sample.c b/src/gallium/drivers/softpipe/sp_tex_sample.c
+index 565fca6..07eb5ff 100644
+--- a/src/gallium/drivers/softpipe/sp_tex_sample.c
++++ b/src/gallium/drivers/softpipe/sp_tex_sample.c
+@@ -3306,6 +3306,7 @@ softpipe_create_sampler_view(struct pipe_context *pipe,
+       view->texture = NULL;
+       pipe_resource_reference(&view->texture, resource);
+       view->context = pipe;
++      view->sampler_view_destroy = pipe->sampler_view_destroy;
+ 
+ #ifdef DEBUG
+      /*
+diff --git a/src/gallium/drivers/softpipe/sp_texture.c b/src/gallium/drivers/softpipe/sp_texture.c
+index e1ea5df..d192344 100644
+--- a/src/gallium/drivers/softpipe/sp_texture.c
++++ b/src/gallium/drivers/softpipe/sp_texture.c
+@@ -287,6 +287,7 @@ softpipe_create_surface(struct pipe_context *pipe,
+       pipe_resource_reference(&ps->texture, pt);
+       ps->context = pipe;
+       ps->format = surf_tmpl->format;
++      ps->surface_destroy = pipe->surface_destroy;
+       if (pt->target != PIPE_BUFFER) {
+          assert(surf_tmpl->u.tex.level <= pt->last_level);
+          ps->width = u_minify(pt->width0, surf_tmpl->u.tex.level);
 diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
 index 266ebbafe36b..6294fcaf24f0 100644
 --- a/src/gallium/include/pipe/p_state.h
