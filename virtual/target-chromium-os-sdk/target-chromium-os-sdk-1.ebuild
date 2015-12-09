@@ -394,6 +394,7 @@ RDEPEND="${RDEPEND}
 	dev-python/jsonrpclib
 	dev-python/paramiko
 	dev-python/pycrypto
+	dev-python/python-gnupg
 	dev-python/sphinx
 	!dev-python/twisted
 	dev-python/twisted-core
