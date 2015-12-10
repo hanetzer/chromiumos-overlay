@@ -147,6 +147,7 @@ ALL_BOARDS=(
 	nyan_freon
 	nyan_kitty
 	oak
+	oak-cheets
 	optimus
 	orco
 	panda
