@@ -88,7 +88,7 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	!arm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm )
 "
 
 S="${WORKDIR}/${MY_P}"
@@ -208,7 +208,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm llvm-gallium) \
+		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
