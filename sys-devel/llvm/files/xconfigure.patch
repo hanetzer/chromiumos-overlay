@@ -27,8 +27,26 @@ diff -aur llvm-3.1.src.orig/configure llvm-3.1.src/configure
  echo "$as_me: error: no acceptable cc found in \$PATH" >&2;}
     { (exit 1); exit 1; }; }
 -  ac_build_link='${BUILD_CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
-+  ac_build_link='${BUILD_CC-cc} -o conftest $HOST_CFLAGS $HOST_CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
++  ac_build_link='${BUILD_CC-cc} -o conftest $HOST_CFLAGS $HOST_CPPFLAGS $HOST_LDFLAGS conftest.$ac_ext $LIBS 1>&5'
    rm -f conftest*
    echo 'int main () { return 0; }' > conftest.$ac_ext
    ac_cv_build_exeext=
-Only in llvm-3.1.src/: configure.orig
+diff -aur llvm-3.1.src.orig/Makefile llvm-3.1.src/Makefile
+--- llvm-3.1.src.orig/Makefile	2015-12-09 17:14:49.149009257 -0800
++++ llvm-3.1.src/Makefile	2015-12-09 17:16:23.557968948 -0800
+@@ -112,6 +112,7 @@
+ 	  cd BuildTools ; \
+ 	  unset CFLAGS ; \
+ 	  unset CXXFLAGS ; \
++	  unset LDFLAGS ; \
+ 	  AR=$(BUILD_AR) ; \
+ 	  AS=$(BUILD_AS) ; \
+ 	  LD=$(BUILD_LD) ; \
+@@ -144,6 +144,7 @@
+ 	  ENABLE_LIBCPP=$(ENABLE_LIBCPP) \
+ 	  CFLAGS= \
+ 	  CXXFLAGS= \
++	  LDFLAGS= \
+ 	) || exit 1;
+ endif
+ 
