@@ -13,7 +13,7 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_SUBDIR="update_engine"
 
-inherit toolchain-funcs cros-debug cros-workon platform
+inherit toolchain-funcs cros-debug cros-workon platform systemd
 
 DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
@@ -22,7 +22,7 @@ SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
+IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management systemd"
 
 COMMON_DEPEND="
 	app-arch/bzip2
@@ -119,9 +119,14 @@ src_install() {
 	insinto /etc
 	doins update_engine.conf
 
-	# Install upstart script
-	insinto /etc/init
-	doins init/update-engine.conf
+	if use systemd; then
+		systemd_dounit "${FILESDIR}"/update-engine.service
+		systemd_enable_service multi-user.target update-engine.service
+	else
+		# Install upstart script
+		insinto /etc/init
+		doins init/update-engine.conf
+	fi
 
 	# Install DBus configuration
 	insinto /etc/dbus-1/system.d
