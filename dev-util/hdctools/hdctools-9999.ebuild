@@ -21,7 +21,8 @@ RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-python/pyserial
 	dev-python/pyusb
 	virtual/libusb:1
-	app-misc/screen"
+	app-misc/screen
+	chromeos-base/ec-devutils"
 DEPEND="${RDEPEND}
 	app-text/htmltidy"
 
