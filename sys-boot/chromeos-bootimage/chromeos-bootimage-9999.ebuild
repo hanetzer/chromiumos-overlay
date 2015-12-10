@@ -354,11 +354,13 @@ src_compile_depthcharge() {
 		${depthcharge_binaries[@]} || \
 	  die "failed to build production image."
 	einfo "Building serial image."
+	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
 		--outdir "out.serial" --output "image.serial.bin" \
 		${depthcharge_binaries[@]} || \
 	  die "failed to build serial image."
 	einfo "Building developer image."
+	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
 		--outdir "out.dev" --output "image.dev.bin" \
 		${dev_binaries[@]} || die "failed to build developer image."
@@ -391,6 +393,7 @@ src_compile_depthcharge() {
 	else
 		netboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
 	fi
+	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 		--force-rw \
 		--coreboot-elf="${netboot_ro}" \
@@ -425,6 +428,7 @@ src_compile_depthcharge() {
 		fi
 
 		einfo "Building fastboot image."
+		COREBOOT_VARIANT=.serial \
 		cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 			--force-rw \
 			--coreboot-elf="${fastboot_ro}" \
