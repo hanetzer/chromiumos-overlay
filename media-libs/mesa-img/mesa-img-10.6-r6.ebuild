@@ -1,1 +1,0 @@
-mesa-img-10.6.ebuild

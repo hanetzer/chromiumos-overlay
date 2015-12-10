@@ -1,7 +1,7 @@
-From e78fdcd8884bbf78f89cbf2076571c1af3e286c6 Mon Sep 17 00:00:00 2001
+From 16ae64234032037cb19e072ab9194dd37d93df16 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Thu, 19 Mar 2015 14:07:23 +0000
-Subject: [PATCH 06/52] dri: Add MT12 and MT21 DRI fourcc
+Subject: [PATCH 06/40] dri: Add MT12 and MT21 DRI fourcc
 
 Add MT12 and MT21 DRI fourcc that corresponds to DRM_FORMAT_MT12 and
 DRM_FORMAT_MT21 respectively.
@@ -11,10 +11,10 @@ DRM_FORMAT_MT21 respectively.
  2 files changed, 4 insertions(+)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index 0e5aa1f..ba50c7c 100644
+index fd3e467..14643e8 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
-@@ -1125,6 +1125,8 @@ struct __DRIdri2ExtensionRec {
+@@ -1121,6 +1121,8 @@ struct __DRIdri2ExtensionRec {
  #define __DRI_IMAGE_FOURCC_NV12		0x3231564e
  #define __DRI_IMAGE_FOURCC_NV16		0x3631564e
  #define __DRI_IMAGE_FOURCC_YUYV		0x56595559
@@ -24,10 +24,10 @@ index 0e5aa1f..ba50c7c 100644
  
  /**
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index 3837eac..4868c93 100644
+index 10b4342..e4b4590 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -1707,6 +1707,8 @@ dri2_check_dma_buf_format(const _EGLImageAttribs *attrs)
+@@ -1798,6 +1798,8 @@ dri2_check_dma_buf_format(const _EGLImageAttribs *attrs)
     case DRM_FORMAT_NV21:
     case DRM_FORMAT_NV16:
     case DRM_FORMAT_NV61:
@@ -37,5 +37,5 @@ index 3837eac..4868c93 100644
        break;
     case DRM_FORMAT_YUV410:
 -- 
-1.8.5.4.gfdaaaa2
+1.9.1
 

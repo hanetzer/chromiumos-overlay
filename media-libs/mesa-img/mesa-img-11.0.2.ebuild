@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="c2a0600d5b0645533ba442b5ab879b23c2564a4d"
-CROS_WORKON_TREE="1a3cb3ffa016a1e453b5b5c7b6f93ad4050f1e96"
+CROS_WORKON_COMMIT="51e0b06d9916e126060c0d218de1aaa4e5a4ce26"
+CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -124,7 +124,6 @@ src_prepare() {
 	fi
 
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
-	epatch "${FILESDIR}"/10.6-mapi-Adding-missing-string.h-include.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
@@ -141,43 +140,26 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
 	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
-	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-implement-platform_null.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-try-to-use-render-node-if-available.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/10.6-mesa-do-not-use-_glapi_new_nop_table-for-DRI-builds.patch	
-	epatch "${FILESDIR}"/10.6-i965-do-not-round-line-width-when-multisampling-or-a.patch
-	epatch "${FILESDIR}"/10.6-mesa-add-GL_RED-GL_RG-support-for-floating-point-tex.patch
-	epatch "${FILESDIR}"/10.6-mesa-teximage-use-correct-extension-for-accept-stenc.patch
-	epatch "${FILESDIR}"/10.6-i965-Momentarily-pretend-to-support-ARB_texture_sten.patch
-	epatch "${FILESDIR}"/10.6-Revert-i965-Advertise-a-line-width-of-40.0-on-Cherry.patch
+	epatch "${FILESDIR}"/11.0-mesa-Correctly-handle-GL_BGRA_EXT-in-ES3-format_and_.patch
 
 	# IMG patches
 	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
 	epatch "${FILESDIR}"/0006-dri-Add-MT12-and-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
-	epatch "${FILESDIR}"/0012-GL_EXT_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0014-GL_KHR_blend_equation_advanced-entry-points.patch
-	epatch "${FILESDIR}"/0023-GL_KHR_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0037-Add-support-for-various-GLES-extensions.patch
-	epatch "${FILESDIR}"/0038-Add-EGL_IMG_context_priority-EGL-extension.patch
-	epatch "${FILESDIR}"/0047-dri-set-the-__DRI_API_OPENGL-bit-based-on-max-gl-com.patch
-	epatch "${FILESDIR}"/0027-egl-Add-eglQuerySurface-surface-type-check-for-EGL_L.patch
-	epatch "${FILESDIR}"/0028-egl-clamp-size-to-0-in-_eglFlattenArray.patch
-	epatch "${FILESDIR}"/0044-egl-dri-Add-a-bad-access-error-code-to-the-DRI-inter.patch
+	epatch "${FILESDIR}"/0010-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0012-GL_KHR_blend_equation_advanced-entry-points.patch
+	epatch "${FILESDIR}"/0021-GL_KHR_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0031-Add-support-for-various-GLES-extensions.patch
+	epatch "${FILESDIR}"/0032-Add-EGL_IMG_context_priority-EGL-extension.patch
 
-	epatch "${FILESDIR}"/0001-dri_interface-add-an-interface-for-fences.patch
-	epatch "${FILESDIR}"/0002-mesa-add-GL_OES_EGL_sync.patch
-	epatch "${FILESDIR}"/0003-egl-dri2-implement-EGL_KHR_fence_sync.patch
-	epatch "${FILESDIR}"/0004-egl-dri2-implement-EGL_KHR_wait_sync.patch
-	epatch "${FILESDIR}"/0005-egl-dri2-return-the-latest-sync-status-in-eglGetSync.patch
 	epatch "${FILESDIR}"/0006-egl-dri2-don-t-require-a-context-for-ClientWaitSync-v2.patch
 
 	base_src_prepare
@@ -221,7 +203,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
-		$(use egl && echo "--with-egl-platforms=null")
+		$(use egl && echo "--with-egl-platforms=surfaceless")
 }
 
 src_install() {

@@ -1,7 +1,7 @@
-From c42da0dd0088fa99d8c8b27c78cea9e2a6632ae1 Mon Sep 17 00:00:00 2001
+From 82144f9939c8bc10b990f00295c69e87bbc01307 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Mon, 10 Mar 2014 12:27:03 +0000
-Subject: [PATCH 37/37] Add support for various GLES extensions
+Subject: [PATCH 31/40] Add support for various GLES extensions
 
 Add support for:
 	EXT_multisampled_render_to_texture
@@ -9,38 +9,37 @@ Add support for:
 	IMG_multisampled_render_to_texture
 	OES_matrix_palette
 ---
- src/mapi/glapi/gen/es_EXT.xml      | 104 ++++++++++++++++++++++++++++----
+ src/mapi/glapi/gen/es_EXT.xml      | 102 +++++++++++++++++++++++++++++---
  src/mapi/glapi/gen/gl_genexec.py   |   1 +
  src/mesa/Makefile.sources          |   4 +-
  src/mesa/main/es_extension_stubs.c | 118 +++++++++++++++++++++++++++++++++++++
  src/mesa/main/es_extension_stubs.h |  48 +++++++++++++++
- 5 files changed, 263 insertions(+), 12 deletions(-)
+ 5 files changed, 263 insertions(+), 10 deletions(-)
  create mode 100644 src/mesa/main/es_extension_stubs.c
  create mode 100644 src/mesa/main/es_extension_stubs.h
 
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 428b703..9cb832f 100644
+index cddae8c..2f53103 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -307,30 +307,25 @@
+@@ -285,28 +285,25 @@
      <enum name="WEIGHT_ARRAY_BUFFER_BINDING_OES"          value="0x889E"/>
      <enum name="MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES"    value="0x8B9E"/>
  
 -    <function name="CurrentPaletteMatrixOES" alias="CurrentPaletteMatrixARB"
--              static_dispatch="false" exec="skip">
-+    <function name="CurrentPaletteMatrixOES" offset="assign" es1="1.0">
+-	      exec="skip">
++    <function name="CurrentPaletteMatrixOES" es1="1.0">
          <param name="matrixpaletteindex" type="GLuint"/>
      </function>
  
 -    <!-- no offset -->
--    <function name="LoadPaletteFromModelViewMatrixOES" static_dispatch="false"
--              exec="skip">
-+    <function name="LoadPaletteFromModelViewMatrixOES" offset="assign" es1="1.0">
+-    <function name="LoadPaletteFromModelViewMatrixOES" exec="skip">
++    <function name="LoadPaletteFromModelViewMatrixOES" es1="1.0">
      </function>
  
 -    <function name="MatrixIndexPointerOES" alias="MatrixIndexPointerARB"
--              static_dispatch="false" exec="skip">
-+    <function name="MatrixIndexPointerOES" offset="assign" es1="1.0">
+-	      exec="skip">
++    <function name="MatrixIndexPointerOES" es1="1.0">
          <param name="size" type="GLint"/>
          <param name="type" type="GLenum"/>
          <param name="stride" type="GLsizei"/>
@@ -48,9 +47,8 @@ index 428b703..9cb832f 100644
 +        <param name="pointer" type="GLvoid *"/>
      </function>
  
--    <function name="WeightPointerOES" alias="WeightPointerARB"
--              static_dispatch="false" exec="skip">
-+    <function name="WeightPointerOES" offset="assign" es1="1.0">
+-    <function name="WeightPointerOES" alias="WeightPointerARB" exec="skip">
++    <function name="WeightPointerOES" es1="1.0">
          <param name="size" type="GLint"/>
          <param name="type" type="GLenum"/>
          <param name="stride" type="GLsizei"/>
@@ -59,7 +57,7 @@ index 428b703..9cb832f 100644
      </function>
  </category>
  
-@@ -717,6 +712,31 @@
+@@ -672,6 +669,31 @@
      </enum>
  </category>
  
@@ -70,7 +68,7 @@ index 428b703..9cb832f 100644
 +    <enum name="MAX_SAMPLES_IMG"                            value="0x9135"/>
 +    <enum name="TEXTURE_SAMPLES_IMG"                        value="0x9136"/>
 +
-+    <function name="RenderbufferStorageMultisampleIMG" offset="assign" es2="2.0">
++    <function name="RenderbufferStorageMultisampleIMG" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +        <param name="samples" type="GLsizei"/>
 +        <param name="internalformat" type="GLenum"/>
@@ -78,7 +76,7 @@ index 428b703..9cb832f 100644
 +        <param name="height" type="GLsizei"/>
 +    </function>
 +
-+    <function name="FramebufferTexture2DMultisampleIMG" offset="assign" es2="2.0">
++    <function name="FramebufferTexture2DMultisampleIMG" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +        <param name="attachment" type="GLenum"/>
 +        <param name="textarget" type="GLenum"/>
@@ -91,7 +89,7 @@ index 428b703..9cb832f 100644
  <!-- 87. GL_OES_EGL_image_external -->
  <category name="GL_OES_EGL_image_external" number="87">
      <enum name="TEXTURE_EXTERNAL_OES"                     value="0x8D65"/>
-@@ -797,6 +817,51 @@
+@@ -750,6 +772,51 @@
      </function>
  </category>
  
@@ -103,37 +101,37 @@ index 428b703..9cb832f 100644
 +    <enum name="QUERY_RESULT_EXT"                         value="0x8866"/>
 +    <enum name="QUERY_RESULT_AVAILABLE_EXT"               value="0x8867"/>
 +
-+    <function name="GenQueriesEXT" offset="assign" es2="2.0">
++    <function name="GenQueriesEXT" es2="2.0">
 +        <param name="n" type="GLsizei"/>
 +        <param name="ids" type="GLuint *"/>
 +    </function>
 +
-+    <function name="DeleteQueriesEXT" offset="assign" es2="2.0">
++    <function name="DeleteQueriesEXT" es2="2.0">
 +        <param name="n" type="GLsizei"/>
 +        <param name="ids" type="const GLuint *"/>
 +    </function>
 +
-+    <function name="IsQueryEXT" offset="assign" es2="2.0">
++    <function name="IsQueryEXT" es2="2.0">
 +        <param name="id" type="GLuint"/>
 +        <return type="GLboolean"/>
 +    </function>
 +
-+    <function name="BeginQueryEXT" offset="assign" es2="2.0">
++    <function name="BeginQueryEXT" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +        <param name="id" type="GLuint"/>
 +    </function>
 +
-+    <function name="EndQueryEXT" offset="assign" es2="2.0">
++    <function name="EndQueryEXT" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +    </function>
 +
-+    <function name="GetQueryivEXT" offset="assign" es2="2.0">
++    <function name="GetQueryivEXT" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +        <param name="pname" type="GLenum"/>
 +        <param name="params" type="GLint *"/>
 +    </function>
 +
-+    <function name="GetQueryObjectuivEXT" offset="assign" es2="2.0">
++    <function name="GetQueryObjectuivEXT" es2="2.0">
 +        <param name="id" type="GLuint"/>
 +        <param name="pname" type="GLenum"/>
 +        <param name="params" type="GLuint *"/>
@@ -143,7 +141,7 @@ index 428b703..9cb832f 100644
  <!-- 103. GL_EXT_texture_rg -->
  <category name="GL_EXT_texture_rg" number="103">
      <enum name="RED_EXT"                                  value="0x1903"/>
-@@ -805,6 +870,23 @@
+@@ -758,6 +825,23 @@
      <enum name="RG8_EXT"                                  value="0x822B"/>
  </category>
  
@@ -154,7 +152,7 @@ index 428b703..9cb832f 100644
 +    <enum name="MAX_SAMPLES_EXT"                            value="0x8D57"/>
 +    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_SAMPLES_EXT" value="0x8D6C"/>
 +
-+    <function name="FramebufferTexture2DMultisampleEXT" offset="assign" es2="2.0">
++    <function name="FramebufferTexture2DMultisampleEXT" es2="2.0">
 +        <param name="target" type="GLenum"/>
 +        <param name="attachment" type="GLenum"/>
 +        <param name="textarget" type="GLenum"/>
@@ -168,10 +166,10 @@ index 428b703..9cb832f 100644
  <xi:include href="EXT_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 diff --git a/src/mapi/glapi/gen/gl_genexec.py b/src/mapi/glapi/gen/gl_genexec.py
-index d479e66..231f3b7 100644
+index 78b62a2..9251a1c 100644
 --- a/src/mapi/glapi/gen/gl_genexec.py
 +++ b/src/mapi/glapi/gen/gl_genexec.py
-@@ -70,6 +70,7 @@ header = """/**
+@@ -72,6 +72,7 @@ header = """/**
  #include "main/rastpos.h"
  #include "main/enable.h"
  #include "main/errors.h"
@@ -180,7 +178,7 @@ index d479e66..231f3b7 100644
  #include "main/eval.h"
  #include "main/get.h"
 diff --git a/src/mesa/Makefile.sources b/src/mesa/Makefile.sources
-index cc166ce..7a9b7aa 100644
+index e9011c9..1dd977d 100644
 --- a/src/mesa/Makefile.sources
 +++ b/src/mesa/Makefile.sources
 @@ -3,7 +3,9 @@

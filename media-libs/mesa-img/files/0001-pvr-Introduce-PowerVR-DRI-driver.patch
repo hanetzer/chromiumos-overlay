@@ -1,9 +1,9 @@
-From 02e6d70c83a44d59c985395af3260a275c46e779 Mon Sep 17 00:00:00 2001
+From c960520d2becf261e93741db46ea33b9b930fb24 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
-Date: Mon, 30 Nov 2015 10:46:46 +0000
+Date: Mon, 30 Nov 2015 13:42:57 +0000
 Subject: [PATCH] pvr: Introduce PowerVR DRI driver.
 
-Change-Id: Icc6e3f1117ad8dbfee305dbbec33b2ef152166e4
+Change-Id: I3b21e84b290c5057e7b11681c3a7b59485094aae
 ---
  configure.ac                                       |    8 +
  src/mesa/drivers/dri/Makefile.am                   |    6 +
@@ -56,18 +56,18 @@ Change-Id: Icc6e3f1117ad8dbfee305dbbec33b2ef152166e4
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index 4ed4b74..3968619 100644
+index 92799c6..870dc7b 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -69,6 +69,7 @@ dnl Versions for external dependencies
- LIBDRM_REQUIRED=2.4.38
+@@ -71,6 +71,7 @@ LIBDRM_REQUIRED=2.4.60
  LIBDRM_RADEON_REQUIRED=2.4.56
- LIBDRM_INTEL_REQUIRED=2.4.60
+ LIBDRM_AMDGPU_REQUIRED=2.4.63
+ LIBDRM_INTEL_REQUIRED=2.4.61
 +LIBDRM_PVR_REQUIRED=2.4.60
  LIBDRM_NVVIEUX_REQUIRED=2.4.33
- LIBDRM_NOUVEAU_REQUIRED="2.4.33 libdrm >= 2.4.41"
- LIBDRM_FREEDRENO_REQUIRED=2.4.57
-@@ -1436,6 +1437,11 @@ if test -n "$with_dri_drivers"; then
+ LIBDRM_NOUVEAU_REQUIRED=2.4.62
+ LIBDRM_FREEDRENO_REQUIRED=2.4.64
+@@ -1290,6 +1291,11 @@ if test -n "$with_dri_drivers"; then
              HAVE_R200_DRI=yes;
              PKG_CHECK_MODULES([RADEON], [libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
              ;;
@@ -79,7 +79,7 @@ index 4ed4b74..3968619 100644
          xswrast)
              HAVE_SWRAST_DRI=yes;
              ;;
-@@ -2279,6 +2285,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
+@@ -2108,6 +2114,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
@@ -87,7 +87,7 @@ index 4ed4b74..3968619 100644
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
  AM_CONDITIONAL(NEED_RADEON_DRM_WINSYS, test "x$HAVE_GALLIUM_R300" = xyes -o \
-@@ -2437,6 +2444,7 @@ AC_CONFIG_FILES([Makefile
+@@ -2265,6 +2272,7 @@ AC_CONFIG_FILES([Makefile
  		src/mesa/drivers/dri/nouveau/Makefile
  		src/mesa/drivers/dri/r200/Makefile
  		src/mesa/drivers/dri/radeon/Makefile
@@ -96,7 +96,7 @@ index 4ed4b74..3968619 100644
  		src/mesa/drivers/osmesa/Makefile
  		src/mesa/drivers/osmesa/osmesa.pc
 diff --git a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
-index fa1de10..fd7d9c0 100644
+index 08a8e64..ec690ec 100644
 --- a/src/mesa/drivers/dri/Makefile.am
 +++ b/src/mesa/drivers/dri/Makefile.am
 @@ -36,6 +36,12 @@ MEGADRIVERS_DEPS += radeon/libradeon_dri.la
@@ -2793,7 +2793,7 @@ index 0000000..a6e9625
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
 new file mode 100644
-index 0000000..46df52b
+index 0000000..c03dc02
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
 @@ -0,0 +1,345 @@
@@ -2903,7 +2903,7 @@ index 0000000..46df52b
 +	int bindToTextureRgba;
 +} PVRDRIConfigInfo;
 +
-+typedef struct EGLImageRec EGLImage;
++typedef struct EGLImageRec _EGLImage;
 +typedef struct __DRIimageRec __DRIimage;
 +
 +/* PVRDRI interface opaque types */
@@ -2986,13 +2986,13 @@ index 0000000..46df52b
 +                     uint32_t  uiTarget,
 +                     uintptr_t uiBuffer,
 +                     uint32_t  uiLevel,
-+                     EGLImage *psEGLImage);
++                     _EGLImage *psEGLImage);
 +
 +PVRDRIImageError
 +PVRDRIGetImageSourceOCL(PVRDRIScreenImpl *psScreenImpl,
 +                        uint32_t uiTarget,
 +                        void *pBuffer,
-+                        EGLImage *psEGLImage);
++                        _EGLImage *psEGLImage);
 +
 +bool
 +PVRDRI2BindTexImage(pvrdri_api_type eAPI,
@@ -3060,25 +3060,25 @@ index 0000000..46df52b
 +
 +
 +/* Image functions */
-+EGLImage *PVRDRIEGLImageCreate(void);
-+EGLImage *PVRDRIEGLImageCreateFromBuffers(int iWidth,
-+					  int iHeight,
-+					  int iStride,
-+					  IMG_PIXFMT ePixelFormat,
-+					  IMG_YUV_COLORSPACE eColourSpace,
-+					  IMG_YUV_CHROMA_INTERP eChromaUInterp,
-+					  IMG_YUV_CHROMA_INTERP eChromaVInterp,
-+					  PVRDRIBufferImpl **apsBuffers,
-+					  int iNumBuffers);
-+EGLImage *PVRDRIEGLImageDup(EGLImage *psIn);
++_EGLImage *PVRDRIEGLImageCreate(void);
++_EGLImage *PVRDRIEGLImageCreateFromBuffers(int iWidth,
++					   int iHeight,
++					   int iStride,
++					   IMG_PIXFMT ePixelFormat,
++					   IMG_YUV_COLORSPACE eColourSpace,
++					   IMG_YUV_CHROMA_INTERP eChromaUInterp,
++					   IMG_YUV_CHROMA_INTERP eChromaVInterp,
++					   PVRDRIBufferImpl **apsBuffers,
++					   int iNumBuffers);
++_EGLImage *PVRDRIEGLImageDup(_EGLImage *psIn);
 +
-+void PVRDRIEGLImageSetCallbackData(EGLImage *psEGLImage, __DRIimage *image);
++void PVRDRIEGLImageSetCallbackData(_EGLImage *psEGLImage, __DRIimage *image);
 +
 +void PVRDRIEGLImageDestroyExternal(PVRDRIScreenImpl *psScreenImpl,
-+                                   EGLImage *psEGLImage);
-+void PVRDRIEGLImageFree(EGLImage *psEGLImage);
++                                   _EGLImage *psEGLImage);
++void PVRDRIEGLImageFree(_EGLImage *psEGLImage);
 +
-+void PVRDRIEGLImageGetAttribs(EGLImage *psEGLImage, PVRDRIBufferAttribs *psAttribs);
++void PVRDRIEGLImageGetAttribs(_EGLImage *psEGLImage, PVRDRIBufferAttribs *psAttribs);
 +
 +/* Sync functions */
 +bool PVRDRISyncPrimAlloc(PVRDRIScreenImpl *psScreenImpl,
@@ -3132,8 +3132,8 @@ index 0000000..46df52b
 +
 +	PVRDRIImageType      (*ImageGetSharedType)(__DRIimage *image);
 +	PVRDRIBufferImpl    *(*ImageGetSharedBuffer)(__DRIimage *image);
-+	EGLImage            *(*ImageGetSharedEGLImage)(__DRIimage *image);
-+	EGLImage            *(*ImageGetEGLImage)(__DRIimage *image);
++	_EGLImage           *(*ImageGetSharedEGLImage)(__DRIimage *image);
++	_EGLImage           *(*ImageGetEGLImage)(__DRIimage *image);
 +	__DRIimage          *(*ScreenGetDRIImage)(void *hEGLImage);
 +	void                 (*RefImage)(__DRIimage *image);
 +	void                 (*UnrefImage)(__DRIimage *image);
@@ -5843,7 +5843,7 @@ index 0000000..fb66e50
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
 new file mode 100644
-index 0000000..e55893c
+index 0000000..2c1cba4
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.h
 @@ -0,0 +1,274 @@
@@ -6113,8 +6113,8 @@ index 0000000..e55893c
 +
 +PVRDRIImageType PVRDRIImageGetSharedType(__DRIimage *image);
 +PVRDRIBufferImpl *PVRDRIImageGetSharedBuffer(__DRIimage *image);
-+EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *image);
-+EGLImage *PVRDRIImageGetEGLImage(__DRIimage *image);
++_EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *image);
++_EGLImage *PVRDRIImageGetEGLImage(__DRIimage *image);
 +
 +__DRIimage *PVRDRIScreenGetDRIImage(void *hEGLImage);
 +void PVRDRIRefImage(__DRIimage *image);
@@ -6416,7 +6416,7 @@ index 0000000..2f53ca1
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..2cac663
+index 0000000..1d0948f
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
 @@ -0,0 +1,1068 @@
@@ -6472,7 +6472,7 @@ index 0000000..2cac663
 +	IMG_YUV_CHROMA_INTERP eChromaVInterp;
 +
 +	PVRDRIBufferImpl *apsBuffers[DRI_PLANES_MAX];
-+	EGLImage *psEGLImage;
++	_EGLImage *psEGLImage;
 +};
 +
 +struct __DRIimageRec
@@ -6483,7 +6483,7 @@ index 0000000..2cac663
 +
 +	struct PVRDRIImageShared *psShared;
 +
-+	EGLImage *psEGLImage;
++	_EGLImage *psEGLImage;
 +};
 +
 +
@@ -6551,7 +6551,7 @@ index 0000000..2cac663
 +
 +static struct PVRDRIImageShared *
 +CreateImageSharedFromEGLImage(__DRIscreen *screen,
-+                              EGLImage *psEGLImage)
++                              _EGLImage *psEGLImage)
 +{
 +	struct PVRDRIImageShared *shared;
 +	PVRDRIBufferAttribs sAttribs;
@@ -6893,7 +6893,7 @@ index 0000000..2cac663
 +GetImageSourceOCL(PVRDRIContext *psPVRContext,
 +                  uint32_t target,
 +                  void *buffer,
-+                  EGLImage *psEGLImage)
++                  _EGLImage *psEGLImage)
 +{
 +	PVRDRIImageError e;
 +	PVRDRIScreen *psPVRScreen = psPVRContext->psPVRScreen;
@@ -6923,7 +6923,7 @@ index 0000000..2cac663
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
 +	PVRDRIImageError e;
-+	EGLImage *psEGLImage;
++	_EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +
 +	image = CommonImageSetup(loaderPrivate);
@@ -7213,7 +7213,7 @@ index 0000000..2cac663
 +{
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
-+	EGLImage *psEGLImage;
++	_EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +	uint32_t eglTarget;
 +	PVRDRIImageError e;
@@ -7311,7 +7311,7 @@ index 0000000..2cac663
 +{
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
-+	EGLImage *psEGLImage;
++	_EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +
 +	switch (target)
@@ -7463,13 +7463,13 @@ index 0000000..2cac663
 +	return NULL;
 +}
 +
-+EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *pImage)
++_EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *pImage)
 +{
 +	assert(pImage->psShared->eType == PVRDRI_IMAGE_FROM_EGLIMAGE);
 +	return pImage->psShared->psEGLImage;
 +}
 +
-+EGLImage *PVRDRIImageGetEGLImage(__DRIimage *pImage)
++_EGLImage *PVRDRIImageGetEGLImage(__DRIimage *pImage)
 +{
 +	return pImage->psEGLImage;
 +}
