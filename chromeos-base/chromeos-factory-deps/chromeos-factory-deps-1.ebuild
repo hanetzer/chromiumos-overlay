@@ -88,14 +88,11 @@ FACTORY_TEST_RDEPEND+="
 	chromeos-base/autotest-client
 "
 
-# Packages to support in-place factory wiping inside factory software.
+# Packages used by finalize.
 FACTORY_TEST_RDEPEND+="
+	chromeos-base/memento_softwareupdate
 	sys-apps/busybox
-"
-
-# Packages used by factory software and factory installer for battery cutoff.
-FACTORY_TEST_RDEPEND+="
-  chromeos-base/memento_softwareupdate
+	sys-apps/coreboot-utils
 "
 
 ################################################################################
