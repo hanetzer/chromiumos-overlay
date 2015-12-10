@@ -164,6 +164,7 @@ ALL_BOARDS=(
 	peach_kirby
 	peach_pi
 	peach_pit
+	pedra
 	peppy
 	ppcbe-32-generic
 	ppcbe-64-generic
