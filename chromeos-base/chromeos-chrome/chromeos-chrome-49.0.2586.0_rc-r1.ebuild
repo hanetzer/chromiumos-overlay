@@ -31,7 +31,6 @@ IUSE="
 	afdo_use
 	+accessibility
 	app_shell
-	arc
 	asan
 	+build_tests
 	+chrome_debug
@@ -129,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-49.0.2577.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-49.0.2577.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-49.0.2577.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-49.0.2586.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-49.0.2586.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-49.0.2586.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -286,7 +285,6 @@ set_build_defines() {
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 		"use_system_minigbm=1"
-		"enable_arc=$(use10 arc)"
 
 		# Clang features.
 		asan=$(use10 asan)
