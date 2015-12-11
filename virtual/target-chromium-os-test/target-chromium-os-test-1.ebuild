@@ -159,7 +159,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/radvd
-	net-wireless/hostapd
 	sci-geosciences/gpsd
 	sys-apps/coreutils
 	sys-apps/dtc
