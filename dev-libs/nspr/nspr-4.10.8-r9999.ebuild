@@ -1,1 +1,0 @@
-nspr-4.10.8.ebuild
