@@ -10,7 +10,9 @@ DESCRIPTION="Library that allows selection of GL API and of window system at run
 HOMEPAGE="http://www.waffle-gl.org"
 # TODO(fjhenigman): merge github fork into main project and change SRC_URI back to a release from there
 MY_V="null2"
-SRC_URI="https://github.com/fjhenigman/waffle/archive/${MY_V}.tar.gz -> ${PF}.tar.gz"
+# TODO(ihf): Remove the -r1 when reving the next MY_V archive. Also notice that the waffle-1.6.0-r1.tar.gz
+# to waffle-1.6.0-r6.tar.gz tarballs on GS are identical.
+SRC_URI="https://github.com/fjhenigman/waffle/archive/${MY_V}.tar.gz -> ${P}-r1.tar.gz"
 S="${WORKDIR}/${PN}-${MY_V}"
 LICENSE="BSD-2"
 SLOT="0"
@@ -45,6 +47,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	opengl? ( x11-proto/glproto )
+	x11-libs/libX11
 	X? ( x11-proto/xcb-proto )
 	doc? (
 		dev-libs/libxslt

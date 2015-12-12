@@ -28,7 +28,9 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="virtual/opengles"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	x11-libs/libX11
+"
 
 S=${WORKDIR}/${MY_P}
 EGIT_CHECKOUT_DIR=${S}

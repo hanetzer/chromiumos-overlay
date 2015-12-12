@@ -22,7 +22,9 @@ RDEPEND="
 	media-libs/libpng
 "
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	x11-libs/libX11
+"
 
 S="${WORKDIR}"
 
