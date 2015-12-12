@@ -41,7 +41,8 @@ SERVER_IUSE_TESTS="
 	+tests_audio_AudioBasicUSBRecord
 	+tests_audio_AudioBluetoothConnectionStability
 	+tests_audio_AudioNodeSwitch
-        +tests_audio_InternalCardNodes
+	+tests_audio_AudioQualityAfterSuspend
+	+tests_audio_InternalCardNodes
 	+tests_audio_MediaBasicVerification
 	+tests_audio_PowerConsumption
 	+tests_autoupdate_CatchBadSignatures
