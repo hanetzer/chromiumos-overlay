@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("39856942fe00e55634791eefef70f23b66fc3627" "f9874815ce2fc82b76930e8cfc19a0811231cff9")
-CROS_WORKON_TREE=("a5013597dd7e1f8028f698ecafd8472fb672324a" "e20986ea0e21f569c519681a05e9f62caf958e20")
+CROS_WORKON_COMMIT=("0801b39b9fbc09ad703644c6e9d5f38ef459704f" "5a4c5130390f7433aa725996ad95043a0554707c")
+CROS_WORKON_TREE=("6b107680fe5a8d19b79ad0b2c13f5fca65f5fe01" "68f7d19a0d6a472cde9286feb5aa354cc1dfd575")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
@@ -15,7 +15,7 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_SUBDIR="update_engine"
 
-inherit toolchain-funcs cros-debug cros-workon platform
+inherit toolchain-funcs cros-debug cros-workon platform systemd
 
 DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
+IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management systemd"
 
 COMMON_DEPEND="
 	app-arch/bzip2
@@ -121,9 +121,14 @@ src_install() {
 	insinto /etc
 	doins update_engine.conf
 
-	# Install upstart script
-	insinto /etc/init
-	doins init/update-engine.conf
+	if use systemd; then
+		systemd_dounit "${FILESDIR}"/update-engine.service
+		systemd_enable_service multi-user.target update-engine.service
+	else
+		# Install upstart script
+		insinto /etc/init
+		doins init/update-engine.conf
+	fi
 
 	# Install DBus configuration
 	insinto /etc/dbus-1/system.d
