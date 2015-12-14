@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded -cros_host test"
+IUSE="arc cros_embedded -cros_host test"
 REQUIRE_USE="!cros_host"
 
 RDEPEND="
