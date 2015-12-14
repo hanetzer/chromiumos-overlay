@@ -186,6 +186,7 @@ ALL_BOARDS=(
 	sama5d3
 	samus
 	samus-cheets
+	setzer
 	shogun
 	sklrvp
 	slippy
