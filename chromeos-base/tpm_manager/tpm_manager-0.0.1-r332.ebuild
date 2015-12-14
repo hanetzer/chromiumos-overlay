@@ -3,13 +3,13 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("d4629233bb3ebaba57d8e8de5107fc748a00bc90" "ae4cee7f6558e5ed9130be812618c1886d16a4cb")
-CROS_WORKON_TREE=("5eccb20df5a4ea8b6c4c1415b2126e60e3fe17bf" "6f110b596256ff93b16491035e71887aab0e04c6")
+CROS_WORKON_COMMIT=("065e3108172e42e727458079ad98fe903662ffca" "5cb93f016cff70190b89577ca3e8416ce3fd888a")
+CROS_WORKON_TREE=("eef67817c4dc2d13a86a751f6d2dbcc8a77a625b" "b6442767f4d4b6f3d4f35625e86e49632dc28263")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm_manager")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm_manager")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/tpm_manager")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/tpm")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 CROS_WORKON_USE_VCSID=1
 
@@ -50,7 +50,7 @@ pkg_preinst() {
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	S="${s}/aosp/system/tpm_manager"
+	S="${s}/aosp/system/tpm/tpm_manager"
 }
 
 src_install() {

@@ -3,13 +3,13 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("d4629233bb3ebaba57d8e8de5107fc748a00bc90" "b3c9cdcef463064d7ac8f1e6b4b88e62433f9d5d")
-CROS_WORKON_TREE=("5eccb20df5a4ea8b6c4c1415b2126e60e3fe17bf" "febe3db56bf6f20af5f2f9ad7e6e3becb88a8a0c")
+CROS_WORKON_COMMIT=("065e3108172e42e727458079ad98fe903662ffca" "5cb93f016cff70190b89577ca3e8416ce3fd888a")
+CROS_WORKON_TREE=("eef67817c4dc2d13a86a751f6d2dbcc8a77a625b" "b6442767f4d4b6f3d4f35625e86e49632dc28263")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/attestation")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/attestation")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/attestation")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/tpm")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 
 PLATFORM_SUBDIR="attestation"
@@ -41,12 +41,14 @@ pkg_preinst() {
 	# Create user and group for attestation.
 	enewuser "attestation"
 	enewgroup "attestation"
+	# Create group for /mnt/stateful_partition/unencrypted/preserve.
+	enewgroup "preserve"
 }
 
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	S="${s}/aosp/system/attestation"
+	S="${s}/aosp/system/tpm/attestation"
 }
 
 src_install() {
