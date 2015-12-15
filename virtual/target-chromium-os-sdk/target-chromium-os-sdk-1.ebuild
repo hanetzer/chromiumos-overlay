@@ -415,3 +415,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-util/kbuild
 	"
+
+# Host dependencies for audio topology generation
+RDEPEND="${RDEPEND}
+	media-sound/alsa-utils"
