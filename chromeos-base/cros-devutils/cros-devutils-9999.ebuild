@@ -21,7 +21,6 @@ RDEPEND="cros_host? ( app-emulation/qemu )
 	app-portage/gentoolkit
 	cros_host? ( app-shells/bash )
 	>=chromeos-base/devserver-0.0.2
-	brillo-base/libsparse
 	!cros_host? ( !chromeos-base/gmerge )
 	dev-lang/python
 	dev-util/shflags
@@ -61,7 +60,6 @@ src_install() {
 		dobin "${host_tools[@]/#/host/}"
 
 		# Payload generation scripts.
-		dobin host/brillo_update_payload
 		dobin host/cros_generate_update_payload
 		dobin host/cros_generate_stateful_update_payload
 

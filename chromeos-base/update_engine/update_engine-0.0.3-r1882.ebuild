@@ -28,7 +28,9 @@ IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management systemd"
 
 COMMON_DEPEND="
 	app-arch/bzip2
+	!chromeos-base/brillo_update_payload
 	chromeos-base/chromeos-ca-certificates
+	!<chromeos-base/cros-devutils-0.0.3
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
@@ -55,12 +57,20 @@ DEPEND="
 	sys-fs/e2fsprogs
 	${COMMON_DEPEND}"
 
+DELTA_GENERATOR_RDEPEND="
+	app-arch/unzip
+	app-arch/xz-utils
+	app-shells/bash
+	brillo-base/libsparse
+	dev-util/shflags
+	sys-fs/e2fsprogs
+"
+
 RDEPEND="
-	delta_generator? ( app-arch/xz-utils )
 	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}
+	delta_generator? ( ${DELTA_GENERATOR_RDEPEND} )
 	power_management? ( chromeos-base/power_manager )
-	delta_generator? ( sys-fs/e2fsprogs )
 	virtual/update-policy
 "
 
@@ -116,7 +126,10 @@ src_install() {
 	dosbin "${OUT}"/update_engine
 	dobin "${OUT}"/update_engine_client
 
-	use delta_generator && dobin "${OUT}"/delta_generator
+	if use delta_generator; then
+		dobin "${S}"/scripts/brillo_update_payload
+		dobin "${OUT}"/delta_generator
+	fi
 
 	insinto /etc
 	doins update_engine.conf
