@@ -253,12 +253,23 @@ src_compile_depthcharge() {
 		fi
 	fi
 
+	local multicbfs="$(grep 'CONFIG_MULTIPLE_CBFS_INSTANCES=y' \
+			"${froot}/coreboot.config")"
+
 	if use unified_depthcharge; then
 		ro_suffix="elf"
-		rw_suffix="payload"
+		if [ -z "${multicbfs}" ]; then
+			rw_suffix="payload"
+		else
+			rw_suffix="elf"
+		fi
 	else
 		ro_suffix="ro.elf"
-		rw_suffix="rw.bin"
+		if [ -z "${multicbfs}" ]; then
+			rw_suffix="rw.bin"
+		else
+			rw_suffix="rw.elf"
+		fi
 	fi
 
 	local depthcharge_binaries=( --coreboot-elf
@@ -266,8 +277,6 @@ src_compile_depthcharge() {
 	local dev_binaries=( --coreboot-elf
 		"${froot}/depthcharge/dev.${ro_suffix}" )
 
-	local multicbfs="$(grep 'CONFIG_MULTIPLE_CBFS_INSTANCES=y' \
-			"${froot}/coreboot.config")"
 	local common=(
 		--board "${BOARD_USE}"
 		--key "${devkeys_file}"
