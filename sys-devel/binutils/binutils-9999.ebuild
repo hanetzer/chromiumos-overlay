@@ -3,7 +3,11 @@
 
 EAPI="4"
 
-CROS_WORKON_PROJECT=chromiumos/third_party/binutils
+CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="toolchain/binutils"
+CROS_WORKON_LOCALNAME="aosp/toolchain/binutils"
+CROS_WORKON_BLACKLIST="1"
+
 NEXT_BINUTILS=cros/binutils-2_25-google
 
 # By default, PREV_BINUTILS points to the parent of current tip of cros/master.
@@ -100,6 +104,14 @@ src_unpack() {
 		# GITHASH. Correct VCSID here.
 		if use next_binutils || use prev_binutils ; then
 			export VCSID=${CROS_WORKON_COMMIT}
+		fi
+		# The repo at https://android.git.corp.google.com/toolchain/binutils
+		# has sources inside a subdirectory named binutils-${PV}. The repo at
+		# https://chromium.googlesource.com/chromiumos/third_party/binutils
+		# has sources at top level. This ebuild needs to handle both cases.
+		local subdir="${PN}-$(get_version_component_range 1-2)"
+		if [[ -d "${S}/${subdir}" ]] ; then
+			S="${S}/${subdir}"
 		fi
 	fi
 
