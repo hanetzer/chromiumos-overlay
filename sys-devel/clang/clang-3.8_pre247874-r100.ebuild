@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="-* amd64"
 IUSE="debug multitarget python +static-analyzer"
 
-RDEPEND="~sys-devel/llvm-${PV}[clang(-),debug=,multitarget?,python?,static-analyzer,${MULTILIB_USEDEP}]"
+RDEPEND="~sys-devel/llvm-${PV}[debug=,multitarget?,python?,static-analyzer,${MULTILIB_USEDEP}]"
 
 # Please keep this package around since it's quite likely that we'll
 # return to separate LLVM & clang ebuilds when the cmake build system
