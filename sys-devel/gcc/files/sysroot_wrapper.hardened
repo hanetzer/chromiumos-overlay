@@ -153,7 +153,9 @@ else:
                            '-Wmissing-parameter-type', '-Woverride-init',
                            '-Wold-style-declaration', '-Wno-psabi',
                            '-Wno-unused-local-typedefs',
-                           '-mno-movbe',])
+                           '-mno-movbe',
+                           '-march=armv8-a+crc',
+                          ])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=', '-finline-limit=')
 
   # clang with '-ftrapv' generates 'call __mulodi4', which is only implemented
