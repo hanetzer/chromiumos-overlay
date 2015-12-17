@@ -79,6 +79,7 @@ CONFIG_FRAGMENTS=(
 	gobi
 	highmem
 	i2cdev
+	iscsi
 	kasan
 	kgdb
 	kvm
@@ -235,6 +236,12 @@ CONFIG_HIGHMEM64G=y
 i2cdev_desc="I2C device interface"
 i2cdev_config="
 CONFIG_I2C_CHARDEV=y
+"
+
+iscsi_desc="iSCSI driver"
+iscsi_config="
+CONFIG_SCSI_LOWLEVEL=y
+CONFIG_ISCSI_TCP=m
 "
 
 debug_desc="Miscellaneous debug extensions"
