@@ -6,7 +6,7 @@ EAPI=5
 inherit eutils toolchain-funcs
 
 # Version used to bootstrap the build.
-BOOTSTRAP="1.4.2"
+BOOTSTRAP="1.4.3"
 
 DESCRIPTION="An expressive, concurrent, garbage-collected programming language"
 HOMEPAGE="http://golang.org/"
@@ -57,7 +57,6 @@ src_unpack() {
 	mv go "go-${PV}"
 	unpack "go${BOOTSTRAP}.src.tar.gz"
 	mv go "go-${BOOTSTRAP}"
-	epatch "${FILESDIR}/go-${BOOTSTRAP}-no-strict-overflow.patch"
 }
 
 src_configure() {
