@@ -24,6 +24,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-11.patch   # Downloaded from upstream
+	epatch "${FILESDIR}"/${P}-container.patch
 }
 
 src_configure() {
