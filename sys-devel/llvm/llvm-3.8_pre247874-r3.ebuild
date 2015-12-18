@@ -185,7 +185,6 @@ src_unpack() {
 
 src_prepare() {
 	use llvm-next || epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
-	use llvm-next || epatch "${FILESDIR}"/clang-3.7-odr-detection-level.patch
 	epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
 
