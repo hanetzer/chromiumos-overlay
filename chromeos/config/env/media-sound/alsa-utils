@@ -4,3 +4,5 @@
 
 # Remove .wav test files used by `speaker-test -t wav` from the image.
 INSTALL_MASK+=" /usr/share/sounds/alsa/*.wav"
+# Remove unused diagnostic tool that requires bash.
+INSTALL_MASK+=" /usr/sbin/alsa-info.sh"
