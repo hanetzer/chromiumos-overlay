@@ -3,8 +3,12 @@
 # found in the LICENSE.makefile file.
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/ec"
-CROS_WORKON_LOCALNAME="ec"
+
+S="${WORKDIR}/platform/ec"
+
+CROS_WORKON_PROJECT=("chromiumos/platform/ec" "chromiumos/third_party/tpm2")
+CROS_WORKON_LOCALNAME=("ec" "../third_party/tpm2")
+CROS_WORKON_DESTDIR=("${S}" "${WORKDIR}/third_party/tpm2")
 
 inherit toolchain-funcs cros-ec-board cros-workon
 
@@ -101,5 +105,7 @@ src_install() {
 }
 
 src_test() {
+	# Verify compilation of all boards
+	emake buildall
 	emake runtests
 }
