@@ -9,7 +9,7 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="platform/external/libchrome"
-CROS_WORKON_COMMIT="dc9ba3fb3f920d97db54387c1a7ecce1df7bf5b1"
+CROS_WORKON_COMMIT="b22b2857a43c8acff39efc0749f21f9ff349fb32"
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
@@ -39,6 +39,7 @@ src_prepare() {
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.
 	append-lfs-flags
+	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-inject-valgrind-headers.patch
 }
 
 src_configure() {
@@ -57,8 +58,6 @@ src_install() {
 	local d header_dirs=(
 		base/third_party/icu
 		base/third_party/nspr
-		base/third_party/valgrind
-		base/third_party/dynamic_annotations
 		base
 		base/containers
 		base/debug
@@ -82,6 +81,7 @@ src_install() {
 		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
+		third_party/valgrind
 	)
 	for d in "${header_dirs[@]}" ; do
 		insinto /usr/include/base-${SLOT}/${d}
