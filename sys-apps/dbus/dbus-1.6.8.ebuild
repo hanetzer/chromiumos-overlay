@@ -77,6 +77,9 @@ src_prepare() {
 	# Dynamically link the binaries to save some space.
 	epatch "${FILESDIR}"/${P}-dynamically-link-libdbus.patch
 
+	# In libdbus, raise SIGTERM when the connection is dropped.
+	epatch "${FILESDIR}"/${P}-raise-SIGTERM-on-connection-lost.patch
+
 	# required for asneeded and dynamically-link-libdbus patches but also for
 	# bug 263909, cross-compile so don't remove eautoreconf
 	eautoreconf
