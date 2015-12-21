@@ -28,6 +28,8 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_AttenuatedPerf
 	+tests_network_WiFi_BeaconInterval
 	+tests_network_WiFi_BgscanBackoff
+	+tests_network_WiFi_BluetoothScanPerf
+	+tests_network_WiFi_BluetoothStreamPerf
 	+tests_network_WiFi_ChannelScanDwellTime
 	+tests_network_WiFi_ChaosConfigFailure
 	+tests_network_WiFi_ChaosConnectDisconnect
