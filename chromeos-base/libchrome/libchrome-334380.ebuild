@@ -9,7 +9,8 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="platform/external/libchrome"
-CROS_WORKON_COMMIT="b22b2857a43c8acff39efc0749f21f9ff349fb32"
+CROS_WORKON_COMMIT="da04820d4f6c808cc997a3957be0aad62c4f3fd2"
+CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
