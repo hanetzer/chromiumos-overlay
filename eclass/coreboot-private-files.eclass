@@ -6,7 +6,11 @@
 # The Chromium OS Authors
 # @BLURB: Unifies logic for installing private coreboot files.
 
-[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
+# Check for EAPI 4+
+case "${EAPI:-0}" in
+4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
+esac
 
 coreboot-private-files_src_install() {
 	local srcdir="${1:-${FILESDIR}}"

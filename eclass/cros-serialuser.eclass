@@ -5,7 +5,12 @@
 # Original Author: The Chromium OS Authors <chromium-os-dev@chromium.org>
 # Purpose: Eclass for use by ebuilds that need to know the debug serial port.
 #
-[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
+
+# Check for EAPI 4+
+case "${EAPI:-0}" in
+4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
+esac
 
 SERIAL_USE_PREFIX="serial_use_"
 ALL_SERIALPORTS=(

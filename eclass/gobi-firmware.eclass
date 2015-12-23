@@ -66,8 +66,8 @@ GOBI_FIRMWARE_CARRIER_OMH=16
 
 # Check for EAPI 2+
 case "${EAPI:-0}" in
-	4|3|2) ;;
-	*) die "unsupported EAPI" ;;
+2|3|4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
 gobi-firmware_install_udev_qcserial_rules() {

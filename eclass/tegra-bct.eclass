@@ -29,8 +29,8 @@
 
 # Check for EAPI 2+
 case "${EAPI:-0}" in
-	4|3|2) ;;
-	*) die "unsupported EAPI" ;;
+2|3|4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
 tegra-bct_src_configure() {

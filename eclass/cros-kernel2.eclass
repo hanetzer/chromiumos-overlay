@@ -1,7 +1,11 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
+# Check for EAPI 4+
+case "${EAPI:-0}" in
+4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
+esac
 
 # Since we use CHROMEOS_KERNEL_CONFIG and CHROMEOS_KERNEL_SPLITCONFIG here,
 # it is not safe to reuse the kernel prebuilts across different boards. Inherit

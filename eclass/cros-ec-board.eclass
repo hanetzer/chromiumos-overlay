@@ -18,7 +18,12 @@
 #
 #  The firmware for these ECs can be found in platform/ec/build
 #  The first item of the array is always the main ec.
-[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
+
+# Check for EAPI 4+
+case "${EAPI:-0}" in
+4|5|6) ;;
+*) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
+esac
 
 EC_BOARD_USE_PREFIX="ec_firmware_"
 EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
