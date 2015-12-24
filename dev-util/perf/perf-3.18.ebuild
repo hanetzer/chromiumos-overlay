@@ -124,8 +124,7 @@ src_prepare() {
 	# echo "#define PERF_VERSION \"${MY_PV}\"" > PERF-VERSION-FILE
 
 	PATCHES=(
-		"${FILESDIR}/3.14-get-kernel-start-address-by-symbol-name.patch"
-		"${FILESDIR}/3.14-separate-tools-and-tests.patch"
+		"${FILESDIR}/separate-tools-and-tests.patch"
 	)
 
 	for patch_file in "${PATCHES[@]}"; do
