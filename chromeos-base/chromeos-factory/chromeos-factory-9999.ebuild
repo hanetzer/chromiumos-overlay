@@ -62,6 +62,10 @@ src_install() {
 		MAKE_PAR_ARGS="$make_par_args" \
 		par install bundle
 
+	# Install region database for shopfloor in bundle.
+	insinto "${TARGET_DIR}/bundle/shopfloor"
+	doins "${CROS_REGIONS_DATABASE}"
+
 	# Sanity check: make sure we can import stuff with only the
 	# .par file.
 	PYTHONPATH="${D}${TARGET_DIR}/bundle/shopfloor/factory.par" \
