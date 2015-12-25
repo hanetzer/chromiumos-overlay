@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("9e15de5b347e2518c5b9eff8cfc4f57c5597854e" "18a882c2c46f8208307cbcc20b02737df0668166")
-CROS_WORKON_TREE=("3d0f6f0a8a48a1c3bbe62bca69810391b96754b0" "70761762ebd4b20e4a665c1bd86346180270264e")
+CROS_WORKON_COMMIT=("2cf36a2574e4d6d262a1734e9b6d326f9bbcd4a8" "18a882c2c46f8208307cbcc20b02737df0668166")
+CROS_WORKON_TREE=("0d5b17f27dc0af38076e0dc43f21131bfd8c1edf" "70761762ebd4b20e4a665c1bd86346180270264e")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform2")
 CROS_WORKON_LOCALNAME=("factory" "platform2")
 CROS_WORKON_DESTDIR=("${S}" "${S}/platform2")
@@ -63,6 +63,10 @@ src_install() {
 		PYTHON="$(PYTHON)" \
 		MAKE_PAR_ARGS="$make_par_args" \
 		par install bundle
+
+	# Install region database for shopfloor in bundle.
+	insinto "${TARGET_DIR}/bundle/shopfloor"
+	doins "${CROS_REGIONS_DATABASE}"
 
 	# Sanity check: make sure we can import stuff with only the
 	# .par file.
