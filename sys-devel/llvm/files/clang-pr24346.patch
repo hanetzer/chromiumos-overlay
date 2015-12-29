@@ -1,0 +1,84 @@
+The upstream patch is here - http://reviews.llvm.org/D15442
+Index: lib/Target/ARM/MCTargetDesc/ARMAsmBackend.cpp
+===================================================================
+--- lib/Target/ARM/MCTargetDesc/ARMAsmBackend.cpp
++++ lib/Target/ARM/MCTargetDesc/ARMAsmBackend.cpp
+@@ -90,6 +90,7 @@
+       {"fixup_arm_movw_lo16", 0, 20, 0},
+       {"fixup_t2_movt_hi16", 0, 20, 0},
+       {"fixup_t2_movw_lo16", 0, 20, 0},
++      {"fixup_arm_mod_imm", 0, 12, 0},
+   };
+   const static MCFixupKindInfo InfosBE[ARM::NumTargetFixupKinds] = {
+       // This table *must* be in the order that the fixup_* kinds are defined in
+@@ -133,6 +134,7 @@
+       {"fixup_arm_movw_lo16", 12, 20, 0},
+       {"fixup_t2_movt_hi16", 12, 20, 0},
+       {"fixup_t2_movw_lo16", 12, 20, 0},
++      {"fixup_arm_mod_imm", 20, 12, 0},
+   };
+ 
+   if (Kind < FirstTargetFixupKind)
+@@ -624,6 +626,13 @@
+ 
+     return Value;
+   }
++  case ARM::fixup_arm_mod_imm:
++    Value = ARM_AM::getSOImmVal(Value);
++    if (Ctx && Value >> 12) {
++      report_fatal_error("out of range immediate fixup value");
++      return 0;
++    }
++    return Value;
+   }
+ }
+ 
+@@ -690,6 +699,7 @@
+   case FK_Data_2:
+   case ARM::fixup_arm_thumb_br:
+   case ARM::fixup_arm_thumb_cb:
++  case ARM::fixup_arm_mod_imm:
+     return 2;
+ 
+   case ARM::fixup_arm_pcrel_10_unscaled:
+@@ -766,6 +776,7 @@
+   case ARM::fixup_arm_movw_lo16:
+   case ARM::fixup_t2_movt_hi16:
+   case ARM::fixup_t2_movw_lo16:
++  case ARM::fixup_arm_mod_imm:
+     // Instruction size is 4 bytes.
+     return 4;
+   }
+Index: lib/Target/ARM/MCTargetDesc/ARMFixupKinds.h
+===================================================================
+--- lib/Target/ARM/MCTargetDesc/ARMFixupKinds.h
++++ lib/Target/ARM/MCTargetDesc/ARMFixupKinds.h
+@@ -100,6 +100,9 @@
+   fixup_t2_movt_hi16, // :upper16:
+   fixup_t2_movw_lo16, // :lower16:
+ 
++  // fixup_arm_mod_imm - Fixup for mod_imm
++  fixup_arm_mod_imm,
++
+   // Marker
+   LastTargetFixupKind,
+   NumTargetFixupKinds = LastTargetFixupKind - FirstTargetFixupKind
+Index: lib/Target/ARM/MCTargetDesc/ARMMCCodeEmitter.cpp
+===================================================================
+--- lib/Target/ARM/MCTargetDesc/ARMMCCodeEmitter.cpp
++++ lib/Target/ARM/MCTargetDesc/ARMMCCodeEmitter.cpp
+@@ -312,12 +312,8 @@
+     // Support for fixups (MCFixup)
+     if (MO.isExpr()) {
+       const MCExpr *Expr = MO.getExpr();
+-      // In instruction code this value always encoded as lowest 12 bits,
+-      // so we don't have to perform any specific adjustments.
+-      // Due to requirements of relocatable records we have to use FK_Data_4.
+-      // See ARMELFObjectWriter::ExplicitRelSym and
+-      //     ARMELFObjectWriter::GetRelocTypeInner for more details.
+-      MCFixupKind Kind = MCFixupKind(FK_Data_4);
++      // Fixups resolve to plain values that need to be encoded.
++      MCFixupKind Kind = MCFixupKind(ARM::fixup_arm_mod_imm);
+       Fixups.push_back(MCFixup::create(0, Expr, Kind, MI.getLoc()));
+       return 0;
+     }

@@ -187,6 +187,7 @@ src_prepare() {
 	use llvm-next || epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
 	epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
+	epatch "${FILESDIR}"/clang-pr24346.patch
 
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
