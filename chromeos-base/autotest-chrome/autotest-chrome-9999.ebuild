@@ -94,6 +94,7 @@ IUSE_TESTS=(
 	+tests_policy_JavaScriptAllowedForUrls
 	+tests_policy_JavaScriptBlockedForUrls
 	+tests_policy_ManagedBookmarks
+	+tests_policy_PopupsAllowedForUrls
 	+tests_policy_RestoreOnStartupURLs
 	+tests_policy_URLBlacklist
 	+tests_policy_URLWhitelist
