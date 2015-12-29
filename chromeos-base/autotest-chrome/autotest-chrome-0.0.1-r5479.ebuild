@@ -97,6 +97,7 @@ IUSE_TESTS=(
 	+tests_policy_JavaScriptBlockedForUrls
 	+tests_policy_RestoreOnStartupURLs
 	+tests_policy_URLBlacklist
+	+tests_policy_URLWhitelist
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_FlashVideoSuspend
