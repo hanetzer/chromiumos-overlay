@@ -190,6 +190,7 @@ ALL_BOARDS=(
 	sama5d3
 	samus
 	samus-cheets
+	sentry
 	setzer
 	shogun
 	sklrvp
