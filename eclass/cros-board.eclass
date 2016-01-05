@@ -32,7 +32,7 @@ ALL_BOARDS=(
 	#amd64-drm
 	amd64-generic
 	amd64-generic_embedded
-	amd64-generic_freon
+	#amd64-generic_freon
 	amd64-generic_mobbuild
 	amd64-host
 	#anglar
@@ -264,7 +264,7 @@ ALL_BOARDS=(
 	#x86-fruitloop
 	x86-generic
 	x86-generic_embedded
-	x86-generic_freon
+	#x86-generic_freon
 	x86-mario
 	x86-mario64
 	#x86-pineview
