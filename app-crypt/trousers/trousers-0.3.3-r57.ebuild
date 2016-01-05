@@ -4,8 +4,8 @@
 # $Header$
 
 EAPI="4"
-CROS_WORKON_COMMIT="4ca78880022107e61481a0e2e053acc82b2e5090"
-CROS_WORKON_TREE="5fef069b493339f20a97a2b48a5e37cbaae33f84"
+CROS_WORKON_COMMIT="d11a6d2374d668bfcdfea6e55493b821a95c31fd"
+CROS_WORKON_TREE="e15bd6573f62e549410830f4851fefda08d75052"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
 inherit autotools base cros-debug cros-workon libchrome user
