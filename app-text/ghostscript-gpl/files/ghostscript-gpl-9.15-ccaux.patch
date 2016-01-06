@@ -1,0 +1,64 @@
+From ec61fbca572fa9a96dcc2a0731afcf0251830eb7 Mon Sep 17 00:00:00 2001
+From: Brian Norris <computersforpeace@gmail.com>
+Date: Mon, 11 Jan 2016 19:23:24 -0800
+Subject: [PATCH] Pick better host defaults for CCAUX/CFLAGSAUX
+
+Now a cross-compilation will default to the host compiler. Also allows
+configuration for either native or host compilation, using:
+
+  ./configure CCAUX=my-host-compiler CFLAGSAUX=my-host-compiler-flags ...
+
+Signed-off-by: Brian Norris <computersforpeace@gmail.com>
+---
+ Makefile.in  | 5 +++--
+ configure.ac | 11 +++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index 3d6ec56c06ae..0424d0712789 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -360,7 +360,8 @@ RANLIB=@RANLIB@
+ # Define the name of the C compiler (target and host (AUX))
+ 
+ CC=@CC@
+-CCAUX=@CC@
++CCAUX=@CCAUX@
++CFLAGSAUX=@CFLAGSAUX@
+ 
+ # Define the name of the linker for the final link step.
+ # Normally this is the same as the C compiler.
+@@ -631,7 +632,7 @@ AK=
+ 
+ CCFLAGS=$(GENOPT) $(CAPOPT) $(CFLAGS)
+ CC_=$(CC) $(CCFLAGS)
+-CCAUX_=$(CCAUX) $(CFLAGS)
++CCAUX_=$(CCAUX) $(CFLAGSAUX)
+ CC_LEAF=$(CC_)
+ # note gcc can't use -fomit-frame-pointer with -pg.
+ CC_LEAF_PG=$(CC_)
+diff --git a/configure.ac b/configure.ac
+index c4e0f8d8a7ad..b70c45122f98 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2460,6 +2460,17 @@ AC_SUBST(OPT_CFLAGS)
+ AC_SUBST(DBG_CFLAGS)
+ AC_SUBST(GCFLAGS)
+ 
++dnl Let environment provide CCAUX, or default to target compiler
++if test "x${is_cross_compiler}" = "xno"; then
++  CCAUX="${CCAUX:-${CC}}"
++else
++  CCAUX="${CCAUX:-cc}"
++fi
++dnl Provide reasonable default AUX CFLAGS
++CFLAGSAUX="${CFLAGSAUX:--O}"
++AC_SUBST(CCAUX)
++AC_SUBST(CFLAGSAUX)
++
+ AC_OUTPUT(Makefile)
+ 
+ if test "x$AFS" = "x1"; then
+-- 
+2.6.0.rc2.230.g3dd15c0
+

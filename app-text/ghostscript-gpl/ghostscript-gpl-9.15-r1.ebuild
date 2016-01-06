@@ -94,6 +94,9 @@ src_prepare() {
 	"
 	epatch
 
+	epatch "${FILESDIR}/${PN}-9.15-ccaux.patch"
+	epatch "${FILESDIR}/${PN}-9.15-source-dirs-defaults.patch"
+
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
 		cp gsdjvu-${GSDJVU_PV}/gsdjvu "${S}"
@@ -151,10 +154,14 @@ src_configure() {
 		FONTPATH="$FONTPATH${FONTPATH:+:}$path"
 	done
 
+	tc-export_build_env BUILD_CC
+
 	# We force the endian configure flags until this is fixed:
 	# http://bugs.ghostscript.com/show_bug.cgi?id=696498
 	PKGCONFIG=$(type -P $(tc-getPKG_CONFIG)) \
 	econf \
+		CCAUX="${BUILD_CC}" \
+		CFLAGSAUX="${BUILD_CFLAGS}" \
 		--enable-dynamic \
 		--enable-freetype \
 		--enable-fontconfig \

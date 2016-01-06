@@ -1,0 +1,32 @@
+Add "safe" defaults for the FT and LCMS2 source dirs
+
+So we don't risk (too much) finding spurious headers for wrong versions
+when linking to shared libraries, use the same safe default ("src") as
+the other shared libs.
+
+[NOTE: mostly backported from upstream, with a few modifications]
+---
+
+diff --git a/configure.ac b/configure.ac
+index 01d251997d05..8a2f6628b2f2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -709,7 +709,7 @@ AC_ARG_ENABLE([freetype], AC_HELP_STRING([--disable-freetype],
+ 
+ FT_BRIDGE=0
+ SHARE_FT=0
+-FTSRCDIR=
++FTSRCDIR=src
+ FT_CFLAGS=
+ FT_LIBS=
+ 
+@@ -1001,7 +1001,7 @@ AC_ARG_WITH([system-libtiff], AC_HELP_STRING([--with-system-libtiff],
+ TIFFDEVS=''
+ FAX_DEVS=''
+ 
+-LIBTIFFDIR=''
+-LIBTIFFCONFDIR=''
++LIBTIFFDIR='src'
++LIBTIFFCONFDIR='src'
+ 
+ TIFFDEVS_ALL='tiffs tiff12nc tiff24nc tiff48nc tiff32nc tiff64nc tiffcrle tifflzw tiffpack tiffgray tiffsep tiffsep1 tiffscaled'
