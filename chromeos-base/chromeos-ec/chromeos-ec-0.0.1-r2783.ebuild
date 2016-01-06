@@ -4,8 +4,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("9fce7075d992a5fc03476169600823b207ae5ff2" "e00c54dc27d21aa736c2626d2574eef7790c161c")
-CROS_WORKON_TREE=("98ccbca4dfb20c15fdfba0b105c2cb6a5ebce638" "fff8f1f0ae340686f4da82bbed7f8deb64b52c79")
+CROS_WORKON_COMMIT=("0c8a1b8d39734eaae692eacbe04894207bb2c6da" "e00c54dc27d21aa736c2626d2574eef7790c161c")
+CROS_WORKON_TREE=("27369562b39a8a4aeb54b1da65ec7abaceb8ca4b" "fff8f1f0ae340686f4da82bbed7f8deb64b52c79")
 S="${WORKDIR}/platform/ec"
 
 CROS_WORKON_PROJECT=("chromiumos/platform/ec" "chromiumos/third_party/tpm2")
