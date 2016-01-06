@@ -355,6 +355,7 @@ src_compile_depthcharge() {
 	fi
 
 	common+=( --cbfs-files "${froot}/cbfs" )
+	common+=( --rocbfs-files "${froot}/rocbfs" )
 	serial+=( --gbb-flags "+enable-serial" )
 
 	einfo "Building production image."
