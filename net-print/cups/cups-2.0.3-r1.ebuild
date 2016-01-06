@@ -33,6 +33,10 @@ LICENSE="GPL-2"
 SLOT="0"
 IUSE="acl dbus debug java kerberos lprng-compat pam
 	python selinux +ssl static-libs systemd +threads usb X xinetd zeroconf"
+# TODO: 'IUSE=kernel_linux' should be handled implicitly (e.g., with
+# IUSE_IMPLICIT), but this doesn't work with 'cros deploy' right now. See
+# http://crbug.com/579661
+IUSE="${IUSE} kernel_linux"
 
 LANGS="ca cs de es fr it ja pt_BR ru"
 for X in ${LANGS} ; do
