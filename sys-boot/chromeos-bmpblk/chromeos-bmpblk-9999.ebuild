@@ -100,7 +100,10 @@ src_compile() {
 
 src_install() {
 	if use bitmap_in_cbfs; then
-		insinto /firmware/cbfs
+		# Bitmaps need to reside in the RO CBFS only. Many boards do
+		# not have enough space in the RW CBFS regions to contain
+		# all image files.
+		insinto /firmware/rocbfs
 		doins "${WORKDIR}/${BOARD}"/vbgfx.bin
 		doins "${WORKDIR}/${BOARD}"/locales
 		doins "${WORKDIR}/${BOARD}"/locale_*.bin
