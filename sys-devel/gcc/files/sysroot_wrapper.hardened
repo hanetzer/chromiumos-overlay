@@ -154,7 +154,6 @@ else:
                            '-Wold-style-declaration', '-Wno-psabi',
                            '-Wno-unused-local-typedefs',
                            '-mno-movbe',
-                           '-march=armv8-a+crc',
                           ])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=', '-finline-limit=')
 
