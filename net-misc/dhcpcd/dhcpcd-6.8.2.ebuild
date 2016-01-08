@@ -47,6 +47,7 @@ src_prepare()
 	epatch "${FILESDIR}"/patches/${P}-DHCPv6-Fix-prefix-delegation-lease-file-name.patch
 	epatch "${FILESDIR}"/patches/${P}-Ensure-Gateway-Probe-Is-Broadcast.patch
 	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Fix-heap-based-overflow-in-dhcp_envoption1.patch
+	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Ensure-that-option-length-fits-inside-data-length-less-option-size.patch
 }
 
 src_configure()
