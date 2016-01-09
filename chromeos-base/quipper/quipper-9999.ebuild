@@ -62,21 +62,9 @@ src_install() {
 
 platform_pkg_test() {
 	local tests=(
-		address_mapper_test
-		buffer_reader_test
-		buffer_writer_test
-		conversion_utils_test
-		file_reader_test
-		perf_option_parser_test
-		perf_parser_test
-		perf_reader_test
+		integration_tests
 		perf_recorder_test
-		perf_serializer_test
-		perf_stat_parser_test
-		run_command_test
-		sample_info_reader_test
-		scoped_temp_path_test
-		utils_test
+		unit_tests
 	)
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
