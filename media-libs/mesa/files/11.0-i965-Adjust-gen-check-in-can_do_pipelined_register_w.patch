@@ -1,0 +1,40 @@
+From 1fc215a745f245ce18249856cb65491579e08692 Mon Sep 17 00:00:00 2001
+From: Francisco Jerez <currojerez@riseup.net>
+Date: Thu, 3 Sep 2015 17:08:16 +0300
+Subject: [PATCH 02/12] i965: Adjust gen check in
+ can_do_pipelined_register_writes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Allow for pipelined register writes for gen < 7.
+
+v2:
+ * Split from another patch and adjust comment (jljusten)
+
+Reviewed-by: Jordan Justen <jordan.l.justen@intel.com>
+Reviewed-by: Kristian Høgsberg  <krh@bitplanet.net>
+---
+ src/mesa/drivers/dri/i965/intel_extensions.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/intel_extensions.c b/src/mesa/drivers/dri/i965/intel_extensions.c
+index 4365b71..ef80d3e 100644
+--- a/src/mesa/drivers/dri/i965/intel_extensions.c
++++ b/src/mesa/drivers/dri/i965/intel_extensions.c
+@@ -42,8 +42,11 @@
+ static bool
+ can_do_pipelined_register_writes(struct brw_context *brw)
+ {
+-   /* Supposedly, Broadwell just works. */
+-   if (brw->gen >= 8)
++   /**
++    * gen >= 8 specifically allows these writes. gen <= 6 also
++    * doesn't block them.
++    */
++   if (brw->gen != 7)
+       return true;
+
+    static int result = -1;
+--
+1.9.1

@@ -1,0 +1,54 @@
+From 5d29544e27a500e9ae8f39a5aa0d38686f0426bb Mon Sep 17 00:00:00 2001
+From: Francisco Jerez <currojerez@riseup.net>
+Date: Thu, 3 Sep 2015 18:08:59 +0300
+Subject: [PATCH 08/12] i965/hsw: Enable L3 atomics.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Improves performance of the arb_shader_image_load_store-atomicity
+piglit test by over 25x (which isn't a real benchmark it's just heavy
+on atomics -- the improvement in a microbenchmark I wrote a while ago
+seemed to be even greater).  The drawback is one needs to be
+extra-careful not to hang the GPU (in fact the whole system).  A DC
+partition must have been allocated on L3, the "convert L3 cycle for DC
+to UC" bit may not be set, the MOCS L3 cacheability bit must be set
+for all surfaces accessed using DC atomics, and the SCRATCH1 and
+ROW_CHICKEN3 bits must be kept in sync.
+
+A fairly recent kernel is required for the command parser to allow
+writes to these registers.
+
+Reviewed-by: Samuel Iglesias Gonsálvez <siglesias@igalia.com>
+Acked-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Kristian Høgsberg  <krh@bitplanet.net>
+---
+ src/mesa/drivers/dri/i965/gen7_l3_state.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/gen7_l3_state.c b/src/mesa/drivers/dri/i965/gen7_l3_state.c
+index 712c7c7..141d481 100644
+--- a/src/mesa/drivers/dri/i965/gen7_l3_state.c
++++ b/src/mesa/drivers/dri/i965/gen7_l3_state.c
+@@ -258,5 +258,19 @@ setup_l3_config(struct brw_context *brw, const struct brw_l3_config *cfg)
+                 SET_FIELD(cfg->n[L3P_T], GEN7_L3CNTLREG3_T_ALLOC));
+
+       ADVANCE_BATCH();
++
++      if (brw->is_haswell && brw->intelScreen->cmd_parser_version >= 4) {
++         /* Enable L3 atomics on HSW if we have a DC partition, otherwise keep
++          * them disabled to avoid crashing the system hard.
++          */
++         BEGIN_BATCH(5);
++         OUT_BATCH(MI_LOAD_REGISTER_IMM | (5 - 2));
++         OUT_BATCH(HSW_SCRATCH1);
++         OUT_BATCH(has_dc ? 0 : HSW_SCRATCH1_L3_ATOMIC_DISABLE);
++         OUT_BATCH(HSW_ROW_CHICKEN3);
++         OUT_BATCH(HSW_ROW_CHICKEN3_L3_ATOMIC_DISABLE << 16 |
++                   (has_dc ? 0 : HSW_ROW_CHICKEN3_L3_ATOMIC_DISABLE));
++         ADVANCE_BATCH();
++      }
+    }
+ }
+--
+1.9.1

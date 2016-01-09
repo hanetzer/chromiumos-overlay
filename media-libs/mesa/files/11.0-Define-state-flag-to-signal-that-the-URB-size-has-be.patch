@@ -1,0 +1,82 @@
+From 1cf6eb2272630e6f708b58cfbb2e37be80f2f212 Mon Sep 17 00:00:00 2001
+From: Francisco Jerez <currojerez@riseup.net>
+Date: Fri, 8 Jan 2016 23:15:35 -0800
+Subject: [PATCH 04/12] Define state flag to signal that the URB size has been
+ altered.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This will make sure that we recalculate the URB layout anytime the URB
+size is modified by the L3 partitioning code.
+
+Reviewed-by: Jordan Justen <jordan.l.justen@intel.com>
+Reviewed-by: Kristian Høgsberg  <krh@bitplanet.net>
+---
+ src/mesa/drivers/dri/i965/brw_context.h      | 2 ++
+ src/mesa/drivers/dri/i965/brw_state_upload.c | 1 +
+ src/mesa/drivers/dri/i965/gen7_urb.c         | 3 +++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_context.h b/src/mesa/drivers/dri/i965/brw_context.h
+index df511f2..7ec6804 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.h
++++ b/src/mesa/drivers/dri/i965/brw_context.h
+@@ -214,6 +214,7 @@ enum brw_state_id {
+    BRW_STATE_SAMPLER_STATE_TABLE,
+    BRW_STATE_VS_ATTRIB_WORKAROUNDS,
+    BRW_STATE_COMPUTE_PROGRAM,
++   BRW_STATE_URB_SIZE,
+    BRW_NUM_STATE_BITS
+ };
+
+@@ -296,6 +297,7 @@ enum brw_state_id {
+ #define BRW_NEW_SAMPLER_STATE_TABLE     (1ull << BRW_STATE_SAMPLER_STATE_TABLE)
+ #define BRW_NEW_VS_ATTRIB_WORKAROUNDS   (1ull << BRW_STATE_VS_ATTRIB_WORKAROUNDS)
+ #define BRW_NEW_COMPUTE_PROGRAM         (1ull << BRW_STATE_COMPUTE_PROGRAM)
++#define BRW_NEW_URB_SIZE                (1ull << BRW_STATE_URB_SIZE)
+
+ struct brw_state_flags {
+    /** State update flags signalled by mesa internals */
+diff --git a/src/mesa/drivers/dri/i965/brw_state_upload.c b/src/mesa/drivers/dri/i965/brw_state_upload.c
+index 9de42ce..990f9bb 100644
+--- a/src/mesa/drivers/dri/i965/brw_state_upload.c
++++ b/src/mesa/drivers/dri/i965/brw_state_upload.c
+@@ -609,6 +609,7 @@ static struct dirty_bit_map brw_bits[] = {
+    DEFINE_BIT(BRW_NEW_SAMPLER_STATE_TABLE),
+    DEFINE_BIT(BRW_NEW_VS_ATTRIB_WORKAROUNDS),
+    DEFINE_BIT(BRW_NEW_COMPUTE_PROGRAM),
++   DEFINE_BIT(BRW_NEW_URB_SIZE),
+    {0, 0, 0}
+ };
+
+diff --git a/src/mesa/drivers/dri/i965/gen7_urb.c b/src/mesa/drivers/dri/i965/gen7_urb.c
+index 6916217..11a4f03 100644
+--- a/src/mesa/drivers/dri/i965/gen7_urb.c
++++ b/src/mesa/drivers/dri/i965/gen7_urb.c
+@@ -153,6 +153,7 @@ gen7_upload_urb(struct brw_context *brw)
+     * skip the rest of the logic.
+     */
+    if (!(brw->ctx.NewDriverState & BRW_NEW_CONTEXT) &&
++       !(brw->ctx.NewDriverState & BRW_NEW_URB_SIZE) &&
+        brw->urb.vsize == vs_size &&
+        brw->urb.gs_present == gs_present &&
+        brw->urb.gsize == gs_size) {
+@@ -176,6 +177,7 @@ gen7_upload_urb(struct brw_context *brw)
+    unsigned chunk_size_bytes = 8192;
+
+    /* Determine the size of the URB in chunks.
++    * BRW_NEW_URB_SIZE
+     */
+    unsigned urb_chunks = brw->urb.size * 1024 / chunk_size_bytes;
+
+@@ -314,6 +316,7 @@ const struct brw_tracked_state gen7_urb = {
+    .dirty = {
+       .mesa = 0,
+       .brw = BRW_NEW_CONTEXT |
++             BRW_NEW_URB_SIZE |
+              BRW_NEW_GEOMETRY_PROGRAM |
+              BRW_NEW_GS_PROG_DATA |
+              BRW_NEW_VS_PROG_DATA,
+--
+1.9.1

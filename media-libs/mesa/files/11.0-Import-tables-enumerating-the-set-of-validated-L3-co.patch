@@ -1,0 +1,226 @@
+From 9249964b8ed6b6a1ca3d922ab63ca63ae7d1ef0b Mon Sep 17 00:00:00 2001
+From: Francisco Jerez <currojerez@riseup.net>
+Date: Fri, 8 Jan 2016 21:04:24 -0800
+Subject: [PATCH 1/7] Import tables enumerating the set of validated L3
+ configurations.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+It should be possible to use additional L3 configurations other than
+the ones listed in the tables of validated allocations ("BSpec »
+3D-Media-GPGPU Engine » L3 Cache and URB [IVB+] » L3 Cache and URB [*]
+» L3 Allocation and Programming"), but it seems sensible for now to
+hard-code the tables in order to stick to the hardware docs.  Instead
+of setting up the arbitrary L3 partitioning given as input, the
+closest validated L3 configuration will be looked up in these tables
+and used to program the hardware.
+
+The included tables should work for Gen7-9.  Note that the quantities
+are specified in ways rather than in KB, this is because the L3
+control registers expect the value in ways, and because by doing that
+we can re-use a single table for all GT variants of the same
+generation (and in the case of IVB/HSW and CHV/SKL across different
+generations) which generally have different L3 way sizes but allow the
+same combinations of way allocations.
+
+v2: Use slice count from the devinfo structure instead of the gt
+    number to implement get_l3_way_size().
+
+Reviewed-by: Samuel Iglesias Gonsálvez <siglesias@igalia.com>
+Acked-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Kristian Høgsberg  <krh@bitplanet.net>
+---
+ src/mesa/drivers/dri/i965/Makefile.sources |   1 +
+ src/mesa/drivers/dri/i965/gen7_l3_state.c  | 167 +++++++++++++++++++++++++++++
+ 2 files changed, 168 insertions(+)
+ create mode 100644 src/mesa/drivers/dri/i965/gen7_l3_state.c
+
+diff --git a/src/mesa/drivers/dri/i965/Makefile.sources b/src/mesa/drivers/dri/i965/Makefile.sources
+index dfdad75..028ce3e 100644
+--- a/src/mesa/drivers/dri/i965/Makefile.sources
++++ b/src/mesa/drivers/dri/i965/Makefile.sources
+@@ -165,6 +165,7 @@ i965_FILES = \
+ 	gen7_blorp.h \
+ 	gen7_disable.c \
+ 	gen7_gs_state.c \
++        gen7_l3_state.c \
+ 	gen7_misc_state.c \
+ 	gen7_sf_state.c \
+ 	gen7_sol_state.c \
+diff --git a/src/mesa/drivers/dri/i965/gen7_l3_state.c b/src/mesa/drivers/dri/i965/gen7_l3_state.c
+new file mode 100644
+index 0000000..ac4c93b
+--- /dev/null
++++ b/src/mesa/drivers/dri/i965/gen7_l3_state.c
+@@ -0,0 +1,167 @@
++/*
++ * Copyright (c) 2015 Intel Corporation
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
++ * IN THE SOFTWARE.
++ */
++
++#include "brw_context.h"
++#include "brw_defines.h"
++#include "brw_state.h"
++#include "intel_batchbuffer.h"
++
++/**
++ * Chunk of L3 cache reserved for some specific purpose.
++ */
++enum brw_l3_partition {
++   /** Shared local memory. */
++   L3P_SLM = 0,
++   /** Unified return buffer. */
++   L3P_URB,
++   /** Union of DC and RO. */
++   L3P_ALL,
++   /** Data cluster RW partition. */
++   L3P_DC,
++   /** Union of IS, C and T. */
++   L3P_RO,
++   /** Instruction and state cache. */
++   L3P_IS,
++   /** Constant cache. */
++   L3P_C,
++   /** Texture cache. */
++   L3P_T,
++   /** Number of supported L3 partitions. */
++   NUM_L3P
++};
++
++/**
++ * L3 configuration represented as the number of ways allocated for each
++ * partition.  \sa get_l3_way_size().
++ */
++struct brw_l3_config {
++   unsigned n[NUM_L3P];
++};
++
++/**
++ * IVB/HSW validated L3 configurations.
++ */
++static const struct brw_l3_config ivb_l3_configs[] = {
++   /* SLM URB ALL DC  RO  IS   C   T */
++   {{  0, 32,  0,  0, 32,  0,  0,  0 }},
++   {{  0, 32,  0, 16, 16,  0,  0,  0 }},
++   {{  0, 32,  0,  4,  0,  8,  4, 16 }},
++   {{  0, 28,  0,  8,  0,  8,  4, 16 }},
++   {{  0, 28,  0, 16,  0,  8,  4,  8 }},
++   {{  0, 28,  0,  8,  0, 16,  4,  8 }},
++   {{  0, 28,  0,  0,  0, 16,  4, 16 }},
++   {{  0, 32,  0,  0,  0, 16,  0, 16 }},
++   {{  0, 28,  0,  4, 32,  0,  0,  0 }},
++   {{ 16, 16,  0, 16, 16,  0,  0,  0 }},
++   {{ 16, 16,  0,  8,  0,  8,  8,  8 }},
++   {{ 16, 16,  0,  4,  0,  8,  4, 16 }},
++   {{ 16, 16,  0,  4,  0, 16,  4,  8 }},
++   {{ 16, 16,  0,  0, 32,  0,  0,  0 }},
++   {{ 0 }}
++};
++
++/**
++ * VLV validated L3 configurations.
++ */
++static const struct brw_l3_config vlv_l3_configs[] = {
++   /* SLM URB ALL DC  RO  IS   C   T */
++   {{  0, 64,  0,  0, 32,  0,  0,  0 }},
++   {{  0, 80,  0,  0, 16,  0,  0,  0 }},
++   {{  0, 80,  0,  8,  8,  0,  0,  0 }},
++   {{  0, 64,  0, 16, 16,  0,  0,  0 }},
++   {{  0, 60,  0,  4, 32,  0,  0,  0 }},
++   {{ 32, 32,  0, 16, 16,  0,  0,  0 }},
++   {{ 32, 40,  0,  8, 16,  0,  0,  0 }},
++   {{ 32, 40,  0, 16,  8,  0,  0,  0 }},
++   {{ 0 }}
++};
++
++/**
++ * BDW validated L3 configurations.
++ */
++static const struct brw_l3_config bdw_l3_configs[] = {
++   /* SLM URB ALL DC  RO  IS   C   T */
++   {{  0, 48, 48,  0,  0,  0,  0,  0 }},
++   {{  0, 48,  0, 16, 32,  0,  0,  0 }},
++   {{  0, 32,  0, 16, 48,  0,  0,  0 }},
++   {{  0, 32,  0,  0, 64,  0,  0,  0 }},
++   {{  0, 32, 64,  0,  0,  0,  0,  0 }},
++   {{ 24, 16, 48,  0,  0,  0,  0,  0 }},
++   {{ 24, 16,  0, 16, 32,  0,  0,  0 }},
++   {{ 24, 16,  0, 32, 16,  0,  0,  0 }},
++   {{ 0 }}
++};
++
++/**
++ * CHV/SKL validated L3 configurations.
++ */
++static const struct brw_l3_config chv_l3_configs[] = {
++   /* SLM URB ALL DC  RO  IS   C   T */
++   {{  0, 48, 48,  0,  0,  0,  0,  0 }},
++   {{  0, 48,  0, 16, 32,  0,  0,  0 }},
++   {{  0, 32,  0, 16, 48,  0,  0,  0 }},
++   {{  0, 32,  0,  0, 64,  0,  0,  0 }},
++   {{  0, 32, 64,  0,  0,  0,  0,  0 }},
++   {{ 32, 16, 48,  0,  0,  0,  0,  0 }},
++   {{ 32, 16,  0, 16, 32,  0,  0,  0 }},
++   {{ 32, 16,  0, 32, 16,  0,  0,  0 }},
++   {{ 0 }}
++};
++
++/**
++ * Return a zero-terminated array of validated L3 configurations for the
++ * specified device.
++ */
++static const struct brw_l3_config *
++get_l3_configs(const struct brw_device_info *devinfo)
++{
++   switch (devinfo->gen) {
++   case 7:
++      return (devinfo->is_baytrail ? vlv_l3_configs : ivb_l3_configs);
++
++   case 8:
++      return (devinfo->is_cherryview ? chv_l3_configs : bdw_l3_configs);
++
++   case 9:
++      return chv_l3_configs;
++
++   default:
++      unreachable("Not implemented");
++   }
++}
++
++/**
++ * Return the size of an L3 way in KB.
++ */
++static unsigned
++get_l3_way_size(const struct brw_device_info *devinfo)
++{
++   if (devinfo->is_baytrail)
++      return 2;
++
++   else if (devinfo->is_cherryview || devinfo->gt == 1)
++      return 4;
++
++   else
++      return 8 * devinfo->num_slices;
++}
+-- 
+1.9.1
+
