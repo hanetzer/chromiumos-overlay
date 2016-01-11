@@ -16,6 +16,7 @@ CROS_BOARDS=(
 	buddy
 	butterfly
 	candy
+	chell
 	cid
 	clapper
 	cranky
@@ -29,6 +30,7 @@ CROS_BOARDS=(
 	enguarde
 	expresso
 	falco
+	glados
 	glimmer
 	gnawty
 	guado
