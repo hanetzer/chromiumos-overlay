@@ -20,6 +20,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
+	epatch "${FILESDIR}/${P}-use-right-cpp.patch"
 	eautoreconf
 }
 
