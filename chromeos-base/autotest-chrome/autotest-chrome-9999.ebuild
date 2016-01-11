@@ -68,6 +68,7 @@ IUSE_TESTS=(
 	+tests_display_ClientChameleonConnection
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_PowerManagement
+	+tests_enterprise_RemoraRequisition
 	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
 	+tests_graphics_KhronosGLCTSChrome
