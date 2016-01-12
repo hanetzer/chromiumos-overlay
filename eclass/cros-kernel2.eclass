@@ -254,6 +254,8 @@ kasan_config="
 CONFIG_KASAN=y
 CONFIG_KASAN_INLINE=y
 CONFIG_TEST_KASAN=m
+CONFIG_SLUB_DEBUG=y
+CONFIG_SLUB_DEBUG_ON=y
 "
 
 kgdb_desc="Enable kgdb"
