@@ -20,7 +20,7 @@ SRC_URI="
 LICENSE="AGPL-3 CPL-1.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cups dbus djvu gtk idn linguas_de static-libs X"
+IUSE="cups dbus djvu gtk idn linguas_de static-libs X tiff"
 RESTRICT="djvu? ( bindist )"
 
 COMMON_DEPEND="
@@ -30,7 +30,7 @@ COMMON_DEPEND="
 	media-libs/jbig2dec
 	>=media-libs/lcms-2.6:2
 	>=media-libs/libpng-1.6.2:0=
-	>=media-libs/tiff-4.0.1:0=
+	tiff? ( >=media-libs/tiff-4.0.1:0= )
 	>=sys-libs/zlib-1.2.7:=
 	virtual/jpeg:0
 	cups? ( >=net-print/cups-1.3.8 )
@@ -166,7 +166,7 @@ src_configure() {
 		--with-ijs \
 		--with-jbig2dec \
 		--with-libpaper \
-		--with-system-libtiff \
+		$(use_with tiff system-libtiff) \
 		--without-lcms \
 		--without-luratech \
 		$(use_enable cups) \
