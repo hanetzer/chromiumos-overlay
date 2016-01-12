@@ -46,7 +46,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
-	epatch "${FILESDIR}"/gen789-use-coefficient-matrix-to-convert-yuv-to-rgb.patch
+	epatch "${FILESDIR}"/vp9_decoding-disable-all-seg-reference-for-key-frame.patch
+	epatch "${FILESDIR}"/update-PIPE_MODE-command-setting-for-VP9-decoding.patch
 	eautoreconf
 }
 
