@@ -108,7 +108,7 @@ MULTILIB_CHOST_TOOLS=(
 pkg_setup() {
 	enewgroup lp
 	enewuser lp -1 -1 -1 lp
-	enewgroup lpadmin 106
+	enewgroup lpadmin
 
 	use python && python-single-r1_pkg_setup
 
