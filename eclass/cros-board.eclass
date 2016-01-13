@@ -103,6 +103,7 @@ ALL_BOARDS=(
 	gandof
 	gizmo
 	glados
+	glados-cheets
 	glimmer
 	gnawty
 	guado
