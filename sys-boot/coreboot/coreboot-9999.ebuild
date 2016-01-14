@@ -99,6 +99,11 @@ src_prepare() {
 
 		cp -v "${FILESDIR}/configs/config.${board}" .config
 
+		# Override mainboard vendor if needed.
+		if [[ -n "${SYSTEM_OEM}" ]]; then
+			echo "CONFIG_MAINBOARD_VENDOR=\"${SYSTEM_OEM}\"" >> .config
+		fi
+
 		# In case config comes from a symlink we are likely building
 		# for an overlay not matching this config name. Enable adding
 		# a CBFS based board ID for coreboot.
