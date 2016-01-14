@@ -29,7 +29,7 @@ COMMON_DEPEND="
 	>=media-libs/freetype-2.4.9:2=
 	media-libs/jbig2dec
 	>=media-libs/lcms-2.6:2
-	>=media-libs/libpng-1.6.2:0=
+	>=media-libs/libpng-1.2:0=
 	tiff? ( >=media-libs/tiff-4.0.1:0= )
 	>=sys-libs/zlib-1.2.7:=
 	virtual/jpeg:0
