@@ -48,8 +48,10 @@ pkg_preinst() {
 	enewuser "buffet"
 	enewgroup "buffet"
 	# Additional groups to put buffet into.
-	enewgroup "apmanager"
-	enewgroup "peerd"
+	if use wifi_bootstrapping ; then
+		enewgroup "apmanager"
+		enewgroup "peerd"
+	fi
 }
 
 src_install() {
