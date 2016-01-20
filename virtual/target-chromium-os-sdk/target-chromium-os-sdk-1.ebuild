@@ -373,6 +373,11 @@ RDEPEND="${RDEPEND}
 	brillo-base/bidl
 	"
 
+# Host dependencies for converting sparse into raw images (simg2img).
+RDEPEND="${RDEPEND}
+	brillo-base/libsparse
+	"
+
 # Host dependencies for building Chromium code (libmojo)
 RDEPEND="${RDEPEND}
 	dev-python/ply
