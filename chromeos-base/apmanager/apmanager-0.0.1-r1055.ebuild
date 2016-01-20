@@ -29,7 +29,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/permission_broker
 	net-dns/dnsmasq
-	=net-wireless/hostapd-2.3
+	~net-wireless/hostapd-2.3
 "
 
 DEPEND="
