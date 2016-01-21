@@ -2,7 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
+
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/google-breakpad"
+	"linux-syscall-support"
+)
+CROS_WORKON_LOCALNAME=(
+	"../third_party/breakpad"
+	"../third_party/breakpad/src/third_party/lss"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${S}/src/third_party/lss"
+)
 
 inherit cros-workon toolchain-funcs flag-o-matic multiprocessing
 
@@ -13,10 +25,14 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-alltests cros_host"
+IUSE="-alltests cros_host test"
 
 RDEPEND="net-misc/curl"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)"
 
 src_prepare() {
 	find "${S}" -type f -exec touch -r "${S}"/configure {} +
@@ -36,7 +52,7 @@ src_configure() {
 
 	mkdir build
 	pushd build >/dev/null
-	ECONF_SOURCE=${S} multijob_child_init cros-workon_src_configure
+	ECONF_SOURCE=${S} multijob_child_init cros-workon_src_configure --enable-system-test-libs
 	popd >/dev/null
 
 	if use cros_host; then
