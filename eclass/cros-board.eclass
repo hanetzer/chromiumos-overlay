@@ -227,6 +227,7 @@ ALL_BOARDS=(
 	tidus
 	tricky
 	ultima
+	umaro
 	#urara
 	veyron
 	veyron_brain
