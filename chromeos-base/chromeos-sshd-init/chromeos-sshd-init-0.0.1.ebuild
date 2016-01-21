@@ -14,9 +14,16 @@ KEYWORDS="*"
 S="${WORKDIR}"
 
 src_install() {
+	exeinto /usr/share/chromeos-ssh-config
+	doexe "${FILESDIR}"/sshd-pre
+	doexe "${FILESDIR}"/sshd-post
+
+	insinto /usr/lib/systemd/system/sshd.service.d
+	doins "${FILESDIR}"/chromeos-sshd.conf
+
 	insinto /usr/share/chromeos-ssh-config/init
-	doins "${FILESDIR}"/*.conf
+	doins "${FILESDIR}"/openssh-server.conf
 
 	insinto /etc/init
-	doins "${FILESDIR}"/*.conf.README
+	doins "${FILESDIR}"/openssh-server.conf.README
 }
