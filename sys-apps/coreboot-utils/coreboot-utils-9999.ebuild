@@ -39,7 +39,9 @@ is_x86() {
 src_compile() {
 	tc-export CC
 	emake -C util/cbfstool obj="${PWD}/util/cbfstool"
-	if ! use cros_host; then
+	if use cros_host; then
+		emake -C util/archive CC="${CC}"
+	else
 		emake -C util/cbmem CC="${CC}"
 	fi
 	if is_x86; then
@@ -54,12 +56,13 @@ src_compile() {
 			emake -C util/cbmem CC="${CC}"
 		fi
 	fi
-	use bitmap_in_cbfs && emake -C util/archive CC="${CC}"
 }
 
 src_install() {
 	dobin util/cbfstool/cbfstool
-	if ! use cros_host; then
+	if use cros_host; then
+		dobin util/archive/archive
+	else
 		dobin util/cbmem/cbmem
 	fi
 	if is_x86; then
@@ -78,5 +81,4 @@ src_install() {
 			doins util/mma/mma.conf
 		fi
 	fi
-	use bitmap_in_cbfs && dobin util/archive/archive
 }

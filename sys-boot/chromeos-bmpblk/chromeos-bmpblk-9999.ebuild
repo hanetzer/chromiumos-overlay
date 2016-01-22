@@ -96,7 +96,7 @@ src_prepare() {
 src_compile() {
 	emake OUTPUT="${WORKDIR}" "${BOARD}"
 	if use bitmap_in_cbfs; then
-		emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="${ROOT}usr/bin/archive" archive
+		emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
 	fi
 }
 
