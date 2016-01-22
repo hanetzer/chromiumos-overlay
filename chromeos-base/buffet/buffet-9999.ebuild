@@ -22,21 +22,21 @@ IUSE="wifi_bootstrapping"
 COMMON_DEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libweave
-	chromeos-base/webserver
+	wifi_bootstrapping? (
+		chromeos-base/apmanager
+		chromeos-base/peerd
+		chromeos-base/webserver
+	)
 "
 
 RDEPEND="
 	${COMMON_DEPEND}
-	wifi_bootstrapping? (
-		chromeos-base/apmanager
-		chromeos-base/peerd
-	)
 "
 
 DEPEND="
 	${COMMON_DEPEND}
-	chromeos-base/apmanager
 	chromeos-base/shill-client
+	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock
 		dev-cpp/gtest
