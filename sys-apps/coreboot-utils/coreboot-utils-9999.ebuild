@@ -38,9 +38,8 @@ is_x86() {
 
 src_compile() {
 	tc-export CC
-	if use cros_host; then
-		emake -C util/cbfstool obj="${PWD}/util/cbfstool"
-	else
+	emake -C util/cbfstool obj="${PWD}/util/cbfstool"
+	if ! use cros_host; then
 		emake -C util/cbmem CC="${CC}"
 	fi
 	if is_x86; then
@@ -52,7 +51,6 @@ src_compile() {
 			emake -C util/nvramtool CC="${CC}"
 		fi
 		if use mma; then
-			emake -C util/cbfstool obj="${PWD}/util/cbfstool"
 			emake -C util/cbmem CC="${CC}"
 		fi
 	fi
@@ -60,9 +58,8 @@ src_compile() {
 }
 
 src_install() {
-	if use cros_host; then
-		dobin util/cbfstool/cbfstool
-	else
+	dobin util/cbfstool/cbfstool
+	if ! use cros_host; then
 		dobin util/cbmem/cbmem
 	fi
 	if is_x86; then
@@ -77,7 +74,6 @@ src_install() {
 			dobin util/mma/mma_setup_test.sh
 			dobin util/mma/mma_get_result.sh
 			dobin util/mma/mma_automated_test.sh
-			dobin util/cbfstool/cbfstool
 			insinto /etc/init
 			doins util/mma/mma.conf
 		fi
