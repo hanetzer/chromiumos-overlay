@@ -9,7 +9,7 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="platform/external/libchrome"
-CROS_WORKON_COMMIT="da04820d4f6c808cc997a3957be0aad62c4f3fd2"
+CROS_WORKON_COMMIT="1ac3a5e3e15a0a3db48c4cb13736ce38033831fe"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
@@ -28,6 +28,7 @@ IUSE="cros_host"
 # pulled only into the configurations that require it.
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
+	dev-libs/modp_b64
 	dev-libs/nss
 	dev-libs/protobuf
 	sys-apps/dbus"
@@ -77,6 +78,8 @@ src_install() {
 		base/threading
 		base/time
 		base/timer
+		base/trace_event
+		base/trace_event/common
 		build
 		components/timers
 		dbus

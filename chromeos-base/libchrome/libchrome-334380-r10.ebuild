@@ -1,1 +1,0 @@
-libchrome-334380.ebuild

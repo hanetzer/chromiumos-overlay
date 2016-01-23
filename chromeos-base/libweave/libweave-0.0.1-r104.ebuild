@@ -31,6 +31,12 @@ DEPEND="
 	dev-cpp/gtest
 "
 
+src_prepare() {
+	# Temporary patch until we can uprev the ToT version of libweave into
+	# CrOS source tree
+	epatch ${FILESDIR}/patches/libweave-int64.patch
+}
+
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
