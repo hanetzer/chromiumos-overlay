@@ -3,7 +3,12 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r2.ebuild,v 1.1 2010/12/13 00:35:03 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/third_party/bsdiff"
+CROS_WORKON_BLACKLIST=1
+# cros-workon expects the repo to be in src/third_party, but is in src/aosp.
+CROS_WORKON_LOCALNAME="../aosp/external/bsdiff"
+CROS_WORKON_PROJECT="platform/external/bsdiff"
+CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_INCREMENTAL_BUILD=1
 
 inherit cros-workon toolchain-funcs flag-o-matic
 
@@ -23,7 +28,7 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	append-lfs-flags
-	tc-export CC
+	tc-export CXX
 	makeargs=( USE_BSDIFF=y )
 }
 
