@@ -391,6 +391,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for building/testing factory software
 RDEPEND="${RDEPEND}
+	chromeos-base/regions
 	dev-libs/closure-library
 	dev-libs/closure_linter
 	dev-python/autopep8
