@@ -31,6 +31,7 @@ IUSE="
 	legacy_keyboard
 	legacy_power_button
 	moblab
+	native_gpu_memory_buffers
 	natural_scroll_default
 	neon
 	opengles
