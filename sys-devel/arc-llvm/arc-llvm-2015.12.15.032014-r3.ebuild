@@ -14,6 +14,10 @@ SLOT="0"
 KEYWORDS="-* amd64"
 IUSE=""
 
+# These prebuilts are already properly stripped.
+RESTRICT="strip"
+QA_PREBUILT="*"
+
 INSTALL_DIR="/opt/android/arc-llvm"
 
 src_install() {

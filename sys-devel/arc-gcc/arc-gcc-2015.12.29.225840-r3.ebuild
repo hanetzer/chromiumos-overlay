@@ -14,9 +14,16 @@ SLOT="0"
 KEYWORDS="-* amd64"
 IUSE=""
 
+# These prebuilts are already properly stripped.
+RESTRICT="strip"
+QA_PREBUILT="*"
+
 INSTALL_DIR="/opt/android/arc-gcc/arm"
 
 src_install() {
+	# Clean up some loose cruft.
+	rm -r */.git || die
+
 	dodir "${INSTALL_DIR}"
 	cp -pPR * "${D}/${INSTALL_DIR}/" || die
 }
