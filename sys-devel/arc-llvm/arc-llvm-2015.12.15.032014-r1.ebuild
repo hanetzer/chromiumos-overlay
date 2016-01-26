@@ -14,8 +14,6 @@ SLOT="0"
 KEYWORDS="-* amd64"
 IUSE=""
 
-S=${WORKDIR}
-
 INSTALL_DIR="/opt/android"
 
 src_install() {
