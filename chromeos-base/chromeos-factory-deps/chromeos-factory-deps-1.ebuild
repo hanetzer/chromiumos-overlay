@@ -88,10 +88,15 @@ FACTORY_TEST_RDEPEND+="
 	chromeos-base/autotest-client
 "
 
+# Packages for a rich set of general system commands.
+FACTORY_TEST_RDEPEND+="
+	sys-apps/busybox
+	sys-apps/toybox
+"
+
 # Packages used by finalize.
 FACTORY_TEST_RDEPEND+="
 	chromeos-base/memento_softwareupdate
-	sys-apps/busybox
 	sys-apps/coreboot-utils
 "
 
