@@ -17,7 +17,7 @@ IUSE="cros_host"
 
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-python/numpy
-	dev-python/pexpect
+	>=dev-python/pexpect-3.0
 	dev-python/pyserial
 	dev-python/pyusb
 	virtual/libusb:1
