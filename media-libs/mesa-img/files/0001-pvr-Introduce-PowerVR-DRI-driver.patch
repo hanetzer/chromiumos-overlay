@@ -29,8 +29,8 @@ Change-Id: I3b21e84b290c5057e7b11681c3a7b59485094aae
  src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
  src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  183 +++
  src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
- src/mesa/drivers/dri/pvr/pvrutil.c                 |  519 +++++++
- 25 files changed, 8251 insertions(+)
+ src/mesa/drivers/dri/pvr/pvrutil.c                 |  495 +++++++
+ 25 files changed, 8227 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
@@ -7967,7 +7967,7 @@ new file mode 100644
 index 0000000..b4afd4f
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,519 @@
+@@ -0,0 +1,495 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -8110,30 +8110,6 @@ index 0000000..b4afd4f
 +				.iDRIFormat = __DRI_IMAGE_FORMAT_ARGB1555,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
-+		},
-+	},
-+#endif
-+#if defined(__DRI_IMAGE_FOURCC_MT12)
-+	/* We patch this format into Mesa */
-+	{
-+		.eIMGPixelFormat = IMG_PIXFMT_YUV8_420_2PLANE_PACK8_P,
-+		.iDRIFourCC = __DRI_IMAGE_FOURCC_MT12,
-+		.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
-+		.iDRIComponents = __DRI_IMAGE_COMPONENTS_Y_UV,
-+		.uiNumPlanes = 2,
-+		.sPlanes[0] =
-+		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
-+				.uiWidthShift = 0,
-+				.uiHeightShift = 0
-+		},
-+		.sPlanes[1] =
-+		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
-+				.uiWidthShift = 1,
-+				.uiHeightShift = 1
 +		},
 +	},
 +#endif

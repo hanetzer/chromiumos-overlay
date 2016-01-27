@@ -149,7 +149,7 @@ src_prepare() {
 	# IMG patches
 	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
-	epatch "${FILESDIR}"/0006-dri-Add-MT12-and-MT21-DRI-fourcc.patch
+	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
 	epatch "${FILESDIR}"/0010-GL_EXT_robustness-entry-points.patch
 	epatch "${FILESDIR}"/0012-GL_KHR_blend_equation_advanced-entry-points.patch
