@@ -14,9 +14,7 @@ SLOT="0"
 KEYWORDS="-* amd64"
 IUSE=""
 
-S=${WORKDIR}
-
-INSTALL_DIR="/opt/android"
+INSTALL_DIR="/opt/android/arc-gcc/arm"
 
 src_install() {
 	dodir "${INSTALL_DIR}"
