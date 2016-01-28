@@ -25,8 +25,15 @@ inherit flag-o-matic
 
 # These are internal variables the user should not need to mess with.
 ARC_BASE="/opt/android"
+
 ARC_CLANG_BASE="${ARC_BASE}/arc-llvm/3.8/bin"
-ARC_GCC_ARM_PREFIX="${ARC_BASE}/arc-gcc/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+
+ARC_GCC_BASE="${ARC_BASE}/arc-gcc"
+ARC_GCC_ARM_BASE="${ARC_GCC_BASE}/arm/arm-linux-androideabi-4.9"
+ARC_GCC_ARM_BINDIR="${ARC_GCC_ARM_BASE}/bin"
+ARC_GCC_ARM_LIBDIR="${ARC_GCC_ARM_BASE}/lib/gcc/arm-linux-androideabi/4.9"
+ARC_GCC_ARM_PREFIX="${ARC_GCC_ARM_BINDIR}/arm-linux-androideabi-"
+
 ARC_SYSROOT_BASE="${ARC_BASE}"
 
 # Make sure we know how to handle the active system.
@@ -38,6 +45,11 @@ arc-build-check-arch() {
 }
 
 _arc-build-select-common() {
+	if [[ -n ${ARC_SYSROOT} ]] ; then
+		# If we've already been set up, don't re-run.
+		return 0
+	fi
+
 	arc-build-check-arch
 
 	# Set up flags for the android sysroot.
@@ -65,10 +77,17 @@ arc-build-select-gcc() {
 
 # Set up the compiler settings for clang.
 arc-build-select-clang() {
-	die "does not work yet"
-
 	export CC="${ARC_CLANG_BASE}/clang"
 	export CXX="${ARC_CLANG_BASE}/clang++"
+
+	local target
+	case ${ARCH} in
+	arm) target="arm-linux-androideabi" ;;
+	esac
+	CC+=" -target ${target} -B${ARC_GCC_ARM_BINDIR}"
+	CXX+=" -target ${target} -B${ARC_GCC_ARM_BINDIR}"
+
+	append-ldflags -L"${ARC_GCC_ARM_LIBDIR}"
 
 	_arc-build-select-common
 }
