@@ -42,7 +42,6 @@ DEPEND="${RDEPEND}"
 
 XORG_EAUTORECONF=yes
 PATCHES=(
-	"${FILESDIR}"/0001-tests-install-test-programs.patch
 	"${FILESDIR}"/drm_rockchip-0001-add-support-for-rockchip.patch
 	"${FILESDIR}"/drm_mediatek-0001-add-support-for-mediatek.patch
 	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
