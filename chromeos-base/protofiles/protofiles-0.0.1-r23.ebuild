@@ -26,7 +26,7 @@ EGIT_REPO_URIS=(
 
 	"chromeos"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
-	"da5ae4f722a91e02737341d2b4f2295298d04675"
+	"15ddbc750c7bf4594769e1a3d7ca597f52d641d2"
 )
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
