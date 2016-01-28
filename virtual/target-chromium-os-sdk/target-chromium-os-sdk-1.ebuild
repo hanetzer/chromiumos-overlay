@@ -91,6 +91,13 @@ RDEPEND="${RDEPEND}
 	sys-fs/mtd-utils
 	"
 
+# Needed to build Android/ARC userland code.
+RDEPEND="${RDEPEND}
+	sys-devel/arc-gcc
+	sys-devel/arc-libs
+	sys-devel/arc-llvm
+	"
+
 # Needed to run 'repo selfupdate'
 RDEPEND="${RDEPEND}
 	app-crypt/gnupg
