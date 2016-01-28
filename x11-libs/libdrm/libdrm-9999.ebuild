@@ -1,25 +1,21 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-libs/libdrm/libdrm-2.4.50.ebuild,v 1.1 2013/12/04 12:08:51 chithanh Exp $
 
-EAPI=4
-inherit xorg-2
+EAPI="4"
+CROS_WORKON_PROJECT="chromiumos/third_party/libdrm"
 
-EGIT_REPO_URI="git://anongit.freedesktop.org/git/mesa/drm"
+inherit xorg-2 cros-workon
 
 DESCRIPTION="X.Org libdrm library"
 HOMEPAGE="http://dri.freedesktop.org/"
-if [[ ${PV} = 9999* ]]; then
-	SRC_URI=""
-else
-	SRC_URI="http://dri.freedesktop.org/${PN}/${P}.tar.bz2"
-fi
+SRC_URI=""
 
 # This package uses the MIT license inherited from Xorg but fails to provide
 # any license file in its source, so we add X as a license, which lists all
 # the Xorg copyright holders and allows license generation to pick them up.
 LICENSE="|| ( MIT X )"
-KEYWORDS="*"
+SLOT="0"
+KEYWORDS="~*"
 VIDEO_CARDS="amdgpu exynos freedreno intel mediatek nouveau omap radeon vmware rockchip"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
@@ -30,7 +26,6 @@ REQUIRED_USE="video_cards_exynos? ( libkms )
 	video_cards_mediatek? ( libkms )
 	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
-RESTRICT="${RESTRICT} nomirror" #libdrm-2.4.61 not yet available on the Google mirror
 
 RDEPEND="dev-libs/libpthread-stubs
 	udev? ( virtual/udev )
@@ -41,14 +36,6 @@ RDEPEND="dev-libs/libpthread-stubs
 DEPEND="${RDEPEND}"
 
 XORG_EAUTORECONF=yes
-PATCHES=(
-	"${FILESDIR}"/drm_rockchip-0001-add-support-for-rockchip.patch
-	"${FILESDIR}"/drm_mediatek-0001-add-support-for-mediatek.patch
-	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
-	"${FILESDIR}"/drm_mediatek-0003-Add-Mediatek-proprietary-format.patch
-	"${FILESDIR}"/drm_vgem-0001-add-vgem-ioctl-macro-definitions.patch
-	"${FILESDIR}"/modetest-Also-print-the-pixel-clock.patch
-)
 
 src_prepare() {
 	xorg-2_src_prepare
