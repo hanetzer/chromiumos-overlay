@@ -1,0 +1,27 @@
+From e7f405bbcc343f684c802426cdcca25c16fe2c4c Mon Sep 17 00:00:00 2001
+From: "Ilja H. Friedel" <ihf@chromium.org>
+Date: Fri, 5 Feb 2016 16:27:51 -0800
+Subject: [PATCH] Fix clang signed shift warning.
+
+TEST=No more
+warning: shifting a negative signed value is undefined [-Wshift-negative-value]
+---
+ framework/delibs/debase/deInt32.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/framework/delibs/debase/deInt32.h b/framework/delibs/debase/deInt32.h
+index 1ec9a37..6a4b636 100644
+--- a/framework/delibs/debase/deInt32.h
++++ b/framework/delibs/debase/deInt32.h
+@@ -478,7 +478,7 @@ DE_INLINE deInt32 deInt32ModF (deInt32 n, deInt32 d)
+ 
+ DE_INLINE deBool deInt64InInt32Range (deInt64 x)
+ {
+-	return ((x >= (-1ll<<31)) && (x <= ((1ll<<31)-1)));
++	return ((x >= -(1ll<<31)) && (x <= ((1ll<<31)-1)));
+ }
+ 
+ 
+-- 
+2.1.2
+

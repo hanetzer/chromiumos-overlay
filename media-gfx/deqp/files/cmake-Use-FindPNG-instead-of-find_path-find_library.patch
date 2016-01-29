@@ -1,4 +1,4 @@
-From 5e11275cb6fb176c2cf8e5770c5f5b46c5b3b9da Mon Sep 17 00:00:00 2001
+From 2eebd55a4cc91c4c0069f39d4c7256b5783b07f2 Mon Sep 17 00:00:00 2001
 From: Chad Versace <chad.versace@linux.intel.com>
 Date: Fri, 13 Mar 2015 14:41:58 -0700
 Subject: [PATCH 1/2] cmake: Use FindPNG instead of find_path/find_library
@@ -18,10 +18,10 @@ Signed-off-by: Chad Versace <chad.versace@intel.com>
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f04916c..f1c27d5 100644
+index 9760d72..50c2f8d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -69,8 +69,14 @@ endif ()
+@@ -66,8 +66,14 @@ endif ()
  include_directories(${ZLIB_INCLUDE_PATH})
  
  # libpng
@@ -39,5 +39,5 @@ index f04916c..f1c27d5 100644
  if (NOT PNG_INCLUDE_PATH OR NOT PNG_LIBRARY)
  	message(STATUS "System version of libpng not found, using external/libpng")
 -- 
-2.2.0
+2.7.0.rc3.207.g0ac5344
 
