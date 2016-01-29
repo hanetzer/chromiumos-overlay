@@ -1,0 +1,115 @@
+This patch adds SELinux functionality to upstart, by making it load the SELinux
+policy and then re-exec itself.  This appears to be all that is required to
+support SELinux in the init process.
+
+This mimics an existing upstart patch that is floating around but was never
+mainlined in any major distribution (afaik), likely because upstart is no
+longer the default init for any of them (also afaik).  It also mimics the
+behavior of other init programs, for example Android's init.
+
+The patch was developed specifically for Chromium OS, which at this time is
+using a patched upstart version 1.2. It is meant to be applied after a number
+of other patches as described in the Chromium OS upstart ebuild in
+src/third_party/chromiumos-overlay/sys-apps/upstart.
+
+Patch by Luigi Semenzato <semenzato@chromium.org>
+
+diff --git a/configure.ac b/configure.ac
+index 277dff2..fd3617c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -34,6 +34,15 @@ PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.2.16])
+ # Checks for header files.
+ AC_CHECK_HEADERS([valgrind/valgrind.h])
+ 
++AC_ARG_ENABLE(selinux,
++	AS_HELP_STRING([--enable-selinux], [enable SELinux support]),
++	[], [enable_selinux=no])
++
++if test "x$enable_selinux" = "xyes" ; then
++	PKG_CHECK_MODULES(SELINUX, [libselinux])
++	AC_DEFINE(HAVE_SELINUX, 1, [Define if we have SELinux])
++fi
++
+ # Checks for typedefs, structures, and compiler characteristics.
+ AC_PROG_CC_C99
+ AM_PROG_CC_C_O
+diff --git a/init/Makefile.am b/init/Makefile.am
+index 467a705..91410b1 100644
+--- a/init/Makefile.am
++++ b/init/Makefile.am
+@@ -5,7 +5,8 @@ initconfdir = $(sysconfdir)/init
+ AM_CFLAGS = \
+ 	$(NIH_CFLAGS) \
+ 	$(NIH_DBUS_CFLAGS) \
+-	$(DBUS_CFLAGS)
++	$(DBUS_CFLAGS) \
++	$(SELINUX_CFLAGS)
+ 
+ AM_CPPFLAGS = \
+ 	-DLOCALEDIR="\"$(localedir)\"" \
+@@ -60,6 +61,7 @@ init_LDADD = \
+ 	$(NIH_LIBS) \
+ 	$(NIH_DBUS_LIBS) \
+ 	$(DBUS_LIBS) \
++	$(SELINUX_LIBS) \
+ 	-lrt
+ 
+ 
+diff --git a/init/main.c b/init/main.c
+index 49aac41..a92d511 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -30,6 +30,9 @@
+ #include <sys/reboot.h>
+ #include <sys/resource.h>
+ 
++#include <sys/stat.h>
++#include <fcntl.h>
++
+ #include <errno.h>
+ #include <stdio.h>
+ #include <limits.h>
+@@ -39,6 +42,10 @@
+ #include <syslog.h>
+ #include <unistd.h>
+ 
++#ifdef HAVE_SELINUX
++#include <selinux/selinux.h>
++#endif
++
+ #include <linux/kd.h>
+ 
+ #include <nih/macros.h>
+@@ -113,6 +120,31 @@ main (int   argc,
+ 	char **args;
+ 	int    ret;
+ 
++#ifdef HAVE_SELINUX
++	int    enforce = 0;
++
++	if (getpid() == 1 && getenv ("SELINUX_INIT") == NULL) {
++		const char *old_program_name = program_name;
++		program_name = "selinux";  /* for logger_kmsg before NIH init */
++		putenv ("SELINUX_INIT=YES");
++		if (selinux_init_load_policy (&enforce) == 0 ) {
++			logger_kmsg (NIH_LOG_MESSAGE,
++				     "policy loaded, doing self-exec\n");
++			execv (argv[0], argv);
++		} else {
++			logger_kmsg (NIH_LOG_WARN, "policy failed to load\n");
++			if (enforce > 0) {
++				/* Enforcing mode, must quit. */
++				logger_kmsg (NIH_LOG_FATAL,
++					     "no policy in enforcing "
++					     "mode: quit\n");
++				exit (1);
++			}
++		}
++		program_name = old_program_name;  /* put things back */
++	}
++#endif
++
+ 	argv0 = argv[0];
+ 	nih_main_init (argv0);
+ 

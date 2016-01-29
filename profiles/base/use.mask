@@ -4,7 +4,6 @@
 
 # profile specific USE flags
 # Don't put hardened in here.
-selinux
 uclibc
 multilib
 

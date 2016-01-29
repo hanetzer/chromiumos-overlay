@@ -13,14 +13,17 @@ SRC_URI="http://upstart.ubuntu.com/download/${PV}/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug examples nls"
+IUSE="debug examples nls selinux"
 
-DEPEND=">=dev-libs/expat-2.0.0
-	>=sys-apps/dbus-1.2.16
-	nls? ( sys-devel/gettext )
-	>=sys-libs/libnih-1.0.2"
 RDEPEND=">=sys-apps/dbus-1.2.16
-	>=sys-libs/libnih-1.0.2"
+	>=sys-libs/libnih-1.0.2
+	selinux? (
+		sys-libs/libselinux
+		sys-libs/libsepol
+	)"
+DEPEND=">=dev-libs/expat-2.0.0
+	nls? ( sys-devel/gettext )
+	${RDEPEND}"
 
 src_prepare() {
 	# 1.3+ has scary user and chroot session support that we just
@@ -51,6 +54,13 @@ src_prepare() {
 	# our own patch because we can't just add --verbose to the
 	# kernel command-line when we need to.
 	use debug && epatch "${FILESDIR}"/upstart-1.2-log-verbosity.patch
+
+	# load SELinux policy
+	epatch "${FILESDIR}"/upstart-1.2-selinux.patch
+	# The selinux patch changes makefile.am and configure.ac
+	# so we need to run autoreconf, and if we don't the system
+	# will do it for us, and incorrectly too.
+	eautoreconf
 }
 
 src_configure() {
@@ -64,6 +74,7 @@ src_configure() {
 		--exec-prefix= \
 		--includedir='${prefix}/usr/include' \
 		--disable-rpath \
+		$(use_enable selinux) \
 		$(use_enable nls)
 }
 
