@@ -47,6 +47,7 @@ PATCHES=(
 	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
 	"${FILESDIR}"/drm_mediatek-0003-Add-Mediatek-proprietary-format.patch
 	"${FILESDIR}"/drm_vgem-0001-add-vgem-ioctl-macro-definitions.patch
+	"${FILESDIR}"/modetest-Also-print-the-pixel-clock.patch
 )
 
 src_prepare() {
