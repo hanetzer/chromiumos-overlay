@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,46 +23,42 @@ GOTOOL = '@GOTOOL@'
 
 def has_ldflags(argv):
   """Check if any linker flags are present in argv."""
-  link_flags = set(('-ldflags', '-linkmode', '-extld', '-extldflags'))
+  link_flags = set(('-ldflags', '-linkmode', '-buildmode',
+                    '-installsuffix', '-extld', '-extldflags'))
   if set(argv) & link_flags:
     return True
   for arg in argv:
-    if arg.startswith('-ldflags=') or arg.startswith('-linkmode='):
-      return True
+    for link_flag in link_flags:
+      if arg.startswith(link_flag + '='):
+        return True
   return False
 
 
 def main(argv):
   pie_enabled = os.getenv('GOPIE', '1') != '0'
-  pie_flags = []
 
   if len(argv) and pie_enabled and not has_ldflags(argv):
-    if argv[0] in ('build', 'run', 'test'):
-      pie_flags = [
-          argv[0],
-          '-ldflags',
-          '-linkmode=external -extld ' + CC + ' -extldflags "-pie"'
-      ]
-      argv = argv[1:]
-    elif argv[0] == 'tool' and len(argv) > 1 and argv[1] == 'link':
-      # Handle direct linker invocations ("go tool link <args>").
-      pie_flags = [
-          argv[0],
-          argv[1],
-          '-linkmode=external',
-          '-extld',
-          CC,
-          '-extldflags',
-          '-pie'
-      ]
-      argv = argv[2:]
+    if argv[0] in ('build', 'install', 'run', 'test'):
+      # Add "-buildmode=pie" to "go build|install|run|test" commands.
+      argv = argv[0:1] + ['-buildmode=pie'] + argv[1:]
+    elif argv[0] == 'tool' and len(argv) > 1:
+      if argv[1] == 'asm':
+        # Handle direct assembler invocations ("go tool asm <args>").
+        argv = argv[0:2] + ['-shared'] + argv[2:]
+      elif argv[1] == 'compile':
+        # Handle direct compiler invocations ("go tool compile <args>").
+        argv = argv[0:2] + ['-shared', '-installsuffix=shared'] + argv[2:]
+      elif argv[1] == 'link':
+        # Handle direct linker invocations ("go tool link <args>").
+        argv = argv[0:2] + ['-installsuffix=shared', '-buildmode=pie',
+                            '-extld', CC] + argv[2:]
 
   os.environ['GOOS'] = 'linux'
   os.environ['GOARCH'] = GOARCH
   os.environ['CGO_ENABLED'] = '1'
   os.environ['CC'] = CC
   os.environ['CXX'] = CXX
-  os.execv(GOTOOL, [GOTOOL] + pie_flags + argv)
+  os.execv(GOTOOL, [GOTOOL] + argv)
 
 
 if __name__ == '__main__':

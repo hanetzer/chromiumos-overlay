@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2.
 
 EAPI=5
@@ -65,14 +65,23 @@ src_configure() {
 }
 
 src_compile() {
+	einfo "Building the bootstrap compiler."
 	cd "${GOROOT_BOOTSTRAP}/src"
 	./make.bash || die
 
 	cd "${S}/src"
+	einfo "Building the cross compiler for ${CTARGET}."
 	GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
 		CC_FOR_TARGET="$(tc-getCC ${CTARGET})" \
 		CXX_FOR_TARGET="$(tc-getCXX ${CTARGET})" \
 		./make.bash || die
+
+	einfo "Building the standard library with -buildmode=pie."
+	GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
+		CC="$(tc-getCC ${CTARGET})" \
+		CXX="$(tc-getCXX ${CTARGET})" \
+		GOROOT="${S}" \
+		"${S}/bin/go" install -v -buildmode=pie std || die
 }
 
 src_install() {
@@ -88,6 +97,7 @@ src_install() {
 	insinto "${goroot}/pkg"
 	doins -r "pkg/include"
 	doins -r "pkg/linux_$(get_goarch ${CTARGET})"
+	doins -r "pkg/linux_$(get_goarch ${CTARGET})_shared"
 
 	exeinto "${goroot}/${tooldir}"
 	doexe "${tooldir}/"{asm,cgo,compile,link,pack}
