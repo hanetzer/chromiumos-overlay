@@ -101,6 +101,7 @@ ALL_BOARDS=(
 	#fox_baskingridge
 	#fox_wtm1
 	#fox_wtm2
+	gale
 	gandof
 	gizmo
 	glados
