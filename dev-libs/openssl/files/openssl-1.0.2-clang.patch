@@ -12,8 +12,8 @@ supported by clang either, replace it using an upstream version that is guarded
 by "__APPLE__". LLVM upstream bug here -
 https://llvm.org/bugs/show_bug.cgi?id=24350
 
---- crypto/bn/asm/armv4-gf2m.pl
-+++ crypto/bn/asm/armv4-gf2m.pl
+--- a/crypto/bn/asm/armv4-gf2m.pl
++++ b/crypto/bn/asm/armv4-gf2m.pl
 @@ -211,12 +211,12 @@
  .fpu	neon
  
@@ -29,26 +29,8 @@ https://llvm.org/bugs/show_bug.cgi?id=24350
  	vmov.i64	$k16, #0x000000000000ffff
  
  	vext.8		$t0#lo, $a, $a, #1	@ A1
---- crypto/modes/asm/ghash-armv4.pl
-+++ crypto/modes/asm/ghash-armv4.pl
-@@ -124,10 +124,15 @@
- #include "arm_arch.h"
- 
- .text
- .code	32
- 
-+#ifdef  __clang__
-+#define ldrplb  ldrbpl
-+#define ldrneb  ldrbne
-+#endif
-+
- .type	rem_4bit,%object
- .align	5
- rem_4bit:
- .short	0x0000,0x1C20,0x3840,0x2460
- .short	0x7080,0x6CA0,0x48C0,0x54E0
---- crypto/sha/asm/sha256-armv4.pl
-+++ crypto/sha/asm/sha256-armv4.pl
+--- a/crypto/sha/asm/sha256-armv4.pl
++++ b/crypto/sha/asm/sha256-armv4.pl
 @@ -593,11 +593,11 @@
  	vld1.32	{$ABCD,$EFGH},[$ctx]
  # ifdef __thumb2__
