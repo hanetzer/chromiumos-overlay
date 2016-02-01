@@ -18,6 +18,7 @@ chromeos-base/crosh	-cups
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi	static-libs
+dev-lang/perl		-berkdb gdbm
 dev-lang/python		-berkdb gdbm -sqlite
 dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils

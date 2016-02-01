@@ -33,7 +33,6 @@ app-text/docbook-xsl-stylesheets-1.75.2
 app-text/texi2html-1.76
 
 dev-lang/nasm-2.07
-dev-lang/perl-5.8.8-r5
 
 # Needed for building Icedtea
 dev-java/ant-core-1.7.1-r4
@@ -64,7 +63,6 @@ sys-apps/texinfo-4.13
 
 sys-devel/autoconf-2.63-r1
 sys-devel/automake-1.10.2
-sys-devel/bc-1.06.95
 sys-devel/bison-2.3
 sys-devel/gettext-0.18.1-r1
 sys-devel/gnuconfig-20090203
