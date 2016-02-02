@@ -31,6 +31,6 @@ src_install() {
 
 	# Add telemetry to the python path.
 	dodir "$(python_get_sitedir)"
-	echo "/usr/local/telemetry/src/tools/telemetry" > \
+	echo "/usr/local/telemetry/src/third_party/catapult/telemetry" > \
 		"${ED}$(python_get_sitedir)/telemetry.pth" || die
 }
