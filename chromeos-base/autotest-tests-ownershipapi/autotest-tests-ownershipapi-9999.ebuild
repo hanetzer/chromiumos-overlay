@@ -61,6 +61,6 @@ src_prepare() {
 	# so that file removals in Telemetry source can be performed properly.
 	export TMP_DIR="$(mktemp -d)"
 	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
-	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
+	export PYTHONPATH="${TMP_DIR}/telemetry/src/third_party/catapult/telemetry"
 	autotest_src_prepare
 }

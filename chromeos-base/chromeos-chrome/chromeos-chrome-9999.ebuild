@@ -1012,7 +1012,7 @@ install_perf_data_dep_resources() {
 install_telemetry_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
+	if [[ -r "${CHROME_ROOT}/src/third_party/catapult/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
 		# Get deps from Chrome.

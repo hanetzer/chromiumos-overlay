@@ -203,7 +203,7 @@ src_prepare() {
 	export TMP_DIR="$(mktemp -d)"
 	rsync -a --exclude=third_party/trace-viewer/test_data/ \
 		"${SYSROOT}"/usr/local/telemetry/src/ "${TMP_DIR}"
-	export PYTHONPATH="${TMP_DIR}/tools/telemetry"
+	export PYTHONPATH="${TMP_DIR}/third_party/catapult/telemetry"
 	autotest_src_prepare
 }
 
