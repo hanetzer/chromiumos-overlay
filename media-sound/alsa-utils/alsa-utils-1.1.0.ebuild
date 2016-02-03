@@ -26,6 +26,8 @@ RDEPEND="${CDEPEND}
 
 src_prepare() {
 	epatch_user
+
+	epatch "${FILESDIR}/0001-amixer-skip-showing-asoc-tlv-byte-controls.patch"
 }
 
 src_configure() {
