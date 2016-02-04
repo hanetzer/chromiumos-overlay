@@ -53,6 +53,7 @@ CROS_COMMON_RDEPEND="
 	cros_ec? (
 		chromeos-base/ec-devutils
 		chromeos-base/ec-utils
+		chromeos-base/ec-utils-test
 	)
 	!chromeless_tty? (
 		!app_shell? (
