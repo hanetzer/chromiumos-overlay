@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-50.0.2633.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-50.0.2633.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-50.0.2633.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-50.0.2639.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-50.0.2639.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-50.0.2639.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -1012,7 +1012,7 @@ install_perf_data_dep_resources() {
 install_telemetry_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
+	if [[ -r "${CHROME_ROOT}/src/third_party/catapult/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
 		# Get deps from Chrome.
