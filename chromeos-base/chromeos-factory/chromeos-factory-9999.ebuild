@@ -20,6 +20,7 @@ IUSE="+autotest +build_tests"
 
 DEPEND="virtual/chromeos-interface
 	virtual/chromeos-regions
+	dev-python/jsonrpclib
 	dev-python/pyyaml
 	dev-libs/protobuf-python
 	chromeos-base/chromeos-factory-board"

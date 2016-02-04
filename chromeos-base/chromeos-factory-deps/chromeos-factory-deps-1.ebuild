@@ -27,9 +27,7 @@ FACTORY_FRAMEWORK_RDEPEND="
 	dev-python/setproctitle
 	dev-python/ws4py
 "
-# Note: factory repo also has a 'third_party/jsonrpclib' and factory software
-# used to run that instead of dev-python/jsonrpclib.
-# dbus-python may be temporarily broken on embedded platform.
+# Note: dbus-python may be temporarily broken on embedded platform.
 
 # Packages used only if X is available.
 FACTORY_X_RDEPEND="
