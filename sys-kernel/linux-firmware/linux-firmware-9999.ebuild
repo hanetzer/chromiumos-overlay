@@ -126,7 +126,7 @@ doins_subdir() {
 src_install() {
 	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
-	use_fw adsp_skl && doins_subdir intel/dsp_fw_release.bin
+	use_fw adsp_skl && doins_subdir intel/dsp_fw_*
 	use_fw ath9k_htc && doins htc_*.fw
 	use_fw bcm4354-bt && doins_subdir brcm/BCM4354_*.hcd
 	use_fw cros-pd && doins_subdir cros-pd/*
