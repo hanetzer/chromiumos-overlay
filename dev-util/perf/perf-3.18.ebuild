@@ -125,6 +125,8 @@ src_prepare() {
 
 	PATCHES=(
 		"${FILESDIR}/separate-tools-and-tests.patch"
+		"${FILESDIR}/3.18-Preparation-for-compressed-kernel-modul.patch"
+		"${FILESDIR}/3.18-Fix-build-id-matching-on-vmlinux.patch"
 	)
 
 	for patch_file in "${PATCHES[@]}"; do
