@@ -25,9 +25,6 @@ FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
           parallel-install -preserve-libs sandbox splitdebug -strict userfetch
           userpriv usersandbox -unknown-features-warn"
 
-# Native language support is handled inside Chrome itself.
-LINGUAS="en"
-
 # Enable license processing during our emerge hook:
 #   src/scripts/hooks/install/gen-package-licenses.sh.
 ENABLE_LICENSING="Y"

@@ -28,3 +28,7 @@ RESUMECOMMAND_AB="${FETCHCOMMAND_AB}"
 
 FETCHCOMMAND='curl --ipv4 -y 30 -f --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
 RESUMECOMMAND='curl --ipv4 -y 30 -f -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
+
+# Native language support is handled inside Chrome itself.
+# This needs to be in make.conf and not make.defaults to override IUSE defaults.
+LINGUAS="en"
