@@ -69,7 +69,7 @@ net-misc/openvpn	pkcs11
 net-misc/strongswan	cisco nat-transport
 net-nds/openldap	minimal
 net-print/cups		zeroconf
-net-print/cups-filters	zeroconf
+net-print/cups-filters	zeroconf -postscript
 net-proxy/tsocks	tordns
 net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd	-python -ntp -X dbus garmin minimal ocean tntc usb -sockets
