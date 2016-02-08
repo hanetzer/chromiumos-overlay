@@ -7,7 +7,7 @@ inherit flag-o-matic toolchain-funcs
 
 DESCRIPTION="Extensible Virtual Display Interface Library"
 HOMEPAGE="https://github.com/DisplayLink/evdi"
-SRC_URI="https://github.com/DisplayLink/evdi/archive/e3544b223fb6f3a7f766b62cf358ae80f2d40a85.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/DisplayLink/evdi/archive/77f1a21f58f4fa1541ebcb531a240eb603beb66f.tar.gz -> ${PF}.tar.gz"
 
 # evdi has mixed license: GPLv2 for the module, LGPL-2.1 for the library.
 # However, this ebuild is for the library only.
