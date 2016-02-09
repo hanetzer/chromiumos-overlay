@@ -36,6 +36,7 @@ ALL_BOARDS=(
 	amd64-generic-goofy
 	amd64-generic_mobbuild
 	amd64-host
+	amenia
 	#anglar
 	aplrvp
 	#app-shell-panther
