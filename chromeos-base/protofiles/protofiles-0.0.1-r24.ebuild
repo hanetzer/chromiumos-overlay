@@ -20,11 +20,11 @@ inherit cros-constants git-2
 #   - The repository URL
 #   - The commit to checkout
 EGIT_REPO_URIS=(
-	"cloud"
+	"proto/cloud"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy/proto.git"
 	"1c29a8465c755c4e63fe818772307ab6f49ec52a"
 
-	"chromeos"
+	"proto/chromeos"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
 	"15ddbc750c7bf4594769e1a3d7ca597f52d641d2"
 )
@@ -52,10 +52,10 @@ src_unpack() {
 
 src_install() {
 	insinto /usr/include/proto
-	doins "${S}"/{chromeos,cloud}/*.proto
+	doins "${S}"/proto/{chromeos,cloud}/*.proto
 	insinto /usr/share/protofiles
-	doins "${S}"/chromeos/chrome_device_policy.proto
-	doins "${S}"/cloud/device_management_backend.proto
-	doins "${S}"/cloud/chrome_extension_policy.proto
+	doins "${S}"/proto/chromeos/chrome_device_policy.proto
+	doins "${S}"/proto/cloud/device_management_backend.proto
+	doins "${S}"/proto/cloud/chrome_extension_policy.proto
 	dobin "${FILESDIR}"/policy_reader
 }
