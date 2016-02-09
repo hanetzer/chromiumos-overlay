@@ -432,3 +432,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for audio topology generation
 RDEPEND="${RDEPEND}
 	media-sound/alsa-utils"
+
+# Host dependency for dev-libs/boost package
+RDEPEND="${RDEPEND}
+	dev-util/boost-build"
