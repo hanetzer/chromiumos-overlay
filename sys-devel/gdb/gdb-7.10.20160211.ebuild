@@ -1,11 +1,14 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-9999.ebuild,v 1.37 2015/05/04 08:19:53 vapier Exp $
+# $Id$
 
 EAPI="5"
 PYTHON_COMPAT=( python{2_7,3_3,3_4} )
 
-inherit flag-o-matic eutils python-single-r1
+inherit flag-o-matic eutils python-single-r1 versionator
+
+GIT_SHAI="771779c6dc58eaae39e53f0bb9a4bbdeef04a624"
+SRC_URI="https://android.googlesource.com/toolchain/gdb/+archive/${GIT_SHAI}.tar.gz -> ${P}.tar.gz"
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
@@ -17,38 +20,15 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
 RPM=
 MY_PV=${PV}
-case ${PV} in
-*.*.50.2???????)
-	# weekly snapshots
-	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.xz"
-	;;
-9999*)
-	# live git tree
-	inherit cros-constants
-	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
-	EGIT_BRANCH="chromeos_master"
-	EGIT_COMMIT=0ea2048212cc7769aeb9681b7f4e2df8163edd35
-	inherit git-2
-	SRC_URI=""
-	;;
-*)
-	# Normal upstream release
-	SRC_URI="mirror://gnu/gdb/${P}.tar.xz
-		ftp://sourceware.org/pub/gdb/releases/${P}.tar.xz"
-	;;
-esac
-
-PATCH_VER=""
 DESCRIPTION="GNU debugger"
 HOMEPAGE="http://sourceware.org/gdb/"
-SRC_URI="${SRC_URI} ${PATCH_VER:+mirror://gentoo/${P}-patches-${PATCH_VER}.tar.xz}"
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"
 if [[ ${PV} != 9999* ]] ; then
 	KEYWORDS="*"
 fi
-IUSE="+client expat lzma multitarget nls +python +server test vanilla zlib mounted_sources"
+IUSE="+client expat lzma multitarget -mounted_sources nls +python +server test vanilla zlib"
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
 	|| ( client server )
@@ -71,27 +51,27 @@ DEPEND="${RDEPEND}
 		nls? ( sys-devel/gettext )
 	)"
 
-S=${WORKDIR}/${PN}-${MY_PV}
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
 src_unpack() {
-	if use mounted_sources ; then
-		: ${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.5.x}
+	S="${WORKDIR}"
+	if use mounted_sources; then
+		GDBDIR=/usr/local/toolchain_root/gdb
 		if [[ ! -d ${GDBDIR} ]] ; then
 			die "gdb dir not mounted/present at: ${GDBDIR}"
 		fi
-		cp -R "${GDBDIR}" "${S}"
+		cp -r "${GDBDIR}"/* "${S}"
 	else
-		git-2_src_unpack
+		default
+		S="${WORKDIR}/${PN}-$(get_version_component_range 1-2)"
 	fi
 }
 
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
-	! use vanilla && [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
 	epatch_user
 	strip-linguas -u bfd/po opcodes/po
 }
@@ -144,6 +124,8 @@ src_configure() {
 			--enable-64-bit-bfd
 			--disable-install-libbfd
 			--disable-install-libiberty
+			# Disable guile for now as it requires guile-2.x #562902
+			--without-guile
 			# This only disables building in the readline subdir.
 			# For gdb itself, it'll use the system version.
 			--disable-readline
@@ -170,6 +152,14 @@ src_install() {
 	default
 	use client && find "${ED}"/usr -name libiberty.a -delete
 	cd "${S}"
+
+	# Delete translations that conflict with binutils-libs. #528088
+	# Note: Should figure out how to store these in an internal gdb dir.
+	if use nls ; then
+		find "${ED}" \
+			-regextype posix-extended -regex '.*/(bfd|opcodes)[.]g?mo$' \
+			-delete
+	fi
 
 	# Don't install docs when building a cross-gdb
 	if [[ ${CTARGET} != ${CHOST} ]] ; then
