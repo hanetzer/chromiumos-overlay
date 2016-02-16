@@ -1,0 +1,28 @@
+diff --git a/man/Makefile b/man/Makefile
+index dc1a8c0a4f57..0ad42a1d01ba 100644
+--- a/man/Makefile
++++ b/man/Makefile
+@@ -73,7 +73,7 @@ MAN8	=	cupsaccept.$(MAN8EXT) \
+ # Make everything...
+ #
+ 
+-all:	$(MAN1) $(MAN5) $(MAN7) $(MAN8) html
++all:	$(MAN1) $(MAN5) $(MAN7) $(MAN8)
+ 
+ 
+ #
+diff --git a/ppdc/Makefile b/ppdc/Makefile
+index 221ea18936d9..6a3b0f78f41d 100644
+--- a/ppdc/Makefile
++++ b/ppdc/Makefile
+@@ -242,8 +242,8 @@ genstrings:		genstrings.o libcupsppdc.a ../cups/$(LIBCUPSSTATIC) \
+ 	$(CXX) $(ARCHFLAGS) $(LDFLAGS) -o genstrings genstrings.o \
+ 		libcupsppdc.a ../cups/$(LIBCUPSSTATIC) $(LIBGSSAPI) $(SSLLIBS) \
+ 		$(DNSSDLIBS) $(COMMONLIBS) $(LIBZ)
+-	echo Generating localization strings...
+-	./genstrings >sample.c
++	echo NOT generating localization strings...
++	#./genstrings >sample.c
+ 
+ 
+ #
