@@ -258,9 +258,8 @@ use10()  { usex $1 1 0 ; }
 usetf()  { usex $1 true false ; }
 set_build_defines() {
 	# General build defines.
-	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
-		"sysroot=${ROOT}"
+		"sysroot=${SYSROOT}"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
 		"${EXTRA_BUILD_ARGS}"
@@ -292,9 +291,43 @@ set_build_defines() {
 		clang_use_chrome_plugins=0
 		host_clang=0
 	)
+	BUILD_ARGS=(
+		is_debug=false
+		"${EXTRA_GN_ARGS}"
+		use_v4l2_codec=$(usetf v4l2_codec)
+		use_v4lplugin=$(usetf v4lplugin)
+		use_ozone=$(usetf ozone)
+		use_evdev_gestures=$(usetf evdev_gestures)
+		use_xkbcommon=$(usetf xkbcommon)
+		# Use the ChromeOS toolchain and not the one bundled with Chromium.
+		linux_use_bundled_binutils=false
+		use_debug_fission=false
+		enable_remoting=$(usetf chrome_remoting)
+		enable_nacl=$(use_nacl; echotf)
+		icu_use_data_file=true
+		use_cras=true
+		use_system_minigbm=true
+
+		# Clang features.
+		is_asan=$(usetf asan)
+		is_clang=$(usetf clang)
+		clang_use_chrome_plugins=false
+	)
+	BUILD_STRING_ARGS=(
+		target_sysroot="${SYSROOT}"
+		system_libdir="$(get_libdir)"
+		pkg_config="$(tc-getPKG_CONFIG)"
+		target_os=chromeos
+	)
+	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
+	use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
-	[[ ${CHOST} == armv6* ]] && BUILD_DEFINES+=( use_allocator=none )
+	if [[ ${CHOST} == armv6* ]]; then
+		BUILD_DEFINES+=( use_allocator=none )
+		BUILD_ARGS+=( arm_version=6 )
+		BUILD_STRING_ARGS+=( use_allocator=none )
+	fi
 
 	if use ozone; then
 		local platform
@@ -302,6 +335,7 @@ set_build_defines() {
 			local flag="${OZONE_PLATFORM_DEFAULT_PREFIX}${platform}"
 			if use "${flag}"; then
 				BUILD_DEFINES+=("ozone_platform=${platform}")
+				BUILD_STRING_ARGS+=(ozone_platform="${platform}")
 			fi
 		done
 		BUILD_DEFINES+=(
@@ -309,9 +343,15 @@ set_build_defines() {
 			"use_mesa_platform_null=1"
 			"ozone_auto_platforms=0"
 		)
+		BUILD_ARGS+=(
+			use_vgem_map=true
+			use_mesa_platform_null=true
+			ozone_auto_platforms=false
+		)
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
 			if use "${platform}"; then
 				BUILD_DEFINES+=("${platform}=1")
+				BUILD_ARGS+=("${platform}"=true)
 			fi
 		done
 	fi
@@ -320,6 +360,7 @@ set_build_defines() {
 	case "${ARCH}" in
 	x86)
 		BUILD_DEFINES+=( target_arch=ia32 )
+		BUILD_STRING_ARGS+=( target_cpu=x86 )
 		;;
 	arm)
 		BUILD_DEFINES+=(
@@ -327,12 +368,20 @@ set_build_defines() {
 			arm_float_abi=$(usex hardfp hard softfp)
 			arm_neon=$(use10 neon)
 		)
+		BUILD_ARGS+=(
+			arm_use_neon=$(usetf neon)
+		)
+		BUILD_STRING_ARGS+=(
+			target_cpu=arm
+			arm_float_abi=$(usex hardfp hard softfp)
+		)
 		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
 		fi
 		;;
 	amd64)
 		BUILD_DEFINES+=( target_arch=x64 )
+		BUILD_STRING_ARGS+=( target_cpu=x64 )
 		;;
 	mips)
 		local mips_arch target_arch
@@ -355,6 +404,10 @@ set_build_defines() {
 			target_arch="${target_arch}"
 			mips_arch_variant="${mips_arch}"
 		)
+		BUILD_STRING_ARGS+=(
+			target_cpu="${target_arch}"
+			mips_arch_variant="${mips_arch}"
+		)
 		;;
 	*)
 		die "Unsupported architecture: ${ARCH}"
@@ -364,9 +417,12 @@ set_build_defines() {
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
+		BUILD_ARGS+=( is_chrome_branded=true is_offcial_build=true )
 		# This test can only be build from internal sources
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
+		BUILD_ARGS+=( internal_gles2_conform_tests=true )
+		BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -376,6 +432,8 @@ set_build_defines() {
 	elif use chrome_media; then
 		echo "Building Chromium with additional media codecs and containers."
 		BUILD_DEFINES+=( ffmpeg_branding=ChromeOS proprietary_codecs=1 )
+		BUILD_ARGS+=( proprietary_codecs=true )
+		BUILD_STRING_ARGS+=( ffmpeg_branding=ChromeOS )
 	fi
 
 	# This saves time and bytes.
@@ -388,6 +446,12 @@ set_build_defines() {
 			werror=
 			use_allocator=none
 		)
+		BUILD_ARGS+=(
+			treat_warnings_as_errors=false
+		)
+		BUILD_STRING_ARGS+=(
+			use_allocator=none
+		)
 
 		# The chrome build system will add -m32 for 32bit arches, and
 		# clang defaults to 64bit because our cros_sdk is 64bit default.
@@ -396,11 +460,17 @@ set_build_defines() {
 		cros_use_gcc
 	fi
 
-	use component_build && BUILD_DEFINES+=( component=shared_library )
+	if use component_build; then
+		BUILD_DEFINES+=( component=shared_library )
+		BUILD_ARGS+=( is_component_build=true )
+	fi
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
-	use chrome_debug && RELEASE_EXTRA_CFLAGS+=( -g )
+	if use chrome_debug; then
+		RELEASE_EXTRA_CFLAGS+=( -g )
+		BUILD_ARGS+=( symbol_level=2 )
+	fi
 
 	if use deep_memory_profiler; then
 		BUILD_DEFINES+=(
@@ -439,7 +509,7 @@ unpack_chrome() {
 
 decide_chrome_origin() {
 	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
-	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
+	local cros_workon_file="${SYSROOT}/etc/portage/package.keywords/cros-workon"
 	if [[ -e "${cros_workon_file}" ]] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
 		# LOCAL_SOURCE is the default for cros_workon
 		# Warn the user if CHROME_ORIGIN is already set
@@ -800,6 +870,18 @@ src_configure() {
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
 		"${cmd[@]}" || die
 	fi
+
+	BUILD_STRING_ARGS+=(
+		cros_target_ar="${AR}"
+		cros_target_cc="${CC}"
+		cros_target_cxx="${CXX}"
+	)
+	local arg
+	for arg in "${BUILD_STRING_ARGS[@]}"; do
+		BUILD_ARGS+=("${arg%%=*}=\"${arg#*=}\"")
+	done
+	export GN_ARGS="${BUILD_ARGS[*]}"
+	# TODO(hashimoto): Run "gn gen" to generate ninja files with GN. crbug.com/561142
 
 	setup_test_lists
 }
