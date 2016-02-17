@@ -106,9 +106,9 @@ MULTILIB_CHOST_TOOLS=(
 )
 
 pkg_setup() {
-	enewgroup lp
-	enewuser lp -1 -1 -1 lp
 	enewgroup lpadmin
+	enewgroup cups
+	enewuser cups -1 -1 -1 cups
 
 	use python && python-single-r1_pkg_setup
 
@@ -191,8 +191,8 @@ multilib_src_configure() {
 		--libdir="${EPREFIX}"/usr/$(get_libdir) \
 		--localstatedir="${EPREFIX}"/var \
 		--with-rundir="${EPREFIX}"/run/cups \
-		--with-cups-user=lp \
-		--with-cups-group=lp \
+		--with-cups-user=nobody \
+		--with-cups-group=nobody \
 		--with-docdir="${EPREFIX}"/usr/share/cups/html \
 		--with-languages="${LINGUAS}" \
 		--with-system-groups=lpadmin \
@@ -286,7 +286,7 @@ multilib_src_install_all() {
 	fi
 
 	keepdir /usr/libexec/cups/driver /usr/share/cups/{model,profiles} \
-		/var/log/cups /var/spool/cups/tmp
+		/var/spool/cups/tmp
 
 	keepdir /etc/cups/{interfaces,ppd,ssl}
 
@@ -303,6 +303,9 @@ multilib_src_install_all() {
 	rm -r "${ED}"/var/cache/cups || die
 	rm -r "${ED}"/run || die
 
+	# we're sending logs to syslog, not /var/log/cups/*
+	rmdir "${ED}"/var/log/cups || die
+
 	# for the special case of running lprng and cups together, bug 467226
 	if use lprng-compat ; then
 		rm -fv "${ED}"/usr/bin/{lp*,cancel}
@@ -313,6 +316,17 @@ multilib_src_install_all() {
 		ewarn "Unless you plan to install an exotic server setup, you most likely"
 		ewarn "do not want this. Disable the useflag then and all will be fine."
 	fi
+
+	# CUPS tries to install these as root-only executables, for
+	# IPP/Kerberos support, and for "privileged port" listening. We don't
+	# need the former, and the latter is handled by Linux capabilities.
+	# Discussion here:
+	# http://www.cups.org/pipermail/cups/2016-February/027499.html
+	chmod 0755 "${ED}"/usr/libexec/cups/backend/{dnssd,ipp,lpd}
+
+	insinto /etc/cups
+	# Install our own conf files
+	doins "${FILESDIR}"/{cupsd,cups-files}.conf
 }
 
 pkg_preinst() {
