@@ -330,6 +330,8 @@ multilib_src_install_all() {
 	insinto /etc/cups
 	# Install our own conf files
 	doins "${FILESDIR}"/{cupsd,cups-files}.conf
+	insinto /etc/init
+	doins "${FILESDIR}"/init/cupsd.conf
 }
 
 pkg_preinst() {
