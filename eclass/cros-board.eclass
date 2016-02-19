@@ -108,6 +108,7 @@ ALL_BOARDS=(
 	glados-cheets
 	glimmer
 	gnawty
+	gru
 	guado
 	guado_moblab
 	heli
@@ -118,6 +119,7 @@ ALL_BOARDS=(
 	kayle
 	kblrvp
 	#kennet
+	kevin
 	#kiev
 	kip
 	klang
