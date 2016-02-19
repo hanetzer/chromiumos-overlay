@@ -55,7 +55,8 @@ arch = '-'.join(gcc_comp.split('-')[0:-1])
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2',
                     '-fno-omit-frame-pointer',
-                    '-Wno-deprecated-declarations'])
+                    '-Wno-deprecated-declarations',
+                    '-Wl,--build-id'])
 x86_disable_flags = set(['-mno-movbe'])
 
 gcc_flags = ['-frecord-gcc-switches',
