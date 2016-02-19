@@ -7,7 +7,7 @@ inherit cros-workon
 
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
-SRC_URI="gs://chromeos-localmirror/distfiles/overlord-deps-0.0.2.tar.gz"
+SRC_URI="gs://chromeos-localmirror/distfiles/overlord-deps-0.0.3.tar.gz"
 
 DESCRIPTION="Overlord factory monitor"
 
