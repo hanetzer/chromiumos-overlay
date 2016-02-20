@@ -22,7 +22,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="arc cros_embedded -cros_host test"
-REQUIRE_USE="!cros_host"
+REQUIRED_USE="!cros_host"
 
 RDEPEND="
 	chromeos-base/chromeos-ca-certificates

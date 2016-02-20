@@ -17,7 +17,7 @@ IUSE="bluetooth bootchart bootimage buffet +cellular coreboot
 	intel_lpe +syslog touchview +tpm +trim_supported +vpn watchdog
 	wifi_bootstrapping wimax X"
 
-REQUIRE_USE="cellular? ( shill )"
+REQUIRED_USE="cellular? ( shill )"
 
 ################################################################################
 #
