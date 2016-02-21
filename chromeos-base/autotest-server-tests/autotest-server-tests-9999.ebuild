@@ -144,6 +144,7 @@ SERVER_IUSE_TESTS="
 	+tests_kernel_EmptyLines
 	+tests_kernel_ExternalUsbPeripheralsDetectionTest
 	+tests_kernel_MemoryRamoop
+	+tests_logging_GenerateCrashFiles
 	moblab? ( +tests_moblab_RunSuite )
 	cros_p2p? ( +tests_p2p_EndToEndTest )
 	+tests_network_FirewallHolePunchServer
