@@ -32,6 +32,7 @@ dev-util/dialog		-unicode minimal
 dev-util/perf		-audit -doc -demangle -tui -ncurses -perl -python -slang -unwind
 chromeos-base/chromeos-chrome   build_tests
 >=chromeos-base/chromeos-chrome-42.0.2297.0_rc-r1		v4l2_codec
+chromeos-base/nsswitch	zeroconf
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick	png
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
@@ -45,6 +46,7 @@ media-libs/opencv	-gtk python png jpeg -tiff v4l
 media-sound/sox		alsa ogg
 media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
 net-analyzer/tcpdump	-chroot ipv6
+net-dns/avahi-daemon	zeroconf
 net-dns/dnsmasq		script
 net-firewall/iptables	ipv6
 # C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
