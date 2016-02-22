@@ -31,6 +31,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0001-CHROMIUM-media-headers-Import-V4L2-headers-from-Chro.patch"
 	epatch "${FILESDIR}/0002-CHROMIUM-v4l-Add-VP8-low-level-decoder-API-controls.patch"
 	epatch "${FILESDIR}/0003-v4l-add-pixelformat-change-event.patch"
+	epatch "${FILESDIR}/0004-v4l-add-force-key-frame-control.patch"
 }
 
 src_install() {
