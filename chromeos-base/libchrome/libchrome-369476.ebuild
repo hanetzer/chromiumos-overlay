@@ -9,7 +9,7 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="platform/external/libchrome"
-CROS_WORKON_COMMIT="1ac3a5e3e15a0a3db48c4cb13736ce38033831fe"
+CROS_WORKON_COMMIT="09869323a738d3490b112f4ee8fc4f14f57f3c6c"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
