@@ -80,3 +80,6 @@ media-fonts/encodings-1.0.3
 
 # Our chromeos-base package takes care of this.
 app-misc/editor-wrapper-4
+
+# A build tool only; not needed on the target board.
+dev-util/boost-build-1.55.0
