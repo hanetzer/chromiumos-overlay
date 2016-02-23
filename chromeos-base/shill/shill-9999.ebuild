@@ -28,6 +28,7 @@ RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	chromeos-base/metrics
+	chromeos-base/nsswitch
 	wimax? ( chromeos-base/wimax_manager )
 	dev-libs/dbus-c++
 	cellular? ( net-dialup/ppp )
@@ -141,8 +142,6 @@ src_install() {
 			> "${D}/${shims_dir}/wpa_supplicant.conf"
 	fi
 
-	insinto /etc
-	doins shims/nsswitch.conf
 	dosym /var/run/shill/resolv.conf /etc/resolv.conf
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
