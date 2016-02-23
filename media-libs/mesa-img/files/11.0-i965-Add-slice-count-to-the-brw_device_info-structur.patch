@@ -1,0 +1,183 @@
+From 2f97a7b691bdebad1bdcc1fd33ccd86e67536403 Mon Sep 17 00:00:00 2001
+From: Francisco Jerez <currojerez@riseup.net>
+Date: Fri, 8 Jan 2016 21:49:13 -0800
+Subject: [PATCH 05/12] i965: Add slice count to the brw_device_info structure.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Reviewed-by: Samuel Iglesias Gonsálvez <siglesias@igalia.com>
+Reviewed-by: Kristian Høgsberg  <krh@bitplanet.net>
+---
+ src/mesa/drivers/dri/i965/brw_device_info.c | 19 +++++++++++++++++++
+ src/mesa/drivers/dri/i965/brw_device_info.h |  5 +++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_device_info.c b/src/mesa/drivers/dri/i965/brw_device_info.c
+index 7ad3a2f..dd42df8 100644
+--- a/src/mesa/drivers/dri/i965/brw_device_info.c
++++ b/src/mesa/drivers/dri/i965/brw_device_info.c
+@@ -28,6 +28,7 @@
+ static const struct brw_device_info brw_device_info_i965 = {
+    .gen = 4,
+    .has_negative_rhw_bug = true,
++   .num_slices = 1,
+    .max_vs_threads = 16,
+    .max_gs_threads = 2,
+    .max_wm_threads = 8 * 4,
+@@ -42,6 +43,7 @@ static const struct brw_device_info brw_device_info_g4x = {
+    .has_compr4 = true,
+    .has_surface_tile_offset = true,
+    .is_g4x = true,
++   .num_slices = 1,
+    .max_vs_threads = 32,
+    .max_gs_threads = 2,
+    .max_wm_threads = 10 * 5,
+@@ -55,6 +57,7 @@ static const struct brw_device_info brw_device_info_ilk = {
+    .has_pln = true,
+    .has_compr4 = true,
+    .has_surface_tile_offset = true,
++   .num_slices = 1,
+    .max_vs_threads = 72,
+    .max_gs_threads = 32,
+    .max_wm_threads = 12 * 6,
+@@ -71,6 +74,7 @@ static const struct brw_device_info brw_device_info_snb_gt1 = {
+    .has_pln = true,
+    .has_surface_tile_offset = true,
+    .needs_unlit_centroid_workaround = true,
++   .num_slices = 1,
+    .max_vs_threads = 24,
+    .max_gs_threads = 21, /* conservative; 24 if rendering disabled. */
+    .max_wm_threads = 40,
+@@ -90,6 +94,7 @@ static const struct brw_device_info brw_device_info_snb_gt2 = {
+    .has_pln = true,
+    .has_surface_tile_offset = true,
+    .needs_unlit_centroid_workaround = true,
++   .num_slices = 1,
+    .max_vs_threads = 60,
+    .max_gs_threads = 60,
+    .max_wm_threads = 80,
+@@ -112,6 +117,7 @@ static const struct brw_device_info brw_device_info_snb_gt2 = {
+ static const struct brw_device_info brw_device_info_ivb_gt1 = {
+    GEN7_FEATURES, .is_ivybridge = true, .gt = 1,
+    .needs_unlit_centroid_workaround = true,
++   .num_slices = 1,
+    .max_vs_threads = 36,
+    .max_hs_threads = 36,
+    .max_ds_threads = 36,
+@@ -131,6 +137,7 @@ static const struct brw_device_info brw_device_info_ivb_gt1 = {
+ static const struct brw_device_info brw_device_info_ivb_gt2 = {
+    GEN7_FEATURES, .is_ivybridge = true, .gt = 2,
+    .needs_unlit_centroid_workaround = true,
++   .num_slices = 1,
+    .max_vs_threads = 128,
+    .max_hs_threads = 128,
+    .max_ds_threads = 128,
+@@ -150,6 +157,7 @@ static const struct brw_device_info brw_device_info_ivb_gt2 = {
+ static const struct brw_device_info brw_device_info_byt = {
+    GEN7_FEATURES, .is_baytrail = true, .gt = 1,
+    .needs_unlit_centroid_workaround = true,
++   .num_slices = 1,
+    .has_llc = false,
+    .max_vs_threads = 36,
+    .max_hs_threads = 36,
+@@ -175,6 +183,7 @@ static const struct brw_device_info brw_device_info_byt = {
+
+ static const struct brw_device_info brw_device_info_hsw_gt1 = {
+    HSW_FEATURES, .gt = 1,
++   .num_slices = 1,
+    .max_vs_threads = 70,
+    .max_hs_threads = 70,
+    .max_ds_threads = 70,
+@@ -193,6 +202,7 @@ static const struct brw_device_info brw_device_info_hsw_gt1 = {
+
+ static const struct brw_device_info brw_device_info_hsw_gt2 = {
+    HSW_FEATURES, .gt = 2,
++   .num_slices = 1,
+    .max_vs_threads = 280,
+    .max_hs_threads = 256,
+    .max_ds_threads = 280,
+@@ -211,6 +221,7 @@ static const struct brw_device_info brw_device_info_hsw_gt2 = {
+
+ static const struct brw_device_info brw_device_info_hsw_gt3 = {
+    HSW_FEATURES, .gt = 3,
++   .num_slices = 2,
+    .max_vs_threads = 280,
+    .max_hs_threads = 256,
+    .max_ds_threads = 280,
+@@ -243,6 +254,7 @@ static const struct brw_device_info brw_device_info_hsw_gt3 = {
+
+ static const struct brw_device_info brw_device_info_bdw_gt1 = {
+    GEN8_FEATURES, .gt = 1,
++   .num_slices = 1,
+    .max_cs_threads = 42,
+    .urb = {
+       .size = 192,
+@@ -256,6 +268,7 @@ static const struct brw_device_info brw_device_info_bdw_gt1 = {
+
+ static const struct brw_device_info brw_device_info_bdw_gt2 = {
+    GEN8_FEATURES, .gt = 2,
++   .num_slices = 1,
+    .max_cs_threads = 56,
+    .urb = {
+       .size = 384,
+@@ -269,6 +282,7 @@ static const struct brw_device_info brw_device_info_bdw_gt2 = {
+
+ static const struct brw_device_info brw_device_info_bdw_gt3 = {
+    GEN8_FEATURES, .gt = 3,
++   .num_slices = 2,
+    .max_cs_threads = 56,
+    .urb = {
+       .size = 384,
+@@ -283,6 +297,7 @@ static const struct brw_device_info brw_device_info_bdw_gt3 = {
+ static const struct brw_device_info brw_device_info_chv = {
+    GEN8_FEATURES, .is_cherryview = 1, .gt = 1,
+    .has_llc = false,
++   .num_slices = 1,
+    .max_vs_threads = 80,
+    .max_hs_threads = 80,
+    .max_ds_threads = 80,
+@@ -324,14 +339,17 @@ static const struct brw_device_info brw_device_info_chv = {
+
+ static const struct brw_device_info brw_device_info_skl_gt1 = {
+    GEN9_FEATURES, .gt = 1,
++   .num_slices = 1,
+ };
+
+ static const struct brw_device_info brw_device_info_skl_gt2 = {
+    GEN9_FEATURES, .gt = 2,
++   .num_slices = 1,
+ };
+
+ static const struct brw_device_info brw_device_info_skl_gt3 = {
+    GEN9_FEATURES, .gt = 3,
++   .num_slices = 2,
+ };
+
+ static const struct brw_device_info brw_device_info_bxt = {
+@@ -341,6 +359,7 @@ static const struct brw_device_info brw_device_info_bxt = {
+    .has_llc = false,
+
+    /* XXX: These are preliminary thread counts and URB sizes. */
++   .num_slices = 1,
+    .max_vs_threads = 56,
+    .max_hs_threads = 56,
+    .max_ds_threads = 56,
+diff --git a/src/mesa/drivers/dri/i965/brw_device_info.h b/src/mesa/drivers/dri/i965/brw_device_info.h
+index 2a73e93..1347cab 100644
+--- a/src/mesa/drivers/dri/i965/brw_device_info.h
++++ b/src/mesa/drivers/dri/i965/brw_device_info.h
+@@ -68,6 +68,11 @@ struct brw_device_info
+     * GPU Limits:
+     *  @{
+     */
++   /**
++    * Total number of slices present on the device whether or not they've been
++    * fused off.
++    */
++   unsigned num_slices;
+    unsigned max_vs_threads;
+    unsigned max_hs_threads;
+    unsigned max_ds_threads;
+--
+1.9.1
