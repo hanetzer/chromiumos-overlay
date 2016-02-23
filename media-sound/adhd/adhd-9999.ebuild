@@ -32,12 +32,9 @@ DEPEND="${RDEPEND}
 # Exclude adhd from clang build. clang rejects access to cp10/cp11,
 # which is not correct. Upstream bug here -
 # https://llvm.org/bugs/show_bug.cgi?id=23998
-cros_pre_src_prepare_use_gcc() {
-    cros_use_gcc
-    filter_clang_syntax
-}
-
 src_prepare() {
+	cros_use_gcc
+	filter_clang_syntax
 	cd cras
 	eautoreconf
 }
