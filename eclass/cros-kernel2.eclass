@@ -43,6 +43,7 @@ IUSE="
 	-lxc
 	-binder
 	-android_test
+	-transparent_hugepage
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -99,6 +100,7 @@ CONFIG_FRAGMENTS=(
 	socketmon
 	systemtap
 	tpm
+	transparent_hugepage
 	usb_gadget
 	usb_gadget_acm
 	usb_gadget_audio
@@ -508,6 +510,11 @@ CONFIG_POSIX_MQUEUE=y
 CONFIG_BRIDGE_NETFILTER=y
 "
 
+transparent_hugepage_desc="Transparent Hugepage Support"
+transparent_hugepage_config="
+CONFIG_TRANSPARENT_HUGEPAGE=y
+CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
+"
 # Firmware binaries selected by USE flags.  Selected firmware binaries will
 # be built into the kernel using CONFIG_EXTRA_FIRMWARE.
 
