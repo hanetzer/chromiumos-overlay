@@ -1,7 +1,7 @@
-From 604f4072647c24e072c0aa8b1f4aa4cbf25e0da8 Mon Sep 17 00:00:00 2001
+From f88d20b41e9a2202a2677839d7c832541cb7d2cf Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Tue, 2 Sep 2014 18:19:12 +0100
-Subject: [PATCH 14/14] GL_KHR_blend_equation_advanced entry points
+Subject: [PATCH 12/12] GL_KHR_blend_equation_advanced entry points
 
 ---
  src/mapi/glapi/gen/KHR_blend_equation_advanced.xml | 31 ++++++++++++++++++++++
@@ -13,7 +13,7 @@ Subject: [PATCH 14/14] GL_KHR_blend_equation_advanced entry points
 
 diff --git a/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml b/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml
 new file mode 100644
-index 0000000..4a2fc11
+index 0000000..e09acf4
 --- /dev/null
 +++ b/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml
 @@ -0,0 +1,31 @@
@@ -49,19 +49,19 @@ index 0000000..4a2fc11
 +</OpenGLAPI>
 +
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 9816a4c..c8aa6bc 100644
+index 2b8a2bb..d332d28 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -849,4 +849,7 @@
-     </function>
- </category>
+@@ -804,4 +804,7 @@
+ <!-- 174. GL_OES_texture_storage_multisample_2d_array -->
+ <xi:include href="OES_texture_storage_multisample_2d_array.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 +<!-- 168. GL_KHR_blend_equation_advanced -->
 +<xi:include href="KHR_blend_equation_advanced.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
  </OpenGLAPI>
 diff --git a/src/mesa/main/blend.c b/src/mesa/main/blend.c
-index 774fc88..eadf80a 100644
+index 4fc3296..d7f0519 100644
 --- a/src/mesa/main/blend.c
 +++ b/src/mesa/main/blend.c
 @@ -549,6 +549,12 @@ _mesa_BlendColor( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
@@ -78,10 +78,10 @@ index 774fc88..eadf80a 100644
  /**
   * Specify the alpha test function.
 diff --git a/src/mesa/main/blend.h b/src/mesa/main/blend.h
-index fe31a74..7ab80f0 100644
+index 8ab9e02..5826e76 100644
 --- a/src/mesa/main/blend.h
 +++ b/src/mesa/main/blend.h
-@@ -78,6 +78,9 @@ _mesa_BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+@@ -79,6 +79,9 @@ _mesa_BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
  
  
  extern void GLAPIENTRY

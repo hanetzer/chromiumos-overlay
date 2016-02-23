@@ -1,0 +1,298 @@
+From e26f2b9b6d6aef1ce16a4b0c421eaf0e47f70fc3 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 4 Dec 2014 10:16:04 +0000
+Subject: [PATCH 18/40] GL_EXT_texture_border_clamp entry points
+
+---
+ src/mapi/glapi/gen/EXT_texture_border_clamp.xml | 37 +++++++++++++++++++++++++
+ src/mapi/glapi/gen/EXT_texture_integer.xml      |  8 +++---
+ src/mapi/glapi/gen/es_EXT.xml                   |  3 ++
+ src/mesa/main/samplerobj.c                      | 36 ++++++++++++++++++++++++
+ src/mesa/main/samplerobj.h                      |  8 ++++++
+ src/mesa/main/texparam.c                        | 28 +++++++++++++++++++
+ src/mesa/main/texparam.h                        | 12 ++++++++
+ 7 files changed, 128 insertions(+), 4 deletions(-)
+ create mode 100644 src/mapi/glapi/gen/EXT_texture_border_clamp.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_texture_border_clamp.xml b/src/mapi/glapi/gen/EXT_texture_border_clamp.xml
+new file mode 100644
+index 0000000..85ee855
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_texture_border_clamp.xml
+@@ -0,0 +1,37 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_texture_border_clamp" number="182">
++
++    <enum name="TEXTURE_BORDER_COLOR_EXT" value="0x1004"/>
++    <enum name="CLAMP_TO_BORDER_EXT"      value="0x812D"/>
++
++    <function name="SamplerParameterIivEXT" es2="2.0">
++      <param name="sampler" type="GLuint"/>
++      <param name="pname" type="GLenum"/>
++      <param name="params" type="const GLint *"/>
++    </function>
++
++    <function name="SamplerParameterIuivEXT" es2="2.0">
++      <param name="sampler" type="GLuint"/>
++      <param name="pname" type="GLenum"/>
++      <param name="params" type="const GLuint *"/>
++    </function>
++
++    <function name="GetSamplerParameterIivEXT" es2="2.0">
++      <param name="sampler" type="GLuint"/>
++      <param name="pname" type="GLenum"/>
++      <param name="params" type="GLint *"/>
++    </function>
++
++    <function name="GetSamplerParameterIuivEXT" es2="2.0">
++      <param name="sampler" type="GLuint"/>
++      <param name="pname" type="GLenum"/>
++      <param name="params" type="GLuint *"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/EXT_texture_integer.xml b/src/mapi/glapi/gen/EXT_texture_integer.xml
+index 5f9ea29..ad837c9 100644
+--- a/src/mapi/glapi/gen/EXT_texture_integer.xml
++++ b/src/mapi/glapi/gen/EXT_texture_integer.xml
+@@ -69,25 +69,25 @@
+         <param name="a" type="GLuint"/>
+     </function>
+ 
+-    <function name="TexParameterIivEXT" alias="TexParameterIiv">
++    <function name="TexParameterIivEXT" es2="2.0">
+         <param name="target" type="GLenum"/>
+         <param name="pname"  type="GLenum"/>
+         <param name="params" type="const GLint *"/>
+     </function>
+ 
+-    <function name="TexParameterIuivEXT" alias="TexParameterIuiv">
++    <function name="TexParameterIuivEXT" es2="2.0">
+         <param name="target" type="GLenum"/>
+         <param name="pname"  type="GLenum"/>
+         <param name="params" type="const GLuint *"/>
+     </function>
+ 
+-    <function name="GetTexParameterIivEXT" alias="GetTexParameterIiv">
++    <function name="GetTexParameterIivEXT" es2="2.0">
+         <param name="target" type="GLenum"/>
+         <param name="pname"  type="GLenum"/>
+         <param name="params" type="GLint *"/>
+     </function>
+ 
+-    <function name="GetTexParameterIuivEXT" alias="GetTexParameterIuiv">
++    <function name="GetTexParameterIuivEXT" es2="2.0">
+         <param name="target" type="GLenum"/>
+         <param name="pname"  type="GLenum"/>
+         <param name="params" type="GLuint *"/>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 878a6ed..ff388ee 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -822,6 +822,9 @@
+ <!-- 177. GL_EXT_geometry_shader-->
+ <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 182. GL_EXT_texture_border_clamp -->
++<xi:include href="EXT_texture_border_clamp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 183. GL_EXT_texture_buffer -->
+ <xi:include href="EXT_texture_buffer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mesa/main/samplerobj.c b/src/mesa/main/samplerobj.c
+index 32180fb1..02078d5 100644
+--- a/src/mesa/main/samplerobj.c
++++ b/src/mesa/main/samplerobj.c
+@@ -1201,6 +1201,15 @@ _mesa_SamplerParameterIiv(GLuint sampler, GLenum pname, const GLint *params)
+ 
+ 
+ void GLAPIENTRY
++_mesa_SamplerParameterIivEXT(GLuint sampler, GLenum pname, const GLint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glSamplerParameterIivEXT");
++}
++
++
++void GLAPIENTRY
+ _mesa_SamplerParameterIuiv(GLuint sampler, GLenum pname, const GLuint *params)
+ {
+    struct gl_sampler_object *sampObj;
+@@ -1287,6 +1296,15 @@ _mesa_SamplerParameterIuiv(GLuint sampler, GLenum pname, const GLuint *params)
+ 
+ 
+ void GLAPIENTRY
++_mesa_SamplerParameterIuivEXT(GLuint sampler, GLenum pname, const GLuint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glSamplerParameterIuivEXT");
++}
++
++
++void GLAPIENTRY
+ _mesa_GetSamplerParameteriv(GLuint sampler, GLenum pname, GLint *params)
+ {
+    struct gl_sampler_object *sampObj;
+@@ -1550,6 +1568,15 @@ invalid_pname:
+ 
+ 
+ void GLAPIENTRY
++_mesa_GetSamplerParameterIivEXT(GLuint sampler, GLenum pname, GLint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetSamplerParameterIivEXT");
++}
++
++
++void GLAPIENTRY
+ _mesa_GetSamplerParameterIuiv(GLuint sampler, GLenum pname, GLuint *params)
+ {
+    struct gl_sampler_object *sampObj;
+@@ -1628,6 +1655,15 @@ invalid_pname:
+ }
+ 
+ 
++void GLAPIENTRY
++_mesa_GetSamplerParameterIuivEXT(GLuint sampler, GLenum pname, GLuint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "gl_GetSamplerParameterIuivEXT");
++}
++
++
+ void
+ _mesa_init_sampler_object_functions(struct dd_function_table *driver)
+ {
+diff --git a/src/mesa/main/samplerobj.h b/src/mesa/main/samplerobj.h
+index 7bea911..343fb93 100644
+--- a/src/mesa/main/samplerobj.h
++++ b/src/mesa/main/samplerobj.h
+@@ -103,15 +103,23 @@ _mesa_SamplerParameterfv(GLuint sampler, GLenum pname, const GLfloat *params);
+ void GLAPIENTRY
+ _mesa_SamplerParameterIiv(GLuint sampler, GLenum pname, const GLint *params);
+ void GLAPIENTRY
++_mesa_SamplerParameterIivEXT(GLuint sampler, GLenum pname, const GLint *params);
++void GLAPIENTRY
+ _mesa_SamplerParameterIuiv(GLuint sampler, GLenum pname, const GLuint *params);
+ void GLAPIENTRY
++_mesa_SamplerParameterIuivEXT(GLuint sampler, GLenum pname, const GLuint *params);
++void GLAPIENTRY
+ _mesa_GetSamplerParameteriv(GLuint sampler, GLenum pname, GLint *params);
+ void GLAPIENTRY
+ _mesa_GetSamplerParameterfv(GLuint sampler, GLenum pname, GLfloat *params);
+ void GLAPIENTRY
+ _mesa_GetSamplerParameterIiv(GLuint sampler, GLenum pname, GLint *params);
+ void GLAPIENTRY
++_mesa_GetSamplerParameterIivEXT(GLuint sampler, GLenum pname, GLint *params);
++void GLAPIENTRY
+ _mesa_GetSamplerParameterIuiv(GLuint sampler, GLenum pname, GLuint *params);
++void GLAPIENTRY
++_mesa_GetSamplerParameterIuivEXT(GLuint sampler, GLenum pname, GLuint *params);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/src/mesa/main/texparam.c b/src/mesa/main/texparam.c
+index 68c6e58..cfd5b01 100644
+--- a/src/mesa/main/texparam.c
++++ b/src/mesa/main/texparam.c
+@@ -1085,6 +1085,13 @@ _mesa_TexParameterIiv(GLenum target, GLenum pname, const GLint *params)
+    _mesa_texture_parameterIiv(ctx, texObj, pname, params, false);
+ }
+ 
++void GLAPIENTRY
++_mesa_TexParameterIivEXT(GLenum target, GLenum pname, const GLint *params)
++{
++   _mesa_TexParameterIiv(target, pname, params);
++}
++
++
+ /**
+  * Set tex parameter to unsigned integer value(s).  Primarily intended to set
+  * uint-valued texture border color (for integer-valued textures).
+@@ -1105,6 +1112,13 @@ _mesa_TexParameterIuiv(GLenum target, GLenum pname, const GLuint *params)
+ 
+ 
+ void GLAPIENTRY
++_mesa_TexParameterIuivEXT(GLenum target, GLenum pname, const GLuint *params)
++{
++   _mesa_TexParameterIuiv(target, pname, params);
++}
++
++
++void GLAPIENTRY
+ _mesa_TextureParameterfv(GLuint texture, GLenum pname, const GLfloat *params)
+ {
+    struct gl_texture_object *texObj;
+@@ -2244,6 +2258,13 @@ _mesa_GetTexParameterIiv(GLenum target, GLenum pname, GLint *params)
+ }
+ 
+ 
++void GLAPIENTRY
++_mesa_GetTexParameterIivEXT(GLenum target, GLenum pname, GLint *params)
++{
++   _mesa_GetTexParameterIiv(target, pname, params);
++}
++
++
+ /** New in GL 3.0 */
+ void GLAPIENTRY
+ _mesa_GetTexParameterIuiv(GLenum target, GLenum pname, GLuint *params)
+@@ -2327,3 +2348,10 @@ _mesa_GetTextureParameterIuiv(GLuint texture, GLenum pname, GLuint *params)
+ 
+    get_tex_parameterIuiv(ctx, texObj, pname, params, true);
+ }
++
++
++void GLAPIENTRY
++_mesa_GetTexParameterIuivEXT(GLenum target, GLenum pname, GLuint *params)
++{
++   _mesa_GetTexParameterIuiv(target, pname, params);
++}
+diff --git a/src/mesa/main/texparam.h b/src/mesa/main/texparam.h
+index 96defbe..666a0f5 100644
+--- a/src/mesa/main/texparam.h
++++ b/src/mesa/main/texparam.h
+@@ -100,8 +100,14 @@ extern void GLAPIENTRY
+ _mesa_GetTexParameterIiv(GLenum target, GLenum pname, GLint *params);
+ 
+ extern void GLAPIENTRY
++_mesa_GetTexParameterIivEXT(GLenum target, GLenum pname, GLint *params);
++
++extern void GLAPIENTRY
+ _mesa_GetTexParameterIuiv(GLenum target, GLenum pname, GLuint *params);
+ 
++extern void GLAPIENTRY
++_mesa_GetTexParameterIuivEXT(GLenum target, GLenum pname, GLuint *params);
++
+ 
+ extern void GLAPIENTRY
+ _mesa_GetTextureParameterfv(GLuint texture, GLenum pname, GLfloat *params);
+@@ -147,9 +153,15 @@ extern void GLAPIENTRY
+ _mesa_TextureParameteriv(GLuint texture, GLenum pname, const GLint *params);
+ 
+ extern void GLAPIENTRY
++_mesa_TexParameterIivEXT(GLenum target, GLenum pname, const GLint *params);
++
++extern void GLAPIENTRY
+ _mesa_TextureParameterIiv(GLuint texture, GLenum pname, const GLint *params);
+ 
+ extern void GLAPIENTRY
+ _mesa_TextureParameterIuiv(GLuint texture, GLenum pname, const GLuint *params);
+ 
++extern void GLAPIENTRY
++_mesa_TexParameterIuivEXT(GLenum target, GLenum pname, const GLuint *params);
++
+ #endif /* TEXPARAM_H */
+-- 
+1.9.1
+

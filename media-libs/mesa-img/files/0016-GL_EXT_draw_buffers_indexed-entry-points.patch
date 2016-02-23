@@ -1,0 +1,333 @@
+From b46eacb7c1339117f7e6326d4667308bdb087b79 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Wed, 3 Dec 2014 14:04:51 +0000
+Subject: [PATCH 16/16] GL_EXT_draw_buffers_indexed entry points
+
+---
+ src/mapi/glapi/gen/EXT_draw_buffers_indexed.xml | 59 +++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                   |  3 ++
+ src/mesa/main/blend.c                           | 59 +++++++++++++++++++++++++
+ src/mesa/main/blend.h                           | 22 +++++++++
+ src/mesa/main/enable.c                          | 29 ++++++++++++
+ src/mesa/main/enable.h                          |  9 ++++
+ 6 files changed, 181 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_draw_buffers_indexed.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_draw_buffers_indexed.xml b/src/mapi/glapi/gen/EXT_draw_buffers_indexed.xml
+new file mode 100644
+index 0000000..c0017d6
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_draw_buffers_indexed.xml
+@@ -0,0 +1,59 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_draw_buffers_indexed" number="176">
++
++    <function name="EnableiEXT" es2="3.0">
++       <param name="target" type="GLenum"/>
++       <param name="index" type="GLuint"/>
++    </function>
++
++    <function name="DisableiEXT" es2="3.0">
++       <param name="target" type="GLenum"/>
++       <param name="index" type="GLuint"/>
++    </function>
++
++    <function name="BlendEquationiEXT" es2="3.0">
++         <param name="buf" type="GLuint"/>
++         <param name="mode" type="GLenum"/>
++    </function>
++
++    <function name="BlendEquationSeparateiEXT" es2="3.0">
++        <param name="buf" type="GLuint"/>
++        <param name="modeRGB" type="GLenum"/>
++        <param name="modeA" type="GLenum"/>
++    </function>
++
++    <function name="BlendFunciEXT" es2="3.0">
++        <param name="buf" type="GLuint"/>
++        <param name="src" type="GLenum"/>
++        <param name="dst" type="GLenum"/>
++    </function>
++
++    <function name="BlendFuncSeparateiEXT" es2="3.0">
++        <param name="buf" type="GLuint"/>
++        <param name="srcRGB" type="GLenum"/>
++        <param name="dstRGB" type="GLenum"/>
++        <param name="srcA" type="GLenum"/>
++        <param name="dstA" type="GLenum"/>
++    </function>
++
++    <function name="ColorMaskiEXT" es2="3.0">
++        <param name="buf" type="GLuint"/>
++        <param name="r" type="GLboolean"/>
++        <param name="g" type="GLboolean"/>
++        <param name="b" type="GLboolean"/>
++        <param name="a" type="GLboolean"/>
++    </function>
++
++    <function name="IsEnablediEXT" es2="3.0">
++       <param name="target" type="GLenum"/>
++       <param name="index" type="GLuint"/>
++          <return type="GLboolean"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index a831377..c1e00a6 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -813,6 +813,9 @@
+ <!-- 175. GL_EXT_copy_image -->
+ <xi:include href="EXT_copy_image.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 176. GL_EXT_draw_buffers_indexed -->
++<xi:include href="EXT_draw_buffers_indexed.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 183. GL_EXT_texture_buffer -->
+ <xi:include href="EXT_texture_buffer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mesa/main/blend.c b/src/mesa/main/blend.c
+index d7f0519..a64bd6f 100644
+--- a/src/mesa/main/blend.c
++++ b/src/mesa/main/blend.c
+@@ -264,6 +264,18 @@ _mesa_BlendFunciARB(GLuint buf, GLenum sfactor, GLenum dfactor)
+ 
+ 
+ /**
++ * Set blend source/dest factors for one color buffer/target.
++ */
++void GLAPIENTRY
++_mesa_BlendFunciEXT(GLuint buf, GLenum sfactor, GLenum dfactor)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendFunciEXT");
++}
++
++
++/**
+  * Set separate blend source/dest factors for one color buffer/target.
+  */
+ void GLAPIENTRY
+@@ -312,6 +324,19 @@ _mesa_BlendFuncSeparateiARB(GLuint buf, GLenum sfactorRGB, GLenum dfactorRGB,
+ 
+ 
+ /**
++ * Set separate blend source/dest factors for one color buffer/target.
++ */
++void GLAPIENTRY
++_mesa_BlendFuncSeparateiEXT(GLuint buf, GLenum sfactorRGB, GLenum dfactorRGB,
++                         GLenum sfactorA, GLenum dfactorA)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendFuncSeparateiEXT");
++}
++
++
++/**
+  * Check if given blend equation is legal.
+  * \return GL_TRUE if legal, GL_FALSE otherwise.
+  */
+@@ -412,6 +437,18 @@ _mesa_BlendEquationiARB(GLuint buf, GLenum mode)
+ }
+ 
+ 
++/**
++ * Set blend equation for one color buffer/target.
++ */
++void GLAPIENTRY
++_mesa_BlendEquationiEXT(GLuint buf, GLenum mode)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendEquationiEXT");
++}
++
++
+ void GLAPIENTRY
+ _mesa_BlendEquationSeparate( GLenum modeRGB, GLenum modeA )
+ {
+@@ -510,6 +547,18 @@ _mesa_BlendEquationSeparateiARB(GLuint buf, GLenum modeRGB, GLenum modeA)
+ 
+ 
+ /**
++ * Set separate blend equations for one color buffer/target.
++ */
++void GLAPIENTRY
++_mesa_BlendEquationSeparateiEXT(GLuint buf, GLenum modeRGB, GLenum modeA)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendEquationSeparateiEXT");
++}
++
++
++/**
+  * Set the blending color.
+  *
+  * \param red red color component.
+@@ -758,6 +807,16 @@ _mesa_ColorMaski( GLuint buf, GLboolean red, GLboolean green,
+ 
+ 
+ void GLAPIENTRY
++_mesa_ColorMaskiEXT( GLuint buf, GLboolean red, GLboolean green,
++                        GLboolean blue, GLboolean alpha )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glColorMaskiEXT");
++}
++
++
++void GLAPIENTRY
+ _mesa_ClampColor(GLenum target, GLenum clamp)
+ {
+    GET_CURRENT_CONTEXT(ctx);
+diff --git a/src/mesa/main/blend.h b/src/mesa/main/blend.h
+index 5826e76..fd69bf5 100644
+--- a/src/mesa/main/blend.h
++++ b/src/mesa/main/blend.h
+@@ -54,11 +54,20 @@ _mesa_BlendFunciARB(GLuint buf, GLenum sfactor, GLenum dfactor);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendFunciEXT(GLuint buf, GLenum sfactor, GLenum dfactor);
++
++
++extern void GLAPIENTRY
+ _mesa_BlendFuncSeparateiARB(GLuint buf, GLenum sfactorRGB, GLenum dfactorRGB,
+                          GLenum sfactorA, GLenum dfactorA);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendFuncSeparateiEXT(GLuint buf, GLenum sfactorRGB, GLenum dfactorRGB,
++                         GLenum sfactorA, GLenum dfactorA);
++
++
++extern void GLAPIENTRY
+ _mesa_BlendEquation( GLenum mode );
+ 
+ 
+@@ -67,6 +76,10 @@ _mesa_BlendEquationiARB(GLuint buf, GLenum mode);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendEquationiEXT(GLuint buf, GLenum mode);
++
++
++extern void GLAPIENTRY
+ _mesa_BlendEquationSeparate( GLenum modeRGB, GLenum modeA );
+ 
+ 
+@@ -75,6 +88,10 @@ _mesa_BlendEquationSeparateiARB(GLuint buf, GLenum modeRGB, GLenum modeA);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendEquationSeparateiEXT(GLuint buf, GLenum modeRGB, GLenum modeA);
++
++
++extern void GLAPIENTRY
+ _mesa_BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+ 
+ 
+@@ -102,6 +119,11 @@ _mesa_ColorMaski( GLuint buf, GLboolean red, GLboolean green,
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_ColorMaskiEXT( GLuint buf, GLboolean red, GLboolean green,
++                        GLboolean blue, GLboolean alpha );
++
++
++extern void GLAPIENTRY
+ _mesa_ClampColor(GLenum target, GLenum clamp);
+ 
+ extern GLboolean
+diff --git a/src/mesa/main/enable.c b/src/mesa/main/enable.c
+index 42f6799..dd066ea 100644
+--- a/src/mesa/main/enable.c
++++ b/src/mesa/main/enable.c
+@@ -1114,6 +1114,15 @@ _mesa_Disablei( GLenum cap, GLuint index )
+ 
+ 
+ void GLAPIENTRY
++_mesa_DisableiEXT( GLenum cap, GLuint index )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glDisableiEXT");
++}
++
++
++void GLAPIENTRY
+ _mesa_Enablei( GLenum cap, GLuint index )
+ {
+    GET_CURRENT_CONTEXT(ctx);
+@@ -1121,6 +1130,15 @@ _mesa_Enablei( GLenum cap, GLuint index )
+ }
+ 
+ 
++void GLAPIENTRY
++_mesa_EnableiEXT( GLenum cap, GLuint index )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glEnableiEXT");
++}
++
++
+ GLboolean GLAPIENTRY
+ _mesa_IsEnabledi( GLenum cap, GLuint index )
+ {
+@@ -1149,6 +1167,17 @@ _mesa_IsEnabledi( GLenum cap, GLuint index )
+ }
+ 
+ 
++GLboolean GLAPIENTRY
++_mesa_IsEnablediEXT( GLenum cap, GLuint index )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glIsEnablediEXT");
++
++   return GL_FALSE;
++}
++
++
+ 
+ 
+ #undef CHECK_EXTENSION
+diff --git a/src/mesa/main/enable.h b/src/mesa/main/enable.h
+index 10755e5..9121cb4 100644
+--- a/src/mesa/main/enable.h
++++ b/src/mesa/main/enable.h
+@@ -56,11 +56,20 @@ extern void GLAPIENTRY
+ _mesa_Disablei( GLenum cap, GLuint index );
+ 
+ extern void GLAPIENTRY
++_mesa_DisableiEXT( GLenum cap, GLuint index );
++
++extern void GLAPIENTRY
+ _mesa_Enablei( GLenum cap, GLuint index );
+ 
++extern void GLAPIENTRY
++_mesa_EnableiEXT( GLenum cap, GLuint index );
++
+ extern GLboolean GLAPIENTRY
+ _mesa_IsEnabledi( GLenum cap, GLuint index );
+ 
++extern GLboolean GLAPIENTRY
++_mesa_IsEnablediEXT( GLenum cap, GLuint index );
++
+ extern void GLAPIENTRY
+ _mesa_EnableClientState( GLenum cap );
+ 
+-- 
+1.9.1
+

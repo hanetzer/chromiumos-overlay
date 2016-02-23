@@ -166,9 +166,20 @@ src_prepare() {
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
 	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
+	epatch "${FILESDIR}"/0009-GL_KHR_debug-entry-points.patch
 	epatch "${FILESDIR}"/0010-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0011-GL_OES_texture_storage_multisample_2d_array-entry-po.patch
 	epatch "${FILESDIR}"/0012-GL_KHR_blend_equation_advanced-entry-points.patch
+	epatch "${FILESDIR}"/0013-GL_EXT_texture_buffer-entry-points.patch
+	epatch "${FILESDIR}"/0014-GL_OES_sample_shading-entry-points.patch
+	epatch "${FILESDIR}"/0015-GL_EXT_copy_image-entry-points.patch
+	epatch "${FILESDIR}"/0016-GL_EXT_draw_buffers_indexed-entry-points.patch
+	epatch "${FILESDIR}"/0017-GL_EXT_geometry_shader-entry-points.patch
+	epatch "${FILESDIR}"/0018-GL_EXT_texture_border_clamp-entry-points.patch
+	epatch "${FILESDIR}"/0019-GL_EXT_primitive_bounding_box-entry-points.patch
+	epatch "${FILESDIR}"/0020-GL_EXT_tessellation_shader-entry-points.patch
 	epatch "${FILESDIR}"/0021-GL_KHR_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0022-GL_OES_draw_buffers_indexed-entry-points.patch
 	epatch "${FILESDIR}"/0031-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0032-Add-EGL_IMG_context_priority-EGL-extension.patch
 

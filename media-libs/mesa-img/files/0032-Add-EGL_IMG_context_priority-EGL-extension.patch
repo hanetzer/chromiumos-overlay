@@ -1,13 +1,13 @@
-From 3f4f5927008dec771be0c0c29fe2ce20a267e0f8 Mon Sep 17 00:00:00 2001
+From f689abe339a6505b4951732ca4f41bac8925d11f Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 11:31:26 +0000
-Subject: [PATCH 32/40] Add EGL_IMG_context_priority EGL extension
+Subject: [PATCH 32/32] Add EGL_IMG_context_priority EGL extension
 
 Add support for the EGL_IMG_context_priority extension to EGL, and the
 DRI2 EGL driver.
 ---
  include/GL/internal/dri_interface.h    | 30 ++++++++++++++++++++++++++++++
- src/egl/drivers/dri2/egl_dri2.c        | 30 +++++++++++++++++++++++++++++-
+ src/egl/drivers/dri2/egl_dri2.c        | 31 +++++++++++++++++++++++++++++--
  src/egl/drivers/dri2/egl_dri2.h        |  1 +
  src/egl/main/eglapi.c                  |  1 +
  src/egl/main/eglcontext.c              | 18 ++++++++++++++++++
@@ -15,10 +15,10 @@ DRI2 EGL driver.
  src/egl/main/egldisplay.h              |  2 ++
  src/mesa/drivers/dri/common/dri_util.c |  5 +++++
  src/mesa/drivers/dri/common/dri_util.h | 10 ++++++++++
- 9 files changed, 97 insertions(+), 1 deletion(-)
+ 9 files changed, 97 insertions(+), 2 deletions(-)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index 14643e8..8021907 100644
+index 4789b8c..6be5ac3 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
 @@ -980,6 +980,21 @@ struct __DRIdri2LoaderExtensionRec {
@@ -43,7 +43,7 @@ index 14643e8..8021907 100644
   * \name Reasons that __DRIdri2Extension::createContextAttribs might fail
   */
  /*@{*/
-@@ -1537,4 +1552,19 @@ struct __DRIimageDriverExtensionRec {
+@@ -1536,4 +1551,19 @@ struct __DRIimageDriverExtensionRec {
     __DRIgetAPIMaskFunc                  getAPIMask;
  };
  
@@ -64,10 +64,10 @@ index 14643e8..8021907 100644
 +
  #endif
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index e4b4590..0aab4b9 100644
+index f6c2f16..f7df247 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -595,6 +595,9 @@ dri2_setup_screen(_EGLDisplay *disp)
+@@ -593,6 +593,9 @@ dri2_setup_screen(_EGLDisplay *disp)
  
        if (dri2_dpy->robustness)
           disp->Extensions.EXT_create_context_robustness = EGL_TRUE;
@@ -77,17 +77,18 @@ index e4b4590..0aab4b9 100644
     }
  
     if (dri2_dpy->fence) {
-@@ -710,6 +713,9 @@ dri2_create_screen(_EGLDisplay *disp)
-       if (strcmp(extensions[i]->name, __DRI2_RENDERER_QUERY) == 0) {
-          dri2_dpy->rendererQuery = (__DRI2rendererQueryExtension *) extensions[i];
+@@ -711,7 +714,9 @@ dri2_create_screen(_EGLDisplay *disp)
+       if (strcmp(extensions[i]->name, __DRI_IMAGE) == 0) {
+          dri2_dpy->image = (__DRIimageExtension *) extensions[i];
        }
+-
 +      if (strcmp(extensions[i]->name, __DRI_PRIORITY) == 0) {
 +         dri2_dpy->priority = (__DRIpriorityExtension *) extensions[i];
 +      }
     }
  
     dri2_setup_screen(disp);
-@@ -990,7 +996,7 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+@@ -992,7 +997,7 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
        if (dri2_dpy->dri2->base.version >= 3) {
           unsigned error;
           unsigned num_attribs = 0;
@@ -96,7 +97,7 @@ index e4b4590..0aab4b9 100644
  
           ctx_attribs[num_attribs++] = __DRI_CTX_ATTRIB_MAJOR_VERSION;
           ctx_attribs[num_attribs++] = dri2_ctx->base.ClientMajorVersion;
-@@ -1026,6 +1032,28 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+@@ -1028,6 +1033,28 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
              ctx_attribs[num_attribs++] = __DRI_CTX_RESET_LOSE_CONTEXT;
           }
  
@@ -150,10 +151,10 @@ index 323634e..5537a0d 100644
  }
  
 diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
-index ae19862..400828b 100644
+index 588f489..aec007b 100644
 --- a/src/egl/main/eglcontext.c
 +++ b/src/egl/main/eglcontext.c
-@@ -298,6 +298,20 @@ _eglParseContextAttribList(_EGLContext *ctx, _EGLDisplay *dpy,
+@@ -259,6 +259,20 @@ _eglParseContextAttribList(_EGLContext *ctx, _EGLDisplay *dpy,
              ctx->Flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
           break;
  
@@ -174,7 +175,7 @@ index ae19862..400828b 100644
        default:
           err = EGL_BAD_ATTRIBUTE;
           break;
-@@ -481,6 +495,7 @@ _eglInitContext(_EGLContext *ctx, _EGLDisplay *dpy, _EGLConfig *conf,
+@@ -442,6 +456,7 @@ _eglInitContext(_EGLContext *ctx, _EGLDisplay *dpy, _EGLConfig *conf,
     ctx->Flags = 0;
     ctx->Profile = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
     ctx->ResetNotificationStrategy = EGL_NO_RESET_NOTIFICATION_KHR;
@@ -182,7 +183,7 @@ index ae19862..400828b 100644
  
     err = _eglParseContextAttribList(ctx, dpy, attrib_list);
     if (err == EGL_SUCCESS && ctx->Config) {
-@@ -541,6 +556,9 @@ _eglQueryContext(_EGLDriver *drv, _EGLDisplay *dpy, _EGLContext *c,
+@@ -502,6 +517,9 @@ _eglQueryContext(_EGLDriver *drv, _EGLDisplay *dpy, _EGLContext *c,
     case EGL_RENDER_BUFFER:
        *value = _eglQueryContextRenderBuffer(c);
        break;

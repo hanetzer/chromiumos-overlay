@@ -1,0 +1,145 @@
+From bb7a727a7b998803c29c954c3d1a4c892de3b369 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 5 Dec 2014 12:00:58 +0000
+Subject: [PATCH 20/40] GL_EXT_tessellation_shader entry points
+
+---
+ src/mapi/glapi/gen/EXT_tessellation_shader.xml | 73 ++++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                  |  3 ++
+ src/mesa/main/shaderapi.c                      | 10 ++++
+ src/mesa/main/shaderapi.h                      |  4 ++
+ 4 files changed, 90 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_tessellation_shader.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_tessellation_shader.xml b/src/mapi/glapi/gen/EXT_tessellation_shader.xml
+new file mode 100644
+index 0000000..178f541
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_tessellation_shader.xml
+@@ -0,0 +1,73 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<!-- Note: Created by an IMG Mesa patch. -->
++
++<OpenGLAPI>
++<category name="GL_EXT_tessellation_shader" number="181">
++
++    <enum name="PATCHES_EXT"                                    value="0xE"/>
++
++    <enum name="PATCH_VERTICES_EXT"                             value="0x8E72"/>
++
++    <enum name="TESS_CONTROL_OUTPUT_VERTICES_EXT"               value="0x8E75"/>
++    <enum name="TESS_GEN_MODE_EXT"                              value="0x8E76"/>
++    <enum name="TESS_GEN_SPACING_EXT"                           value="0x8E77"/>
++    <enum name="TESS_GEN_VERTEX_ORDER_EXT"                      value="0x8E78"/>
++    <enum name="TESS_GEN_POINT_MODE_EXT"                        value="0x8E79"/>
++
++    <enum name="ISOLINES_EXT"                                   value="0x8E7A"/>
++    <enum name="QUADS_EXT"                                      value="0x0007"/>
++
++    <enum name="FRACTIONAL_ODD_EXT"                             value="0x8E7B"/>
++    <enum name="FRACTIONAL_EVEN_EXT"                            value="0x8E7C"/>
++
++    <enum name="MAX_PATCH_VERTICES_EXT"                         value="0x8E7D"/>
++    <enum name="MAX_TESS_GEN_LEVEL_EXT"                         value="0x8E7E"/>
++    <enum name="MAX_TESS_CONTROL_UNIFORM_COMPONENTS_EXT"        value="0x8E7F"/>
++    <enum name="MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT"     value="0x8E80"/>
++    <enum name="MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_EXT"       value="0x8E81"/>
++    <enum name="MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_EXT"    value="0x8E82"/>
++    <enum name="MAX_TESS_CONTROL_OUTPUT_COMPONENTS_EXT"         value="0x8E83"/>
++    <enum name="MAX_TESS_PATCH_COMPONENTS_EXT"                  value="0x8E84"/>
++    <enum name="MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_EXT"   value="0x8E85"/>
++    <enum name="MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_EXT"      value="0x8E86"/>
++    <enum name="MAX_TESS_CONTROL_UNIFORM_BLOCKS_EXT"            value="0x8E89"/>
++    <enum name="MAX_TESS_EVALUATION_UNIFORM_BLOCKS_EXT"         value="0x8E8A"/>
++    <enum name="MAX_TESS_CONTROL_INPUT_COMPONENTS_EXT"          value="0x886C"/>
++    <enum name="MAX_TESS_EVALUATION_INPUT_COMPONENTS_EXT"       value="0x886D"/>
++    <enum name="MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_EXT"
++                                                                value="0x8E1E"/>
++    <enum name="MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT"
++                                                                value="0x8E1F"/>
++    <enum name="MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS_EXT"    value="0x92CD"/>
++    <enum name="MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS_EXT" value="0x92CE"/>
++    <enum name="MAX_TESS_CONTROL_ATOMIC_COUNTERS_EXT"           value="0x92D3"/>
++    <enum name="MAX_TESS_EVALUATION_ATOMIC_COUNTERS_EXT"        value="0x92D4"/>
++    <enum name="MAX_TESS_CONTROL_IMAGE_UNIFORMS_EXT"            value="0x90CB"/>
++    <enum name="MAX_TESS_EVALUATION_IMAGE_UNIFORMS_EXT"         value="0x90CC"/>
++    <enum name="MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS_EXT"     value="0x90D8"/>
++    <enum name="MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS_EXT"  value="0x90D9"/>
++    <enum name="PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED"        value="0x8221"/>
++
++    <enum name="IS_PER_PATCH_EXT"                               value="0x92E7"/>
++    <enum name="REFERENCED_BY_TESS_CONTROL_SHADER_EXT"          value="0x9307"/>
++    <enum name="REFERENCED_BY_TESS_EVALUATION_SHADER_EXT"       value="0x9308"/>
++
++    <enum name="TESS_EVALUATION_SHADER_EXT"                     value="0x8E87"/>
++    <enum name="TESS_CONTROL_SHADER_EXT"                        value="0x8E88"/>
++
++    <enum name="TESS_CONTROL_SHADER_BIT_EXT"                value="0x00000008"/>
++    <enum name="TESS_EVALUATION_SHADER_BIT_EXT"             value="0x00000010"/>
++
++    <function name="PatchParameteriEXT" es2="3.1">
++        <param name="pname"     type="GLenum"/>
++        <param name="value"     type="GLint"/>
++    </function>
++
++</category>
++
++<category name="GL_EXT_tessellation_point_size" number="181">
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index f2ef294..c306fef 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -822,6 +822,9 @@
+ <!-- 177. GL_EXT_geometry_shader-->
+ <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 181. GL_EXT_tessellation_shader -->
++<xi:include href="EXT_tessellation_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 182. GL_EXT_texture_border_clamp -->
+ <xi:include href="EXT_texture_border_clamp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
+index 5519560..3e07cdc 100644
+--- a/src/mesa/main/shaderapi.c
++++ b/src/mesa/main/shaderapi.c
+@@ -2172,6 +2172,16 @@ _mesa_PatchParameterfv(GLenum pname, const GLfloat *values)
+ }
+ 
+ /**
++ * For GL_EXT_tessellation_shader
++ */
++void GLAPIENTRY
++_mesa_PatchParameteriEXT(GLenum pname, GLint value)
++{
++    GET_CURRENT_CONTEXT(ctx);
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glPatchParameteriEXT");
++}
++
++/**
+  * ARB_shader_subroutine
+  */
+ GLint GLAPIENTRY
+diff --git a/src/mesa/main/shaderapi.h b/src/mesa/main/shaderapi.h
+index e3ac7ee..df443d5 100644
+--- a/src/mesa/main/shaderapi.h
++++ b/src/mesa/main/shaderapi.h
+@@ -275,6 +275,10 @@ _mesa_PatchParameteri(GLenum pname, GLint value);
+ extern void GLAPIENTRY
+ _mesa_PatchParameterfv(GLenum pname, const GLfloat *values);
+ 
++/* GL_EXT_tessellation_shader */
++void GLAPIENTRY
++_mesa_PatchParameteriEXT(GLenum pname, GLint value);
++
+ /* GL_ARB_shader_subroutine */
+ void
+ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg);
+-- 
+1.9.1
+

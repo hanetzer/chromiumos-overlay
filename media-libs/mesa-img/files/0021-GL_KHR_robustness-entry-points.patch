@@ -1,18 +1,18 @@
-From ba2edd393437db237ba9f07da6b16ea497384cd5 Mon Sep 17 00:00:00 2001
+From 0097cfb9df26763b920ba3f76833e5a67a9c81b7 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Thu, 11 Jun 2015 18:05:18 +0100
-Subject: [PATCH 21/40] GL_KHR_robustness entry points
+Subject: [PATCH 21/21] GL_KHR_robustness entry points
 
 ---
  src/mapi/glapi/gen/KHR_robustness.xml | 62 +++++++++++++++++++++++++++++++++++
- src/mapi/glapi/gen/es_EXT.xml         |  4 +++
+ src/mapi/glapi/gen/es_EXT.xml         |  3 ++
  src/mesa/main/get.h                   |  4 +++
  src/mesa/main/getstring.c             | 10 ++++++
  src/mesa/main/readpix.c               |  9 +++++
  src/mesa/main/readpix.h               |  5 +++
  src/mesa/main/uniforms.c              | 24 ++++++++++++++
  src/mesa/main/uniforms.h              |  6 ++++
- 8 files changed, 124 insertions(+)
+ 8 files changed, 123 insertions(+)
  create mode 100644 src/mapi/glapi/gen/KHR_robustness.xml
 
 diff --git a/src/mapi/glapi/gen/KHR_robustness.xml b/src/mapi/glapi/gen/KHR_robustness.xml
@@ -84,16 +84,15 @@ index 0000000..f51460a
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index c306fef..91aeb2b 100644
+index 65fa060..fc82723 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -834,4 +834,8 @@
+@@ -831,4 +831,7 @@
  <!-- 186. GL_EXT_primitive_bounding_box -->
  <xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 +<!-- 190. GL_KHR_robustness -->
 +<xi:include href="KHR_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
-+
 +
  </OpenGLAPI>
 diff --git a/src/mesa/main/get.h b/src/mesa/main/get.h

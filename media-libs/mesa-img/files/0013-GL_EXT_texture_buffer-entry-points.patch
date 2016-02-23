@@ -1,0 +1,123 @@
+From 9c022b0a30939f11e9dc30f2aa0bdb33639bb54a Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 30 Oct 2014 10:03:42 +0000
+Subject: [PATCH 13/13] GL_EXT_texture_buffer entry points
+
+---
+ src/mapi/glapi/gen/EXT_texture_buffer.xml | 39 +++++++++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml             |  3 +++
+ src/mesa/main/teximage.c                  | 20 ++++++++++++++++
+ src/mesa/main/teximage.h                  |  8 +++++++
+ 4 files changed, 70 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_texture_buffer.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_texture_buffer.xml b/src/mapi/glapi/gen/EXT_texture_buffer.xml
+new file mode 100644
+index 0000000..11229db
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_texture_buffer.xml
+@@ -0,0 +1,39 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_texture_buffer" number="183">
++
++    <enum name="TEXTURE_BUFFER_EXT"                     value="0x8C2A"/>
++    <enum name="TEXTURE_BUFFER_BINDING_EXT"             value="0x8C2A"/>
++    <enum name="MAX_TEXTURE_BUFFER_SIZE_EXT"            value="0x8C2B"/>
++    <enum name="TEXTURE_BINDING_BUFFER_EXT"             value="0x8C2C"/>
++    <enum name="TEXTURE_BUFFER_OFFSET_ALIGNMENT_EXT"    value="0x919F"/>
++    <enum name="SAMPLER_BUFFER_EXT"                     value="0x8DC2"/>
++    <enum name="INT_SAMPLER_BUFFER_EXT"                 value="0x8DD0"/>
++    <enum name="UNSIGNED_INT_SAMPLER_BUFFER_EXT"        value="0x8DD8"/>
++    <enum name="IMAGE_BUFFER_EXT"                       value="0x9051"/>
++    <enum name="INT_IMAGE_BUFFER_EXT"                   value="0x905C"/>
++    <enum name="UNSIGNED_INT_IMAGE_BUFFER_EXT"          value="0x9067"/>
++    <enum name="TEXTURE_BUFFER_DATA_STORE_BINDING_EXT"  value="0x8C2D"/>
++    <enum name="TEXTURE_BUFFER_OFFSET_EXT"              value="0x919D"/>
++    <enum name="TEXTURE_BUFFER_SIZE_EXT"                value="0x919E"/>
++
++    <function name="TexBufferEXT" es2="3.1">
++        <param name="target" type="GLenum"/>
++        <param name="internalFormat" type="GLenum"/>
++        <param name="buffer" type="GLuint"/>
++    </function>
++
++    <function name="TexBufferRangeEXT" es2="3.1">
++        <param name="target" type="GLenum"/>
++        <param name="internalFormat" type="GLenum"/>
++        <param name="buffer" type="GLuint"/>
++        <param name="offset" type="GLintptr"/>
++        <param name="size"   type="GLsizeiptr"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index b42ac1c..9d12b65 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -804,4 +804,7 @@
+ <!-- 168. GL_KHR_blend_equation_advanced -->
+ <xi:include href="KHR_blend_equation_advanced.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 183. GL_EXT_texture_buffer -->
++<xi:include href="EXT_texture_buffer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/teximage.c b/src/mesa/main/teximage.c
+index 24a594b..08b0749 100644
+--- a/src/mesa/main/teximage.c
++++ b/src/mesa/main/teximage.c
+@@ -5067,6 +5067,26 @@ _mesa_TextureBufferRange(GLuint texture, GLenum internalFormat, GLuint buffer,
+                               bufObj, offset, size, "glTextureBufferRange");
+ }
+ 
++/** GL_EXT_texture_buffer */
++void GLAPIENTRY
++_mesa_TexBufferEXT(GLenum target, GLenum internalFormat, GLuint buffer)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexBufferEXT");
++}
++
++
++/** GL_EXT_texture_buffer */
++void GLAPIENTRY
++_mesa_TexBufferRangeEXT(GLenum target, GLenum internalFormat, GLuint buffer,
++                     GLintptr offset, GLsizeiptr size)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexBufferRangeEXT");
++}
++
+ static GLboolean
+ is_renderable_texture_format(struct gl_context *ctx, GLenum internalformat)
+ {
+diff --git a/src/mesa/main/teximage.h b/src/mesa/main/teximage.h
+index e221e66..b8f1457 100644
+--- a/src/mesa/main/teximage.h
++++ b/src/mesa/main/teximage.h
+@@ -403,6 +403,14 @@ _mesa_TextureBufferRange(GLuint texture, GLenum internalFormat, GLuint buffer,
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_TexBufferEXT(GLenum target, GLenum internalFormat, GLuint buffer);
++
++extern void GLAPIENTRY
++_mesa_TexBufferRangeEXT(GLenum target, GLenum internalFormat, GLuint buffer,
++                     GLintptr offset, GLsizeiptr size);
++
++
++extern void GLAPIENTRY
+ _mesa_TexImage2DMultisample(GLenum target, GLsizei samples,
+                             GLenum internalformat, GLsizei width,
+                             GLsizei height, GLboolean fixedsamplelocations);
+-- 
+1.9.1
+

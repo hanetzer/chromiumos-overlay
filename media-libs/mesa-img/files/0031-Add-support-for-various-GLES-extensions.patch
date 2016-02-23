@@ -1,4 +1,4 @@
-From 82144f9939c8bc10b990f00295c69e87bbc01307 Mon Sep 17 00:00:00 2001
+From 25fee25bad6e5f156e65885599550011f49240b9 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Mon, 10 Mar 2014 12:27:03 +0000
 Subject: [PATCH 31/40] Add support for various GLES extensions

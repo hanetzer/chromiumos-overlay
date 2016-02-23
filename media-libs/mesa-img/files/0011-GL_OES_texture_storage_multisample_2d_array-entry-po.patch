@@ -1,0 +1,125 @@
+From a16005260549b273298ebd71c71573c733561c16 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 12 Jun 2014 13:48:06 +0100
+Subject: [PATCH 11/40] GL_OES_texture_storage_multisample_2d_array entry
+ points
+
+---
+ .../OES_texture_storage_multisample_2d_array.xml   | 50 ++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                      |  3 ++
+ src/mesa/main/teximage.c                           | 12 ++++++
+ src/mesa/main/teximage.h                           |  8 ++++
+ 4 files changed, 73 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/OES_texture_storage_multisample_2d_array.xml
+
+diff --git a/src/mapi/glapi/gen/OES_texture_storage_multisample_2d_array.xml b/src/mapi/glapi/gen/OES_texture_storage_multisample_2d_array.xml
+new file mode 100644
+index 0000000..fc38a6e
+--- /dev/null
++++ b/src/mapi/glapi/gen/OES_texture_storage_multisample_2d_array.xml
+@@ -0,0 +1,50 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_OES_texture_storage_multisample_2d_array" number="174">
++    <enum name="TEXTURE_2D_MULTISAMPLE_ARRAY_OES"   count="1"  value="0x9102">
++        <size name="TexStorage3DMultisampleOES"/>
++        <size name="GetInternalformativ" mode="get"/>
++        <size name="TexParameteri"/>
++        <size name="TexParameteriv"/>
++        <size name="TexParameterf"/>
++        <size name="TexParameterfv"/>
++        <size name="GetTexParameteriv" mode="get"/>
++        <size name="GetTexParameterfv" mode="get"/>
++        <size name="GetTexLevelParameteriv" mode="get"/>
++        <size name="GetTexLevelParameterfv" mode="get"/>
++        <size name="FramebufferTextureLayer" mode="get"/>
++    </enum>
++
++    <enum name="TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY_OES"   count="1"  value="0x9105">
++       <size name="GetBooleanv" mode="get"/>
++       <size name="GetIntegerv" mode="get"/>
++       <size name="GetFloatv" mode="get"/>
++    </enum>
++
++    <enum name="SAMPLER_2D_MULTISAMPLE_ARRAY_OES"   count="1"  value="0x910B">
++       <size name="GetActiveUniform" mode="get"/>
++    </enum>
++
++    <enum name="INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES"   count="1"  value="0x910C">
++       <size name="GetActiveUniform" mode="get"/>
++    </enum>
++
++    <enum name="UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES"   count="1"  value="0x910D">
++       <size name="GetActiveUniform" mode="get"/>
++    </enum>
++
++    <function name="TexStorage3DMultisampleOES" es2="3.1">
++        <param name="target" type="GLenum"/>
++        <param name="samples" type="GLsizei"/>
++        <param name="sizedinternalformat" type="GLenum"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++        <param name="depth" type="GLsizei"/>
++        <param name="fixedsamplelocations" type="GLboolean"/>
++    </function>
++</category>
++
++</OpenGLAPI>
+\ No newline at end of file
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index d2c4150..38e01ef 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -804,4 +804,7 @@
+     </function>
+ </category>
+ 
++<!-- 174. GL_OES_texture_storage_multisample_2d_array -->
++<xi:include href="OES_texture_storage_multisample_2d_array.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/teximage.c b/src/mesa/main/teximage.c
+index 24a594b..f3130fa 100644
+--- a/src/mesa/main/teximage.c
++++ b/src/mesa/main/teximage.c
+@@ -5403,3 +5403,15 @@ _mesa_TextureStorage3DMultisample(GLuint texture, GLsizei samples,
+                              fixedsamplelocations, GL_TRUE,
+                              "glTextureStorage3DMultisample");
+ }
++
++void GLAPIENTRY
++_mesa_TexStorage3DMultisampleOES(GLenum target, GLsizei samples,
++                                 GLenum sizedinternalformat,
++                                 GLsizei width, GLsizei height,
++                                 GLsizei depth,
++                                 GLboolean fixedsamplelocations)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexStorage3DMultisampleOES");
++}
+diff --git a/src/mesa/main/teximage.h b/src/mesa/main/teximage.h
+index e221e66..18921c3 100644
+--- a/src/mesa/main/teximage.h
++++ b/src/mesa/main/teximage.h
+@@ -435,6 +435,14 @@ _mesa_TextureStorage3DMultisample(GLuint texture, GLsizei samples,
+                                   GLenum internalformat, GLsizei width,
+                                   GLsizei height, GLsizei depth,
+                                   GLboolean fixedsamplelocations);
++
++extern void GLAPIENTRY
++_mesa_TexStorage3DMultisampleOES(GLenum target, GLsizei samples,
++                                 GLenum sizedinternalformat,
++                                 GLsizei width, GLsizei height,
++                                 GLsizei depth,
++                                 GLboolean fixedsamplelocations);
++
+ /*@}*/
+ 
+ #ifdef __cplusplus
+-- 
+1.9.1
+
