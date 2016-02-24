@@ -197,4 +197,5 @@ RDEPEND="${CROS_COMMON_RDEPEND}
 # unit tests
 DEPEND="
 	chromeos-base/chromite
+	ozone? ( chromeos-base/drm-tests )
 "
