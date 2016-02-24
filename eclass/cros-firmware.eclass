@@ -253,6 +253,9 @@ cros-firmware_src_compile() {
 	local local_image_cmd="" output_bom output_file
 	if use cros_ec; then
 		local_image_cmd+="-e $root/firmware/ec.bin "
+		if [ -e "$root/firmware/pd.bin" ]; then
+			local_image_cmd+="-p $root/firmware/pd.bin "
+		fi
 	fi
 	if use bootimage; then
 		if use depthcharge; then
