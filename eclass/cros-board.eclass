@@ -111,6 +111,7 @@ ALL_BOARDS=(
 	gru
 	guado
 	guado_moblab
+	guado_labstation
 	heli
 	hsb
 	ironhide
