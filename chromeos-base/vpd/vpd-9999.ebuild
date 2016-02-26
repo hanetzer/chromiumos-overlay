@@ -38,7 +38,7 @@ src_compile() {
 src_install() {
 	# This target list should be architecture specific
 	# (no ACPI stuff on ARM for instance)
-	dosbin vpd vpd_s util/dump_vpd_log
+	dosbin vpd vpd_s util/dump_vpd_log util/block_devmode_vpd
 
 	# install the init script
 	insinto /etc/init
