@@ -88,6 +88,7 @@ ALL_BOARDS=(
 	#derwent
 	duck
 	edgar
+	elm
 	#emeraldlake2
 	enguarde
 	envoy-jerry
