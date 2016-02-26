@@ -69,6 +69,7 @@ SERVER_IUSE_TESTS="
 	+tests_dummy_FailServer
 	+tests_dummy_FlakyTestServer
 	+tests_enterprise_RemoraRequisitionServer
+	+tests_enterprise_CFM_USBPeripheralHotplugDetect
 	+tests_factory_Basic
 	+tests_firmware_CgptStress
 	+tests_firmware_CompareInstalledToShellBall
