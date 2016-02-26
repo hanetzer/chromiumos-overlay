@@ -436,3 +436,7 @@ RDEPEND="${RDEPEND}
 # Host dependency for dev-libs/boost package
 RDEPEND="${RDEPEND}
 	dev-util/boost-build"
+
+# Host dependency for managing SELinux labels
+RDEPEND="${RDEPEND}
+	sys-apps/restorecon"
