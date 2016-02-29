@@ -17,7 +17,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 
 RDEPEND="
+	app-mobilephone/dfu-util
 	chromeos-base/chromeos-test-init
+	dev-embedded/dfu-programmer
 	virtual/chromeos-test-testauthkeys
 	virtual/chromeos-bsp-test-root
 "
