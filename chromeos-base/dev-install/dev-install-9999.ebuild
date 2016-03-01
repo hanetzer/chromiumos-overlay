@@ -113,6 +113,19 @@ src_compile() {
 	grep "net-misc/dhcp-" target-os-dev.packages >> bootstrap.packages
 }
 
+fixup_make_defaults() {
+	local file=$1
+
+	sed -i \
+		-e "s/@IUSE_IMPLICIT@/${IUSE_IMPLICIT}/g" \
+		-e "s/@ARCH@/${ARCH}/g" \
+		-e "s/@ELIBC@/${ELIBC}/g" \
+		-e "s/@USERLAND@/${USERLAND}/g" \
+		-e "s/@KERNEL@/${KERNEL}/g" \
+		-e "s/@USE_EXPAND_IMPLICIT@/${USE_EXPAND_IMPLICIT}/g" \
+		${file} || die
+}
+
 src_install() {
 	local build_dir=$(cros-workon_get_build_dir)
 
@@ -124,6 +137,8 @@ src_install() {
 
 	insinto /usr/share/${PN}/portage/make.profile
 	doins "${build_dir}"/package.installable make.{conf,defaults}
+
+	fixup_make_defaults "${ED}"/usr/share/${PN}/portage/make.profile/make.defaults
 
 	insinto /usr/share/${PN}/portage/make.profile/package.provided
 	doins "${build_dir}"/chromeos-base.packages
