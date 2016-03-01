@@ -130,6 +130,7 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_AsyncDriverProbe
 	+tests_kernel_FirmwareRequest
 	+tests_kernel_Bootcache
+	+tests_kernel_CheckArmErrata
 	+tests_kernel_ConfigVerify
 	ppp? ( +tests_kernel_ConfigVerifyPPP )
 	+tests_kernel_CpufreqMinMax
