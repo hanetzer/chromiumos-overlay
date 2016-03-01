@@ -18,7 +18,7 @@ LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ipv6 logwatch netlink sqlite +ssl +wps +crda"
+IUSE="ipv6 logwatch netlink sqlite +ssl +wps +crda taxonomy"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	kernel_linux? (
@@ -138,6 +138,11 @@ src_configure() {
 	if use sqlite; then
 		# Sqlite support
 		echo "CONFIG_SQLITE=y" >> ${CONFIG}
+	fi
+
+	if use taxonomy; then
+		# Taxonomy support
+		echo "CONFIG_CLIENT_TAXONOMY=y" >> ${CONFIG}
 	fi
 
 	# If we are using libnl 2.0 and above, enable support for it
