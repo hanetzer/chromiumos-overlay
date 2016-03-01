@@ -1,62 +1,57 @@
-From 12123412e66fb4b7857df244ac176ab915034e88 Mon Sep 17 00:00:00 2001
-From: Chad Versace <chad.versace@intel.com>
-Date: Wed, 25 Feb 2015 20:57:00 -0800
-Subject: [PATCH] targets/drm: Add new target to support Chrome OS's EGL null
- platform
+From 718fbd0004b64d35d752d1276bccabeccbe8d6a8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Mon, 29 Feb 2016 22:19:09 -0800
+Subject: [PATCH] targets/surfaceless: Add support for Chrome OS surfaceless
 
-Implement a new dEQP target, "drm", that supports offscreen rendering
-using Chrome OS's EGL null platform.  On-screen rendering with KMS is
-a planned feature, but not yet started.
+Implement a new dEQP target, "surfaceless", that supports offscreen
+rendering using Chrome OS's EGL null platform. This is based on
+intel's work to add support for "drm" target, but extends it to work
+on ARM as well.
 
 dEQP must be ran with --deqp-surface-type=fbo because the native EGL
 platform does not support EGLSurfaces.
 
 Unlike all of dEQP's other EGL-derived platforms (x11::egl::Platform,
-Android::Platform, rpi::Platform, etc), class drm::Platform does not
-inherit from eglu::Platform and it reuses very little of dEQP's existing
-EGL code. I had to re-invent the wheel when implementing the DRM
+Android::Platform, rpi::Platform, etc), class surfaceless::Platform does
+not inherit from eglu::Platform and it reuses very little of dEQP's
+existing EGL code. I had to re-invent the wheel when implementing the DRM
 platform because dEQP's existing EGL code relies heavily on EGLSurfaces,
-which Chrome's EGL null platform does not support.
+which Chrome's EGL surfaceless does not support.
 
-BUG=chromium:461023
-TEST=emerge-link deqp; cros deploy $REMOTE deqp;
-  ssh $REMOTE /usr/local/deqp/modules/gles3/deqp-gles3 --deqp-surface-type=fbo;
-  Many subtests should pass.
-
-Change-Id: Ifaef21a354afca316f0ea0763ce2b11d2209a328
-Signed-off-by: Chad Versace <chad.versace@intel.com>
+BUG=chromium:543372
+TEST=run deqp on veyron_jaq
 ---
- framework/platform/CMakeLists.txt         |   5 +
- framework/platform/drm/tcuDrmPlatform.cpp | 333 ++++++++++++++++++++++++++++++
- framework/platform/drm/tcuDrmPlatform.hpp |  34 +++
- targets/drm/drm.cmake                     |  47 +++++
- 4 files changed, 419 insertions(+)
- create mode 100644 framework/platform/drm/tcuDrmPlatform.cpp
- create mode 100644 framework/platform/drm/tcuDrmPlatform.hpp
- create mode 100644 targets/drm/drm.cmake
+ framework/platform/CMakeLists.txt                  |   5 +
+ .../surfaceless/tcuSurfacelessPlatform.cpp         | 353 +++++++++++++++++++++
+ .../surfaceless/tcuSurfacelessPlatform.hpp         |  34 ++
+ targets/surfaceless/surfaceless.cmake              |  47 +++
+ 4 files changed, 439 insertions(+)
+ create mode 100644 framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
+ create mode 100644 framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
+ create mode 100644 targets/surfaceless/surfaceless.cmake
 
 diff --git a/framework/platform/CMakeLists.txt b/framework/platform/CMakeLists.txt
-index f1ff95b..0ec7643 100644
+index f1ff95b..82b4587 100644
 --- a/framework/platform/CMakeLists.txt
 +++ b/framework/platform/CMakeLists.txt
 @@ -46,6 +46,11 @@ if (NOT DEFINED TCUTIL_PLATFORM_SRCS)
  		if (NOT (DEQP_SUPPORT_EGL OR DEQP_SUPPORT_GLX))
  		  message(FATAL_ERROR "At least one of EGL and GLX must be enabled for X11")
  		endif ()
-+	elseif (DE_OS_IS_UNIX AND DEQP_USE_DRM)
++	elseif (DE_OS_IS_UNIX AND DEQP_USE_SURFACELESS)
 +		set(TCUTIL_PLATFORM_SRCS
-+			drm/tcuDrmPlatform.hpp
-+			drm/tcuDrmPlatform.cpp
++			surfaceless/tcuSurfacelessPlatform.hpp
++			surfaceless/tcuSurfacelessPlatform.cpp
 +			)
  	elseif (DE_OS_IS_ANDROID)
  		set(TCUTIL_PLATFORM_SRCS
  			android/tcuAndroidExecService.cpp
-diff --git a/framework/platform/drm/tcuDrmPlatform.cpp b/framework/platform/drm/tcuDrmPlatform.cpp
+diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 new file mode 100644
-index 0000000..0798a62
+index 0000000..73d1d81
 --- /dev/null
-+++ b/framework/platform/drm/tcuDrmPlatform.cpp
-@@ -0,0 +1,333 @@
++++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
+@@ -0,0 +1,353 @@
 +/*-------------------------------------------------------------------------
 + * drawElements Quality Program Tester Core
 + * ----------------------------------------
@@ -77,10 +72,10 @@ index 0000000..0798a62
 + *
 + *//*!
 + * \file
-+ * \brief DRM platform
++ * \brief surfaceless platform
 + *//*--------------------------------------------------------------------*/
 +
-+#include "tcuDrmPlatform.hpp"
++#include "tcuSurfacelessPlatform.hpp"
 +
 +#include <string>
 +#include <vector>
@@ -88,13 +83,18 @@ index 0000000..0798a62
 +#include "deDynamicLibrary.hpp"
 +#include "deSTLUtil.hpp"
 +#include "egluUtil.hpp"
++#include "egluGLUtil.hpp"
 +#include "eglwEnums.hpp"
 +#include "eglwLibrary.hpp"
 +#include "gluPlatform.hpp"
++#include "gluRenderConfig.hpp"
 +#include "glwInitES20Direct.hpp"
 +#include "glwInitES30Direct.hpp"
 +#include "glwInitFunctions.hpp"
 +#include "tcuPlatform.hpp"
++
++
++#include <EGL/egl.h>
 +
 +using std::string;
 +using std::vector;
@@ -131,7 +131,7 @@ index 0000000..0798a62
 +
 +namespace tcu
 +{
-+namespace drm
++namespace surfaceless
 +{
 +
 +bool isEGLExtensionSupported(
@@ -214,7 +214,7 @@ index 0000000..0798a62
 +}
 +
 +ContextFactory::ContextFactory()
-+	: glu::ContextFactory("default", "EGL configless context")
++	: glu::ContextFactory("default", "EGL surfaceless context")
 +{}
 +
 +glu::RenderContext* ContextFactory::createContext(const glu::RenderConfig& config, const tcu::CommandLine& cmdLine) const
@@ -229,10 +229,13 @@ index 0000000..0798a62
 +	, m_eglContext(EGL_NO_CONTEXT)
 +{
 +	vector<eglw::EGLint>	attribs;
++	vector<eglw::EGLint>	config_attribs;
 +	const glu::ContextType&	contextType = config.type;
 +	eglw::EGLint		eglMajorVersion;
 +	eglw::EGLint		eglMinorVersion;
 +	eglw::EGLint		flags = 0;
++	eglw::EGLint		num_configs;
++	eglw::EGLConfig		egl_config;
 +
 +	(void) cmdLine;
 +
@@ -250,10 +253,28 @@ index 0000000..0798a62
 +		case glu::RenderConfig::SURFACETYPE_OFFSCREEN_NATIVE:
 +			break;
 +		case glu::RenderConfig::SURFACETYPE_WINDOW:
-+			throw tcu::NotSupportedError("DRM platform does not support --deqp-surface-type=window");
++			throw tcu::NotSupportedError("surfaceless platform does not support --deqp-surface-type=window");
 +		case glu::RenderConfig::SURFACETYPE_LAST:
 +			TCU_CHECK_INTERNAL(false);
 +	}
++
++	config_attribs.push_back(EGL_RED_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_GREEN_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_BLUE_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_RENDERABLE_TYPE);
++	config_attribs.push_back(EGL_OPENGL_ES2_BIT);
++	config_attribs.push_back(EGL_SURFACE_TYPE);
++	config_attribs.push_back(EGL_DONT_CARE);
++	config_attribs.push_back(EGL_NONE);
++
++	if (!eglChooseConfig(m_eglDisplay, &config_attribs[0], NULL, 0, &num_configs))
++		throw tcu::ResourceError("surfaceless couldn't find any config");
++
++	if (!eglChooseConfig(m_eglDisplay, &config_attribs[0], &egl_config, 1, &num_configs))
++		throw tcu::ResourceError("surfaceless couldn't find any config");
 +
 +	attribs.push_back(EGL_CONTEXT_MAJOR_VERSION_KHR);
 +	attribs.push_back(contextType.getMajorVersion());
@@ -293,13 +314,7 @@ index 0000000..0798a62
 +
 +	attribs.push_back(EGL_NONE);
 +
-+	if (!isEGLExtensionSupported(m_egl, m_eglDisplay, "EGL_MESA_configless_context")) {
-+		// FINISHME: On EGL implementations that don't support configless
-+		// contexts, create a throw-away config just for context creation.
-+		throw tcu::ResourceError("DRM platform requires EGL_MESA_configless_context");
-+	}
-+
-+	m_eglContext = m_egl.createContext(m_eglDisplay, static_cast<eglw::EGLConfig>(0), EGL_NO_CONTEXT, &attribs[0]);
++	m_eglContext = m_egl.createContext(m_eglDisplay, egl_config, EGL_NO_CONTEXT, &attribs[0]);
 +	EGLU_CHECK_MSG(m_egl, "eglCreateContext()");
 +	if (!m_eglContext)
 +		throw tcu::ResourceError("eglCreateContext failed");
@@ -375,7 +390,7 @@ index 0000000..0798a62
 +
 +const tcu::RenderTarget& EglRenderContext::getRenderTarget(void) const
 +{
-+	throw tcu::InternalError("DRM platform cannot create EGL surfaces");
++	throw tcu::InternalError("surfaceless platform cannot create EGL surfaces");
 +}
 +
 +void EglRenderContext::postIterate(void)
@@ -383,18 +398,18 @@ index 0000000..0798a62
 +	this->getFunctions().finish();
 +}
 +
-+} // namespace drm
++} // namespace surfaceless
 +} // namespace tcu
 +
 +tcu::Platform* createPlatform(void)
 +{
-+	return new tcu::drm::Platform();
++	return new tcu::surfaceless::Platform();
 +}
-diff --git a/framework/platform/drm/tcuDrmPlatform.hpp b/framework/platform/drm/tcuDrmPlatform.hpp
+diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
 new file mode 100644
 index 0000000..b980e1b
 --- /dev/null
-+++ b/framework/platform/drm/tcuDrmPlatform.hpp
++++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
 @@ -0,0 +1,34 @@
 +#ifndef _TCUDRMPLATFORM_HPP
 +#define _TCUDRMPLATFORM_HPP
@@ -430,23 +445,23 @@ index 0000000..b980e1b
 +tcu::Platform* createPlatform (void);
 +
 +#endif
-diff --git a/targets/drm/drm.cmake b/targets/drm/drm.cmake
+diff --git a/targets/surfaceless/surfaceless.cmake b/targets/surfaceless/surfaceless.cmake
 new file mode 100644
-index 0000000..61a05c9
+index 0000000..f506112
 --- /dev/null
-+++ b/targets/drm/drm.cmake
++++ b/targets/surfaceless/surfaceless.cmake
 @@ -0,0 +1,47 @@
-+message("*** Using DRM target")
++message("*** Using Surfaceless target")
 +
-+set(DEQP_TARGET_NAME "DRM")
++set(DEQP_TARGET_NAME "Surfaceless")
 +
 +include(FindPkgConfig)
 +
-+set(DEQP_USE_DRM        ON)
++set(DEQP_USE_SURFACELESS ON)
 +
-+set(DEQP_SUPPORT_GLES2  ON)
-+set(DEQP_SUPPORT_GLES3  ON)
-+set(DEQP_SUPPORT_EGL    ON)
++set(DEQP_SUPPORT_GLES2   ON)
++set(DEQP_SUPPORT_GLES3   ON)
++set(DEQP_SUPPORT_EGL     ON)
 +
 +find_library(GLES2_LIBRARIES GLESv2)
 +find_library(GLES3_LIBRARIES GLESv3)

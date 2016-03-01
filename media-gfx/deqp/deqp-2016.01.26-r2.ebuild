@@ -31,7 +31,7 @@ S="${WORKDIR}"
 
 PATCHES=(
 	"${FILESDIR}"/cmake-Use-FindPNG-instead-of-find_path-find_library.patch
-	"${FILESDIR}"/targets-drm-Add-new-target-to-support-Chrome-OS-s-EGL-null-platform.patch
+	"${FILESDIR}"/0001-targets-surfaceless-Add-support-for-Chrome-OS-surfac.patch
 	"${FILESDIR}"/0003-Delete-compiler-check.patch
 	"${FILESDIR}"/0001-Fix-clang-signed-shift-warning.patch
 )
@@ -57,7 +57,7 @@ src_configure() {
 		-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
 		-DDE_CPU="${de_cpu}"
-		-DDEQP_TARGET=drm
+		-DDEQP_TARGET=surfaceless
 	)
 
 	# Use runtime loading as specified in external/deqp/Android.mk.
