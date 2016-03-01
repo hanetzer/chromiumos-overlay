@@ -37,6 +37,7 @@ RDEPEND="
 	dev-libs/openssl
 	dev-libs/protobuf
 	sys-apps/keyutils
+	sys-fs/e2fsprogs
 	sys-fs/ecryptfs-utils
 	sys-fs/lvm2
 "
