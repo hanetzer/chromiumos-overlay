@@ -20,3 +20,6 @@
 
 # We only support python-2.x for cross-compiling atm.
 >=dev-lang/python-3
+
+# Temporary mask dev-libs/libgudev
+>=dev-libs/libgudev-230
