@@ -940,9 +940,11 @@ cros-kernel2_src_configure() {
 		fi
 	done
 
-	echo "${extra_fw_config}" | \
-		sed -e "s|%ROOT%|${ROOT}|g" -e "s|%FW%|${builtin_fw[*]}|g" \
-		>> "$(get_build_cfg)" || die
+	if [[ ${#builtin_fw[@]} -gt 0 ]]; then
+		echo "${extra_fw_config}" | \
+			sed -e "s|%ROOT%|${ROOT}|g" -e "s|%FW%|${builtin_fw[*]}|g" \
+			>> "$(get_build_cfg)" || die
+	fi
 
 	# Use default for any options not explitly set in splitconfig
 	# Note: oldnoconfig is a misleading name -- it picks the default
