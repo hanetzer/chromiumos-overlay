@@ -187,6 +187,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/0100-add-pvr_dri-support-for-DRM-display-driver-render-no.patch
 	epatch "${FILESDIR}"/0101-pvr_dri-Use-bpp-instead-of-IMG-pixel-format-for-Buff.patch
+	epatch "${FILESDIR}"/0102-pvr_dri-remove-bpp-parameter-from-PVRDRIBufferCreate.patch
 
 	base_src_prepare
 
