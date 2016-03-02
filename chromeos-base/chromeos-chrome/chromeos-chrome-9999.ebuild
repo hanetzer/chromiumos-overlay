@@ -796,6 +796,7 @@ setup_compile_flags() {
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
 	EBUILD_CXXFLAGS=()
+	EBUILD_LDFLAGS=()
 	if use afdo_use && ! use clang; then
 		local afdo_flags=(
 			-fauto-profile="${AFDO_PROFILE_LOC}"
@@ -807,6 +808,23 @@ setup_compile_flags() {
 		)
 		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
+	fi
+
+	# These flags seperate hot/cold text section into different segments.
+	# They also put read only sections into different segment so that we
+	# have around 8 MB for the first segment that has PT_LOAD and is
+	# executable. This is used for mapping hot segment to hugepage.
+	# Currently these options are only supported by gcc.
+	if ! use clang; then
+		local split_flag=( -freorder-functions=callgraph )
+		local split_ldflags=(
+			"${split_flag[@]}"
+			-Wl,-rosegment
+			-Wl,--plugin-opt,split_segment=yes
+		)
+		EBUILD_CFLAGS+=( "${split_flag[@]}" )
+		EBUILD_CXXFLAGS+=( "${split_flag[@]}" )
+		EBUILD_LDFLAGS+=( "${split_ldflags[@]}" )
 	fi
 
 	# Enable std::vector []-operator bounds checking.
@@ -868,6 +886,7 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		LDFLAGS="${LDFLAGS} ${EBUILD_LDFLAGS[*]}" \
 		"${cmd[@]}" || die
 	fi
 
