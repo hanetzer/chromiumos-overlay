@@ -792,18 +792,6 @@ setup_compile_flags() {
 	# nothing to do with USE=clang.
 	filter-flags -clang-syntax
 
-	# These flags seperate hot/cold text section into different segments. They
-	# also put read only sections into different segment so that we have around
-	# 8 MB for the first segment that has PT_LOAD and is executable. This is used
-	# for hugepage text section.
-	if ! use clang; then
-		append-flags -freorder-functions=callgraph
-		append-ldflags \
-			-freorder-functions=callgraph \
-			-Wl,-rosegment \
-			-Wl,--plugin-opt,split_segment=yes
-	fi
-
 	# There are some flags we want to only use in the ebuild.
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
