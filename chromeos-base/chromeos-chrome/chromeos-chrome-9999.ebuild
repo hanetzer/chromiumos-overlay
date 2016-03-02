@@ -989,7 +989,7 @@ install_test_resources() {
 		cache=$(dirname "${CHROME_CACHE_DIR}/src/${resource}")
 		dest=$(dirname "${test_dir}/${resource}")
 		mkdir -p "${cache}" "${dest}"
-		rsync -a --delete --exclude=.svn --exclude=.git \
+		rsync -a --delete --exclude=.svn --exclude=.git --exclude=*.pyc \
 			"${CHROME_ROOT}/src/${resource}" "${cache}"
 		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
 	done
