@@ -186,6 +186,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0006-egl-dri2-don-t-require-a-context-for-ClientWaitSync-v2.patch
 
 	epatch "${FILESDIR}"/0100-add-pvr_dri-support-for-DRM-display-driver-render-no.patch
+	epatch "${FILESDIR}"/0101-pvr_dri-Use-bpp-instead-of-IMG-pixel-format-for-Buff.patch
 
 	base_src_prepare
 
