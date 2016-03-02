@@ -1106,9 +1106,13 @@ install_perf_data_dep_resources() {
 install_telemetry_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROME_ROOT}/src/third_party/catapult/telemetry" ]]; then
+	TELEMETRY=${CHROME_ROOT}/src/third_party/catapult/telemetry
+	if [[ -r "${TELEMETRY}" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
+		# We are going to call chromium code but can't trust that it is clean
+		# of precompiled code. See crbug.com/590762.
+		find "${TELEMETRY}" -name "*.pyc" -type f -delete
 		# Get deps from Chrome.
 		FIND_DEPS=${CHROME_ROOT}/src/tools/perf/find_dependencies
 		PERF_DEPS=${CHROME_ROOT}/src/tools/perf/bootstrap_deps
@@ -1116,6 +1120,8 @@ install_telemetry_dep_resources() {
 		# sed removes the leading path including src/ converting it to relative.
 		DEPS_LIST=$(python ${FIND_DEPS} ${PERF_DEPS} ${CROS_DEPS} | \
 			sed -e 's|^'${CHROME_ROOT}/src/'||')
+		# To avoid silent failures assert the success of DEPS_LIST command.
+		assert
 		install_test_resources "${test_dir}" ${DEPS_LIST} \
 			chrome/test/data/image_decoding \
 			content/test/data/gpu \
