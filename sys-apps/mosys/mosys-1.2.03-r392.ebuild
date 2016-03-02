@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="0727fc4dea8bd3bcba07fb3d05e878d3350db938"
-CROS_WORKON_TREE="a6d1bd79036b99e5b047e214ae112bfb343f68af"
+CROS_WORKON_COMMIT="78fecb2ab50078a8ae66cdeb07bfb44f135d29ec"
+CROS_WORKON_TREE="24afe6d5e5988f08ff1487f11c32588fa6c09840"
 CROS_WORKON_PROJECT="chromiumos/platform/mosys"
 CROS_WORKON_LOCALNAME="../platform/mosys"
 
