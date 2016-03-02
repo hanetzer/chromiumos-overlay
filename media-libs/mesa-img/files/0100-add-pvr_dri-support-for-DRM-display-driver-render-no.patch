@@ -1,0 +1,94 @@
+From 1af595714cfa19a48e41018082b738090260564e Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Mon, 29 Feb 2016 15:00:22 +0000
+Subject: [PATCH 100/102] add pvr_dri support for DRM display driver render
+ node fds
+
+The pvr_dri driver assumed that if it was given an fd for a
+'primary' node then it must be for the display driver and if it
+was for a 'render' node then it must be for the gpu driver.
+However, in the latter case, this isn't necessarily true.
+
+For example, the display driver might be used as a memory
+allocator for multiple devices (rather like ion). If this is
+done on the card node then the fd must first be authenticated
+with the DRM master. However, this can be avoided by the
+display driver providing a render node, in which case the
+memory can be allocated without any authentication. As a result
+of this the pvr_dri driver may end up being given a render node
+fd that's not for the gpu.
+
+Signed-off-by: Rufus Hamade <rufus.hamade@imgtec.com>
+---
+ src/mesa/drivers/dri/pvr/pvr_dri_support.h | 10 ++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.c        | 25 +++++++++++++++++++++----
+ 2 files changed, 31 insertions(+), 4 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+index c03dc02..dc477f1 100644
+--- a/src/mesa/drivers/dri/pvr/pvr_dri_support.h
++++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+@@ -41,6 +41,14 @@ THE SOFTWARE.
+ 
+ typedef enum
+ {
++	PVRDRI_DEVICE_TYPE_INVALID = 0,
++	PVRDRI_DEVICE_TYPE_UNKNOWN,
++	PVRDRI_DEVICE_TYPE_DISPLAY,
++	PVRDRI_DEVICE_TYPE_RENDER,
++} PVRDRIDeviceType;
++
++typedef enum
++{
+ 	PVRDRI_API_GL,
+ 	PVRDRI_API_GLES1,
+ 	PVRDRI_API_GLES2
+@@ -118,6 +126,8 @@ typedef struct PVRDRIDrawable_TAG PVRDRIDrawable;
+ 
+ typedef struct _SyncCommand_ SyncCommand;
+ 
++PVRDRIDeviceType PVRDRIGetDeviceTypeFromFd(int iFd);
++
+ bool PVRScreenGlobalInit(void);
+ void PVRScreenGlobalDeinit(void);
+ 
+diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
+index 1d0948f..02d41f4 100644
+--- a/src/mesa/drivers/dri/pvr/pvrimage.c
++++ b/src/mesa/drivers/dri/pvr/pvrimage.c
+@@ -705,11 +705,28 @@ __DRIimage *PVRDRIDupImage(__DRIimage *srcImage, void *loaderPrivate)
+ 
+ GLboolean PVRDRIValidateUsage(__DRIimage *image, unsigned int use)
+ {
+-	if (use & (__DRI_IMAGE_USE_SHARE | __DRI_IMAGE_USE_SCANOUT | __DRI_IMAGE_USE_CURSOR))
+-	{
+-		__DRIscreen *screen = image->psShared->psPVRScreen->psDRIScreen;
++	__DRIscreen *screen = image->psShared->psPVRScreen->psDRIScreen;
+ 
+-		if (drmGetNodeTypeFromFd(screen->fd) == DRM_NODE_RENDER)
++	if (use & (__DRI_IMAGE_USE_SCANOUT | __DRI_IMAGE_USE_CURSOR))
++	{
++		/*
++		 * We are extra strict in this case as an application may ask for a
++		 * handle so that the memory can be wrapped as a framebuffer/used as
++		 * a cursor and this can only be done on a card node.
++		 */
++		if (drmGetNodeTypeFromFd(screen->fd) != DRM_NODE_PRIMARY)
++		{
++			return GL_FALSE;
++		}
++	}
++	else if (use & (__DRI_IMAGE_USE_SHARE))
++	{
++		/*
++		 * We are less strict in this case as it's possible to share buffers
++		 * using prime (but not flink) on a render node so we only need to know
++		 * whether or not the fd belongs to the display.
++		 */
++		if (PVRDRIGetDeviceTypeFromFd(screen->fd) != PVRDRI_DEVICE_TYPE_DISPLAY)
+ 		{
+ 			return GL_FALSE;
+ 		}
+-- 
+1.9.1
+

@@ -182,6 +182,8 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/0006-egl-dri2-don-t-require-a-context-for-ClientWaitSync-v2.patch
 
+	epatch "${FILESDIR}"/0100-add-pvr_dri-support-for-DRM-display-driver-render-no.patch
+
 	base_src_prepare
 
 	eautoreconf
