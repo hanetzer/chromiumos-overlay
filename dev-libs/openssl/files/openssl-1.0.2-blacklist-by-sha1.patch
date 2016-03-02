@@ -142,15 +142,15 @@ TEST=`FEATURES=test emerge openssl`
          /* we now have our chain, lets check it... */
 +
 +	ok = check_blacklist(ctx);
-+
 +	if (!ok) {
 +		ctx->error = X509_V_ERR_CERT_REJECTED;
-+		goto end;
++		ok = -1;
++		goto err;
 +	}
 +
-         i = check_trust(ctx);
- 
-         /* If explicitly rejected error */
+         if ((trust = check_trust(ctx)) == X509_TRUST_REJECTED) {
+             /* Callback already issued */
+             ok = 0;
 --- a/test/Makefile
 +++ b/test/Makefile
 @@ -218,6 +218,10 @@
