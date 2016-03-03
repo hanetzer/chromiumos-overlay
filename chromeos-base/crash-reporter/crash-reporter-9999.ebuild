@@ -53,6 +53,7 @@ src_install() {
 	use cros_embedded || dobin "${OUT}"/list_proxies
 	use cros_embedded || dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
+	use arc && dobin "${OUT}"/core_collector
 
 	if use systemd; then
 		systemd_dounit init/crash-reporter.service
