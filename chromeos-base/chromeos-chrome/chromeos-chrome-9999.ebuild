@@ -630,7 +630,7 @@ src_unpack() {
 		local CROS_GLES2_CONFORM=/home/${WHOAMI}/trunk/src/third_party/gles2_conform
 		if [[ ! -d "${CHROME_GLES2_CONFORM}" ]]; then
 			if [[ -d "${CROS_GLES2_CONFORM}" ]]; then
-				ln -s "${CROS_GLES2_CONFORM}" "${CHROME_GLES2_CONFORM}"
+				ln -s "${CROS_GLES2_CONFORM}" "${CHROME_GLES2_CONFORM}" || die
 				einfo "Using GLES2 conformance test suite from ${CROS_GLES2_CONFORM}"
 			else
 				die "Trying to build GLES2 conformance test suite without ${CHROME_GLES2_CONFORM} or ${CROS_GLES2_CONFORM}"
@@ -643,7 +643,7 @@ src_unpack() {
 		local CROS_KHRONOS_GLCTS=/home/${WHOAMI}/trunk/src/third_party/khronos_glcts
 		if [[ ! -d "${CHROME_KHRONOS_GLCTS}" ]]; then
 			if [[ -d "${CROS_KHRONOS_GLCTS}" ]]; then
-				ln -s "${CROS_KHRONOS_GLCTS}" "${CHROME_KHRONOS_GLCTS}"
+				ln -s "${CROS_KHRONOS_GLCTS}" "${CHROME_KHRONOS_GLCTS}" || die
 				einfo "Using Khronos GL-CTS test suite from ${CROS_KHRONOS_GLCTS}"
 			else
 				die "Trying to build Khronos GL-CTS test suite without ${CHROME_KHRONOS_GLCTS} or ${CROS_KHRONOS_GLCTS}"
@@ -653,7 +653,7 @@ src_unpack() {
 
 	if use afdo_use && ! use clang; then
 		local PROFILE_DIR="${WORKDIR}/afdo"
-		mkdir "${PROFILE_DIR}"
+		mkdir "${PROFILE_DIR}" || die
 		pushd "${PROFILE_DIR}" > /dev/null
 
 		# First check if there is a specified "frozen" AFDO profile.
@@ -683,7 +683,7 @@ src_prepare() {
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
 	# We do symlink creation here if appropriate.
-	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}"
+	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" || die
 	if [[ ! -z "${BUILD_OUT_SYM}" ]]; then
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
 		ln -sfT "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
@@ -727,7 +727,7 @@ src_prepare() {
 			GAPI_CONFIG_FILE=/home/${WHOAMI}/.googleapikeys
 		fi
 		if [[ -f "${GAPI_CONFIG_FILE}" ]]; then
-			mkdir "${HOME}"/.gyp
+			mkdir "${HOME}"/.gyp || die
 			cat <<-EOF >"${HOME}/.gyp/include.gypi"
 			{
 				'variables': {
@@ -935,17 +935,17 @@ src_compile() {
 		# We remove only what we will overwrite with the mv below.
 		local deps="${WORKDIR}/${P}/${AUTOTEST_DEPS}"
 
-		rm -rf "${deps}/chrome_test/test_src"
-		mv "${WORKDIR}/test_src" "${deps}/chrome_test/"
+		rm -rf "${deps}/chrome_test/test_src" || die
+		mv "${WORKDIR}/test_src" "${deps}/chrome_test/" || die
 
-		rm -rf "${deps}/page_cycler_dep/test_src"
-		mv "${WORKDIR}/page_cycler_src" "${deps}/page_cycler_dep/test_src"
+		rm -rf "${deps}/page_cycler_dep/test_src" || die
+		mv "${WORKDIR}/page_cycler_src" "${deps}/page_cycler_dep/test_src" || die
 
-		rm -rf "${deps}/perf_data_dep/test_src"
-		mv "${WORKDIR}/perf_data_src" "${deps}/perf_data_dep/test_src"
+		rm -rf "${deps}/perf_data_dep/test_src" || die
+		mv "${WORKDIR}/perf_data_src" "${deps}/perf_data_dep/test_src" || die
 
-		rm -rf "${deps}/telemetry_dep/test_src"
-		mv "${WORKDIR}/telemetry_src" "${deps}/telemetry_dep/test_src"
+		rm -rf "${deps}/telemetry_dep/test_src" || die
+		mv "${WORKDIR}/telemetry_src" "${deps}/telemetry_dep/test_src" || die
 
 		# HACK: It would make more sense to call autotest_src_prepare in
 		# src_prepare, but we need to call install_chrome_test_resources first.
@@ -954,16 +954,10 @@ src_compile() {
 		# Remove .svn dirs
 		esvn_clean "${AUTOTEST_WORKDIR}"
 		# Remove .git dirs
-		find "${AUTOTEST_WORKDIR}" -type d -name .git -prune -exec rm -rf {} +
+		find "${AUTOTEST_WORKDIR}" -type d -name .git -prune -exec rm -rf {} + || die
 
 		autotest_src_compile
 	fi
-}
-
-# Turn off the cp -l behavior in autotest, since the source dir and the
-# installation dir live on different bind mounts right now.
-fast_cp() {
-	cp "$@"
 }
 
 install_test_resources() {
@@ -976,10 +970,10 @@ install_test_resources() {
 	for resource in "$@"; do
 		cache=$(dirname "${CHROME_CACHE_DIR}/src/${resource}")
 		dest=$(dirname "${test_dir}/${resource}")
-		mkdir -p "${cache}" "${dest}"
+		mkdir -p "${cache}" "${dest}" || die
 		rsync -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
-			"${CHROME_ROOT}/src/${resource}" "${cache}"
-		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
+			"${CHROME_ROOT}/src/${resource}" "${cache}" || die
+		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}" || die
 	done
 }
 
@@ -987,11 +981,11 @@ test_strip_install() {
 	local from="${1}"
 	local dest="${2}"
 	shift 2
-	mkdir -p "${dest}"
+	mkdir -p "${dest}" || die
 	local f
 	for f in "$@"; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols \
-			"${from}"/${f} -o "${dest}/$(basename ${f})"
+			"${from}"/${f} -o "${dest}/$(basename ${f})" || die
 	done
 }
 
@@ -1017,19 +1011,19 @@ install_chrome_test_resources() {
 	test_strip_install "${from}" "${dest}" "${TEST_INSTALL_TARGETS[@]}"
 
 	# Copy Chrome test data.
-	mkdir -p "${dest}"/test_data
+	mkdir -p "${dest}/test_data" || die
 	# WARNING: Only copy subdirectories of |test_data|.
 	# The full |test_data| directory is huge and kills our VMs.
 	# Example:
 	# cp -al "${from}"/test_data/<subdir> "${test_dir}"/out/Release/<subdir>
 
 	# Add the fake bidi locale.
-	mkdir -p "${dest}"/pseudo_locales
+	mkdir -p "${dest}"/pseudo_locales || die
 	cp -al "${from}"/pseudo_locales/fake-bidi.pak \
-		"${dest}"/pseudo_locales
+		"${dest}"/pseudo_locales || die
 
 	for f in "${PPAPI_TEST_FILES[@]}"; do
-		cp -al "${from}/${f}" "${dest}"
+		cp -al "${from}/${f}" "${dest}" || die
 	done
 
 	# Install Chrome test resources.
@@ -1063,11 +1057,11 @@ install_chrome_test_resources() {
 		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
-		cp -al "${from}"/khronos_glcts_data "${dest}"/.
+		cp -al "${from}"/khronos_glcts_data "${dest}"/. || die
 	fi
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
-		"${dest}"
+		"${dest}" || die
 }
 
 install_page_cycler_dep_resources() {
@@ -1075,7 +1069,7 @@ install_page_cycler_dep_resources() {
 
 	if [[ -r "${CHROME_ROOT}/src/data/page_cycler" ]]; then
 		echo "Copying Page Cycler Data into ${test_dir}"
-		mkdir -p "${test_dir}"
+		mkdir -p "${test_dir}" || die
 		install_test_resources "${test_dir}" \
 			data/page_cycler
 	fi
@@ -1086,7 +1080,7 @@ install_perf_data_dep_resources() {
 
 	if [[ -r "${CHROME_ROOT}/src/tools/perf/data" ]]; then
 		echo "Copying Perf Data into ${test_dir}"
-		mkdir -p "${test_dir}"
+		mkdir -p "${test_dir}" || die
 		install_test_resources "${test_dir}" tools/perf/data
 	fi
 }
@@ -1097,10 +1091,10 @@ install_telemetry_dep_resources() {
 	TELEMETRY=${CHROME_ROOT}/src/third_party/catapult/telemetry
 	if [[ -r "${TELEMETRY}" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
-		mkdir -p "${test_dir}"
+		mkdir -p "${test_dir}" || die
 		# We are going to call chromium code but can't trust that it is clean
 		# of precompiled code. See crbug.com/590762.
-		find "${TELEMETRY}" -name "*.pyc" -type f -delete
+		find "${TELEMETRY}" -name "*.pyc" -type f -delete || die
 		# Get deps from Chrome.
 		FIND_DEPS=${CHROME_ROOT}/src/tools/perf/find_dependencies
 		PERF_DEPS=${CHROME_ROOT}/src/tools/perf/bootstrap_deps
@@ -1130,7 +1124,7 @@ install_telemetry_dep_resources() {
 
 	# When copying only a portion of the Chrome source that telemetry needs,
 	# some symlinks can end up broken. Thus clean these up before packaging.
-	find -L "${test_dir}" -type l -delete
+	find -L "${test_dir}" -type l -delete || die
 }
 
 # Add any new artifacts generated by the Chrome build targets to deploy_chrome.py.
@@ -1200,8 +1194,9 @@ src_install() {
 	# Fix some perms.
 	# TODO(rcui): Remove this - shouldn't be needed, and is just covering up
 	# potential permissions bugs.
-	chmod -R a+r "${D}"
+	chmod -R a+r "${D}" || die
 	find "${D}" -perm /111 -print0 | xargs -0 chmod a+x
+	assert
 
 	# The following symlinks are needed in order to run chrome.
 	# TODO(rcui): Remove this.  Not needed for running Chrome.
