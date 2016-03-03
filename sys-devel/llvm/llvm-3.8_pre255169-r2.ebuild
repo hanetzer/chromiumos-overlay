@@ -209,6 +209,9 @@ src_prepare() {
 	# Allow custom cmake build types (like 'Gentoo')
 	epatch "${FILESDIR}"/cmake/${PN}-3.8-allow_custom_cmake_build_types.patch
 
+	# crbug/591436
+	epatch "${FILESDIR}"/clang-executable-detection.patch
+
 	# Fix llvm-config for shared linking and sane flags
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
 	use llvm-next && epatch "${FILESDIR}"/llvm-3.8-llvm-config.patch
