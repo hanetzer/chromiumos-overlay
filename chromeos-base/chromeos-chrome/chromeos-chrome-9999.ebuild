@@ -1125,10 +1125,9 @@ install_telemetry_dep_resources() {
 		PERF_DEPS=${CHROME_ROOT}/src/tools/perf/bootstrap_deps
 		CROS_DEPS=${CHROME_ROOT}/src/tools/cros/bootstrap_deps
 		# sed removes the leading path including src/ converting it to relative.
+		# To avoid silent failures assert the success.
 		DEPS_LIST=$(python ${FIND_DEPS} ${PERF_DEPS} ${CROS_DEPS} | \
-			sed -e 's|^'${CHROME_ROOT}/src/'||')
-		# To avoid silent failures assert the success of DEPS_LIST command.
-		assert
+			sed -e 's|^'${CHROME_ROOT}/src/'||'; assert)
 		install_test_resources "${test_dir}" ${DEPS_LIST} \
 			chrome/test/data/image_decoding \
 			content/test/data/gpu \
