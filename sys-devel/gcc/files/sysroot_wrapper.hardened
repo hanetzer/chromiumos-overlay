@@ -253,8 +253,9 @@ def get_linker_path(cmd):
   for path in os.environ['PATH'].split(':'):
     cmd_path = os.path.join(path, cmd)
     if os.path.exists(cmd_path):
-      cmd_full = os.readlink(cmd_path)
-      return os.path.dirname(cmd_full)
+      if os.path.islink(cmd_path):
+        cmd_path = os.readlink(cmd_path)
+      return os.path.dirname(cmd_path)
   return None
 
 
