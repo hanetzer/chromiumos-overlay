@@ -43,7 +43,12 @@ create_seabios_cbfs() {
 	if [[ ! -f "${vgabios}" ]]; then
 		vgabios="${oprom}"
 	fi
-	_cbfstool ${seabios_cbfs} add -f "${vgabios}" -n $(basename "${oprom}") -t optionrom
+	if [[ ! -f "${oprom}" ]]; then
+		cbfsrom="seavgabios.rom"
+	else
+		cbfsrom=$(basename "${oprom}")
+	fi
+	_cbfstool ${seabios_cbfs} add -f "${vgabios}" -n "${cbfsrom}" -t optionrom
 	# Add additional configuration
 	_cbfstool ${seabios_cbfs} add -f chromeos/links -n links -t raw
 	_cbfstool ${seabios_cbfs} add -f chromeos/bootorder -n bootorder -t raw
