@@ -1,0 +1,136 @@
+This patch adds dircrypto ring in the init session.
+
+With this patch, all other processes will have access to the dircrypto ring.
+When the key for decoding an encrypted ext4 directory is added, all other
+processes will be able to read the decoded information, assuming they have access
+rights to that directory.
+
+Patch by Gwendal Grignou <gwendal@chromium.org>
+
+diff --git a/configure.ac b/configure.ac
+index f2f3aea..a814437 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -34,6 +34,37 @@ PKG_CHECK_MODULES([UDEV], [libudev >= 146], [have_udev=yes], [have_udev=no])
+ 
+ AM_CONDITIONAL([HAVE_UDEV], [test "$have_udev" = yes])
+ 
++AC_MSG_CHECKING([wether to add a keyring for ext4 crypto])
++AC_ARG_WITH(
++	[dircrypto-keyring],
++	[AS_HELP_STRING(
++		[--with-dircrypto-keyring],
++		[add crypto keyring for directory encryption])],
++	[],
++	[with_dircrypto_keyring=auto]
++)
++
++KEYUTILS_LIBS=""
++
++AS_IF(
++	[test "$with_dircrypto_keyring" != "no"],
++	[
++		AC_CHECK_HEADER([keyutils.h],
++			[AC_CHECK_LIB([keyutils], [keyctl_read], [have_keyutils="yes"])]
++		)
++		if test "$have_keyutils" != "yes"; then
++			if test "$with_dircrypto_keyring" = "yes"; then
++				AC_MSG_ERROR([The keyutils library (or developer files) was not found])
++			fi
++		else
++			KEYUTILS_LIBS="-lkeyutils"
++			AC_DEFINE([ADD_DIRCRYPTO_RING], 1, [Use keyutils and kernel keyring])
++		fi
++	]
++)
++
++AC_SUBST(KEYUTILS_LIBS)
++
+ # Checks for header files.
+ AC_CHECK_HEADERS([valgrind/valgrind.h])
+ 
+diff --git a/init/Makefile.am b/init/Makefile.am
+index 91410b1..7069ffa 100644
+--- a/init/Makefile.am
++++ b/init/Makefile.am
+@@ -62,6 +62,7 @@ init_LDADD = \
+ 	$(NIH_DBUS_LIBS) \
+ 	$(DBUS_LIBS) \
+ 	$(SELINUX_LIBS) \
++	$(KEYUTILS_LIBS) \
+ 	-lrt
+ 
+ 
+diff --git a/init/main.c b/init/main.c
+index 10d6c27..8409064 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -43,6 +43,11 @@
+ #include <syslog.h>
+ #include <unistd.h>
+ 
++#ifdef ADD_DIRCRYPTO_RING
++#include <ext2fs/ext2_fs.h>
++#include <keyutils.h>
++#endif
++
+ #ifdef HAVE_SELINUX
+ #include <selinux/selinux.h>
+ #endif
+@@ -125,6 +130,11 @@ main (int   argc,
+ 	char **args;
+ 	char  *arg_end = NULL;
+ 	int    ret;
++#ifdef ADD_DIRCRYPTO_RING
++	int    root_fd;
++	struct ext4_encryption_policy policy;
++	key_serial_t keyring_id;
++#endif
+ 
+ 	argv0 = argv[0];
+ 	nih_main_init (argv0);
+@@ -294,6 +304,44 @@ main (int   argc,
+ 		(int)getpid (), (int)getppid ());
+ #endif /* DEBUG */
+ 
++#ifdef ADD_DIRCRYPTO_RING
++#define EXT4_IOC_GET_ENCRYPTION_POLICY \
++	_IOW('f', 21, struct ext4_encryption_policy)
++	/*
++	 * Set a keyring for the session to hold ext4 crypto keys.
++	 * The session is at the root of all processes, so any users who wish
++	 * to access a directory protected by ext4 crypto can access the key.
++	 *
++	 * Set only a session keyring when needed.
++	 * A kernel patch is needed (see crbug/593893).
++	 * Upstream kernel does not have the patch yet
++	 * (See https://lkml.org/lkml/2016/3/17/491).
++	 */
++	int fd = open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
++	if (fd == -1) {
++		nih_warn("%s: %s", _("Unable to open / directory: %s"),
++			 strerror (errno));
++		ret = EINVAL;
++	} else {
++		ret = ioctl(fd, EXT4_IOC_GET_ENCRYPTION_POLICY, &policy);
++		if (ret)
++			ret = errno;
++		close(fd);
++	}
++	if (ret != EINVAL && ret != EOPNOTSUPP && ret != ENOTTY) {
++		keyring_id = add_key ("keyring", "dircrypt", 0, 0,
++				KEY_SPEC_SESSION_KEYRING);
++		if (keyring_id == -1)
++			nih_warn ("%s: %s",
++				  _("Unable to create dircrypt keyring: %s"),
++				  strerror (errno));
++		else
++			keyctl_setperm(keyring_id,
++				       KEY_POS_VIEW | KEY_POS_SEARCH |
++				       KEY_POS_LINK | KEY_POS_READ |
++				       KEY_USR_ALL);
++	}
++#endif
+ 
+ 	/* Reset the signal state and install the signal handler for those
+ 	 * signals we actually want to catch; this also sets those that

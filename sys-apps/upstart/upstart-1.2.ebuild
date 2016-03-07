@@ -13,16 +13,22 @@ SRC_URI="http://upstart.ubuntu.com/download/${PV}/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug examples nls selinux udev_bridge"
+IUSE="debug direncryption examples nls selinux udev_bridge"
 
 RDEPEND=">=sys-apps/dbus-1.2.16
 	>=sys-libs/libnih-1.0.2
 	selinux? (
 		sys-libs/libselinux
 		sys-libs/libsepol
+	)
+	direncryption? (
+		sys-apps/keyutils
 	)"
 DEPEND=">=dev-libs/expat-2.0.0
 	nls? ( sys-devel/gettext )
+	direncryption? (
+		sys-fs/e2fsprogs
+	)
 	${RDEPEND}"
 
 src_prepare() {
@@ -66,6 +72,10 @@ src_prepare() {
 
 	# Clean up domain sockets on startup and shutdown.
 	epatch "${FILESDIR}"/upstart-1.2-socket-cleanup.patch
+
+	# Add base fscrypto ring: to work with File systems that support
+	# directory encryption.
+	use direncryption && epatch "${FILESDIR}"/upstart-1.2-dircrypto.patch
 
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
