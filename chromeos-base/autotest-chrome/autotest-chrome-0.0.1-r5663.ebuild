@@ -87,6 +87,7 @@ IUSE_TESTS=(
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_login_OobeLocalization
+	+tests_longevity_Tracker
 	+tests_network_ChromeWifiConfigure
 	+tests_network_ChromeWifiTDLS
 	+tests_platform_ChromeCgroups
