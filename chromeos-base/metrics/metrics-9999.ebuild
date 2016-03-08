@@ -11,14 +11,14 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="metrics"
 
-inherit cros-constants cros-workon platform
+inherit cros-constants cros-workon platform systemd
 
 DESCRIPTION="Metrics aggregation service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="metrics_uploader +passive_metrics"
+IUSE="metrics_uploader +passive_metrics systemd"
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -40,8 +40,14 @@ src_install() {
 
 	if use passive_metrics; then
 		dobin "${OUT}"/metrics_daemon
-		insinto /etc/init
-		doins init/metrics_library.conf init/metrics_daemon.conf
+		if use systemd; then
+			systemd_dounit init/metrics-daemon.service
+			systemd_enable_service multi-user.target metrics-daemon.service
+			systemd_dotmpfilesd init/metrics.conf
+		else
+			insinto /etc/init
+			doins init/metrics_library.conf init/metrics_daemon.conf
+		fi
 
 		if use metrics_uploader; then
 			sed -i '/DAEMON_FLAGS=/s:=.*:="-uploader":' \
