@@ -67,6 +67,7 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_display_ClientChameleonConnection
 	+tests_dummy_IdleSuspend
+	+tests_enterprise_CFM_Perf
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
 	+tests_graphics_GLES2ConformChrome
