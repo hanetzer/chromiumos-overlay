@@ -302,14 +302,6 @@ src_configure() {
 	# Enable mitigation against certain attacks against TKIP
 	Kconfig_style_config DELAYED_MIC_ERROR_REPORT
 
-	# If we are using libnl 2.0 and above, enable support for it
-	# Bug 382159
-	# Removed for now, since the 3.2 version is broken, and we don't
-	# support it.
-	if has_version ">=dev-libs/libnl-3.2"; then
-		Kconfig_style_config LIBNL32
-	fi
-
 	if use qt4 ; then
 		pushd "${S}"/wpa_gui-qt4 > /dev/null
 		eqmake4 wpa_gui.pro
