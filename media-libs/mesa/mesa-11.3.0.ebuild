@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="4c0b48461269d3ede0c5446d86ebe3e81f16788e"
+CROS_WORKON_COMMIT="3dc2630e457155a4e8c8613911fe178bc4adf743"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -144,19 +144,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.0-mesa-Correctly-handle-GL_BGRA_EXT-in-ES3-format_and_.patch
-	epatch "${FILESDIR}"/11.0-i965-Define-symbolic-constants-for-some-useful-L3-ca.patch
-	epatch "${FILESDIR}"/11.0-i965-Adjust-gen-check-in-can_do_pipelined_register_w.patch
-	epatch "${FILESDIR}"/11.0-i965-Keep-track-of-whether-LRI-is-allowed-in-the-con.patch
-	epatch "${FILESDIR}"/11.0-Define-state-flag-to-signal-that-the-URB-size-has-be.patch
-	epatch "${FILESDIR}"/11.0-i965-Add-slice-count-to-the-brw_device_info-structur.patch
-	epatch "${FILESDIR}"/11.0-Import-tables-enumerating-the-set-of-validated-L3-co.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-programming-of-the-L3-configuration.patch
-	epatch "${FILESDIR}"/11.0-i965-hsw-Enable-L3-atomics.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-selection-of-the-closest-L3-configura.patch
-	epatch "${FILESDIR}"/11.0-i965-Calculate-appropriate-L3-partition-weights-for-.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-L3-state-atom.patch
-	epatch "${FILESDIR}"/11.0-i965-Work-around-L3-state-leaks-during-context-switc.patch
 	base_src_prepare
 
 	eautoreconf
