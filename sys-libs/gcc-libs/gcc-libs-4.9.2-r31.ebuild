@@ -9,8 +9,8 @@ EAPI="4"
 
 # These are used to find the project sources. Since the gcc-libs sources are
 # within the gcc source tree, we leave these "gcc" rather than "gcc-libs".
-CROS_WORKON_COMMIT="c5ee8738c30a88bb891a99110cda342f8a260454"
-CROS_WORKON_TREE="d2573f43dc51f3f568b2f55299a4c21d0a1e2499"
+CROS_WORKON_COMMIT="ecc64074216eaa2cf6941f2907431268d78d6667"
+CROS_WORKON_TREE="e9990efdfbbe5357e02b2971284f9d7cd31aa406"
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
 CROS_WORKON_OUTOFTREE_BUILD=1
