@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="crash-reporter"
 
-inherit cros-workon platform udev
+inherit cros-workon platform systemd udev
 
 DESCRIPTION="Crash reporting service that uploads crash reports with debug
 information"
@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="arc cros_embedded -cros_host test"
+IUSE="arc cros_embedded -cros_host systemd test"
 REQUIRED_USE="!cros_host"
 
 RDEPEND="
@@ -51,12 +51,23 @@ src_install() {
 
 	into /usr
 	use cros_embedded || dobin "${OUT}"/list_proxies
-	dobin "${OUT}"/warn_collector
+	use cros_embedded || dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
 
-	insinto /etc/init
-	doins init/crash-reporter.conf init/crash-sender.conf
-	use cros_embedded || doins init/warn-collector.conf
+	if use systemd; then
+		systemd_dounit init/crash-reporter.service
+		systemd_enable_service multi-user.target crash-reporter.service
+		systemd_dounit init/crash-sender.service
+		systemd_dounit init/crash-sender.timer
+		systemd_enable_service timers.target crash-sender.timer
+
+		# warn_collector does not work on systemd-enabled systems
+		use cros_embedded || die "Warn-collector does not work with systemd"
+	else
+		insinto /etc/init
+		doins init/crash-reporter.conf init/crash-sender.conf
+		use cros_embedded || doins init/warn-collector.conf
+	fi
 
 	insinto /etc
 	doins crash_reporter_logs.conf
