@@ -31,9 +31,9 @@ ALL_BOARDS=(
 	amd64-corei7
 	#amd64-drm
 	amd64-generic
+	amd64-generic-goofy
 	amd64-generic_embedded
 	#amd64-generic_freon
-	amd64-generic-goofy
 	amd64-generic_mobbuild
 	amd64-host
 	amenia
@@ -66,6 +66,7 @@ ALL_BOARDS=(
 	#bxt-rvp
 	candy
 	cardhu
+	cave
 	celes
 	chell
 	#chronos
@@ -79,8 +80,8 @@ ALL_BOARDS=(
 	daisy
 	#daisy-drm
 	daisy_embedded
-	daisy_snow
 	daisy_skate
+	daisy_snow
 	daisy_spring
 	daisy_winter
 	dalmore
@@ -144,12 +145,12 @@ ALL_BOARDS=(
 	marble
 	mccloud
 	minnowboard
-	mipseb-o32-generic
 	mipseb-n32-generic
 	mipseb-n64-generic
-	mipsel-o32-generic
+	mipseb-o32-generic
 	mipsel-n32-generic
 	mipsel-n64-generic
+	mipsel-o32-generic
 	monroe
 	moose
 	ninja
@@ -168,9 +169,9 @@ ALL_BOARDS=(
 	panther_goofy
 	panther_moblab
 	parrot
-	parrot_ivb
 	parrot32
 	parrot64
+	parrot_ivb
 	#parry
 	peach
 	peach_kirby
@@ -250,8 +251,8 @@ ALL_BOARDS=(
 	veyron_nicky
 	veyron_pinky
 	veyron_remy
-	veyron_romy
 	veyron_rialto
+	veyron_romy
 	veyron_shark
 	veyron_speedy
 	veyron_thea
@@ -264,10 +265,10 @@ ALL_BOARDS=(
 	x32-generic
 	x86-agz
 	x86-alex
-	x86-alex_he
-	x86-alex_hubble
 	x86-alex32
 	x86-alex32_he
+	x86-alex_he
+	x86-alex_hubble
 	x86-dogfood
 	#x86-drm
 	#x86-fruitloop
@@ -279,9 +280,9 @@ ALL_BOARDS=(
 	#x86-pineview
 	#x86-wayland
 	x86-zgb
-	x86-zgb_he
 	x86-zgb32
 	x86-zgb32_he
+	x86-zgb_he
 	zako
 )
 
