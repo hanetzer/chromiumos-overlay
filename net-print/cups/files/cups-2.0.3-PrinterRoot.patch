@@ -1,0 +1,258 @@
+From f8b8e27ace4b39d92305a4992efcd5c73df45a4e Mon Sep 17 00:00:00 2001
+From: Brian Norris <briannorris@chromium.org>
+Date: Thu, 10 Mar 2016 15:47:26 -0800
+Subject: [PATCH] Support placing RW configuration separately from ServerRoot
+
+cupsd writes out its printer data to
+$ServerRoot/{printers.conf,ppd/*.ppd}, alongside less volatile data,
+like cupsd.conf and cups-files.conf. Some systems might like to keep the
+static config files (i.e., ServerRoot) protected in a read-only
+partition, while placing the volatile printer info in a writeable
+partition.
+
+Support that with a new conf directive, PrinterRoot. If not supplied,
+PrinterRoot defaults to ServerRoot.
+
+Patch supplied upstream here:
+https://www.cups.org/str.php?L4783
+
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+---
+ scheduler/conf.c     |  8 ++++++--
+ scheduler/conf.h     |  2 ++
+ scheduler/cupsd.h    |  2 ++
+ scheduler/ipp.c      | 24 ++++++++----------------
+ scheduler/job.c      |  2 +-
+ scheduler/main.c     | 16 ++++++++++++++++
+ scheduler/printers.c | 10 +++++-----
+ 7 files changed, 40 insertions(+), 24 deletions(-)
+
+diff --git a/scheduler/conf.c b/scheduler/conf.c
+index 17a17fa5fb37..56baed3e13f1 100644
+--- a/scheduler/conf.c
++++ b/scheduler/conf.c
+@@ -143,6 +143,7 @@ static const cupsd_var_t	cupsfiles_vars[] =
+   { "LPDConfigFile",		&LPDConfigFile,		CUPSD_VARTYPE_STRING },
+   { "PageLog",			&PageLog,		CUPSD_VARTYPE_STRING },
+   { "Printcap",			&Printcap,		CUPSD_VARTYPE_STRING },
++  { "PrinterRoot",		&PrinterRoot,		CUPSD_VARTYPE_STRING },
+   { "RemoteRoot",		&RemoteRoot,		CUPSD_VARTYPE_STRING },
+   { "RequestRoot",		&RequestRoot,		CUPSD_VARTYPE_STRING },
+   { "ServerBin",		&ServerBin,		CUPSD_VARTYPE_PATHNAME },
+@@ -800,6 +801,9 @@ cupsdReadConfiguration(void)
+   if (!ErrorLog)
+     cupsdSetString(&ErrorLog, CUPS_LOGDIR "/error_log");
+ 
++  if (!PrinterRoot)
++    cupsdSetString(&PrinterRoot, ServerRoot);
++
+  /*
+   * Read the cupsd.conf file...
+   */
+@@ -1091,7 +1095,7 @@ cupsdReadConfiguration(void)
+ 			     SystemGroupIDs[0], 1, 1) < 0 ||
+        cupsdCheckPermissions(ServerRoot, NULL, 0755, RunUser,
+ 			     Group, 1, 0) < 0 ||
+-       cupsdCheckPermissions(ServerRoot, "ppd", 0755, RunUser,
++       cupsdCheckPermissions(PrinterRoot, "ppd", 0755, RunUser,
+ 			     Group, 1, 1) < 0 ||
+        cupsdCheckPermissions(ServerRoot, "ssl", 0700, RunUser,
+ 			     Group, 1, 0) < 0 ||
+@@ -1101,7 +1105,7 @@ cupsdReadConfiguration(void)
+ 			     Group, 0, 0) < 0 ||
+        cupsdCheckPermissions(ServerRoot, "classes.conf", 0600, RunUser,
+ 			     Group, 0, 0) < 0 ||
+-       cupsdCheckPermissions(ServerRoot, "printers.conf", 0600, RunUser,
++       cupsdCheckPermissions(PrinterRoot, "printers.conf", 0600, RunUser,
+ 			     Group, 0, 0) < 0 ||
+        cupsdCheckPermissions(ServerRoot, "passwd.md5", 0600, User,
+ 			     Group, 0, 0) < 0) &&
+diff --git a/scheduler/conf.h b/scheduler/conf.h
+index 1c47b53bc31f..3509c8dfc7e0 100644
+--- a/scheduler/conf.h
++++ b/scheduler/conf.h
+@@ -100,6 +100,8 @@ VAR char		*ConfigurationFile	VALUE(NULL),
+ 					/* cupsd.conf file to use */
+ 			*CupsFilesFile		VALUE(NULL),
+ 					/* cups-files.conf file to use */
++			*PrinterRoot		VALUE(NULL),
++					/* Root directory for printer configs */
+ 			*ServerName		VALUE(NULL),
+ 					/* FQDN for server */
+ 			*ServerAdmin		VALUE(NULL),
+diff --git a/scheduler/cupsd.h b/scheduler/cupsd.h
+index f8b2c1195f45..9bfc0bc0de1e 100644
+--- a/scheduler/cupsd.h
++++ b/scheduler/cupsd.h
+@@ -199,6 +199,8 @@ extern void		cupsdReleaseSignals(void);
+ extern void		cupsdSetString(char **s, const char *v);
+ extern void		cupsdSetStringf(char **s, const char *f, ...)
+ 			__attribute__ ((__format__ (__printf__, 2, 3)));
++extern void		cupsdGetPPDPath(char *s, size_t s_size,
++					const cupsd_printer_t *p, int backup);
+ 
+ /* process.c */
+ extern void		*cupsdCreateProfile(int job_id, int allow_networking);
+diff --git a/scheduler/ipp.c b/scheduler/ipp.c
+index 3251fcd5dea2..f5acaf92e341 100644
+--- a/scheduler/ipp.c
++++ b/scheduler/ipp.c
+@@ -2602,8 +2602,7 @@ add_printer(cupsd_client_t  *con,	/* I - Client connection */
+ 	chmod(dstfile, 0755);
+       }
+ 
+-      snprintf(dstfile, sizeof(dstfile), "%s/ppd/%s.ppd", ServerRoot,
+-               printer->name);
++      cupsdGetPPDPath(dstfile, sizeof(dstfile), printer, 0);
+ 
+       if (!strncmp(line, "*PPD-Adobe", 10))
+       {
+@@ -2651,8 +2650,7 @@ add_printer(cupsd_client_t  *con,	/* I - Client connection */
+                printer->name);
+       unlink(dstfile);
+ 
+-      snprintf(dstfile, sizeof(dstfile), "%s/ppd/%s.ppd", ServerRoot,
+-               printer->name);
++      cupsdGetPPDPath(dstfile, sizeof(dstfile), printer, 0);
+       unlink(dstfile);
+     }
+     else
+@@ -2665,8 +2663,7 @@ add_printer(cupsd_client_t  *con,	/* I - Client connection */
+                printer->name);
+       unlink(dstfile);
+ 
+-      snprintf(dstfile, sizeof(dstfile), "%s/ppd/%s.ppd", ServerRoot,
+-               printer->name);
++      cupsdGetPPDPath(dstfile, sizeof(dstfile), printer, 0);
+ 
+       if (copy_model(con, attr->values[0].string.text, dstfile))
+       {
+@@ -2716,8 +2713,7 @@ add_printer(cupsd_client_t  *con,	/* I - Client connection */
+                     sizeof(scheme), username, sizeof(username), host,
+ 		    sizeof(host), &port, resource, sizeof(resource));
+ 
+-    snprintf(srcfile, sizeof(srcfile), "%s/ppd/%s.ppd", ServerRoot,
+-	     printer->name);
++    cupsdGetPPDPath(srcfile, sizeof(srcfile), printer, 0);
+     if ((ppd = _ppdOpenFile(srcfile, _PPD_LOCALIZATION_NONE)) != NULL)
+     {
+       for (ppdattr = ppdFindAttr(ppd, "cupsPortMonitor", NULL);
+@@ -5647,11 +5643,9 @@ delete_printer(cupsd_client_t  *con,	/* I - Client connection */
+            printer->name);
+   unlink(filename);
+ 
+-  snprintf(filename, sizeof(filename), "%s/ppd/%s.ppd", ServerRoot,
+-           printer->name);
++  cupsdGetPPDPath(filename, sizeof(filename), printer, 0);
+   unlink(filename);
+-  snprintf(filename, sizeof(filename), "%s/ppd/%s.ppd.O", ServerRoot,
+-           printer->name);
++  cupsdGetPPDPath(filename, sizeof(filename), printer, 1);
+   unlink(filename);
+ 
+   snprintf(filename, sizeof(filename), "%s/%s.png", CacheDir, printer->name);
+@@ -6725,8 +6719,7 @@ get_ppd(cupsd_client_t  *con,		/* I - Client connection */
+     * See if we need the PPD for a class or remote printer...
+     */
+ 
+-    snprintf(filename, sizeof(filename), "%s/ppd/%s.ppd", ServerRoot,
+-             dest->name);
++    cupsdGetPPDPath(filename, sizeof(filename), dest, 0);
+ 
+     if ((dtype & CUPS_PRINTER_REMOTE) && access(filename, 0))
+     {
+@@ -6740,8 +6733,7 @@ get_ppd(cupsd_client_t  *con,		/* I - Client connection */
+       for (i = 0; i < dest->num_printers; i ++)
+         if (!(dest->printers[i]->type & CUPS_PRINTER_CLASS))
+ 	{
+-	  snprintf(filename, sizeof(filename), "%s/ppd/%s.ppd", ServerRoot,
+-		   dest->printers[i]->name);
++	  cupsdGetPPDPath(filename, sizeof(filename), dest->printers[i], 0);
+ 
+           if (!access(filename, 0))
+ 	    break;
+diff --git a/scheduler/job.c b/scheduler/job.c
+index 3f0028698280..28cbe2312875 100644
+--- a/scheduler/job.c
++++ b/scheduler/job.c
+@@ -963,7 +963,7 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+            job->filetypes[job->current_file]->type);
+   snprintf(device_uri, sizeof(device_uri), "DEVICE_URI=%s",
+            job->printer->device_uri);
+-  snprintf(ppd, sizeof(ppd), "PPD=%s/ppd/%s.ppd", ServerRoot,
++  snprintf(ppd, sizeof(ppd), "PPD=%s/ppd/%s.ppd", PrinterRoot,
+ 	   job->printer->name);
+   snprintf(printer_info, sizeof(printer_name), "PRINTER_INFO=%s",
+            job->printer->info ? job->printer->info : "");
+diff --git a/scheduler/main.c b/scheduler/main.c
+index 4843cdf2d8d3..3d7144347a8d 100644
+--- a/scheduler/main.c
++++ b/scheduler/main.c
+@@ -1266,6 +1266,22 @@ cupsdSetString(char       **s,		/* O - New string */
+ 
+ 
+ /*
++ * 'cupsdGetPPDPath()' - Get the path of the PPD for a particular printer.
++ */
++
++void
++cupsdGetPPDPath(char                  *s,	/* O - Output string */
++		size_t                s_size,	/* I - Size of 's' */
++                const cupsd_printer_t *p,	/* I - Printer */
++	        int                   backup)	/* I - Get the backup path (*.O)? */
++{
++	if (backup)
++		snprintf(s, s_size, "%s/ppd/%s.ppd.O", PrinterRoot, p->name);
++	else
++		snprintf(s, s_size, "%s/ppd/%s.ppd", PrinterRoot, p->name);
++}
++
++/*
+  * 'cupsdSetStringf()' - Set a formatted string value.
+  */
+ 
+diff --git a/scheduler/printers.c b/scheduler/printers.c
+index 96f6d063fb6d..c1a9413f5a0c 100644
+--- a/scheduler/printers.c
++++ b/scheduler/printers.c
+@@ -837,7 +837,7 @@ cupsdLoadAllPrinters(void)
+   * Open the printers.conf file...
+   */
+ 
+-  snprintf(line, sizeof(line), "%s/printers.conf", ServerRoot);
++  snprintf(line, sizeof(line), "%s/printers.conf", PrinterRoot);
+   if ((fp = cupsdOpenConfFile(line)) == NULL)
+     return;
+ 
+@@ -1336,7 +1336,7 @@ cupsdSaveAllPrinters(void)
+   * Create the printers.conf file...
+   */
+ 
+-  snprintf(filename, sizeof(filename), "%s/printers.conf", ServerRoot);
++  snprintf(filename, sizeof(filename), "%s/printers.conf", PrinterRoot);
+ 
+   if ((fp = cupsdCreateConfFile(filename, ConfigFilePerm & 0600)) == NULL)
+     return;
+@@ -2655,8 +2655,8 @@ cupsdUpdatePrinterPPD(
+   * Get the old and new PPD filenames...
+   */
+ 
+-  snprintf(srcfile, sizeof(srcfile), "%s/ppd/%s.ppd.O", ServerRoot, p->name);
+-  snprintf(dstfile, sizeof(srcfile), "%s/ppd/%s.ppd", ServerRoot, p->name);
++  cupsdGetPPDPath(srcfile, sizeof(srcfile), p, 1);
++  cupsdGetPPDPath(dstfile, sizeof(dstfile), p, 0);
+ 
+  /*
+   * Rename the old file and open the old and new...
+@@ -3675,7 +3675,7 @@ load_ppd(cupsd_printer_t *p)		/* I - Printer */
+   if (stat(cache_name, &cache_info))
+     cache_info.st_mtime = 0;
+ 
+-  snprintf(ppd_name, sizeof(ppd_name), "%s/ppd/%s.ppd", ServerRoot, p->name);
++  cupsdGetPPDPath(ppd_name, sizeof(ppd_name), p, 0);
+   if (stat(ppd_name, &ppd_info))
+     ppd_info.st_mtime = 1;
+ 
+-- 
+2.1.2
+
