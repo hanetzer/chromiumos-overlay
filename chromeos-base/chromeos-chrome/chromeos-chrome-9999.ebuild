@@ -417,7 +417,7 @@ set_build_defines() {
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
-		BUILD_ARGS+=( is_chrome_branded=true is_offcial_build=true )
+		BUILD_ARGS+=( is_chrome_branded=true is_official_build=true )
 		# This test can only be build from internal sources
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
