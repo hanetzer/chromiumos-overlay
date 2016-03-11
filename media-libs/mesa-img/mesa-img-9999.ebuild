@@ -4,9 +4,8 @@
 
 EAPI=4
 
-EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
-CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
-CROS_WORKON_LOCALNAME="mesa"
+CROS_WORKON_PROJECT="chromiumos/third_party/mesa-img"
+CROS_WORKON_LOCALNAME="mesa-img"
 CROS_WORKON_BLACKLIST="1"
 
 if [[ ${PV} = 9999* ]]; then
@@ -27,14 +26,6 @@ FOLDER="${PV/_rc*/}"
 
 DESCRIPTION="OpenGL-like graphic library for Linux"
 HOMEPAGE="http://mesa3d.sourceforge.net/"
-
-#SRC_PATCHES="mirror://gentoo/${P}-gentoo-patches-01.tar.bz2"
-if [[ $PV = 9999* ]] || [[ -n ${CROS_WORKON_COMMIT} ]]; then
-	SRC_URI="${SRC_PATCHES}"
-else
-	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${MY_SRC_P}.tar.bz2
-		${SRC_PATCHES}"
-fi
 
 # Most of the code is MIT/X11.
 # ralloc is LGPL-3
@@ -119,56 +110,6 @@ src_prepare() {
 			-e "s/-DHAVE_POSIX_MEMALIGN//" \
 			configure.ac || die
 	fi
-
-	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
-	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
-	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
-	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
-	epatch "${FILESDIR}"/8.1-array-overflow.patch
-	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
-	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
-	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
-	epatch "${FILESDIR}"/10.3-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
-	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
-	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
-	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
-	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
-	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
-	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
-	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
-	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
-	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
-	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
-	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
-	epatch "${FILESDIR}"/11.7-double-buffered.patch
-
-	# IMG patches
-	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
-	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
-	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
-	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
-	epatch "${FILESDIR}"/0008-GL_EXT_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0009-GL_KHR_blend_equation_advanced-entry-points.patch
-	epatch "${FILESDIR}"/0014-GL_EXT_geometry_shader-entry-points.patch
-	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
-	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0021-GL_OES_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0023-GL_EXT_sparse_texture-entry-points.patch
-	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
-	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
-	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
-	epatch "${FILESDIR}"/0036-Add-DRI-Query-Buffers-extension.patch
-
-	epatch "${FILESDIR}"/0101-dri-pvr-Add-support-for-YV12.patch
-	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
-	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
-	epatch "${FILESDIR}"/0104-pvr_dri-fix-pbuffer-synchronisation.patch
-	epatch "${FILESDIR}"/0105-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
-	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
 
 	base_src_prepare
 
