@@ -61,8 +61,6 @@ DEPEND="
 	amd64? ($DEPEND_X86)
 	"
 
-VERIFIED_STAGES=( "ramstage" "romstage" "refcode" "bl31" "secure_os" )
-
 src_prepare() {
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
@@ -152,13 +150,6 @@ make_coreboot() {
 		ifdtool --em100 "${builddir}/coreboot.rom" || die
 		mv "${builddir}/coreboot.rom"{.new,} || die
 	fi
-
-	# Extract stages which may need to be repackaged for vboot, if present.
-	for stage in ${VERIFIED_STAGES[@]}; do
-		cbfstool "${builddir}/coreboot.rom" extract \
-			-n "fallback/${stage}" \
-			-f "${builddir}/${stage}.stage" || true
-	done
 }
 
 src_compile() {
@@ -212,16 +203,6 @@ src_install() {
 
 	newins "build/coreboot.rom" coreboot.rom
 	newins "build_serial/coreboot.rom" coreboot.rom.serial
-	for stage in ${VERIFIED_STAGES[@]}; do
-		if [[ -f "build/${stage}.stage" ]]; then
-			newins "build/${stage}.stage" "${stage}.stage"
-			newins "build_serial/${stage}.stage" "${stage}.stage.serial"
-		fi
-		if [[ -f "build/cbfs/fallback/${stage}.elf" ]]; then
-			newins "build/cbfs/fallback/${stage}.elf" "${stage}.elf"
-			newins "build_serial/cbfs/fallback/${stage}.elf" "${stage}.elf.serial"
-		fi
-	done
 
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		${FILESDIR}/configs/config.${board} )
@@ -242,4 +223,10 @@ src_install() {
 		done
 	fi
 	newins .config coreboot.config
+
+	# Keep binaries with debug symbols around for crash dump analysis
+	insinto /firmware/coreboot
+	doins build/cbfs/fallback/*.debug
+	insinto /firmware/coreboot_serial
+	doins build_serial/cbfs/fallback/*.debug
 }

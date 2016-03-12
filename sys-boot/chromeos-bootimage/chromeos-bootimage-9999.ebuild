@@ -240,7 +240,6 @@ src_compile_depthcharge() {
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
-	local verified_stages=( "ramstage" "romstage" "bl31" "secure_os" )
 	local refcode_file="${froot}/refcode.stage"
 	local ro_suffix
 	local rw_suffix
@@ -253,23 +252,12 @@ src_compile_depthcharge() {
 		fi
 	fi
 
-	local multicbfs="$(grep 'CONFIG_MULTIPLE_CBFS_INSTANCES=y' \
-			"${froot}/coreboot.config")"
-
 	if use unified_depthcharge; then
 		ro_suffix="elf"
-		if [ -z "${multicbfs}" ]; then
-			rw_suffix="payload"
-		else
-			rw_suffix="elf"
-		fi
+		rw_suffix="elf"
 	else
 		ro_suffix="ro.elf"
-		if [ -z "${multicbfs}" ]; then
-			rw_suffix="rw.bin"
-		else
-			rw_suffix="rw.elf"
-		fi
+		rw_suffix="rw.bin"
 	fi
 
 	local depthcharge_binaries=( --coreboot-elf
@@ -286,23 +274,7 @@ src_compile_depthcharge() {
 	local serial=( --coreboot "${coreboot_file}.serial" )
 	local silent=( --coreboot "${coreboot_file}" )
 
-	if [ -z "${multicbfs}" ]; then
-		# Add all stages we have, CBF will pick what it needs based on fmap.dts
-		for stage in ${verified_stages[@]}; do
-			if [ -f "${froot}/${stage}.stage.serial" ]; then
-				serial+=( --add-blob ${stage} "${froot}/${stage}.stage.serial" )
-				silent+=( --add-blob ${stage} "${froot}/${stage}.stage" )
-			elif [ -f "${froot}/${stage}.stage" ]; then
-				common+=( --add-blob ${stage} "${froot}/${stage}.stage" )
-			fi
-		done
-		depthcharge_binaries+=( --uboot )
-		depthcharge_binaries+=(
-			"${froot}/depthcharge/depthcharge.${rw_suffix}" )
-		dev_binaries+=( --uboot )
-		dev_binaries+=(
-			"${froot}/depthcharge/dev.${rw_suffix}" )
-	else
+	if use unified_depthcharge; then
 		# cros_bundle_firmare was written with an assumption that
 		# u-boot is always a part of the image. So, unless -D is
 		# given, in case there is no explicit --uboot option in the
@@ -313,6 +285,13 @@ src_compile_depthcharge() {
 		# Do not bundle defaults, but state the "skeleton" from which to take
 		# IFD data and non-BIOS partitions on x86.
 		common+=( -D --skeleton=${froot}/coreboot.rom )
+	else
+		depthcharge_binaries+=( --uboot )
+		depthcharge_binaries+=(
+			"${froot}/depthcharge/depthcharge.${rw_suffix}" )
+		dev_binaries+=( --uboot )
+		dev_binaries+=(
+			"${froot}/depthcharge/dev.${rw_suffix}" )
 	fi
 
 	local legacy_file=""
@@ -389,11 +368,7 @@ src_compile_depthcharge() {
 	einfo "Building netboot image."
 	local netboot_rw
 	if use unified_depthcharge; then
-		if [ -z  "${multicbfs}" ]; then
-			netboot_rw="${froot}/depthcharge/netboot.payload"
-		else
-			netboot_rw="${froot}/depthcharge/netboot.elf"
-		fi
+		netboot_rw="${froot}/depthcharge/netboot.elf"
 	else
 		netboot_rw="${froot}/depthcharge/netboot.bin"
 	fi
