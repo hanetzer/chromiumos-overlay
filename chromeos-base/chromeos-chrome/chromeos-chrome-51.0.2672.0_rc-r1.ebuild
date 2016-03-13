@@ -814,8 +814,9 @@ setup_compile_flags() {
 	# They also put read only sections into different segment so that we
 	# have around 8 MB for the first segment that has PT_LOAD and is
 	# executable. This is used for mapping hot segment to hugepage.
-	# Currently these options are only supported by gcc.
-	if ! use clang; then
+	# Currently these options are only supported by gcc. We disable it
+	# for arm while investigating crbug.com/593719.
+	if ! use clang && ! use arm ; then
 		local split_flag=( -freorder-functions=callgraph )
 		local split_ldflags=(
 			"${split_flag[@]}"
