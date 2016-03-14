@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="b30663b4a7d70886c5e8cdfce7307f0271e34de8"
-CROS_WORKON_TREE="88fa478b74df85e65679bba6ae953f7157d3a422"
+CROS_WORKON_COMMIT="38234f4bef8b70d985c09224e6d7752d71400f23"
+CROS_WORKON_TREE="76b0016e92d7ec15a0287cfbfa7be13a5d6aee36"
 CROS_WORKON_BLACKLIST=1
 # cros-workon expects the repo to be in src/third_party, but is in src/aosp.
 CROS_WORKON_LOCALNAME="../aosp/bootable/recovery"

@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("6bd7dd9e3b3831253d4c4dd3b63c6636c91a2d24" "390efedcb7e17587da765b6d682077cb7fa46ee1")
-CROS_WORKON_TREE=("a44d1c14d291ec73c4153a72e6809323437b827a" "8a8016f57fbcc5c5848ef95536b653171e05cb2d")
+CROS_WORKON_COMMIT=("4d53b0b6f7d015f9cb18495e657e49493152f573" "d15c546ed794293d0a63770467a0f3c4c84c6214")
+CROS_WORKON_TREE=("a1d6e1e92ff8b2847dcd12ccd6cb0afdb62d1ef7" "2bfe36f4978b5e41048e5c2e2aeb276b016d1efd")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
@@ -40,6 +40,7 @@ COMMON_DEPEND="
 	dev-libs/protobuf
 	dev-libs/xz-embedded
 	dev-util/bsdiff
+	dev-util/imgdiff
 	net-misc/curl
 	sys-apps/rootdev"
 
