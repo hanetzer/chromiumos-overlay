@@ -50,6 +50,7 @@ src_prepare()
 	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Ensure-that-option-length-fits-inside-data-length-less-option-size.patch
 	epatch "${FILESDIR}"/patches/${P}-Change-vendor_encapsulated_options-to-binhex.patch
 	epatch "${FILESDIR}"/patches/${P}-Handle-DHCP-iSNS-option.patch
+	epatch "${FILESDIR}"/patches/${P}-Send-more-DHCPv6-options-over-DBus-RPC.patch
 }
 
 src_configure()
