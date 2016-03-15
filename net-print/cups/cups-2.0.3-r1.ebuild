@@ -336,6 +336,12 @@ multilib_src_install_all() {
 	doins "${FILESDIR}"/{cupsd,cups-files}.conf
 	insinto /etc/init
 	doins "${FILESDIR}"/init/cupsd.conf
+
+	# CUPS wants the daemon user to own these
+	chown cups:nobody "${ED}"/etc/cups/{cupsd.conf,cups-files.conf,ssl}
+	# CUPS also wants some specific permissions
+	chmod 640 "${ED}"/etc/cups/{cupsd,cups-files}.conf
+	chmod 700 "${ED}"/etc/cups/ssl
 }
 
 pkg_preinst() {
