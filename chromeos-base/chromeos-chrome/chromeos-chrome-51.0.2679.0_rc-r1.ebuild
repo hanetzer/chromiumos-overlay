@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-51.0.2672.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-51.0.2672.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-51.0.2672.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -417,7 +417,7 @@ set_build_defines() {
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
-		BUILD_ARGS+=( is_chrome_branded=true is_offcial_build=true )
+		BUILD_ARGS+=( is_chrome_branded=true is_official_build=true )
 		# This test can only be build from internal sources
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
