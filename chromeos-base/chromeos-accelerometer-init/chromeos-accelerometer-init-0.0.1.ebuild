@@ -21,8 +21,6 @@ RDEPEND="
 S=${WORKDIR}
 
 src_install() {
-	insinto "/etc/init"
-	doins "${FILESDIR}"/init/preload-accelerometer.conf
 	udev_dorules "${FILESDIR}"/udev/99-cros-ec-accel.rules
 	exeinto $(udev_get_udevdir)
 	doexe "${FILESDIR}"/udev/accelerometer-init.sh
