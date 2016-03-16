@@ -45,6 +45,7 @@ ALL_BOARDS=(
 	arm-generic
 	arm-generic_freon
 	arm64-generic
+	arm64-llvmpipe
 	auron
 	auron_paine
 	auron_pearlvalley
