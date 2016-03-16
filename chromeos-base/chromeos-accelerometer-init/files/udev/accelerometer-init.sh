@@ -7,6 +7,7 @@
 
 DEVICE=$1
 IIO_DEVICES=/sys/bus/iio/devices
+CROS_EC_PATH=/sys/class/chromeos/cros_ec
 IIO_DEVICE_PATH="${IIO_DEVICES}/${DEVICE}"
 LOCATION_PATH="${IIO_DEVICE_PATH}/location"
 IIO_SINGLE_SENSOR_DIR=false
@@ -72,3 +73,12 @@ echo 1 > "${IIO_DEVICE_PATH}/buffer/enable"
 # Allow chronos to trigger the accelerometer.
 chgrp chronos "${IIO_DEVICES}/trigger0/trigger_now"
 chmod g+w "${IIO_DEVICES}/trigger0/trigger_now"
+
+# Allow powerd to set the keyboard wake angle.
+if "${IIO_SINGLE_SENSOR_DIR}"; then
+  chgrp power ${CROS_EC_PATH}/kb_wake_angle
+  chmod g+w ${CROS_EC_PATH}/kb_wake_angle
+else
+  chgrp power ${IIO_DEVICE_PATH}/in_angl_offset
+  chmod g+w ${IIO_DEVICE_PATH}/in_angl_offset
+fi
