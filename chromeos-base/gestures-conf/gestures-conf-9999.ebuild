@@ -37,6 +37,7 @@ src_install() {
 	# -cheets variants are running on the same hardware as their non-cheets
 	# counterpart. Strip -cheets suffix to re-use the config.
 	local board_variant=${board_variant%-cheets}
+	local board=${board%-cheets}
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
 	#
