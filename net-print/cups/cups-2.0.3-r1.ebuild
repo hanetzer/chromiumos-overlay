@@ -100,6 +100,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.0.1-xinetd-installation-fix.patch"
 	"${FILESDIR}/${PN}-2.0.3-cross-compile.patch"
 	"${FILESDIR}/${PN}-2.0.3-PrinterRoot.patch"
+	"${FILESDIR}/${PN}-2.0.3-debug-printfs.patch"
 )
 
 MULTILIB_CHOST_TOOLS=(
