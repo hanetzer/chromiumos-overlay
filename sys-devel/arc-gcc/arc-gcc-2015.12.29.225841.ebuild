@@ -18,12 +18,9 @@ IUSE=""
 RESTRICT="strip"
 QA_PREBUILT="*"
 
-INSTALL_DIR="/opt/android/arc-gcc/arm"
+INSTALL_DIR="/opt/android/arc-gcc/"
 
 src_install() {
-	# Clean up some loose cruft.
-	rm -r */.git || die
-
 	dodir "${INSTALL_DIR}"
 	cp -pPR * "${D}/${INSTALL_DIR}/" || die
 }
