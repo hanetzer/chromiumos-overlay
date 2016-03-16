@@ -1,15 +1,15 @@
-# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="74db9d39f2f026c0e0adac855b4ab0bae00ada67"
-CROS_WORKON_TREE="5ed67a772061e56e7334fe9d58a8c3a7478e6d36"
+CROS_WORKON_COMMIT="dba1c63d4beeef4a56b7ee3d71046c3bfed67c72"
+CROS_WORKON_TREE="8bc18818e9a025b6ec591f010558e964608ab286"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v3.18"
+CROS_WORKON_LOCALNAME="kernel/v3.14"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
-DESCRIPTION="Chrome OS Linux Kernel 3.18"
+DESCRIPTION="Chrome OS Linux Kernel 3.14"
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 KEYWORDS="*"
