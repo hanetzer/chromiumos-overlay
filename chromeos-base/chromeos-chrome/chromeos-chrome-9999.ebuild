@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="4"
-inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs
+inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs versionator
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -695,6 +695,11 @@ src_prepare() {
 	# Apply patches for non-localsource builds.
 	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
+	fi
+	# TODO(cywang): Remove this once ${CHROME_VERSION} >= 51.0.2681.0.
+	CHROME_BUILD=$(get_version_component_range 3 ${PV})
+	if [ "${CHROME_BUILD}" -lt "2681" ]; then
+		epatch "${FILESDIR}/${PN}-optin-fix.patch"
 	fi
 
 	local WHOAMI=$(whoami)
