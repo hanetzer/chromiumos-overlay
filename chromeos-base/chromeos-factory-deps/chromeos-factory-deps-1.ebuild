@@ -99,6 +99,11 @@ FACTORY_TEST_RDEPEND+="
 	sys-apps/coreboot-utils
 "
 
+# Packages used to generate QR codes.
+FACTORY_TEST_RDEPEND+="
+	dev-python/qrcode
+"
+
 ################################################################################
 # Assemble the final RDEPEND variable for portage
 ################################################################################
