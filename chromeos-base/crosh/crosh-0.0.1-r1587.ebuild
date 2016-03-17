@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="X"
+IUSE="X cups"
 
 RDEPEND="app-admin/sudo
 	X? ( chromeos-base/salsa )
@@ -28,6 +28,7 @@ RDEPEND="app-admin/sudo
 	net-misc/openssh
 	net-wireless/iw
 	sys-apps/net-tools
+	cups? ( net-print/cups )
 "
 DEPEND=""
 
@@ -48,6 +49,7 @@ src_compile() {
 src_install() {
 	dobin crosh crosh-{dev,usb}
 	dobin network_diag
+	use cups && dobin crosh-cups
 	insinto /usr/share/misc
 	doins "${WORKDIR}"/inputrc.crosh
 }
