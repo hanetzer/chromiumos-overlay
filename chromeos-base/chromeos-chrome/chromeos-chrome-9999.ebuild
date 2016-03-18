@@ -436,6 +436,10 @@ set_build_defines() {
 		BUILD_STRING_ARGS+=( ffmpeg_branding=ChromeOS )
 	fi
 
+	# TODO(cywang): Remove the enforcement of debug symbol removal
+	# once PFQ pass.
+	REMOVE_WEBCORE_DEBUG_SYMBOLS=1
+
 	# This saves time and bytes.
 	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
