@@ -28,7 +28,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
-RESTRICT="binchecks strip"
+
+# The unit tests try to connect to the dbus on host and fail.
+RESTRICT="binchecks strip test"
 
 DEPEND=""
 RDEPEND=""

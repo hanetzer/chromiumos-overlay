@@ -16,6 +16,10 @@ CROS_GO_PACKAGES=(
 	"golang.org/x/net/context"
 )
 
+CROS_GO_TEST=(
+	"${CROS_GO_PACKAGES[@]}"
+)
+
 inherit cros-workon cros-go
 
 DESCRIPTION="Go supplementary network libraries"

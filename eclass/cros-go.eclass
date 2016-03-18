@@ -41,6 +41,14 @@
 # and other Go projects can use the package with
 #   import "golang.org/x/tools/go/types"
 
+# @ECLASS-VARIABLE: CROS_GO_TEST
+# @DESCRIPTION:
+# Go packages to test
+# Package paths are relative to ${CROS_GO_WORKSPACE}/src
+# Package tests are always built and run locally on host.
+# Default is to test all packages in ${CROS_GO_WORKSPACE}.
+: ${CROS_GO_TEST:=./...}
+
 inherit toolchain-funcs
 
 DEPEND="dev-lang/go"
@@ -51,6 +59,12 @@ cros_go() {
 		$(tc-getGO) "$@" || die
 }
 
+go_test() {
+	local workspace="${CROS_GO_WORKSPACE:-${S}}"
+	GOPATH="${workspace}:${SYSROOT}/usr/lib/gopath" \
+		go test "$@" || die
+}
+
 cros-go_src_compile() {
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
@@ -59,6 +73,10 @@ cros-go_src_compile() {
 		bin="${bin%:*}"
 		cros_go build -v -o "${name}" "${bin}"
 	done
+}
+
+cros-go_src_test() {
+	go_test "${CROS_GO_TEST[@]}"
 }
 
 cros-go_src_install() {
@@ -86,4 +104,4 @@ cros-go_src_install() {
 	done
 }
 
-EXPORT_FUNCTIONS src_compile src_install
+EXPORT_FUNCTIONS src_compile src_test src_install

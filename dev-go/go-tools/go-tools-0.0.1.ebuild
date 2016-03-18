@@ -18,6 +18,13 @@ CROS_GO_PACKAGES=(
 	"golang.org/x/tools/go/gcimporter"
 )
 
+# The tests for "golang.org/x/tools/go/types" look for ${GOROOT}/test
+# directory, which we do not install in dev-lang/go.
+CROS_GO_TEST=(
+	"golang.org/x/tools/go/exact"
+	"golang.org/x/tools/go/gcimporter"
+)
+
 CROS_GO_BINARIES=(
 	"golang.org/x/tools/cmd/godoc"
 	"golang.org/x/tools/cmd/vet:govet"
