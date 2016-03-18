@@ -1168,6 +1168,10 @@ src_install() {
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
 	fi
+	# TODO(ihf): Remove this once 595763 is fixed.
+	eerror "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
+	LS=$(ls -alhS ${FROM})
+	eerror "CHROME_DIR after build\n${LS}"
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
@@ -1271,13 +1275,26 @@ src_install() {
 		--strip-flags="${PORTAGE_STRIP_FLAGS}"
 		--verbose
 	)
-	einfo "${cmd[*]}"
+	# TODO(ihf): Make this einfo again once 595763 is fixed.
+	eerror "${cmd[*]}"
 	"${cmd[@]}" || die
+	LS=$(ls -alhS ${D}/${CHROME_DIR})
+	eerror "CHROME_DIR after deploy_chrome\n${LS}"
 
 	if use build_tests; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"
 		cp -pPR "${FROM}"/chromedriver "${D}/${chromedriver_dir}" || die
+	fi
+}
+
+pkg_postinst() {
+	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
+	eerror "CHROME_DIR after installation\n${LS}"
+	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
+	eerror "CHROME_SIZE = ${CHROME_SIZE}"
+	if [ ${CHROME_SIZE} -ge 200000000 ]; then
+		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
 }
