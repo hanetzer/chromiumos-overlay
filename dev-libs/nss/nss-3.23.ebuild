@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=6
+EAPI=5
 
 inherit eutils flag-o-matic multilib toolchain-funcs multilib-minimal
 
@@ -32,7 +32,8 @@ RDEPEND=">=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
 	abi_x86_32? (
 		!<=app-emulation/emul-linux-x86-baselibs-20140508-r12
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-	)"
+	)
+	!<app-crypt/nss-${PV}[${MULTILIB_USEDEP}]"
 
 RESTRICT="test"
 
@@ -40,13 +41,6 @@ S="${WORKDIR}/${P}/${PN}"
 
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/nss-config
-)
-
-PATCHES=(
-	# Custom changes for gentoo
-	"${FILESDIR}/${PN}-3.21-gentoo-fixups.patch"
-	"${FILESDIR}/${PN}-3.21-gentoo-fixup-warnings.patch"
-	"${FILESDIR}/${PN}-3.23-hppa-byte_order.patch"
 )
 
 src_unpack() {
@@ -57,19 +51,20 @@ src_unpack() {
 }
 
 src_prepare() {
-	if use nss-pem ; then
-		PATCHES+=(
-			"${FILESDIR}/${PN}-3.21-enable-pem.patch"
-			"${FILESDIR}/${PN}-3.21-pem-werror.patch"
-		)
-	fi
+	# Custom changes for gentoo
+	epatch "${FILESDIR}/${PN}-3.21-gentoo-fixups.patch"
+	epatch "${FILESDIR}/${PN}-3.21-gentoo-fixup-warnings.patch"
+	use cacert && epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
+	use nss-pem && epatch "${FILESDIR}/${PN}-3.21-enable-pem.patch" \
+		"${FILESDIR}/${PN}-3.21-pem-werror.patch"
+	use cacert && epatch "${FILESDIR}/${PN}-3.21-cacert-class3.patch" # 521462
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
 
-	default
-
-	if use cacert ; then
-			eapply -p4 "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
-			eapply "${FILESDIR}/${PN}-3.21-cacert-class3.patch" #521462
-	fi
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
 
 	pushd coreconf >/dev/null || die
 	# hack nspr paths
@@ -304,7 +299,9 @@ multilib_src_install() {
 		fi
 		pushd dist/*/bin >/dev/null || die
 		for f in ${nssutils}; do
+			#TODO(cmasone): switch to normal nss tool names
 			dobin ${f}
+			dosym ${f} /usr/bin/nss${f}
 		done
 		popd >/dev/null || die
 	fi
