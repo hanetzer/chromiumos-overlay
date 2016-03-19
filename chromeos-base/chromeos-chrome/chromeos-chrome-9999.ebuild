@@ -1290,6 +1290,7 @@ src_install() {
 }
 
 pkg_postinst() {
+	autotest_pkg_postinst
 	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
 	eerror "CHROME_DIR after installation\n${LS}"
 	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
