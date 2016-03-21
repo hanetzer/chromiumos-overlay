@@ -35,6 +35,7 @@ src_prepare() {
 	# Temporary patch until we can uprev the ToT version of libweave into
 	# CrOS source tree
 	epatch ${FILESDIR}/patches/libweave-int64.patch
+	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
 }
 
 src_unpack() {

@@ -9,7 +9,7 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="platform/external/libchrome"
-CROS_WORKON_COMMIT="16334168f40e584033e0c57e9003e40cd1edf64a"
+CROS_WORKON_COMMIT="2b5c5fde012ebbc28208891aa7c95f3e13ce1d0a"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
@@ -108,6 +108,7 @@ src_install() {
 		crypto/openssl_util.h \
 		crypto/p224.h \
 		crypto/p224_spake.h \
+		crypto/random.h \
 		crypto/rsa_private_key.h \
 		crypto/scoped_nss_types.h \
 		crypto/scoped_openssl_types.h \
