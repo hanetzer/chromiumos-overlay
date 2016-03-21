@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-51.0.2679.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-51.0.2686.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-51.0.2686.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-51.0.2686.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -206,7 +206,7 @@ RDEPEND="${RDEPEND}
 	)
 	xkbcommon? (
 		x11-libs/libxkbcommon
-                x11-misc/xkeyboard-config
+		x11-misc/xkeyboard-config
 	)
 	evdev_gestures? (
 		chromeos-base/gestures
@@ -435,6 +435,10 @@ set_build_defines() {
 		BUILD_ARGS+=( proprietary_codecs=true )
 		BUILD_STRING_ARGS+=( ffmpeg_branding=ChromeOS )
 	fi
+
+	# TODO(cywang): Remove the enforcement of debug symbol removal
+	# once PFQ pass.
+	REMOVE_WEBCORE_DEBUG_SYMBOLS=1
 
 	# This saves time and bytes.
 	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
@@ -1164,6 +1168,10 @@ src_install() {
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
 	fi
+	# TODO(ihf): Remove this once 595763 is fixed.
+	eerror "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
+	LS=$(ls -alhS ${FROM})
+	eerror "CHROME_DIR after build\n${LS}"
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
@@ -1267,13 +1275,27 @@ src_install() {
 		--strip-flags="${PORTAGE_STRIP_FLAGS}"
 		--verbose
 	)
-	einfo "${cmd[*]}"
+	# TODO(ihf): Make this einfo again once 595763 is fixed.
+	eerror "${cmd[*]}"
 	"${cmd[@]}" || die
+	LS=$(ls -alhS ${D}/${CHROME_DIR})
+	eerror "CHROME_DIR after deploy_chrome\n${LS}"
 
 	if use build_tests; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"
 		cp -pPR "${FROM}"/chromedriver "${D}/${chromedriver_dir}" || die
+	fi
+}
+
+pkg_postinst() {
+	autotest_pkg_postinst
+	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
+	eerror "CHROME_DIR after installation\n${LS}"
+	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
+	eerror "CHROME_SIZE = ${CHROME_SIZE}"
+	if [ ${CHROME_SIZE} -ge 200000000 ]; then
+		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
 }
