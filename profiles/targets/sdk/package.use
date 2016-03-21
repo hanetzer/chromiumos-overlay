@@ -22,7 +22,8 @@ dev-libs/glib static-libs
 sys-apps/attr static-libs
 
 # mksquashfs used in build_image requires lzo support.
-sys-fs/squashfs-tools lzo
+# Also include lz4 and lzma compressors, for flexibility.
+sys-fs/squashfs-tools lzo lz4 lzma
 
 # some prebuilt binaries created on Ubuntu like to link against libtinfo.
 sys-libs/ncurses tinfo
