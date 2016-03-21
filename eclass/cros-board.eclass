@@ -208,6 +208,7 @@ ALL_BOARDS=(
 	slippy
 	smaug
 	smaug-cheets
+	smaug-kasan
 	sonic
 	#space
 	squawks
