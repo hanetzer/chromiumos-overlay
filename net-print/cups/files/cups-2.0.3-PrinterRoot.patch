@@ -1,4 +1,4 @@
-From f8b8e27ace4b39d92305a4992efcd5c73df45a4e Mon Sep 17 00:00:00 2001
+From 03b66e437488ea46e61032b485e8d84c62a4a7b2 Mon Sep 17 00:00:00 2001
 From: Brian Norris <briannorris@chromium.org>
 Date: Thu, 10 Mar 2016 15:47:26 -0800
 Subject: [PATCH] Support placing RW configuration separately from ServerRoot
@@ -16,19 +16,101 @@ PrinterRoot defaults to ServerRoot.
 Patch supplied upstream here:
 https://www.cups.org/str.php?L4783
 
+with additions for handling subscriptions, classes, and a few initial
+oversights.
+
 Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
- scheduler/conf.c     |  8 ++++++--
- scheduler/conf.h     |  2 ++
- scheduler/cupsd.h    |  2 ++
- scheduler/ipp.c      | 24 ++++++++----------------
- scheduler/job.c      |  2 +-
- scheduler/main.c     | 16 ++++++++++++++++
- scheduler/printers.c | 10 +++++-----
- 7 files changed, 40 insertions(+), 24 deletions(-)
+ scheduler/classes.c       |  4 ++--
+ scheduler/client.c        |  6 +++---
+ scheduler/colorman.c      |  4 ++--
+ scheduler/conf.c          | 10 +++++++---
+ scheduler/conf.h          |  2 ++
+ scheduler/cupsd.h         |  2 ++
+ scheduler/ipp.c           | 24 ++++++++----------------
+ scheduler/job.c           |  2 +-
+ scheduler/main.c          | 16 ++++++++++++++++
+ scheduler/printers.c      | 10 +++++-----
+ scheduler/subscriptions.c |  4 ++--
+ 11 files changed, 50 insertions(+), 34 deletions(-)
 
+diff --git a/scheduler/classes.c b/scheduler/classes.c
+index 17add06ceacc..56be9055de5c 100644
+--- a/scheduler/classes.c
++++ b/scheduler/classes.c
+@@ -279,7 +279,7 @@ cupsdLoadAllClasses(void)
+   * Open the classes.conf file...
+   */
+ 
+-  snprintf(line, sizeof(line), "%s/classes.conf", ServerRoot);
++  snprintf(line, sizeof(line), "%s/classes.conf", PrinterRoot);
+   if ((fp = cupsdOpenConfFile(line)) == NULL)
+     return;
+ 
+@@ -671,7 +671,7 @@ cupsdSaveAllClasses(void)
+   * Create the classes.conf file...
+   */
+ 
+-  snprintf(filename, sizeof(filename), "%s/classes.conf", ServerRoot);
++  snprintf(filename, sizeof(filename), "%s/classes.conf", PrinterRoot);
+ 
+   if ((fp = cupsdCreateConfFile(filename, ConfigFilePerm)) == NULL)
+     return;
+diff --git a/scheduler/client.c b/scheduler/client.c
+index 15abbe3f0d26..7dfff9fb1a3e 100644
+--- a/scheduler/client.c
++++ b/scheduler/client.c
+@@ -1090,7 +1090,7 @@ cupsdReadClient(cupsd_client_t *con)	/* I - Client to read from */
+ 		      char ppdname[1024];/* PPD filename */
+ 
+ 		      snprintf(ppdname, sizeof(ppdname), "%s/ppd/%s.ppd",
+-		               ServerRoot, p->printers[i]->name);
++		               PrinterRoot, p->printers[i]->name);
+ 		      if (!access(ppdname, 0))
+ 		      {
+ 		        p = p->printers[i];
+@@ -1150,7 +1150,7 @@ cupsdReadClient(cupsd_client_t *con)	/* I - Client to read from */
+ 		      char ppdname[1024];/* PPD filename */
+ 
+ 		      snprintf(ppdname, sizeof(ppdname), "%s/ppd/%s.ppd",
+-		               ServerRoot, p->printers[i]->name);
++		               PrinterRoot, p->printers[i]->name);
+ 		      if (!access(ppdname, 0))
+ 		      {
+ 		        p = p->printers[i];
+@@ -2933,7 +2933,7 @@ get_file(cupsd_client_t *con,		/* I  - Client connection */
+ 
+   if (!strncmp(con->uri, "/ppd/", 5) && !strchr(con->uri + 5, '/'))
+   {
+-    snprintf(filename, len, "%s%s", ServerRoot, con->uri);
++    snprintf(filename, len, "%s%s", PrinterRoot, con->uri);
+ 
+     perm_check = 0;
+   }
+diff --git a/scheduler/colorman.c b/scheduler/colorman.c
+index b3e6f08211df..b2fe30dddd80 100644
+--- a/scheduler/colorman.c
++++ b/scheduler/colorman.c
+@@ -375,7 +375,7 @@ apple_register_profiles(
+   * Try opening the PPD file for this printer...
+   */
+ 
+-  snprintf(ppdfile, sizeof(ppdfile), "%s/ppd/%s.ppd", ServerRoot, p->name);
++  snprintf(ppdfile, sizeof(ppdfile), "%s/ppd/%s.ppd", PrinterRoot, p->name);
+   if ((ppd = _ppdOpenFile(ppdfile, _PPD_LOCALIZATION_ICC_PROFILES)) == NULL)
+     return;
+ 
+@@ -1393,7 +1393,7 @@ colord_register_printer(
+   * Try opening the PPD file for this printer...
+   */
+ 
+-  snprintf(ppdfile, sizeof(ppdfile), "%s/ppd/%s.ppd", ServerRoot, p->name);
++  snprintf(ppdfile, sizeof(ppdfile), "%s/ppd/%s.ppd", PrinterRoot, p->name);
+   if ((ppd = _ppdOpenFile(ppdfile, _PPD_LOCALIZATION_ICC_PROFILES)) == NULL)
+     return;
+ 
 diff --git a/scheduler/conf.c b/scheduler/conf.c
-index 17a17fa5fb37..56baed3e13f1 100644
+index 17a17fa5fb37..9122471c5272 100644
 --- a/scheduler/conf.c
 +++ b/scheduler/conf.c
 @@ -143,6 +143,7 @@ static const cupsd_var_t	cupsfiles_vars[] =
@@ -58,9 +140,12 @@ index 17a17fa5fb37..56baed3e13f1 100644
  			     Group, 1, 1) < 0 ||
         cupsdCheckPermissions(ServerRoot, "ssl", 0700, RunUser,
  			     Group, 1, 0) < 0 ||
-@@ -1101,7 +1105,7 @@ cupsdReadConfiguration(void)
+@@ -1099,9 +1103,9 @@ cupsdReadConfiguration(void)
  			     Group, 0, 0) < 0 ||
-        cupsdCheckPermissions(ServerRoot, "classes.conf", 0600, RunUser,
+        cupsdCheckPermissions(CupsFilesFile, NULL, ConfigFilePerm, RunUser,
+ 			     Group, 0, 0) < 0 ||
+-       cupsdCheckPermissions(ServerRoot, "classes.conf", 0600, RunUser,
++       cupsdCheckPermissions(PrinterRoot, "classes.conf", 0600, RunUser,
  			     Group, 0, 0) < 0 ||
 -       cupsdCheckPermissions(ServerRoot, "printers.conf", 0600, RunUser,
 +       cupsdCheckPermissions(PrinterRoot, "printers.conf", 0600, RunUser,
@@ -253,6 +338,28 @@ index 96f6d063fb6d..c1a9413f5a0c 100644
    if (stat(ppd_name, &ppd_info))
      ppd_info.st_mtime = 1;
  
+diff --git a/scheduler/subscriptions.c b/scheduler/subscriptions.c
+index 95a2d2518cd2..ece1c6b540ff 100644
+--- a/scheduler/subscriptions.c
++++ b/scheduler/subscriptions.c
+@@ -717,7 +717,7 @@ cupsdLoadAllSubscriptions(void)
+   * Open the subscriptions.conf file...
+   */
+ 
+-  snprintf(line, sizeof(line), "%s/subscriptions.conf", ServerRoot);
++  snprintf(line, sizeof(line), "%s/subscriptions.conf", PrinterRoot);
+   if ((fp = cupsdOpenConfFile(line)) == NULL)
+     return;
+ 
+@@ -1071,7 +1071,7 @@ cupsdSaveAllSubscriptions(void)
+   * Create the subscriptions.conf file...
+   */
+ 
+-  snprintf(filename, sizeof(filename), "%s/subscriptions.conf", ServerRoot);
++  snprintf(filename, sizeof(filename), "%s/subscriptions.conf", PrinterRoot);
+ 
+   if ((fp = cupsdCreateConfFile(filename, ConfigFilePerm)) == NULL)
+     return;
 -- 
 2.1.2
 
