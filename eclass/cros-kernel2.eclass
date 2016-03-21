@@ -65,6 +65,7 @@ MULTILIB_STRICT_EXEMPT+="|modules"
 
 CONFIG_FRAGMENTS=(
 	acpi_ac_off
+	allocator_slab
 	android_test
 	binder
 	blkdevram
@@ -117,6 +118,12 @@ CONFIG_FRAGMENTS=(
 acpi_ac_off_desc="Turn off ACPI AC"
 acpi_ac_off_config="
 # CONFIG_ACPI_AC is not set
+"
+
+allocator_slab_desc="Turn on SLAB allocator"
+allocator_slab_config="
+CONFIG_SLAB=y
+CONFIG_SLUB=n
 "
 
 android_test_desc="Allow android user space tests"
