@@ -24,7 +24,7 @@ RDEPEND="
 	chromeos-base/chromeos-ssh-testkeys
 	chromeos-base/chromeos-sshd-init
 	chromeos-base/libbrillo
-	chromeos-base/shill
+	chromeos-base/shill-client
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/dbus-c++
@@ -40,7 +40,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-login
 	chromeos-base/debugd-client
-	chromeos-base/shill
 	sys-apps/dbus
 	virtual/modemmanager"
 
