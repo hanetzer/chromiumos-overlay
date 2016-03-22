@@ -21,7 +21,7 @@ BOARDS="${BOARDS} parrot peppy rambi samus sklrvp slippy squawks stout strago st
 BOARDS="${BOARDS} sumo"
 IUSE="${BOARDS} +bmpblk bitmap_in_cbfs build-all-fw cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
-IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2 fastboot"
+IUSE="${IUSE} memtest pd_sync spring tegra vboot2 fastboot"
 
 REQUIRED_USE="
 	^^ ( ${BOARDS} arm mips )
@@ -252,13 +252,8 @@ src_compile_depthcharge() {
 		fi
 	fi
 
-	if use unified_depthcharge; then
-		ro_suffix="elf"
-		rw_suffix="elf"
-	else
-		ro_suffix="ro.elf"
-		rw_suffix="rw.bin"
-	fi
+	ro_suffix="elf"
+	rw_suffix="elf"
 
 	local depthcharge_binaries=( --coreboot-elf
 		"${froot}/depthcharge/depthcharge.${ro_suffix}" )
@@ -274,25 +269,16 @@ src_compile_depthcharge() {
 	local serial=( --coreboot "${coreboot_file}.serial" )
 	local silent=( --coreboot "${coreboot_file}" )
 
-	if use unified_depthcharge; then
-		# cros_bundle_firmare was written with an assumption that
-		# u-boot is always a part of the image. So, unless -D is
-		# given, in case there is no explicit --uboot option in the
-		# command line, cros_bundle_firmware assumes implicit
-		# "--uboot /buils/<board>/fimrware/u-boot.bin"
-		# which messes up the multicbfs case.
-		#
-		# Do not bundle defaults, but state the "skeleton" from which to take
-		# IFD data and non-BIOS partitions on x86.
-		common+=( -D --skeleton=${froot}/coreboot.rom )
-	else
-		depthcharge_binaries+=( --uboot )
-		depthcharge_binaries+=(
-			"${froot}/depthcharge/depthcharge.${rw_suffix}" )
-		dev_binaries+=( --uboot )
-		dev_binaries+=(
-			"${froot}/depthcharge/dev.${rw_suffix}" )
-	fi
+	# cros_bundle_firmare was written with an assumption that
+	# u-boot is always a part of the image. So, unless -D is
+	# given, in case there is no explicit --uboot option in the
+	# command line, cros_bundle_firmware assumes implicit
+	# "--uboot /buils/<board>/fimrware/u-boot.bin"
+	# which messes up the multicbfs case.
+	#
+	# Do not bundle defaults, but state the "skeleton" from which to take
+	# IFD data and non-BIOS partitions on x86.
+	common+=( -D --skeleton=${froot}/coreboot.rom )
 
 	local legacy_file=""
 	prepare_legacy_image legacy_file
@@ -367,17 +353,9 @@ src_compile_depthcharge() {
 	# graphics. On those systems, netboot is used for both payloads.
 	einfo "Building netboot image."
 	local netboot_rw
-	if use unified_depthcharge; then
-		netboot_rw="${froot}/depthcharge/netboot.elf"
-	else
-		netboot_rw="${froot}/depthcharge/netboot.bin"
-	fi
+	netboot_rw="${froot}/depthcharge/netboot.elf"
 	local netboot_ro
-	if ! use unified_depthcharge && ( use lumpy || use link ); then
-		netboot_ro="${froot}/depthcharge/netboot.elf"
-	else
-		netboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
-	fi
+	netboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
 	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 		--force-rw \
@@ -406,11 +384,7 @@ src_compile_depthcharge() {
 		fastboot_rw="${froot}/depthcharge/depthcharge.${rw_suffix}"
 
 		local fastboot_ro
-		if use unified_depthcharge; then
-			fastboot_ro="${froot}/depthcharge/fastboot.elf"
-		else
-			fastboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
-		fi
+		fastboot_ro="${froot}/depthcharge/fastboot.elf"
 
 		einfo "Building fastboot image."
 		COREBOOT_VARIANT=.serial \
