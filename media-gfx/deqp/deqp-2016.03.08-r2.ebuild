@@ -35,6 +35,9 @@ PATCHES=(
 	"${FILESDIR}"/0001-targets-surfaceless-Add-support-for-Chrome-OS-surfac.patch
 	"${FILESDIR}"/0003-Delete-compiler-check.patch
 	"${FILESDIR}"/0001-Fix-clang-signed-shift-warning.patch
+	"${FILESDIR}"/0004-Surfaceless-Dont-fail-checks-in-sglrGLContext-when-F.patch
+	"${FILESDIR}"/0005-Use-non-zero-fb-id-for-not-bound-fbo-tests.patch
+	"${FILESDIR}"/0006-Query-initial-bound-fb-from-RenderContext-in-FrameBu.patch
 )
 
 src_configure() {
