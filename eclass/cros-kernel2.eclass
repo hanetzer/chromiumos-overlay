@@ -83,6 +83,7 @@ CONFIG_FRAGMENTS=(
 	i2cdev
 	iscsi
 	kasan
+	kcov
 	kgdb
 	kvm
 	loader_kernel_ramfs
@@ -267,6 +268,12 @@ CONFIG_KASAN_INLINE=y
 CONFIG_TEST_KASAN=m
 CONFIG_SLUB_DEBUG=y
 CONFIG_SLUB_DEBUG_ON=y
+"
+
+kcov_desc="Enable kcov"
+kcov_config="
+CONFIG_KCOV=y
+# CONFIG_RANDOMIZE_BASE is not set
 "
 
 kgdb_desc="Enable kgdb"
