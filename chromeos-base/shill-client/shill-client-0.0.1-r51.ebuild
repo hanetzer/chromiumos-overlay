@@ -3,25 +3,23 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("104990ff72eafb84511a3c8f35190fbbce8ff7b3" "021a45ebdd98bd6c34d1884c4c3a3dd5128df411")
-CROS_WORKON_TREE=("d344ad877178d370f4f342db21a6851284d385ef" "a29a33b91afe7bb05d97db6389e1f435a9019ea6")
+CROS_WORKON_COMMIT=("12e79d86a53a5b351a45335fb24fff0f802ebb9c" "cb06675c0f33adf3bfbd8ef76cc86188154d1254")
+CROS_WORKON_TREE=("4a433011d507ddc642e9aac5511b678f28546657" "2fe1e1c76ee776106335a086124f103632963f32")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
-CROS_WORKON_USE_VCSID=1
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/shill")
 CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="${PN%-client}"
 PLATFORM_GYP_FILE="${PN}.gyp"
 
-inherit cros-debug cros-workon platform
+inherit cros-workon platform
 
-DESCRIPTION="Chrome OS Update Engine client library"
+DESCRIPTION="Shill DBus client library for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -40,16 +38,20 @@ DEPEND="
 "
 
 RDEPEND="
-	!<chromeos-base/update_engine-0.0.3
+	!<chromeos-base/shill-0.0.2
 "
 
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
-	S="${s}/aosp/system/update_engine"
+	S="${s}/aosp/system/connectivity/shill"
 }
 
 src_install() {
 	# Install DBus client library.
-	platform_install_dbus_client_lib "update_engine"
+	platform_install_dbus_client_lib "shill"
+
+	# Install dbus-c++ client library.
+	insinto /usr/include/shill-client/shill/dbus_proxies
+	doins ${OUT}/gen/include/shill/dbus_proxies/*.h
 }
