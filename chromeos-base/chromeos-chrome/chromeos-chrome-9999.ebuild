@@ -436,10 +436,6 @@ set_build_defines() {
 		BUILD_STRING_ARGS+=( ffmpeg_branding=ChromeOS )
 	fi
 
-	# TODO(cywang): Remove the enforcement of debug symbol removal
-	# once PFQ pass.
-	REMOVE_WEBCORE_DEBUG_SYMBOLS=1
-
 	# This saves time and bytes.
 	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
@@ -472,7 +468,12 @@ set_build_defines() {
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
-		RELEASE_EXTRA_CFLAGS+=( -g )
+		if use x86 || use arm; then
+			# Pass -g1 to avoid 4GB limit of ELF32 (see crbug.com/595763).
+			RELEASE_EXTRA_CFLAGS+=( -g1 )
+		else
+			RELEASE_EXTRA_CFLAGS+=( -g )
+		fi
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
 
