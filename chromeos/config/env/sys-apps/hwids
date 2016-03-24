@@ -10,3 +10,4 @@ hwids_mask="
 
 PKG_INSTALL_MASK+=" ${hwids_mask}"
 INSTALL_MASK+=" ${hwids_mask}"
+unset hwids_mask

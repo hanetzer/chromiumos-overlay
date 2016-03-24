@@ -33,3 +33,4 @@ fi
 
 PKG_INSTALL_MASK+=" ${util_linux_mask}"
 INSTALL_MASK+=" ${util_linux_mask}"
+unset util_linux_mask

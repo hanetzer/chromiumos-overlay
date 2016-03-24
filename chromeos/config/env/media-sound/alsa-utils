@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 # Remove .wav test files used by `speaker-test -t wav` from the image.
-INSTALL_MASK+=" /usr/share/sounds/alsa/*.wav"
+alsa_mask="/usr/share/sounds/alsa/*.wav"
 # Remove unused diagnostic tool that requires bash.
-INSTALL_MASK+=" /usr/sbin/alsa-info.sh"
+alsa_mask+=" /usr/sbin/alsa-info.sh"
+INSTALL_MASK+=" ${alsa_mask}"
+PKG_INSTALL_MASK+=" ${alsa_mask}"
+unset alsa_mask
