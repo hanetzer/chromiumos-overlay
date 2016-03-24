@@ -34,12 +34,17 @@ ARC_GCC_ARM_BINDIR="${ARC_GCC_ARM_BASE}/bin"
 ARC_GCC_ARM_LIBDIR="${ARC_GCC_ARM_BASE}/lib/gcc/arm-linux-androideabi/4.9"
 ARC_GCC_ARM_PREFIX="${ARC_GCC_ARM_BINDIR}/arm-linux-androideabi-"
 
+ARC_GCC_X86_64_BASE="${ARC_GCC_BASE}/x86_64/x86_64-linux-android-4.9"
+ARC_GCC_X86_64_BINDIR="${ARC_GCC_X86_64_BASE}/bin"
+ARC_GCC_X86_64_LIBDIR="${ARC_GCC_X86_64_BASE}/lib/gcc/x86_64-linux-android/4.9"
+ARC_GCC_X86_64_PREFIX="${ARC_GCC_X86_64_BINDIR}/x86_64-linux-android-"
+
 ARC_SYSROOT_BASE="${ARC_BASE}"
 
 # Make sure we know how to handle the active system.
 arc-build-check-arch() {
 	case ${ARCH} in
-	arm) ;;
+	arm|amd64) ;;
 	*) die "Unsupported arch ${ARCH}" ;;
 	esac
 }
@@ -69,6 +74,10 @@ arc-build-select-gcc() {
 	arm)
 		export CC="${ARC_GCC_ARM_PREFIX}gcc"
 		export CXX="${ARC_GCC_ARM_PREFIX}g++"
+		;;
+	amd64)
+		export CC="${ARC_GCC_X86_64_PREFIX}gcc"
+		export CXX="${ARC_GCC_X86_64_PREFIX}g++"
 		;;
 	esac
 
