@@ -51,6 +51,7 @@ ALL_BOARDS=(
 	auron_pearlvalley
 	auron_yuna
 	banjo
+	banon
 	bayleybay
 	beaglebone
 	beaglebone_servo
