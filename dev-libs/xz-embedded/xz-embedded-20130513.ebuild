@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit multilib
+inherit flag-o-matic multilib
 
 DESCRIPTION="Small XZ decompressor"
 HOMEPAGE="http://tukaani.org/xz/embedded.html"
@@ -18,6 +18,12 @@ IUSE=""
 src_unpack() {
 	default
 	cp "${FILESDIR}"/{Makefile,xz-embedded.pc.in} "${S}" || die "Copying files"
+}
+
+src_prepare() {
+	# Enable support for BCJ filters for the common architectures. See other
+	# available architectures in userspace/xz_config.h.
+	append-cppflags -DXZ_DEC_X86 -DXZ_DEC_ARM -DXZ_DEC_ARMTHUMB
 }
 
 src_configure() {

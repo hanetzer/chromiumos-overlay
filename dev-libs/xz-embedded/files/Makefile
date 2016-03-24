@@ -12,6 +12,7 @@ LIBDIR ?= $(PREFIX)/$(GENTOO_LIBDIR)
 # userspace code.
 xz_embedded_src_files := \
   linux/lib/xz/xz_crc32.c \
+  linux/lib/xz/xz_dec_bcj.c \
   linux/lib/xz/xz_dec_lzma2.c \
   linux/lib/xz/xz_dec_stream.c
 
