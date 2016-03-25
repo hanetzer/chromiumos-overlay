@@ -57,7 +57,9 @@ src_install() {
 
 	if use systemd; then
 		systemd_dounit init/crash-reporter.service
+		systemd_dounit init/crash-boot-collect.service
 		systemd_enable_service multi-user.target crash-reporter.service
+		systemd_enable_service multi-user.target crash-boot-collect.service
 		systemd_dounit init/crash-sender.service
 		systemd_dounit init/crash-sender.timer
 		systemd_enable_service timers.target crash-sender.timer
@@ -66,7 +68,9 @@ src_install() {
 		use cros_embedded || die "Warn-collector does not work with systemd"
 	else
 		insinto /etc/init
-		doins init/crash-reporter.conf init/crash-sender.conf
+		doins init/crash-reporter.conf
+		doins init/crash-boot-collect.conf
+		doins init/crash-sender.conf
 		use cros_embedded || doins init/warn-collector.conf
 	fi
 
