@@ -13,7 +13,7 @@ KEYWORDS="-* amd64"
 IUSE=""
 
 S=${WORKDIR}
-INSTALL_DIR="/opt/android/arm"
+INSTALL_DIR="/opt/android"
 
 
 # These prebuilts are already properly stripped.
