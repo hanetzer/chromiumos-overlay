@@ -58,7 +58,7 @@ src_install() {
 	if use systemd; then
 		systemd_dounit init/crash-reporter.service
 		systemd_dounit init/crash-boot-collect.service
-		systemd_enable_service multi-user.target crash-reporter.service
+		systemd_enable_service sysinit.target crash-reporter.service
 		systemd_enable_service multi-user.target crash-boot-collect.service
 		systemd_dounit init/crash-sender.service
 		systemd_dounit init/crash-sender.timer

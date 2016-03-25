@@ -18,6 +18,7 @@ IUSE="+mmc X"
 
 RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
+	chromeos-base/crash-reporter
 	chromeos-base/modem-utilities
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
