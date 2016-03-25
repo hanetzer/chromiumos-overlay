@@ -76,9 +76,6 @@ src_compile() {
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	if use fastboot; then
-		echo "CONFIG_FASTBOOT_MODE=y" >> "board/${board}/defconfig"
-		emake defconfig BOARD="${board}"
-
 		emake fastboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
