@@ -260,6 +260,7 @@ ALL_BOARDS=(
 	veyron_shark
 	veyron_speedy
 	veyron_thea
+	veyron_tiger
 	#waluigi
 	whirlwind
 	winky
