@@ -40,6 +40,7 @@ EC_BOARD_NAMES=(
 	cr50
 	cyan
 	dingdong
+	elm
 	glados
 	glados_pd
 	hadoken
