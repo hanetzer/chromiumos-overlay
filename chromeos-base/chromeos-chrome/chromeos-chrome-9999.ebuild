@@ -342,12 +342,10 @@ set_build_defines() {
 			fi
 		done
 		BUILD_DEFINES+=(
-			"use_vgem_map=1"
 			"use_mesa_platform_null=1"
 			"ozone_auto_platforms=0"
 		)
 		BUILD_ARGS+=(
-			use_vgem_map=true
 			use_mesa_platform_null=true
 			ozone_auto_platforms=false
 		)
