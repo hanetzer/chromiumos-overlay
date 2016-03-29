@@ -241,8 +241,6 @@ src_compile_depthcharge() {
 	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
 	local refcode_file="${froot}/refcode.stage"
-	local ro_suffix
-	local rw_suffix
 
 	if use fsp ; then
 		if [ -f "${froot}/fsp.rw.bin" ]; then
@@ -252,13 +250,10 @@ src_compile_depthcharge() {
 		fi
 	fi
 
-	ro_suffix="elf"
-	rw_suffix="elf"
-
 	local depthcharge_binaries=( --coreboot-elf
-		"${froot}/depthcharge/depthcharge.${ro_suffix}" )
+		"${froot}/depthcharge/depthcharge.elf" )
 	local dev_binaries=( --coreboot-elf
-		"${froot}/depthcharge/dev.${ro_suffix}" )
+		"${froot}/depthcharge/dev.elf" )
 
 	local common=(
 		--board "${BOARD_USE}"
@@ -345,17 +340,11 @@ src_compile_depthcharge() {
 	# The readonly payload is usually depthcharge and the read/write
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
-	#
-	# This doesn't work on systems which optionally run the video BIOS
-	# and don't use early firmware selection, specifically link and lumpy,
-	# because both depthcharge and netboot run in normal mode and
-	# continuously reboot the machine to alternatively enable and disable
-	# graphics. On those systems, netboot is used for both payloads.
 	einfo "Building netboot image."
 	local netboot_rw
 	netboot_rw="${froot}/depthcharge/netboot.elf"
 	local netboot_ro
-	netboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
+	netboot_ro="${froot}/depthcharge/depthcharge.elf"
 	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 		--force-rw \
@@ -381,7 +370,7 @@ src_compile_depthcharge() {
 		local fastboot_rw
 		# Currently, rw image does not need to have any fastboot functionality.
 		# Thus, use the normal depthcharge image compiled without fastboot mode.
-		fastboot_rw="${froot}/depthcharge/depthcharge.${rw_suffix}"
+		fastboot_rw="${froot}/depthcharge/depthcharge.elf"
 
 		local fastboot_ro
 		fastboot_ro="${froot}/depthcharge/fastboot.elf"

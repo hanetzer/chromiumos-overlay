@@ -100,11 +100,10 @@ src_install() {
 	insinto "${dstdir}/dts"
 	doins "fmap.dts"
 
-	local files_to_copy=(netboot.{bin,elf{,.map},payload})
-	files_to_copy+=({depthcharge,dev}.{elf{,.map},payload})
+	local files_to_copy=({netboot,depthcharge,dev}.elf{,.map})
 
 	if use fastboot ; then
-		files_to_copy+=(fastboot.{bin,elf{,.map},payload})
+		files_to_copy+=(fastboot.elf{,.map})
 	fi
 
 	insinto "${dstdir}/depthcharge"
