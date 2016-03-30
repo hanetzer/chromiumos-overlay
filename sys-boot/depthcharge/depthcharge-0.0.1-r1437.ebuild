@@ -14,7 +14,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="fastboot fwconsole mocktpm pd_sync unified_depthcharge"
+IUSE="fastboot fwconsole mocktpm pd_sync"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -66,21 +66,12 @@ src_compile() {
 	emake defconfig BOARD="${board}"
 	emake dts BOARD="${board}"
 
-	if use unified_depthcharge; then
-		emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-		          PD_SYNC=$(usev pd_sync) \
-			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
-		emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-		          PD_SYNC=$(usev pd_sync) \
-			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
-	else
-		emake depthcharge_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-		          PD_SYNC=$(usev pd_sync) \
-			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
-		emake dev_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-		          PD_SYNC=$(usev pd_sync) \
-			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
-	fi
+	emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  PD_SYNC=$(usev pd_sync) \
+		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+	emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  PD_SYNC=$(usev pd_sync) \
+		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 	          PD_SYNC=$(usev pd_sync) \
@@ -112,11 +103,7 @@ src_install() {
 	doins "fmap.dts"
 
 	local files_to_copy=(netboot.{bin,elf{,.map},payload})
-	if use unified_depthcharge ; then
-		files_to_copy+=({depthcharge,dev}.{elf{,.map},payload})
-	else
-		files_to_copy+=({depthcharge,dev}.{ro,rw}.{bin,elf{,.map}})
-	fi
+	files_to_copy+=({depthcharge,dev}.{elf{,.map},payload})
 
 	if use fastboot ; then
 		files_to_copy+=(fastboot.{bin,elf{,.map},payload})
