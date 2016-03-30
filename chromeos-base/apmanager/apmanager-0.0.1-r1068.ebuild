@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("837c74a6dec801f5b277f6c543e524bda499ae70" "57188eeae6e36334e15f2cec96f68fec330b0f34")
-CROS_WORKON_TREE=("fa393fa372e642ec4da1ff986ee5a6aac0cb6c49" "4eaad6acce1221611a1192004de22f2beefcd462")
+CROS_WORKON_COMMIT=("ec3139fe1f5201521a199efd91f682001277433b" "57188eeae6e36334e15f2cec96f68fec330b0f34")
+CROS_WORKON_TREE=("b3e63a704c409034fa4a95b2c78e4b35331e728e" "4eaad6acce1221611a1192004de22f2beefcd462")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/apmanager")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/apmanager")
