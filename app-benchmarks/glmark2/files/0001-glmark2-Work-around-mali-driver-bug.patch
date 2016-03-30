@@ -1,0 +1,31 @@
+From fd375a1e4eef5e0d588c14df2f631b1f88fcb64f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Tue, 29 Mar 2016 20:43:24 -0700
+Subject: [PATCH] glmark2: Work around mali driver bug
+
+There is a bug where the type of unused uniforms seems to be changed
+internally by the driver. The driver then complains that the type
+differs if the uniform is used by another shader (for example fragment
+vs vertex shaders).
+
+BUG=chrome-os-partner:51809
+TEST=run on veyron_minnie, the test runs to the end
+---
+ data/shaders/terrain.vert | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/data/shaders/terrain.vert b/data/shaders/terrain.vert
+index dd5b863..ee1c8eb 100644
+--- a/data/shaders/terrain.vert
++++ b/data/shaders/terrain.vert
+@@ -2,7 +2,6 @@
+ uniform mat4 modelViewMatrix;
+ uniform mat4 normalMatrix;
+ uniform mat4 projectionMatrix;
+-uniform mat4 viewMatrix;
+ 
+ // Vertex attributes
+ attribute vec3 position;
+-- 
+2.8.0.rc3.226.g39d4020
+

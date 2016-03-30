@@ -41,6 +41,7 @@ PATCHES=(
 	"${FILESDIR}/0005-GLState-change-native-config-type-to-intptr_t.patch"
 	"${FILESDIR}/0006-Add-waffle-backend.patch"
 	"${FILESDIR}/clang-syntax.patch"
+	"${FILESDIR}/0001-glmark2-Work-around-mali-driver-bug.patch"
 )
 
 src_configure() {
