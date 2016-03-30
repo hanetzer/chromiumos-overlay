@@ -16,7 +16,7 @@ LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ap dbus debug gnutls eap-sim fasteap +hs2-0 libressl madwifi p2p ps3 qt4 qt5 readline selinux smartcard ssl tdls uncommon-eap-types wps kernel_linux kernel_FreeBSD wimax"
+IUSE="ap dbus debug gnutls eap-sim fasteap +hs2-0 libressl madwifi p2p ps3 qt4 qt5 readline selinux smartcard ssl +tdls uncommon-eap-types wps kernel_linux kernel_FreeBSD wimax"
 REQUIRED_USE="fasteap? ( !gnutls !ssl ) smartcard? ( ssl )"
 
 CDEPEND="
