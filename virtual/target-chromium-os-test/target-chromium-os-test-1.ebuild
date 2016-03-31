@@ -133,6 +133,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/python-evdev
 	dev-python/python-uinput
 	dev-python/pyudev
+	dev-python/pyxattr
 	dev-python/pyyaml
 	dev-python/selenium
 	dev-python/setproctitle
