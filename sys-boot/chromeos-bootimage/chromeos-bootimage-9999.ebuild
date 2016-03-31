@@ -240,15 +240,6 @@ src_compile_depthcharge() {
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
-	local refcode_file="${froot}/refcode.stage"
-
-	if use fsp ; then
-		if [ -f "${froot}/fsp.rw.bin" ]; then
-			refcode_file="${froot}/fsp.rw.bin"
-		else
-			refcode_file="${froot}/fsp.bin"
-		fi
-	fi
 
 	local depthcharge_binaries=( --coreboot-elf
 		"${froot}/depthcharge/depthcharge.elf" )
@@ -284,19 +275,6 @@ src_compile_depthcharge() {
 			silent+=( --seabios "${legacy_file}" )
 		else
 			common+=( --seabios "${legacy_file}" )
-		fi
-	fi
-
-	if ( use x86 || use amd64 ) && [ -f "${refcode_file}" ]; then
-		if use fsp ; then
-			if [ -f "${refcode_file}.serial" ]; then
-				serial+=( --add-blob refcode "${refcode_file}.serial" )
-			else
-				serial+=( --add-blob refcode "${refcode_file}" )
-			fi
-			silent+=( --add-blob refcode "${refcode_file}" )
-		else
-			common+=( --add-blob refcode "${refcode_file}" )
 		fi
 	fi
 
