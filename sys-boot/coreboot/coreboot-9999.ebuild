@@ -32,6 +32,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
+IUSE="${IUSE} +bmpblk bitmap_in_cbfs"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
@@ -57,11 +58,13 @@ DEPEND="
 	${DEPEND_BLOCKERS}
 	virtual/coreboot-private-files
 	sys-apps/coreboot-utils
+	bmpblk? ( sys-boot/chromeos-bmpblk )
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	"
 
 src_prepare() {
+	local froot="${SYSROOT}/firmware"
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
 
@@ -131,6 +134,10 @@ EOF
 	fi
 	if use mma; then
 		echo "CONFIG_MMA=y" >> .config
+	fi
+
+	if use bmpblk && ! use bitmap_in_cbfs; then
+		echo "CONFIG_GBB_BMPFV_FILE=\"${froot}/bmpblk.bin\"" >> .config
 	fi
 
 	cp .config .config_serial
