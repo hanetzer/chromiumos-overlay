@@ -137,6 +137,7 @@ EOF
 	# handle the case when .config does not have a newline in the end.
 	echo >> .config_serial
 	cat "${FILESDIR}/configs/fwserial.${board}" >> .config_serial || die
+	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> .config_serial
 }
 
 make_coreboot() {
