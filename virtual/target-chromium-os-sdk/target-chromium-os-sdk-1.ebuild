@@ -156,6 +156,7 @@ RDEPEND="${RDEPEND}
 	dev-python/mako
 	dev-python/netifaces
 	dev-python/pexpect
+	dev-python/psutil
 	dev-python/py
 	dev-python/pycairo
 	dev-python/pycparser
