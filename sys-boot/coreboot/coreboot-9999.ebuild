@@ -32,7 +32,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk bitmap_in_cbfs"
+IUSE="${IUSE} +bmpblk bitmap_in_cbfs cros_ec pd_sync depthcharge"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
@@ -59,6 +59,8 @@ DEPEND="
 	virtual/coreboot-private-files
 	sys-apps/coreboot-utils
 	bmpblk? ( sys-boot/chromeos-bmpblk )
+	cros_ec? ( chromeos-base/chromeos-ec )
+	pd_sync? ( chromeos-base/chromeos-ec )
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	"
@@ -149,6 +151,7 @@ EOF
 
 make_coreboot() {
 	local builddir="$1"
+	local froot="${SYSROOT}/firmware"
 
 	yes "" | emake oldconfig obj="${builddir}"
 	emake obj="${builddir}"
@@ -158,6 +161,40 @@ make_coreboot() {
 		ifdtool --em100 "${builddir}/coreboot.rom" || die
 		mv "${builddir}/coreboot.rom"{.new,} || die
 	fi
+
+	if ! use depthcharge; then
+		# pre-depthcarge builds don't know our new CBFS-based world,
+		# so the following image changes aren't relevant for them.
+		return
+	fi
+
+	if use cros_ec; then
+		cbfstool "${builddir}/coreboot.rom" add \
+			-r FW_MAIN_A,FW_MAIN_B \
+			-f ${froot}/ec.RW.bin \
+			-n ecrw \
+			-t raw \
+			-A sha256
+	fi
+
+	if use pd_sync; then
+		cbfstool "${builddir}/coreboot.rom" add \
+			-r FW_MAIN_A,FW_MAIN_B \
+			-f ${froot}/${PD_FIRMWARE}/ec.RW.bin \
+			-n pdrw \
+			-t raw \
+			-A sha256
+	fi
+
+	( cd "${froot}/cbfs" 2>/dev/null && find . -type f) | \
+	while read file; do
+		file="${file:2}" # strip ./ prefix
+		cbfstool "${builddir}/coreboot.rom" add \
+			-r COREBOOT,FW_MAIN_A,FW_MAIN_B \
+			-f "${froot}/cbfs/$file" \
+			-n "$file" \
+			-t raw -c lzma
+	done
 }
 
 src_compile() {
