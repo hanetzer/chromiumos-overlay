@@ -55,6 +55,10 @@ create_seabios_cbfs() {
 	_cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-wait -n etc/boot-menu-wait -t raw
 	# Print CBFS inventory
 	_cbfstool ${seabios_cbfs} print
+
+	cp out/bios.bin.elf "legacy.elf${suffix}"
+	mkdir -p "legacy${suffix}/etc"
+	cp -a chromeos/* "legacy${suffix}/"
 }
 
 _emake() {
@@ -84,4 +88,9 @@ src_compile() {
 src_install() {
 	insinto /firmware
 	doins out/bios.bin.elf seabios.cbfs seabios.cbfs.serial
+	doins legacy.elf{,.serial}
+	insinto /firmware/legacy
+	doins -r legacy/*
+	insinto /firmware/legacy.serial
+	doins -r legacy.serial/*
 }
