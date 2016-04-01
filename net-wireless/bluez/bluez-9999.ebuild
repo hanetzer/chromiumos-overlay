@@ -104,12 +104,15 @@ src_install() {
 	fi
 
 	dobin tools/btmgmt tools/btgatt-client tools/btgatt-server
+	dobin "${FILESDIR}/dbus_send_blutooth_class.awk"
+	dobin "${FILESDIR}/get_bluetooth_device_class.sh"
 
 	insinto /etc/init
 	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
 
 	udev_dorules "${FILESDIR}/99-uhid.rules"
 	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
+	udev_dorules "${FILESDIR}/99-bluetooth-quirks.rules"
 
 	# We don't preserve /var/lib in images, so nuke anything we preseed.
 	rm -rf "${D}"/var/lib/bluetooth
