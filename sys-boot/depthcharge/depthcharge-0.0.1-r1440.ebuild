@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("16d5dbb46f298f318688d71a4a99ce7d305e398e" "65f61f90ccae5f0b5f37ea3bdf86735bc58709a0")
-CROS_WORKON_TREE=("c6bbe27800016055d772c16915c8529ef06820d4" "60c1112de026c06994c10c5199050c547a30c224")
+CROS_WORKON_COMMIT=("6943a9035ada0a577b11bc6e2f74c3f6cf2cc23b" "65f61f90ccae5f0b5f37ea3bdf86735bc58709a0")
+CROS_WORKON_TREE=("25beb70fff2feecf092c9092d0b7c51045b7a969" "60c1112de026c06994c10c5199050c547a30c224")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/depthcharge"
 	"chromiumos/platform/vboot_reference"
@@ -78,9 +78,6 @@ src_compile() {
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	if use fastboot; then
-		echo "CONFIG_FASTBOOT_MODE=y" >> "board/${board}/defconfig"
-		emake defconfig BOARD="${board}"
-
 		emake fastboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
