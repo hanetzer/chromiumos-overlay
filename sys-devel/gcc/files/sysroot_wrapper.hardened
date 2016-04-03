@@ -365,7 +365,7 @@ else:
 
   try:
     # The logging module does not support setting permissions.
-    os.chmod(log_file, 0666)
+    os.chmod(log_file, 0o0666)
   except OSError:
     pass
 
