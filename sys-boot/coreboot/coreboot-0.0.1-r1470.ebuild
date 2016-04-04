@@ -34,6 +34,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
+IUSE="${IUSE} +bmpblk bitmap_in_cbfs"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
@@ -59,11 +60,13 @@ DEPEND="
 	${DEPEND_BLOCKERS}
 	virtual/coreboot-private-files
 	sys-apps/coreboot-utils
+	bmpblk? ( sys-boot/chromeos-bmpblk )
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	"
 
 src_prepare() {
+	local froot="${SYSROOT}/firmware"
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
 
@@ -135,10 +138,15 @@ EOF
 		echo "CONFIG_MMA=y" >> .config
 	fi
 
+	if use bmpblk && ! use bitmap_in_cbfs; then
+		echo "CONFIG_GBB_BMPFV_FILE=\"${froot}/bmpblk.bin\"" >> .config
+	fi
+
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
 	echo >> .config_serial
 	cat "${FILESDIR}/configs/fwserial.${board}" >> .config_serial || die
+	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> .config_serial
 }
 
 make_coreboot() {
