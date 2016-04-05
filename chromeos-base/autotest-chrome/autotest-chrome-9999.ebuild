@@ -95,6 +95,7 @@ IUSE_TESTS=(
 	+tests_policy_CookiesBlockedForUrls
 	+tests_policy_EditBookmarksEnabled
 	+tests_policy_ForceGoogleSafeSearch
+	+tests_policy_ForceYouTubeSafetyMode
 	+tests_policy_ImagesAllowedForUrls
 	+tests_policy_ImagesBlockedForUrls
 	+tests_policy_JavaScriptAllowedForUrls
