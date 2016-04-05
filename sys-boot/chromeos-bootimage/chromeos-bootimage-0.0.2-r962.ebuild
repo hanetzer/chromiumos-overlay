@@ -280,24 +280,14 @@ src_compile_depthcharge() {
 		fi
 	fi
 
-	if use cros_ec; then
-		common+=( --ec "${ec_file}" )
-	fi
-
-	if use pd_sync; then
-		common+=( --pd "${froot}/${PD_FIRMWARE}/ec.RW.bin")
-	fi
-
 	if use bmpblk && ! use bitmap_in_cbfs; then
 		common+=( --bmpblk "${froot}/bmpblk.bin" )
 	else
 		common+=( --skip-bmpblk )
 	fi
 
-	common+=( --cbfs-files "${froot}/cbfs" )
 	common+=( --rocbfs-files "${froot}/rocbfs" )
 	serial+=( --gbb-flags "+enable-serial" )
-
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
 		--outdir "out.ro" --output "image.bin" \
