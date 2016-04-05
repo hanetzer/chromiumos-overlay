@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="alex lumpy lumpy64 mario tegra2-ldk"
+IUSE="alex +fonts lumpy lumpy64 mario tegra2-ldk"
 
 DEPEND=""
 # display_boot_message calls ply-image directly.
@@ -20,7 +20,7 @@ DEPEND=""
 RDEPEND="!<chromeos-base/chromeos-assets-0.0.2"
 
 RDEPEND+="
-	chromeos-base/chromeos-fonts
+	fonts? ( chromeos-base/chromeos-fonts )
 	media-gfx/ply-image"
 
 REAL_CURSOR_NAMES="

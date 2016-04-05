@@ -43,6 +43,7 @@ IUSE="
 	deep_memory_profiler
 	envoy
 	evdev_gestures
+	+fonts
 	+gold
 	hardfp
 	+highdpi
@@ -165,7 +166,7 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
-	chromeos-base/chromeos-fonts
+	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
