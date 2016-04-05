@@ -33,7 +33,7 @@ ARC_ARCH_LIBM=('i387' 'arm')
 # Now we support two platforms: arm and 32-bit x86.
 ARTIFACTS_DIR_ARM=${HOME}/android/arm_target_files/
 ARTIFACTS_DIR_X86=${HOME}/android/x86_target_files/
-ARTIFACTS_DIR_ARRAY=(${ARTIFACTS_DIR_ARM} ${ARTIFACTS_DIR_X86})
+ARTIFACTS_DIR_ARRAY=(${ARTIFACTS_DIR_X86} ${ARTIFACTS_DIR_ARM})
 
 # 3. Destination directory.
 TO_DIR_BASE=${HOME}/android/arc-libs-dir
@@ -139,6 +139,8 @@ do
 	    cp -pPR ${MNC_DR_ARC_DEV_TREE}/bionic/$f/include/* \
 		${arch_to_dir}/usr/include
     done
+    cp -pP ${MNC_DR_ARC_DEV_TREE}/bionic/libc/upstream-netbsd/android/include/sys/sha1.h \
+	${arch_to_dir}/usr/include
 
 
     ### 3. Libcxx headers.
@@ -220,11 +222,12 @@ done
 ### 5. Do the pack.
 PACKET_VERSION=$(git --git-dir=${MNC_DR_ARC_DEV_TREE}/bionic/.git log \
     --pretty=%ci -1 | cut -f"1 2" -d" " | sed -e 's!-\| !.!g' -e 's!:!!g')
-TARBALL=${TO_DIR_BASE}/../arc-libs-${PACKET_VERSION}.tar.gz
+TARBALL=${TO_DIR_BASE}/../arc-libs-${PACKET_VERSION}_p0.tar.gz
 runcmd tar zcf "${TARBALL}" -C ${TO_DIR_BASE} .
 
 
 
 ### 6. Manually upload
-echo Done! Please upload ${TARBALL} manually to: \
-    https://pantheon.corp.google.com/storage/browser/chromeos-localmirror/distfiles/?debugUI=DEVELOPERS
+echo "Done! Please upload ${TARBALL} manually to: " \
+     "https://pantheon.corp.google.com/storage/browser/chromeos-localmirror/distfiles/?debugUI=DEVELOPERS"
+echo "If this is based on the same Bionic HEAD of a previous tarball bump up _p0 to the latest step number."
