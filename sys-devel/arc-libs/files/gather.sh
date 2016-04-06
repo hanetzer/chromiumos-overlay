@@ -97,6 +97,7 @@ do
 	    libsync.so \
 	    libui.so \
 	    libutils.so \
+	    libz.so \
 	    libc_malloc_debug_leak.so \
 	    libc_malloc_debug_qemu.so \
 	    libpagemap.so \
@@ -216,6 +217,12 @@ do
 	    ${MNC_DR_ARC_DEV_TREE}/frameworks/native/opengl/include/$f/*.h \
 	    $todir
     done
+
+    ### 4.7 zlib includes
+
+    # Do not use -P (those are symlinks)
+    runcmd cp -p ${MNC_DR_ARC_DEV_TREE}/external/zlib/*.h \
+	"${arch_to_dir}/usr/include/"
 
 done
 
