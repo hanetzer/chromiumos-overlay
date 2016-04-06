@@ -285,6 +285,7 @@ set_build_defines() {
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 		"use_system_minigbm=1"
+		"use_system_harfbuzz=1"
 
 		# Clang features.
 		asan=$(use10 asan)
@@ -308,6 +309,7 @@ set_build_defines() {
 		icu_use_data_file=true
 		use_cras=true
 		use_system_minigbm=true
+		use_system_harfbuzz=true
 
 		# Clang features.
 		is_asan=$(usetf asan)
