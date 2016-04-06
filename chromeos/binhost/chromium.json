@@ -23,6 +23,138 @@
         "chrome_debug", 
         "chrome_remoting", 
         "evdev_gestures", 
+        "fonts", 
+        "gold", 
+        "hardfp", 
+        "highdpi", 
+        "nacl", 
+        "neon", 
+        "opengles", 
+        "ozone", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "v4lplugin", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "veyron_minnie", 
+      "useflags": [
+        "-chrome_internal"
+      ]
+    }
+  }, 
+  {
+    "compat_id": {
+      "arch": "arm", 
+      "cflags": [
+        "-O2", 
+        "-O2", 
+        "-pipe", 
+        "-march=armv7-a", 
+        "-mtune=cortex-a15", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "X", 
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "fonts", 
+        "gold", 
+        "hardfp", 
+        "highdpi", 
+        "nacl", 
+        "neon", 
+        "opengles", 
+        "runhooks", 
+        "v4l2_codec"
+      ]
+    }, 
+    "key": {
+      "board": "arm-generic", 
+      "useflags": [
+        "-chrome_internal"
+      ]
+    }
+  }, 
+  {
+    "compat_id": {
+      "arch": "amd64", 
+      "cflags": [
+        "-O2", 
+        "-pipe", 
+        "-O2", 
+        "-pipe", 
+        "-march=x86-64", 
+        "-msse3", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "evdev_gestures", 
+        "fonts", 
+        "gold", 
+        "highdpi", 
+        "nacl", 
+        "opengles", 
+        "ozone", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "vaapi", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "amd64-generic", 
+      "useflags": []
+    }
+  }, 
+  {
+    "compat_id": {
+      "arch": "arm", 
+      "cflags": [
+        "-O2", 
+        "-O2", 
+        "-pipe", 
+        "-march=armv7-a", 
+        "-mtune=cortex-a15", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "evdev_gestures", 
+        "fonts", 
         "gold", 
         "hardfp", 
         "highdpi", 
@@ -68,6 +200,7 @@
         "chrome_debug", 
         "chrome_remoting", 
         "evdev_gestures", 
+        "fonts", 
         "gold", 
         "hardfp", 
         "highdpi", 
@@ -87,93 +220,6 @@
       "useflags": [
         "-chrome_internal"
       ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "arm", 
-      "cflags": [
-        "-O2", 
-        "-O2", 
-        "-pipe", 
-        "-march=armv7-a", 
-        "-mtune=cortex-a15", 
-        "-mfpu=neon", 
-        "-mfloat-abi=hard", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "evdev_gestures", 
-        "gold", 
-        "hardfp", 
-        "highdpi", 
-        "nacl", 
-        "neon", 
-        "opengles", 
-        "ozone", 
-        "ozone_platform_default_gbm", 
-        "ozone_platform_gbm", 
-        "runhooks", 
-        "v4l2_codec", 
-        "v4lplugin", 
-        "xkbcommon"
-      ]
-    }, 
-    "key": {
-      "board": "veyron_minnie", 
-      "useflags": [
-        "-chrome_internal"
-      ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "amd64", 
-      "cflags": [
-        "-O2", 
-        "-pipe", 
-        "-O2", 
-        "-pipe", 
-        "-march=x86-64", 
-        "-msse3", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "evdev_gestures", 
-        "gold", 
-        "highdpi", 
-        "nacl", 
-        "opengles", 
-        "ozone", 
-        "ozone_platform_default_gbm", 
-        "ozone_platform_gbm", 
-        "runhooks", 
-        "v4l2_codec", 
-        "vaapi", 
-        "xkbcommon"
-      ]
-    }, 
-    "key": {
-      "board": "amd64-generic", 
-      "useflags": []
     }
   }, 
   {
@@ -204,6 +250,7 @@
         "chrome_debug", 
         "chrome_remoting", 
         "evdev_gestures", 
+        "fonts", 
         "gold", 
         "highdpi", 
         "nacl", 
@@ -219,47 +266,6 @@
     }, 
     "key": {
       "board": "x86-generic", 
-      "useflags": [
-        "-chrome_internal"
-      ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "arm", 
-      "cflags": [
-        "-O2", 
-        "-O2", 
-        "-pipe", 
-        "-march=armv7-a", 
-        "-mtune=cortex-a15", 
-        "-mfpu=neon", 
-        "-mfloat-abi=hard", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "X", 
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "gold", 
-        "hardfp", 
-        "highdpi", 
-        "nacl", 
-        "neon", 
-        "opengles", 
-        "runhooks", 
-        "v4l2_codec"
-      ]
-    }, 
-    "key": {
-      "board": "arm-generic", 
       "useflags": [
         "-chrome_internal"
       ]
