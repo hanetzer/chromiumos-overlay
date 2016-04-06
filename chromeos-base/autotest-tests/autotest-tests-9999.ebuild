@@ -126,7 +126,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_TrackpadFunction
 	+tests_hardware_TrimIntegrity
 	+tests_hardware_VideoDecodeCapable
-	+tests_hardware_VideoOutSemiAuto
 	+tests_kernel_AsyncDriverProbe
 	+tests_kernel_FirmwareRequest
 	+tests_kernel_Bootcache
@@ -222,7 +221,6 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_TotalMemory
 	+tests_platform_UdevVars
 	+tests_suite_HWConfig
-	+tests_suite_HWQual
 	+tests_system_ColdBoot
 	+tests_touch_HasInput
 	+tests_touch_UpdateErrors
