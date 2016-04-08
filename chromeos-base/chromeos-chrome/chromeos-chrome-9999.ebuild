@@ -342,11 +342,9 @@ set_build_defines() {
 			fi
 		done
 		BUILD_DEFINES+=(
-			"use_mesa_platform_null=1"
 			"ozone_auto_platforms=0"
 		)
 		BUILD_ARGS+=(
-			use_mesa_platform_null=true
 			ozone_auto_platforms=false
 		)
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
