@@ -1,6 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/alsa-lib/alsa-lib-1.0.29.ebuild,v 1.10 2015/07/17 15:07:02 ago Exp $
+# $Id$
 
 EAPI=5
 
@@ -34,9 +34,10 @@ pkg_setup() {
 
 src_prepare() {
 	find . -name Makefile.am -exec sed -i -e '/CFLAGS/s:-g -O2::' {} + || die
-	# http://bugs.gentoo.org/509886
+	# https://bugs.gentoo.org/509886
 	use elibc_uclibc && { sed -i -e 's:oldapi queue_timer:queue_timer:' test/Makefile.am || die; }
 	epatch_user
+	epatch "${FILESDIR}/0001-ucm-add-cset-tlv.patch"
 	eautoreconf
 }
 
