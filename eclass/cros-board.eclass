@@ -70,7 +70,9 @@ ALL_BOARDS=(
 	cardhu
 	cave
 	celes
+	celes-cheets
 	chell
+	chell-cheets
 	#chronos
 	cid
 	clapper
@@ -140,6 +142,7 @@ ALL_BOARDS=(
 	leon
 	link
 	lulu
+	lulu-cheets
 	lumpy
 	mappy
 	mappy-envoy
@@ -259,6 +262,7 @@ ALL_BOARDS=(
 	veyron_romy
 	veyron_shark
 	veyron_speedy
+	veyron_speedy-cheets
 	veyron_thea
 	veyron_tiger
 	#waluigi
