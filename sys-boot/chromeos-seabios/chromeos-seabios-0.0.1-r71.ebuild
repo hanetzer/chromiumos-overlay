@@ -18,7 +18,6 @@ KEYWORDS="amd64 x86"
 RDEPEND=""
 DEPEND="
 	sys-apps/coreboot-utils
-	sys-boot/coreboot
 "
 
 # Directory where the generated files are looked for and placed.
