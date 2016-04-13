@@ -12,3 +12,12 @@ PrintMotd no
 PrintLastLog no
 UseDns no
 Subsystem sftp internal-sftp
+# Make DUT responsible to keep connection to server alive for at least half
+# a day, even if network is down. We don't care about leaking/ghost connections
+# as this is the config for the DUT which gets rebooted periodically.
+# Ping ssh client/autotest server once every 60 seconds.
+ClientAliveInterval 60
+# Do this 720 times for 12 hours.
+ClientAliveCountMax 720
+# Ignore temporary network outages.
+TCPKeepAlive no
