@@ -58,6 +58,7 @@ EC_BOARD_NAMES=(
 	pit
 	plankton
 	rambi
+	reef
 	ryu
 	ryu_p4p5
 	ryu_sh
