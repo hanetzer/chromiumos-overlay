@@ -1,18 +1,18 @@
-From 0097cfb9df26763b920ba3f76833e5a67a9c81b7 Mon Sep 17 00:00:00 2001
+From 09790ff4fcab7525c8832047a403a61f855b7d16 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Thu, 11 Jun 2015 18:05:18 +0100
-Subject: [PATCH 21/21] GL_KHR_robustness entry points
+Subject: [PATCH 18/34] GL_KHR_robustness entry points
 
 ---
  src/mapi/glapi/gen/KHR_robustness.xml | 62 +++++++++++++++++++++++++++++++++++
- src/mapi/glapi/gen/es_EXT.xml         |  3 ++
+ src/mapi/glapi/gen/es_EXT.xml         |  4 +++
  src/mesa/main/get.h                   |  4 +++
  src/mesa/main/getstring.c             | 10 ++++++
  src/mesa/main/readpix.c               |  9 +++++
  src/mesa/main/readpix.h               |  5 +++
  src/mesa/main/uniforms.c              | 24 ++++++++++++++
  src/mesa/main/uniforms.h              |  6 ++++
- 8 files changed, 123 insertions(+)
+ 8 files changed, 124 insertions(+)
  create mode 100644 src/mapi/glapi/gen/KHR_robustness.xml
 
 diff --git a/src/mapi/glapi/gen/KHR_robustness.xml b/src/mapi/glapi/gen/KHR_robustness.xml
@@ -84,15 +84,16 @@ index 0000000..f51460a
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 65fa060..fc82723 100644
+index cdf546d..cd225a0 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -831,4 +831,7 @@
+@@ -1014,4 +1014,8 @@
  <!-- 186. GL_EXT_primitive_bounding_box -->
  <xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 +<!-- 190. GL_KHR_robustness -->
 +<xi:include href="KHR_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
 +
  </OpenGLAPI>
 diff --git a/src/mesa/main/get.h b/src/mesa/main/get.h
@@ -109,10 +110,10 @@ index 756bccf..df1a197 100644
 +
  #endif
 diff --git a/src/mesa/main/getstring.c b/src/mesa/main/getstring.c
-index c033578..7a32075 100644
+index 0e5b225..b142781 100644
 --- a/src/mesa/main/getstring.c
 +++ b/src/mesa/main/getstring.c
-@@ -371,3 +371,13 @@ _mesa_GetGraphicsResetStatusEXT( void )
+@@ -375,3 +375,13 @@ _mesa_GetGraphicsResetStatusEXT( void )
  
     return GL_NO_ERROR;
  }
@@ -127,10 +128,10 @@ index c033578..7a32075 100644
 +   return GL_NO_ERROR;
 +}
 diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
-index 298d6e4..05c67c9 100644
+index 1591cc5..537f730 100644
 --- a/src/mesa/main/readpix.c
 +++ b/src/mesa/main/readpix.c
-@@ -1130,6 +1130,15 @@ _mesa_ReadnPixelsEXT( GLint x, GLint y, GLsizei width, GLsizei height,
+@@ -1127,6 +1127,15 @@ _mesa_ReadnPixelsEXT( GLint x, GLint y, GLsizei width, GLsizei height,
  }
  
  void GLAPIENTRY
@@ -161,7 +162,7 @@ index d3b74d1..46d1171 100644
 +
  #endif
 diff --git a/src/mesa/main/uniforms.c b/src/mesa/main/uniforms.c
-index 3ccdc2a..309d729 100644
+index 33683fa..ffa4ae5 100644
 --- a/src/mesa/main/uniforms.c
 +++ b/src/mesa/main/uniforms.c
 @@ -852,6 +852,14 @@ _mesa_GetnUniformfvEXT(GLuint program, GLint location,
@@ -210,7 +211,7 @@ index 3ccdc2a..309d729 100644
  {
     _mesa_GetnUniformuivARB(program, location, INT_MAX, params);
 diff --git a/src/mesa/main/uniforms.h b/src/mesa/main/uniforms.h
-index cfbdda4..5c8bb7d 100644
+index caf2d99..13f19cb 100644
 --- a/src/mesa/main/uniforms.h
 +++ b/src/mesa/main/uniforms.h
 @@ -199,16 +199,22 @@ _mesa_GetnUniformfvARB(GLuint, GLint, GLsizei, GLfloat *);

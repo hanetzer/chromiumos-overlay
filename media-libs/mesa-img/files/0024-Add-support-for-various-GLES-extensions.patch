@@ -1,7 +1,7 @@
-From 25fee25bad6e5f156e65885599550011f49240b9 Mon Sep 17 00:00:00 2001
+From 463329b05201a231e8a5cc946fd12a4398ece813 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Mon, 10 Mar 2014 12:27:03 +0000
-Subject: [PATCH 31/40] Add support for various GLES extensions
+Subject: [PATCH 24/34] Add support for various GLES extensions
 
 Add support for:
 	EXT_multisampled_render_to_texture
@@ -19,7 +19,7 @@ Add support for:
  create mode 100644 src/mesa/main/es_extension_stubs.h
 
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index cddae8c..2f53103 100644
+index d39527f..fae9c73 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
 @@ -285,28 +285,25 @@
@@ -166,10 +166,10 @@ index cddae8c..2f53103 100644
  <xi:include href="EXT_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 diff --git a/src/mapi/glapi/gen/gl_genexec.py b/src/mapi/glapi/gen/gl_genexec.py
-index 78b62a2..9251a1c 100644
+index 72d7b6f..c3b031f 100644
 --- a/src/mapi/glapi/gen/gl_genexec.py
 +++ b/src/mapi/glapi/gen/gl_genexec.py
-@@ -72,6 +72,7 @@ header = """/**
+@@ -73,6 +73,7 @@ header = """/**
  #include "main/rastpos.h"
  #include "main/enable.h"
  #include "main/errors.h"
@@ -178,7 +178,7 @@ index 78b62a2..9251a1c 100644
  #include "main/eval.h"
  #include "main/get.h"
 diff --git a/src/mesa/Makefile.sources b/src/mesa/Makefile.sources
-index e9011c9..1dd977d 100644
+index 48647ad..42698d7 100644
 --- a/src/mesa/Makefile.sources
 +++ b/src/mesa/Makefile.sources
 @@ -3,7 +3,9 @@

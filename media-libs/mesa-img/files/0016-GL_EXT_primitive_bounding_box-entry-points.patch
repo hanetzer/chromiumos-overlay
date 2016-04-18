@@ -1,7 +1,7 @@
-From ff23e47049a32d5fe13de40a17897577f1af86a8 Mon Sep 17 00:00:00 2001
+From d7c4f7fc30fc22e2f570607d1bffd43e160e7432 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Fri, 5 Dec 2014 11:05:03 +0000
-Subject: [PATCH 19/40] GL_EXT_primitive_bounding_box entry points
+Subject: [PATCH 16/16] GL_EXT_primitive_bounding_box entry points
 
 ---
  src/mapi/glapi/gen/EXT_primitive_bounding_box.xml | 23 +++++++++++++++++++++++
@@ -41,22 +41,22 @@ index 0000000..0766d12
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index ff388ee..f2ef294 100644
+index 11d5546..e68fa6d 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -828,4 +828,7 @@
- <!-- 183. GL_EXT_texture_buffer -->
- <xi:include href="EXT_texture_buffer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+@@ -1304,4 +1304,7 @@
+ <!-- 177. GL_EXT_geometry_shader-->
+ <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 +<!-- 186. GL_EXT_primitive_bounding_box -->
 +<xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
  </OpenGLAPI>
 diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
-index b227c17..5519560 100644
+index b28b5ce..4dcdf07 100644
 --- a/src/mesa/main/shaderapi.c
 +++ b/src/mesa/main/shaderapi.c
-@@ -2678,3 +2678,13 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
+@@ -2761,3 +2761,13 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
        _mesa_shader_init_subroutine_defaults(shProg->_LinkedShaders[i]);
     }
  }
@@ -71,10 +71,10 @@ index b227c17..5519560 100644
 +    _mesa_error(ctx, GL_INVALID_OPERATION, "PrimitiveBoundingBoxEXT");
 +}
 diff --git a/src/mesa/main/shaderapi.h b/src/mesa/main/shaderapi.h
-index fba767b..e3ac7ee 100644
+index d2d7f16..81a92e7 100644
 --- a/src/mesa/main/shaderapi.h
 +++ b/src/mesa/main/shaderapi.h
-@@ -313,6 +313,13 @@ extern GLvoid GLAPIENTRY
+@@ -319,6 +319,13 @@ extern GLvoid GLAPIENTRY
  _mesa_GetProgramStageiv(GLuint program, GLenum shadertype,
                          GLenum pname, GLint *values);
  

@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="51e0b06d9916e126060c0d218de1aaa4e5a4ce26"
+CROS_WORKON_COMMIT="339335811580c522d6ff66878bc40e662739c47b"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -90,7 +90,7 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	!arm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm )
 	video_cards_powervr? ( virtual/img-ddk )
 "
 
@@ -123,7 +123,6 @@ src_prepare() {
 			configure.ac || die
 	fi
 
-	epatch "${FILESDIR}"/10.0-cross-compile.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
@@ -147,48 +146,22 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.0-mesa-Correctly-handle-GL_BGRA_EXT-in-ES3-format_and_.patch
-	epatch "${FILESDIR}"/11.0-i965-Define-symbolic-constants-for-some-useful-L3-ca.patch
-	epatch "${FILESDIR}"/11.0-i965-Adjust-gen-check-in-can_do_pipelined_register_w.patch
-	epatch "${FILESDIR}"/11.0-i965-Keep-track-of-whether-LRI-is-allowed-in-the-con.patch
-	epatch "${FILESDIR}"/11.0-Define-state-flag-to-signal-that-the-URB-size-has-be.patch
-	epatch "${FILESDIR}"/11.0-i965-Add-slice-count-to-the-brw_device_info-structur.patch
-	epatch "${FILESDIR}"/11.0-Import-tables-enumerating-the-set-of-validated-L3-co.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-programming-of-the-L3-configuration.patch
-	epatch "${FILESDIR}"/11.0-i965-hsw-Enable-L3-atomics.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-selection-of-the-closest-L3-configura.patch
-	epatch "${FILESDIR}"/11.0-i965-Calculate-appropriate-L3-partition-weights-for-.patch
-	epatch "${FILESDIR}"/11.0-i965-Implement-L3-state-atom.patch
-	epatch "${FILESDIR}"/11.0-i965-Work-around-L3-state-leaks-during-context-switc.patch
+	epatch "${FILESDIR}"/11.3-dri-i965-extend-GLES3-sRGB-workaround-to-cover-all-f.patch
+	epatch "${FILESDIR}"/11.3-dri-i965-fix-incorrect-rgbFormat-in-intelCreateBuffe.patch
 
 	# IMG patches
 	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
 	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
-	epatch "${FILESDIR}"/0009-GL_KHR_debug-entry-points.patch
-	epatch "${FILESDIR}"/0010-GL_EXT_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0011-GL_OES_texture_storage_multisample_2d_array-entry-po.patch
-	epatch "${FILESDIR}"/0012-GL_KHR_blend_equation_advanced-entry-points.patch
-	epatch "${FILESDIR}"/0013-GL_EXT_texture_buffer-entry-points.patch
-	epatch "${FILESDIR}"/0014-GL_OES_sample_shading-entry-points.patch
-	epatch "${FILESDIR}"/0015-GL_EXT_copy_image-entry-points.patch
-	epatch "${FILESDIR}"/0016-GL_EXT_draw_buffers_indexed-entry-points.patch
-	epatch "${FILESDIR}"/0017-GL_EXT_geometry_shader-entry-points.patch
-	epatch "${FILESDIR}"/0018-GL_EXT_texture_border_clamp-entry-points.patch
-	epatch "${FILESDIR}"/0019-GL_EXT_primitive_bounding_box-entry-points.patch
-	epatch "${FILESDIR}"/0020-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0021-GL_KHR_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0022-GL_OES_draw_buffers_indexed-entry-points.patch
-	epatch "${FILESDIR}"/0031-Add-support-for-various-GLES-extensions.patch
-	epatch "${FILESDIR}"/0032-Add-EGL_IMG_context_priority-EGL-extension.patch
-
-	epatch "${FILESDIR}"/0006-egl-dri2-don-t-require-a-context-for-ClientWaitSync-v2.patch
-
-	epatch "${FILESDIR}"/0100-add-pvr_dri-support-for-DRM-display-driver-render-no.patch
-	epatch "${FILESDIR}"/0101-pvr_dri-Use-bpp-instead-of-IMG-pixel-format-for-Buff.patch
-	epatch "${FILESDIR}"/0102-pvr_dri-remove-bpp-parameter-from-PVRDRIBufferCreate.patch
-	epatch "${FILESDIR}"/0103-dri-pvr-Add-extra-information-to-PVRDRISyncPrimDelet.patch
+	epatch "${FILESDIR}"/0008-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0009-GL_KHR_blend_equation_advanced-entry-points.patch
+	epatch "${FILESDIR}"/0014-GL_EXT_geometry_shader-entry-points.patch
+	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
+	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
+	epatch "${FILESDIR}"/0018-GL_KHR_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
+	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
 
 	base_src_prepare
 
@@ -217,7 +190,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm llvm-gallium) \
+		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
