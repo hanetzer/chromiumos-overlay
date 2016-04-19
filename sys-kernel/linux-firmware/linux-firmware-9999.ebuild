@@ -60,6 +60,7 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_BRCMWIFI[@]}"
 	marvell-mwlwifi
 	marvell-pcie8897
+	marvell-pcie8997
 	nvidia-xusb
 	rt2870
 )
@@ -78,6 +79,7 @@ LICENSE="
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
+	linux_firmware_marvell-pcie8997? ( LICENCE.Marvell )
 	linux_firmware_nvidia-xusb? ( LICENCE.nvidia )
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
@@ -86,6 +88,7 @@ LICENSE="
 "
 
 DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
+	linux_firmware_marvell-pcie8997? ( !net-wireless/marvell_sd8787[pcie] )
 	linux_firmware_ath3k-all? ( !net-wireless/ath3k )
 	linux_firmware_ath3k-ar3011? ( !net-wireless/ath3k )
 	linux_firmware_ath3k-ar3012? ( !net-wireless/ath3k )
@@ -135,7 +138,8 @@ src_install() {
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
-	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
+	(use_fw marvell-pcie8897 || use_fw marvell-pcie8997) && doins_subdir mrvl/pcie8897_uapsta.bin
+	use_fw marvell-pcie8997 && doins_subdir mrvl/pcieuart8997_combo_v2.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use video_cards_radeon && doins_subdir radeon/*
 
