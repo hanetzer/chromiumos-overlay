@@ -15,7 +15,7 @@ DESCRIPTION="Disk mounting daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+seccomp test"
+IUSE="chromeless_tty +seccomp test"
 KEYWORDS="~*"
 
 RDEPEND="
@@ -68,6 +68,10 @@ src_install() {
 	# Install upstart config file.
 	insinto /etc/init
 	doins cros-disks.conf
+	# Insert the --no-session-manager flag if needed.
+	if use chromeless_tty; then
+		sed -i -E "s/(CROS_DISKS_OPTS=')/\1--no-session-manager /" "${D}"/etc/init/cros-disks.conf || die
+	fi
 
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
