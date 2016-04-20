@@ -39,7 +39,7 @@ RDEPEND+="
 "
 
 # Default to the latest kernel if none has been selected.
-RDEPEND_DEFAULT="sys-kernel/chromeos-kernel-3_18"
+RDEPEND_DEFAULT="sys-kernel/chromeos-kernel-4_4"
 # Here be dragons!
 RDEPEND+="
 	$(printf '!%s? ( ' "${IUSE_KERNEL_VERS[@]}")
