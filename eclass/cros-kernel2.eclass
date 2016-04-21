@@ -73,6 +73,7 @@ CONFIG_FRAGMENTS=(
 	cifs
 	cros_ec_mec
 	debug
+	dm_snapshot
 	dwc2_dual_role
 	dyndebug
 	fbconsole
@@ -208,6 +209,12 @@ CONFIG_CIFS=m
 cros_ec_mec="LPC Support for Microchip Embedded Controller"
 cros_ec_mec_config="
 CONFIG_MFD_CROS_EC_LPC_MEC=y
+"
+
+dm_snapshot_desc="Snapshot device mapper target"
+dm_snapshot_config="
+CONFIG_BLK_DEV_DM=y
+CONFIG_DM_SNAPSHOT=m
 "
 
 dwc2_dual_role_desc="Dual Role support for DesignWare USB2.0 controller"
