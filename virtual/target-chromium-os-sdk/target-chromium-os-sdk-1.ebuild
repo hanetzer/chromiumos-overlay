@@ -120,6 +120,9 @@ RDEPEND="${RDEPEND}
 	!app-emulation/qemu-kvm
 	!app-emulation/qemu-user
 	app-text/asciidoc
+	app-text/docbook-xml-dtd:4.2
+	app-text/docbook-xml-dtd:4.5
+	app-text/docbook-xsl-stylesheets
 	app-text/texi2html
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-base
