@@ -49,6 +49,7 @@ FACTORY_TEST_RDEPEND="
 	dev-python/pyudev
 	dev-util/stressapptest
 	net-ftp/pybootd
+	net-misc/htpdate
 	sys-apps/iproute2
 	sys-apps/lshw
 "
