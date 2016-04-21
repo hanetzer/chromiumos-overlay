@@ -13,11 +13,13 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-RDEPEND="
-	dev-util/android-tools
+DEPEND="
+	chromeos-base/chromeos-base
 "
 
-DEPEND=""
+RDEPEND="${DEPEND}
+	dev-util/android-tools
+"
 
 S=${WORKDIR}
 
