@@ -32,7 +32,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk bitmap_in_cbfs cros_ec pd_sync depthcharge"
+IUSE="${IUSE} +bmpblk bitmap_in_cbfs cros_ec pd_sync depthcharge qca-framework"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
@@ -63,6 +63,7 @@ DEPEND="
 	pd_sync? ( chromeos-base/chromeos-ec )
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
+	qca-framework? ( sys-boot/qca-framework )
 	"
 
 src_prepare() {
