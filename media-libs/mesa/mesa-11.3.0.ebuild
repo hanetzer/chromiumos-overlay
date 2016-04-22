@@ -144,6 +144,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
 	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
+	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	base_src_prepare
 
 	eautoreconf
