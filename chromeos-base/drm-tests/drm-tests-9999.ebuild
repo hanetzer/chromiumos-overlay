@@ -28,6 +28,6 @@ src_compile() {
 
 src_install() {
 	cd build-opt-local
-	dobin atomictest drm_cursor_test gamma_test linear_bo_test null_platform_test plane_test
-	dobin swrast_test tiled_bo_test vgem_test vgem_fb_test
+	dobin atomictest drm_cursor_test gamma_test linear_bo_test mmap_test
+	dobin null_platform_test plane_test swrast_test tiled_bo_test vgem_test
 }
