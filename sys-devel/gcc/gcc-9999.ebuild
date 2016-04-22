@@ -91,6 +91,13 @@ src_unpack() {
 		fi
 	else
 		cros-workon_src_unpack
+		# For aosp gcc repository, the actual gcc directory is 1 more
+		# level down, eg. gcc/gcc-4.9, pick up the newest one in this
+		# case.
+		local gccsub=$(find "${S}" -maxdepth 1 -type d -name "gcc-*" | sort -r | head -1)
+		if [[ -d "${gccsub}" ]] && [[ -d "${gccsub}/gcc/config/arm/" ]]; then
+		    S="${gccsub}"
+		fi
 		cd "${S}"
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
