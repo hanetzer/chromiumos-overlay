@@ -248,6 +248,7 @@ ALL_BOARDS=(
 	veyron_caution
 	veyron_danger
 	veyron_emile
+	veyron_fievel
 	veyron_gus
 	veyron_jaq
 	veyron_jerry
