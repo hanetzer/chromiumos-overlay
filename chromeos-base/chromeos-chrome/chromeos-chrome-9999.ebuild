@@ -468,12 +468,11 @@ set_build_defines() {
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
 		if use x86 || use arm; then
-			# Use components to avoid 4GB limit of ELF32 (see crbug.com/595763).
-			# Using -g1 causes problems with crash server (see crbug.com/601854).
-			BUILD_DEFINES+=( component=shared_library )
-			BUILD_ARGS+=( is_component_build=true )
+			# Pass -g1 to avoid 4GB limit of ELF32 (see crbug.com/595763).
+			RELEASE_EXTRA_CFLAGS+=( -g1 )
+		else
+			RELEASE_EXTRA_CFLAGS+=( -g )
 		fi
-		RELEASE_EXTRA_CFLAGS+=( -g )
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
 
