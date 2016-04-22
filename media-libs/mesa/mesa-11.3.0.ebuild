@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="339335811580c522d6ff66878bc40e662739c47b"
+CROS_WORKON_COMMIT="c3b88cc2c15f19e748c9c406e9ab053975adab7e"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -143,8 +143,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.3-dri-i965-extend-GLES3-sRGB-workaround-to-cover-all-f.patch
-	epatch "${FILESDIR}"/11.3-dri-i965-fix-incorrect-rgbFormat-in-intelCreateBuffe.patch
 	base_src_prepare
 
 	eautoreconf
