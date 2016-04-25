@@ -169,6 +169,7 @@ eblit-src_unpack-post() {
 	epatch "${FILESDIR}"/local/glibc-2.19-CVE-2015-1472.patch
 	epatch "${FILESDIR}"/local/glibc-2.19-CVE-2015-7547.patch
 	epatch "${FILESDIR}"/local/glibc-2.19-CVE-2013-7423.patch
+	epatch "${FILESDIR}"/local/glibc-2.21-resize-dtv.patch
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
