@@ -212,6 +212,9 @@ src_prepare() {
 	# crbug/591436
 	epatch "${FILESDIR}"/clang-executable-detection.patch
 
+	# crbug/606391
+	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
+
 	# Fix llvm-config for shared linking and sane flags
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
 	use llvm-next && epatch "${FILESDIR}"/llvm-3.8-llvm-config.patch
