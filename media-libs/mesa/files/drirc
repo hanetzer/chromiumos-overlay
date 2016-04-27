@@ -3,6 +3,7 @@
       <application name="Default">
          <!-- Force on S3TC hardware decompression support -->
          <option name="force_s3tc_enable" value="true"/>
+         <option name="intel_precise_trig" value="true"/>
       </application>
    </device>
 </driconf>

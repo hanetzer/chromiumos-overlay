@@ -145,6 +145,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
 	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
+	epatch "${FILESDIR}"/11.6-intel-trig.patch
 	base_src_prepare
 
 	eautoreconf
