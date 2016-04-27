@@ -39,6 +39,7 @@ src_install() {
 
 	# Install built tools
 	pushd "${OUT}" >/dev/null
+	dobin alsa_api_test
 	dobin audiofuntest
 	dobin test_tones
 	dobin looptest
