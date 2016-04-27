@@ -129,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2715.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2715.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2715.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2717.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2717.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2717.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -468,11 +468,12 @@ set_build_defines() {
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
 		if use x86 || use arm; then
-			# Pass -g1 to avoid 4GB limit of ELF32 (see crbug.com/595763).
-			RELEASE_EXTRA_CFLAGS+=( -g1 )
-		else
-			RELEASE_EXTRA_CFLAGS+=( -g )
+			# Use components to avoid 4GB limit of ELF32 (see crbug.com/595763).
+			# Using -g1 causes problems with crash server (see crbug.com/601854).
+			BUILD_DEFINES+=( component=shared_library )
+			BUILD_ARGS+=( is_component_build=true )
 		fi
+		RELEASE_EXTRA_CFLAGS+=( -g )
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
 
@@ -800,7 +801,6 @@ setup_compile_flags() {
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
 	EBUILD_CXXFLAGS=()
-	EBUILD_LDFLAGS=()
 	if use afdo_use && ! use clang; then
 		local afdo_flags=(
 			-fauto-profile="${AFDO_PROFILE_LOC}"
@@ -812,24 +812,6 @@ setup_compile_flags() {
 		)
 		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
-	fi
-
-	# These flags seperate hot/cold text section into different segments.
-	# They also put read only sections into different segment so that we
-	# have around 8 MB for the first segment that has PT_LOAD and is
-	# executable. This is used for mapping hot segment to hugepage.
-	# Currently these options are only supported by gcc. We disable it
-	# for arm while investigating crbug.com/593719.
-	if ! use clang && ! use arm ; then
-		local split_flag=( -freorder-functions=callgraph )
-		local split_ldflags=(
-			"${split_flag[@]}"
-			-Wl,-rosegment
-			-Wl,--plugin-opt,split_segment=yes
-		)
-		EBUILD_CFLAGS+=( "${split_flag[@]}" )
-		EBUILD_CXXFLAGS+=( "${split_flag[@]}" )
-		EBUILD_LDFLAGS+=( "${split_ldflags[@]}" )
 	fi
 
 	# Enable std::vector []-operator bounds checking.
@@ -891,7 +873,6 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
-		LDFLAGS="${LDFLAGS} ${EBUILD_LDFLAGS[*]}" \
 		"${cmd[@]}" || die
 	fi
 
