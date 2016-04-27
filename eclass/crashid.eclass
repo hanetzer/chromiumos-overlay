@@ -1,7 +1,8 @@
 # Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-# $Header: $
+
+inherit osreleased
 
 # @ECLASS: crashid.eclass
 # @MAINTAINER:
@@ -37,13 +38,9 @@ docrashid() {
 	if [[ -n ${filtered_id} || -n ${filtered_version_id} ]]; then
 		die "Invalid input. Must satisfy: ${validregex}"
 	fi
-	dodir /etc
 
-	local os_release="${D}/etc/os-release"
-	[[ -e ${os_release} ]] && die "${os_release} already exists!"
-
-	echo "GOOGLE_CRASH_ID=${crash_id}" > "${os_release}" || die "creating ${os_release} failed!"
+	do_osrelease_field GOOGLE_CRASH_ID "${crash_id}"
 	if [[ -n "${crash_version_id}" ]]; then
-		echo "GOOGLE_CRASH_VERSION_ID=${crash_version_id}" >> "${os_release}"
+		do_osrelease_field GOOGLE_CRASH_VERSION_ID "${crash_version_id}"
 	fi
 }
