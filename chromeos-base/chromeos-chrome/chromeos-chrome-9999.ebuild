@@ -308,7 +308,7 @@ set_build_defines() {
 		enable_nacl=$(use_nacl; echotf)
 		icu_use_data_file=true
 		use_cras=true
-		use_system_minigbm=true
+		# use_system_minigbm is set under 'if use ozone' below.
 		use_system_harfbuzz=true
 
 		# Clang features.
@@ -353,6 +353,9 @@ set_build_defines() {
 				BUILD_ARGS+=("${platform}"=true)
 			fi
 		done
+		if use "ozone_platform_gbm"; then
+			BUILD_ARGS+=(use_system_minigbm=true)
+		fi
 	fi
 
 	# Set proper BUILD_DEFINES for the arch
