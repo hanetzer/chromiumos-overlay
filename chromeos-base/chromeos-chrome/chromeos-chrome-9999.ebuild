@@ -44,6 +44,7 @@ IUSE="
 	envoy
 	evdev_gestures
 	+fonts
+	gn
 	+gold
 	hardfp
 	+highdpi
@@ -557,6 +558,7 @@ src_unpack() {
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
+	export EGN="${EGN:-/home/${WHOAMI}/depot_tools/gn}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -881,6 +883,7 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		GYP_CHROMIUM_NO_ACTION=$(use10 gn) \
 		"${cmd[@]}" || die
 	fi
 
@@ -894,7 +897,10 @@ src_configure() {
 		BUILD_ARGS+=("${arg%%=*}=\"${arg#*=}\"")
 	done
 	export GN_ARGS="${BUILD_ARGS[*]}"
-	# TODO(hashimoto): Run "gn gen" to generate ninja files with GN. crbug.com/561142
+	if use gn; then
+		use build_tests && eerror "Cannot use gn without -build_tests yet. crbug.com/607362"
+		${EGN} gen "${BUILD_OUT_SYM}/${BUILDTYPE}" --args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
+	fi
 
 	setup_test_lists
 }
