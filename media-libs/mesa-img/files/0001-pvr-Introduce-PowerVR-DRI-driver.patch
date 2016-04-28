@@ -1,4 +1,4 @@
-From 610efbcfd301f21eea8be132f78b7ee09dbf01b2 Mon Sep 17 00:00:00 2001
+From ef16c0119466fb36cad76ac434765c642d5c9066 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Mon, 30 Nov 2015 13:42:57 +0000
 Subject: [PATCH] pvr: Introduce PowerVR DRI driver.
@@ -56,7 +56,7 @@ Change-Id: I3b21e84b290c5057e7b11681c3a7b59485094aae
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index ffd51db..8e15c69 100644
+index 9226a0d..ccdb33f 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -72,6 +72,7 @@ LIBDRM_REQUIRED=2.4.66
@@ -79,15 +79,15 @@ index ffd51db..8e15c69 100644
          xswrast)
              HAVE_SWRAST_DRI=yes;
              ;;
-@@ -2397,6 +2403,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
+@@ -2455,6 +2461,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
 +AM_CONDITIONAL(HAVE_PVR_DRI, test x$HAVE_PVR_DRI = xyes)
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
- AM_CONDITIONAL(NEED_RADEON_DRM_WINSYS, test "x$HAVE_GALLIUM_R300" = xyes -o \
-@@ -2556,6 +2563,7 @@ AC_CONFIG_FILES([Makefile
+ AM_CONDITIONAL(HAVE_INTEL_VULKAN, test "x$HAVE_INTEL_VULKAN" = xyes)
+@@ -2642,6 +2649,7 @@ AC_CONFIG_FILES([Makefile
  		src/mesa/drivers/dri/nouveau/Makefile
  		src/mesa/drivers/dri/r200/Makefile
  		src/mesa/drivers/dri/radeon/Makefile

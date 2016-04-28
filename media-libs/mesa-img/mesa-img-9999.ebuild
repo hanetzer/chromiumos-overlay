@@ -143,8 +143,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.3-dri-i965-extend-GLES3-sRGB-workaround-to-cover-all-f.patch
-	epatch "${FILESDIR}"/11.3-dri-i965-fix-incorrect-rgbFormat-in-intelCreateBuffe.patch
 
 	# IMG patches
 	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch

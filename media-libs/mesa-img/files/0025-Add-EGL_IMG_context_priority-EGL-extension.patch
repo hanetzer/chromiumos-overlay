@@ -1,4 +1,4 @@
-From 8967f28b8ace7ba8d25d2ae30030c41f6edee5c2 Mon Sep 17 00:00:00 2001
+From d534d67e0b552c37f0712fa97295961b36552971 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 11:31:26 +0000
 Subject: [PATCH 25/25] Add EGL_IMG_context_priority EGL extension
@@ -18,10 +18,10 @@ DRI2 EGL driver.
  9 files changed, 101 insertions(+), 5 deletions(-)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index 9ee3970..0b3eaf1 100644
+index 12985fb..2612302 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
-@@ -989,6 +989,21 @@ struct __DRIdri2LoaderExtensionRec {
+@@ -1015,6 +1015,21 @@ struct __DRIdri2LoaderExtensionRec {
  /*@}*/
  
  /**
@@ -43,7 +43,7 @@ index 9ee3970..0b3eaf1 100644
   * \name Reasons that __DRIdri2Extension::createContextAttribs might fail
   */
  /*@{*/
-@@ -1550,4 +1565,19 @@ struct __DRIimageDriverExtensionRec {
+@@ -1576,4 +1591,19 @@ struct __DRIimageDriverExtensionRec {
     __DRIgetAPIMaskFunc                  getAPIMask;
  };
  
@@ -64,10 +64,10 @@ index 9ee3970..0b3eaf1 100644
 +
  #endif
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index f00a373..eb8a6ac 100644
+index df1d12e..ae55ba6 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -614,6 +614,9 @@ dri2_setup_screen(_EGLDisplay *disp)
+@@ -617,6 +617,9 @@ dri2_setup_screen(_EGLDisplay *disp)
  
        if (dri2_dpy->robustness)
           disp->Extensions.EXT_create_context_robustness = EGL_TRUE;
@@ -77,7 +77,7 @@ index f00a373..eb8a6ac 100644
     }
  
     if (dri2_dpy->fence) {
-@@ -739,6 +742,9 @@ dri2_create_screen(_EGLDisplay *disp)
+@@ -746,6 +749,9 @@ dri2_create_screen(_EGLDisplay *disp)
        if (strcmp(extensions[i]->name, __DRI_IMAGE) == 0) {
           dri2_dpy->image = (__DRIimageExtension *) extensions[i];
        }
@@ -87,7 +87,7 @@ index f00a373..eb8a6ac 100644
  
     }
  
-@@ -942,7 +948,7 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
+@@ -949,7 +955,7 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
  {
     int pos = 0;
  
@@ -96,7 +96,7 @@ index f00a373..eb8a6ac 100644
  
     ctx_attribs[pos++] = __DRI_CTX_ATTRIB_MAJOR_VERSION;
     ctx_attribs[pos++] = dri2_ctx->base.ClientMajorVersion;
-@@ -978,6 +984,28 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
+@@ -985,6 +991,28 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
        ctx_attribs[pos++] = __DRI_CTX_RESET_LOSE_CONTEXT;
     }
  
@@ -125,7 +125,7 @@ index f00a373..eb8a6ac 100644
     *num_attribs = pos;
  
     return true;
-@@ -1067,8 +1095,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+@@ -1074,8 +1102,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
  
     if (dri2_dpy->image_driver) {
        unsigned error;
@@ -136,7 +136,7 @@ index f00a373..eb8a6ac 100644
  
        if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
                                          &num_attribs))
-@@ -1087,8 +1115,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+@@ -1094,8 +1122,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
     } else if (dri2_dpy->dri2) {
        if (dri2_dpy->dri2->base.version >= 3) {
           unsigned error;
@@ -148,22 +148,22 @@ index f00a373..eb8a6ac 100644
           if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
                                          &num_attribs))
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index 52ad92b..3866b48 100644
+index 3e9f991..0401d9e 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
-@@ -174,6 +174,7 @@ struct dri2_egl_display
-    const __DRI2configQueryExtension *config;
+@@ -175,6 +175,7 @@ struct dri2_egl_display
     const __DRI2fenceExtension *fence;
     const __DRI2rendererQueryExtension *rendererQuery;
+    const __DRI2interopExtension *interop;
 +   const __DRIpriorityExtension   *priority;
     int                       fd;
  
     int                       own_device;
 diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
-index dd145a1..35861ee 100644
+index eb612c0..0c53dcf 100644
 --- a/src/egl/main/eglapi.c
 +++ b/src/egl/main/eglapi.c
-@@ -419,6 +419,7 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
+@@ -422,6 +422,7 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
     _EGL_CHECK_EXTENSION(WL_bind_wayland_display);
     _EGL_CHECK_EXTENSION(WL_create_wayland_buffer_from_image);
  
@@ -227,10 +227,10 @@ index 69bf77d..aa5cf25 100644
     /* The real render buffer when a window surface is bound */
     EGLint WindowRenderBuffer;
 diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
-index cec6d59..24f4da0 100644
+index 6bfc858..c8df3c7 100644
 --- a/src/egl/main/egldisplay.h
 +++ b/src/egl/main/egldisplay.h
-@@ -125,6 +125,8 @@ struct _egl_extensions
+@@ -127,6 +127,8 @@ struct _egl_extensions
  
     EGLBoolean WL_bind_wayland_display;
     EGLBoolean WL_create_wayland_buffer_from_image;
@@ -240,7 +240,7 @@ index cec6d59..24f4da0 100644
  
  
 diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
-index adc1501..548d605 100644
+index 6c1d0f8..86ed42f 100644
 --- a/src/mesa/drivers/dri/common/dri_util.c
 +++ b/src/mesa/drivers/dri/common/dri_util.c
 @@ -304,6 +304,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
@@ -261,7 +261,7 @@ index adc1501..548d605 100644
  	default:
  	    /* We can't create a context that satisfies the requirements of an
  	     * attribute that we don't understand.  Return failure.
-@@ -423,6 +427,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+@@ -444,6 +448,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
      context->driScreenPriv = screen;
      context->driDrawablePriv = NULL;
      context->driReadablePriv = NULL;
