@@ -323,7 +323,10 @@ set_build_defines() {
 		target_os=chromeos
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
-	use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+
+        # This is never referenced for chromeos in any chromium .gn file.
+        # crbug.com/607669.
+	# use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	if [[ ${CHOST} == armv6* ]]; then
@@ -424,7 +427,9 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		BUILD_ARGS+=( internal_gles2_conform_tests=true )
-		BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+                # This is never referenced for chromeos in any chromium .gn
+                # file. crbug.com/607669
+		#BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
