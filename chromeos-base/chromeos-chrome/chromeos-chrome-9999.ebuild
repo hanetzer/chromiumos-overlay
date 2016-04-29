@@ -899,7 +899,8 @@ src_configure() {
 	export GN_ARGS="${BUILD_ARGS[*]}"
 	if use gn; then
 		use build_tests && eerror "Cannot use gn without -build_tests yet. crbug.com/607362"
-		${EGN} gen "${BUILD_OUT_SYM}/${BUILDTYPE}" --args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
+		${EGN} gen "${CHROME_ROOT}/src/${BUILD_OUT_SYM}/${BUILDTYPE}" \
+		  --args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 	fi
 
 	setup_test_lists
