@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="crash-reporter"
 
-inherit cros-workon platform systemd udev
+inherit cros-i686 cros-workon platform systemd udev
 
 DESCRIPTION="Crash reporting service that uploads crash reports with debug
 information"
@@ -26,7 +26,7 @@ REQUIRED_USE="!cros_host"
 
 RDEPEND="
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/google-breakpad
+	chromeos-base/google-breakpad[cros_i686?]
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	dev-libs/libpcre
@@ -44,6 +44,16 @@ DEPEND="
 	sys-devel/flex
 "
 
+src_configure() {
+	platform_src_configure
+	use arc && use_i686 && platform_src_configure_i686
+}
+
+src_compile() {
+	platform_src_compile
+	use arc && use_i686 && platform_src_compile_i686 "core_collector"
+}
+
 src_install() {
 	into /
 	dosbin "${OUT}"/crash_reporter
@@ -53,7 +63,11 @@ src_install() {
 	use cros_embedded || dobin "${OUT}"/list_proxies
 	use cros_embedded || dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
-	use arc && dobin "${OUT}"/core_collector
+
+	if use arc; then
+		dobin "${OUT}"/core_collector
+		use_i686 && newbin "$(platform_out_i686)"/core_collector "core_collector32"
+	fi
 
 	if use systemd; then
 		systemd_dounit init/crash-reporter.service
