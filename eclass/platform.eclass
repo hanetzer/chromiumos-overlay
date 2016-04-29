@@ -137,7 +137,7 @@ platform_src_configure() {
 	cros-debug-add-NDEBUG
 	append-lfs-flags
 	clang-setup-env
-	platform_configure "${S}/${PLATFORM_GYP_FILE}"
+	platform_configure "${S}/${PLATFORM_GYP_FILE}" "$@"
 }
 
 platform_src_test() {
