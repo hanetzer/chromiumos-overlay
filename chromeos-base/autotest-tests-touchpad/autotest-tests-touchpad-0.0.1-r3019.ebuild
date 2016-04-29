@@ -1,0 +1,44 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=2
+CROS_WORKON_COMMIT="5f4922c627d9eb895f6fcf35e1e19b090a5894a8"
+CROS_WORKON_TREE="8c5fd781c24881fdf7d3479bde719fee69df0ec2"
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+
+inherit cros-workon autotest
+
+DESCRIPTION="touchpad autotest"
+HOMEPAGE="http://www.chromium.org/"
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="*"
+
+IUSE="${IUSE} +autotest"
+
+RDEPEND="
+	chromeos-base/autotest-deps-touchpad
+"
+
+DEPEND="${RDEPEND}"
+
+IUSE_TESTS="
+	+tests_platform_GesturesRegressionTest
+"
+
+IUSE="${IUSE} ${IUSE_TESTS}"
+
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
+
+AUTOTEST_DEPS_LIST=""
+AUTOTEST_CONFIG_LIST=""
+AUTOTEST_PROFILERS_LIST=""
+
+AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_configure() {
+	cros-workon_src_configure
+}
+
+
