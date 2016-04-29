@@ -16,7 +16,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}/src/third_party/lss"
 )
 
-inherit cros-workon toolchain-funcs flag-o-matic multiprocessing
+inherit cros-i686 cros-workon toolchain-funcs flag-o-matic multiprocessing
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
@@ -55,19 +55,21 @@ src_configure() {
 	ECONF_SOURCE=${S} multijob_child_init cros-workon_src_configure --enable-system-test-libs
 	popd >/dev/null
 
-	if use cros_host; then
+	if use cros_host || use_i686; then
 		# The mindump code is still wordsize specific.  Needs to be redone
 		# like https://code.google.com/p/google-breakpad/source/detail?r=987.
-		einfo "Building a 32-bit version of tools"
+		einfo "Configuring 32-bit build"
 		mkdir work32
 		pushd work32 >/dev/null
-		append-flags "-m32"
+		use cros_host && append-flags "-m32"
+		use_i686 && push_i686_env
 		# Can be dropped once this is merged upstream:
 		# https://breakpad.appspot.com/619002/
 		append-lfs-flags # crbug.com/266064
 		ECONF_SOURCE=${S} multijob_child_init cros-workon_src_configure
 		filter-lfs-flags
-		filter-flags "-m32"
+		use_i686 && pop_i686_env
+		use cros_host && filter-flags "-m32"
 		popd >/dev/null
 	fi
 
@@ -81,6 +83,13 @@ src_compile() {
 		einfo "Building 32-bit tools"
 		emake -C work32 \
 			src/tools/linux/md2core/minidump-2-core
+	fi
+
+	if use_i686; then
+		einfo "Building 32-bit library"
+		push_i686_env
+		emake -C work32 src/client/linux/libbreakpad_client.a
+		pop_i686_env
 	fi
 }
 
@@ -114,5 +123,11 @@ src_install() {
 	if use cros_host; then
 		newbin work32/src/tools/linux/md2core/minidump-2-core \
 		       minidump-2-core.32
+	fi
+
+	if use_i686; then
+		push_i686_env
+		dolib.a work32/src/client/linux/libbreakpad_client.a
+		pop_i686_env
 	fi
 }

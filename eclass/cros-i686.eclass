@@ -10,7 +10,7 @@
 # packages. The "cros_i686" USE flag determines whether a package should also
 # build i686 binaries on x86_64.
 
-inherit cros-au cros-workon platform
+inherit cros-au cros-workon
 
 IUSE="cros_i686"
 
