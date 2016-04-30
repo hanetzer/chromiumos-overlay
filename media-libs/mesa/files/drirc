@@ -6,5 +6,11 @@
          <option name="intel_precise_trig" value="true"/>
       </application>
    </device>
+   <device driver="i915">
+      <application name="Default">
+         <!-- Force on S3TC hardware decompression support -->
+         <option name="force_s3tc_enable" value="true"/>
+      </application>
+   </device>
 </driconf>
 
