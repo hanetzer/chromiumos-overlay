@@ -20,15 +20,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"fad81ab170b3d422f0aaa15b88157fdb16d3e75d" # EGIT_COMMIT
+		"26a9873b72c6dbb425ae075fcf51caa9fc5e892b" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"30373afde77e6540e2768c164142af7d716cdb03" # EGIT_COMMIT
+		"12d2fe2a170a5be91dddef5555b7f21a36e3a704" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"4483c0162c2672fc09fb738e9c683ebde1f146f3"  # EGIT_COMMIT
+		"af6a0b98569cf7981fe27327ac4bf19bd0d6b162"  # EGIT_COMMIT
 )
 
 
@@ -183,11 +183,29 @@ src_unpack() {
 	fi
 }
 
+pick_cherries() {
+	# clang
+	local CHERRIES=""
+	CHERRIES+=" b3419a9ef1857ae36a09cf845f8eec4abefdd159 " # r266113
+	CHERRIES+=" 47bc7ec72ef69769b6fa693d574e1f9159b0d6e6 " # r266116
+
+	pushd "${S}"/tools/clang >/dev/null || die
+	git cherry-pick ${CHERRIES} >/dev/null || die
+	popd >/dev/null || die
+
+	# compiler-rt
+	CHERRIES=" f0ccaf3554182da4c7a038ae96a869e0e202bd2c " # r269749
+
+	pushd "${S}"/projects/compiler-rt >/dev/null || die
+	git cherry-pick ${CHERRIES} >/dev/null || die
+	popd >/dev/null || die
+}
+
 src_prepare() {
+	use llvm-next || pick_cherries
 	use llvm-next || epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
 	epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
-	epatch "${FILESDIR}"/clang-pr24346.patch
 
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
@@ -218,6 +236,10 @@ src_prepare() {
 	# Fix llvm-config for shared linking and sane flags
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
 	use llvm-next && epatch "${FILESDIR}"/llvm-3.8-llvm-config.patch
+
+	# Bug 27703 - InstCombine hangs (loops forever) at -O1 or higher...
+	# https://llvm.org/bugs/show_bug.cgi?id=27703
+	epatch "${FILESDIR}"/llvm-3.9-inst-combine-D20173.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
