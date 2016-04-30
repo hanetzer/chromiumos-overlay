@@ -44,6 +44,7 @@ IUSE="
 	envoy
 	evdev_gestures
 	+fonts
+	gn
 	+gold
 	hardfp
 	+highdpi
@@ -129,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2719.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2719.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2719.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2720.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2720.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2720.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -308,7 +309,7 @@ set_build_defines() {
 		enable_nacl=$(use_nacl; echotf)
 		icu_use_data_file=true
 		use_cras=true
-		use_system_minigbm=true
+		# use_system_minigbm is set under 'if use ozone' below.
 		use_system_harfbuzz=true
 
 		# Clang features.
@@ -323,7 +324,10 @@ set_build_defines() {
 		target_os=chromeos
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
-	use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+
+        # This is never referenced for chromeos in any chromium .gn file.
+        # crbug.com/607669.
+	# use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	if [[ ${CHOST} == armv6* ]]; then
@@ -353,6 +357,9 @@ set_build_defines() {
 				BUILD_ARGS+=("${platform}"=true)
 			fi
 		done
+		if use "ozone_platform_gbm"; then
+			BUILD_ARGS+=(use_system_minigbm=true)
+		fi
 	fi
 
 	# Set proper BUILD_DEFINES for the arch
@@ -421,7 +428,9 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		BUILD_ARGS+=( internal_gles2_conform_tests=true )
-		BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+                # This is never referenced for chromeos in any chromium .gn
+                # file. crbug.com/607669
+		#BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -549,6 +558,7 @@ src_unpack() {
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
+	export EGN="${EGN:-/home/${WHOAMI}/depot_tools/gn}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -873,6 +883,7 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		GYP_CHROMIUM_NO_ACTION=$(use10 gn) \
 		"${cmd[@]}" || die
 	fi
 
@@ -886,7 +897,10 @@ src_configure() {
 		BUILD_ARGS+=("${arg%%=*}=\"${arg#*=}\"")
 	done
 	export GN_ARGS="${BUILD_ARGS[*]}"
-	# TODO(hashimoto): Run "gn gen" to generate ninja files with GN. crbug.com/561142
+	if use gn; then
+		use build_tests && eerror "Cannot use gn without -build_tests yet. crbug.com/607362"
+		${EGN} gen "${BUILD_OUT_SYM}/${BUILDTYPE}" --args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
+	fi
 
 	setup_test_lists
 }
