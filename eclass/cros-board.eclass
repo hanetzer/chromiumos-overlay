@@ -46,6 +46,7 @@ ALL_BOARDS=(
 	arm-generic_freon
 	arm64-generic
 	arm64-llvmpipe
+	asuka
 	auron
 	auron_paine
 	auron_pearlvalley
@@ -127,6 +128,7 @@ ALL_BOARDS=(
 	jecht
 	kayle
 	kblrvp
+	kefka
 	#kennet
 	kevin
 	#kiev
@@ -195,6 +197,7 @@ ALL_BOARDS=(
 	rambi
 	raspberrypi
 	reef
+	relm
 	reks
 	reptile
 	#ricochet
