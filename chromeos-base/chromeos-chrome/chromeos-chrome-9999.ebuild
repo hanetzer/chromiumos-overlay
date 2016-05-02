@@ -759,10 +759,15 @@ setup_test_lists() {
 	TEST_FILES=(
 		media_unittests
 		sandbox_linux_unittests
-		ppapi_example_video_decode
 		video_decode_accelerator_unittest
 		video_encode_accelerator_unittest
 	)
+
+	if use gn; then
+		TEST_FILES+=( ppapi/examples/video_decode )
+	else
+		TEST_FILES+=( ppapi_example_video_decode )
+	fi
 
 	if use chrome_internal || use internal_gles_conform; then
 		TEST_FILES+=(
