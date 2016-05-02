@@ -142,6 +142,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/11.6-intel-trig.patch
+	epatch "${FILESDIR}"/11.7-double-buffered.patch
 	base_src_prepare
 
 	eautoreconf
