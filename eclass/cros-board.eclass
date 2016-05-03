@@ -95,6 +95,7 @@ ALL_BOARDS=(
 	duck
 	edgar
 	elm
+	elm-cheets
 	#emeraldlake2
 	enguarde
 	envoy-jerry
