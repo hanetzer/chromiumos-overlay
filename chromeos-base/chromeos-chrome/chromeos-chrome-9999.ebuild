@@ -1300,7 +1300,7 @@ pkg_postinst() {
 	eerror "CHROME_DIR after installation\n${LS}"
 	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
 	eerror "CHROME_SIZE = ${CHROME_SIZE}"
-	if [ ${CHROME_SIZE} -ge 200000000 ]; then
+	if [[ ${CHROME_SIZE} -ge 200000000 && -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
 }
