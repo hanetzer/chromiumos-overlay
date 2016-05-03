@@ -1222,7 +1222,14 @@ src_install() {
 		# Copy generated cloud_policy.proto. We can't do this in the
 		# protofiles ebuild since this is a generated proto.
 		insinto /usr/share/protofiles
-		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
+		# stevenjb: It is unclear why the .proto is in gen/policy/policy
+		# in GYP and gen/policy/ in GN, but once we move away from GYP
+		# that shouldn't matter.
+		if use gn; then
+			doins "${FROM}"/gen/policy/cloud_policy.proto
+		else
+			doins "${FROM}"/gen/policy/policy/cloud_policy.proto
+		fi
 	fi
 
 	# Fix some perms.
