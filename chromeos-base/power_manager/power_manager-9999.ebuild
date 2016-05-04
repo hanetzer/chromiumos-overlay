@@ -22,6 +22,7 @@ IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power
 
 RDEPEND="
 	chromeos-base/metrics
+	dev-libs/libnl
 	dev-libs/protobuf
 	cras? ( media-sound/adhd )
 	virtual/udev"
@@ -46,6 +47,7 @@ src_install() {
 	dobin "${OUT}"/powerd
 	dobin "${OUT}"/powerd_setuid_helper
 	dobin "${OUT}"/power_supply_info  # feedback
+	dobin "${OUT}"/set_wifi_transmit_power
 	fowners root:power /usr/bin/powerd_setuid_helper
 	fperms 4750 /usr/bin/powerd_setuid_helper
 
