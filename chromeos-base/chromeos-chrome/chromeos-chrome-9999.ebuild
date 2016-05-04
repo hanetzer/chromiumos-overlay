@@ -472,10 +472,9 @@ set_build_defines() {
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
 		if use x86 || use arm; then
-			# Use components to avoid 4GB limit of ELF32 (see crbug.com/595763).
+			# Use debug fission to avoid 4GB limit of ELF32 (see crbug.com/595763).
 			# Using -g1 causes problems with crash server (see crbug.com/601854).
-			BUILD_DEFINES+=( component=shared_library )
-			BUILD_ARGS+=( is_component_build=true )
+			RELEASE_EXTRA_CFLAGS+=( -gsplit-dwarf )
 		fi
 		RELEASE_EXTRA_CFLAGS+=( -g )
 		BUILD_ARGS+=( symbol_level=2 )
@@ -1285,6 +1284,30 @@ src_install() {
 	"${cmd[@]}" || die
 	LS=$(ls -alhS ${D}/${CHROME_DIR})
 	eerror "CHROME_DIR after deploy_chrome\n${LS}"
+
+	# Keep the .dwp file.
+	if use chrome_debug && ( use x86 || use arm ); then
+		mkdir -p "${D}/usr/lib/debug/${CHROME_DIR}"
+		DWP="${CHOST}"-dwp
+		cd "${D}/${CHROME_DIR}"
+		# Iterate over all ELF files in current directory
+		while read i; do
+			cd "${FROM}"
+			# There two files does not build with -gsplit-dwarf,
+			# so we do not need to get .dwp file from them.
+			if [[ "${i}" == "./nacl_helper_nonsfi" ]] ||
+				[[ "${i}" == "./nacl_irt_x86_32.nexe" ]] ; then
+				continue
+			fi
+			source="${i}"
+			# The chrome_sandbox is renamed to chrome_sandbox.
+			# Use the original file to generate the .dwp file.
+			if [[ ${source} == "./chrome-sandbox" ]] ; then
+				source="chrome_sandbox"
+			fi
+			${DWP} -e "${FROM}/${source}" -o "${D}/usr/lib/debug/${CHROME_DIR}/${i}.dwp"
+		done < <(scanelf -BRyF '%F' ".")
+	fi
 
 	if use build_tests; then
 		# Install Chrome Driver to test image.
