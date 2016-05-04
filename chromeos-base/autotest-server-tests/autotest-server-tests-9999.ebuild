@@ -163,6 +163,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_InstallTestImage
         +tests_platform_InternalDisplay
 	+tests_platform_KernelErrorPaths
+	+tests_platform_LabFirmwareUpdate
 	power_management? (
 		+tests_platform_PowerStatusStress
 		+tests_power_DarkResumeShutdownServer
