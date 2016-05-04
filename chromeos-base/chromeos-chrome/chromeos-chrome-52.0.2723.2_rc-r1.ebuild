@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2723.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2723.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2723.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2723.2_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2723.2_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2723.2_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -428,8 +428,8 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		BUILD_ARGS+=( internal_gles2_conform_tests=true )
-                # This is never referenced for chromeos in any chromium .gn
-                # file. crbug.com/607669
+		# This is never referenced for chromeos in any chromium .gn
+		# file. crbug.com/607669
 		#BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
@@ -690,7 +690,7 @@ src_unpack() {
 
 src_prepare() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
+			"${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -759,10 +759,15 @@ setup_test_lists() {
 	TEST_FILES=(
 		media_unittests
 		sandbox_linux_unittests
-		ppapi_example_video_decode
 		video_decode_accelerator_unittest
 		video_encode_accelerator_unittest
 	)
+
+	if use gn; then
+		TEST_FILES+=( ppapi/examples/video_decode )
+	else
+		TEST_FILES+=( ppapi_example_video_decode )
+	fi
 
 	if use chrome_internal || use internal_gles_conform; then
 		TEST_FILES+=(
@@ -900,7 +905,7 @@ src_configure() {
 	if use gn; then
 		use build_tests && eerror "Cannot use gn without -build_tests yet. crbug.com/607362"
 		${EGN} gen "${CHROME_ROOT}/src/${BUILD_OUT_SYM}/${BUILDTYPE}" \
-		  --args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
+			--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 	fi
 
 	setup_test_lists
@@ -913,7 +918,7 @@ chrome_make() {
 
 src_compile() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
+			"${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -1217,7 +1222,14 @@ src_install() {
 		# Copy generated cloud_policy.proto. We can't do this in the
 		# protofiles ebuild since this is a generated proto.
 		insinto /usr/share/protofiles
-		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
+		# stevenjb: It is unclear why the .proto is in gen/policy/policy
+		# in GYP and gen/policy/ in GN, but once we move away from GYP
+		# that shouldn't matter.
+		if use gn; then
+			doins "${FROM}"/gen/policy/cloud_policy.proto
+		else
+			doins "${FROM}"/gen/policy/policy/cloud_policy.proto
+		fi
 	fi
 
 	# Fix some perms.
