@@ -61,6 +61,10 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins webservd/etc/dbus-1/org.chromium.WebServer.conf
 
+        # Install seccomp filter for webservd.
+        insinto /usr/share/filters
+        doins webservd/usr/share/filters/webservd-seccomp.policy
+
 	# Install web server daemon.
 	dobin "${OUT}"/webservd
 }
