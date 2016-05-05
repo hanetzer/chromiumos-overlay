@@ -83,6 +83,7 @@ RDEPEND="${RDEPEND}
 	)
 	app-crypt/nss
 	tpm? ( app-crypt/tpm-tools )
+	app-editors/nano
 	app-editors/qemacs
 	app-editors/vim
 	app-misc/evtest
