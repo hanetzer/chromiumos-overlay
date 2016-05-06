@@ -162,6 +162,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
 
+	epatch "${FILESDIR}"/0100-HACK-dri-pvr-Assume-drawable-is-always-a-PBUFFER.patch
+
 	base_src_prepare
 
 	eautoreconf
