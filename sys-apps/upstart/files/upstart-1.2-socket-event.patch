@@ -1,0 +1,1707 @@
+-r 1307 - "Merge of lp:~jamesodhunt/upstart/upstream-udev+socket-bridges."
+
+=== modified file 'Makefile.am'
+--- Makefile.am	2011-06-01 14:28:20 +0000
++++ Makefile.am	2011-06-06 17:05:11 +0000
+@@ -1,6 +1,6 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-SUBDIRS = intl dbus init util conf doc contrib po
++SUBDIRS = intl dbus init util extra conf doc contrib po
+ 
+ EXTRA_DIST = HACKING
+ 
+
+=== modified file 'configure.ac'
+--- configure.ac	2011-06-01 14:28:20 +0000
++++ configure.ac	2011-06-06 17:05:11 +0000
+@@ -30,6 +30,9 @@
+ PKG_CHECK_MODULES([NIH], [libnih >= 1.0.2])
+ PKG_CHECK_MODULES([NIH_DBUS], [libnih-dbus >= 1.0.0])
+ PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.2.16])
++PKG_CHECK_MODULES([UDEV], [libudev >= 146], [have_udev=yes], [have_udev=no])
++
++AM_CONDITIONAL([HAVE_UDEV], [test "$have_udev" = yes])
+ 
+ # Checks for header files.
+ AC_CHECK_HEADERS([valgrind/valgrind.h])
+@@ -64,6 +67,6 @@
+ 
+ AC_CONFIG_FILES([ Makefile intl/Makefile
+ 		  dbus/Makefile init/Makefile util/Makefile conf/Makefile
+-		  doc/Makefile contrib/Makefile po/Makefile.in ])
++		  extra/Makefile doc/Makefile contrib/Makefile po/Makefile.in ])
+ AC_CONFIG_HEADERS([config.h])
+ AC_OUTPUT
+
+=== modified file 'dbus/com.ubuntu.Upstart.xml'
+--- dbus/com.ubuntu.Upstart.xml	2009-07-03 16:08:10 +0000
++++ dbus/com.ubuntu.Upstart.xml	2010-12-10 07:18:34 +0000
+@@ -49,6 +49,13 @@
+       <arg name="env" type="as" direction="in" />
+       <arg name="wait" type="b" direction="in" />
+     </method>
++    <method name="EmitEventWithFile">
++      <annotation name="com.netsplit.Nih.Method.Async" value="true" />
++      <arg name="name" type="s" direction="in" />
++      <arg name="env" type="as" direction="in" />
++      <arg name="wait" type="b" direction="in" />
++      <arg name="file" type="h" direction="in" />
++    </method>
+ 
+     <!-- Basic information about Upstart -->
+     <property name="version" type="s" access="read" />
+
+=== added directory 'extra'
+=== added file 'extra/Makefile.am'
+--- extra/Makefile.am	1970-01-01 00:00:00 +0000
++++ extra/Makefile.am	2011-06-06 15:49:43 +0000
+@@ -0,0 +1,125 @@
++## Process this file with automake to produce Makefile.in
++
++AM_CFLAGS = \
++	$(NIH_CFLAGS) \
++	$(NIH_DBUS_CFLAGS) \
++	$(DBUS_CFLAGS) \
++	$(UDEV_CFLAGS)
++
++AM_CPPFLAGS = \
++	-DLOCALEDIR="\"$(localedir)\"" \
++	-DSBINDIR="\"$(sbindir)\"" \
++	-I$(top_builddir) -I$(top_srcdir) -iquote$(builddir) -iquote$(srcdir) \
++	-I$(top_srcdir)/intl
++
++
++initdir = $(sysconfdir)/init
++
++
++sbin_PROGRAMS = \
++	upstart-socket-bridge
++
++dist_init_DATA = \
++	conf/upstart-socket-bridge.conf
++
++dist_man_MANS = \
++	man/upstart-socket-bridge.8 \
++	man/socket-event.7
++
++upstart_socket_bridge_SOURCES = \
++	upstart-socket-bridge.c
++nodist_upstart_socket_bridge_SOURCES = \
++	$(com_ubuntu_Upstart_OUTPUTS) \
++	$(com_ubuntu_Upstart_Job_OUTPUTS)
++upstart_socket_bridge_LDADD = \
++	$(LTLIBINTL) \
++	$(NIH_LIBS) \
++	$(NIH_DBUS_LIBS) \
++	$(DBUS_LIBS)
++
++
++if HAVE_UDEV
++dist_init_DATA += \
++	conf/upstart-udev-bridge.conf
++
++dist_man_MANS += \
++	man/upstart-udev-bridge.8
++
++sbin_PROGRAMS += \
++	upstart-udev-bridge
++
++upstart_udev_bridge_SOURCES = \
++	upstart-udev-bridge.c
++nodist_upstart_udev_bridge_SOURCES = \
++	$(com_ubuntu_Upstart_OUTPUTS)
++upstart_udev_bridge_LDADD = \
++	$(LTLIBINTL) \
++	$(NIH_LIBS) \
++	$(NIH_DBUS_LIBS) \
++	$(DBUS_LIBS) \
++	$(UDEV_LIBS)
++
++install-data-hook:
++	src=`echo upstart-udev-bridge| sed '$(transform)'`.8; \
++	for symlink in \
++		net-device-added \
++		net-device-removed \
++		graphics-device-added \
++		drm-device-added; do \
++	  inst=`echo $$symlink | sed '$(transform)'`.7; \
++          echo " ln -sf '$(man8dir)/$$src' '$(DESTDIR)$(man7dir)/$$inst'"; \
++	  ln -sf "$(man8dir)/$$src" "$(DESTDIR)$(man7dir)/$$inst"; \
++	done
++
++else
++EXTRA_DIST = \
++	man/upstart-udev-bridge.8
++endif
++
++
++com_ubuntu_Upstart_OUTPUTS = \
++	com.ubuntu.Upstart.c \
++	com.ubuntu.Upstart.h
++
++com_ubuntu_Upstart_XML = \
++	../dbus/com.ubuntu.Upstart.xml
++
++$(com_ubuntu_Upstart_OUTPUTS): $(com_ubuntu_Upstart_XML)
++	$(AM_V_GEN)$(NIH_DBUS_TOOL) \
++		--package=$(PACKAGE) \
++		--mode=proxy --prefix=upstart \
++		--default-interface=com.ubuntu.Upstart0_6 \
++		--output=$@ $<
++
++
++com_ubuntu_Upstart_Job_OUTPUTS = \
++	com.ubuntu.Upstart.Job.c \
++	com.ubuntu.Upstart.Job.h
++
++com_ubuntu_Upstart_Job_XML = \
++	../dbus/com.ubuntu.Upstart.Job.xml
++
++$(com_ubuntu_Upstart_Job_OUTPUTS): $(com_ubuntu_Upstart_Job_XML)
++	$(AM_V_GEN)$(NIH_DBUS_TOOL) \
++		--package=$(PACKAGE) \
++		--mode=proxy --prefix=job_class \
++		--default-interface=com.ubuntu.Upstart0_6.Job \
++		--output=$@ $<
++
++
++# These have to be built sources because we can't compile object files
++# without the header file existing first
++BUILT_SOURCES = \
++	$(com_ubuntu_Upstart_OUTPUTS) \
++	$(com_ubuntu_Upstart_Job_OUTPUTS)
++
++CLEANFILES = \
++	$(com_ubuntu_Upstart_OUTPUTS) \
++	$(com_ubuntu_Upstart_Job_OUTPUTS)
++
++
++clean-local:
++	rm -f *.gcno *.gcda
++
++maintainer-clean-local:
++	rm -f *.gcov
+
+=== added directory 'extra/conf'
+=== added file 'extra/conf/upstart-socket-bridge.conf'
+--- extra/conf/upstart-socket-bridge.conf	1970-01-01 00:00:00 +0000
++++ extra/conf/upstart-socket-bridge.conf	2011-05-15 14:21:17 +0000
+@@ -0,0 +1,16 @@
++# upstart-socket-bridge - Bridge socket events into upstart
++#
++# This helper daemon receives socket(7) events and
++# emits equivalent Upstart events.
++
++description	"Bridge socket events into upstart"
++
++emits socket
++
++start on net-device-up IFACE=lo
++stop on runlevel [!2345]
++
++expect daemon
++respawn
++
++exec upstart-socket-bridge --daemon
+
+=== added file 'extra/conf/upstart-udev-bridge.conf'
+--- extra/conf/upstart-udev-bridge.conf	1970-01-01 00:00:00 +0000
++++ extra/conf/upstart-udev-bridge.conf	2011-06-06 15:51:11 +0000
+@@ -0,0 +1,16 @@
++# upstart-udev-bridge - Bridge udev events into upstart
++#
++# This helper daemon receives udev events from the netlink socket and
++# emits equivalent Upstart events.
++
++description	"Bridge udev events into upstart"
++
++emits *-device-*
++
++start on starting udev
++stop on stopped udev
++
++expect daemon
++respawn
++
++exec upstart-udev-bridge --daemon
+
+=== added directory 'extra/man'
+=== added file 'extra/man/socket-event.7'
+--- extra/man/socket-event.7	1970-01-01 00:00:00 +0000
++++ extra/man/socket-event.7	2011-05-15 14:21:17 +0000
+@@ -0,0 +1,92 @@
++.TH socket\-event 8 2011-03-08 upstart
++.\"
++.SH NAME
++socket \- event signalling that a socket connection has been made
++.\"
++.SH SYNOPSIS
++.B socket
++.BI PROTO\fR= PROTO
++.BI PORT\fR= PORT
++.BI ADDR\fR= ADDR
++
++.B socket
++.BI PROTO\fR= PROTO
++.BI PATH\fR= PATH
++.\"
++.SH DESCRIPTION
++
++The
++.B socket
++event is generated by the
++.BR upstart\-socket\-bridge (8)
++daemon when a socket connection is made whose details match the
++socket event condition and environment specified in a jobs
++.B start on
++or
++.B stop on
++stanza.
++
++When an incoming connection is detected, the file descriptor
++representing the socket is passed to the job in question to allow it to
++.BR accept (2)
++the connection. Additionally, the environment variable
++.B UPSTART_JOB
++will contain the name of the event ("socket") and the environment
++variable
++.B UPSTART_FDS
++will contain the number of the file descriptor corresponding to the
++listening socket.
++.\"
++.SH EXAMPLES
++.\"
++.SS Internet socket
++Start web server when first client connects from localhost:
++.RS
++.nf
++
++start on socket PROTO=inet PORT=80 ADDR=127.0.0.1
++.fi
++.RE
++.\"
++.SS Local socket
++.P
++.RS
++.nf
++
++start on socket PROTO=unix PATH=/var/run/.s.pgsql.1234
++.fi
++.FE
++.\"
++.SS Abstract socket
++.P
++
++.RS
++.nf
++
++start on socket PROTO=unix PATH=@/at/upstart/example
++.fi
++.FE
++.\"
++.SH AUTHOR
++Written by Scott James Remnant
++.RB < scott@netsplit.com >
++
++Manual page written by James Hunt
++.RB < james.hunt@ubuntu.com >
++.\"
++.SH BUGS
++Report bugs at 
++.RB < https://launchpad.net/upstart/+bugs >
++.\"
++.SH COPYRIGHT
++Copyright \(co 2011 Canonical Ltd.
++.PP
++This is free software; see the source for copying conditions.  There is NO
++warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++.\"
++.SH SEE ALSO
++.BR init (5)
++.BR init (8)
++.BR socket (2)
++.BR socket (7)
++.BR upstart\-socket\-bridge (8)
+
+=== added file 'extra/man/upstart-socket-bridge.8'
+--- extra/man/upstart-socket-bridge.8	1970-01-01 00:00:00 +0000
++++ extra/man/upstart-socket-bridge.8	2011-05-15 14:21:17 +0000
+@@ -0,0 +1,47 @@
++.TH upstart-socket-bridge 8 2011-03-08 upstart
++.\"
++.SH NAME
++upstart-socket-bridge \- Bridge between Upstart and sockets
++.\"
++.SH SYNOPSIS
++.B upstart-socket-bridge
++.RI [ OPTIONS ]...
++.\"
++.SH DESCRIPTION
++The
++.B upstart-socket-bridge
++queries the Upstart 
++.BR init (8)
++daemon for all job configurations which
++.B start on
++or
++.B stop on
++the socket event. It then waits for an incoming connection on each
++specified
++.BR socket (7)
++and when detected emits the socket event (\fBsocket\-event\fP (7)),
++setting a number of environment variables for the job to query.
++.\"
++.SH AUTHOR
++Written by Scott James Remnant
++.RB < scott@netsplit.com >
++
++Manual page written by James Hunt
++.RB < james.hunt@ubuntu.com >
++.\"
++.SH BUGS
++Report bugs at 
++.RB < https://launchpad.net/upstart/+bugs >
++.\"
++.SH COPYRIGHT
++Copyright \(co 2011 Canonical Ltd.
++.PP
++This is free software; see the source for copying conditions.  There is NO
++warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++.\"
++.SH SEE ALSO
++.BR init (5)
++.BR init (8)
++.BR socket (2)
++.BR socket (7)
++.BR socket\-event (7)
+
+=== added file 'extra/man/upstart-udev-bridge.8'
+--- extra/man/upstart-udev-bridge.8	1970-01-01 00:00:00 +0000
++++ extra/man/upstart-udev-bridge.8	2011-06-06 15:52:17 +0000
+@@ -0,0 +1,57 @@
++.TH upstart\-udev\-bridge 8 2011-03-08 upstart
++.\"
++.SH NAME
++upstart\-udev\-bridge \- Bridge between Upstart and udev
++.\"
++.SH SYNOPSIS
++.B upstart\-udev\-bridge
++.RI [ OPTIONS ]...
++.\"
++.SH DESCRIPTION
++.B upstart\-udev\-bridge
++receives information about kernel uevents that
++.BR udev (8)
++has completed and creates
++.BR init (8)
++events for them.
++
++It emits events which match the pattern "\fIS\fP\-device\-\fIA\fP" where
++\(aqS\(aq is the udev \fIsubsystem\fP and \(aqA\(aq is the udev \fIaction\fP.
++See \fBudev\fP(7) and for further details.
++
++Assuming \fI/sys\fP is mounted, possible values for \fIsubsystem\fP for
++your system are viewable via \fI/sys/class/\fP.
++
++.\"
++.SH EXAMPLES
++
++.IP net\-device\-added
++Event emitted when a network device is added.
++.IP net\-device\-removed
++Event emitted when a network device is removed.
++.IP graphics\-card\-added
++Event emitted when a graphics device is available to the system.
++.\"
++.SH NOTES
++This is a temporary tool until
++.BR init (8)
++itself gains the functionality to read them directly; you should not
++rely on its behaviour.
++.\"
++.SH AUTHOR
++Written by Scott James Remnant
++.RB < scott@netsplit.com >
++.\"
++.SH BUGS
++Report bugs at 
++.RB < https://launchpad.net/ubuntu/+source/upstart/+bugs >
++.\"
++.SH COPYRIGHT
++Copyright \(co 2009,2010,2011 Canonical Ltd.
++.PP
++This is free software; see the source for copying conditions.  There is NO
++warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++.SH SEE ALSO
++.BR init (5)
++.BR init (8)
++.BR udev (7)
+
+=== added file 'extra/upstart-socket-bridge.c'
+--- extra/upstart-socket-bridge.c	1970-01-01 00:00:00 +0000
++++ extra/upstart-socket-bridge.c	2011-05-15 14:21:17 +0000
+@@ -0,0 +1,644 @@
++/* upstart
++ *
++ * Copyright © 2010 Canonical Ltd.
++ * Author: Scott James Remnant <scott@netsplit.com>.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif /* HAVE_CONFIG_H */
++
++
++#include <sys/epoll.h>
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <sys/un.h>
++
++#include <netinet/in.h>
++#include <arpa/inet.h>
++
++#include <errno.h>
++#include <stdlib.h>
++#include <string.h>
++#include <syslog.h>
++#include <unistd.h>
++
++#include <nih/macros.h>
++#include <nih/alloc.h>
++#include <nih/list.h>
++#include <nih/hash.h>
++#include <nih/string.h>
++#include <nih/io.h>
++#include <nih/option.h>
++#include <nih/main.h>
++#include <nih/logging.h>
++#include <nih/error.h>
++
++#include <nih-dbus/dbus_connection.h>
++#include <nih-dbus/dbus_proxy.h>
++
++#include "dbus/upstart.h"
++#include "com.ubuntu.Upstart.h"
++#include "com.ubuntu.Upstart.Job.h"
++
++
++/* Structure we use for tracking jobs */
++typedef struct job {
++	NihList entry;
++	char *path;
++	NihList sockets;
++} Job;
++
++/* Structure we use for tracking listening sockets */
++typedef struct socket {
++	NihList entry;
++
++	union {
++		struct sockaddr        addr;
++		struct sockaddr_in sin_addr;
++		struct sockaddr_un sun_addr;
++	};
++	socklen_t addrlen;
++
++	int sock;
++} Socket;
++
++
++/* Prototypes for static functions */
++static void epoll_watcher        (void *data, NihIoWatch *watch,
++				  NihIoEvents events);
++static void upstart_job_added    (void *data, NihDBusMessage *message,
++				  const char *job);
++static void upstart_job_removed  (void *data, NihDBusMessage *message,
++				  const char *job);
++static void job_add_socket       (Job *job, char **socket_info);
++static void socket_destroy       (Socket *socket);
++static void upstart_disconnected (DBusConnection *connection);
++static void emit_event_reply     (Socket *sock, NihDBusMessage *message);
++static void emit_event_error     (Socket *sock, NihDBusMessage *message);
++
++
++/**
++ * daemonise:
++ *
++ * Set to TRUE if we should become a daemon, rather than just running
++ * in the foreground.
++ **/
++static int daemonise = FALSE;
++
++/**
++ * epoll_fd:
++ *
++ * Shared epoll file descriptor for listening on.
++ **/
++static int epoll_fd = -1;
++
++/**
++ * jobs:
++ *
++ * Jobs that we're monitoring.
++ **/
++static NihHash *jobs = NULL;
++
++/**
++ * upstart:
++ *
++ * Proxy to Upstart daemon.
++ **/
++static NihDBusProxy *upstart = NULL;
++
++
++/**
++ * options:
++ *
++ * Command-line options accepted by this program.
++ **/
++static NihOption options[] = {
++	{ 0, "daemon", N_("Detach and run in the background"),
++	  NULL, NULL, &daemonise, NULL },
++
++	NIH_OPTION_LAST
++};
++
++
++int
++main (int   argc,
++      char *argv[])
++{
++	char **         args;
++	DBusConnection *connection;
++	char **         job_class_paths;
++	int             ret;
++
++	nih_main_init (argv[0]);
++
++	nih_option_set_synopsis (_("Bridge socket events into upstart"));
++	nih_option_set_help (
++		_("By default, upstart-socket-bridge does not detach from the "
++		  "console and remains in the foreground.  Use the --daemon "
++		  "option to have it detach."));
++
++	args = nih_option_parser (NULL, argc, argv, options, FALSE);
++	if (! args)
++		exit (1);
++
++	/* Create an epoll file descriptor for listening on; use this so
++	 * we can do edge triggering rather than level.
++	 */
++	epoll_fd = epoll_create1 (0);
++	if (epoll_fd < 0) {
++		nih_fatal ("%s: %s", _("Could not create epoll descriptor"),
++			   strerror (errno));
++		exit (1);
++	}
++
++	NIH_MUST (nih_io_add_watch (NULL, epoll_fd, NIH_IO_READ,
++				    epoll_watcher, NULL));
++
++	/* Allocate jobs hash table */
++	jobs = NIH_MUST (nih_hash_string_new (NULL, 0));
++
++	/* Initialise the connection to Upstart */
++	connection = NIH_SHOULD (nih_dbus_connect (DBUS_ADDRESS_UPSTART, upstart_disconnected));
++	if (! connection) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not connect to Upstart"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	upstart = NIH_SHOULD (nih_dbus_proxy_new (NULL, connection,
++						  NULL, DBUS_PATH_UPSTART,
++						  NULL, NULL));
++	if (! upstart) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not create Upstart proxy"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	/* Connect signals to be notified when jobs come and go */
++	if (! nih_dbus_proxy_connect (upstart, &upstart_com_ubuntu_Upstart0_6, "JobAdded",
++				      (NihDBusSignalHandler)upstart_job_added, NULL)) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not create JobAdded signal connection"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	if (! nih_dbus_proxy_connect (upstart, &upstart_com_ubuntu_Upstart0_6, "JobRemoved",
++				      (NihDBusSignalHandler)upstart_job_removed, NULL)) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not create JobRemoved signal connection"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	/* Request a list of all current jobs */
++	if (upstart_get_all_jobs_sync (NULL, upstart, &job_class_paths) < 0) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not obtain job list"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	for (char **job_class_path = job_class_paths;
++	     job_class_path && *job_class_path; job_class_path++)
++		upstart_job_added (NULL, NULL, *job_class_path);
++
++	nih_free (job_class_paths);
++
++	/* Become daemon */
++	if (daemonise) {
++		if (nih_main_daemonise () < 0) {
++			NihError *err;
++
++			err = nih_error_get ();
++			nih_fatal ("%s: %s", _("Unable to become daemon"),
++				   err->message);
++			nih_free (err);
++
++			exit (1);
++		}
++
++		/* Send all logging output to syslog */
++		openlog (program_name, LOG_PID, LOG_DAEMON);
++		nih_log_set_logger (nih_logger_syslog);
++	}
++
++	/* Handle TERM and INT signals gracefully */
++	nih_signal_set_handler (SIGTERM, nih_signal_handler);
++	NIH_MUST (nih_signal_add_handler (NULL, SIGTERM, nih_main_term_signal, NULL));
++
++	if (! daemonise) {
++		nih_signal_set_handler (SIGINT, nih_signal_handler);
++		NIH_MUST (nih_signal_add_handler (NULL, SIGINT, nih_main_term_signal, NULL));
++	}
++
++	ret = nih_main_loop ();
++
++	return ret;
++}
++
++
++static void
++epoll_watcher (void *      data,
++	       NihIoWatch *watch,
++	       NihIoEvents events)
++{
++	struct epoll_event event[1024];
++	int                num_events;
++
++	num_events = epoll_wait (epoll_fd, event, 1024, 0);
++	if (num_events < 0) {
++		nih_error ("%s: %s", _("Error from epoll"), strerror (errno));
++		return;
++	} else if (num_events == 0)
++		return;
++
++	for (int i = 0; i < num_events; i++) {
++		Socket *sock = (Socket *)event[i].data.ptr;
++		nih_local char **env = NULL;
++		size_t env_len = 0;
++		char *var;
++		DBusPendingCall *pending_call;
++
++		if (event[i].events & EPOLLIN)
++			nih_debug ("%p EPOLLIN", sock);
++		if (event[i].events & EPOLLERR)
++			nih_debug ("%p EPOLLERR", sock);
++		if (event[i].events & EPOLLHUP)
++			nih_debug ("%p EPOLLHUP", sock);
++
++		env = NIH_MUST (nih_str_array_new (NULL));
++
++		switch (sock->addr.sa_family) {
++		case AF_INET:
++			NIH_MUST (nih_str_array_add (&env, NULL, &env_len,
++						     "PROTO=inet"));
++
++			var = NIH_MUST (nih_sprintf (NULL, "PORT=%d",
++						     ntohs (sock->sin_addr.sin_port)));
++			NIH_MUST (nih_str_array_addp (&env, NULL, &env_len,
++						      var));
++			nih_discard (var);
++
++			var = NIH_MUST (nih_sprintf (NULL, "ADDR=%s",
++						     inet_ntoa (sock->sin_addr.sin_addr)));
++			NIH_MUST (nih_str_array_addp (&env, NULL, &env_len,
++						      var));
++			nih_discard (var);
++			break;
++		case AF_UNIX:
++			NIH_MUST (nih_str_array_add (&env, NULL, &env_len,
++						     "PROTO=unix"));
++
++			var = NIH_MUST (nih_sprintf (NULL, "PATH=%s",
++						     sock->sun_addr.sun_path));
++			NIH_MUST (nih_str_array_addp (&env, NULL, &env_len,
++						      var));
++			nih_discard (var);
++			break;
++		default:
++			nih_assert_not_reached ();
++		}
++
++		pending_call = NIH_SHOULD (upstart_emit_event_with_file (
++						   upstart, "socket", env, TRUE,
++						   sock->sock,
++						   (UpstartEmitEventWithFileReply)emit_event_reply,
++						   (NihDBusErrorHandler)emit_event_error,
++						   sock,
++						   NIH_DBUS_TIMEOUT_NEVER));
++		if (! pending_call) {
++			NihError *err;
++
++			err = nih_error_get ();
++			nih_warn ("%s: %s", _("Could not send socket event"),
++				  err->message);
++			nih_free (err);
++		}
++
++		dbus_pending_call_unref (pending_call);
++
++		// might be EPOLLIN
++		// might be EPOLLERR
++		// might be EPOLLHUP
++	}
++}
++
++
++static void
++upstart_job_added (void *          data,
++		   NihDBusMessage *message,
++		   const char *    job_class_path)
++{
++	nih_local NihDBusProxy *job_class = NULL;
++	nih_local char ***start_on = NULL;
++	nih_local char ***stop_on = NULL;
++	Job *job;
++
++	nih_assert (job_class_path != NULL);
++
++	/* Obtain a proxy to the job */
++	job_class = nih_dbus_proxy_new (NULL, upstart->connection,
++					upstart->name, job_class_path,
++					NULL, NULL);
++	if (! job_class) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_error ("Could not create proxy for job %s: %s",
++			   job_class_path, err->message);
++		nih_free (err);
++
++		return;
++	}
++
++	job_class->auto_start = FALSE;
++
++	/* Obtain the start_on and stop_on properties of the job */
++	if (job_class_get_start_on_sync (NULL, job_class, &start_on) < 0) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_error ("Could not obtain job start condition %s: %s",
++			   job_class_path, err->message);
++		nih_free (err);
++
++		return;
++	}
++
++	if (job_class_get_stop_on_sync (NULL, job_class, &stop_on) < 0) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_error ("Could not obtain job stop condition %s: %s",
++			   job_class_path, err->message);
++		nih_free (err);
++
++		return;
++	}
++
++	/* Free any existing record for the job (should never happen,
++	 * but worth being safe).
++	 */
++	job = (Job *)nih_hash_lookup (jobs, job_class_path);
++	if (job)
++		nih_free (job);
++
++	/* Create new record for the job */
++	job = NIH_MUST (nih_new (NULL, Job));
++	job->path = NIH_MUST (nih_strdup (job, job_class_path));
++
++	nih_list_init (&job->entry);
++	nih_list_init (&job->sockets);
++
++	/* Find out whether this job listens for any socket events */
++	for (char ***event = start_on; event && *event && **event; event++)
++		if (! strcmp (**event, "socket"))
++			job_add_socket (job, *event);
++	for (char ***event = stop_on; event && *event && **event; event++)
++		if (! strcmp (**event, "socket"))
++			job_add_socket (job, *event);
++
++	/* If we didn't end up with any sockets, free the job and move on */
++	if (NIH_LIST_EMPTY (&job->sockets)) {
++		nih_free (job);
++		return;
++	}
++
++	nih_debug ("Job got added %s", job_class_path);
++
++	nih_alloc_set_destructor (job, nih_list_destroy);
++	nih_hash_add (jobs, &job->entry);
++}
++
++static void
++upstart_job_removed (void *          data,
++		     NihDBusMessage *message,
++		     const char *    job_path)
++{
++	Job *job;
++
++	nih_assert (job_path != NULL);
++
++	job = (Job *)nih_hash_lookup (jobs, job_path);
++	if (job) {
++		nih_debug ("Job went away %s", job_path);
++		nih_free (job);
++	}
++}
++
++
++static void
++job_add_socket (Job *  job,
++		char **socket_info)
++{
++	Socket *sock;
++	nih_local char *error = NULL;
++	int     components = 0;
++	struct epoll_event event;
++
++	nih_assert (job != NULL);
++	nih_assert (socket_info != NULL);
++	nih_assert (! strcmp(socket_info[0], "socket"));
++
++	sock = NIH_MUST (nih_new (job, Socket));
++	memset (sock, 0, sizeof (Socket));
++	sock->sock = -1;
++
++	nih_list_init (&sock->entry);
++
++	nih_debug ("Found socket");
++	for (char **env = socket_info + 1; env && *env; env++) {
++		char  *val;
++		size_t name_len;
++
++		val = strchr (*env, '=');
++		if (! val) {
++			nih_warn ("Ignored socket event without variable name in %s",
++				  job->path);
++			goto error;
++		}
++
++		name_len = val - *env;
++		val++;
++
++		if (! strncmp (*env, "PROTO", name_len)) {
++			if (! strcmp (val, "inet")) {
++				sock->addrlen = sizeof sock->sin_addr;
++				sock->sin_addr.sin_family = AF_INET;
++				sock->sin_addr.sin_addr.s_addr = INADDR_ANY;
++				components = 1;
++			} else if (! strcmp (val, "unix")) {
++				sock->addrlen = sizeof sock->sun_addr;
++				sock->sun_addr.sun_family = AF_UNIX;
++				components = 1;
++			} else {
++				nih_warn ("Ignored socket event with unknown PROTO=%s in %s",
++					  val, job->path);
++				goto error;
++			}
++
++		} else if (! strncmp (*env, "PORT", name_len)
++			   && (sock->sin_addr.sin_family == AF_INET)) {
++			sock->sin_addr.sin_port = htons (atoi (val));
++			components--;
++
++		} else if (! strncmp (*env, "ADDR", name_len)
++			   && (sock->sin_addr.sin_family == AF_INET)) {
++			if (inet_aton (val, &(sock->sin_addr.sin_addr)) == 0) {
++				nih_warn ("Ignored socket event with invalid ADDR=%s in %s",
++					  val, job->path);
++				goto error;
++			}
++
++		} else if (! strncmp (*env, "PATH", name_len)
++			   && (sock->sun_addr.sun_family == AF_UNIX)) {
++			strncpy (sock->sun_addr.sun_path, val,
++				 sizeof sock->sun_addr.sun_path);
++
++			if (sock->sun_addr.sun_path[0] == '@')
++				sock->sun_addr.sun_path[0] = '\0';
++
++			components--;
++
++		} else {
++			nih_warn ("Ignored socket event with unknown variable %.*s in %s",
++				  (int)name_len, *env, job->path);
++			goto error;
++		}
++	}
++
++	/* Missing any required components? */
++	if (components) {
++		nih_warn ("Ignored incomplete socket event in %s",
++			  job->path);
++		goto error;
++	}
++
++	/* Let's try and set this baby up */
++	sock->sock = socket (sock->addr.sa_family, SOCK_STREAM, 0);
++	if (sock->sock < 0) {
++		nih_warn ("Failed to create socket in %s: %s",
++			  job->path, strerror (errno));
++		goto error;
++	}
++
++	int opt = 1;
++	if (setsockopt (sock->sock, SOL_SOCKET, SO_REUSEADDR,
++			&opt, sizeof opt) < 0) {
++		nih_warn ("Failed to set socket reuse in %s: %s",
++			  job->path, strerror (errno));
++		goto error;
++	}
++
++	if (bind (sock->sock, &sock->addr, sock->addrlen) < 0) {
++		nih_warn ("Failed to bind socket in %s: %s",
++			  job->path, strerror (errno));
++		goto error;
++	}
++
++	if (listen (sock->sock, SOMAXCONN) < 0) {
++		nih_warn ("Failed to listen on socket in %s: %s",
++			  job->path, strerror (errno));
++		goto error;
++	}
++
++	/* We have a listening socket, now we want to be notified when someone
++	 * connects; but we just want one notification, we don't want to get
++	 * a DDoS of wake-ups while waiting for the service to start.
++	 *
++	 * The solution is to use epoll in edge-triggered mode, this will
++	 * fire only on initial connection until a new one comes in.
++	 */
++	event.events = EPOLLIN | EPOLLET;
++	event.data.ptr = sock;
++
++	if (epoll_ctl (epoll_fd, EPOLL_CTL_ADD, sock->sock, &event) < 0) {
++		nih_warn ("Failed to watch socket in %s: %s",
++			  job->path, strerror (errno));
++		goto error;
++	}
++
++	/* Okay then, add to the job */
++	nih_alloc_set_destructor (sock, socket_destroy);
++	nih_list_add (&job->sockets, &sock->entry);
++
++	return;
++
++error:
++	if (sock->sock != -1)
++		close (sock->sock);
++	nih_free (sock);
++}
++
++static void
++socket_destroy (Socket *sock)
++{
++	epoll_ctl (epoll_fd, EPOLL_CTL_DEL, sock->sock, NULL);
++	close (sock->sock);
++
++	nih_list_destroy (&sock->entry);
++}
++
++
++static void
++upstart_disconnected (DBusConnection *connection)
++{
++	nih_fatal (_("Disconnected from Upstart"));
++	nih_main_loop_exit (1);
++}
++
++
++static void
++emit_event_reply (Socket *        sock,
++		  NihDBusMessage *message)
++{
++	nih_debug ("Event completed");
++}
++
++static void
++emit_event_error (Socket *        sock,
++		  NihDBusMessage *message)
++{
++	NihError *err;
++
++	err = nih_error_get ();
++	nih_warn ("%s: %s", _("Error emitting socket event"), err->message);
++	nih_free (err);
++}
+
+=== added file 'extra/upstart-udev-bridge.c'
+--- extra/upstart-udev-bridge.c	1970-01-01 00:00:00 +0000
++++ extra/upstart-udev-bridge.c	2010-12-10 04:42:34 +0000
+@@ -0,0 +1,310 @@
++/* upstart
++ *
++ * Copyright © 2009 Canonical Ltd.
++ * Author: Scott James Remnant <scott@netsplit.com>.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif /* HAVE_CONFIG_H */
++
++
++#include <libudev.h>
++
++#include <stdlib.h>
++#include <string.h>
++#include <syslog.h>
++
++#include <nih/macros.h>
++#include <nih/alloc.h>
++#include <nih/string.h>
++#include <nih/io.h>
++#include <nih/option.h>
++#include <nih/main.h>
++#include <nih/logging.h>
++#include <nih/error.h>
++
++#include <nih-dbus/dbus_connection.h>
++#include <nih-dbus/dbus_proxy.h>
++
++#include "dbus/upstart.h"
++#include "com.ubuntu.Upstart.h"
++
++
++/* Prototypes for static functions */
++static void udev_monitor_watcher (struct udev_monitor *udev_monitor,
++				  NihIoWatch *watch, NihIoEvents events);
++static void upstart_disconnected (DBusConnection *connection);
++static void emit_event_error     (void *data, NihDBusMessage *message);
++
++
++/**
++ * daemonise:
++ *
++ * Set to TRUE if we should become a daemon, rather than just running
++ * in the foreground.
++ **/
++static int daemonise = FALSE;
++
++/**
++ * upstart:
++ *
++ * Proxy to Upstart daemon.
++ **/
++static NihDBusProxy *upstart = NULL;
++
++
++/**
++ * options:
++ *
++ * Command-line options accepted by this program.
++ **/
++static NihOption options[] = {
++	{ 0, "daemon", N_("Detach and run in the background"),
++	  NULL, NULL, &daemonise, NULL },
++
++	NIH_OPTION_LAST
++};
++
++
++int
++main (int   argc,
++      char *argv[])
++{
++	char **              args;
++	DBusConnection *     connection;
++	struct udev *        udev;
++	struct udev_monitor *udev_monitor;
++	int                  ret;
++
++	nih_main_init (argv[0]);
++
++	nih_option_set_synopsis (_("Bridge udev events into upstart"));
++	nih_option_set_help (
++		_("By default, upstart-udev-bridge does not detach from the "
++		  "console and remains in the foreground.  Use the --daemon "
++		  "option to have it detach."));
++
++	args = nih_option_parser (NULL, argc, argv, options, FALSE);
++	if (! args)
++		exit (1);
++
++	/* Initialise the connection to Upstart */
++	connection = NIH_SHOULD (nih_dbus_connect (DBUS_ADDRESS_UPSTART, upstart_disconnected));
++	if (! connection) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not connect to Upstart"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	upstart = NIH_SHOULD (nih_dbus_proxy_new (NULL, connection,
++						  NULL, DBUS_PATH_UPSTART,
++						  NULL, NULL));
++	if (! upstart) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_fatal ("%s: %s", _("Could not create Upstart proxy"),
++			   err->message);
++		nih_free (err);
++
++		exit (1);
++	}
++
++	/* Initialise the connection to udev */
++	nih_assert (udev = udev_new ());
++	nih_assert (udev_monitor = udev_monitor_new_from_netlink (udev, "udev"));
++	nih_assert (udev_monitor_enable_receiving (udev_monitor) == 0);
++	udev_monitor_set_receive_buffer_size(udev_monitor, 128*1024*1024);
++
++	NIH_MUST (nih_io_add_watch (NULL, udev_monitor_get_fd (udev_monitor),
++				    NIH_IO_READ,
++				    (NihIoWatcher)udev_monitor_watcher,
++				    udev_monitor));
++
++	/* Become daemon */
++	if (daemonise) {
++		if (nih_main_daemonise () < 0) {
++			NihError *err;
++
++			err = nih_error_get ();
++			nih_fatal ("%s: %s", _("Unable to become daemon"),
++				   err->message);
++			nih_free (err);
++
++			exit (1);
++		}
++
++		/* Send all logging output to syslog */
++		openlog (program_name, LOG_PID, LOG_DAEMON);
++		nih_log_set_logger (nih_logger_syslog);
++	}
++
++	/* Handle TERM and INT signals gracefully */
++	nih_signal_set_handler (SIGTERM, nih_signal_handler);
++	NIH_MUST (nih_signal_add_handler (NULL, SIGTERM, nih_main_term_signal, NULL));
++
++	if (! daemonise) {
++		nih_signal_set_handler (SIGINT, nih_signal_handler);
++		NIH_MUST (nih_signal_add_handler (NULL, SIGINT, nih_main_term_signal, NULL));
++	}
++
++	ret = nih_main_loop ();
++
++	return ret;
++}
++
++
++static void
++udev_monitor_watcher (struct udev_monitor *udev_monitor,
++		      NihIoWatch *         watch,
++		      NihIoEvents          events)
++{
++	struct udev_device *    udev_device;
++	const char *            subsystem;
++	const char *            action;
++	const char *            kernel;
++	const char *            devpath;
++	const char *            devname;
++	nih_local char *        name = NULL;
++	nih_local char **       env = NULL;
++	size_t                  env_len = 0;
++	DBusPendingCall *       pending_call;
++
++	udev_device = udev_monitor_receive_device (udev_monitor);
++	if (! udev_device)
++		return;
++
++	subsystem = udev_device_get_subsystem (udev_device);
++	action = udev_device_get_action (udev_device);
++	kernel = udev_device_get_sysname (udev_device);
++	devpath = udev_device_get_devpath (udev_device);
++	devname = udev_device_get_devnode (udev_device);
++
++	if (! strcmp (action, "add")) {
++		name = NIH_MUST (nih_sprintf (NULL, "%s-device-added",
++					      subsystem));
++	} else if (! strcmp (action, "change")) {
++		name = NIH_MUST (nih_sprintf (NULL, "%s-device-changed",
++					      subsystem));
++	} else if (! strcmp (action, "remove")) {
++		name = NIH_MUST (nih_sprintf (NULL, "%s-device-removed",
++					      subsystem));
++	} else {
++		name = NIH_MUST (nih_sprintf (NULL, "%s-device-%s",
++					      subsystem, action));
++	}
++
++	env = NIH_MUST (nih_str_array_new (NULL));
++
++	if (kernel) {
++		nih_local char *var = NULL;
++
++		var = NIH_MUST (nih_sprintf (NULL, "KERNEL=%s", kernel));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	if (devpath) {
++		nih_local char *var = NULL;
++
++		var = NIH_MUST (nih_sprintf (NULL, "DEVPATH=%s", devpath));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	if (devname) {
++		nih_local char *var = NULL;
++
++		var = NIH_MUST (nih_sprintf (NULL, "DEVNAME=%s", devname));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	if (subsystem) {
++		nih_local char *var = NULL;
++
++		var = NIH_MUST (nih_sprintf (NULL, "SUBSYSTEM=%s", subsystem));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	if (action) {
++		nih_local char *var = NULL;
++
++		var = NIH_MUST (nih_sprintf (NULL, "ACTION=%s", action));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	for (struct udev_list_entry *list_entry = udev_device_get_properties_list_entry (udev_device);
++	     list_entry != NULL;
++	     list_entry = udev_list_entry_get_next (list_entry)) {
++		const char *    key;
++		nih_local char *var = NULL;
++
++		key = udev_list_entry_get_name (list_entry);
++		if (! strcmp (key, "DEVPATH"))
++			continue;
++		if (! strcmp (key, "DEVNAME"))
++			continue;
++		if (! strcmp (key, "SUBSYSTEM"))
++			continue;
++		if (! strcmp (key, "ACTION"))
++			continue;
++
++		var = NIH_MUST (nih_sprintf (NULL, "%s=%s", key,
++					     udev_list_entry_get_value (list_entry)));
++		NIH_MUST (nih_str_array_addp (&env, NULL, &env_len, var));
++	}
++
++	nih_debug ("%s %s", name, devname);
++
++	pending_call = NIH_SHOULD (upstart_emit_event (upstart,
++						       name, env, FALSE,
++						       NULL, emit_event_error, NULL,
++						       NIH_DBUS_TIMEOUT_NEVER));
++	if (! pending_call) {
++		NihError *err;
++
++		err = nih_error_get ();
++		nih_warn ("%s", err->message);
++		nih_free (err);
++	}
++
++	dbus_pending_call_unref (pending_call);
++
++	udev_device_unref (udev_device);
++}
++
++
++static void
++upstart_disconnected (DBusConnection *connection)
++{
++	nih_fatal (_("Disconnected from Upstart"));
++	nih_main_loop_exit (1);
++}
++
++static void
++emit_event_error (void *          data,
++		  NihDBusMessage *message)
++{
++	NihError *err;
++
++	err = nih_error_get ();
++	nih_warn ("%s", err->message);
++	nih_free (err);
++}
+
+=== modified file 'init/control.c'
+--- init/control.c	2011-06-03 11:02:18 +0000
++++ init/control.c	2011-06-06 17:05:11 +0000
+@@ -25,8 +25,10 @@
+ 
+ #include <dbus/dbus.h>
+ 
++#include <fcntl.h>
+ #include <stdio.h>
+ #include <string.h>
++#include <unistd.h>
+ 
+ #include <nih/macros.h>
+ #include <nih/alloc.h>
+@@ -507,13 +509,24 @@
+ }
+ 
+ 
++int
++control_emit_event (void            *data,
++		    NihDBusMessage  *message,
++		    const char      *name,
++		    char * const    *env,
++		    int              wait)
++{
++	return control_emit_event_with_file (data, message, name, env, wait, -1);
++}
++
+ /**
+- * control_emit_event:
++ * control_emit_event_with_file:
+  * @data: not used,
+  * @message: D-Bus connection and message received,
+  * @name: name of event to emit,
+  * @env: environment of environment,
+- * @wait: whether to wait for event completion before returning.
++ * @wait: whether to wait for event completion before returning,
++ * @file: file descriptor.
+  *
+  * Implements the top half of the EmitEvent method of the com.ubuntu.Upstart
+  * interface, the bottom half may be found in event_finished().
+@@ -533,11 +546,12 @@
+  * Returns: zero on success, negative value on raised error.
+  **/
+ int
+-control_emit_event (void            *data,
+-		    NihDBusMessage  *message,
+-		    const char      *name,
+-		    char * const    *env,
+-		    int              wait)
++control_emit_event_with_file (void            *data,
++			      NihDBusMessage  *message,
++			      const char      *name,
++			      char * const    *env,
++			      int              wait,
++			      int              file)
+ {
+ 	Event   *event;
+ 	Blocked *blocked;
+@@ -550,6 +564,7 @@
+ 	if (! strlen (name)) {
+ 		nih_dbus_error_raise_printf (DBUS_ERROR_INVALID_ARGS,
+ 					     _("Name may not be empty string"));
++		close (file);
+ 		return -1;
+ 	}
+ 
+@@ -557,13 +572,26 @@
+ 	if (! environ_all_valid (env)) {
+ 		nih_dbus_error_raise_printf (DBUS_ERROR_INVALID_ARGS,
+ 					     _("Env must be KEY=VALUE pairs"));
++		close (file);
+ 		return -1;
+ 	}
+ 
+ 	/* Make the event and block the message on it */
+ 	event = event_new (NULL, name, (char **)env);
+-	if (! event)
+-		nih_return_system_error (-1);
++	if (! event) {
++		nih_error_raise_system ();
++		close (file);
++		return -1;
++	}
++
++	event->fd = file;
++	if (event->fd >= 0) {
++		long flags;
++
++		flags = fcntl (event->fd, F_GETFD);
++		flags &= ~FD_CLOEXEC;
++		fcntl (event->fd, F_SETFD, flags);
++	}
+ 
+ 	if (wait) {
+ 		blocked = blocked_new (event, BLOCKED_EMIT_METHOD, message);
+@@ -573,6 +601,7 @@
+ 		if (! blocked) {
+ 			nih_error_raise_system ();
+ 			nih_free (event);
++			close (file);
+ 			return -1;
+ 		}
+ 
+
+=== modified file 'init/control.h'
+--- init/control.h	2011-05-31 14:22:00 +0000
++++ init/control.h	2011-06-06 17:05:11 +0000
+@@ -72,6 +72,10 @@
+ 				   const char *name, char * const *env,
+ 				   int wait)
+ 	__attribute__ ((warn_unused_result));
++int  control_emit_event_with_file (void *data, NihDBusMessage *message,
++				   const char *name, char * const *env,
++				   int wait, int file)
++	__attribute__ ((warn_unused_result));
+ 
+ int  control_get_version          (void *data, NihDBusMessage *message,
+ 				   char **version)
+
+=== modified file 'init/event.c'
+--- init/event.c	2011-05-12 12:07:02 +0000
++++ init/event.c	2011-06-06 17:05:11 +0000
+@@ -25,6 +25,7 @@
+ 
+ 
+ #include <string.h>
++#include <unistd.h>
+ 
+ #include <nih/macros.h>
+ #include <nih/alloc.h>
+@@ -124,4 +125,5 @@
+ 	nih_list_init (&event->entry);
+ 
++	event->fd = -1;
+ 	event->progress = EVENT_PENDING;
+ 	event->failed = FALSE;
+@@ -402,8 +404,16 @@
+ 				job->start_env = env;
+ 				nih_ref (job->start_env, job);
+ 
++				nih_discard (env);
++				env = NULL;
++
+ 				job_finished (job, FALSE);
+ 
++				NIH_MUST (event_operator_fds (class->start_on, job,
++							      &job->fds, &job->num_fds,
++							      &job->start_env, &len,
++							      "UPSTART_FDS"));
++
+ 				event_operator_events (job->class->start_on,
+ 						       job, &job->blocking);
+ 
+@@ -468,6 +478,8 @@
+ 		nih_free  (blocked);
+ 	}
+ 
++	close (event->fd);
++
+ 	if (event->failed) {
+ 		char *name;
+ 
+
+=== modified file 'init/event.h'
+--- init/event.h	2010-12-10 03:02:57 +0000
++++ init/event.h	2011-06-06 17:05:11 +0000
+@@ -67,6 +67,7 @@
+ 
+  	char            *name;
+ 	char           **env;
++	int              fd;
+ 
+ 	EventProgress    progress;
+ 	int              failed;
+
+=== modified file 'init/event_operator.c'
+--- init/event_operator.c	2010-11-19 14:34:51 +0000
++++ init/event_operator.c	2010-12-10 07:18:34 +0000
+@@ -552,6 +552,65 @@
+ 	return *env;
+ }
+ 
++int *
++event_operator_fds (EventOperator *root,
++		    const void *parent,
++		    int **fds,
++		    size_t *num_fds,
++		    char          ***env,
++		    size_t          *len,
++		    const char      *key)
++{
++	nih_local char *evlist = NULL;
++
++	nih_assert (root != NULL);
++	nih_assert (fds != NULL);
++	nih_assert (num_fds != NULL);
++	nih_assert (env != NULL);
++	nih_assert (len != NULL);
++	nih_assert (key != NULL);
++
++	/* Initialise the event list variable with the name given. */
++	evlist = nih_sprintf (NULL, "%s=", key);
++	if (! evlist)
++		return NULL;
++
++	*num_fds = 0;
++	NIH_TREE_FOREACH_FULL (&root->node, iter,
++			       (NihTreeFilter)event_operator_filter, NULL) {
++		EventOperator *oper = (EventOperator *)iter;
++
++		if (oper->type != EVENT_MATCH)
++			continue;
++
++		nih_assert (oper->event != NULL);
++
++		if (oper->event->fd >= 0) {
++			*fds = nih_realloc (*fds, parent, sizeof (int) * (*num_fds + 1));
++			if (! *fds)
++				return NULL;
++
++			(*fds)[(*num_fds)++] = oper->event->fd;
++
++			if (evlist[strlen (evlist) - 1] != '=') {
++				if (! nih_strcat_sprintf (&evlist, NULL, " %d",
++							  oper->event->fd))
++					return NULL;
++			} else {
++				if (! nih_strcat_sprintf (&evlist, NULL, "%d",
++							  oper->event->fd))
++					return NULL;
++			}
++		}
++	}
++
++	if (*num_fds)
++		if (! environ_add (env, parent, len, TRUE, evlist))
++			return NULL;
++
++	return (void *)1;
++}
++
+ /**
+  * event_operator_events:
+  * @root: operator tree to collect from,
+
+=== modified file 'init/event_operator.h'
+--- init/event_operator.h	2009-06-23 09:29:35 +0000
++++ init/event_operator.h	2010-12-10 07:18:34 +0000
+@@ -95,6 +95,14 @@
+ char **        event_operator_environment (EventOperator *root, char ***env,
+ 					   const void *parent, size_t *len,
+ 					   const char *key);
++int *
++event_operator_fds (EventOperator *root,
++		    const void *parent,
++		    int **fds,
++		    size_t *num_fds,
++		    char          ***env,
++		    size_t          *len,
++		    const char      *key);
+ void           event_operator_events      (EventOperator *root,
+ 					   const void *parent, NihList *list);
+ 
+
+=== modified file 'init/job.c'
+--- init/job.c	2011-05-15 12:53:17 +0000
++++ init/job.c	2011-06-06 17:05:11 +0000
+@@ -125,6 +125,9 @@
+ 			goto error;
+ 	}
+ 
++	job->fds = NULL;
++	job->num_fds = 0;
++
+ 	job->pid = nih_alloc (job, sizeof (pid_t) * PROCESS_LAST);
+ 	if (! job->pid)
+ 		goto error;
+
+=== modified file 'init/job.h'
+--- init/job.h	2010-12-10 03:02:57 +0000
++++ init/job.h	2011-06-06 17:05:11 +0000
+@@ -134,6 +134,9 @@
+ 	char          **stop_env;
+ 	EventOperator  *stop_on;
+ 
++	int *fds;
++	size_t num_fds;
++
+ 	pid_t          *pid;
+ 	Event          *blocker;
+ 	NihList         blocking;
+
+=== modified file 'po/POTFILES.in'
+--- po/POTFILES.in	2011-05-05 09:06:21 +0000
++++ po/POTFILES.in	2011-05-15 15:08:06 +0000
+@@ -20,3 +20,5 @@
+ util/runlevel.c
+ util/shutdown.c
+ util/telinit.c
++
++extra/upstart-udev-bridge.c
+

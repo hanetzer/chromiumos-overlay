@@ -57,6 +57,10 @@ src_prepare() {
 
 	# load SELinux policy
 	epatch "${FILESDIR}"/upstart-1.2-selinux.patch
+
+	# -r 1307 - "Merge of lp:~jamesodhunt/upstart/upstream-udev+socket-bridges."
+	epatch "${FILESDIR}"/upstart-1.2-socket-event.patch
+
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
 	# will do it for us, and incorrectly too.
@@ -85,4 +89,7 @@ src_compile() {
 src_install() {
 	default
 	use examples || rm "${D}"/etc/init/*.conf
+	insinto /etc/init
+	# Always use our own upstart-socket-bridge.conf.
+	doins "${FILESDIR}"/init/upstart-socket-bridge.conf
 }
