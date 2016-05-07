@@ -36,7 +36,7 @@ IUSE="${IUSE} +bmpblk bitmap_in_cbfs cros_ec pd_sync depthcharge qca-framework"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
-	kunimitsu lars link lumpy nyan panther parrot peppy rambi samus sklrvp
+	kunimitsu link lumpy nyan panther parrot peppy rambi samus sklrvp
 	slippy stout stout32 strago stumpy urara variant-peach-pit
 )
 

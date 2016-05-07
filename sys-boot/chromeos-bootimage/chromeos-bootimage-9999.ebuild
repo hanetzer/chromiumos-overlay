@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex amenia aplrvp auron bayleybay beltino bolt butterfly chell cyan emeraldlake2 falco fox"
-BOARDS="${BOARDS} gizmo glados jecht kunimitsu lars link lumpy lumpy64 mario panther"
+BOARDS="${BOARDS} gizmo glados jecht kunimitsu link lumpy lumpy64 mario panther"
 BOARDS="${BOARDS} parrot peppy rambi reef samus sklrvp slippy squawks stout strago stumpy"
 BOARDS="${BOARDS} sumo"
 IUSE="${BOARDS} +bmpblk bitmap_in_cbfs build-all-fw cb_legacy_seabios cb_legacy_uboot"
