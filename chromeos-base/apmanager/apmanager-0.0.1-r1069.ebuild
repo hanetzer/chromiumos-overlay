@@ -5,7 +5,6 @@ EAPI=4
 
 CROS_WORKON_COMMIT=("e040c6b099f11f82a8cc9c1569d8217bbf9d7e76" "57188eeae6e36334e15f2cec96f68fec330b0f34")
 CROS_WORKON_TREE=("6788d36d19df5c75ddb8f4108546e7dad271e877" "4eaad6acce1221611a1192004de22f2beefcd462")
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/apmanager")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/apmanager")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")

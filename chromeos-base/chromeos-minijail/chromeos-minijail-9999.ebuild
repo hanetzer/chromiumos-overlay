@@ -3,10 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
-CROS_WORKON_PROJECT="platform/external/minijail"
-CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="aosp/platform/external/minijail"
 CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-debug cros-workon eutils toolchain-funcs

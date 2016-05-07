@@ -5,7 +5,6 @@ EAPI="4"
 
 CROS_WORKON_COMMIT=("e040c6b099f11f82a8cc9c1569d8217bbf9d7e76" "46a9aae85e78179a0acd0d1efd1d99685fb827bb")
 CROS_WORKON_TREE=("6788d36d19df5c75ddb8f4108546e7dad271e877" "f8699e480d7c3defa6b3da35327d74bc5bd90305")
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")

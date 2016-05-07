@@ -5,7 +5,6 @@ EAPI=4
 
 CROS_WORKON_COMMIT=("e040c6b099f11f82a8cc9c1569d8217bbf9d7e76" "b470b41a117a213f5b8cf2d7badcc208da001b72")
 CROS_WORKON_TREE=("6788d36d19df5c75ddb8f4108546e7dad271e877" "ce097c51b1aa49708188c52ca071d9703e637112")
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/webservd")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/webservd")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")

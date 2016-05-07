@@ -5,7 +5,6 @@ EAPI=4
 
 CROS_WORKON_COMMIT="7a569073b95af7532892dc726c2f33cd40edfb57"
 CROS_WORKON_TREE="0e1e4a68dcd4ce51362c3ef8f094eed5e7e60ba1"
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
 CROS_WORKON_REPO="https://android.googlesource.com"
