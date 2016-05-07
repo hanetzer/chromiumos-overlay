@@ -61,6 +61,9 @@ src_prepare() {
 	# -r 1307 - "Merge of lp:~jamesodhunt/upstart/upstream-udev+socket-bridges."
 	epatch "${FILESDIR}"/upstart-1.2-socket-event.patch
 
+	# Inspired by -r 1542; just rewrote it based on 1.2 though
+	epatch "${FILESDIR}"/upstart-1.2-socket-event-SOCKET_PATH.patch
+
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
 	# will do it for us, and incorrectly too.

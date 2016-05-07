@@ -1,0 +1,55 @@
+Inspired by -r 1542; I just rewrote it based on 1.2 though
+
+diff --git a/extra/man/socket-event.7 b/extra/man/socket-event.7
+index 9dfb97e53df6..88c25d412617 100644
+--- a/extra/man/socket-event.7
++++ b/extra/man/socket-event.7
+@@ -11,7 +11,7 @@ socket \- event signalling that a socket connection has been made
+ 
+ .B socket
+ .BI PROTO\fR= PROTO
+-.BI PATH\fR= PATH
++.BI SOCKET_PATH\fR= PATH
+ .\"
+ .SH DESCRIPTION
+ 
+@@ -53,7 +53,7 @@ start on socket PROTO=inet PORT=80 ADDR=127.0.0.1
+ .RS
+ .nf
+ 
+-start on socket PROTO=unix PATH=/var/run/.s.pgsql.1234
++start on socket PROTO=unix SOCKET_PATH=/var/run/.s.pgsql.1234
+ .fi
+ .FE
+ .\"
+@@ -63,7 +63,7 @@ start on socket PROTO=unix PATH=/var/run/.s.pgsql.1234
+ .RS
+ .nf
+ 
+-start on socket PROTO=unix PATH=@/at/upstart/example
++start on socket PROTO=unix SOCKET_PATH=@/at/upstart/example
+ .fi
+ .FE
+ .\"
+diff --git a/extra/upstart-socket-bridge.c b/extra/upstart-socket-bridge.c
+index 9a31d9fd3a74..dabb9fa35cda 100644
+--- a/extra/upstart-socket-bridge.c
++++ b/extra/upstart-socket-bridge.c
+@@ -326,7 +326,7 @@ epoll_watcher (void *      data,
+ 			NIH_MUST (nih_str_array_add (&env, NULL, &env_len,
+ 						     "PROTO=unix"));
+ 
+-			var = NIH_MUST (nih_sprintf (NULL, "PATH=%s",
++			var = NIH_MUST (nih_sprintf (NULL, "SOCKET_PATH=%s",
+ 						     sock->sun_addr.sun_path));
+ 			NIH_MUST (nih_str_array_addp (&env, NULL, &env_len,
+ 						      var));
+@@ -527,7 +527,7 @@ job_add_socket (Job *  job,
+ 				goto error;
+ 			}
+ 
+-		} else if (! strncmp (*env, "PATH", name_len)
++		} else if (! strncmp (*env, "SOCKET_PATH", name_len)
+ 			   && (sock->sun_addr.sun_family == AF_UNIX)) {
+ 			strncpy (sock->sun_addr.sun_path, val,
+ 				 sizeof sock->sun_addr.sun_path);
