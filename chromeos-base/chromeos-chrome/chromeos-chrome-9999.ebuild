@@ -324,10 +324,7 @@ set_build_defines() {
 		target_os=chromeos
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
-
-        # This is never referenced for chromeos in any chromium .gn file.
-        # crbug.com/607669.
-	# use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+	use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	if [[ ${CHOST} == armv6* ]]; then
@@ -428,9 +425,7 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		BUILD_ARGS+=( internal_gles2_conform_tests=true )
-		# This is never referenced for chromeos in any chromium .gn
-		# file. crbug.com/607669
-		#BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+		BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -767,18 +762,14 @@ setup_test_lists() {
 		TEST_FILES+=( ppapi/examples/video_decode )
 	else
 		TEST_FILES+=( ppapi_example_video_decode )
-	fi
-
-	if use chrome_internal || use internal_gles_conform; then
-		TEST_FILES+=(
-			gles2_conform_test{,_windowless}
-		)
-	fi
-
-	if use chrome_internal || use internal_khronos_glcts; then
-		TEST_FILES+=(
-			khronos_glcts_test{,_windowless}
-		)
+		# TODO(ihf/stevenjb/kbr): Investigate why these targets fail with GN.
+		# crbug.com/609958
+		if use chrome_internal || use internal_khronos_glcts; then
+			TEST_FILES+=( khronos_glcts_test{,_windowless} )
+		fi
+		if use chrome_internal || use internal_gles_conform; then
+			TEST_FILES+=( gles2_conform_test{,_windowless} )
+		fi
 	fi
 
 	# TODO(ihf): Figure out how to keep this in sync with telemetry.
