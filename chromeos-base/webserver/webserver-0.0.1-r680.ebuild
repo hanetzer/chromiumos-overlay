@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("ec3139fe1f5201521a199efd91f682001277433b" "a1d5f07e895c04002c9d57e620734f7ff98d1704")
-CROS_WORKON_TREE=("b3e63a704c409034fa4a95b2c78e4b35331e728e" "293cf23c2b9d91aca2e9dfca8c84b015511bb6bc")
+CROS_WORKON_COMMIT=("6208a33ec2b6c6a5d755986b75a5837928b142e9" "b470b41a117a213f5b8cf2d7badcc208da001b72")
+CROS_WORKON_TREE=("2882c8bedd557f72b39314a2f781f871264aec98" "ce097c51b1aa49708188c52ca071d9703e637112")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/webservd")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/webservd")
@@ -62,6 +62,10 @@ src_install() {
 	# Install DBus configuration files.
 	insinto /etc/dbus-1/system.d
 	doins webservd/etc/dbus-1/org.chromium.WebServer.conf
+
+        # Install seccomp filter for webservd.
+        insinto /usr/share/filters
+        doins webservd/usr/share/filters/webservd-seccomp.policy
 
 	# Install web server daemon.
 	dobin "${OUT}"/webservd
