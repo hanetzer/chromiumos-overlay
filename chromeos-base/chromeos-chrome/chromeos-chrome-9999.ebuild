@@ -823,6 +823,12 @@ setup_compile_flags() {
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
 
+	# Chrome and ChromeOS versions of the compiler may not be in
+	# sync. So, don't complain if Chrome uses a diagnostic
+	# option that is not yet implemented in the compiler version used
+	# by ChromeOS.
+	append-cxxflags -Wno-unknown-warning-option
+
 	# crbug.com/532532
 	filter-flags "-Wl,--fix-cortex-a53-843419"
 
