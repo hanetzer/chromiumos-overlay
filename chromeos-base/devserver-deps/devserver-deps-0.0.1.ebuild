@@ -18,6 +18,7 @@ RDEPEND="
 	dev-python/lockfile
 	dev-python/cherrypy
 	net-misc/gsutil
+	dev-python/rtslib-fb
 "
 
 DEPEND=""
