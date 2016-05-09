@@ -18,7 +18,6 @@ IUSE="
 	${IUSE}
 	+autotest
 	+cellular
-	rk32
 	+shill
 	+tpm
 	vaapi
@@ -132,6 +131,10 @@ IUSE_TESTS=(
 	+tests_touch_TouchscreenScroll
 	+tests_touch_TouchscreenTaps
 	+tests_touch_TouchscreenZoom
+	+tests_video_ChromeHWDecodeUsed
+	+tests_video_ChromeRTCHWDecodeUsed
+	+tests_video_ChromeRTCHWEncodeUsed
+	+tests_video_ChromeVidResChangeHWDecode
 	+tests_video_GlitchDetection
 	+tests_video_HangoutHardwarePerf
 	+tests_video_MultiplePlayback
@@ -151,16 +154,6 @@ IUSE_TESTS=(
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
 )
-
-# This should be reverted once crbug.com/608838 is fixed.
-IUSE_TESTS_VIDEO_CHROME="
-	!rk32? (
-		+tests_video_ChromeHWDecodeUsed
-		+tests_video_ChromeRTCHWDecodeUsed
-		+tests_video_ChromeRTCHWEncodeUsed
-		+tests_video_ChromeVidResChangeHWDecode
-	)
-"
 
 IUSE_TESTS_CELLULAR="
 	cellular? (
@@ -190,7 +183,6 @@ IUSE_TESTS_TPM="
 
 IUSE_TESTS="
 	${IUSE_TESTS[*]}
-	${IUSE_TESTS_VIDEO_CHROME}
 	${IUSE_TESTS_CELLULAR}
 	${IUSE_TESTS_SHILL}
 	${IUSE_TESTS_TPM}
