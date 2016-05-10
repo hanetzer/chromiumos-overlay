@@ -255,10 +255,16 @@ i2cdev_config="
 CONFIG_I2C_CHARDEV=y
 "
 
-iscsi_desc="iSCSI driver"
+iscsi_desc="iSCSI initiator and target drivers"
 iscsi_config="
 CONFIG_SCSI_LOWLEVEL=y
 CONFIG_ISCSI_TCP=m
+CONFIG_CONFIGFS_FS=m
+CONFIG_TARGET_CORE=m
+CONFIG_ISCSI_TARGET=m
+CONFIG_TCM_IBLOCK=m
+CONFIG_TCM_FILEIO=m
+CONFIG_TCM_PSCSI=m
 "
 
 debug_desc="Miscellaneous debug extensions"
