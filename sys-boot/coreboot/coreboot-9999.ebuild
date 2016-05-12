@@ -143,6 +143,9 @@ EOF
 		echo "CONFIG_GBB_BMPFV_FILE=\"${froot}/bmpblk.bin\"" >> .config
 	fi
 
+	# disable coreboot's own EC firmware building mechanism
+	echo "CONFIG_EC_EXTERNAL_FIRMWARE=y" >> .config
+
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
 	echo >> .config_serial
