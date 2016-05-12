@@ -1,0 +1,29 @@
+From 9e2eb2aff5348795bec587d1f8ed349bbf15d92a Mon Sep 17 00:00:00 2001
+From: Sean Kau <skau@chromium.org>
+Date: Thu, 12 May 2016 15:05:17 -0700
+Subject: [PATCH] Add printerroot to configure script
+
+---
+ config-scripts/cups-directories.m4 | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/config-scripts/cups-directories.m4 b/config-scripts/cups-directories.m4
+index fa3369e..96b0e0b 100644
+--- a/config-scripts/cups-directories.m4
++++ b/config-scripts/cups-directories.m4
+@@ -304,6 +304,12 @@ AC_ARG_WITH(rundir, [  --with-rundir           set transient run-time state dire
+ AC_DEFINE_UNQUOTED(CUPS_STATEDIR, "$CUPS_STATEDIR")
+ AC_SUBST(CUPS_STATEDIR)
+ 
++# Printer files
++AC_ARG_WITH(printerroot, [  --with-printerroot   set location for printer configurations],printerroot="$withval",printerroot="$CUPS_SERVERROOT")
++CUPS_PRINTERROOT="$printerroot"
++AC_DEFINE_UNQUOTED(CUPS_PRINTERROOT, "$CUPS_PRINTERROOT")
++AC_SUBST(CUPS_PRINTERROOT)
++
+ dnl
+ dnl End of "$Id: cups-directories.m4 11717 2014-03-21 16:42:53Z msweet $".
+ dnl
+-- 
+2.8.0.rc3.226.g39d4020
+

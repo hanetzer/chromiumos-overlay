@@ -103,6 +103,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.0.2-systemd-socket.patch"
 	"${FILESDIR}/${PN}-2.0.1-xinetd-installation-fix.patch"
 	"${FILESDIR}/${PN}-2.0.3-cross-compile.patch"
+	"${FILESDIR}/${PN}-2.0.3-Add-printerroot-to-configure.patch"
 	"${FILESDIR}/${PN}-2.0.3-PrinterRoot.patch"
 	"${FILESDIR}/${PN}-2.0.3-debug-printfs.patch"
 )
@@ -197,6 +198,7 @@ multilib_src_configure() {
 		--libdir="${EPREFIX}"/usr/$(get_libdir) \
 		--localstatedir="${EPREFIX}"/var \
 		--with-rundir="${EPREFIX}"/run/cups \
+		--with-printerroot="${EPREFIX}"/var/cache/cups/printers \
 		--with-cups-user=nobody \
 		--with-cups-group=nobody \
 		--with-docdir="${EPREFIX}"/usr/share/cups/html \

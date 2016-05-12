@@ -1,14 +1,11 @@
-From 03b66e437488ea46e61032b485e8d84c62a4a7b2 Mon Sep 17 00:00:00 2001
+From 1254bbe1df294c0e86e26952edc2836ed43a4b66 Mon Sep 17 00:00:00 2001
 From: Brian Norris <briannorris@chromium.org>
-Date: Thu, 10 Mar 2016 15:47:26 -0800
-Subject: [PATCH] Support placing RW configuration separately from ServerRoot
-
-cupsd writes out its printer data to
-$ServerRoot/{printers.conf,ppd/*.ppd}, alongside less volatile data,
-like cupsd.conf and cups-files.conf. Some systems might like to keep the
-static config files (i.e., ServerRoot) protected in a read-only
-partition, while placing the volatile printer info in a writeable
-partition.
+Date: Mon, 25 Apr 2016 12:42:11 -0700
+Subject: [PATCH] cupsd writes out its printer data to
+ $ServerRoot/{printers.conf,ppd/*.ppd}, alongside less volatile data, like
+ cupsd.conf and cups-files.conf. Some systems might like to keep the static
+ config files (i.e., ServerRoot) protected in a read-only partition, while
+ placing the volatile printer info in a writeable partition.
 
 Support that with a new conf directive, PrinterRoot. If not supplied,
 PrinterRoot defaults to ServerRoot.
@@ -20,7 +17,13 @@ with additions for handling subscriptions, classes, and a few initial
 oversights.
 
 Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Sean Kau <skau@chromium.org>
 ---
+ config.h.in               |  1 +
+ cups-config.in            |  5 +++++
+ cups/cups-private.h       |  2 ++
+ cups/globals.c            |  7 +++++++
+ cups/util.c               |  2 +-
  scheduler/classes.c       |  4 ++--
  scheduler/client.c        |  6 +++---
  scheduler/colorman.c      |  4 ++--
@@ -32,10 +35,110 @@ Signed-off-by: Brian Norris <briannorris@chromium.org>
  scheduler/main.c          | 16 ++++++++++++++++
  scheduler/printers.c      | 10 +++++-----
  scheduler/subscriptions.c |  4 ++--
- 11 files changed, 50 insertions(+), 34 deletions(-)
+ 16 files changed, 66 insertions(+), 35 deletions(-)
 
+diff --git a/config.h.in b/config.h.in
+index 802e259..f71bbd2 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -128,6 +128,7 @@
+ #define CUPS_SBINDIR	"/usr/sbin"
+ #define CUPS_SERVERBIN	"/usr/lib/cups"
+ #define CUPS_SERVERROOT	"/etc/cups"
++#define CUPS_PRINTERROOT	CUPS_SERVERROOT
+ #define CUPS_STATEDIR	"/var/run/cups"
+ 
+ 
+diff --git a/cups-config.in b/cups-config.in
+index 07726c5..49b70f0 100755
+--- a/cups-config.in
++++ b/cups-config.in
+@@ -30,6 +30,7 @@ sysconfdir=@sysconfdir@
+ cups_datadir=@CUPS_DATADIR@
+ cups_serverbin=@CUPS_SERVERBIN@
+ cups_serverroot=@CUPS_SERVERROOT@
++cups_printerroot=@CUPS_PRINTERROOT@
+ INSTALLSTATIC=@INSTALLSTATIC@
+ 
+ # flags for C++ compiler:
+@@ -67,6 +68,7 @@ usage ()
+     echo "       cups-config [--image] [--static] --libs"
+     echo "       cups-config --serverbin"
+     echo "       cups-config --serverroot"
++    echo "       cups-config --printerroot"
+     echo "       cups-config --version"
+ 
+     exit $1
+@@ -117,6 +119,9 @@ while test $# -gt 0; do
+ 	    fi
+ 	    echo $libs
+ 	    ;;
++        --printerroot)
++           echo $cups_printerroot
++           ;;
+ 	--serverbin)
+ 	    echo $cups_serverbin
+ 	    ;;
+diff --git a/cups/cups-private.h b/cups/cups-private.h
+index 90420a2..3e81c24 100644
+--- a/cups/cups-private.h
++++ b/cups/cups-private.h
+@@ -66,6 +66,8 @@ typedef struct _cups_globals_s		/**** CUPS global state data ****/
+ 			*cups_serverbin,/* CUPS_SERVERBIN environment var */
+ 			*cups_serverroot,
+ 					/* CUPS_SERVERROOT environment var */
++                        *cups_printerroot,
++                                        /* CUPS_PRINTERROOT enviornment var */
+ 			*cups_statedir,	/* CUPS_STATEDIR environment var */
+ 			*localedir;	/* LOCALDIR environment var */
+ 
+diff --git a/cups/globals.c b/cups/globals.c
+index c48c321..3b3f481 100644
+--- a/cups/globals.c
++++ b/cups/globals.c
+@@ -283,6 +283,9 @@ cups_globals_alloc(void)
+   if ((cg->cups_serverroot = getenv("CUPS_SERVERROOT")) == NULL)
+     cg->cups_serverroot = confdir;
+ 
++  if ((cg->cups_printerroot = getenv("CUPS_PRINTERROOT")) == NULL)
++    cg->cups_printerroot = cg->cups_serverroot;
++
+   if ((cg->cups_statedir = getenv("CUPS_STATEDIR")) == NULL)
+     cg->cups_statedir = confdir;
+ 
+@@ -304,6 +307,7 @@ cups_globals_alloc(void)
+     cg->cups_datadir    = CUPS_DATADIR;
+     cg->cups_serverbin  = CUPS_SERVERBIN;
+     cg->cups_serverroot = CUPS_SERVERROOT;
++    cg->cups_printerroot = CUPS_PRINTERROOT;
+     cg->cups_statedir   = CUPS_STATEDIR;
+     cg->localedir       = CUPS_LOCALEDIR;
+   }
+@@ -322,6 +326,9 @@ cups_globals_alloc(void)
+     if ((cg->cups_serverroot = getenv("CUPS_SERVERROOT")) == NULL)
+       cg->cups_serverroot = CUPS_SERVERROOT;
+ 
++    if ((cg->cups_printerroot = getenv("CUPS_PRINTERROOT")) == NULL)
++      cg->cups_printerroot = CUPS_PRINTERROOT;
++
+     if ((cg->cups_statedir = getenv("CUPS_STATEDIR")) == NULL)
+       cg->cups_statedir = CUPS_STATEDIR;
+ 
+diff --git a/cups/util.c b/cups/util.c
+index 3ccc21c..7e4d2f5 100644
+--- a/cups/util.c
++++ b/cups/util.c
+@@ -844,7 +844,7 @@ cupsGetPPD3(http_t     *http,		/* I  - HTTP connection or @code CUPS_HTTP_DEFAUL
+     struct stat	ppdinfo;		/* PPD file information */
+ 
+ 
+-    snprintf(ppdname, sizeof(ppdname), "%s/ppd/%s.ppd", cg->cups_serverroot,
++    snprintf(ppdname, sizeof(ppdname), "%s/ppd/%s.ppd", cg->cups_printerroot,
+              name);
+     if (!stat(ppdname, &ppdinfo) && !access(ppdname, R_OK))
+     {
 diff --git a/scheduler/classes.c b/scheduler/classes.c
-index 17add06ceacc..56be9055de5c 100644
+index 17add06..56be905 100644
 --- a/scheduler/classes.c
 +++ b/scheduler/classes.c
 @@ -279,7 +279,7 @@ cupsdLoadAllClasses(void)
@@ -57,7 +160,7 @@ index 17add06ceacc..56be9055de5c 100644
    if ((fp = cupsdCreateConfFile(filename, ConfigFilePerm)) == NULL)
      return;
 diff --git a/scheduler/client.c b/scheduler/client.c
-index 15abbe3f0d26..7dfff9fb1a3e 100644
+index 15abbe3..7dfff9f 100644
 --- a/scheduler/client.c
 +++ b/scheduler/client.c
 @@ -1090,7 +1090,7 @@ cupsdReadClient(cupsd_client_t *con)	/* I - Client to read from */
@@ -88,7 +191,7 @@ index 15abbe3f0d26..7dfff9fb1a3e 100644
      perm_check = 0;
    }
 diff --git a/scheduler/colorman.c b/scheduler/colorman.c
-index b3e6f08211df..b2fe30dddd80 100644
+index b3e6f08..b2fe30d 100644
 --- a/scheduler/colorman.c
 +++ b/scheduler/colorman.c
 @@ -375,7 +375,7 @@ apple_register_profiles(
@@ -110,7 +213,7 @@ index b3e6f08211df..b2fe30dddd80 100644
      return;
  
 diff --git a/scheduler/conf.c b/scheduler/conf.c
-index 17a17fa5fb37..9122471c5272 100644
+index 17a17fa..9122471 100644
 --- a/scheduler/conf.c
 +++ b/scheduler/conf.c
 @@ -143,6 +143,7 @@ static const cupsd_var_t	cupsfiles_vars[] =
@@ -153,7 +256,7 @@ index 17a17fa5fb37..9122471c5272 100644
         cupsdCheckPermissions(ServerRoot, "passwd.md5", 0600, User,
  			     Group, 0, 0) < 0) &&
 diff --git a/scheduler/conf.h b/scheduler/conf.h
-index 1c47b53bc31f..3509c8dfc7e0 100644
+index 1c47b53..3509c8d 100644
 --- a/scheduler/conf.h
 +++ b/scheduler/conf.h
 @@ -100,6 +100,8 @@ VAR char		*ConfigurationFile	VALUE(NULL),
@@ -166,7 +269,7 @@ index 1c47b53bc31f..3509c8dfc7e0 100644
  					/* FQDN for server */
  			*ServerAdmin		VALUE(NULL),
 diff --git a/scheduler/cupsd.h b/scheduler/cupsd.h
-index f8b2c1195f45..9bfc0bc0de1e 100644
+index f8b2c11..9bfc0bc 100644
 --- a/scheduler/cupsd.h
 +++ b/scheduler/cupsd.h
 @@ -199,6 +199,8 @@ extern void		cupsdReleaseSignals(void);
@@ -179,7 +282,7 @@ index f8b2c1195f45..9bfc0bc0de1e 100644
  /* process.c */
  extern void		*cupsdCreateProfile(int job_id, int allow_networking);
 diff --git a/scheduler/ipp.c b/scheduler/ipp.c
-index 3251fcd5dea2..f5acaf92e341 100644
+index 3251fcd..f5acaf9 100644
 --- a/scheduler/ipp.c
 +++ b/scheduler/ipp.c
 @@ -2602,8 +2602,7 @@ add_printer(cupsd_client_t  *con,	/* I - Client connection */
@@ -257,7 +360,7 @@ index 3251fcd5dea2..f5acaf92e341 100644
            if (!access(filename, 0))
  	    break;
 diff --git a/scheduler/job.c b/scheduler/job.c
-index 3f0028698280..28cbe2312875 100644
+index 3f00286..28cbe23 100644
 --- a/scheduler/job.c
 +++ b/scheduler/job.c
 @@ -963,7 +963,7 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
@@ -270,10 +373,10 @@ index 3f0028698280..28cbe2312875 100644
    snprintf(printer_info, sizeof(printer_name), "PRINTER_INFO=%s",
             job->printer->info ? job->printer->info : "");
 diff --git a/scheduler/main.c b/scheduler/main.c
-index 4843cdf2d8d3..3d7144347a8d 100644
+index 8069419..1305f99 100644
 --- a/scheduler/main.c
 +++ b/scheduler/main.c
-@@ -1266,6 +1266,22 @@ cupsdSetString(char       **s,		/* O - New string */
+@@ -1259,6 +1259,22 @@ cupsdSetString(char       **s,		/* O - New string */
  
  
  /*
@@ -297,7 +400,7 @@ index 4843cdf2d8d3..3d7144347a8d 100644
   */
  
 diff --git a/scheduler/printers.c b/scheduler/printers.c
-index 96f6d063fb6d..c1a9413f5a0c 100644
+index 96f6d06..c1a9413 100644
 --- a/scheduler/printers.c
 +++ b/scheduler/printers.c
 @@ -837,7 +837,7 @@ cupsdLoadAllPrinters(void)
@@ -339,7 +442,7 @@ index 96f6d063fb6d..c1a9413f5a0c 100644
      ppd_info.st_mtime = 1;
  
 diff --git a/scheduler/subscriptions.c b/scheduler/subscriptions.c
-index 95a2d2518cd2..ece1c6b540ff 100644
+index 95a2d25..ece1c6b 100644
 --- a/scheduler/subscriptions.c
 +++ b/scheduler/subscriptions.c
 @@ -717,7 +717,7 @@ cupsdLoadAllSubscriptions(void)
@@ -361,5 +464,5 @@ index 95a2d2518cd2..ece1c6b540ff 100644
    if ((fp = cupsdCreateConfFile(filename, ConfigFilePerm)) == NULL)
      return;
 -- 
-2.1.2
+2.8.0.rc3.226.g39d4020
 
