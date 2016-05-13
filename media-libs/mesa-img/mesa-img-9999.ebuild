@@ -158,8 +158,11 @@ src_prepare() {
 	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
 	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
 	epatch "${FILESDIR}"/0018-GL_KHR_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0021-GL_OES_tessellation_shader-entry-points.patch
+	epatch "${FILESDIR}"/0023-GL_EXT_sparse_texture-entry-points.patch
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
+	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
 
 	epatch "${FILESDIR}"/0100-HACK-dri-pvr-Assume-drawable-is-always-a-PBUFFER.patch
 
