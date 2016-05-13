@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2733.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2733.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2733.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2734.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2734.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2734.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -324,10 +324,7 @@ set_build_defines() {
 		target_os=chromeos
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
-
-        # This is never referenced for chromeos in any chromium .gn file.
-        # crbug.com/607669.
-	# use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+	use internal_khronos_glcts && BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	if [[ ${CHOST} == armv6* ]]; then
@@ -428,9 +425,7 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		BUILD_ARGS+=( internal_gles2_conform_tests=true )
-		# This is never referenced for chromeos in any chromium .gn
-		# file. crbug.com/607669
-		#BUILD_ARGS+=( internal_khronos_glcts_tests=true )
+		BUILD_ARGS+=( internal_khronos_glcts_tests=true )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -767,18 +762,14 @@ setup_test_lists() {
 		TEST_FILES+=( ppapi/examples/video_decode )
 	else
 		TEST_FILES+=( ppapi_example_video_decode )
-	fi
-
-	if use chrome_internal || use internal_gles_conform; then
-		TEST_FILES+=(
-			gles2_conform_test{,_windowless}
-		)
-	fi
-
-	if use chrome_internal || use internal_khronos_glcts; then
-		TEST_FILES+=(
-			khronos_glcts_test{,_windowless}
-		)
+		# TODO(ihf/stevenjb/kbr): Investigate why these targets fail with GN.
+		# crbug.com/609958
+		if use chrome_internal || use internal_khronos_glcts; then
+			TEST_FILES+=( khronos_glcts_test{,_windowless} )
+		fi
+		if use chrome_internal || use internal_gles_conform; then
+			TEST_FILES+=( gles2_conform_test{,_windowless} )
+		fi
 	fi
 
 	# TODO(ihf): Figure out how to keep this in sync with telemetry.
@@ -831,6 +822,12 @@ setup_compile_flags() {
 
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
+
+	# Chrome and ChromeOS versions of the compiler may not be in
+	# sync. So, don't complain if Chrome uses a diagnostic
+	# option that is not yet implemented in the compiler version used
+	# by ChromeOS.
+	append-cxxflags -Wno-unknown-warning-option
 
 	# crbug.com/532532
 	filter-flags "-Wl,--fix-cortex-a53-843419"
@@ -1303,7 +1300,7 @@ pkg_postinst() {
 	eerror "CHROME_DIR after installation\n${LS}"
 	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
 	eerror "CHROME_SIZE = ${CHROME_SIZE}"
-	if [ ${CHROME_SIZE} -ge 200000000 ]; then
+	if [[ ${CHROME_SIZE} -ge 200000000 && -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
 }
