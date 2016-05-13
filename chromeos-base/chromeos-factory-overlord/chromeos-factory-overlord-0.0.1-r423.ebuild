@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT="153b21d973f8dee4db18ca9cbabd2178ebcea256"
-CROS_WORKON_TREE="c56acbac5844a3edee7772bb60ede90295eabe4c"
+CROS_WORKON_COMMIT="04ed0cc88a34f396ba995b7410bba1a095ddb69c"
+CROS_WORKON_TREE="5f9919936e84ec61320543193dce191d3bb378bf"
 inherit cros-workon
 
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
