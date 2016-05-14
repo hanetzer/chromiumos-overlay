@@ -339,8 +339,12 @@ multilib_src_install_all() {
 	insinto /etc/cups
 	# Install our own conf files
 	doins "${FILESDIR}"/{cupsd,cups-files}.conf
-	insinto /etc/init
-	doins "${FILESDIR}"/init/cupsd.conf
+	if use upstart; then
+		insinto /etc/init
+		doins "${FILESDIR}"/init/cups-pre-upstart-socket-bridge.conf
+		doins "${FILESDIR}"/init/cups-post-upstart-socket-bridge.conf
+		doins "${FILESDIR}"/init/cupsd.conf
+	fi
 
 	# CUPS wants the daemon user to own these
 	chown cups:nobody "${ED}"/etc/cups/{cupsd.conf,cups-files.conf,ssl}
