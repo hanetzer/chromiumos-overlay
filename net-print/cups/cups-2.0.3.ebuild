@@ -32,7 +32,7 @@ HOMEPAGE="http://www.cups.org/"
 LICENSE="GPL-2"
 SLOT="0"
 IUSE="acl dbus debug java kerberos lprng-compat pam
-	python selinux +ssl static-libs systemd +threads usb X xinetd zeroconf"
+	python selinux +ssl static-libs systemd +threads upstart usb X xinetd zeroconf"
 # TODO: 'IUSE=kernel_linux' should be handled implicitly (e.g., with
 # IUSE_IMPLICIT), but this doesn't work with 'cros deploy' right now. See
 # http://crbug.com/579661
@@ -87,6 +87,7 @@ PDEPEND="
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
 	usb? ( threads )
+	?? ( systemd upstart )
 "
 
 # upstream includes an interactive test which is a nono for gentoo
@@ -106,6 +107,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.0.3-Add-printerroot-to-configure.patch"
 	"${FILESDIR}/${PN}-2.0.3-PrinterRoot.patch"
 	"${FILESDIR}/${PN}-2.0.3-debug-printfs.patch"
+	"${FILESDIR}/${PN}-2.0.3-upstart-on-demand.patch"
 )
 
 MULTILIB_CHOST_TOOLS=(
@@ -218,6 +220,7 @@ multilib_src_configure() {
 		$(use_enable threads) \
 		$(use_enable ssl gnutls) \
 		$(use_enable systemd) \
+		$(use_enable upstart) \
 		$(multilib_native_use_enable usb libusb) \
 		$(use_enable zeroconf avahi) \
 		--disable-dnssd \
