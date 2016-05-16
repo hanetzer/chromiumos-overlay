@@ -475,8 +475,9 @@ set_build_defines() {
 			# Use debug fission to avoid 4GB limit of ELF32 (see crbug.com/595763).
 			# Using -g1 causes problems with crash server (see crbug.com/601854).
 			RELEASE_EXTRA_CFLAGS+=( -gsplit-dwarf )
+		else
+			RELEASE_EXTRA_CFLAGS+=( -g )
 		fi
-		RELEASE_EXTRA_CFLAGS+=( -g )
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
 
