@@ -64,6 +64,9 @@ src_prepare() {
 	# Inspired by -r 1542; just rewrote it based on 1.2 though
 	epatch "${FILESDIR}"/upstart-1.2-socket-event-SOCKET_PATH.patch
 
+	# Clean up domain sockets on startup and shutdown.
+	epatch "${FILESDIR}"/upstart-1.2-socket-cleanup.patch
+
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
 	# will do it for us, and incorrectly too.
