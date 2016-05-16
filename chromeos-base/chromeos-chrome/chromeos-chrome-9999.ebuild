@@ -491,7 +491,9 @@ set_build_defines() {
 
 	use envoy && BUILD_DEFINES+=( envoy=1 )
 
-	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
+	# This requires some extreme quoting in order to support multiple flags,
+	# e.g. "-gsplit-dwarf -g". This will be deprecated once we switch to gn.
+	BUILD_DEFINES+=( "release_extra_cflags=\"'${RELEASE_EXTRA_CFLAGS[*]}'\"" )
 
 	export GYP_GENERATORS="ninja"
 	export GYP_DEFINES="${BUILD_DEFINES[*]}"
