@@ -315,8 +315,11 @@ set_build_defines() {
 		# Clang features.
 		is_asan=$(usetf asan)
 		is_clang=$(usetf clang)
+		cros_host_is_clang=$(usetf clang)
 		clang_use_chrome_plugins=false
 	)
+	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
+	# add them to BUILD_ARGS at the end.
 	BUILD_STRING_ARGS=(
 		target_sysroot="${SYSROOT}"
 		system_libdir="$(get_libdir)"
@@ -470,6 +473,7 @@ set_build_defines() {
 			# Use debug fission to avoid 4GB limit of ELF32 (see crbug.com/595763).
 			# Using -g1 causes problems with crash server (see crbug.com/601854).
 			RELEASE_EXTRA_CFLAGS+=( -gsplit-dwarf )
+			BUILD_ARGS+=( use_debug_fission=true )
 		else
 			RELEASE_EXTRA_CFLAGS+=( -g )
 		fi
@@ -550,7 +554,6 @@ src_unpack() {
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
-	export EGN="${EGN:-/home/${WHOAMI}/depot_tools/gn}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -631,6 +634,9 @@ src_unpack() {
 	# Chrome builds inside distfiles because of speed, so we at least make
 	# a symlink here to add compatibility with autotest eclass which uses this.
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
+
+	export EGN="${EGN:-${CHROME_ROOT}/src/buildtools/linux64/gn}"
+	einfo "Using GN from ${EGN}"
 
 	if use internal_gles_conform; then
 		local CHROME_GLES2_CONFORM=${CHROME_ROOT}/src/third_party/gles2_conform
@@ -895,14 +901,37 @@ src_configure() {
 		cros_target_ar="${AR}"
 		cros_target_cc="${CC}"
 		cros_target_cxx="${CXX}"
+		host_toolchain="//build/toolchain/cros:host"
+		v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot"
+		cros_target_ld="${LD}"
+		cros_target_extra_cflags="${CFLAGS} ${EBUILD_CFLAGS[*]}"
+		cros_target_extra_cppflags="${CPPFLAGS}"
+		cros_target_extra_cxxflags="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}"
+		cros_target_extra_ldflags="${LDFLAGS}"
+		cros_host_cc="${CC_host}"
+		cros_host_cxx="${CXX_host}"
+		cros_host_ar="${AR_host}"
+		cros_host_ld="${LD_host}"
+		cros_host_extra_cflags="${CFLAGS_host}"
+		cros_host_extra_cxxflags="${CXXFLAGS_host}"
+		cros_host_extra_cppflags="${CPPFLAGS_host}"
+		cros_host_extra_ldflags="${LDFLAGS_host}"
+		cros_v8_snapshot_cc="${CC_host}"
+		cros_v8_snapshot_cxx="${CXX_host}"
+		cros_v8_snapshot_ar="${AR_host}"
+		cros_v8_snapshot_ld="${LD_host}"
+		cros_v8_snapshot_extra_cflags="${CFLAGS_host}"
+		cros_v8_snapshot_extra_cxxflags="${CXXFLAGS_host}"
+		cros_v8_snapshot_extra_cppflags="${CPPFLAGS_host}"
+		cros_v8_snapshot_extra_ldflags="${LDFLAGS_host}"
 	)
+
 	local arg
 	for arg in "${BUILD_STRING_ARGS[@]}"; do
 		BUILD_ARGS+=("${arg%%=*}=\"${arg#*=}\"")
 	done
 	export GN_ARGS="${BUILD_ARGS[*]}"
 	if use gn; then
-		use build_tests && eerror "Cannot use gn without -build_tests yet. crbug.com/607362"
 		${EGN} gen "${CHROME_ROOT}/src/${BUILD_OUT_SYM}/${BUILDTYPE}" \
 			--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 	fi
