@@ -14,6 +14,9 @@ inherit cros-au cros-workon
 
 IUSE="cros_i686"
 
+# An ebuild inheriting from "cros-i686" should also build i686 binaries if this
+# returns 0. The "amd64" check allows the "cros_i686" USE flag to be enabled for
+# an overlay inherited by non-x86 boards.
 use_i686() { use cros_i686 && use amd64; }
 
 push_i686_env() {
