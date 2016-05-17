@@ -46,6 +46,7 @@ SERVER_IUSE_TESTS="
 	+tests_audio_PowerConsumption
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
+	+tests_bluetooth_AdapterStandalone
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
 	debugd? ( +tests_debugd_DevTools )
