@@ -1,1 +1,0 @@
-evdi-1.0.453.ebuild
