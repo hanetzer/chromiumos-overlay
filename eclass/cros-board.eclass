@@ -248,10 +248,6 @@ ALL_BOARDS=(
 	umaro
 	#urara
 	veyron
-	veyron_brain
-	veyron_caution
-	veyron_danger
-	veyron_emile
 	veyron_fievel
 	veyron_gus
 	veyron_jaq
@@ -264,7 +260,6 @@ ALL_BOARDS=(
 	veyron_pinky
 	veyron_remy
 	veyron_rialto
-	veyron_romy
 	veyron_shark
 	veyron_speedy
 	veyron_speedy-cheets
