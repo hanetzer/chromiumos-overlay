@@ -34,5 +34,8 @@ USE="${USE} -tpm -vpn -wimax"
 # Remove most of the unused firmware in kernel build (see crbug.com/378877).
 USE="${USE} -firmware_install"
 
+# Don't turn on printing; among the reasons: some cups filters require bash.
+USE="${USE} -cups"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""

@@ -12,6 +12,8 @@ app-editors/vim		-X minimal
 # We don't use network functionality in bash, and since we ship it in a release
 # image, we'd prefer that attack surface simply not exist.
 app-shells/bash		-net
+# crosh CUPS CLI isn't ready yet: http://crbug.com/588231
+chromeos-base/crosh	-cups
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi	static-libs
@@ -73,6 +75,8 @@ net-nds/openldap	minimal
 net-print/cups		zeroconf upstart
 net-print/cups-filters	zeroconf -postscript
 net-proxy/tsocks	tordns
+# No support for bluetooth printing.
+net-wireless/bluez	-cups
 net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd	-python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
