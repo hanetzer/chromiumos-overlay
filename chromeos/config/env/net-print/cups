@@ -18,3 +18,5 @@ cups_mask="
 
 PKG_INSTALL_MASK+=" ${cups_mask}"
 INSTALL_MASK+=" ${cups_mask}"
+
+unset cups_mask
