@@ -39,6 +39,7 @@ src_prepare() {
 	# Add "lib/${PLUGIN_DIR}/Makefile" after lib/libv4l2rds/Makefile
 	sed -i -e "s:libv4l2rds/Makefile:&\n\tlib/${PLUGIN_DIR}/Makefile:" \
 		configure.ac || die
+	rm -rf include
 	eautoreconf
 }
 
