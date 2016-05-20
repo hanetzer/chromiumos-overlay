@@ -109,7 +109,9 @@ do
 
     # x86 only
     if [[ "$arch" == "x86" ]]; then
-	BINARY_FILES="$BINARY_FILES libgralloc_drm.so"
+	BINARY_FILES+="\
+	    libgralloc_drm.so \
+	    libdrm_intel.so"
     fi
 
     artifacts_system_dir=${ARTIFACTS_DIR_ARRAY[$a]}/SYSTEM
