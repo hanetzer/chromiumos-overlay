@@ -1,20 +1,18 @@
-From f0871ef8f7a9a3c283f052f88462c4d851f1bf6e Mon Sep 17 00:00:00 2001
+From c51e9add38982e7f3dc5aca3633187979d2a67cd Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@chromium.org>
-Date: Mon, 7 Mar 2016 22:53:15 -0800
-Subject: [PATCH] CHROMIUM: dri: add swrast support on top of prime imported
- buffers
+Date: Tue, 3 May 2016 16:04:59 -0700
+Subject: [PATCH 2/2] CHROMIUM: dri: add swrast support on top of prime
+ imported buffers
 
 TEST=null_platform_test /dev/dri/card0
 BUG=chromium:394868
 CQ-DEPEND=CL:242570
-
-Change-Id: Iea5c0d2c97ae99f3219fc4efb353f185ff86fc3c
 ---
  src/gallium/state_trackers/dri/Makefile.am |   1 +
  src/gallium/state_trackers/dri/drisw.c     | 127 +++++++++++++++++
  src/gallium/winsys/sw/dri/Makefile.am      |   5 +
- src/gallium/winsys/sw/dri/dri_sw_winsys.c  | 220 ++++++++++++++++++++++++++---
- 4 files changed, 337 insertions(+), 16 deletions(-)
+ src/gallium/winsys/sw/dri/dri_sw_winsys.c  | 221 ++++++++++++++++++++++++++---
+ 4 files changed, 338 insertions(+), 16 deletions(-)
 
 diff --git a/src/gallium/state_trackers/dri/Makefile.am b/src/gallium/state_trackers/dri/Makefile.am
 index 74bccaa..d7cf34b 100644
@@ -206,7 +204,7 @@ index a7d3253..a0fe9d3 100644
  
  libswdri_la_SOURCES = $(C_SOURCES)
 diff --git a/src/gallium/winsys/sw/dri/dri_sw_winsys.c b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
-index 5c98f26..3c23699 100644
+index 94d5092..f8ce4a9 100644
 --- a/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 +++ b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 @@ -26,6 +26,17 @@
@@ -338,7 +336,7 @@ index 5c98f26..3c23699 100644
     dri_sw_dt->format = format;
     dri_sw_dt->width = width;
     dri_sw_dt->height = height;
-@@ -119,30 +210,33 @@ no_dt:
+@@ -119,30 +210,34 @@ no_dt:
     return NULL;
  }
  
@@ -348,7 +346,7 @@ index 5c98f26..3c23699 100644
 -{
 -   struct dri_sw_displaytarget *dri_sw_dt = dri_sw_displaytarget(dt);
 -
--   FREE(dri_sw_dt->data);
+-   align_free(dri_sw_dt->data);
 -
 -   FREE(dri_sw_dt);
 -}
@@ -361,8 +359,7 @@ index 5c98f26..3c23699 100644
     struct dri_sw_displaytarget *dri_sw_dt = dri_sw_displaytarget(dt);
 -   dri_sw_dt->mapped = dri_sw_dt->data;
 +   struct dri_sw_winsys *dri_sw_ws = dri_sw_winsys(ws);
- 
--   if (dri_sw_dt->front_private && (flags & PIPE_TRANSFER_READ)) {
++
 +   switch (dri_sw_dt->type) {
 +   case DISPLAYTARGET_TYPE_USER:
 +      dri_sw_dt->mapped = dri_sw_dt->data;
@@ -376,6 +373,8 @@ index 5c98f26..3c23699 100644
 +   default:
 +         dri_sw_dt->mapped = NULL;
 +   }
+
+-   if (dri_sw_dt->front_private && (flags & PIPE_TRANSFER_READ)) {
 +   if (dri_sw_dt->mapped && dri_sw_dt->front_private && (flags & PIPE_TRANSFER_READ)) {
        struct dri_sw_winsys *dri_sw_ws = dri_sw_winsys(ws);
 -      dri_sw_ws->lf->get_image((void *)dri_sw_dt->front_private, 0, 0, dri_sw_dt->width, dri_sw_dt->height, dri_sw_dt->stride, dri_sw_dt->data);
@@ -386,7 +385,7 @@ index 5c98f26..3c23699 100644
     return dri_sw_dt->mapped;
  }
  
-@@ -156,25 +250,111 @@ dri_sw_displaytarget_unmap(struct sw_winsys *ws,
+@@ -156,25 +251,111 @@ dri_sw_displaytarget_unmap(struct sw_winsys *ws,
        dri_sw_ws->lf->put_image2((void *)dri_sw_dt->front_private, dri_sw_dt->data, 0, 0, dri_sw_dt->width, dri_sw_dt->height, dri_sw_dt->stride);
     }
     dri_sw_dt->map_flags = 0;
@@ -500,7 +499,7 @@ index 5c98f26..3c23699 100644
     return FALSE;
  }
  
-@@ -211,6 +391,11 @@ dri_sw_displaytarget_display(struct sw_winsys *ws,
+@@ -211,6 +392,11 @@ dri_sw_displaytarget_display(struct sw_winsys *ws,
  static void
  dri_destroy_sw_winsys(struct sw_winsys *winsys)
  {
@@ -512,7 +511,7 @@ index 5c98f26..3c23699 100644
     FREE(winsys);
  }
  
-@@ -224,6 +409,9 @@ dri_create_sw_winsys(struct drisw_loader_funcs *lf)
+@@ -224,6 +410,9 @@ dri_create_sw_winsys(struct drisw_loader_funcs *lf)
        return NULL;
  
     ws->lf = lf;
@@ -523,5 +522,5 @@ index 5c98f26..3c23699 100644
  
     ws->base.is_displaytarget_format_supported = dri_sw_is_displaytarget_format_supported;
 -- 
-2.7.0.rc3.207.g0ac5344
+2.5.0
 

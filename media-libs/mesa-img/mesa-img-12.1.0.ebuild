@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="c3b88cc2c15f19e748c9c406e9ab053975adab7e"
+CROS_WORKON_COMMIT="b010fa85675b98962426fe8961466fbae2d25499"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -90,7 +90,7 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	llvm? ( sys-devel/llvm )
+	!arm? ( sys-devel/llvm )
 	video_cards_powervr? ( virtual/img-ddk )
 "
 
@@ -147,7 +147,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
 	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
-	epatch "${FILESDIR}"/11.6-intel-trig.patch
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 
 	# IMG patches
@@ -160,7 +159,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0014-GL_EXT_geometry_shader-entry-points.patch
 	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
 	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0018-GL_KHR_robustness-entry-points.patch
 	epatch "${FILESDIR}"/0021-GL_OES_tessellation_shader-entry-points.patch
 	epatch "${FILESDIR}"/0023-GL_EXT_sparse_texture-entry-points.patch
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
@@ -176,6 +174,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
 
 	base_src_prepare
+
+	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
+	echo '#define MESA_GIT_SHA1 "git-0000000"' > src/git_sha1.h
 
 	eautoreconf
 }
@@ -202,7 +203,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm gallium-llvm) \
+		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
