@@ -6,9 +6,21 @@ EAPI="4"
 
 S="${WORKDIR}/platform/ec"
 
-CROS_WORKON_PROJECT=("chromiumos/platform/ec" "chromiumos/third_party/tpm2")
-CROS_WORKON_LOCALNAME=("ec" "../third_party/tpm2")
-CROS_WORKON_DESTDIR=("${S}" "${WORKDIR}/third_party/tpm2")
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/ec"
+	"chromiumos/third_party/tpm2"
+	"chromiumos/third_party/cryptoc"
+)
+CROS_WORKON_LOCALNAME=(
+	"ec"
+	"../third_party/tpm2"
+	"../third_party/cryptoc"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${WORKDIR}/third_party/tpm2"
+	"${WORKDIR}/third_party/cryptoc"
+)
 
 inherit toolchain-funcs cros-ec-board cros-workon
 
