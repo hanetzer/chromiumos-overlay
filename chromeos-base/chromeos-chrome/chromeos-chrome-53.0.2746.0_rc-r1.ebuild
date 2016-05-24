@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-52.0.2739.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-52.0.2739.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-52.0.2739.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -491,7 +491,9 @@ set_build_defines() {
 
 	use envoy && BUILD_DEFINES+=( envoy=1 )
 
-	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
+	# This requires some extreme quoting in order to support multiple flags,
+	# e.g. "-gsplit-dwarf -g". This will be deprecated once we switch to gn.
+	BUILD_DEFINES+=( "release_extra_cflags=\"'${RELEASE_EXTRA_CFLAGS[*]}'\"" )
 
 	export GYP_GENERATORS="ninja"
 	export GYP_DEFINES="${BUILD_DEFINES[*]}"
@@ -993,16 +995,24 @@ install_test_resources() {
 	# We keep a cache of test resources inside the chroot to avoid copying
 	# multiple times.
 	local test_dir="${1}"
+	einfo "install_test_resources to ${test_dir}"
 	shift
-	local resource cache dest
-	for resource in "$@"; do
-		cache=$(dirname "${CHROME_CACHE_DIR}/src/${resource}")
-		dest=$(dirname "${test_dir}/${resource}")
-		mkdir -p "${cache}" "${dest}"
-		rsync -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
-			"${CHROME_ROOT}/src/${resource}" "${cache}"
-		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
-	done
+
+	# To speed things up, we write the list of files to a temporary file so
+	# we can use rsync with --files-from.
+	local tmp_list_file="${T}/${test_dir##*/}.files"
+	printf "%s\n" "$@" > "${tmp_list_file}"
+
+	# Copy the specific files to the cache from the source directory.
+	# TODO(ihf): Make failures here fatal.
+	rsync -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
+		--files-from="${tmp_list_file}" "${CHROME_ROOT}/src/" \
+		"${CHROME_CACHE_DIR}/src/"
+
+	# Create hard links in the destination based on the cache.
+	# TODO(ihf): Make failures here fatal.
+	rsync -a --link-dest="${CHROME_CACHE_DIR}/src" \
+		--files-from="${tmp_list_file}" "${CHROME_CACHE_DIR}/src/" "${test_dir}/"
 }
 
 test_strip_install() {
@@ -1131,7 +1141,7 @@ install_telemetry_dep_resources() {
 		# To avoid silent failures assert the success.
 		DEPS_LIST=$(python ${FIND_DEPS} ${PERF_DEPS} ${CROS_DEPS} | \
 			sed -e 's|^'${CHROME_ROOT}/src/'||'; assert)
-		install_test_resources "${test_dir}" ${DEPS_LIST} \
+		install_test_resources "${test_dir}" "${DEPS_LIST}" \
 			chrome/test/data/image_decoding \
 			content/test/data/gpu \
 			content/test/data/media \
