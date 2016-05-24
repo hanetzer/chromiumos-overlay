@@ -151,7 +151,6 @@ IUSE_TESTS=(
 	+tests_video_WebRtcMediaRecorder
 	+tests_video_WebRtcPerf
 	+tests_video_WebRtcPeerConnectionWithCamera
-	+tests_video_YouTubeFlash
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
