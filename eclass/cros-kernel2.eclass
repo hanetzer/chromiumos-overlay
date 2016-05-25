@@ -94,6 +94,7 @@ CONFIG_FRAGMENTS=(
 	nfc
 	nfs
 	nowerror
+	tegradrm
 	pcserial
 	ppp
 	qmi
@@ -523,6 +524,29 @@ CONFIG_VT_CONSOLE=n
 nowerror_desc="Don't build with -Werror (warnings aren't fatal)."
 nowerror_config="
 CONFIG_ERROR_ON_WARNING=n
+"
+
+tegradrm_desc="Disable tegradc and enable TegraDRM as Tegra display driver."
+tegradrm_config="
+CONFIG_FB_CFB_COPYAREA=n
+CONFIG_FB_CFB_FILLRECT=n
+CONFIG_FB_CFB_IMAGEBLIT=n
+CONFIG_FB_TEGRA=n
+CONFIG_TEGRA_DC=n
+CONFIG_TEGRA_DC_BLENDER_DEPTH=n
+CONFIG_TEGRA_DC_BLENDER_GEN2=n
+CONFIG_TEGRA_DC_BLOCK_LINEAR=n
+CONFIG_TEGRA_DC_CLOCK_GEN2=n
+CONFIG_TEGRA_DC_EXTENSIONS=n
+CONFIG_TEGRA_DC_INTERLACE=n
+CONFIG_TEGRA_DC_LOW_LATENCY_CURSOR=n
+CONFIG_TEGRA_DC_TEMPORAL_DITHER=n
+CONFIG_DRM=y
+CONFIG_DRM_KMS_HELPER=y
+CONFIG_DRM_PANEL=y
+CONFIG_DRM_PANEL_SIMPLE=y
+CONFIG_DRM_TEGRA=y
+CONFIG_DRM_TEGRA_FBDEV=n
 "
 
 lxc_desc="LXC Support (Linux Containers)"
