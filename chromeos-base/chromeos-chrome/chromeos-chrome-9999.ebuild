@@ -1001,14 +1001,18 @@ install_test_resources() {
 	printf "%s\n" "$@" > "${tmp_list_file}"
 
 	# Copy the specific files to the cache from the source directory.
+	# Note: we need to specify -r when using --files-from and -a to get a
+	# recursive copy.
 	# TODO(ihf): Make failures here fatal.
-	rsync -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
+	rsync -r -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
 		--files-from="${tmp_list_file}" "${CHROME_ROOT}/src/" \
 		"${CHROME_CACHE_DIR}/src/"
 
 	# Create hard links in the destination based on the cache.
+	# Note: we need to specify -r when using --files-from and -a to get a
+	# recursive copy.
 	# TODO(ihf): Make failures here fatal.
-	rsync -a --link-dest="${CHROME_CACHE_DIR}/src" \
+	rsync -r -a --link-dest="${CHROME_CACHE_DIR}/src" \
 		--files-from="${tmp_list_file}" "${CHROME_CACHE_DIR}/src/" "${test_dir}/"
 }
 
