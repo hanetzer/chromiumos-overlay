@@ -57,6 +57,11 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+	if use tpm2; then
+		sed -i 's/started tcsd/started trunksd/' \
+			"${D}/etc/init/cryptohomed.conf" ||
+			die "Can't replace tcsd with trunksd in cryptohomed.conf"
+	fi
 }
 
 platform_pkg_test() {

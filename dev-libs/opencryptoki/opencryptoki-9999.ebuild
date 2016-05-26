@@ -14,10 +14,13 @@ HOMEPAGE="http://sourceforge.net/projects/opencryptoki"
 LICENSE="CPL-0.5"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="tpmtok"
+IUSE="tpmtok tpm2"
 
-RDEPEND="tpmtok? ( app-crypt/trousers )
-	 dev-libs/openssl"
+RDEPEND="
+	tpmtok? (
+		!tpm2? ( app-crypt/trousers )
+	)
+	dev-libs/openssl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {

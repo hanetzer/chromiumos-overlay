@@ -53,6 +53,11 @@ src_install() {
 
 	insinto /etc/init
 	doins server/attestationd.conf
+	if use tpm2; then
+		sed -i 's/started tcsd/started trunksd/' \
+			"${D}/etc/init/attestationd.conf" ||
+			die "Can't replace tcsd with trunksd in attestationd.conf"
+	fi
 
 	dosbin "${OUT}"/attestationd
 	dobin "${OUT}"/attestation_client

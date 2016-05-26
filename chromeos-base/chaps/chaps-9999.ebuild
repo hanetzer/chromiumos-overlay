@@ -60,6 +60,11 @@ src_install() {
 	# Install upstart config file.
 	insinto /etc/init
 	doins chapsd.conf
+	if use tpm2; then
+		sed -i 's/started tcsd/started trunksd/' \
+			"${D}/etc/init/chapsd.conf" ||
+			die "Can't replace tcsd with trunksd in chapsd.conf"
+	fi
 
 	# Install headers for use by clients.
 	insinto /usr/include/chaps

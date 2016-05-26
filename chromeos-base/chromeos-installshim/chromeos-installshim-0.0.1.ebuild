@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+shill"
+IUSE="+shill tpm2"
 
 X86_DEPEND="
 	sys-boot/syslinux
@@ -24,7 +24,7 @@ RDEPEND="
 		chromeos-base/u-boot-scripts
 	)
 	app-arch/sharutils
-	app-crypt/trousers
+	!tpm2? ( app-crypt/trousers )
 	app-shells/bash
 	app-shells/dash
 	chromeos-base/chromeos-base

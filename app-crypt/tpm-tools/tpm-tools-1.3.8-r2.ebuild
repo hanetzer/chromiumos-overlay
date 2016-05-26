@@ -12,10 +12,10 @@ SRC_URI="mirror://sourceforge/trousers/${P}.tar.gz"
 LICENSE="CPL-1.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="nls pkcs11 debug"
+IUSE="nls pkcs11 debug tpm2"
 
 COMMON_DEPEND="
-	>=app-crypt/trousers-0.3.0
+	!tpm2? ( >=app-crypt/trousers-0.3.0 )
 	dev-libs/openssl
 	pkcs11? ( dev-libs/opencryptoki )
 	"
