@@ -16,7 +16,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # Enable autotest by default.
-IUSE="-app_shell +autotest -chromeless_tty +seccomp"
+IUSE="-chromeless_tests +autotest -chromeless_tty +seccomp"
 
 RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
@@ -25,7 +25,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	!chromeless_tty? (
-		!app_shell? (
+		!chromeless_tests? (
 			+tests_security_EnableChromeTesting
 			+tests_security_RendererSandbox
 			+tests_security_RestartJob

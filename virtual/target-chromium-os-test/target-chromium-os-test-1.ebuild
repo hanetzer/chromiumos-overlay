@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-app_shell chromeless_tty cros_ec cros_embedded opengl opengles ozone p2p
+IUSE="-chromeless_tests chromeless_tty cros_ec cros_embedded opengl opengles ozone p2p
 	peerd +shill +tpm X"
 
 # Packages required to support autotest images.  Dependencies here
@@ -56,7 +56,7 @@ CROS_COMMON_RDEPEND="
 		chromeos-base/ec-utils-test
 	)
 	!chromeless_tty? (
-		!app_shell? (
+		!chromeless_tests? (
 			>=dev-cpp/gflags-2.0
 		)
 	)
@@ -117,7 +117,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
-	!app_shell? ( chromeos-base/telemetry )
+	!chromeless_tests? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
 	dev-libs/opensc
 	dev-libs/protobuf-python

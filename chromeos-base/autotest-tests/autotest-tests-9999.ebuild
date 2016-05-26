@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-app_shell -chromeless_tty +crash_reporting +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
+IUSE="-chromeless_tests -chromeless_tty +crash_reporting +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -75,7 +75,7 @@ CLIENT_IUSE_TESTS="
 	+tests_build_RootFilesystemSize
 	+tests_camera_V4L2
 	!chromeless_tty? (
-		!app_shell? (
+		!chromeless_tests? (
 			+tests_desktopui_CrashyReboot
 			+tests_desktopui_FontCache
 			+tests_desktopui_HangDetector
