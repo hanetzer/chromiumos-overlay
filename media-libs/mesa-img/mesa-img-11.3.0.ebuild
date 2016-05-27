@@ -168,6 +168,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
 
 	epatch "${FILESDIR}"/0100-HACK-dri-pvr-Assume-drawable-is-always-a-PBUFFER.patch
+	epatch "${FILESDIR}"/0101-dri-pvr-Add-support-for-YV12.patch
 
 	base_src_prepare
 
