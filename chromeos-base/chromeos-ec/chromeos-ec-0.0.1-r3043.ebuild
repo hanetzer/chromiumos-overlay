@@ -4,13 +4,25 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("641b02a46c323a4560e9e6ff75478680ff9a6e7d" "5c18d72e028eb0aa1ad9487589b495889bb3b905")
-CROS_WORKON_TREE=("d1adbf67ce67343e5fd0d635737177f461e64097" "814dd364fad89da24d2981765ff9663cd85a426a")
+CROS_WORKON_COMMIT=("cebf8734d96d8c6a44185ee1b7d38b4d42efd36a" "716a46a8f2e9516bd9ac64674a5811374f446792" "1510e3782bba280bb9692ff503117e08ce3e7eb9")
+CROS_WORKON_TREE=("9cd0599cdb625af60b94115f33e0cf29c9ad2b82" "e641aef9c79c04410afc91aefb5f6d1b5fd84d94" "0f7b703d46ab978f84c04e3f82e49f83d44c8b54")
 S="${WORKDIR}/platform/ec"
 
-CROS_WORKON_PROJECT=("chromiumos/platform/ec" "chromiumos/third_party/tpm2")
-CROS_WORKON_LOCALNAME=("ec" "../third_party/tpm2")
-CROS_WORKON_DESTDIR=("${S}" "${WORKDIR}/third_party/tpm2")
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/ec"
+	"chromiumos/third_party/tpm2"
+	"chromiumos/third_party/cryptoc"
+)
+CROS_WORKON_LOCALNAME=(
+	"ec"
+	"../third_party/tpm2"
+	"../third_party/cryptoc"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${WORKDIR}/third_party/tpm2"
+	"${WORKDIR}/third_party/cryptoc"
+)
 
 inherit toolchain-funcs cros-ec-board cros-workon
 
