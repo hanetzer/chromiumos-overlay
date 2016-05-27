@@ -116,6 +116,7 @@ ALL_BOARDS=(
 	glados
 	glados-cheets
 	glimmer
+	glimmer-cheets
 	gnawty
 	gru
 	guado
