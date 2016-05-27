@@ -824,9 +824,12 @@ setup_compile_flags() {
 	# sync. So, don't complain if Chrome uses a diagnostic
 	# option that is not yet implemented in the compiler version used
 	# by ChromeOS.
-	append-flags -Wno-unknown-warning-option
-	export CXXFLAGS_host+=" -Wno-unknown-warning-option"
-	export CFLAGS_host+=" -Wno-unknown-warning-option"
+	# Turns out this is only really supported by Clang. See crosbug.com/615466
+	if use clang; then
+		append-flags -Wno-unknown-warning-option
+		export CXXFLAGS_host+=" -Wno-unknown-warning-option"
+		export CFLAGS_host+=" -Wno-unknown-warning-option"
+	fi
 
 	# crbug.com/532532
 	filter-flags "-Wl,--fix-cortex-a53-843419"
