@@ -447,15 +447,10 @@ set_build_defines() {
 	if use clang; then
 		BUILD_DEFINES+=(
 			werror=
-			use_allocator=none
 		)
 		BUILD_ARGS+=(
 			treat_warnings_as_errors=false
 		)
-		BUILD_STRING_ARGS+=(
-			use_allocator=none
-		)
-
 		# The chrome build system will add -m32 for 32bit arches, and
 		# clang defaults to 64bit because our cros_sdk is 64bit default.
 		export CC="clang" CXX="clang++"
