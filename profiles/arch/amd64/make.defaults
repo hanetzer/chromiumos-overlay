@@ -28,9 +28,13 @@ CHOST_x86="i686-pc-linux-gnu"
 CDEFINE_x86="__i386__"
 
 # 2006/10/24 - Simon Stelling <blubb@gentoo.org>
-# They are masked, but we can enable them anyway for those who have 
+# They are masked, but we can enable them anyway for those who have
 # >=portage-2.1.2_pre3-r4
 USE="${USE} mmx sse sse2"
+
+# 2016/05/27 - Yunlian Jiang <yunlian@google.com>
+# Enable transparent hugepage for amd64 architecture.
+USE="${USE} transparent_hugepage"
 
 # 2006/08/18 - Donnie Berkholz <dberkholz@gentoo.org>
 # Defaults for video drivers
