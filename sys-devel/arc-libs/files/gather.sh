@@ -93,6 +93,7 @@ do
 	    libdl.so \
 	    libdrm.so \
 	    libexpat.so \
+	    libgralloc_drm.so \
 	    libhardware.so \
 	    liblog.so \
 	    libm.so \
@@ -110,7 +111,6 @@ do
     # x86 only
     if [[ "$arch" == "x86" ]]; then
 	BINARY_FILES+="\
-	    libgralloc_drm.so \
 	    libdrm_intel.so"
     fi
 
