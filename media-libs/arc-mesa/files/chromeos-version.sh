@@ -18,4 +18,4 @@ if [ ! -f VERSION ] ; then
     exit
 fi
 
-cat VERSION | sed s/-/_/g
+cat VERSION | sed s/devel/pre/g | sed s/-/_/g
