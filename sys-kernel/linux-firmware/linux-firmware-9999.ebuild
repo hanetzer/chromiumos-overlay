@@ -47,6 +47,7 @@ IUSE_BRCMWIFI=(
 	brcmfmac4371-pcie
 )
 IUSE_LINUX_FIRMWARE=(
+	adsp_apl
 	adsp_skl
 	ath9k_htc
 	bcm4354-bt
@@ -67,6 +68,7 @@ IUSE_LINUX_FIRMWARE=(
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon video_cards_amdgpu"
 LICENSE="
+	linux_firmware_adsp_apl? ( LICENCE.adsp_sst )
 	linux_firmware_adsp_skl? ( LICENCE.adsp_sst )
 	linux_firmware_ath3k-all? ( LICENCE.atheros_firmware )
 	linux_firmware_ath3k-ar3011? ( LICENCE.atheros_firmware )
@@ -132,6 +134,7 @@ doins_subdir() {
 src_install() {
 	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
+	use_fw adsp_apl && doins_subdir intel/dsp_fw_bxtn*
 	use_fw adsp_skl && doins_subdir intel/dsp_fw_*
 	use_fw ath9k_htc && doins htc_*.fw
 	use_fw bcm4354-bt && doins_subdir brcm/BCM4354_*.hcd
