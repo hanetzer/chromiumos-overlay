@@ -73,6 +73,7 @@ src_compile() {
 
 src_install() {
 	local src_root="payloads/libpayload"
+
 	pushd "${src_root}"
 
 	emake obj="build_gdb" DESTDIR="${D}/firmware" DOTCONFIG=.config.gdb install
