@@ -11,13 +11,6 @@ inherit base autotools multilib flag-o-matic python toolchain-funcs cros-workon 
 
 OPENGL_DIR="xorg-x11"
 
-MY_PN="${PN/m/M}"
-MY_P="${MY_PN}-${PV/_/-}"
-MY_SRC_P="${MY_PN}Lib-${PV/_/-}"
-
-FOLDER="${PV/_rc*/}"
-[[ ${PV/_rc*/} == ${PV} ]] || FOLDER+="/RC"
-
 DESCRIPTION="OpenGL-like graphic library for Linux"
 HOMEPAGE="http://mesa3d.sourceforge.net/"
 
@@ -41,8 +34,6 @@ IUSE="${IUSE_VIDEO_CARDS}
 
 DEPEND=""
 
-S="${WORKDIR}/${MY_P}"
-
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
 QA_EXECSTACK="usr/lib*/opengl/xorg-x11/lib/libGL.so*"
@@ -56,6 +47,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# workaround for cros-workon not preserving git metadata
+	if [[ ${PV} == 9999* && "${CROS_WORKON_INPLACE}" != "1" ]]; then
+		echo "#define MESA_GIT_SHA1 \"git-deadbeef\"" > src/git_sha1.h
+	fi
+
 	# apply patches
 	if [[ ${PV} != 9999* && -n ${SRC_PATCHES} ]]; then
 		EPATCH_FORCE="yes" \
@@ -138,6 +134,9 @@ src_configure() {
 		export EXPAT_LIBS="-lexpat"
 		export PTHREAD_LIBS="-lc"
 
+		export PTHREADSTUBS_CFLAGS=" "
+		export PTHREADSTUBS_LIBS="-lc"
+
 		export DRM_GRALLOC_CFLAGS="-I${ARC_SYSROOT}/usr/include/drm_gralloc"
 		export DRM_GRALLOC_LIBS="-lgralloc_drm"
 
@@ -214,7 +213,7 @@ src_install_arc() {
 		newexe lib/i965_dri.so i965_dri.so
 	fi
 	if use gallium; then
-		newexe lib/gallium/swrast_dri.so swrast_dri.so
+		newexe lib/gallium/kms_swrast_dri.so kms_swrast_dri.so
 	fi
 }
 
