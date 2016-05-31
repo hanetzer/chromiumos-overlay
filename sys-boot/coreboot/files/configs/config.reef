@@ -46,3 +46,8 @@ CONFIG_LBP2_FILE_NAME="3rdparty/blobs/baseboard-reef/signature2.bin"
 
 # Management Engine
 # CONFIG_LOCK_MANAGEMENT_ENGINE is not set
+
+# IFWI
+CONFIG_NEED_IFWI=y
+CONFIG_IFWI_FMAP_NAME="IFWI"
+CONFIG_IFWI_FILE_NAME="3rdparty/blobs/mainboard/google/reef/fitimage.bin"
