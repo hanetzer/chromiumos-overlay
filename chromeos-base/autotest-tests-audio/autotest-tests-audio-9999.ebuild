@@ -26,6 +26,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_sound_infrastructure
+	+tests_audio_AlsaAPI
 	+tests_audio_AlsaLoopback
 	+tests_audio_Aplay
 	+tests_audio_CRASFormatConversion
