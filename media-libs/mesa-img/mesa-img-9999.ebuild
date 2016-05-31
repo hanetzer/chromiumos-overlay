@@ -166,6 +166,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/0100-HACK-dri-pvr-Assume-drawable-is-always-a-PBUFFER.patch
 	epatch "${FILESDIR}"/0101-dri-pvr-Add-support-for-YV12.patch
+	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
 
 	base_src_prepare
 
