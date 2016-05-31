@@ -26,9 +26,6 @@ DEPEND="${RDEPEND}
 	app-arch/xz-utils"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-pnm2png-eof.patch
-	epatch "${FILESDIR}"/${P}-pnm2png-comment-line.patch
-	epatch "${FILESDIR}"/${P}-pnm2png-pbm.patch
 	epatch "${FILESDIR}"/${P}-pnm2png-truncate-get-token.patch
 	elibtoolize
 }

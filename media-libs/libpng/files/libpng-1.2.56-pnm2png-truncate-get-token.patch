@@ -3,18 +3,20 @@ of the input string.  This involves passing  the input string
 size to get_token(), and prevents it from overwriting past
 the end of that string.
 
---- libpng-1.2.49/contrib/pngminus/pnm2png.c.orig	2013-05-07 18:50:45.271320496 -0700
-+++ libpng-1.2.49/contrib/pngminus/pnm2png.c	2013-05-07 18:58:38.881218666 -0700
-@@ -50,7 +50,7 @@
- int  main (int argc, char *argv[]);
+diff --git a/contrib/pngminus/pnm2png.c b/contrib/pngminus/pnm2png.c
+index 8fa64cd..44e2470 100644
+--- a/contrib/pngminus/pnm2png.c
++++ b/contrib/pngminus/pnm2png.c
+@@ -53,7 +53,7 @@ int  main (int argc, char *argv[]);
  void usage ();
- BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace, BOOL alpha);
+ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
+     BOOL alpha);
 -void get_token(FILE *pnm_file, char *token);
 +void get_token(FILE *pnm_file, char *token, int token_size);
  png_uint_32 get_data (FILE *pnm_file, int depth);
  png_uint_32 get_value (FILE *pnm_file, int depth);
  
-@@ -212,7 +212,7 @@
+@@ -222,7 +222,7 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
  
    /* read header of PNM file */
  
@@ -23,49 +25,54 @@ the end of that string.
    if (type_token[0] != 'P')
    {
      return FALSE;
-@@ -221,9 +221,9 @@
-   {
+@@ -232,10 +232,10 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
+ #if defined(PNG_WRITE_INVERT_SUPPORTED) || defined(PNG_WRITE_PACK_SUPPORTED)
      raw = (type_token[1] == '4');
      color_type = PNG_COLOR_TYPE_GRAY;
 -    get_token(pnm_file, width_token);
 +    get_token(pnm_file, width_token, sizeof(width_token));
-     sscanf (width_token, "%lu", &width);
+     sscanf (width_token, "%lu", &ul_width);
+     width = (png_uint_32) ul_width;
 -    get_token(pnm_file, height_token);
 +    get_token(pnm_file, height_token, sizeof(height_token));
-     sscanf (height_token, "%lu", &height);
+     sscanf (height_token, "%lu", &ul_height);
+     height = (png_uint_32) ul_height;
      bit_depth = 1;
-     packed_bitmap = TRUE;
-@@ -232,11 +232,11 @@
+@@ -249,13 +249,13 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
    {
      raw = (type_token[1] == '5');
      color_type = PNG_COLOR_TYPE_GRAY;
 -    get_token(pnm_file, width_token);
 +    get_token(pnm_file, width_token, sizeof(width_token));
-     sscanf (width_token, "%lu", &width);
+     sscanf (width_token, "%lu", &ul_width);
+     width = (png_uint_32) ul_width;
 -    get_token(pnm_file, height_token);
 +    get_token(pnm_file, height_token, sizeof(height_token));
-     sscanf (height_token, "%lu", &height);
+     sscanf (height_token, "%lu", &ul_height);
+     height = (png_uint_32) ul_height;
 -    get_token(pnm_file, maxval_token);
 +    get_token(pnm_file, maxval_token, sizeof(maxval_token));
-     sscanf (maxval_token, "%lu", &maxval);
-     if (maxval <= 1)
-       bit_depth = 1;
-@@ -253,11 +253,11 @@
+     sscanf (maxval_token, "%lu", &ul_maxval);
+     maxval = (png_uint_32) ul_maxval;
+ 
+@@ -274,13 +274,13 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
    {
      raw = (type_token[1] == '6');
      color_type = PNG_COLOR_TYPE_RGB;
 -    get_token(pnm_file, width_token);
 +    get_token(pnm_file, width_token, sizeof(width_token));
-     sscanf (width_token, "%lu", &width);
+     sscanf (width_token, "%lu", &ul_width);
+     width = (png_uint_32) ul_width;
 -    get_token(pnm_file, height_token);
 +    get_token(pnm_file, height_token, sizeof(height_token));
-     sscanf (height_token, "%lu", &height);
+     sscanf (height_token, "%lu", &ul_height);
+     height = (png_uint_32) ul_height;
 -    get_token(pnm_file, maxval_token);
 +    get_token(pnm_file, maxval_token, sizeof(maxval_token));
-     sscanf (maxval_token, "%lu", &maxval);
+     sscanf (maxval_token, "%lu", &ul_maxval);
+     maxval = (png_uint_32) ul_maxval;
      if (maxval <= 1)
-       bit_depth = 1;
-@@ -284,7 +284,7 @@
+@@ -308,7 +308,7 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
      if (color_type == PNG_COLOR_TYPE_RGB)
        color_type = PNG_COLOR_TYPE_RGB_ALPHA;
  
@@ -74,26 +81,28 @@ the end of that string.
      if (type_token[0] != 'P')
      {
        return FALSE;
-@@ -292,15 +292,15 @@
+@@ -316,17 +316,17 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
      else if ((type_token[1] == '2') || (type_token[1] == '5'))
      {
        alpha_raw = (type_token[1] == '5');
 -      get_token(alpha_file, width_token);
 +      get_token(alpha_file, width_token, sizeof(width_token));
-       sscanf (width_token, "%lu", &alpha_width);
+       sscanf (width_token, "%lu", &ul_alpha_width);
+       alpha_width=(png_uint_32) ul_alpha_width;
        if (alpha_width != width)
          return FALSE;
 -      get_token(alpha_file, height_token);
 +      get_token(alpha_file, height_token, sizeof(height_token));
-       sscanf (height_token, "%lu", &alpha_height);
+       sscanf (height_token, "%lu", &ul_alpha_height);
+       alpha_height = (png_uint_32) ul_alpha_height;
        if (alpha_height != height)
          return FALSE;
 -      get_token(alpha_file, maxval_token);
 +      get_token(alpha_file, maxval_token, sizeof(maxval_token));
-       sscanf (maxval_token, "%lu", &maxval);
+       sscanf (maxval_token, "%lu", &ul_maxval);
+       maxval = (png_uint_32) ul_maxval;
        if (maxval <= 1)
-         alpha_depth = 1;
-@@ -464,7 +464,7 @@
+@@ -511,7 +511,7 @@ BOOL pnm2png (FILE *pnm_file, FILE *png_file, FILE *alpha_file, BOOL interlace,
   * get_token() - gets the first string after whitespace
   */
  
@@ -102,7 +111,7 @@ the end of that string.
  {
    int i = 0;
    int ret;
-@@ -491,7 +491,7 @@
+@@ -538,7 +538,7 @@ void get_token(FILE *pnm_file, char *token)
    {
      ret = fgetc(pnm_file);
      if (ret == EOF) break;
@@ -111,12 +120,12 @@ the end of that string.
      token[i] = (unsigned char) ret;
    }
    while ((token[i] != '\n') && (token[i] != '\r') && (token[i] != ' '));
-@@ -551,7 +551,7 @@
+@@ -599,7 +599,7 @@ png_uint_32 get_value (FILE *pnm_file, int depth)
      for (i = 0; i < depth; i++)
        mask = (mask << 1) | 0x01;
  
 -  get_token (pnm_file, (char *) token);
 +  get_token (pnm_file, (char *) token, sizeof(token));
-   sscanf ((const char *) token, "%lu", &ret_value);
+   sscanf ((const char *) token, "%lu", &ul_ret_value);
+   ret_value = (png_uint_32) ul_ret_value;
  
-   ret_value &= mask;
