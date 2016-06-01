@@ -88,6 +88,7 @@ pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 wrapper_only_options = set(['-clang-syntax', '-print-cmdline',
                             '-nopie', '-noccache'])
+relocatable = set(['-r', '--relocatable'])
 
 myargs = sys.argv[1:]
 
@@ -98,6 +99,8 @@ if fPIE.intersection(myargs):
   flags_to_add.remove('-fPIE')
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
+if relocatable.intersection(myargs):
+  flags_to_add.remove('-Wl,--build-id')
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = clang_flags + list(flags_to_add)
 gcc_flags += list(flags_to_add)
