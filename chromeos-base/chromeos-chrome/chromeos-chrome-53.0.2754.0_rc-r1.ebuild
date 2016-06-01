@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2746.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2754.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2754.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2754.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -824,9 +824,12 @@ setup_compile_flags() {
 	# sync. So, don't complain if Chrome uses a diagnostic
 	# option that is not yet implemented in the compiler version used
 	# by ChromeOS.
-	append-flags -Wno-unknown-warning-option
-	export CXXFLAGS_host+=" -Wno-unknown-warning-option"
-	export CFLAGS_host+=" -Wno-unknown-warning-option"
+	# Turns out this is only really supported by Clang. See crosbug.com/615466
+	if use clang; then
+		append-flags -Wno-unknown-warning-option
+		export CXXFLAGS_host+=" -Wno-unknown-warning-option"
+		export CFLAGS_host+=" -Wno-unknown-warning-option"
+	fi
 
 	# crbug.com/532532
 	filter-flags "-Wl,--fix-cortex-a53-843419"
@@ -1001,14 +1004,18 @@ install_test_resources() {
 	printf "%s\n" "$@" > "${tmp_list_file}"
 
 	# Copy the specific files to the cache from the source directory.
+	# Note: we need to specify -r when using --files-from and -a to get a
+	# recursive copy.
 	# TODO(ihf): Make failures here fatal.
-	rsync -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
+	rsync -r -a --delete --exclude=.svn --exclude=.git --exclude="*.pyc" \
 		--files-from="${tmp_list_file}" "${CHROME_ROOT}/src/" \
 		"${CHROME_CACHE_DIR}/src/"
 
 	# Create hard links in the destination based on the cache.
+	# Note: we need to specify -r when using --files-from and -a to get a
+	# recursive copy.
 	# TODO(ihf): Make failures here fatal.
-	rsync -a --link-dest="${CHROME_CACHE_DIR}/src" \
+	rsync -r -a --link-dest="${CHROME_CACHE_DIR}/src" \
 		--files-from="${tmp_list_file}" "${CHROME_CACHE_DIR}/src/" "${test_dir}/"
 }
 
