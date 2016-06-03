@@ -136,32 +136,20 @@ pkg_setup() {
 }
 
 trunk_src_unpack() {
-	if use clang; then
-		git-r3_fetch "http://llvm.org/git/compiler-rt.git
-			https://github.com/llvm-mirror/compiler-rt.git"
-		git-r3_fetch "http://llvm.org/git/clang.git
-			https://github.com/llvm-mirror/clang.git"
-		git-r3_fetch "http://llvm.org/git/clang-tools-extra.git
-			https://github.com/llvm-mirror/clang-tools-extra.git"
-	fi
-	if use lldb; then
-		git-r3_fetch "http://llvm.org/git/lldb.git
-			https://github.com/llvm-mirror/lldb.git"
-	fi
+	git-r3_fetch "http://llvm.org/git/compiler-rt.git
+		https://github.com/llvm-mirror/compiler-rt.git"
+	git-r3_fetch "http://llvm.org/git/clang.git
+		https://github.com/llvm-mirror/clang.git"
+	git-r3_fetch "http://llvm.org/git/clang-tools-extra.git
+		https://github.com/llvm-mirror/clang-tools-extra.git"
 	git-r3_fetch
 
-	if use clang; then
-		git-r3_checkout http://llvm.org/git/compiler-rt.git \
-			"${S}"/projects/compiler-rt
-		git-r3_checkout http://llvm.org/git/clang.git \
-			"${S}"/tools/clang
-		git-r3_checkout http://llvm.org/git/clang-tools-extra.git \
-			"${S}"/tools/clang/tools/extra
-	fi
-	if use lldb; then
-		git-r3_checkout http://llvm.org/git/lldb.git \
-			"${S}"/tools/lldb
-	fi
+	git-r3_checkout http://llvm.org/git/compiler-rt.git \
+		"${S}"/projects/compiler-rt
+	git-r3_checkout http://llvm.org/git/clang.git \
+		"${S}"/tools/clang
+	git-r3_checkout http://llvm.org/git/clang-tools-extra.git \
+		"${S}"/tools/clang/tools/extra
 	git-r3_checkout
 }
 
@@ -233,13 +221,9 @@ src_prepare() {
 	# crbug/606391
 	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
 
-	# Fix llvm-config for shared linking and sane flags
-	# https://bugs.gentoo.org/show_bug.cgi?id=565358
-	use llvm-next && epatch "${FILESDIR}"/llvm-3.8-llvm-config.patch
-
 	# Bug 27703 - InstCombine hangs (loops forever) at -O1 or higher...
 	# https://llvm.org/bugs/show_bug.cgi?id=27703
-	epatch "${FILESDIR}"/llvm-3.9-inst-combine-D20173.patch
+	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-inst-combine-D20173.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
