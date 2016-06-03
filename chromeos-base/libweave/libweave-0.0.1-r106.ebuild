@@ -36,6 +36,7 @@ src_prepare() {
 	# CrOS source tree
 	epatch ${FILESDIR}/patches/libweave-int64.patch
 	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
+	epatch ${FILESDIR}/patches/libweave-fix-395517.patch
 }
 
 src_unpack() {

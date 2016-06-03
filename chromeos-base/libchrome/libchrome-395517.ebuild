@@ -8,7 +8,7 @@
 EAPI="4"
 
 CROS_WORKON_PROJECT="aosp/platform/external/libchrome"
-CROS_WORKON_COMMIT="fc7fe5e067751426175b585aacf02cff022e9816"
+CROS_WORKON_COMMIT="85d6ef31f94c9c39642f0ebc4c1eb08e48edacc1"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
@@ -41,7 +41,7 @@ src_prepare() {
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.
 	append-lfs-flags
-	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-inject-valgrind-headers.patch
+	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-add-scoped-ptr.patch
 }
 
 src_configure() {
@@ -58,9 +58,8 @@ src_install() {
 	dolib.a libbase*-${SLOT}.a
 
 	local d header_dirs=(
-		base/third_party/icu
-		base/third_party/nspr
 		base
+		base/allocator
 		base/containers
 		base/debug
 		base/files
@@ -75,6 +74,9 @@ src_install() {
 		base/strings
 		base/synchronization
 		base/task
+		base/third_party/icu
+		base/third_party/nspr
+		base/third_party/valgrind
 		base/threading
 		base/time
 		base/timer
@@ -85,7 +87,6 @@ src_install() {
 		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
-		third_party/valgrind
 	)
 	for d in "${header_dirs[@]}" ; do
 		insinto /usr/include/base-${SLOT}/${d}
