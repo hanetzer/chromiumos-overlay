@@ -75,14 +75,20 @@ src_compile() {
 board_install() {
 	insinto $2
 	pushd build/$1 >/dev/null || die
+
+	openssl dgst -sha256 -binary RO/ec.RO.flat > RO/ec.RO.hash
+	openssl dgst -sha256 -binary RW/ec.RW.flat > RW/ec.RW.hash
+
 	doins ec.bin
 	newins RW/ec.RW.flat ec.RW.bin
+	doins RW/ec.RW.hash
 	# Intermediate file for debugging.
 	doins RW/ec.RW.elf
 
 	if [ `grep "^CONFIG_FW_INCLUDE_RO=y" .config` ];
 		then
 			newins RO/ec.RO.flat ec.RO.bin
+			doins RO/ec.RO.hash
 			# Intermediate file for debugging.
 			doins RO/ec.RO.elf
 	fi
