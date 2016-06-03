@@ -89,6 +89,9 @@ sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 wrapper_only_options = set(['-clang-syntax', '-print-cmdline',
                             '-nopie', '-noccache'])
 relocatable = set(['-r', '--relocatable'])
+debug_dwarf = set(['-g', '-g1', '-g2', '-g3', '-ggdb', '-ggdb1', '-ggdb2', '-ggdb3',
+                   '-gdwarf-2', '-gdwarf-3'])
+
 
 myargs = sys.argv[1:]
 
@@ -105,6 +108,15 @@ print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = clang_flags + list(flags_to_add)
 gcc_flags += list(flags_to_add)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
+# Invoking clang with '-g' causes it to generate .debug_frames using
+# dwarf V4 by default.  Breakpad cannnot parse .debug_frames beyond Dwarf V3.
+# (see https://bugs.chromium.org/p/chromium/issues/detail?id=614788).
+# To handle this, when we are using clang and passing any version of '-g',
+# (except '-g0' which turns off debug info) we also need to pass '-gdwarf-3'
+# to the compiler (unless another -gdwarf-x flag has already been passed).
+if clang_codegen and debug_dwarf.intersection(myargs):
+  myargs = ['-gdwarf-3'] + myargs
+
 if '-fstack-check' in myargs:
   print('Option "-fstack-check" is not supported. See crbug.com/485492',
         file=sys.stderr)
