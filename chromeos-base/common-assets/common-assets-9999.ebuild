@@ -205,8 +205,8 @@ src_install() {
 
 	# Speech synthesis voice data
 	for i in ${TTS_LANGUAGES}; do
-		doins "${S}"/speech_synthesis/patts/voice_data_hmm_${i}.js
-		doins "${S}"/speech_synthesis/patts/voice_data_hmm_${i}.zvoice
+		doins "${S}"/speech_synthesis/patts/voice_*${i}.js
+		doins "${S}"/speech_synthesis/patts/voice_*${i}.zvoice
 	done
 
 	# Speech synthesis engine (platform-specific native client module)
