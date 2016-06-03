@@ -44,6 +44,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-reject-create-child-sa-exchange.patch"
 	epatch "${FILESDIR}/${P}-lenient-encryption.patch"
 	epatch "${FILESDIR}/${P}-modp_custom.patch"
+	epatch "${FILESDIR}/${PN}-5.0.0-5.0.2_enforce_remote_auth.patch"
+	epatch "${FILESDIR}/${PN}-4.4.0-5.3.3_eap_mschapv2_state.patch"
 }
 
 pkg_setup() {
