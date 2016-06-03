@@ -63,9 +63,6 @@ src_compile() {
 		BOARD=${board} emake clean
 		BOARD=${board} emake all
 		BOARD=${board} emake tests
-
-		BOARD=${board} emake all out=build/${board}_shifted \
-				EXTRA_CFLAGS="-DSHIFT_CODE_FOR_TEST"
 	done
 }
 
@@ -99,7 +96,6 @@ board_install() {
 	# EC test binaries
 	nonfatal doins test-*.bin || ewarn "No test binaries found"
 	popd > /dev/null
-	newins build/$1_shifted/ec.bin ec_autest_image.bin
 }
 
 src_install() {
