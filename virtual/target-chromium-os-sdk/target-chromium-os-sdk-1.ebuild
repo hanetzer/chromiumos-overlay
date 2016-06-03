@@ -409,6 +409,7 @@ RDEPEND="${RDEPEND}
 	dev-python/django
 	dev-python/flup
 	dev-python/jsonrpclib
+	dev-python/jsonschema
 	dev-python/paramiko
 	dev-python/pycrypto
 	dev-python/python-gnupg

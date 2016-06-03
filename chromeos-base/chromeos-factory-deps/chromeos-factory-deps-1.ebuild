@@ -21,6 +21,7 @@ FACTORY_FRAMEWORK_RDEPEND="
 	dev-python/dpkt
 	dev-python/imaging
 	dev-python/jsonrpclib
+	dev-python/jsonschema
 	dev-python/netifaces
 	dev-python/pygobject
 	dev-python/pyyaml
