@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-chromeless_tests -chromeless_tty +crash_reporting +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
+IUSE="-chromeless_tests -chromeless_tty +crash_reporting cups +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -35,6 +35,9 @@ RDEPEND="
 
 RDEPEND="${RDEPEND}
 	tests_dbench? ( dev-libs/libaio )
+	cups? (
+		tests_platform_CUPSDaemon? ( net-print/cups[upstart] )
+	)
 	tests_platform_MetricsUploader? (
 		chromeos-base/metrics
 		dev-libs/protobuf-python
@@ -181,6 +184,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_CompressedSwapPerf
 	+tests_platform_Crossystem
 	+tests_platform_Crouton
+	cups? ( +tests_platform_CUPSDaemon )
 	+tests_platform_DaemonsRespawn
 	+tests_platform_DBusMachineIdRotation
 	+tests_platform_DMVerityBitCorruption
