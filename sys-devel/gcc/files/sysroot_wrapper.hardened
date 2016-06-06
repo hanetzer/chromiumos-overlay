@@ -55,8 +55,7 @@ arch = '-'.join(gcc_comp.split('-')[0:-1])
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2',
                     '-fno-omit-frame-pointer',
-                    '-Wno-deprecated-declarations',
-                    '-Wl,--build-id'])
+                    '-Wno-deprecated-declarations'])
 x86_disable_flags = set(['-mno-movbe'])
 
 gcc_flags = ['-frecord-gcc-switches',
@@ -88,7 +87,6 @@ pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 wrapper_only_options = set(['-clang-syntax', '-print-cmdline',
                             '-nopie', '-noccache'])
-relocatable = set(['-r', '--relocatable'])
 debug_dwarf = set(['-g', '-g1', '-g2', '-g3', '-ggdb', '-ggdb1', '-ggdb2', '-ggdb3',
                    '-gdwarf-2', '-gdwarf-3'])
 
@@ -102,8 +100,6 @@ if fPIE.intersection(myargs):
   flags_to_add.remove('-fPIE')
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
-if relocatable.intersection(myargs):
-  flags_to_add.remove('-Wl,--build-id')
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = clang_flags + list(flags_to_add)
 gcc_flags += list(flags_to_add)
