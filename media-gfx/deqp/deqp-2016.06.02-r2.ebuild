@@ -102,4 +102,11 @@ src_install() {
 	doins -r "${BUILD_DIR}/modules/gles3/gles3"
 	insinto "${deqp_dir}/modules/gles31"
 	doins -r "${BUILD_DIR}/modules/gles31/gles31"
+
+	# Install master control files
+	insinto "${deqp_dir}/master"
+	doins "android/cts/master/egl-master.txt"
+	doins "android/cts/master/gles2-master.txt"
+	doins "android/cts/master/gles3-master.txt"
+	doins "android/cts/master/gles31-master.txt"
 }
