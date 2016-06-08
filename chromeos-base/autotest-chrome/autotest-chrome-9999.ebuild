@@ -66,7 +66,6 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_display_ClientChameleonConnection
 	+tests_dummy_IdleSuspend
-	+tests_enterprise_CFM_Perf
 	+tests_enterprise_CFM_Sanity
 	+tests_enterprise_CFM_SessionStress
 	+tests_enterprise_CFM_USBPeripheralDetect

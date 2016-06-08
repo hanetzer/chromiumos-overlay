@@ -70,7 +70,7 @@ SERVER_IUSE_TESTS="
 	+tests_dummy_PassServer
 	+tests_dummy_FailServer
 	+tests_dummy_FlakyTestServer
-	+tests_enterprise_CFM_PerfServer
+	+tests_enterprise_CFM_Perf
 	+tests_enterprise_CFM_SanityServer
 	+tests_enterprise_CFM_SessionStressServer
 	+tests_enterprise_CFM_USBPeripheralHotplugDetect
