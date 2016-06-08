@@ -68,3 +68,6 @@ dev-embedded/openocd  ftdi
 # Resolve circular dependency between libcap and pam.
 # http://crbug.com/508630 (see #8)
 sys-libs/libcap	-pam
+
+# Disable obsolete/unused protocols.
+dev-libs/openssl -sslv2 -sslv3 -tls-heartbeat
