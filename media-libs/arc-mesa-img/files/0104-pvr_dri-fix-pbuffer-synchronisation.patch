@@ -1,0 +1,274 @@
+From 57e11a3db75481691c7bd5f0c1bac067c5513be6 Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Fri, 6 May 2016 12:57:54 +0100
+Subject: [PATCH 104/104] pvr_dri: fix pbuffer synchronisation
+
+When the PVR DRI driver was using the image loader extension,
+rendering to a pbuffer would fail due to it incorrectly setting the
+EGLDRAWABLE_FLAGS_BUFFER_SYNC flag in KEGLGetDrawableParameters.
+This happened as the PVR DRI driver was initially treating all
+drawables as windows, since it isn't told the drawable type by
+Mesa, and it was assuming that windows use buffer sync. When using
+the DRI2 loader extension, this happens to work as pbuffer memory
+is imported into Services, meaning buffer sync is supported,
+whereas, when using the image loader extension, it's allocated by
+Services, meaning it doesn't support buffer sync.
+
+Fix this by removing the use of drawable type in the PVR DRI driver
+and instead using the PVRDRI_RENDER_BUFFER_FLAG_IMPORT
+PVRDRIRenderBuffer flag to determine when to user buffer sync.
+
+Change-Id: I276cbf0c2a5e36e253101249f66fe3b37a82aff2
+---
+ src/mesa/drivers/dri/pvr/pvr_dri_support.h |  9 +--
+ src/mesa/drivers/dri/pvr/pvrdrawable.c     | 90 +++++-------------------------
+ src/mesa/drivers/dri/pvr/pvrdri.c          |  4 +-
+ src/mesa/drivers/dri/pvr/pvrdri.h          |  8 +--
+ src/mesa/drivers/dri/pvr/pvrext.c          |  2 +-
+ 5 files changed, 20 insertions(+), 93 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+index 6060484..fb26b12 100644
+--- a/src/mesa/drivers/dri/pvr/pvr_dri_support.h
++++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+@@ -56,13 +56,6 @@ typedef enum
+ 
+ typedef enum
+ {
+-	PVRDRI_SURFACE_WINDOW,
+-	PVRDRI_SURFACE_PIXMAP,
+-	PVRDRI_SURFACE_PBUFFER
+-} pvrdri_surface_type;
+-
+-typedef enum
+-{
+ 	PVRDRI_IMAGE = 1,
+ 	PVRDRI_IMAGE_FROM_NAMES,
+ 	PVRDRI_IMAGE_FROM_EGLIMAGE,
+@@ -340,7 +333,7 @@ typedef struct
+ 	                                              PVRDRIBufferImpl **psDstBuffer,
+ 	                                              PVRDRIBufferImpl **psAccumBuffer,
+ 	                                              PVRDRIBufferAttribs *psAttribs,
+-	                                              pvrdri_surface_type *eSurfaceType);
++	                                              bool *pbDoubleBuffered);
+ 
+ 	PVRDRIImageType      (*ImageGetSharedType)(__DRIimage *image);
+ 	PVRDRIBufferImpl    *(*ImageGetSharedBuffer)(__DRIimage *image);
+diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+index 3527819..1806aea 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdrawable.c
++++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+@@ -298,7 +298,6 @@ static bool PVRDRI2DrawableGetNativeInfo(PVRDRIDrawable *psPVRDrawable)
+ {
+ 	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
+ 	__DRIscreen *psDRIScreen = psPVRDrawable->psPVRScreen->psDRIScreen;
+-	unsigned int uiAttachment;
+ 	unsigned int auiAttachmentReq[2];
+ 	__DRIbuffer *psDRIBuffers;
+ 	int iBufCount;
+@@ -308,50 +307,16 @@ static bool PVRDRI2DrawableGetNativeInfo(PVRDRIDrawable *psPVRDrawable)
+ 	assert(psDRIScreen->dri2.loader);
+ 	assert(psDRIScreen->dri2.loader->getBuffersWithFormat);
+ 
+-	switch (psPVRDrawable->eSurfaceType)
++	if (psPVRDrawable->bDoubleBuffered)
+ 	{
+-		case PVRDRI_SURFACE_PIXMAP:
+-			uiAttachment = __DRI_BUFFER_FRONT_LEFT;
+-			auiAttachmentReq[0] = __DRI_BUFFER_FRONT_LEFT;
+-			auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+-			break;
+-		case PVRDRI_SURFACE_PBUFFER:
+-			if (psPVRDrawable->bDoubleBuffered)
+-			{
+-				uiAttachment = __DRI_BUFFER_BACK_LEFT;
+-				auiAttachmentReq[0] = __DRI_BUFFER_BACK_LEFT;
+-				auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+-			}
+-			else
+-			{
+-				uiAttachment = __DRI_BUFFER_FRONT_LEFT;
+-				auiAttachmentReq[0] = __DRI_BUFFER_FRONT_LEFT;
+-				auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+-			}
+-			break;
+-		case PVRDRI_SURFACE_WINDOW:
+-			if (psPVRDrawable->bDoubleBuffered)
+-			{
+-				uiAttachment = __DRI_BUFFER_BACK_LEFT;
+-				auiAttachmentReq[0] = __DRI_BUFFER_BACK_LEFT;
+-				auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+-			}
+-			else
+-			{
+-				/*
+-				 * We request the real front buffer and get a fake
+-				 * front buffer.
+-				 */
+-				uiAttachment = __DRI_BUFFER_FAKE_FRONT_LEFT;
+-				auiAttachmentReq[0] = __DRI_BUFFER_FRONT_LEFT;
+-				auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+-			}
+-			break;
+-		default:
+-			errorMessage("%s: Unsupported surface type: %d\n",
+-				     __func__, (int)psPVRDrawable->eSurfaceType);
+-			return false;
++		auiAttachmentReq[0] = __DRI_BUFFER_BACK_LEFT;
+ 	}
++	else
++	{
++		auiAttachmentReq[0] = __DRI_BUFFER_FRONT_LEFT;
++	}
++
++	auiAttachmentReq[1] = PVRDRIPixFmtGetDepth(psPVRDrawable->ePixelFormat);
+ 
+ 	/* Do not free psDRIBuffers when finished with it */
+ 	psDRIBuffers = psDRIScreen->dri2.loader->getBuffersWithFormat(psDRIDrawable,
+@@ -367,35 +332,11 @@ static bool PVRDRI2DrawableGetNativeInfo(PVRDRIDrawable *psPVRDrawable)
+ 		return false;
+ 	}
+ 
+-	/*
+-	 * For buffers created via the CreateBuffer entry point, we can't
+-	 * distinguish between windows, pixmaps and pbuffers so we initially
+-	 * assume we have a window. The situation slightly improves once
+-	 * getBuffersWithFormat is called as we have the opportunity to
+-	 * attempt to detect whether or not we have something else.
+-	 * Unfortunately, we can never detect the difference between a pbuffer
+-	 * and pixmap so, rightly or wrongly, the detection code below assumes
+-	 * we have a pbuffer.
+-	 */
+-	if (psPVRDrawable->eSurfaceType == PVRDRI_SURFACE_WINDOW)
+-	{
+-		for (i = 0; i < iBufCount; i++)
+-		{
+-			if (psDRIBuffers[i].attachment == __DRI_BUFFER_FRONT_LEFT)
+-			{
+-				psPVRDrawable->eSurfaceType = PVRDRI_SURFACE_PBUFFER;
+-				if (!psPVRDrawable->bDoubleBuffered)
+-				{
+-					uiAttachment = __DRI_BUFFER_FRONT_LEFT;
+-				}
+-				break;
+-			}
+-		}
+-	}
+-
+ 	for (i = 0; i < iBufCount; i++)
+ 	{
+-		if (psDRIBuffers[i].attachment == uiAttachment)
++		if (psDRIBuffers[i].attachment == auiAttachmentReq[0] ||
++		    (psDRIBuffers[i].attachment == __DRI_BUFFER_FAKE_FRONT_LEFT &&
++		     auiAttachmentReq[0] == __DRI_BUFFER_FRONT_LEFT))
+ 		{
+ 			break;
+ 		}
+@@ -679,8 +620,7 @@ bool PVRDRIDrawableCreate(PVRDRIDrawable *psPVRDrawable)
+ /*************************************************************************/ /*!
+  PVR drawable interface
+ */ /**************************************************************************/
+-bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable,
+-                        pvrdri_surface_type eSurfaceType)
++bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable)
+ {
+ 	unsigned uNumBufs = psPVRDrawable->bDoubleBuffered ? DRI2_BUFFERS_MAX : 1;
+ 	PVRObjectCacheInsertCB pfnInsert;
+@@ -719,8 +659,6 @@ bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable,
+ 		return false;
+ 	}
+ 
+-	psPVRDrawable->eSurfaceType = eSurfaceType;
+-
+ 	if (!PVRDRIDrawableCreate(psPVRDrawable))
+ 	{
+ 		PVRObjectCacheDestroy(psPVRDrawable->hBufferCache);
+@@ -772,7 +710,7 @@ bool PVRDRIDrawableGetParameters(PVRDRIDrawable *psPVRDrawable,
+                                  PVRDRIBufferImpl **psDstBuffer,
+                                  PVRDRIBufferImpl **psAccumBuffer,
+                                  PVRDRIBufferAttribs *psAttribs,
+-                                 pvrdri_surface_type *eSurfaceType)
++                                 bool *pbDoubleBuffered)
+ {
+ 	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
+ 	PVRDRIBuffer *psPVRBuffer;
+@@ -794,7 +732,7 @@ bool PVRDRIDrawableGetParameters(PVRDRIDrawable *psPVRDrawable,
+ 		*psAccumBuffer = *psDstBuffer;
+ 	}
+ 
+-	*eSurfaceType = psPVRDrawable->eSurfaceType;
++	*pbDoubleBuffered = psPVRDrawable->bDoubleBuffered;
+ 
+ 	psAttribs->uiWidth           = psDRIDrawable->w;
+ 	psAttribs->uiHeight          = psDRIDrawable->h;
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
+index a65e61c..b1e3708 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdri.c
++++ b/src/mesa/drivers/dri/pvr/pvrdri.c
+@@ -1241,7 +1241,7 @@ static GLboolean PVRDRIMakeCurrent(__DRIcontext *psDRIContext,
+ 
+ 	if (psPVRWrite != NULL)
+ 	{
+-		if (!PVRDRIDrawableInit(psPVRWrite, PVRDRI_SURFACE_WINDOW))
++		if (!PVRDRIDrawableInit(psPVRWrite))
+ 		{
+ 			__driUtilMessage("%s: Couldn't initialise write drawable",
+ 					 __func__);
+@@ -1251,7 +1251,7 @@ static GLboolean PVRDRIMakeCurrent(__DRIcontext *psDRIContext,
+ 
+ 	if (psPVRRead != NULL)
+ 	{
+-		if (!PVRDRIDrawableInit(psPVRRead, PVRDRI_SURFACE_WINDOW))
++		if (!PVRDRIDrawableInit(psPVRRead))
+ 		{
+ 			__driUtilMessage("%s: Couldn't initialise read drawable",
+ 					 __func__);
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
+index 1561a95..51b1743 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdri.h
++++ b/src/mesa/drivers/dri/pvr/pvrdri.h
+@@ -133,9 +133,6 @@ typedef struct PVRDRIDrawable_TAG
+ 	/* Mutex for this drawable */
+ 	pthread_mutex_t     sMutex;
+ 
+-	/* Surface type */
+-	pvrdri_surface_type   eSurfaceType;
+-
+ 	/* IMG Pixel format for this drawable */
+ 	IMG_PIXFMT          ePixelFormat;
+ 
+@@ -256,8 +253,7 @@ IMG_YUV_CHROMA_INTERP PVRDRIChromaSittingToIMGInterp(const PVRDRIImageFormat *ps
+  pvrdrawable.c
+ */ /**************************************************************************/
+ 
+-bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable,
+-			                  pvrdri_surface_type eSurfaceType);
++bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable);
+ void PVRDRIDrawableDeinit(PVRDRIDrawable *psPVRDrawable);
+ 
+ /* Callbacks into non-impl layer */
+@@ -270,7 +266,7 @@ bool PVRDRIDrawableGetParameters(PVRDRIDrawable *psPVRDrawable,
+                                  PVRDRIBufferImpl **psDstBuffer,
+                                  PVRDRIBufferImpl **psAccumBuffer,
+                                  PVRDRIBufferAttribs *psAttribs,
+-                                 pvrdri_surface_type *eSurfaceType);
++                                 bool *pbDoubleBuffered);
+ 
+ PVRDRIImageType PVRDRIImageGetSharedType(__DRIimage *image);
+ PVRDRIBufferImpl *PVRDRIImageGetSharedBuffer(__DRIimage *image);
+diff --git a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
+index f61ec37..18b2417 100644
+--- a/src/mesa/drivers/dri/pvr/pvrext.c
++++ b/src/mesa/drivers/dri/pvr/pvrext.c
+@@ -115,7 +115,7 @@ static void PVRDRIExtSetTexBuffer(__DRIcontext  *psDRIContext,
+ 
+ 	if (!psPVRDrawable->bInitialised)
+ 	{
+-		if (!PVRDRIDrawableInit(psPVRDrawable, PVRDRI_SURFACE_PIXMAP))
++		if (!PVRDRIDrawableInit(psPVRDrawable))
+ 		{
+ 			__driUtilMessage("%s: Couldn't initialise pixmap", __func__);
+ 			return;
+-- 
+1.9.1
+
