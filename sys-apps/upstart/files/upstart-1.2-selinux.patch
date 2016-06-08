@@ -14,8 +14,6 @@ src/third_party/chromiumos-overlay/sys-apps/upstart.
 
 Patch by Luigi Semenzato <semenzato@chromium.org>
 
-diff --git a/configure.ac b/configure.ac
-index 277dff2..fd3617c 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -34,6 +34,15 @@ PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.2.16])
@@ -34,8 +32,6 @@ index 277dff2..fd3617c 100644
  # Checks for typedefs, structures, and compiler characteristics.
  AC_PROG_CC_C99
  AM_PROG_CC_C_O
-diff --git a/init/Makefile.am b/init/Makefile.am
-index 467a705..91410b1 100644
 --- a/init/Makefile.am
 +++ b/init/Makefile.am
 @@ -5,7 +5,8 @@ initconfdir = $(sysconfdir)/init
@@ -56,21 +52,39 @@ index 467a705..91410b1 100644
  	-lrt
  
  
-diff --git a/init/main.c b/init/main.c
-index 9984058..4970f16 100644
+--- a/init/errors.h
++++ b/init/errors.h
+@@ -52,6 +52,9 @@ enum {
+ 
+ 	/* Errors while handling control requests */
+ 	CONTROL_NAME_TAKEN,
++
++	/* SELinux handling errors */
++	SELINUX_POLICY_LOAD_FAIL,
+ };
+ 
+ /* Error strings for defined messages */
+@@ -72,5 +75,6 @@ enum {
+ #define PARSE_EXPECTED_VARIABLE_STR	N_("Expected variable name before value")
+ #define PARSE_MISMATCHED_PARENS_STR	N_("Mismatched parentheses")
+ #define CONTROL_NAME_TAKEN_STR		N_("Name already taken")
++#define SELINUX_POLICY_LOAD_FAIL_STR	N_("Failed to load SELinux policy while in enforcing mode")
+ 
+ #endif /* INIT_ERRORS_H */
 --- a/init/main.c
 +++ b/init/main.c
-@@ -30,6 +30,9 @@
+@@ -29,6 +29,10 @@
+ #include <sys/ioctl.h>
  #include <sys/reboot.h>
  #include <sys/resource.h>
- 
++#include <sys/mount.h>
++
 +#include <sys/stat.h>
 +#include <fcntl.h>
-+
+ 
  #include <errno.h>
  #include <stdio.h>
- #include <limits.h>
-@@ -39,6 +42,10 @@
+@@ -39,6 +43,10 @@
  #include <syslog.h>
  #include <unistd.h>
  
@@ -81,94 +95,199 @@ index 9984058..4970f16 100644
  #include <linux/kd.h>
  
  #include <nih/macros.h>
-@@ -71,8 +78,15 @@ static void kbd_handler     (void *data, NihSignal *signal);
- static void pwr_handler     (void *data, NihSignal *signal);
- static void hup_handler     (void *data, NihSignal *signal);
+@@ -53,6 +61,7 @@
+ #include <nih/logging.h>
+ 
+ #include "paths.h"
++#include "errors.h"
+ #include "events.h"
+ #include "system.h"
+ #include "job_process.h"
+@@ -73,6 +82,9 @@
  static void usr1_handler    (void *data, NihSignal *signal);
-+#else
-+static int  logger_kmsg     (NihLogLevel priority, const char *message) {}
  #endif /* DEBUG */
  
 +#ifdef HAVE_SELINUX
-+#define CHECKREQPROT_PATH "/sys/fs/selinux/checkreqprot"
-+static void initialize_selinux (char **argv);
++static int initialize_selinux (void);
 +#endif
-+
  
  /**
   * argv0:
-@@ -113,6 +127,12 @@ main (int   argc,
+@@ -111,6 +123,7 @@
+       char *argv[])
+ {
  	char **args;
++	char  *arg_end = NULL;
  	int    ret;
  
+ 	argv0 = argv[0];
+@@ -158,8 +171,6 @@
+ 	 * will show whitespace in their place.
+ 	 */
+ 	if (argc > 1) {
+-		char *arg_end;
+-
+ 		arg_end = argv[argc-1] + strlen (argv[argc-1]);
+ 		*arg_end = ' ';
+ 	}
+@@ -208,7 +219,8 @@
+ 	 * essential for any Linux system; not to mention used by
+ 	 * ourselves.
+ 	 */
+-	if (system_mount ("proc", "/proc") < 0) {
++	if (system_mount ("proc", "/proc",
++			  MS_NODEV | MS_NOEXEC | MS_NOSUID) < 0) {
+ 		NihError *err;
+ 
+ 		err = nih_error_get ();
+@@ -217,7 +229,8 @@
+ 		nih_free (err);
+ 	}
+ 
+-	if (system_mount ("sysfs", "/sys") < 0) {
++	if (system_mount ("sysfs", "/sys",
++			  MS_NODEV | MS_NOEXEC | MS_NOSUID) < 0) {
+ 		NihError *err;
+ 
+ 		err = nih_error_get ();
+@@ -225,6 +238,56 @@
+ 			  err->message);
+ 		nih_free (err);
+ 	}
++
 +#ifdef HAVE_SELINUX
-+	if (getpid () == 1 && getenv ("SELINUX_INIT") == NULL) {
-+		initialize_selinux (argv);
++	if (!getenv ("SELINUX_INIT")) {
++		/*
++		 * We mount selinuxfs ourselves instead of letting
++		 * libselinux do it so that our standard mount options
++		 * (nosuid and noexec) will be applied. Note that
++		 * we leave devices on since there is null device in
++		 * selinuxfs.
++		 */
++		if (system_mount ("selinuxfs", "/sys/fs/selinux",
++				  MS_NOEXEC | MS_NOSUID) < 0) {
++			NihError *err;
++
++			err = nih_error_get ();
++			nih_fatal ("%s: %s",
++				   _("Unable to mount /sys/fs/selinux filesystem"),
++				   err->message);
++			nih_free (err);
++
++			exit (1);
++		}
++
++		if (initialize_selinux () < 0) {
++			NihError *err;
++
++			err = nih_error_get ();
++			nih_fatal ("%s: %s",
++				   _("Failed to initialize SELinux"),
++				   err->message);
++			nih_free (err);
++
++			exit (1);
++		}
++
++		putenv ("SELINUX_INIT=YES");
++		nih_info (_("SELinux policy loaded, doing self-exec"));
++
++		/* Unmangle argv and re-execute */
++		if (arg_end)
++			*arg_end = '\0';
++		execv (argv0, argv);
++
++		nih_fatal ("%s: %s",
++			   _("Failed to re-exec init"),
++			   strerror (errno));
++		exit (1);
 +	}
 +#endif
 +
- 	argv0 = argv[0];
- 	nih_main_init (argv0);
- 
-@@ -630,3 +650,61 @@ usr1_handler (void      *data,
- 	}
- }
- #endif /* DEBUG */
+ #else /* DEBUG */
+ 	nih_log_set_priority (NIH_LOG_DEBUG);
+ 	nih_debug ("Running as PID %d (PPID %d)",
+@@ -632,0 +696,49 @@
 +
 +#ifdef HAVE_SELINUX
 +/**
++ * selinux_set_checkreqprot:
++ *
++ * Forces /sys/fs/selinux/checkreqprot to 0 to ensure that
++ * SELinux will check the protection for mmap and mprotect
++ * calls that will be applied by the kernel and not the
++ * one requested by the application.
++ **/
++static int selinux_set_checkreqprot (void)
++{
++	static const char path[] = "/sys/fs/selinux/checkreqprot";
++	FILE *checkreqprot_file;
++
++	checkreqprot_file = fopen (path, "w");
++	if (!checkreqprot_file)
++		nih_return_system_error (-1);
++
++	if (fputc ('0', checkreqprot_file) == EOF)
++		nih_return_system_error (-1);
++
++	if (fclose (checkreqprot_file) != 0)
++		nih_return_system_error (-1);
++
++	return 0;
++}
++
++/**
 + * initialize_selinux:
 + *
-+ * Loads an SELinux policy and reexecs init to enter the the proper SELinux
-+ * context.
++ * Loads an SELinux policy.
 + **/
-+void initialize_selinux (char **argv)
++static int initialize_selinux (void)
 +{
 +	int         enforce = 0;
-+	FILE       *checkreqprot_file;
-+	const char *errstr;
 +
-+	program_name = argv[0];  /* for logger_kmsg before NIH init */
-+	putenv ("SELINUX_INIT=YES");
 +	if (selinux_init_load_policy (&enforce) != 0) {
-+		logger_kmsg (NIH_LOG_WARN, "SELinux policy failed to load");
++		nih_warn (_("SELinux policy failed to load"));
 +		if (enforce > 0) {
 +			/* Enforcing mode, must quit. */
-+			logger_kmsg (NIH_LOG_FATAL,
-+				     "no SELinux policy in enforcing mode: quit");
-+			exit (1);
++			nih_return_error (-1, SELINUX_POLICY_LOAD_FAIL,
++					  _(SELINUX_POLICY_LOAD_FAIL_STR));
 +		}
 +	}
 +
-+	checkreqprot_file = fopen (CHECKREQPROT_PATH, "w");
-+	if (checkreqprot_file == NULL) {
-+		errstr = strerror(errno);
-+		logger_kmsg (NIH_LOG_FATAL,
-+			     "Failed to open " CHECKREQPROT_PATH);
-+		logger_kmsg (NIH_LOG_FATAL, errstr);
-+		exit (1);
-+	}
-+	if (fputc ('0', checkreqprot_file) == EOF) {
-+		errstr = strerror(errno);
-+		logger_kmsg (NIH_LOG_FATAL,
-+			     "Failed to write " CHECKREQPROT_PATH);
-+		logger_kmsg (NIH_LOG_FATAL, errstr);
-+		exit (1);
-+	}
-+	if (fclose (checkreqprot_file) != 0) {
-+		errstr = strerror(errno);
-+		logger_kmsg (NIH_LOG_FATAL,
-+			     "Failed to close " CHECKREQPROT_PATH);
-+		logger_kmsg (NIH_LOG_FATAL, errstr);
-+		exit (1);
-+	}
-+
-+	logger_kmsg (NIH_LOG_MESSAGE, "SELinux policy loaded, doing self-exec");
-+	execv (argv[0], argv);
-+	errstr = strerror(errno);
-+
-+	logger_kmsg (NIH_LOG_FATAL, "Failed to re-exec init.");
-+	logger_kmsg (NIH_LOG_FATAL, errstr);
-+	exit (1);
++	return selinux_set_checkreqprot ();
 +}
 +#endif /* HAVE_SELINUX */
+--- a/init/system.c
++++ b/init/system.c
+@@ -175,7 +175,8 @@ system_setup_console (ConsoleType type,
+  **/
+ int
+ system_mount (const char *type,
+-	      const char *dir)
++	      const char *dir,
++	      unsigned int opts)
+ {
+ 	nih_local char *parent = NULL;
+ 	char *          ptr;
+@@ -204,8 +205,7 @@ system_mount (const char *type,
+ 		return 0;
+ 
+ 	/* Mount the filesystem */
+-	if (mount ("none", dir, type,
+-		   MS_NODEV | MS_NOEXEC | MS_NOSUID, NULL) < 0)
++       if (mount ("none", dir, type, opts, NULL) < 0)
+ 		nih_return_system_error (-1);
+ 
+ 	return 0;
+
+--- a/init/system.h
++++ b/init/system.h
+@@ -35,7 +35,7 @@ int system_kill          (pid_t pid, int
+ int system_setup_console (ConsoleType type, int reset)
+ 	__attribute__ ((warn_unused_result));
+ 
+-int system_mount         (const char *type, const char *dir)
++int system_mount         (const char *type, const char *dir, unsigned int opts)
+ 	__attribute__ ((warn_unused_result));
+ 
+ NIH_END_EXTERN
