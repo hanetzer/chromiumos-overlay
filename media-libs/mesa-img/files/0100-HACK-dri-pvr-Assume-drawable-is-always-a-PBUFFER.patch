@@ -1,7 +1,7 @@
-From 5d0ef0516e1c2c32e00c05581ae5162b487eb6d2 Mon Sep 17 00:00:00 2001
+From fcfdab759089d5f6e56dc5422c31cd30c38ebfd1 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Fri, 6 May 2016 12:57:54 +0100
-Subject: [PATCH 100/100] HACK: dri/pvr: Assume drawable is always a PBUFFER
+Subject: [PATCH 100/102] HACK: dri/pvr: Assume drawable is always a PBUFFER
 
 The PVR DRI driver needs to know the nature of the drawable being
 allocated, as it uses different allocation and synchronisation
@@ -15,46 +15,9 @@ windowing systems.
 
 Change-Id: I7af49e04bfca6496d571260d3a78f5d7707f61e0
 ---
- src/mesa/drivers/dri/pvr/pvrdrawable.c | 25 -------------------------
- src/mesa/drivers/dri/pvr/pvrdri.c      |  4 ++--
- 2 files changed, 2 insertions(+), 27 deletions(-)
+ src/mesa/drivers/dri/pvr/pvrdri.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
-index 599d00d..0ad5a72 100644
---- a/src/mesa/drivers/dri/pvr/pvrdrawable.c
-+++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
-@@ -341,31 +341,6 @@ static bool PVRDRI2DrawableGetInfo(PVRDRIDrawable *psPVRDrawable, bool bUpdate)
- 		return false;
- 	}
- 
--	/*
--	 * For buffers created via the CreateBuffer entry point, we can't
--	 * distinguish between windows, pixmaps and pbuffers so we initially
--	 * assume we have a window. The situation slightly improves once
--	 * getBuffersWithFormat is called as we have the opportunity to
--	 * attempt to detect whether or not we have something else. Unfortunately,
--	 * we can never detect the difference between a pbuffer and pixmap so
--	 * rightly or wrongly the detection code below assumes we have a pbuffer.
--	 */
--	if (psPVRDrawable->eSurfaceType == PVRDRI_SURFACE_WINDOW)
--	{
--		for (i = 0; i < iBufCount; i++)
--		{
--			if (psDRIBuffers[i].attachment == __DRI_BUFFER_FRONT_LEFT)
--			{
--				psPVRDrawable->eSurfaceType = PVRDRI_SURFACE_PBUFFER;
--				if (!psPVRDrawable->bDoubleBuffered)
--				{
--					uiAttachment = __DRI_BUFFER_FRONT_LEFT;
--				}
--				break;
--			}
--		}
--	}
--
- 	for (i = 0; i < iBufCount; i++)
- 	{
- 		if (psDRIBuffers[i].attachment == uiAttachment)
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
 index 43f1f67..f179871 100644
 --- a/src/mesa/drivers/dri/pvr/pvrdri.c

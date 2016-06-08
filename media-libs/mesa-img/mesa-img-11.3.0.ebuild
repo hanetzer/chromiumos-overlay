@@ -166,10 +166,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
 	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
+	epatch "${FILESDIR}"/0036-Add-DRI-Query-Buffers-extension.patch
 
 	epatch "${FILESDIR}"/0100-HACK-dri-pvr-Assume-drawable-is-always-a-PBUFFER.patch
 	epatch "${FILESDIR}"/0101-dri-pvr-Add-support-for-YV12.patch
 	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
+	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
 
 	base_src_prepare
 
