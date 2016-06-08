@@ -42,10 +42,25 @@ net-dns/avahi		dbus
 # Build emulation statically so that we can execute it within a chroot and
 # still find the shared libraries.
 net-misc/dhcpcd -crash
+
 # Build qemu's userland helpers statically so we can copy them into sysroots
-# and run unittests standalone.
-app-emulation/qemu	-pin-upstream-blobs -seccomp static-user
+# and run unittests standalone.  Build qemu's softmmu helpers statically so
+# we can run vms outside of the chroot.
+app-emulation/qemu	-pin-upstream-blobs -seccomp static-user static-softmmu usb
 dev-libs/libaio		static-libs
+dev-libs/libusb		static-libs
+dev-libs/openssl	static-libs
+media-libs/jpeg		static-libs
+media-libs/libjpeg-turbo	static-libs
+media-libs/libpng	static-libs
+net-misc/curl		static-libs
+sys-apps/dtc		static-libs
+sys-libs/libcap-ng	static-libs
+sys-libs/ncurses	static-libs
+virtual/jpeg		static-libs
+virtual/libusb		static-libs
+x11-libs/pixman		static-libs
+
 cross-armv7a-cros-linux-gnueabi/gcc   hardfp
 cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
 sys-devel/clang		multitarget
