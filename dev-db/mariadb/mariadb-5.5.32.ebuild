@@ -138,6 +138,9 @@ src_configure() {
 	# Use -levent_core instead of -levent as upstream is splitting the libs.
 	sed -i '/FIND_LIBRARY.EVENT_LIBRARY/s:event):event_core):' tests/CMakeLists.txt
 
+	# Fix cross-compiling as the build requires this.
+	MYCMAKEARGS="-DSTACK_DIRECTION=-1"
+
 	mysql-v2_src_configure
 }
 
