@@ -202,7 +202,7 @@ multilib_src_configure() {
 		--with-rundir="${EPREFIX}"/run/cups \
 		--with-printerroot="${EPREFIX}"/var/cache/cups/printers \
 		--with-cups-user=nobody \
-		--with-cups-group=nobody \
+		--with-cups-group=cups \
 		--with-docdir="${EPREFIX}"/usr/share/cups/html \
 		--with-languages="${LINGUAS}" \
 		--with-system-groups=lpadmin \
@@ -347,7 +347,7 @@ multilib_src_install_all() {
 	fi
 
 	# CUPS wants the daemon user to own these
-	chown cups:nobody "${ED}"/etc/cups/{cupsd.conf,cups-files.conf,ssl}
+	chown cups:cups "${ED}"/etc/cups/{cupsd.conf,cups-files.conf,ssl}
 	# CUPS also wants some specific permissions
 	chmod 640 "${ED}"/etc/cups/{cupsd,cups-files}.conf
 	chmod 700 "${ED}"/etc/cups/ssl
