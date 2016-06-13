@@ -40,7 +40,6 @@ IUSE="
 	+chrome_remoting
 	clang
 	component_build
-	deep_memory_profiler
 	envoy
 	evdev_gestures
 	+fonts
@@ -478,14 +477,6 @@ set_build_defines() {
 			RELEASE_EXTRA_CFLAGS+=( -g )
 		fi
 		BUILD_ARGS+=( symbol_level=2 )
-	fi
-
-	if use deep_memory_profiler; then
-		BUILD_DEFINES+=(
-			profiling=1
-			profiling_full_stack_frames=1
-			linux_dump_symbols=1
-		)
 	fi
 
 	use envoy && BUILD_DEFINES+=( envoy=1 )

@@ -18,7 +18,6 @@ IUSE="
 	arc
 	asan
 	cros-debug
-	deep_memory_profiler
 	disable_login_animations
 	disable_webaudio
 	fade_boot_splash_screen
