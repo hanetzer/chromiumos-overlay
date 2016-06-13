@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon libchrome user
+inherit cros-debug cros-workon libchrome systemd user
 
 DESCRIPTION="MTP daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang +seccomp test"
+IUSE="-asan -clang +seccomp systemd test"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
@@ -61,9 +61,14 @@ src_install() {
 	insinto /opt/google/mtpd
 	use seccomp && newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 
-	# Install upstart config file.
-	insinto /etc/init
-	doins mtpd.conf
+	# Install the init scripts.
+	if use systemd; then
+		systemd_dounit mtpd.service
+		systemd_enable_service system-services.target mtpd.service
+	else
+		insinto /etc/init
+		doins mtpd.conf
+	fi
 
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
