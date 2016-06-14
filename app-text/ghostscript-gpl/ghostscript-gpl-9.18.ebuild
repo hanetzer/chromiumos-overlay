@@ -98,8 +98,8 @@ src_prepare() {
 	epatch
 
 	epatch "${FILESDIR}"/${P}-gserrors.h-backport.patch
-	epatch "${FILESDIR}/${PN}-9.15-ccaux.patch"
 	epatch "${FILESDIR}/${PN}-9.18-endian.patch"
+	epatch "${FILESDIR}/${PN}-9.18-ccaux.patch"
 
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
@@ -164,7 +164,6 @@ src_configure() {
 
 	tc-export_build_env BUILD_CC
 
-	PKGCONFIG=$(type -P $(tc-getPKG_CONFIG)) \
 	econf \
 		CCAUX="${BUILD_CC}" \
 		CFLAGSAUX="${BUILD_CFLAGS}" \

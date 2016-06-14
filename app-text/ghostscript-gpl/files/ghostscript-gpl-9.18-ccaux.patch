@@ -1,0 +1,1263 @@
+Rebased/squashed version of this branch:
+
+  git://git.ghostscript.com/user/chrisl/ghostpdl.git CCAUX-configure
+
+With work for this bug:
+
+  http://bugs.ghostscript.com/show_bug.cgi?id=696508
+
+With the following commits (ordered oldest to newest):
+
+4c5e0bd3fe90 First changes for CCAUX from configure
+ae9483b8b675 Move the configure subcall to a temp directory
+b526dba7feeb Ensure all the flags we need get set....
+0a9de688a93c Pass the CFLAGSAUX to the recursive configure call (as CFLAGS).
+e48338229a83 If the recursive call to configure fails, error out.
+adbfe2c1da69 Remove debugging code
+ec006b8ca327 Fix logic for keeping/deleting tmp directort for recursive configure call
+e4a37efddd8a Fix up missing quotes
+6d1e7220d0c2 Remove contents of CAPOPTAUX and fix setting CFLAGSAUX
+e3de4f83dc53 More cross compile tidy ups.
+e32efbf69732 Fix erroneous png.h dependency (should have been png_.h).
+69ea8e878bd0 Tweak CFLAGS for aux tools in unix-aux.mak
+1c9bcc96a63a Tweak .gitignore for new derived files
+9babee5fc154 Use AC_PATH_TOOL (rather than AC_PATH_PROG) for pkg-config
+60b419aae38c Tweak some places we use uname in configure
+8b2884cb620a Safer use of "uname"
+75f492cd3345 Allow configure to create an arch.h when cross compiling.
+db68bfe55488 Tidy up naming of configure generated arch.h
+42fea734590f Slightly hacky pkg-config solution for cross compiling
+
+diff --git a/.gitignore b/.gitignore
+index 24d896a6d54e..429563c44e8e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,5 +1,6 @@
+ # Ignore editor backup files
+ *~
++*.swp
+ 
+ # Ignore bad merge files
+ *.rej
+@@ -96,6 +97,10 @@ tiff
+ tiff-config
+ 
+ 
++/Makefile
++/auxflags.mak
++
++
+ # Adding the following lines would help limit the 'noise' seen in git status
+ # due to files created during testing. Conversely, it prevents them being
+ # removed with git clean. A compromise is to include them here commented out
+diff --git a/Makefile.in b/Makefile.in
+index c4efab910874..a82c7b97bbc1 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -138,6 +138,7 @@ TARGET_ARCH_FILE=@ARCH_CONF_HEADER@
+ #	  are set.
+ 
+ GENOPT=
++GENOPTAUX=
+ 
+ # Choose capability options.
+ 
+@@ -360,7 +361,9 @@ RANLIB=@RANLIB@
+ # Define the name of the C compiler (target and host (AUX))
+ 
+ CC=@CC@
+-CCAUX=@CC@
++
++# CCAUX and it's flags come from:
++include auxflags.mak
+ 
+ # Define the name of the linker for the final link step.
+ # Normally this is the same as the C compiler.
+@@ -405,6 +408,7 @@ DBUS_LIBS=@DBUS_LIBS@
+ ACDEFS=@DEFS@
+ 
+ CFLAGS=$(CFLAGS_STANDARD) $(GCFLAGS) $(AC_CFLAGS) $(XCFLAGS)
++CFLAGSAUX=$(CFLAGSAUX_STANDARD) $(GCFLAGSAUX) $(XCFLAGSAUX)
+ 
+ # Define platform flags for ld.
+ # SunOS 4.n may need -Bstatic.
+@@ -513,9 +517,6 @@ FEATURE_DEVS=$(GLD)pipe.dev $(GLD)gsnogc.dev $(GLD)htxlib.dev $(GLD)psl3lib.dev
+              $(GLD)psf2lib.dev $(GLD)lzwd.dev $(GLD)sicclib.dev \
+              $(GLD)sjbig2.dev $(GLD)sjpx.dev $(GLD)ramfs.dev
+ 
+-
+-
+-
+ #FEATURE_DEVS=$(PSD)psl3.dev $(PSD)pdf.dev
+ #FEATURE_DEVS=$(PSD)psl3.dev $(PSD)pdf.dev $(PSD)dpsnext.dev $(PSD)ttfont.dev $(PSD)rasterop.dev $(GLD)pipe.dev
+ # The following is strictly for testing.
+@@ -631,8 +632,11 @@ AK=
+ 
+ CCFLAGS=$(GENOPT) $(CAPOPT) $(CFLAGS)
+ CC_=$(CC) $(CCFLAGS)
+-CCAUX_=$(CCAUX) $(CFLAGS)
+ CC_LEAF=$(CC_)
++
++CCFLAGSAUX=$(GENOPTAUX) $(CAPOPTAUX) $(CFLAGSAUX)
++CCAUX_=$(CCAUX) $(CCFLAGSAUX)
++
+ # note gcc can't use -fomit-frame-pointer with -pg.
+ CC_LEAF_PG=$(CC_)
+ # These are the specific warnings we have to turn off to compile those
+diff --git a/arch/arch_autoconf.h.in b/arch/arch_autoconf.h.in
+new file mode 100644
+index 000000000000..7d0c8d4e7946
+--- /dev/null
++++ b/arch/arch_autoconf.h.in
+@@ -0,0 +1,97 @@
++/* Copyright (C) 2001-2012 Artifex Software, Inc.
++   All Rights Reserved.
++
++   This software is provided AS-IS with no warranty, either express or
++   implied.
++
++   This software is distributed under license and may not be copied,
++   modified or distributed except as expressly authorized under the terms
++   of the license contained in the file LICENSE in this distribution.
++
++   Refer to licensing information at http://www.artifex.com or contact
++   Artifex Software, Inc.,  7 Mt. Lassen Drive - Suite A-134, San Rafael,
++   CA  94903, U.S.A., +1(415)492-9861, for further information.
++*/
++
++
++         /* ---------------- Scalar alignments ---------------- */
++
++#define ARCH_ALIGN_SHORT_MOD                 @ARCH_ALIGN_SHORT_MOD@
++#define ARCH_ALIGN_INT_MOD                   @ARCH_ALIGN_INT_MOD@
++#define ARCH_ALIGN_LONG_MOD                  @ARCH_ALIGN_LONG_MOD@
++#define ARCH_ALIGN_PTR_MOD                   @ARCH_ALIGN_PTR_MOD@
++#define ARCH_ALIGN_FLOAT_MOD                 @ARCH_ALIGN_FLOAT_MOD@
++#define ARCH_ALIGN_DOUBLE_MOD                @ARCH_ALIGN_DOUBLE_MOD@
++
++         /* ---------------- Scalar sizes ---------------- */
++
++#define ARCH_LOG2_SIZEOF_CHAR                @ARCH_LOG2_SIZEOF_CHAR@
++#define ARCH_LOG2_SIZEOF_SHORT               @ARCH_LOG2_SIZEOF_SHORT@
++#define ARCH_LOG2_SIZEOF_INT                 @ARCH_LOG2_SIZEOF_INT@
++#define ARCH_LOG2_SIZEOF_LONG                @ARCH_LOG2_SIZEOF_LONG@
++#define ARCH_LOG2_SIZEOF_LONG_LONG           @ARCH_LOG2_SIZEOF_LONG_LONG@
++#define ARCH_LOG2_SIZEOF_PTR                 @ARCH_LOG2_SIZEOF_PTR@
++#define ARCH_LOG2_SIZEOF_FLOAT               @ARCH_LOG2_SIZEOF_FLOAT@
++#define ARCH_LOG2_SIZEOF_DOUBLE              @ARCH_LOG2_SIZEOF_DOUBLE@
++
++#define ARCH_SIZEOF_PTR                      @ARCH_SIZEOF_PTR@
++#define ARCH_SIZEOF_FLOAT                    @ARCH_SIZEOF_FLOAT@
++#define ARCH_SIZEOF_DOUBLE                   @ARCH_SIZEOF_DOUBLE@
++
++         /* ---------------- Unsigned max values ---------------- */
++
++#define ARCH_MAX_UCHAR                       ((unsigned char)~(unsigned char)0 + (unsigned char)0)
++#define ARCH_MAX_USHORT                      ((unsigned short)~(unsigned short)0 + (unsigned short)0)
++#define ARCH_MAX_UINT                        ((unsigned int)~0 + (unsigned int)0)
++#define ARCH_MAX_ULONG                       ((unsigned long)~0L + (unsigned long)0)
++
++         /* ---------------- Floating point ---------------- */
++
++#ifndef FLOATS_ARE_IEEE
++
++#if defined(__STDC_IEC_559__) && __STDC_IEC_559__!=0
++
++# define FLOATS_ARE_IEEE 1
++
++#elif (defined(FLT_RADIX) && FLT_RADIX == 2) && (defined(FLT_MANT_DIG) && FLT_MANT_DIG == 24) \
++   && (defined(FLT_MIN_EXP) && FLT_MIN_EXP == -125) && (defined(FLT_MAX_EXP) && FLT_MAX_EXP == 128)
++
++# define FLOATS_ARE_IEEE 1
++
++#elif (defined(__FLT_RADIX__) && __FLT_RADIX__ == 2) && (defined(__FLT_MANT_DIG__) && __FLT_MANT_DIG__ == 24) \
++   && (defined(__FLT_MIN_EXP__) && __FLT_MIN_EXP__ == -125) && (defined(__FLT_MAX_EXP__) && __FLT_MAX_EXP__ == 128)
++
++# define FLOATS_ARE_IEEE 1
++
++#else
++
++# define FLOATS_ARE_IEEE 0
++
++#endif
++
++#endif /* FLOATS_ARE_IEEE */
++
++
++#if FLOATS_ARE_IEEE == 1
++# define ARCH_FLOATS_ARE_IEEE                1
++# define ARCH_FLOAT_MANTISSA_BITS            24
++# define ARCH_DOUBLE_MANTISSA_BITS           53
++#else /* FLOATS_ARE_IEEE*/
++# define ARCH_FLOATS_ARE_IEEE 0
++/*
++ * There isn't any general way to compute the number of mantissa
++ * bits accurately, especially if the machine uses hex rather
++ * than binary exponents.  Use conservative values, assuming
++ * the exponent is stored in a 16-bit word of its own.
++ */
++# define ARCH_FLOAT_MANTISSA_BITS            (sizeof(float) * 8 - 17)
++# define ARCH_DOUBLE_MANTISSA_BITS           (sizeof(double) * 8 - 17)
++#endif /* FLOATS_ARE_IEEE*/
++
++         /* ---------------- Miscellaneous ---------------- */
++
++#define ARCH_IS_BIG_ENDIAN                   @ARCH_IS_BIG_ENDIAN@
++#define ARCH_PTRS_ARE_SIGNED                 @ARCH_PTRS_ARE_SIGNED@
++#define ARCH_DIV_NEG_POS_TRUNCATES           @ARCH_DIV_NEG_POS_TRUNCATES@
++#define ARCH_ARITH_RSHIFT                    @ARCH_ARITH_RSHIFT@
++#define ARCH_SIZEOF_GX_COLOR_INDEX           @ARCH_SIZEOF_GX_COLOR_INDEX@
+diff --git a/auxflags.mak.in b/auxflags.mak.in
+new file mode 100644
+index 000000000000..e2a583f3d08b
+--- /dev/null
++++ b/auxflags.mak.in
+@@ -0,0 +1,29 @@
++# Copyright (C) 2001-2015 Artifex Software, Inc.
++# All Rights Reserved.
++#
++# This software is provided AS-IS with no warranty, either express or
++# implied.
++#
++# This software is distributed under license and may not be copied,
++# modified or distributed except as expressly authorized under the terms
++# of the license contained in the file LICENSE in this distribution.
++#
++# Refer to licensing information at http://www.artifex.com or contact
++# Artifex Software, Inc.,  7 Mt. Lassen Drive - Suite A-134, San Rafael,
++# CA  94903, U.S.A., +1(415)492-9861, for further information.
++#
++# CCAUX flags template for/from the autoconf build.
++# @configure_input@
++
++CCAUX=@CC@
++
++GCFLAGSAUX=@CPPFLAGS@ @GCFLAGS@ @CFLAGS@
++CAPOPTAUX=
++
++CFLAGSAUX_STANDARD=@OPT_CFLAGS@
++CFLAGSAUX_DEBUG=@DBG_CFLAGS@
++CFLAGS_PROFILE=-pg @OPT_CFLAGS@
++
++LDFLAGSAUX=@LDFLAGS@
++
++AUXEXTRALIBS=@LIBS@
+diff --git a/base/gsroprun.c b/base/gsroprun.c
+index 25a210b5bce9..bf29e3e4475b 100644
+--- a/base/gsroprun.c
++++ b/base/gsroprun.c
+@@ -18,7 +18,6 @@
+ #include "std.h"
+ #include "stdpre.h"
+ #include "gsropt.h"
+-#include "arch.h"
+ #include "gp.h"
+ 
+ /* Enable the following define to use 'template'd code (code formed by
+diff --git a/base/unix-aux.mak b/base/unix-aux.mak
+index 4f736df0def0..ad4b6a9ba7f4 100644
+--- a/base/unix-aux.mak
++++ b/base/unix-aux.mak
+@@ -43,7 +43,7 @@ $(GLOBJ)gp_unix.$(OBJ): $(GLSRC)gp_unix.c $(AK)\
+ $(AUX)gp_unix.$(OBJ): $(GLSRC)gp_unix.c $(AK)\
+  $(pipe__h) $(string__h) $(time__h)\
+  $(gx_h) $(gsexit_h) $(gp_h) $(MAKEDIRS)
+-	$(GLCCAUX) $(FONTCONFIG_CFLAGS) $(AUXO_)gp_unix.$(OBJ) $(C_) $(GLSRC)gp_unix.c
++	$(GLCCAUX) $(AUXO_)gp_unix.$(OBJ) $(C_) $(GLSRC)gp_unix.c
+ 
+ $(GLOBJ)gp_unix_cache.$(OBJ): $(GLSRC)gp_unix_cache.c $(AK)\
+  $(stdio__h) $(string__h) $(time__h) $(gconfigd_h) $(gp_h) $(gsmd5_h)\
+@@ -96,7 +96,7 @@ MKROMFS_OBJS_0=$(MKROMFS_ZLIB_OBJS) $(AUX)gpmisc.$(OBJ) $(AUX)gp_getnv.$(OBJ) \
+  $(AUX)gp_stdia.$(OBJ) $(AUX)gsutil.$(OBJ) $(AUX)memento.$(OBJ)
+ 
+ $(MKROMFS_XE)_0: $(GLSRC)mkromfs.c $(MKROMFS_COMMON_DEPS) $(MKROMFS_OBJS_0) $(MAKEDIRS)
+-	$(CCAUX_) $(GENOPT) $(CFLAGS) $(I_)$(GLSRCDIR)$(_I) $(I_)$(GLOBJ)$(_I) $(I_)$(ZSRCDIR)$(_I) $(GLSRC)mkromfs.c $(O_)$(MKROMFS_XE)_0 $(MKROMFS_OBJS_0) $(AUXEXTRALIBS)
++	$(CCAUX_) $(GENOPTAUX) $(I_)$(GLSRCDIR)$(_I) $(I_)$(GLOBJ)$(_I) $(I_)$(ZSRCDIR)$(_I) $(GLSRC)mkromfs.c $(O_)$(MKROMFS_XE)_0 $(MKROMFS_OBJS_0) $(AUXEXTRALIBS)
+ 
+ # .... and one using the zlib library linked via the command line
+ MKROMFS_OBJS_1=$(AUX)gscdefs.$(OBJ) \
+@@ -105,7 +105,7 @@ MKROMFS_OBJS_1=$(AUX)gscdefs.$(OBJ) \
+  $(AUX)gp_stdia.$(OBJ) $(AUX)gsutil.$(OBJ)
+ 
+ $(MKROMFS_XE)_1: $(GLSRC)mkromfs.c $(MKROMFS_COMMON_DEPS) $(MKROMFS_OBJS_1) $(MAKEDIRS)
+-	$(CCAUX_) $(GENOPT) $(CFLAGS) $(I_)$(GLSRCDIR)$(_I) $(I_)$(GLOBJ)$(_I) $(I_)$(ZSRCDIR)$(_I) $(GLSRC)mkromfs.c $(O_)$(MKROMFS_XE)_1 $(MKROMFS_OBJS_1) $(AUXEXTRALIBS)
++	$(CCAUX_) $(GENOPTAUX) $(I_)$(GLSRCDIR)$(_I) $(I_)$(GLOBJ)$(_I) $(I_)$(ZSRCDIR)$(_I) $(GLSRC)mkromfs.c $(O_)$(MKROMFS_XE)_1 $(MKROMFS_OBJS_1) $(AUXEXTRALIBS)
+ 
+ $(MKROMFS_XE): $(MKROMFS_XE)_$(SHARE_ZLIB) $(MAKEDIRS)
+ 	$(CP_) $(MKROMFS_XE)_$(SHARE_ZLIB) $(MKROMFS_XE)
+diff --git a/base/unix-end.mak b/base/unix-end.mak
+index 3fe869baf3b7..31c9fefa1a90 100644
+--- a/base/unix-end.mak
++++ b/base/unix-end.mak
+@@ -51,7 +51,9 @@ gpdlclean: .cleansub
+ 
+ # Define a rule for building profiling configurations.
+ PGDEFS=GENOPT='-DPROFILE' CFLAGS='$(CFLAGS_PROFILE) $(GCFLAGS) $(XCFLAGS)'\
+- LDFLAGS='$(XLDFLAGS) -pg' XLIBS='Xt SM ICE Xext X11'
++ LDFLAGS='$(XLDFLAGS) -pg' XLIBS='Xt SM ICE Xext X11' GENOPTAUX='-DPROFILE' \
++ CFLAGSAUX='$(CFLAGSAUX_STANDARD) $(GCFLAGSAUX) $(XCFLAGSAUX)'\
++ LDFLAGSAUX='$(XLDFLAGSAUX)''
+ 
+ pg:
+ 	$(MAKE) $(SUB_MAKE_OPTION) $(PGDEFS) BUILDDIRPREFIX=$(PGDIRPREFIX) default
+@@ -81,7 +83,8 @@ gpdlpgclean:
+ 	$(MAKE) $(SUB_MAKE_OPTION) $(PGDEFS) BUILDDIRPREFIX=$(PGDIRPREFIX) cleansub
+ 
+ # Define a rule for building debugging configurations.
+-DEBUGDEFS=GENOPT='-DDEBUG' CFLAGS='$(CFLAGS_DEBUG) $(GCFLAGS) $(XCFLAGS)'
++DEBUGDEFS=GENOPT='-DDEBUG' CFLAGS='$(CFLAGS_DEBUG) $(GCFLAGS) $(XCFLAGS)' \
++GENOPTAUX= CFLAGSAUX='$(CFLAGSAUX_DEBUG) $(GCFLAGSAUX) $(XCFLAGSAUX)'
+ 
+ 
+ debug:
+@@ -129,7 +132,8 @@ gpdldebugclean:
+ # Define a rule for building memento configurations.
+ MEMENTODEFS=GENOPT='-DMEMENTO -DDEBUG' \
+  CFLAGS='$(CFLAGS_DEBUG) $(GCFLAGS) $(XCFLAGS)'\
+- BUILDDIRPREFIX=$(MEMENTODIRPREFIX)
++ BUILDDIRPREFIX=$(MEMENTODIRPREFIX) GENOPTAUX='-DMEMENTO' \
++ CFLAGSAUX='$(CFLAGSAUX_DEBUG) $(GCFLAGSAUX) $(XCFLAGSAUX)'
+ 
+ memento:
+ 	$(MAKE) $(SUB_MAKE_OPTION) $(MEMENTODEFS) default
+diff --git a/configure.ac b/configure.ac
+index d9db7a52a135..190a3c322d0c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -30,6 +30,17 @@ CPPFLAGS="${CPPFLAGS:=}"
+ CXXFLAGS="${CXXFLAGS:=}"
+ LDFLAGS="${LDFLAGS:=}"
+ 
++CFLAGSAUX="${CFLAGSAUX:-$CFLAGS}"
++
++# save these for later
++OPARMS=$@
++
++THEMAKEFILE="${MAKEFILE:-Makefile}"
++AUXFLAGS_MAK=auxflags.mak
++
++ARCH_AUTOCONF_HEADER=arch-config/arch_autoconf.h
++ARCH_AUTOCONF_HEADER_PROTO=arch/arch_autoconf.h.in
++
+ dnl --------------------------------------------------
+ dnl List of non-threadsafe devices
+ dnl defined at the top of the file for ease of access
+@@ -91,6 +102,41 @@ AC_PROG_CC
+ AC_PROG_CPP
+ CFLAGS=$save_cflags
+ 
++# purposefully do not include "help" output for this
++AC_ARG_ENABLE([save_confaux])
++
++if test x"$CCAUX" != x"" ; then
++  SUBCONFPARMS=
++  for parm in $OPARMS ; do
++    SUBCONFPARMS="$(echo $parm | grep -v CC | grep -v CCAUX | grep -v CFLAGSAUX | grep -v CFLAGS) $SUBCONFPARMS"
++  done
++  # rerun configure for the AUX tools, disabling a load of tests not relevant for CCAUX
++  olddir=`pwd`
++  if test x"$enable_save_confaux" = x"yes"; then
++    CONFAUXDIR=auxtmp
++  else
++    CONFAUXDIR=auxtmp$RANDOM$RANDOM
++  fi
++  mkdir $CONFAUXDIR
++  cd $CONFAUXDIR
++  ../$0 CC="$CCAUX" CFLAGS="$CFLAGSAUX" CCAUX= CFLAGSAUX= MAKEFILE=../$AUXFLAGS_MAK --host= --build= --without-libtiff --disable-contrib --disable-fontconfig --disable-dbus --disable-freetype --disable-fapi --disable-cups --disable-openjpeg --disable-gtk --with-libiconv=no --without-libidn --without-libpaper --without-pdftoraster --without-ijs --without-luratech --without-jbig2dec --without-x --with-drivers=""
++  status=$?
++  cp config.log ../configaux.log
++  cd $olddir
++
++  if test x"$enable_save_confaux" != x"yes"; then
++    rm -rf $CONFAUXDIR
++  fi
++
++  if test $status -ne 0 ; then
++    AC_MSG_ERROR([Recursive call to configure (for auxiliary tools) script failed], $status)
++  fi
++fi
++
++# we have to do this here in case it took
++# AC_PROG_CC to set CC (as it usually does)
++CCAUX="${CCAUX:-$CC}"
++
+ AC_PROG_SED
+ dnl See if it is GNU sed or else.
+ dnl - need more work to tell SED features.
+@@ -106,29 +152,51 @@ AC_PROG_RANLIB
+ #AC_PROG_INSTALL
+ 
+ dnl pkg-config is used for several tests now...
+-AC_PATH_PROG(PKGCONFIG, pkg-config)
++AC_PATH_TOOL(PKGCONFIG, pkg-config)
++
++# this is an unpleasant hack
++# but if we are cross compiling, and there isn't a matching
++# pkconfig for the --host setting, then don't use the 'local'
++# pkconfig at all
++if test x"$cross_compiling" = x"yes"; then
++  AC_PATH_PROG(BUILD_PKGCONFIG, pkg-config)
++  if test x"$BUILD_PKGCONFIG" = x"$PKGCONFIG" ; then
++    PKGCONFIG=
++  fi
++fi
+ 
+ dnl --------------------------------------------------  
+ dnl Allow excluding the contributed drivers
+ dnl --------------------------------------------------  
+ 
+-AC_ARG_ENABLE([contrib], AC_HELP_STRING([--disable-contrib],
+-    [Do not include contributed drivers]))
++AC_ARG_ENABLE([contrib], AC_HELP_STRING([--disable-contrib], [Do not include contributed drivers]))
++
+ CONTRIBINCLUDE="include $srcdir/contrib/contrib.mak"
+ INSTALL_CONTRIB="install-contrib-extras"
+ 
+-case `uname` in
+-    MINGW*)
+-      AC_MSG_WARN([disabling contrib devices])
+-      enable_contrib=no
+-    ;;
+-    *)
++if test x"$enable_contrib" = x; then
++  if test x"$cross_compiling" = x"yes"; then
++    enable_contrib=
++  else
++    case `uname` in
++      MINGW*)
++        AC_MSG_WARN([disabling contrib devices])
++        enable_contrib=no
++      ;;
++      *)
++      ;;
++    esac
++  fi
++fi
++
++if test x"$enable_contrib" != x"no"; then
+ #     This is just an arbitrary file in contrib to check
+-      if ! test -f $srcdir/contrib/gdevbjc_.c; then
++      if test -f $srcdir/contrib/gdevbjc_.c; then
++        enable_contrib=yes
++      else
+         enable_contrib=no
+       fi
+-    ;;
+-esac
++fi
+ 
+ if test x$enable_contrib = xno; then
+     CONTRIBINCLUDE=""
+@@ -147,7 +215,13 @@ dnl --------------------------------------------------
+ CC_OPT_FLAGS_TO_TRY="-O"
+ SET_DT_SONAME="-soname="
+ 
+-case `uname` in
++if test x"$cross_compiling" = x"yes"; then
++  if test $ac_cv_prog_gcc = yes; then
++      CC_OPT_FLAGS_TO_TRY="-O2"
++      CC_DBG_FLAGS_TO_TRY="-gdwarf-2 -g3 -O0"
++  fi
++else
++  case `uname` in
+         Linux*|GNU*)
+         if test $ac_cv_prog_gcc = yes; then
+             CC_OPT_FLAGS_TO_TRY="-O2"
+@@ -187,7 +261,8 @@ case `uname` in
+             SET_DT_SONAME="so"
+         fi
+         ;;
+-esac
++  esac
++fi
+ 
+ AC_SUBST(SET_DT_SONAME)
+ 
+@@ -205,16 +280,28 @@ else
+     dbgflags_to_try="$CC_DBG_FLAGS_TO_TRY"
+ fi
+ 
++
++AC_ARG_WITH([arch_h], AC_HELP_STRING([--with-arch_h=<arch.h to use>],
++            [Use a custom arch.h (must be an absolute path)]),[], [with_arch_h=])
++
+ ARCH_CONF_HEADER=
+ 
+-case `uname` in
+-        Darwin*)
+-          ARCH_CONF_HEADER="\$(GLSRCDIR)/../arch/osx-x86-x86_64-ppc-gcc.h"
+-        ;;
+-        *)
+-          ARCH_CONF_HEADER=
+-        ;;
+-esac
++if test x"$with_arch_h" = x""; then
++  if test x"$cross_compiling" = x"yes"; then
++    ARCH_CONF_HEADER="\$(GLSRCDIR)/../$ARCH_AUTOCONF_HEADER"
++  else
++    case `uname` in
++          Darwin*)
++            ARCH_CONF_HEADER="\$(GLSRCDIR)/../arch/osx-x86-x86_64-ppc-gcc.h"
++          ;;
++          *)
++            ARCH_CONF_HEADER=
++          ;;
++    esac
++  fi
++else
++  ARCH_CONF_HEADER=$with_arch_h
++fi
+ 
+ AC_SUBST(ARCH_CONF_HEADER)
+ 
+@@ -228,7 +315,7 @@ AC_SUBST(ARCH_CONF_HEADER)
+ 
+ AC_MSG_CHECKING([supported compiler flags])
+ old_cflags=$CFLAGS
+-echo
++
+ for flag in $optflags_to_try; do
+     CFLAGS="$CFLAGS $flag"
+     AC_TRY_COMPILE(, [return 0;], [
+@@ -246,7 +333,7 @@ for flag in $cflags_to_try; do
+         CFLAGS=$old_cflags
+ done
+ old_cflags=$CFLAGS
+-echo
++
+ for flag in $dbgflags_to_try; do
+     CFLAGS="$CFLAGS $flag"
+     AC_TRY_COMPILE(, [return 0;], [
+@@ -429,18 +516,22 @@ if test x"$large_color_index" != "x0"; then
+    AC_CHECK_SIZEOF(unsigned long int)
+    if test $ac_cv_sizeof_unsigned_long_int = 8; then
+           color_ind_type="unsigned long int"
++          color_ind_size=$ac_cv_sizeof_unsigned_long_int
+    else
+     AC_CHECK_SIZEOF(unsigned long long)
+     if test $ac_cv_sizeof_unsigned_long_long = 8; then
+           color_ind_type="unsigned long long"
++          color_ind_size=$ac_cv_sizeof_unsigned_long_long
+     else
+      AC_CHECK_SIZEOF(unsigned __int64)
+      if test $ac_cv_sizeof_unsigned___int64 = 8; then
+           color_ind_type="unsigned __int64"
++          color_ind_size=$ac_cv_sizeof_unsigned___int64
+      else
+       AC_CHECK_SIZEOF(u_int64_t)
+       if test $ac_cv_sizeof_u_int64_t = 8; then
+           color_ind_type="u_int64_t"
++          color_ind_size=$ac_cv_sizeof_u_int64_t
+       fi
+      fi
+     fi
+@@ -451,18 +542,22 @@ else
+    AC_CHECK_SIZEOF(unsigned long int)
+    if test $ac_cv_sizeof_unsigned_long_int = 4; then
+           color_ind_type="unsigned long int"
++          color_ind_size=$ac_cv_sizeof_unsigned_long_int
+    else
+     AC_CHECK_SIZEOF(unsigned int)
+     if test $ac_cv_sizeof_unsigned_int = 4; then
+           color_ind_type="unsigned int"
++          color_ind_size=$ac_cv_sizeof_unsigned_int
+     else
+      AC_CHECK_SIZEOF(unsigned __int32)
+      if test $ac_cv_sizeof_unsigned___int32 = 4; then
+           color_ind_type="unsigned __int32"
++          color_in_size=$ac_cv_sizeof_unsigned___int32
+      else
+       AC_CHECK_SIZEOF(u_int32_t)
+       if test $ac_cv_sizeof_u_int32_t = 4; then
+           color_ind_type="u_int32_t"
++          color_ind_size=$ac_cv_sizeof_u_int32_t
+       fi
+      fi
+     fi
+@@ -473,8 +568,13 @@ dnl if a suitable type wasn't found above, we fall back to
+ dnl a default in genarch.
+ if test "$color_ind_type" != "none"; then
+         GCFLAGS="$GCFLAGS -DGX_COLOR_INDEX_TYPE=\"$color_ind_type\""
++        ARCH_SIZEOF_GX_COLOR_INDEX=$color_ind_size
+ fi
+ 
++AC_SUBST(ARCH_SIZEOF_GX_COLOR_INDEX)
++
++
++
+ dnl --------------------------------------------------
+ dnl Set options that we want to pass into all other
+ dnl configure scripts we might call
+@@ -482,10 +582,13 @@ dnl --------------------------------------------------
+ 
+ SUBCONFIG_OPTS=""
+ 
+-if test x$build_alias != x; then
+-SUBCONFIG_OPTS="$SUBCONFIG_OPTS --build=$build_alias"
++if test x"$build_alias" != x""; then
++  SUBCONFIG_OPTS="$SUBCONFIG_OPTS --build=$build_alias"
+ fi
+ 
++if test x"$host_alias" != x""; then
++  SUBCONFIG_OPTS="$SUBCONFIG_OPTS --host=$host_alias"
++fi
+ 
+ dnl --------------------------------------------------
+ dnl Check for libraries
+@@ -517,46 +620,39 @@ AC_ARG_ENABLE([threading], AC_HELP_STRING([--disable-threading],
+ # if you haven't got pread/pwrite, we can't use multithreading
+ if test "x$HAVE_PREAD_PWRITE" != "x"; then
+   if test "$enable_threading" != "no"; then
+-    case `uname` in
+-      MINGW*)
+-        AC_MSG_WARN([disabling support for pthreads......])
+-      ;;
+-      *)
+-        AC_CHECK_LIB(pthread, pthread_create, [
+-          SYNC=posync;
+-          PTHREAD_LIBS="-lpthread"
+-        ])
+-        AC_MSG_CHECKING([recursive mutexes.......])
+-        AC_TRY_COMPILE([#include <pthread.h>],
+-             [
+-                static int k = PTHREAD_MUTEX_RECURSIVE;
+-                #ifndef pthread_mutexattr_settype
+-                #ifdef __cplusplus
+-                  (void) pthread_mutexattr_settype;
+-                #else
+-                  (void) pthread_mutexattr_settype;
+-                #endif
+-                #endif
+-                ;
+-                return 0;
+-              ],
+-             [RECURSIVE_MUTEXATTR="-DGS_RECURSIVE_MUTEXATTR=PTHREAD_MUTEX_RECURSIVE"],
+-             [AC_TRY_COMPILE([#include <pthread.h>],
+-                [
+-                  static int k = PTHREAD_MUTEX_RECURSIVE_NP;
+-                  #ifndef pthread_mutexattr_settype
+-                  #ifdef __cplusplus
+-                    (void) pthread_mutexattr_settype;
+-                  #else
+-                    (void) pthread_mutexattr_settype;
+-                  #endif
+-                  #endif
+-                  ;
+-                  return 0;
+-                ],
+-                [RECURSIVE_MUTEXATTR="-DGS_RECURSIVE_MUTEXATTR=PTHREAD_MUTEX_RECURSIVE_NP"])])
+-      ;;
+-    esac
++    AC_CHECK_LIB(pthread, pthread_create, [
++      SYNC=posync;
++      PTHREAD_LIBS="-lpthread"
++    ])
++    AC_MSG_CHECKING([recursive mutexes.......])
++    AC_TRY_COMPILE([#include <pthread.h>],
++         [
++            static int k = PTHREAD_MUTEX_RECURSIVE;
++            #ifndef pthread_mutexattr_settype
++            #ifdef __cplusplus
++              (void) pthread_mutexattr_settype;
++            #else
++              (void) pthread_mutexattr_settype;
++            #endif
++            #endif
++            ;
++            return 0;
++          ],
++         [RECURSIVE_MUTEXATTR="-DGS_RECURSIVE_MUTEXATTR=PTHREAD_MUTEX_RECURSIVE"],
++         [AC_TRY_COMPILE([#include <pthread.h>],
++            [
++              static int k = PTHREAD_MUTEX_RECURSIVE_NP;
++              #ifndef pthread_mutexattr_settype
++              #ifdef __cplusplus
++                (void) pthread_mutexattr_settype;
++              #else
++                (void) pthread_mutexattr_settype;
++              #endif
++              #endif
++              ;
++              return 0;
++            ],
++            [RECURSIVE_MUTEXATTR="-DGS_RECURSIVE_MUTEXATTR=PTHREAD_MUTEX_RECURSIVE_NP"])])
+   fi
+ fi
+ 
+@@ -1008,9 +1104,17 @@ AC_SUBST(LCMS2DIR)
+ 
+ dnl look for libtiff, it also requires lib
+ dnl png for the png output device; it also requires zlib
++AC_ARG_WITH([libtiff],  AC_HELP_STRING([--without-libtiff],
++    [disable use of libtiff]), with_libtiff=no)
++
+ AC_ARG_WITH([system-libtiff], AC_HELP_STRING([--with-system-libtiff],
+                                              [Force using the systems libtiff]),
+             [], [with_system_libtiff=check])
++
++if test x"$with_libtiff" = x"no" ; then
++  with_system_libtiff=none
++fi
++
+ TIFFDEVS=''
+ FAX_DEVS=''
+ XPSWRITEDEVICE=''
+@@ -1098,10 +1202,11 @@ case "x$with_system_libtiff" in
+             AC_MSG_NOTICE([Could not find local copy of libtiff. Disabling tiff and xps output devices.])
+         fi
+         ;;
++    xnone)
++        ;;
+ esac
+ 
+-if test $SHARE_LIBTIFF -eq 0; then
+-      echo
++if test x"$SHARE_LIBTIFF" = x"0" ; then
+       echo "Running libtiff configure script..."
+       olddir=`pwd`
+       if ! test -d "$LIBTIFFCONFDIR" ; then
+@@ -1109,7 +1214,7 @@ if test $SHARE_LIBTIFF -eq 0; then
+       fi
+       cd "$LIBTIFFCONFDIR" && ../"$LIBTIFFDIR"/configure --disable-jbig --disable-lzma $SUBCONFIG_OPTS
+       status=$?
+-      if test "$status" -ne 0 ; then
++      if test $status -ne 0 ; then
+         AC_MSG_ERROR([libtiff configure script failed], $status)
+       fi
+       cd "$olddir"
+@@ -1170,6 +1275,10 @@ if ( test -d $srcdir/cups ); then
+             if test "x$CUPSCONFIG" != x; then
+                 AC_CHECK_HEADER([cups/raster.h],[],[CUPSCONFIG=""])
+             fi
++            # cross compiling - don't use cups-config
++            if test x"$host_alias" != x"" ; then
++              CUPSCONFIG=""
++            fi
+ 
+             if test "x$CUPSCONFIG" != x; then
+                 dnl Use values from CUPS config...
+@@ -1202,7 +1311,6 @@ if ( test -d $srcdir/cups ); then
+                 CUPSINCLUDE="include $srcdir/cups/cups.mak"
+                 CUPSDEV="cups"
+ 
+-                echo "\n\n\n $CUPSAPIVERSION \n\n\n"
+                 # pwgraster support arrived in cups 1.5.x
+                 if test "$CUPSAPIVERSION" ">" "1.4" ; then
+                   CUPSDEV="$CUPSDEV pwgraster"
+@@ -1219,15 +1327,13 @@ if ( test -d $srcdir/cups ); then
+                 fi
+             fi
+         else
+-            if test "$(uname)" = "Linux"; then
+-                AC_MSG_WARN([* USING LOCAL CUPS SOURCE *])
+-                SHARELCUPS=0
+-                SHARELCUPSI=0
+-                LCUPSBUILDTYPE=linux
+-                LCUPSINCLUDE="include \$(GLSRCDIR)/lcups.mak"
+-                LCUPSIINCLUDE="include \$(GLSRCDIR)/lcupsi.mak"
+-                CUPSDEV="cups pwgraster"
+-            fi
++            AC_MSG_WARN([USING LOCAL CUPS SOURCE])
++            SHARELCUPS=0
++            SHARELCUPSI=0
++            LCUPSBUILDTYPE=linux
++            LCUPSINCLUDE="include \$(GLSRCDIR)/lcups.mak"
++            LCUPSIINCLUDE="include \$(GLSRCDIR)/lcupsi.mak"
++            CUPSDEV="cups pwgraster"
+         fi
+     fi
+ fi
+@@ -1256,15 +1362,16 @@ dnl look for IJS implementation
+ AC_ARG_WITH([ijs], AC_HELP_STRING([--without-ijs],
+     [disable IJS driver support]))
+ 
+-case `uname` in
++if test x"$cross_compiling" != x"yes"; then
++  case `uname` in
+     MINGW*)
+       AC_MSG_WARN([disabling the ijs device])
+       with_ijs=no
+     ;;
+     *)
+     ;;
+-esac
+-
++  esac
++fi
+ 
+ dnl set safe defaults
+     IJSDIR=src
+@@ -1316,21 +1423,29 @@ if test x$with_luratech != xno; then
+     SHARE_JBIG2=0
+     JBIG2DIR=$srcdir/luratech/ldf_jb2
+ 
+-    case `uname` in
+-      Darwin*)
+-        JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -DMAC -DMAC_OS_X_BUILD"
+-      ;;
+-      AIX)
+-        if test $ac_cv_prog_gcc = yes; then
+-          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -fsigned-char -DLINUX"
++    if test x"$cross_compiling" = x"yes"; then
++        if test x"$JBIG2_CFLAGS" != x""; then
++          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 $JBIG2_CFLAGS"
+         else
+-          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -qchars=signed -DLINUX"
++          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -DLINUX"
+         fi
+-     ;;
+-     *)
+-        JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -DLINUX"
+-     ;;
+-     esac
++    else
++      case `uname` in
++        Darwin*)
++          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -DMAC -DMAC_OS_X_BUILD"
++        ;;
++        AIX)
++          if test $ac_cv_prog_gcc = yes; then
++            JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -fsigned-char -DLINUX"
++          else
++            JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -qchars=signed -DLINUX"
++          fi
++        ;;
++        *)
++          JBIG2_AUTOCONF_CFLAGS="-DUSE_LDF_JB2 -DLINUX"
++        ;;
++      esac
++    fi
+ 
+     JBIG2FILEDEVS='$(DD)gdevjbig2.dev'
+     JBIG2DEVS='$(PSD)jbig2.dev'
+@@ -1391,7 +1506,6 @@ if test "x$JBIG2_DECODER" = x; then
+             JBIG2_AUTOCONF_CFLAGS="$JBIG2_AUTOCONF_CFLAGS -DWORDS_BIGENDIAN"
+         fi
+ 
+-        echo
+         AC_MSG_RESULT([$JBIG2DIR])
+         echo "Continuing with Ghostscript configuration..."
+     else
+@@ -1438,22 +1552,29 @@ if test x$with_luratech != xno; then
+     SHARE_JPX=0
+     JPXDIR=$srcdir/luratech/lwf_jp2
+ 
+-    case `uname` in
+-      Darwin*)
+-        JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -DMAC -DMAC_OS_X_BUILD"
+-      ;;
+-      AIX)
+-        if test $ac_cv_prog_gcc = yes; then
+-          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -fsigned-char -DLINUX"
++    if test x"$cross_compiling" = x"yes"; then
++        if test x"$JPX_CFLAGS" != x""; then
++          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 $JPX_CFLAGS"
+         else
+-          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -qchars=signed -DLINUX"
++          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -DLINUX"
+         fi
+-     ;;
+-     *)
+-        JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -DLINUX"
+-     ;;
+-     esac
+-
++    else
++      case `uname` in
++        Darwin*)
++          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -DMAC -DMAC_OS_X_BUILD"
++        ;;
++        AIX)
++          if test $ac_cv_prog_gcc = yes; then
++            JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -fsigned-char -DLINUX"
++          else
++            JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -qchars=signed -DLINUX"
++          fi
++        ;;
++        *)
++          JPX_AUTOCONF_CFLAGS="-DUSE_LWF_JP2 -DLINUX"
++        ;;
++      esac
++    fi
+     JPXDEVS='$(PSD)jpx.dev'
+   else
+     AC_MSG_RESULT([no])
+@@ -2062,103 +2183,115 @@ SO_LIB_EXT=".so"
+ DLL_EXT=""
+ SO_LIB_VERSION_SEPARATOR="."
+ 
+-case `uname` in
+-        Linux*|GNU*)
+-          DYNAMIC_CFLAGS="-fPIC"
+-          DYNAMIC_LDFLAGS="-shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
+-          if test $ac_cv_prog_gcc = yes; then
+-            # GCC high level flag
+-            DYNAMIC_LIBS="-rdynamic -ldl"
+-          else
+-            DYNAMIC_LIBS=""
+-          fi
+-          SO_LIB_EXT=".so"
+-        ;;
+-        MINGW*)
+-          DYNAMIC_CFLAGS=""
+-          DYNAMIC_LDFLAGS="-shared  -Wl,--out-implib=\$(BINDIR)/lib\$(GS_SO_BASE).dll.a -Wl,--export-all-symbols -Wl,--enable-auto-import"
+-          SO_LIB_EXT=""
+-          DLL_EXT=".dll"
+-          SO_LIB_VERSION_SEPARATOR="-"
+-        ;;
+-        *BSD)
+-          DYNAMIC_CFLAGS="-fPIC"
+-          DYNAMIC_LDFLAGS="-shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
+-          DYNAMIC_LIBS=""
+-          SO_LIB_EXT=".so"
+-        ;;
+-        Darwin*)
+-          DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(GS_SONAME_MAJOR_MINOR)"
+-          DYNAMIC_LIBS=""
+-          SO_LIB_EXT=".dylib"
+-        ;;
+-        SunOS)
+-          if test $ac_cv_prog_gcc = yes; then
++if test x"$cross_compiling" = x"yes"; then
++  DYNAMIC_CFLAGS="-fPIC"
++  DYNAMIC_LDFLAGS="-shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
++  if test $ac_cv_prog_gcc = yes; then
++    # GCC high level flag
++    DYNAMIC_LIBS="-rdynamic"
++  else
++    DYNAMIC_LIBS=""
++  fi
++  SO_LIB_EXT=".so"
++else
++  case `uname` in
++          Linux*|GNU*)
+             DYNAMIC_CFLAGS="-fPIC"
+-          else
+-            DYNAMIC_CFLAGS="-KPIC"
+-          fi
++            DYNAMIC_LDFLAGS="-shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
++            if test $ac_cv_prog_gcc = yes; then
++              # GCC high level flag
++              DYNAMIC_LIBS="-rdynamic"
++            else
++              DYNAMIC_LIBS=""
++            fi
++            SO_LIB_EXT=".so"
++          ;;
++          MINGW*)
++            DYNAMIC_CFLAGS=""
++            DYNAMIC_LDFLAGS="-shared  -Wl,--out-implib=\$(BINDIR)/lib\$(GS_SO_BASE).dll.a -Wl,--export-all-symbols -Wl,--enable-auto-import"
++            SO_LIB_EXT=""
++            DLL_EXT=".dll"
++            SO_LIB_VERSION_SEPARATOR="-"
++          ;;
++          *BSD)
++            DYNAMIC_CFLAGS="-fPIC"
++            DYNAMIC_LDFLAGS="-shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
++            DYNAMIC_LIBS=""
++            SO_LIB_EXT=".so"
++          ;;
++          Darwin*)
++            DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(GS_SONAME_MAJOR_MINOR)"
++            DYNAMIC_LIBS=""
++            SO_LIB_EXT=".dylib"
++          ;;
++          SunOS)
++            if test $ac_cv_prog_gcc = yes; then
++              DYNAMIC_CFLAGS="-fPIC"
++            else
++              DYNAMIC_CFLAGS="-KPIC"
++            fi
+ 
+-          DYNAMIC_LDFLAGS="-G -shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
+-          DYNAMIC_LIBS=""
+-          SO_LIB_EXT=".so"
+-        ;;
+-        AIX)
+-          DYNAMIC_CFLAGS="-fPIC"
+-          GCFLAGS="-Wl,-brtl $GCFLAGS"
+-          DYNAMIC_LDFLAGS="-shared -Wl,-brtl,-G -fPIC"
+-          if test $ac_cv_prog_gcc = yes; then
+-            # GCC high level flag
+-            DYNAMIC_LIBS="-ldl"
+-          else
++            DYNAMIC_LDFLAGS="-G -shared -Wl,\$(LD_SET_DT_SONAME)\$(LDFLAGS_SO_PREFIX)\$(GS_SONAME_MAJOR)"
+             DYNAMIC_LIBS=""
+-          fi
+-          SO_LIB_EXT=".so"
+-        ;;
+-esac
++            SO_LIB_EXT=".so"
++          ;;
++          AIX)
++            DYNAMIC_CFLAGS="-fPIC"
++            GCFLAGS="-Wl,-brtl $GCFLAGS"
++            DYNAMIC_LDFLAGS="-shared -Wl,-brtl,-G -fPIC"
++            if test $ac_cv_prog_gcc = yes; then
++              # GCC high level flag
++              DYNAMIC_LIBS="-ldl"
++            else
++              DYNAMIC_LIBS=""
++            fi
++            SO_LIB_EXT=".so"
++          ;;
++  esac
++fi
+ 
+ AC_ARG_ENABLE([dynamic], AC_HELP_STRING([--enable-dynamic],
+     [Enable dynamically loaded drivers]),
+ [
+-        if test "x$enable_dynamic" != xno; then
+-                case `uname` in
+-                        Linux*|GNU*)
+-                        INSTALL_SHARED="install-shared"
+-                        if test "x$X_DEVS" != x; then
+-                                DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
+-                        else
+-                                DYNAMIC_DEVS=""
+-                        fi
+-                        DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
+-                        X11_DEVS=""
+-                        OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
+-                        DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
+-                        ;;
+-                        *BSD)
+-                        DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
+-                        DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
+-                        X11_DEVS=""
+-                        OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
+-                        DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
+-                        ;;
+-                        Darwin*)
+-                        INSTALL_SHARED="install-shared"
+-                        DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
+-                        X11_DEVS=""
+-                        OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
+-                        DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
+-                        ;;
+-                        SunOS)
+-                        DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
+-                        DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
+-                        OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
+-                        DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
+-                        ;;
+-                        *)
+-                        AC_MSG_ERROR([Sorry, dynamic driver support not available on this platform!])
+-                        ;;
+-                esac
+-        fi
++  if test "x$enable_dynamic" != xno; then
++    case `uname` in
++      Linux*|GNU*)
++      INSTALL_SHARED="install-shared"
++      if test "x$X_DEVS" != x; then
++              DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
++      else
++              DYNAMIC_DEVS=""
++      fi
++      DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
++      X11_DEVS=""
++      OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
++      DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
++      ;;
++      *BSD)
++      DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
++      DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
++      X11_DEVS=""
++      OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
++      DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
++      ;;
++      Darwin*)
++      INSTALL_SHARED="install-shared"
++      DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
++      X11_DEVS=""
++      OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
++      DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
++      ;;
++      SunOS)
++      DYNAMIC_DEVS="\$(GLOBJDIR)/X11.so"
++      DYNAMIC_FLAGS="-DGS_DEVS_SHARED -DGS_DEVS_SHARED_DIR=\\\"\$(gssharedir)\\\""
++      OPT_CFLAGS="$DYNAMIC_CFLAGS $OPT_CFLAGS"
++      DBG_CFLAGS="$DYNAMIC_CFLAGS $DBG_CFLAGS"
++      ;;
++      *)
++      AC_MSG_ERROR([Sorry, dynamic driver support not available on this platform!])
++      ;;
++    esac
++  fi
+ ])
+ 
+ AC_SUBST(DYNAMIC_CFLAGS)
+@@ -2442,7 +2575,9 @@ AUXDIRPOSTFIX=""
+ case `uname` in
+     MINGW*)
+     AUXDIRPOSTFIX="_"
+-    CFLAGS="-DGS_NO_UTF8=1 $CFLAGS"
++    if test x"$cross_compiling" != x"yes"; then
++      CFLAGS="-DGS_NO_UTF8=1 $CFLAGS"
++    fi
+     ;;
+ esac
+ AC_SUBST(AUXDIRPOSTFIX)
+@@ -2459,15 +2594,134 @@ AC_ARG_WITH([exe-ext],  AC_HELP_STRING([--with-exe-ext=EXT],
+ if test "x"$with_exe_ext != "x"; then
+   EXEEXT="$with_exe_ext"
+ else
+-  case `uname` in
+-    MINGW*)
+-      EXEEXT=".exe"
+-    ;;
+-  esac
++  if test x"$cross_compiling" != x"yes"; then
++    case `uname` in
++      MINGW*)
++        EXEEXT=".exe"
++      ;;
++    esac
++  fi
+ fi
+ 
+ AC_SUBST(EXEEXT)
+ 
++
++if test x"$CCAUX" != x"$CC"; then
++
++  ilog2()
++  {
++    ILOG2_VAL=$1
++    ILOG2_RES=0
++    while test $ILOG2_VAL -gt 1 ; do
++      ILOG2_VAL=$((ILOG2_VAL + 1))
++      ILOG2_VAL=$((ILOG2_VAL >> 1))
++      ILOG2_RES=$((ILOG2_RES + 1))
++    done
++    return $ILOG2_RES
++  };
++
++# --------------------------------------------------
++# Generate arch.h headers
++# --------------------------------------------------
++  AC_CHECK_ALIGNOF([short])
++  AC_CHECK_ALIGNOF([int])
++  AC_CHECK_ALIGNOF([long])
++  AC_CHECK_ALIGNOF([void *])
++  AC_CHECK_ALIGNOF([float])
++  AC_CHECK_ALIGNOF([double])
++
++  AC_SUBST(ARCH_ALIGN_SHORT_MOD, $ac_cv_alignof_short)
++  AC_SUBST(ARCH_ALIGN_INT_MOD, $ac_cv_alignof_int)
++  AC_SUBST(ARCH_ALIGN_LONG_MOD, $ac_cv_alignof_long)
++  AC_SUBST(ARCH_ALIGN_PTR_MOD, $ac_cv_alignof_void_p)
++  AC_SUBST(ARCH_ALIGN_FLOAT_MOD, $ac_cv_alignof_float)
++  AC_SUBST(ARCH_ALIGN_DOUBLE_MOD, $ac_cv_alignof_double)
++
++  AC_CHECK_SIZEOF([char])
++  AC_CHECK_SIZEOF([short])
++  AC_CHECK_SIZEOF([int])
++  AC_CHECK_SIZEOF([long])
++  AC_CHECK_SIZEOF([long long])
++  AC_CHECK_SIZEOF([void *])
++  AC_CHECK_SIZEOF([float])
++  AC_CHECK_SIZEOF([double])
++
++  ilog2 $ac_cv_sizeof_char
++  AC_SUBST(ARCH_LOG2_SIZEOF_CHAR, $?)
++
++  ilog2 $ac_cv_sizeof_short
++  AC_SUBST(ARCH_LOG2_SIZEOF_SHORT, $?)
++
++  ilog2 $ac_cv_sizeof_int
++  AC_SUBST(ARCH_LOG2_SIZEOF_INT, $?)
++
++  ilog2 $ac_cv_sizeof_long
++  AC_SUBST(ARCH_LOG2_SIZEOF_LONG, $?)
++
++  ilog2 $ac_cv_sizeof_long_long
++  AC_SUBST(ARCH_LOG2_SIZEOF_LONG_LONG, $?)
++
++  AC_SUBST(ARCH_SIZEOF_PTR, $ac_cv_sizeof_void_p)
++  ilog2 $ac_cv_sizeof_void_p
++  AC_SUBST(ARCH_LOG2_SIZEOF_PTR, $?)
++
++  AC_SUBST(ARCH_SIZEOF_FLOAT, $ac_cv_sizeof_float)
++  ilog2 $ac_cv_sizeof_float
++  AC_SUBST(ARCH_LOG2_SIZEOF_FLOAT, $?)
++
++  AC_SUBST(ARCH_SIZEOF_DOUBLE, $ac_cv_sizeof_double)
++  ilog2 $ac_cv_sizeof_double
++  AC_SUBST(ARCH_LOG2_SIZEOF_DOUBLE, $?)
++
++  AC_SUBST(ARCH_IS_BIG_ENDIAN, $BIGENDIAN)
++
++  AC_MSG_CHECKING([if pointers are signed])
++  AC_COMPILE_IFELSE(
++    [AC_LANG_PROGRAM([#include <stdint.h>], [
++      char b[[(char *)(uintptr_t)-1 < (char *)(uintptr_t)0 ? -1 : 0]];
++      return sizeof(b);
++    ])],
++    [ARCH_PTRS_ARE_SIGNED=0; AC_MSG_RESULT(no)], [ARCH_PTRS_ARE_SIGNED=1; AC_MSG_RESULT(yes)])
++  AC_SUBST(ARCH_PTRS_ARE_SIGNED)
++
++  AC_MSG_CHECKING([if dividing negative by positive truncates])
++  AC_COMPILE_IFELSE(
++    [AC_LANG_PROGRAM([], [
++      char b[[-1 / 2 == 0 ? -1 : 0]];
++      return sizeof(b);
++    ])],
++    [ARCH_DIV_NEG_POS_TRUNCATES=0; AC_MSG_RESULT(no)], [ARCH_DIV_NEG_POS_TRUNCATES=1; AC_MSG_RESULT(yes)])
++  AC_SUBST(ARCH_DIV_NEG_POS_TRUNCATES)
++
++  AC_MSG_CHECKING([if arithmetic shift works properly])
++  ARCH_ARITH_RSHIFT=""
++  AC_COMPILE_IFELSE(
++    [AC_LANG_PROGRAM([], [
++      char b[[(-1L >> 2) != -1 || (-1 >> 1) != -1 || (-1 >> 2) != -1 ? 0 : -1]];
++      return sizeof(b);
++    ])],
++    [ARCH_ARITH_RSHIFT=0; AC_MSG_RESULT(no)])
++
++  if test "x${ARCH_ARITH_RSHIFT}" = "x"; then
++    # Turbo C problem
++    AC_COMPILE_IFELSE(
++      [AC_LANG_PROGRAM([], [
++        char b[[(-1L >> 2) != -1 ? 0 : -1]];
++        return sizeof(b);
++      ])],
++      [ARCH_ARITH_RSHIFT=1; AC_MSG_RESULT(no)])
++  fi
++
++  if test "x${ARCH_ARITH_RSHIFT}" = "x"; then
++    AC_MSG_RESULT(yes)
++    ARCH_ARITH_RSHIFT=2
++  fi
++  AC_SUBST(ARCH_ARITH_RSHIFT)
++
++  AC_SUBST(ARCH_SIZEOF_GX_COLOR_INDEX)
++  CONFIG_FILES_LIST="$CONFIG_FILES_LIST $ARCH_AUTOCONF_HEADER:$ARCH_AUTOCONF_HEADER_PROTO"
++fi
++
+ dnl --------------------------------------------------
+ dnl Do substitutions
+ dnl --------------------------------------------------
+@@ -2477,7 +2731,11 @@ AC_SUBST(OPT_CFLAGS)
+ AC_SUBST(DBG_CFLAGS)
+ AC_SUBST(GCFLAGS)
+ 
+-AC_OUTPUT(Makefile)
++CONFIG_FILES_LIST="$CONFIG_FILES_LIST $THEMAKEFILE"
++
++if test x"$THEMAKEFILE" != x"$MAKEFILE" && test x"$CCAUX" = x"$CC"; then
++  CONFIG_FILES_LIST="$CONFIG_FILES_LIST $AUXFLAGS_MAK"
++fi
+ 
+ if test "x$AFS" = "x1"; then
+    AC_MSG_WARN([Using "native" font scaler which is now deprecated (rather than freetype),])
+@@ -2488,3 +2746,7 @@ if test "x$NTS_EXCLUDES" != "x" ; then
+    AC_MSG_WARN([Due to the --enable-threadsafe option, the following devices have been excluded because they are not threadsafe:])
+    echo "$NTS_EXCLUDES"
+ fi
++
++AC_CONFIG_FILES($CONFIG_FILES_LIST)
++
++AC_OUTPUT
+
