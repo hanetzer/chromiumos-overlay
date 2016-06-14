@@ -70,6 +70,7 @@ IUSE_TESTS=(
 	+tests_enterprise_CFM_SessionStress
 	+tests_enterprise_CFM_USBPeripheralDetect
 	+tests_enterprise_CFM_VolumeChangeClient
+	+tests_enterprise_KioskEnrollment
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
 	+tests_graphics_GLES2ConformChrome

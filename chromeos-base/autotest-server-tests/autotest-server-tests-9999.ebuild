@@ -75,6 +75,8 @@ SERVER_IUSE_TESTS="
 	+tests_enterprise_CFM_SessionStressServer
 	+tests_enterprise_CFM_USBPeripheralHotplugDetect
 	+tests_enterprise_CFM_VolumeChange
+	+tests_enterprise_KioskEnrollmentServer
+	+tests_enterprise_LongevityTrackerServer
 	+tests_enterprise_RemoraRequisitionServer
 	+tests_factory_Basic
 	+tests_firmware_CgptStress
