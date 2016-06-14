@@ -869,9 +869,9 @@ kmake() {
 			;;
 	esac
 
-	if [[ ${CC} == *clang ]]; then
-		ewarn "Resetting clang (${CC}) to gcc."
-		unset CC
+	if [[ "${CHOST}" != "${cross}" ]]; then
+		ewarn "Resetting CC CXX LD STRIP OBJCOPY."
+		unset CC CXX LD STRIP OBJCOPY
 	fi
 
 	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
