@@ -120,7 +120,7 @@ src_configure() {
 	echo "CONFIG_INTERWORKING=y" >> ${CONFIG}
 	echo "CONFIG_FULL_DYNAMIC_VLAN=y" >> ${CONFIG}
 	echo "CONFIG_HS20=y" >> ${CONFIG}
-	echo "CONFIG_WMN=y" >> ${CONFIG}
+	echo "CONFIG_WNM=y" >> ${CONFIG}
 	echo "CONFIG_FST=y" >> ${CONFIG}
 	echo "CONFIG_FST_TEST=y" >> ${CONFIG}
 	echo "CONFIG_ACS=y" >> ${CONFIG}
