@@ -5,7 +5,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 
-inherit cros-workon eutils toolchain-funcs qt4-r2 qmake-utils multilib user
+inherit cros-workon eutils toolchain-funcs qt4-r2 qmake-utils multilib systemd user
 
 DESCRIPTION="IEEE 802.1X/WPA supplicant for secure wireless transfers"
 # HOMEPAGE="http://hostap.epitest.fi/wpa_supplicant/"
@@ -16,7 +16,7 @@ LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ap dbus debug gnutls eap-sim fasteap +hs2-0 libressl madwifi p2p ps3 qt4 qt5 readline selinux smartcard ssl +tdls uncommon-eap-types wps kernel_linux kernel_FreeBSD wimax"
+IUSE="ap dbus debug gnutls eap-sim fasteap +hs2-0 libressl madwifi p2p ps3 qt4 qt5 readline selinux smartcard ssl systemd +tdls uncommon-eap-types wps kernel_linux kernel_FreeBSD wimax"
 REQUIRED_USE="fasteap? ( !gnutls !ssl ) smartcard? ( ssl )"
 
 CDEPEND="
@@ -380,10 +380,16 @@ src_install() {
 
 		popd > /dev/null
 	fi
-
-	# install wpa_supplicant's init script
-	insinto /etc/init
-	doins ${FILESDIR}/init/wpasupplicant.conf
+	# Install the init scripts
+	if use systemd; then
+		insinto /usr/share
+		systemd_dounit ${FILESDIR}/init/wpa_supplicant.service
+		systemd_enable_service boot-services.target wpa_supplicant.service
+		systemd_dotmpfilesd ${FILESDIR}/init/wpa_supplicant.conf
+	else
+		insinto /etc/init
+		doins ${FILESDIR}/init/wpasupplicant.conf
+	fi
 }
 
 pkg_preinst() {
