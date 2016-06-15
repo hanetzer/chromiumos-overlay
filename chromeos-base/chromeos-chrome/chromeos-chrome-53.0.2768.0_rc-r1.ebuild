@@ -40,7 +40,6 @@ IUSE="
 	+chrome_remoting
 	clang
 	component_build
-	deep_memory_profiler
 	envoy
 	evdev_gestures
 	+fonts
@@ -130,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2762.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2762.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2762.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2768.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2768.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2768.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -478,14 +477,6 @@ set_build_defines() {
 			RELEASE_EXTRA_CFLAGS+=( -g )
 		fi
 		BUILD_ARGS+=( symbol_level=2 )
-	fi
-
-	if use deep_memory_profiler; then
-		BUILD_DEFINES+=(
-			profiling=1
-			profiling_full_stack_frames=1
-			linux_dump_symbols=1
-		)
 	fi
 
 	use envoy && BUILD_DEFINES+=( envoy=1 )
