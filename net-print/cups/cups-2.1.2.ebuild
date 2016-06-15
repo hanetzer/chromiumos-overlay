@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -6,7 +6,7 @@ EAPI=5
 
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools base fdo-mime gnome2-utils flag-o-matic linux-info \
+inherit autotools fdo-mime gnome2-utils flag-o-matic linux-info \
 	multilib multilib-minimal pam python-single-r1 user versionator \
 	java-pkg-opt-2 systemd toolchain-funcs
 
@@ -38,7 +38,7 @@ IUSE="acl dbus debug java kerberos lprng-compat pam
 # http://crbug.com/579661
 IUSE="${IUSE} kernel_linux"
 
-LANGS="ca cs de es fr it ja pt_BR ru"
+LANGS="ca cs de es fr it ja ru"
 for X in ${LANGS} ; do
 	IUSE="${IUSE} +linguas_${X}"
 done
@@ -52,7 +52,7 @@ CDEPEND="
 		)
 	)
 	dbus? ( >=sys-apps/dbus-1.6.18-r1[${MULTILIB_USEDEP}] )
-	java? ( >=virtual/jre-1.6 )
+	java? ( >=virtual/jre-1.6:* )
 	kerberos? ( >=virtual/krb5-0-r1[${MULTILIB_USEDEP}] )
 	!lprng-compat? ( !net-print/lprng )
 	pam? ( virtual/pam )
@@ -101,11 +101,11 @@ PATCHES=(
 	"${FILESDIR}/${PN}-1.6.0-fix-install-perms.patch"
 	"${FILESDIR}/${PN}-1.4.4-nostrip.patch"
 	"${FILESDIR}/${PN}-2.0.2-rename-systemd-service-files.patch"
-	"${FILESDIR}/${PN}-2.0.2-systemd-socket.patch"
+	"${FILESDIR}/${PN}-2.1.2-systemd-socket.patch"
 	"${FILESDIR}/${PN}-2.0.1-xinetd-installation-fix.patch"
 	"${FILESDIR}/${PN}-2.0.3-cross-compile.patch"
 	"${FILESDIR}/${PN}-2.0.3-Add-printerroot-to-configure.patch"
-	"${FILESDIR}/${PN}-2.0.3-PrinterRoot.patch"
+	"${FILESDIR}/${PN}-2.1.2-PrinterRoot.patch"
 	"${FILESDIR}/${PN}-2.0.3-debug-printfs.patch"
 	"${FILESDIR}/${PN}-2.0.3-upstart-on-demand.patch"
 )
@@ -159,7 +159,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-	base_src_prepare
+	epatch ${PATCHES[@]}
+
 	epatch_user
 
 	# Remove ".SILENT" rule for verbose output (bug 524338).
@@ -307,9 +308,8 @@ multilib_src_install_all() {
 	# create /etc/cups/client.conf, bug #196967 and #266678
 	echo "ServerName ${EPREFIX}/run/cups/cups.sock" >> "${ED}"/etc/cups/client.conf
 
-	# the following files are now provided by cups-filters:
+	# the following file is now provided by cups-filters:
 	rm -r "${ED}"/usr/share/cups/banners || die
-	rm -r "${ED}"/usr/share/cups/data/testprint || die
 
 	# the following are created by the init script
 	rm -r "${ED}"/var/cache/cups || die
