@@ -202,15 +202,14 @@ src_configure() {
 }
 
 src_compile() {
-	# -j1 needed because of bug #550926
-	emake -j1 so all
+	emake so all
 
 	cd "${S}/ijs" || die
 	emake
 }
 
 src_install() {
-	emake -j1 DESTDIR="${D}" install-so install
+	emake DESTDIR="${D}" install-so install
 
 	use djvu && dobin gsdjvu
 
@@ -219,7 +218,7 @@ src_install() {
 	mv -f "${ED}"/usr/bin/{gsc,gs} || die
 
 	cd "${S}/ijs" || die
-	emake -j1 DESTDIR="${D}" install
+	emake DESTDIR="${D}" install
 
 	# rename the original cidfmap to cidfmap.GS
 	mv "${ED}/usr/share/ghostscript/${PVM}/Resource/Init/cidfmap"{,.GS} || die

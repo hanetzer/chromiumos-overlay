@@ -1,0 +1,27 @@
+Fix some dependencies, where these rules expect the lib directory to already
+exist. Patch posted here:
+
+  http://bugs.ghostscript.com/show_bug.cgi?id=696843
+
+diff --git a/contrib/contrib.mak b/contrib/contrib.mak
+index 11cc872a3a96..55415b3f76f0 100644
+--- a/contrib/contrib.mak
++++ b/contrib/contrib.mak
+@@ -1098,7 +1098,7 @@ $(DEVOBJ)dviprlib.$(OBJ) : $(JAPSRC)dviprlib.c $(JAPSRC)dviprlib.h \
+                            $(CONTRIB_MAK) $(MAKEDIRS)
+ 	$(DEVCC) $(O_)$@ $(C_) $(JAPSRC)dviprlib.c
+ 
+-extra-dmprt-install:
++extra-dmprt-install: install-libdata
+ 	$(INSTALL_DATA) $(JAPSRC)dmp_init.ps $(DESTDIR)$(gsdatadir)$(D)lib || exit 1
+ 	$(INSTALL_DATA) $(JAPSRC)dmp_site.ps $(DESTDIR)$(gsdatadir)$(D)lib || exit 1
+ 	$(INSTALL_DATA) $(JAPSRC)escp_24.src $(DESTDIR)$(gsdatadir)$(D)lib || exit 1
+@@ -1266,7 +1266,7 @@ $(DEVOBJ)gdevalps.$(OBJ) : $(JAPSRC)gdevalps.c $(PDEVH) \
+ 
+ ### ----------------- Additional .upp files ---------------- ###
+ 
+-extra-upp-install:
++extra-upp-install: install-libdata
+ 	for f in $(CONTRIBSRC)uniprint$(D)*.upp; do \
+ 	    $(INSTALL_DATA) $$f $(DESTDIR)$(gsdatadir)$(D)lib || exit 1; \
+ 	done
