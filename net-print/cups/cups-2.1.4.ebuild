@@ -32,7 +32,7 @@ HOMEPAGE="http://www.cups.org/"
 LICENSE="GPL-2"
 SLOT="0"
 IUSE="acl dbus debug java kerberos lprng-compat pam
-	python selinux +ssl static-libs systemd +threads upstart usb X xinetd zeroconf"
+	python +seccomp selinux +ssl static-libs systemd +threads upstart usb X xinetd zeroconf"
 # TODO: 'IUSE=kernel_linux' should be handled implicitly (e.g., with
 # IUSE_IMPLICIT), but this doesn't work with 'cros deploy' right now. See
 # http://crbug.com/579661
@@ -353,6 +353,14 @@ multilib_src_install_all() {
 	# CUPS also wants some specific permissions
 	chmod 640 "${ED}"/etc/cups/{cupsd,cups-files}.conf
 	chmod 700 "${ED}"/etc/cups/ssl
+
+	if use seccomp; then
+		# Install seccomp policy file.
+		insinto /usr/share/policy
+		newins "${FILESDIR}/cupsd-seccomp-${ARCH}.policy" cupsd-seccomp.policy
+	else
+		sed -i '/^env seccomp_flags=/s:=.*:="":' "${ED}"/etc/init/cupsd.conf
+	fi
 }
 
 pkg_preinst() {
