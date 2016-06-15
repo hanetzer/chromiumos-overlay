@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang static"
+IUSE="-asan -clang -cr50_onboard static"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="dev-embedded/libftdi"
@@ -46,6 +46,11 @@ src_compile() {
 	# be executed on target devices (i.e., arm/x86/amd64), not the build
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="${CC} $(usex static '-static' '')"
+
+	# Do not set BOARD yet, as usb_updater is built for cr50.
+	if use cr50_onboard; then
+		emake -C extra/usb_updater
+	fi
 	set_board
 	emake utils-host
 }
@@ -54,6 +59,10 @@ src_install() {
 	set_board
 	dosbin "build/$BOARD/util/ectool"
 	dosbin "build/$BOARD/util/ec_sb_firmware_update"
+	if use cr50_onboard; then
+		dosbin "extra/usb_updater/usb_updater"
+	fi
+
 	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then
 		insinto /etc/init
 		doins board/${BOARD}/userspace/etc/init/*.conf
