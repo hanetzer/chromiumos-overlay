@@ -115,6 +115,8 @@ MULTILIB_CHOST_TOOLS=(
 )
 
 pkg_setup() {
+	enewgroup lp
+	enewuser lp -1 -1 -1 lp
 	enewgroup lpadmin
 	enewgroup cups
 	enewuser cups -1 -1 -1 cups
