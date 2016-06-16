@@ -1,0 +1,27 @@
+Additional fixup for this bug (bug is still WIP as of this writing):
+
+  http://bugs.ghostscript.com/show_bug.cgi?id=696508
+
+to allow specifying build system LDFLAGS as LDFLAGSAUX.
+
+diff --git a/configure.ac b/configure.ac
+index 190a3c322d0c..c814d93d28aa 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -31,6 +31,7 @@ CXXFLAGS="${CXXFLAGS:=}"
+ LDFLAGS="${LDFLAGS:=}"
+ 
+ CFLAGSAUX="${CFLAGSAUX:-$CFLAGS}"
++LDFLAGSAUX="${LDFLAGSAUX:-$LDFLAGS}"
+ 
+ # save these for later
+ OPARMS=$@
+@@ -119,7 +120,7 @@ if test x"$CCAUX" != x"" ; then
+   fi
+   mkdir $CONFAUXDIR
+   cd $CONFAUXDIR
+-  ../$0 CC="$CCAUX" CFLAGS="$CFLAGSAUX" CCAUX= CFLAGSAUX= MAKEFILE=../$AUXFLAGS_MAK --host= --build= --without-libtiff --disable-contrib --disable-fontconfig --disable-dbus --disable-freetype --disable-fapi --disable-cups --disable-openjpeg --disable-gtk --with-libiconv=no --without-libidn --without-libpaper --without-pdftoraster --without-ijs --without-luratech --without-jbig2dec --without-x --with-drivers=""
++  ../$0 CC="$CCAUX" CFLAGS="$CFLAGSAUX" LDFLAGS="$LDFLAGSAUX" CCAUX= CFLAGSAUX= LDFLAGSAUX= MAKEFILE=../$AUXFLAGS_MAK --host= --build= --without-libtiff --disable-contrib --disable-fontconfig --disable-dbus --disable-freetype --disable-fapi --disable-cups --disable-openjpeg --disable-gtk --with-libiconv=no --without-libidn --without-libpaper --without-pdftoraster --without-ijs --without-luratech --without-jbig2dec --without-x --with-drivers=""
+   status=$?
+   cp config.log ../configaux.log
+   cd $olddir
