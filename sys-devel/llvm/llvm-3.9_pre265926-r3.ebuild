@@ -225,7 +225,7 @@ src_prepare() {
 	# https://llvm.org/bugs/show_bug.cgi?id=27703
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-inst-combine-D20173.patch
 
-	epatch "${FILESDIR}"/llvm-3.9-build-id.patch
+	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-build-id.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
