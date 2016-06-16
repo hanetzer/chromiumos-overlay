@@ -32,5 +32,5 @@ sys-libs/ncurses tinfo
 # http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=877
 # http://crbug.com/490393
 dev-java/icedtea-bin cups
-# And cups wants ghostscript-gpl built with cups support.
-app-text/ghostscript-gpl cups
+# We don't want cups-filters to pull in ghostscript.
+net-print/cups-filters -postscript
