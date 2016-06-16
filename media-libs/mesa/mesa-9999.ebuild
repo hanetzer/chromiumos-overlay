@@ -145,6 +145,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 	base_src_prepare
 
+	# Produce git_sha1.h because .git will not be copied to portage tmp directory
+	git log -n 1 --oneline | sed 's/^\([^ ]*\) .*/#define MESA_GIT_SHA1 "git-\1`"/' > src/git_sha1.h
+
 	eautoreconf
 }
 
