@@ -176,10 +176,18 @@ pick_cherries() {
 	local CHERRIES=""
 	CHERRIES+=" b3419a9ef1857ae36a09cf845f8eec4abefdd159 " # r266113
 	CHERRIES+=" 47bc7ec72ef69769b6fa693d574e1f9159b0d6e6 " # r266116
+	CHERRIES+=" ddc91cf1727ad03fcd091578a23c2bcde55b0761 " # r269154
+	CHERRIES+=" 90ce5cd716419c04a9402de118534ecb5f279ede " # r270781
+	CHERRIES+=" 5d36cf313ae9c9e6d475891ec2c0cb3a25ee62b1 " # r270784
+	CHERRIES+=" 35470639d335074ed5f7de4644627496a4d03f32 " # r272080
 
 	pushd "${S}"/tools/clang >/dev/null || die
 	git cherry-pick ${CHERRIES} >/dev/null || die
 	popd >/dev/null || die
+
+	# "Cherry-pick" of r272971 (bf13b30ff28e64528806076cc88cc46aa2634e62); it
+	# can't be picked directly due to a conflict.
+	epatch "${FILESDIR}"/clang-3.8-fortify-fix.patch
 
 	# compiler-rt
 	# Bug 27673 - [ASan] False alarm to recv/recvfrom
