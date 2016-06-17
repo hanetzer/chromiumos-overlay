@@ -3,9 +3,10 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI="4"
-CROS_WORKON_LOCALNAME=gcc
-CROS_WORKON_PROJECT=chromiumos/third_party/gcc
-NEXT_GCC="origin/svn-mirror/google/gcc-4_9"
+CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="toolchain/gcc"
+CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
+NEXT_GCC="master"
 
 # By default, PREV_GCC points to the parent of current tip of origin/master.
 # If that is a bad commit, override this to point to the last known good commit.
@@ -63,6 +64,17 @@ fi
 
 PREFIX=/usr
 
+update_location_for_aosp() {
+	# For aosp gcc repository, the actual gcc directory is 1 more
+	# level down, eg. gcc/gcc-4.9, pick up the newest one in this
+	# case.
+	local gccsub=$(find "${S}" -maxdepth 1 -type d -name "gcc-*" | sort -r | head -1)
+	if [[ -d "${gccsub}" ]] && [[ -d "${gccsub}/gcc/config/arm/" ]]; then
+	    S="${gccsub}"
+	fi
+	cd "${S}"
+}
+
 src_unpack() {
 	if use mounted_gcc ; then
 		if [[ ! -d "$(get_gcc_dir)" ]] ; then
@@ -89,16 +101,10 @@ src_unpack() {
 				die "Couldn't checkout ${GCC_GITHASH}"
 			popd >/dev/null
 		fi
+		update_location_for_aosp
 	else
 		cros-workon_src_unpack
-		# For aosp gcc repository, the actual gcc directory is 1 more
-		# level down, eg. gcc/gcc-4.9, pick up the newest one in this
-		# case.
-		local gccsub=$(find "${S}" -maxdepth 1 -type d -name "gcc-*" | sort -r | head -1)
-		if [[ -d "${gccsub}" ]] && [[ -d "${gccsub}/gcc/config/arm/" ]]; then
-		    S="${gccsub}"
-		fi
-		cd "${S}"
+		update_location_for_aosp
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
 
