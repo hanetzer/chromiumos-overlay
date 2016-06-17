@@ -182,9 +182,25 @@ pick_cherries() {
 	popd >/dev/null || die
 
 	# compiler-rt
+	# Bug 27673 - [ASan] False alarm to recv/recvfrom
+	# https://llvm.org/bugs/show_bug.cgi?id=27673
 	CHERRIES=" f0ccaf3554182da4c7a038ae96a869e0e202bd2c " # r269749
 
 	pushd "${S}"/projects/compiler-rt >/dev/null || die
+	git cherry-pick ${CHERRIES} >/dev/null || die
+	popd >/dev/null || die
+
+	# llvm
+	CHERRIES=""
+	# Bug 27703 - InstCombine hangs (loops forever) at -O1 or higher...
+	# https://llvm.org/bugs/show_bug.cgi?id=27703
+	CHERRIES+=" 4f4b87e93849eddd82a11c0d41c760aa6a5e8c31 " # r270135
+
+	# Bug 11740 - can't use clang -g to assemble .s file with .file directive
+	# https://llvm.org/bugs/show_bug.cgi?id=11740
+	CHERRIES+=" 2474f04f67a34476c16316ba0299237c3e6df6b0 " # r270806
+
+	pushd "${S}" >/dev/null || die
 	git cherry-pick ${CHERRIES} >/dev/null || die
 	popd >/dev/null || die
 }
@@ -220,10 +236,6 @@ src_prepare() {
 
 	# crbug/606391
 	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
-
-	# Bug 27703 - InstCombine hangs (loops forever) at -O1 or higher...
-	# https://llvm.org/bugs/show_bug.cgi?id=27703
-	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-inst-combine-D20173.patch
 
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-build-id.patch
 
