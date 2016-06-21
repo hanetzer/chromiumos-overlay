@@ -1,0 +1,30 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI="4"
+CROS_WORKON_COMMIT="59f9479d0d46e408cb9a6c1be1046b1a76d02d13"
+CROS_WORKON_TREE="48cdbfddb45011b1a1dc97f66b8b84b9d5bd38f9"
+CROS_WORKON_PROJECT="chromiumos/platform/touch_updater"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+inherit cros-workon
+
+DESCRIPTION="Touch firmware and config updater"
+HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
+
+LICENSE="BSD"
+SLOT="0"
+KEYWORDS="*"
+IUSE="input_devices_synaptics"
+
+RDEPEND="
+	input_devices_synaptics? ( chromeos-base/rmi4utils )
+"
+src_install() {
+	insinto "/etc/init"
+	doins "scripts/chromeos-touch-update.conf"
+
+	exeinto "/opt/google/touch/scripts"
+	doexe scripts/*.sh
+}
