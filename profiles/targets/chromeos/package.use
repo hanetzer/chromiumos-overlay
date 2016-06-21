@@ -75,6 +75,7 @@ net-misc/strongswan	cisco nat-transport
 net-nds/openldap	minimal
 net-print/cups		zeroconf upstart
 net-print/cups-filters	zeroconf -postscript
+net-print/hplip		minimal
 net-proxy/tsocks	tordns
 # No support for bluetooth printing.
 net-wireless/bluez	-cups
