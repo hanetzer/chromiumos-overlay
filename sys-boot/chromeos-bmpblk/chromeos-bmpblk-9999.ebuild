@@ -83,7 +83,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="bitmap_in_cbfs"
+IUSE=""
 DEPEND="
 	sys-apps/coreboot-utils
 "
@@ -95,23 +95,16 @@ src_prepare() {
 
 src_compile() {
 	emake OUTPUT="${WORKDIR}" "${BOARD}"
-	if use bitmap_in_cbfs; then
-		emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
-	fi
+	emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
 }
 
 src_install() {
-	if use bitmap_in_cbfs; then
-		# Bitmaps need to reside in the RO CBFS only. Many boards do
-		# not have enough space in the RW CBFS regions to contain
-		# all image files.
-		insinto /firmware/rocbfs
-		doins "${WORKDIR}/${BOARD}"/vbgfx.bin
-		doins "${WORKDIR}/${BOARD}"/locales
-		doins "${WORKDIR}/${BOARD}"/locale_*.bin
-		doins "${WORKDIR}/${BOARD}"/font.bin
-	else
-		insinto /firmware
-		doins "${WORKDIR}/${BOARD}/bmpblk.bin"
-	fi
+	# Bitmaps need to reside in the RO CBFS only. Many boards do
+	# not have enough space in the RW CBFS regions to contain
+	# all image files.
+	insinto /firmware/rocbfs
+	doins "${WORKDIR}/${BOARD}"/vbgfx.bin
+	doins "${WORKDIR}/${BOARD}"/locales
+	doins "${WORKDIR}/${BOARD}"/locale_*.bin
+	doins "${WORKDIR}/${BOARD}"/font.bin
 }

@@ -19,7 +19,7 @@ BOARDS="alex amenia aplrvp auron bayleybay beltino bolt butterfly chell cyan eme
 BOARDS="${BOARDS} gizmo glados jecht kunimitsu link lumpy lumpy64 mario panther"
 BOARDS="${BOARDS} parrot peppy rambi reef samus sklrvp slippy squawks stout strago stumpy"
 BOARDS="${BOARDS} sumo"
-IUSE="${BOARDS} +bmpblk bitmap_in_cbfs build-all-fw cb_legacy_seabios cb_legacy_uboot"
+IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra vboot2 fastboot"
 
@@ -278,12 +278,8 @@ src_compile_depthcharge() {
 		fi
 	fi
 
-	if use bmpblk && ! use bitmap_in_cbfs; then
-		common+=( --bmpblk "${froot}/bmpblk.bin" )
-	else
-		common+=( --skip-bmpblk )
-	fi
-
+	# bitmaps will be installed through --rocbfs-files
+	common+=( --skip-bmpblk )
 	common+=( --rocbfs-files "${froot}/rocbfs" )
 	serial+=( --gbb-flags "+enable-serial" )
 	einfo "Building production image."
