@@ -35,6 +35,7 @@ IUSE="
 	neon
 	opengles
 	ozone
+	pointer_events
 	test
 	touchview
 	+X
