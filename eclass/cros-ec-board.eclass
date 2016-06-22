@@ -43,10 +43,12 @@ EC_BOARD_NAMES=(
 	elm
 	glados
 	glados_pd
+	gru
 	hadoken
 	hoho
 	host
 	jerry
+	kevin
 	llama
 	minimuffin
 	oak
