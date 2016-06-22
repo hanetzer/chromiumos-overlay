@@ -120,9 +120,6 @@ src_install() {
 
 src_test() {
 	# Verify compilation of all boards
-	ewarn "Dropping cr50 from the build, (see crosbug.com/p/54101)."
-	rm -rf board/cr50
-
 	emake buildall
 	emake runtests
 }
