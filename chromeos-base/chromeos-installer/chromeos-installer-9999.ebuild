@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon cros-debug cros-au libchrome
+inherit cros-workon cros-debug cros-au libchrome systemd
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host -mtd pam test"
+IUSE="32bit_au cros_host -mtd pam systemd test"
 
 DEPEND="
 	chromeos-base/verity[32bit_au=]
@@ -99,8 +99,18 @@ src_install() {
 		dosbin chromeos-* encrypted_import
 		dosym usr/sbin/chromeos-postinst /postinst
 
-		insinto /etc/init
-		doins init/*.conf
+		# Install init scripts.
+		if use systemd; then
+			systemd_dounit init/install-completed.service
+			systemd_enable_service boot-services.target install-completed.service
+			systemd_dounit init/crx-import.service
+			systemd_enable_service system-services.target crx-import.service
+		else
+			insinto /etc/init
+			doins init/*.conf
+		fi
+		insinto /usr/share/cros/init
+		doins init/crx-import.sh
 	fi
 
 	insinto /usr/share/misc
