@@ -33,3 +33,8 @@ src_install() {
 	insinto "/etc/mobmonitor/checkfiles/devserver/"
 	doins -r "${S}/checkfiles/devserver/"*
 }
+
+src_test() {
+	# Run the unit tests.
+	./run_unittests || die
+}
