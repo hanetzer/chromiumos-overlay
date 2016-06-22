@@ -1,0 +1,72 @@
+The mariadb does not support cross build. It uses cross-compiler to build binary
+that runs on the host. This works for amd64 targets. The new cmake_utils.eclass
+disables this and causes the build fail. See crbug.com/621558.
+This patch lets the cross-compiler build host binary. It makes the mariadb builds
+with new cmake_utils.elcass. The behavior is wrong, but it is the old and working
+behavior.
+diff -ur a/mysql/extra/CMakeLists.txt b/mysql/extra/CMakeLists.txt
+--- a/mysql/extra/CMakeLists.txt	2016-06-21 20:54:59.428021790 -0700
++++ b/mysql/extra/CMakeLists.txt	2016-06-21 20:54:11.936215416 -0700
+@@ -26,10 +26,10 @@
+ # Default install component for the files is Server here
+ SET(MYSQL_INSTALL_COMPONENT Server)
+ 
+-IF(NOT CMAKE_CROSSCOMPILING)
+- ADD_EXECUTABLE(comp_err comp_err.c)
+- TARGET_LINK_LIBRARIES(comp_err mysys)
+-ENDIF()
++#IF(NOT CMAKE_CROSSCOMPILING)
++ADD_EXECUTABLE(comp_err comp_err.c)
++TARGET_LINK_LIBRARIES(comp_err mysys)
++#ENDIF()
+ 
+ # Generate mysqld_error.h
+ # Try not to change its timestamp if not necessary(as touching
+@@ -37,7 +37,7 @@
+ # To preserve timestamp, first generate a temp header file, then copy it
+ # to mysqld_error.h using cmake -E copy_if_different
+ ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/include/mysqld_error.h.tmp
+-   COMMAND comp_err
++   COMMAND ./comp_err
+ 	--charset=${PROJECT_SOURCE_DIR}/sql/share/charsets 
+ 	--out-dir=${CMAKE_BINARY_DIR}/sql/share/
+ 	--header_file=${CMAKE_BINARY_DIR}/include/mysqld_error.h.tmp 
+diff -ur a/mysql/scripts/CMakeLists.txt b/mysql/scripts/CMakeLists.txt
+--- a/mysql/scripts/CMakeLists.txt	2016-06-21 20:54:59.728020568 -0700
++++ b/mysql/scripts/CMakeLists.txt	2016-06-21 20:54:12.384213590 -0700
+@@ -14,10 +14,10 @@
+ # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ 
+ # Build comp_sql - used for embedding SQL in C or C++ programs
+-IF(NOT CMAKE_CROSSCOMPILING)
+- ADD_EXECUTABLE(comp_sql comp_sql.c)
+- TARGET_LINK_LIBRARIES(comp_sql)
+-ENDIF()
++#IF(NOT CMAKE_CROSSCOMPILING)
++ADD_EXECUTABLE(comp_sql comp_sql.c)
++TARGET_LINK_LIBRARIES(comp_sql)
++#ENDIF()
+ 
+ 
+ # Build mysql_fix_privilege_tables.sql (concatenate 2 sql scripts)
+@@ -47,7 +47,7 @@
+ ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mysql_fix_privilege_tables_sql.c
+   ${CAT_COMMAND}
+-  COMMAND comp_sql
++  COMMAND ./comp_sql
+   mysql_fix_privilege_tables
+   mysql_fix_privilege_tables.sql
+   mysql_fix_privilege_tables_sql.c
+diff -ur a/mysql/sql/CMakeLists.txt b/mysql/sql/CMakeLists.txt
+--- a/mysql/sql/CMakeLists.txt	2016-06-21 20:54:59.772020388 -0700
++++ b/mysql/sql/CMakeLists.txt	2016-06-21 20:54:12.452213313 -0700
+@@ -214,7 +214,7 @@
+ 
+ ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lex_hash.h
+-  COMMAND gen_lex_hash > lex_hash.h
++  COMMAND ./gen_lex_hash > lex_hash.h
+   DEPENDS gen_lex_hash
+ )
+ 

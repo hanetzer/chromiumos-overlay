@@ -13,7 +13,10 @@ inherit flag-o-matic toolchain-funcs mysql-v2
 IUSE="$IUSE"
 
 # REMEMBER: also update eclass/mysql*.eclass before committing!
-KEYWORDS="*"
+
+# The cross-compile logic is broken.
+# The patch mariadb-5.5.32-workaround-cros-build.patch is a workaround.
+KEYWORDS="-* amd64 x86"
 
 # When MY_EXTRAS is bumped, the index should be revised to exclude these.
 EPATCH_EXCLUDE=''
@@ -131,6 +134,8 @@ src_test() {
 }
 
 src_configure() {
+	epatch "${FILESDIR}"/${P}-workaround-cros-build.patch
+
 	# Append the SYSROOT Library Path in order for the linker to find
 	# libbfd when cross-compiling. See crbug.com/336580 for more details.
 	append-ldflags "-L${SYSROOT}/usr/${CHOST}/lib"
