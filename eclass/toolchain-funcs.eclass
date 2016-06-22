@@ -880,6 +880,10 @@ gcc-ssp() {
 # we get serious about building with Clang.
 clang-setup-env() {
 	use clang || return 0
+	# There is no wrapper for host clang.
+	if [[ "${CHOST}" == "x86_64-pc-linux-gnu" ]] ; then
+		return 0
+	fi
 	case ${ARCH} in
 	amd64|x86|arm)
 		export CC="${CHOST}-clang" CXX="${CHOST}-clang++"
