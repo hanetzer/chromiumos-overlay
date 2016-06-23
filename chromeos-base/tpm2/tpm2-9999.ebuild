@@ -29,6 +29,7 @@ src_install() {
 	doins ExecCommand_fp.h
 	doins GetCommandCodeString_fp.h
 	doins Implementation.h
+	doins Manufacture_fp.h
 	doins Platform.h
 	doins TPMB.h
 	doins TPM_Types.h

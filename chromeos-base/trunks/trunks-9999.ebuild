@@ -19,12 +19,13 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ftdi_tpm test"
+IUSE="ftdi_tpm test tpm2_simulator"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	ftdi_tpm? ( dev-embedded/libftdi )
+	tpm2_simulator? ( chromeos-base/tpm2 )
 	"
 
 DEPEND="
