@@ -49,4 +49,7 @@ src_install() {
 	pushd "${OUT}" >/dev/null
 	dobin avtest_label_detect
 	popd >/dev/null
+
+	insinto /etc
+	doins "${S}"/avtest_label_detect.conf
 }
