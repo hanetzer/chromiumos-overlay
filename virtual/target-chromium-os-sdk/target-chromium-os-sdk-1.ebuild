@@ -115,6 +115,7 @@ RDEPEND="${RDEPEND}
 	app-arch/sharutils
 	app-arch/unzip
 	app-crypt/nss
+	app-doc/xmltoman
 	app-emulation/qemu
 	app-emulation/qemu-binfmt-wrapper
 	!app-emulation/qemu-kvm
