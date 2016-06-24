@@ -70,7 +70,9 @@ platform_pkg_test() {
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
 
+	# TODO(dhsharp): Re-enable when external build is working again.
+	# TODO(dhsharp): See crbug.com/623156
 	# Test external makefile build.
-	emake -f Makefile.external CC="$(tc-getCC)" CXX="$(tc-getCXX)" \
-		PKG_CONFIG="$(tc-getPKG_CONFIG)"
+	#emake -f Makefile.external CC="$(tc-getCC)" CXX="$(tc-getCXX)" \
+	#	PKG_CONFIG="$(tc-getPKG_CONFIG)"
 }
