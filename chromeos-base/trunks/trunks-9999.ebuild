@@ -45,7 +45,11 @@ src_install() {
 	doins org.chromium.Trunks.conf
 
 	insinto /etc/init
-	doins trunksd.conf
+	if use tpm2_simulator; then
+		newins trunksd.conf.tpm2_simulator trunksd.conf
+	else
+		doins trunksd.conf
+	fi
 
 	dosbin "${OUT}"/trunks_client
 	dosbin "${OUT}"/trunksd
