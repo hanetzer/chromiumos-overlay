@@ -32,6 +32,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0002-CHROMIUM-v4l-Add-VP8-low-level-decoder-API-controls.patch"
 	epatch "${FILESDIR}/0003-v4l-add-pixelformat-change-event.patch"
 	epatch "${FILESDIR}/0004-v4l-add-force-key-frame-control.patch"
+	epatch "${FILESDIR}/0005-UPSTREAM-sched-new-clone-flag-CLONE_NEWCGROUP-for-cg.patch"
 }
 
 src_install() {

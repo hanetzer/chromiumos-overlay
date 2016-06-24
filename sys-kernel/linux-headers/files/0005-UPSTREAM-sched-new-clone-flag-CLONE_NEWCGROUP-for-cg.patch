@@ -1,0 +1,41 @@
+From 0a09cb1b511f182a47ddcfde8750115339232f3b Mon Sep 17 00:00:00 2001
+From: Aditya Kali <adityakali@google.com>
+Date: Fri, 29 Jan 2016 02:54:05 -0600
+Subject: [PATCH] UPSTREAM: sched: new clone flag CLONE_NEWCGROUP for cgroup
+ namespace
+
+CLONE_NEWCGROUP will be used to create new cgroup namespace.
+
+Signed-off-by: Aditya Kali <adityakali@google.com>
+Signed-off-by: Serge Hallyn <serge.hallyn@canonical.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+
+BUG=b:29259708
+TEST=Build
+
+(cherry picked from commit 5e2bec7c2248ae27c5b16cd97215ae05c1d39179)
+Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
+Change-Id: Ie65103cd017db69f9121816c8e228c0e2de756ba
+Reviewed-on: https://chromium-review.googlesource.com/353793
+Reviewed-by: Dylan Reid <dgreid@chromium.org>
+---
+ include/uapi/linux/sched.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/sched.h b/include/uapi/linux/sched.h
+index b932be9..1ba5f9a 100644
+--- a/include/uapi/linux/sched.h
++++ b/include/uapi/linux/sched.h
+@@ -21,8 +21,7 @@
+ #define CLONE_DETACHED		0x00400000	/* Unused, ignored */
+ #define CLONE_UNTRACED		0x00800000	/* set if the tracing process can't force CLONE_PTRACE on this clone */
+ #define CLONE_CHILD_SETTID	0x01000000	/* set the TID in the child */
+-/* 0x02000000 was previously the unused CLONE_STOPPED (Start in stopped state)
+-   and is now available for re-use. */
++#define CLONE_NEWCGROUP		0x02000000	/* New cgroup namespace */
+ #define CLONE_NEWUTS		0x04000000	/* New utsname namespace */
+ #define CLONE_NEWIPC		0x08000000	/* New ipc namespace */
+ #define CLONE_NEWUSER		0x10000000	/* New user namespace */
+-- 
+2.8.0.rc3.226.g39d4020
+
