@@ -127,7 +127,10 @@ CROS_COMMON_RDEPEND+="
 	watchdog? ( sys-apps/daisydog )
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
-	cups? ( net-print/cups )
+	cups? (
+		net-print/cups
+		net-print/hplip
+	)
 	eclog? ( chromeos-base/timberslide )
 	chromeos-base/chromeos-machine-id-regen
 	sys-kernel/linux-firmware
