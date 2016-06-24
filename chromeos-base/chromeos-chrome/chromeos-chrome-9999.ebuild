@@ -44,7 +44,7 @@ IUSE="
 	envoy
 	evdev_gestures
 	+fonts
-	gn
+	+gn
 	+gold
 	hardfp
 	+highdpi
