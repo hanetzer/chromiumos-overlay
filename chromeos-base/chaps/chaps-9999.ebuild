@@ -20,10 +20,12 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-tpm2"
+IUSE="tpm tpm2"
+
+REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
-	!tpm2? (
+	tpm? (
 		app-crypt/trousers
 	)
 	tpm2? (

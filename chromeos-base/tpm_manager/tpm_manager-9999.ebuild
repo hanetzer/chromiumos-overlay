@@ -19,15 +19,13 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test -tpm2"
+IUSE="test tpm tpm2"
+
+REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
-	!tpm2? (
-		app-crypt/trousers
-	)
-	tpm2? (
-		chromeos-base/trunks
-	)
+	tpm? ( app-crypt/trousers )
+	tpm2? ( chromeos-base/trunks )
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	"
@@ -57,6 +55,11 @@ src_install() {
 	# Install upstart config file.
 	insinto /etc/init
 	doins server/tpm_managerd.conf
+	if use tpm2; then
+		sed -i 's/started tcsd/started trunksd/' \
+			"${D}/etc/init/tpm_managerd.conf" ||
+			die "Can't replace tcsd with trunksd in tpm_managerd.conf"
+	fi
 
 	# Install the executables provided by TpmManager
 	dosbin "${OUT}"/tpm_managerd
@@ -66,7 +69,7 @@ src_install() {
 
 	# Install seccomp policy files.
 	insinto /usr/share/policy
-	newins server/tpm_manager-seccomp-${ARCH}.policy tpm_managerd-seccomp.policy
+	newins server/tpm_managerd-seccomp-${ARCH}.policy tpm_managerd-seccomp.policy
 
 	# Install header files.
 	insinto /usr/include/tpm_manager/client

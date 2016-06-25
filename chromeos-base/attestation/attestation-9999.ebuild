@@ -18,10 +18,18 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="tpm tpm2"
+
+REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
-	app-crypt/trousers
+	tpm? (
+		app-crypt/trousers
+	)
+	tpm2? (
+		chromeos-base/trunks
+		chromeos-base/tpm_manager
+	)
 	chromeos-base/chaps
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
@@ -54,9 +62,9 @@ src_install() {
 	insinto /etc/init
 	doins server/attestationd.conf
 	if use tpm2; then
-		sed -i 's/started tcsd/started trunksd/' \
+		sed -i 's/started tcsd/started tpm_managerd/' \
 			"${D}/etc/init/attestationd.conf" ||
-			die "Can't replace tcsd with trunksd in attestationd.conf"
+			die "Can't replace tcsd with tpm_managerd in attestationd.conf"
 	fi
 
 	dosbin "${OUT}"/attestationd

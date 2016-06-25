@@ -18,15 +18,19 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test -tpm2"
+IUSE="test tpm tpm2"
+
+REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
 	!chromeos-base/chromeos-cryptohome
-	!tpm2? (
+	tpm? (
 		app-crypt/trousers
 	)
 	tpm2? (
 		chromeos-base/trunks
+		chromeos-base/tpm_manager
+		chromeos-base/attestation
 	)
 	chromeos-base/chaps
 	chromeos-base/libbrillo
@@ -59,9 +63,9 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 	if use tpm2; then
-		sed -i 's/started tcsd/started trunksd/' \
+		sed -i 's/started tcsd/started attestationd/' \
 			"${D}/etc/init/cryptohomed.conf" ||
-			die "Can't replace tcsd with trunksd in cryptohomed.conf"
+			die "Can't replace tcsd with attestationd in cryptohomed.conf"
 	fi
 }
 
