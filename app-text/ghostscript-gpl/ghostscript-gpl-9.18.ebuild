@@ -100,7 +100,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-gserrors.h-backport.patch
 	epatch "${FILESDIR}/${PN}-9.18-endian.patch"
 	epatch "${FILESDIR}/${PN}-9.18-ccaux.patch"
-	epatch "${FILESDIR}/${PN}-9.18-ldflagsaux.patch"
 
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
@@ -166,6 +165,7 @@ src_configure() {
 	tc-export_build_env BUILD_CC
 
 	econf \
+		CUPSCONFIG="${EROOT}/usr/bin/${CHOST}-cups-config" \
 		CCAUX="${BUILD_CC}" \
 		CFLAGSAUX="${BUILD_CFLAGS}" \
 		LDFLAGSAUX="${BUILD_LDFLAGS}" \
