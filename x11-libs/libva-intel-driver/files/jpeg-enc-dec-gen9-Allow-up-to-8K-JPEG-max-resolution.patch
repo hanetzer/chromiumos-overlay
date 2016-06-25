@@ -1,0 +1,90 @@
+From 8b1e436793360880f54402161a9f469e9b42e143 Mon Sep 17 00:00:00 2001
+From: "U. Artie Eoff" <ullysses.a.eoff@intel.com>
+Date: Tue, 7 Jun 2016 13:28:03 -0700
+Subject: [PATCH 2/8] jpeg enc/dec gen9: Allow up to 8K JPEG max resolution on
+ gen9
+
+Allow up to 8K * 8K resolution for JPEG encode and decode on
+gen9 HW (SKL,BXT,KBL).
+
+Signed-off-by: U. Artie Eoff <ullysses.a.eoff@intel.com>
+---
+ src/gen9_mfd.c         | 14 ++++++++++++++
+ src/i965_device_info.c | 16 ++++++++++------
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/src/gen9_mfd.c b/src/gen9_mfd.c
+index f178c03..5f42514 100644
+--- a/src/gen9_mfd.c
++++ b/src/gen9_mfd.c
+@@ -1989,3 +1989,17 @@ gen9_dec_hw_context_init(VADriverContextP ctx, struct object_config *obj_config)
+         return gen8_dec_hw_context_init(ctx, obj_config);
+     }
+ }
++
++void gen9_max_resolution(struct i965_driver_data *i965,
++                         struct object_config *obj_config,
++                         int *w,                                /* out */
++                         int *h)                                /* out */
++{
++    if (obj_config->profile == VAProfileJPEGBaseline) {
++        *w = 8192;
++        *h = 8192;
++    } else {
++        *w = i965->codec_info->max_width;
++        *h = i965->codec_info->max_height;
++    }
++}
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index 96ea43c..239961c 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -321,15 +321,17 @@ static struct hw_codec_info chv_hw_codec_info = {
+ 
+ extern struct hw_context *gen9_enc_hw_context_init(VADriverContextP, struct object_config *);
+ extern void gen9_post_processing_context_init(VADriverContextP, void *, struct intel_batchbuffer *);
++extern void gen9_max_resolution(struct i965_driver_data *, struct object_config *, int *, int *);
+ static struct hw_codec_info skl_hw_codec_info = {
+     .dec_hw_context_init = gen9_dec_hw_context_init,
+     .enc_hw_context_init = gen9_enc_hw_context_init,
+     .proc_hw_context_init = gen75_proc_context_init,
+     .render_init = gen9_render_init,
+     .post_processing_context_init = gen9_post_processing_context_init,
++    .max_resolution = gen9_max_resolution,
+ 
+-    .max_width = 4096,
+-    .max_height = 4096,
++    .max_width = 4096,  /* default. See max_resolution */
++    .max_height = 4096, /* default. See max_resolution */
+     .min_linear_wpitch = 128,
+     .min_linear_hpitch = 16,
+ 
+@@ -378,9 +380,10 @@ static struct hw_codec_info bxt_hw_codec_info = {
+     .proc_hw_context_init = gen75_proc_context_init,
+     .render_init = gen9_render_init,
+     .post_processing_context_init = gen9_post_processing_context_init,
++    .max_resolution = gen9_max_resolution,
+ 
+-    .max_width = 4096,
+-    .max_height = 4096,
++    .max_width = 4096,  /* default. See max_resolution */
++    .max_height = 4096, /* default. See max_resolution */
+     .min_linear_wpitch = 128,
+     .min_linear_hpitch = 16,
+ 
+@@ -430,9 +433,10 @@ static struct hw_codec_info kbl_hw_codec_info = {
+     .proc_hw_context_init = gen75_proc_context_init,
+     .render_init = gen9_render_init,
+     .post_processing_context_init = gen9_post_processing_context_init,
++    .max_resolution = gen9_max_resolution,
+ 
+-    .max_width = 4096,
+-    .max_height = 4096,
++    .max_width = 4096,   /* default. See max_resolution */
++    .max_height = 4096,  /* default. See max_resolution */
+     .min_linear_wpitch = 128,
+     .min_linear_hpitch = 16,
+ 
+-- 
+2.5.5
+

@@ -1,0 +1,122 @@
+From 39ebba0d61657a7c306cc8fd1c5780f3bfc8ba30 Mon Sep 17 00:00:00 2001
+From: "U. Artie Eoff" <ullysses.a.eoff@intel.com>
+Date: Tue, 7 Jun 2016 13:28:02 -0700
+Subject: [PATCH 1/8] i965_drv: add support for per-codec max resolution
+
+Add a functor to hw_codec_info to allow each hw instance to report
+maximum resolution on a per-codec basis.
+
+Signed-off-by: U. Artie Eoff <ullysses.a.eoff@intel.com>
+---
+ src/i965_drv_video.c | 32 +++++++++++++++++++++++++++-----
+ src/i965_drv_video.h |  9 +++++++++
+ 2 files changed, 36 insertions(+), 5 deletions(-)
+
+diff --git a/src/i965_drv_video.c b/src/i965_drv_video.c
+index efac5a5..66cdb9e 100644
+--- a/src/i965_drv_video.c
++++ b/src/i965_drv_video.c
+@@ -2130,6 +2130,20 @@ i965_destroy_context(struct object_heap *heap, struct object_base *obj)
+     object_heap_free(heap, obj);
+ }
+ 
++static inline void
++max_resolution(struct i965_driver_data *i965,
++               struct object_config *obj_config,
++               int *w,                                  /* out */
++               int *h)                                  /* out */
++{
++    if (i965->codec_info->max_resolution) {
++        i965->codec_info->max_resolution(i965, obj_config, w, h);
++    } else {
++        *w = i965->codec_info->max_width;
++        *h = i965->codec_info->max_height;
++    }
++}
++
+ VAStatus
+ i965_CreateContext(VADriverContextP ctx,
+                    VAConfigID config_id,
+@@ -2147,14 +2161,18 @@ i965_CreateContext(VADriverContextP ctx,
+     VAStatus vaStatus = VA_STATUS_SUCCESS;
+     int contextID;
+     int i;
++    int max_width;
++    int max_height;
+ 
+     if (NULL == obj_config) {
+         vaStatus = VA_STATUS_ERROR_INVALID_CONFIG;
+         return vaStatus;
+     }
+ 
+-    if (picture_width > i965->codec_info->max_width ||
+-        picture_height > i965->codec_info->max_height) {
++    max_resolution(i965, obj_config, &max_width, &max_height);
++
++    if (picture_width > max_width ||
++        picture_height > max_height) {
+         vaStatus = VA_STATUS_ERROR_RESOLUTION_NOT_SUPPORTED;
+         return vaStatus;
+     }
+@@ -5485,7 +5503,9 @@ i965_QuerySurfaceAttributes(VADriverContextP ctx,
+     struct object_config *obj_config;
+     int i = 0;
+     VASurfaceAttrib *attribs = NULL;
+-    
++    int max_width;
++    int max_height;
++
+     if (config == VA_INVALID_ID)
+         return VA_STATUS_ERROR_INVALID_CONFIG;
+ 
+@@ -5873,16 +5893,18 @@ i965_QuerySurfaceAttributes(VADriverContextP ctx,
+     attribs[i].value.value.p = NULL; /* ignore */
+     i++;
+ 
++    max_resolution(i965, obj_config, &max_width, &max_height);
++
+     attribs[i].type = VASurfaceAttribMaxWidth;
+     attribs[i].value.type = VAGenericValueTypeInteger;
+     attribs[i].flags = VA_SURFACE_ATTRIB_GETTABLE;
+-    attribs[i].value.value.i = i965->codec_info->max_width;
++    attribs[i].value.value.i = max_width;
+     i++;
+ 
+     attribs[i].type = VASurfaceAttribMaxHeight;
+     attribs[i].value.type = VAGenericValueTypeInteger;
+     attribs[i].flags = VA_SURFACE_ATTRIB_GETTABLE;
+-    attribs[i].value.value.i = i965->codec_info->max_height;
++    attribs[i].value.value.i = max_height;
+     i++;
+ 
+     if (i > *num_attribs) {
+diff --git a/src/i965_drv_video.h b/src/i965_drv_video.h
+index b8d61a1..47e27d0 100644
+--- a/src/i965_drv_video.h
++++ b/src/i965_drv_video.h
+@@ -354,6 +354,8 @@ struct i965_filter
+     int ring;
+ };
+ 
++struct i965_driver_data;
++
+ struct hw_codec_info
+ {
+     struct hw_context *(*dec_hw_context_init)(VADriverContextP, struct object_config *);
+@@ -363,6 +365,13 @@ struct hw_codec_info
+     void (*post_processing_context_init)(VADriverContextP, void *, struct intel_batchbuffer *);
+     void (*preinit_hw_codec)(VADriverContextP, struct hw_codec_info *);
+ 
++    /**
++     * Allows HW info to support per-codec max resolution.  If this functor is
++     * not initialized, then @max_width and @max_height will be used as the
++     * default maximum resolution for all codecs on this HW info.
++     */
++    void (*max_resolution)(struct i965_driver_data *, struct object_config *, int *, int *);
++
+     int max_width;
+     int max_height;
+     int min_linear_wpitch;
+-- 
+2.5.5
+

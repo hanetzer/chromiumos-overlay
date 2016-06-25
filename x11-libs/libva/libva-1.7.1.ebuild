@@ -58,7 +58,7 @@ PDEPEND="video_cards_nvidia? ( x11-libs/libva-vdpau-driver[${MULTILIB_USEDEP}] )
 
 REQUIRED_USE="opengl? ( X )"
 
-PATCHES=("${FILESDIR}"/add-the-support-of-multiple-context-tracing.patch )
+PATCHES=()
 DOCS=( NEWS )
 
 MULTILIB_WRAPPED_HEADERS=(

@@ -46,8 +46,14 @@ src_prepare() {
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
-	epatch "${FILESDIR}"/vp9_decoding-disable-all-seg-reference-for-key-frame.patch
-	epatch "${FILESDIR}"/update-PIPE_MODE-command-setting-for-VP9-decoding.patch
+	epatch "${FILESDIR}"/i965_drv-add-support-for-per-codec-max-resolution.patch
+	epatch "${FILESDIR}"/jpeg-enc-dec-gen9-Allow-up-to-8K-JPEG-max-resolution.patch
+	epatch "${FILESDIR}"/Encoding-Encoding-reuses-aux_batchbuffer-instead-of-.patch
+	epatch "${FILESDIR}"/Encoding-H264-uses-the-GPU-to-construct-the-PAK-obj-.patch
+	epatch "${FILESDIR}"/Follow-the-HW-spec-to-set-the-surface-cache-attribut.patch
+	epatch "${FILESDIR}"/check-the-result-of-hsw_veb_post_format_convert.patch
+	epatch "${FILESDIR}"/Make-sure-a-right-VEBOX_IECP_STATE-is-used-on-BDW.patch
+	epatch "${FILESDIR}"/Update-PCI-IDs-for-Kabylake.patch
 	eautoreconf
 }
 
