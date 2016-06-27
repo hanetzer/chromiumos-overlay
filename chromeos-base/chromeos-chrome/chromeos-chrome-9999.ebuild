@@ -40,6 +40,7 @@ IUSE="
 	+chrome_remoting
 	clang
 	component_build
+	cups
 	envoy
 	evdev_gestures
 	+fonts
@@ -184,6 +185,7 @@ RDEPEND="${RDEPEND}
 	v4lplugin? ( media-libs/libv4lplugins )
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
+	cups? ( net-print/cups )
 	opengl? ( virtual/opengl )
 	opengles? ( virtual/opengles )
 	sys-apps/pciutils
@@ -286,6 +288,7 @@ set_build_defines() {
 		"use_cras=1"
 		"use_system_minigbm=1"
 		"use_system_harfbuzz=1"
+		"use_cups=$(use10 cups)"
 
 		# Clang features.
 		asan=$(use10 asan)
@@ -310,6 +313,7 @@ set_build_defines() {
 		use_cras=true
 		# use_system_minigbm is set under 'if use ozone' below.
 		use_system_harfbuzz=true
+		use_cups=$(usetf cups)
 
 		# Clang features.
 		is_asan=$(usetf asan)
