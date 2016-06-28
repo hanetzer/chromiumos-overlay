@@ -171,6 +171,7 @@ src_configure() {
 		CCAUX="${BUILD_CC}" \
 		CFLAGSAUX="${BUILD_CFLAGS}" \
 		LDFLAGSAUX="${BUILD_LDFLAGS}" \
+		--disable-contrib \
 		--enable-dynamic \
 		--enable-freetype \
 		--enable-fontconfig \
@@ -187,6 +188,7 @@ src_configure() {
 		$(use_enable gtk) \
 		$(use_with cups pdftoraster) \
 		$(use_with idn libidn) \
+		$(use_with tiff libtiff) \
 		$(use_with tiff system-libtiff) \
 		$(use_with X x)
 
