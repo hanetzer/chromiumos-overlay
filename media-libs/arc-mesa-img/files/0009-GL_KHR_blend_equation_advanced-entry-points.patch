@@ -1,0 +1,98 @@
+From d0769ca38816166a78d0ee02dbc98619375e7e3a Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Tue, 2 Sep 2014 18:19:12 +0100
+Subject: [PATCH 09/34] GL_KHR_blend_equation_advanced entry points
+
+---
+ src/mapi/glapi/gen/KHR_blend_equation_advanced.xml | 31 ++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                      |  3 +++
+ src/mesa/main/blend.c                              |  6 +++++
+ src/mesa/main/blend.h                              |  3 +++
+ 4 files changed, 43 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/KHR_blend_equation_advanced.xml
+
+diff --git a/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml b/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml
+new file mode 100644
+index 0000000..4a2fc11
+--- /dev/null
++++ b/src/mapi/glapi/gen/KHR_blend_equation_advanced.xml
+@@ -0,0 +1,31 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++  <category name="GL_KHR_blend_equation_advanced" number="168">
++    <enum name="BLEND_ADVANCED_COHERENT_KHR"      value="0x9285"/>
++
++    <enum name="MULTIPLY_KHR"                     value="0x9294"/>
++    <enum name="SCREEN_KHR"                       value="0x9295"/>
++    <enum name="OVERLAY_KHR"                      value="0x9296"/>
++    <enum name="DARKEN_KHR"                       value="0x9297"/>
++    <enum name="LIGHTEN_KHR"                      value="0x9298"/>
++    <enum name="COLORDODGE_KHR"                   value="0x9299"/>
++    <enum name="COLORBURN_KHR"                    value="0x929A"/>
++    <enum name="HARDLIGHT_KHR"                    value="0x929B"/>
++    <enum name="SOFTLIGHT_KHR"                    value="0x929C"/>
++    <enum name="DIFFERENCE_KHR"                   value="0x929E"/>
++    <enum name="EXCLUSION_KHR"                    value="0x92A0"/>
++
++    <enum name="HSL_HUE_KHR"                      value="0x92AD"/>
++    <enum name="HSL_SATURATION_KHR"               value="0x92AE"/>
++    <enum name="HSL_COLOR_KHR"                    value="0x92AF"/>
++    <enum name="HSL_LUMINOSITY_KHR"               value="0x92B0"/>
++
++    <function name="BlendBarrierKHR">
++    </function>
++
++  </category>
++</OpenGLAPI>
++
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 7701961..460bf5a 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -801,6 +801,9 @@
+     </function>
+ </category>
+ 
++<!-- 168. GL_KHR_blend_equation_advanced -->
++<xi:include href="KHR_blend_equation_advanced.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 174. GL_OES_texture_storage_multisample_2d_array -->
+ <category name="GL_OES_texture_storage_multisample_2d_array" number="174">
+     <enum name="TEXTURE_2D_MULTISAMPLE_ARRAY_OES"              value="0x9102"/>
+diff --git a/src/mesa/main/blend.c b/src/mesa/main/blend.c
+index 2ae22e9..92f85b3 100644
+--- a/src/mesa/main/blend.c
++++ b/src/mesa/main/blend.c
+@@ -585,6 +585,12 @@ _mesa_BlendColor( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
+       ctx->Driver.BlendColor(ctx, ctx->Color.BlendColor);
+ }
+ 
++void GLAPIENTRY
++_mesa_BlendBarrierKHR(void)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendBarrierKHR");
++}
+ 
+ /**
+  * Specify the alpha test function.
+diff --git a/src/mesa/main/blend.h b/src/mesa/main/blend.h
+index 8ab9e02..5826e76 100644
+--- a/src/mesa/main/blend.h
++++ b/src/mesa/main/blend.h
+@@ -79,6 +79,9 @@ _mesa_BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendBarrierKHR(void);
++
++extern void GLAPIENTRY
+ _mesa_AlphaFunc( GLenum func, GLclampf ref );
+ 
+ 
+-- 
+1.9.1
+

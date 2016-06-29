@@ -1,0 +1,41 @@
+From d2709fd82fbbc825f106fab3e9473c5ad54a094c Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@google.com>
+Date: Wed, 8 Jun 2016 23:59:46 +0800
+Subject: [PATCH] platform_android: Add support for DRI Query Buffer extension
+
+CQ-DEPEND=CL:*262435
+BUG=chrome-os-partner:54012
+TEST=Boot to UI.
+
+Change-Id: I0f6d4be3537795c0cae3bf13d6d00b2d40d57e7c
+---
+ src/egl/drivers/dri2/platform_android.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index abc7370..a3a10ee 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -365,6 +365,9 @@ droid_swap_buffers(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw)
+ 
+    (*dri2_dpy->flush->invalidate)(dri2_surf->dri_drawable);
+ 
++   if (dri2_dpy->query_buffers)
++      (*dri2_dpy->query_buffers->query_buffers)(dri2_surf->dri_drawable);
++
+    return EGL_TRUE;
+ }
+ 
+@@ -789,7 +792,8 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+    dri2_dpy->extensions[0] = &dri2_dpy->dri2_loader_extension.base;
+    dri2_dpy->extensions[1] = &image_lookup_extension.base;
+    dri2_dpy->extensions[2] = &use_invalidate.base;
+-   dri2_dpy->extensions[3] = NULL;
++   dri2_dpy->extensions[3] = &use_query_buffers.base;
++   dri2_dpy->extensions[4] = NULL;
+ 
+    if (!dri2_create_screen(dpy)) {
+       err = "DRI2: failed to create screen";
+-- 
+2.8.0.rc3.226.g39d4020
+

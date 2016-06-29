@@ -1,0 +1,97 @@
+From 5d4bcad8426f3f98d2e079814234c522a974971a Mon Sep 17 00:00:00 2001
+From: Youry Metlitsky <winaes@narod.ru>
+Date: Wed, 27 Apr 2016 22:33:14 +0000
+Subject: [PATCH 500/513] UPSTREAM: mesa: Build EGL without X11 headers after
+ interop patchset
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+(cherry picked from commit 4e2c9a04354b6b133845b8b93c0c5d34261a91d0)
+Signed-off-by: Nicolas Boichat <drinkcat@google.com>
+
+Change-Id: If89c7f9368a2f1d202152546a34319ee210c6529
+---
+ include/GL/mesa_glinterop.h | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/include/GL/mesa_glinterop.h b/include/GL/mesa_glinterop.h
+index 814064d..39822f2 100644
+--- a/include/GL/mesa_glinterop.h
++++ b/include/GL/mesa_glinterop.h
+@@ -50,7 +50,11 @@
+ #ifndef MESA_GLINTEROP_H
+ #define MESA_GLINTEROP_H
+ 
++#if defined(MESA_EGL_NO_X11_HEADERS)
++#include <GL/gl.h>
++#else
+ #include <GL/glx.h>
++#endif
+ #include <EGL/egl.h>
+ 
+ #ifdef __cplusplus
+@@ -219,6 +223,7 @@ typedef struct _mesa_glinterop_export_out {
+ } mesa_glinterop_export_out;
+ 
+ 
++#if !defined(MESA_EGL_NO_X11_HEADERS)
+ /**
+  * Query device information.
+  *
+@@ -228,9 +233,11 @@ typedef struct _mesa_glinterop_export_out {
+  *
+  * \return MESA_GLINTEROP_SUCCESS or MESA_GLINTEROP_* != 0 on error
+  */
++
+ GLAPI int GLAPIENTRY
+ MesaGLInteropGLXQueryDeviceInfo(Display *dpy, GLXContext context,
+                                 mesa_glinterop_device_info *out);
++#endif
+ 
+ 
+ /**
+@@ -242,6 +249,7 @@ MesaGLInteropEGLQueryDeviceInfo(EGLDisplay dpy, EGLContext context,
+                                 mesa_glinterop_device_info *out);
+ 
+ 
++#if !defined(MESA_EGL_NO_X11_HEADERS)
+ /**
+  * Create and return a DMABUF handle corresponding to the given OpenGL
+  * object, and return other parameters about the OpenGL object.
+@@ -253,10 +261,12 @@ MesaGLInteropEGLQueryDeviceInfo(EGLDisplay dpy, EGLContext context,
+  *
+  * \return MESA_GLINTEROP_SUCCESS or MESA_GLINTEROP_* != 0 on error
+  */
++
+ GLAPI int GLAPIENTRY
+ MesaGLInteropGLXExportObject(Display *dpy, GLXContext context,
+                              const mesa_glinterop_export_in *in,
+                              mesa_glinterop_export_out *out);
++#endif
+ 
+ 
+ /**
+@@ -268,14 +278,17 @@ MesaGLInteropEGLExportObject(EGLDisplay dpy, EGLContext context,
+                              const mesa_glinterop_export_in *in,
+                              mesa_glinterop_export_out *out);
+ 
+-
++#if !defined(MESA_EGL_NO_X11_HEADERS)
+ typedef int (APIENTRYP PFNMESAGLINTEROPGLXQUERYDEVICEINFOPROC)(Display *dpy, GLXContext context,
+                                                                mesa_glinterop_device_info *out);
++#endif
+ typedef int (APIENTRYP PFNMESAGLINTEROPEGLQUERYDEVICEINFOPROC)(EGLDisplay dpy, EGLContext context,
+                                                                mesa_glinterop_device_info *out);
++#if !defined(MESA_EGL_NO_X11_HEADERS)
+ typedef int (APIENTRYP PFNMESAGLINTEROPGLXEXPORTOBJECTPROC)(Display *dpy, GLXContext context,
+                                                             const mesa_glinterop_export_in *in,
+                                                             mesa_glinterop_export_out *out);
++#endif
+ typedef int (APIENTRYP PFNMESAGLINTEROPEGLEXPORTOBJECTPROC)(EGLDisplay dpy, EGLContext context,
+                                                             const mesa_glinterop_export_in *in,
+                                                             mesa_glinterop_export_out *out);
+-- 
+2.8.0.rc3.226.g39d4020
+

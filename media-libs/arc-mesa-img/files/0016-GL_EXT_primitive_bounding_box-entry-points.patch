@@ -1,0 +1,93 @@
+From d7c4f7fc30fc22e2f570607d1bffd43e160e7432 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 5 Dec 2014 11:05:03 +0000
+Subject: [PATCH 16/16] GL_EXT_primitive_bounding_box entry points
+
+---
+ src/mapi/glapi/gen/EXT_primitive_bounding_box.xml | 23 +++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                     |  3 +++
+ src/mesa/main/shaderapi.c                         | 10 ++++++++++
+ src/mesa/main/shaderapi.h                         |  7 +++++++
+ 4 files changed, 43 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_primitive_bounding_box.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_primitive_bounding_box.xml b/src/mapi/glapi/gen/EXT_primitive_bounding_box.xml
+new file mode 100644
+index 0000000..0766d12
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_primitive_bounding_box.xml
+@@ -0,0 +1,23 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_primitive_bounding_box" number="186">
++
++   <enum name="PRIMITIVE_BOUNDING_BOX_EXT" value="0x92BE"/>
++
++   <function name="PrimitiveBoundingBoxEXT" es2="3.1">
++      <param name="minX" type="GLfloat"/>
++      <param name="minY" type="GLfloat"/>
++      <param name="minZ" type="GLfloat"/>
++      <param name="minW" type="GLfloat"/>
++      <param name="maxX" type="GLfloat"/>
++      <param name="maxY" type="GLfloat"/>
++      <param name="maxZ" type="GLfloat"/>
++      <param name="maxW" type="GLfloat"/>
++   </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 11d5546..e68fa6d 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1304,4 +1304,7 @@
+ <!-- 177. GL_EXT_geometry_shader-->
+ <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 186. GL_EXT_primitive_bounding_box -->
++<xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
+index b28b5ce..4dcdf07 100644
+--- a/src/mesa/main/shaderapi.c
++++ b/src/mesa/main/shaderapi.c
+@@ -2761,3 +2761,13 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
+       _mesa_shader_init_subroutine_defaults(shProg->_LinkedShaders[i]);
+    }
+ }
++
++void GLAPIENTRY
++_mesa_PrimitiveBoundingBoxEXT(GLfloat minX, GLfloat minY,
++                              GLfloat minZ, GLfloat minW,
++                              GLfloat maxX, GLfloat maxY,
++                              GLfloat maxZ, GLfloat maxW)
++{
++    GET_CURRENT_CONTEXT(ctx);
++    _mesa_error(ctx, GL_INVALID_OPERATION, "PrimitiveBoundingBoxEXT");
++}
+diff --git a/src/mesa/main/shaderapi.h b/src/mesa/main/shaderapi.h
+index d2d7f16..81a92e7 100644
+--- a/src/mesa/main/shaderapi.h
++++ b/src/mesa/main/shaderapi.h
+@@ -319,6 +319,13 @@ extern GLvoid GLAPIENTRY
+ _mesa_GetProgramStageiv(GLuint program, GLenum shadertype,
+                         GLenum pname, GLint *values);
+ 
++/* EXT_primitive_bounding_box */
++void GLAPIENTRY
++_mesa_PrimitiveBoundingBoxEXT(GLfloat minX, GLfloat minY,
++                              GLfloat minZ, GLfloat minW,
++                              GLfloat maxX, GLfloat maxY,
++                              GLfloat maxZ, GLfloat maxW);
++
+ #ifdef __cplusplus
+ }
+ #endif
+-- 
+1.9.1
+

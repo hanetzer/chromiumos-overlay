@@ -1,0 +1,42 @@
+From 22715c243c59a0947be9ef3f4cce851d1fd65f4e Mon Sep 17 00:00:00 2001
+From: Haixia Shi <hshi@chromium.org>
+Date: Tue, 10 May 2016 14:43:15 -0700
+Subject: [PATCH 513/513] platform_android: prevent deadlock in
+ droid_swap_buffers
+
+To avoid blocking other EGL calls, release the display mutex before
+we enqueue buffer to android frameworks and re-acquire the mutex
+upon return.
+
+BUG=b/28654039
+TEST=verify pinch zoom no longer causes hangs
+
+Change-Id: I8fcddc9a96d8dc0031bbf9285785ac78f3049ac7
+---
+ src/egl/drivers/dri2/platform_android.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 87ffea0..2d2790d 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -353,8 +353,15 @@ droid_swap_buffers(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw)
+ 
+    dri2_flush_drawable_for_swapbuffers(disp, draw);
+ 
+-   if (dri2_surf->buffer)
++   if (dri2_surf->buffer) {
++      /* To avoid blocking other EGL calls, release the display mutex before
++       * we enter droid_window_enqueue_buffer() and re-acquire the mutex upon
++       * return.
++       */
++      mtx_unlock(&disp->Mutex);
+       droid_window_enqueue_buffer(dri2_surf);
++      mtx_lock(&disp->Mutex);
++   }
+ 
+    (*dri2_dpy->flush->invalidate)(dri2_surf->dri_drawable);
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

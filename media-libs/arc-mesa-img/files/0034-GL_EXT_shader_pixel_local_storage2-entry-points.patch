@@ -1,0 +1,120 @@
+From 248a6937efec266efc09b92f51b25ecdaade7bb9 Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Thu, 4 Feb 2016 14:09:26 +0000
+Subject: [PATCH 34/34] GL_EXT_shader_pixel_local_storage2 entry points
+
+---
+ .../glapi/gen/EXT_shader_pixel_local_storage2.xml  | 33 ++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                      |  3 ++
+ src/mesa/main/pixelstore.c                         | 22 +++++++++++++++
+ src/mesa/main/pixelstore.h                         |  9 +++++-
+ 4 files changed, 66 insertions(+), 1 deletion(-)
+ create mode 100644 src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml b/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+new file mode 100644
+index 0000000..4223ab1
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+@@ -0,0 +1,33 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="EXT_shader_pixel_local_storage2" number="240">
++
++    <enum name="GL_MAX_SHADER_PIXEL_LOCAL_STORAGE_FAST_SIZE_EXT"                          value="0x8F63"/>
++    <enum name="GL_MAX_SHADER_PIXEL_LOCAL_STORAGE_SIZE_EXT"                               value="0x8F67"/>
++    <enum name="GL_SHADER_PIXEL_LOCAL_STORAGE_EXT"                                        value="0x8F64"/>
++    <enum name="GL_MAX_SHADER_COMBINED_LOCAL_STORAGE_FAST_SIZE_EXT"                       value="0x9650"/>
++    <enum name="GL_MAX_SHADER_COMBINED_LOCAL_STORAGE_SIZE_EXT"                            value="0x9651"/>
++    <enum name="GL_FRAMEBUFFER_INCOMPLETE_INSUFFICIENT_SHADER_COMBINED_LOCAL_STORAGE_EXT" value="0x9652"/>
++
++    <function name="ClearPixelLocalStorageuiEXT" es2="3.1">
++        <param name="offset" type="GLsizei"/>
++        <param name="n" type="GLsizei"/>
++        <param name="values" type="const GLuint *"/>
++    </function>
++
++    <function name="FramebufferPixelLocalStorageSizeEXT" es2="3.1">
++        <param name="target" type="GLuint"/>
++        <param name="size" type="GLsizei"/>
++    </function>
++
++    <function name="GetFramebufferPixelLocalStorageSizeEXT" es2="3.1">
++        <param name="target" type="GLuint"/>
++        <return type="GLsizei"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index fae9c73..c46bb43 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1116,4 +1116,7 @@
+ <!-- 240. EXT_sparse_texture -->
+ <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 253. GL_EXT_shader_pixel_local_storage2 -->
++<xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/pixelstore.c b/src/mesa/main/pixelstore.c
+index fc81533..f7d6414 100644
+--- a/src/mesa/main/pixelstore.c
++++ b/src/mesa/main/pixelstore.c
+@@ -326,3 +326,25 @@ _mesa_compressed_pixel_storage_error_check(
+ 
+    return true;
+ }
++
++void GLAPIENTRY
++_mesa_FramebufferPixelLocalStorageSizeEXT(GLuint target, GLsizei size)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexPageCommitmentEXT");
++}
++
++GLsizei GLAPIENTRY
++_mesa_GetFramebufferPixelLocalStorageSizeEXT(GLuint target)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexPageCommitmentEXT");
++   return 0;
++}
++
++void GLAPIENTRY
++_mesa_ClearPixelLocalStorageuiEXT(GLsizei offset, GLsizei n, const GLuint *values)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexPageCommitmentEXT");
++}
+diff --git a/src/mesa/main/pixelstore.h b/src/mesa/main/pixelstore.h
+index 6838454..4761980 100644
+--- a/src/mesa/main/pixelstore.h
++++ b/src/mesa/main/pixelstore.h
+@@ -44,10 +44,17 @@ _mesa_PixelStorei( GLenum pname, GLint param );
+ extern void GLAPIENTRY
+ _mesa_PixelStoref( GLenum pname, GLfloat param );
+ 
+-
+ extern void
+ _mesa_init_pixelstore( struct gl_context *ctx );
+ 
++extern void GLAPIENTRY
++_mesa_FramebufferPixelLocalStorageSizeEXT(GLuint target, GLsizei size);
++
++extern GLsizei GLAPIENTRY
++_mesa_GetFramebufferPixelLocalStorageSizeEXT(GLuint target);
++    
++extern void GLAPIENTRY
++_mesa_ClearPixelLocalStorageuiEXT(GLsizei offset, GLsizei n, const GLuint *values);
+ 
+ extern bool
+ _mesa_compressed_pixel_storage_error_check(
+-- 
+1.9.1
+

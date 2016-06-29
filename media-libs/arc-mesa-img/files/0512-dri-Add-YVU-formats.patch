@@ -1,0 +1,75 @@
+From e596a869c5960551ade093d14fe64952e4813af5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Kristian=20H=C3=B8gsberg=20Kristensen?=
+ <kristian.h.kristensen@intel.com>
+Date: Wed, 27 Apr 2016 15:00:54 -0700
+Subject: [PATCH 512/513] dri: Add YVU formats
+
+Change-Id: If7c4c3ad9d82caabef2cc67dfdf6eee41e231557
+---
+ include/GL/internal/dri_interface.h      |  5 +++++
+ src/mesa/drivers/dri/i965/intel_screen.c | 26 ++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 72ede8b..f3d98e6 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1180,6 +1180,11 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FOURCC_YUYV		0x56595559
+ #define __DRI_IMAGE_FOURCC_MT21		0x3132544D
+ 
++#define __DRI_IMAGE_FOURCC_YVU410	0x39555659
++#define __DRI_IMAGE_FOURCC_YVU411	0x31315659
++#define __DRI_IMAGE_FOURCC_YVU420	0x32315659
++#define __DRI_IMAGE_FOURCC_YVU422	0x36315659
++#define __DRI_IMAGE_FOURCC_YVU444	0x34325659
+ 
+ /**
+  * Queryable on images created by createImageFromNames.
+diff --git a/src/mesa/drivers/dri/i965/intel_screen.c b/src/mesa/drivers/dri/i965/intel_screen.c
+index e571c2b..4b9fe74 100644
+--- a/src/mesa/drivers/dri/i965/intel_screen.c
++++ b/src/mesa/drivers/dri/i965/intel_screen.c
+@@ -226,6 +226,7 @@ static struct intel_image_format intel_image_formats[] = {
+    { __DRI_IMAGE_FOURCC_XBGR8888, __DRI_IMAGE_COMPONENTS_RGB, 1,
+      { { 0, 0, 0, __DRI_IMAGE_FORMAT_XBGR8888, 4 }, } },
+ 
++
+    { __DRI_IMAGE_FOURCC_RGB565, __DRI_IMAGE_COMPONENTS_RGB, 1,
+      { { 0, 0, 0, __DRI_IMAGE_FORMAT_RGB565, 2 } } },
+ 
+@@ -260,6 +261,31 @@ static struct intel_image_format intel_image_formats[] = {
+        { 1, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
+        { 2, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 } } },
+ 
++   { __DRI_IMAGE_FOURCC_YVU410, __DRI_IMAGE_COMPONENTS_Y_U_V, 3,
++     { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 2, 2, 2, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 1, 2, 2, __DRI_IMAGE_FORMAT_R8, 1 } } },
++
++   { __DRI_IMAGE_FOURCC_YVU411, __DRI_IMAGE_COMPONENTS_Y_U_V, 3,
++     { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 2, 2, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 1, 2, 0, __DRI_IMAGE_FORMAT_R8, 1 } } },
++
++   { __DRI_IMAGE_FOURCC_YVU420, __DRI_IMAGE_COMPONENTS_Y_U_V, 3,
++     { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 2, 1, 1, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 1, 1, 1, __DRI_IMAGE_FORMAT_R8, 1 } } },
++
++   { __DRI_IMAGE_FOURCC_YVU422, __DRI_IMAGE_COMPONENTS_Y_U_V, 3,
++     { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 2, 1, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 1, 1, 0, __DRI_IMAGE_FORMAT_R8, 1 } } },
++
++   { __DRI_IMAGE_FOURCC_YVU444, __DRI_IMAGE_COMPONENTS_Y_U_V, 3,
++     { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 2, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
++       { 1, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 } } },
++
+    { __DRI_IMAGE_FOURCC_NV12, __DRI_IMAGE_COMPONENTS_Y_UV, 2,
+      { { 0, 0, 0, __DRI_IMAGE_FORMAT_R8, 1 },
+        { 1, 1, 1, __DRI_IMAGE_FORMAT_GR88, 2 } } },
+-- 
+2.8.0.rc3.226.g39d4020
+

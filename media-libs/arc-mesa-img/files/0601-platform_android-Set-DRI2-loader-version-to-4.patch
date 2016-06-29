@@ -1,0 +1,29 @@
+From f2b2108c4fdf45d31e2a52ef185adb2a1fc31753 Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@google.com>
+Date: Wed, 9 Mar 2016 11:28:04 +0800
+Subject: [PATCH 601/605] platform_android: Set DRI2 loader version to 4
+
+BUG=chrome-os-partner:50322
+TEST=Boot oak-cheets
+
+Change-Id: Ied9c5547d85d292109785938cddb807651dc7c69
+---
+ src/egl/drivers/dri2/platform_android.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 2d2790d..c01c644 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -780,7 +780,7 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+    }
+ 
+    dri2_dpy->dri2_loader_extension.base.name = __DRI_DRI2_LOADER;
+-   dri2_dpy->dri2_loader_extension.base.version = 3;
++   dri2_dpy->dri2_loader_extension.base.version = 4;
+    dri2_dpy->dri2_loader_extension.getBuffers = NULL;
+    dri2_dpy->dri2_loader_extension.flushFrontBuffer = droid_flush_front_buffer;
+    dri2_dpy->dri2_loader_extension.getBuffersWithFormat =
+-- 
+2.8.0.rc3.226.g39d4020
+

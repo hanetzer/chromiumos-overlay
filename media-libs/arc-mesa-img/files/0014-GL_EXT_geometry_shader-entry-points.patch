@@ -1,0 +1,136 @@
+From e045cecdabdcf2159c6f7c37562b2fd812bde32a Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Wed, 3 Dec 2014 15:28:58 +0000
+Subject: [PATCH 14/14] GL_EXT_geometry_shader entry points
+
+---
+ src/mapi/glapi/gen/EXT_geometry_shader.xml | 65 ++++++++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml              |  3 ++
+ src/mesa/main/fbobject.c                   | 11 +++++
+ src/mesa/main/fbobject.h                   |  4 ++
+ 4 files changed, 83 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_geometry_shader.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_geometry_shader.xml b/src/mapi/glapi/gen/EXT_geometry_shader.xml
+new file mode 100644
+index 0000000..0a45dbc
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_geometry_shader.xml
+@@ -0,0 +1,65 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_geometry_shader" number="177">
++
++  <enum name="GEOMETRY_SHADER_EXT"                             value="0x8DD9"/>
++
++  <enum name="GEOMETRY_SHADER_BIT_EXT"                     value="0x00000004"/>
++
++  <enum name="GEOMETRY_LINKED_VERTICES_OUT_EXT"                value="0x8916"/>
++  <enum name="GEOMETRY_LINKED_INPUT_TYPE_EXT"                  value="0x8917"/>
++  <enum name="GEOMETRY_LINKED_OUTPUT_TYPE_EXT"                 value="0x8918"/>
++  <enum name="GEOMETRY_SHADER_INVOCATIONS_EXT"                 value="0x887F"/>
++
++  <enum name="LAYER_PROVOKING_VERTEX_EXT"                      value="0x825E"/>
++  <enum name="MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT"             value="0x8DDF"/>
++  <enum name="MAX_GEOMETRY_UNIFORM_BLOCKS_EXT"                 value="0x8A2C"/>
++  <enum name="MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_EXT"    value="0x8A32"/>
++  <enum name="MAX_GEOMETRY_INPUT_COMPONENTS_EXT"               value="0x9123"/>
++  <enum name="MAX_GEOMETRY_OUTPUT_COMPONENTS_EXT"              value="0x9124"/>
++  <enum name="MAX_GEOMETRY_OUTPUT_VERTICES_EXT"                value="0x8DE0"/>
++  <enum name="MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT"        value="0x8DE1"/>
++  <enum name="MAX_GEOMETRY_SHADER_INVOCATIONS_EXT"             value="0x8E5A"/>
++  <enum name="MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT"            value="0x8C29"/>
++  <enum name="MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS_EXT"         value="0x92CF"/>
++  <enum name="MAX_GEOMETRY_ATOMIC_COUNTERS_EXT"                value="0x92D5"/>
++  <enum name="MAX_GEOMETRY_IMAGE_UNIFORMS_EXT"                 value="0x90CD"/>
++  <enum name="MAX_GEOMETRY_SHADER_STORAGE_BLOCKS_EXT"          value="0x90D7"/>
++
++  <enum name="FIRST_VERTEX_CONVENTION_EXT"                     value="0x8E4D"/>
++  <enum name="LAST_VERTEX_CONVENTION_EXT"                      value="0x8E4E"/>
++  <enum name="UNDEFINED_VERTEX_EXT"                            value="0x8260"/>
++
++  <enum name="PRIMITIVES_GENERATED_EXT"                        value="0x8C87"/>
++
++  <enum name="LINES_ADJACENCY_EXT"                             value="0xA"/>
++  <enum name="LINE_STRIP_ADJACENCY_EXT"                        value="0xB"/>
++  <enum name="TRIANGLES_ADJACENCY_EXT"                         value="0xC"/>
++  <enum name="TRIANGLE_STRIP_ADJACENCY_EXT"                    value="0xD"/>
++
++  <enum name="FRAMEBUFFER_DEFAULT_LAYERS_EXT"                  value="0x9312"/>
++
++  <enum name="MAX_FRAMEBUFFER_LAYERS_EXT"                      value="0x9317"/>
++
++  <enum name="FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT"        value="0x8DA8"/>
++
++  <enum name="FRAMEBUFFER_ATTACHMENT_LAYERED_EXT"              value="0x8DA7"/>
++
++  <enum name="REFERENCED_BY_GEOMETRY_SHADER_EXT"               value="0x9309"/>
++
++  <function name="FramebufferTextureEXT" es2="3.1">
++    <param name="target" type="GLenum"/>
++    <param name="attachment" type="GLenum"/>
++    <param name="texture" type="GLuint"/>
++    <param name="level" type="GLint"/>
++  </function>
++
++</category>
++
++<category name="GL_EXT_geometry_point_size" number="177">
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index f27f8b8..11d5546 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1301,4 +1301,7 @@
+ 
+ </category>
+ 
++<!-- 177. GL_EXT_geometry_shader-->
++<xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/fbobject.c b/src/mesa/main/fbobject.c
+index 6086154..106dd16 100644
+--- a/src/mesa/main/fbobject.c
++++ b/src/mesa/main/fbobject.c
+@@ -3465,6 +3465,17 @@ _mesa_FramebufferTexture(GLenum target, GLenum attachment,
+ 
+ 
+ void GLAPIENTRY
++_mesa_FramebufferTextureEXT(GLenum target, GLenum attachment,
++                         GLuint texture, GLint level)
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION,
++               "unsupported function (glFramebufferTextureEXT) called");
++}
++
++
++void GLAPIENTRY
+ _mesa_NamedFramebufferTexture(GLuint framebuffer, GLenum attachment,
+                               GLuint texture, GLint level)
+ {
+diff --git a/src/mesa/main/fbobject.h b/src/mesa/main/fbobject.h
+index 8774ece..1eb47a3 100644
+--- a/src/mesa/main/fbobject.h
++++ b/src/mesa/main/fbobject.h
+@@ -285,6 +285,10 @@ _mesa_FramebufferTexture(GLenum target, GLenum attachment,
+                          GLuint texture, GLint level);
+ 
+ extern void GLAPIENTRY
++_mesa_FramebufferTextureEXT(GLenum target, GLenum attachment,
++                         GLuint texture, GLint level);
++
++extern void GLAPIENTRY
+ _mesa_NamedFramebufferTexture(GLuint framebuffer, GLenum attachment,
+                               GLuint texture, GLint level);
+ 
+-- 
+1.9.1
+

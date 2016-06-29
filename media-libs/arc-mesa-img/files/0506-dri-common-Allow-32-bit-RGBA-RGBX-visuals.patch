@@ -1,0 +1,33 @@
+From 8a2797a8fa689776b5622a5d67a411eb9be4dc81 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@google.com>
+Date: Thu, 3 Dec 2015 16:32:12 +0900
+Subject: [PATCH 506/513] dri/common: Allow 32-bit RGBA/RGBX visuals
+
+This patch makes it possible to use 32-bit RGBA and RGBX framebuffers
+with DRI, as required by certain platforms.
+
+Change-Id: Ic2fa28814e7230a0bd54c83ea5fe46879817fd42
+Signed-off-by: Tomasz Figa <tfiga@google.com>
+---
+ src/mesa/drivers/dri/common/utils.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/common/utils.c b/src/mesa/drivers/dri/common/utils.c
+index 4b2e89c..8b27904 100644
+--- a/src/mesa/drivers/dri/common/utils.c
++++ b/src/mesa/drivers/dri/common/utils.c
+@@ -202,9 +202,11 @@ driCreateConfigs(mesa_format format,
+       masks = masks_table[2];
+       break;
+    case MESA_FORMAT_R8G8B8A8_UNORM:
++   case MESA_FORMAT_R8G8B8A8_SRGB:
+       masks = masks_table[5];
+       break;
+    case MESA_FORMAT_R8G8B8X8_UNORM:
++   case MESA_FORMAT_R8G8B8X8_SRGB:
+       masks = masks_table[6];
+       break;
+    case MESA_FORMAT_B10G10R10X2_UNORM:
+-- 
+2.8.0.rc3.226.g39d4020
+

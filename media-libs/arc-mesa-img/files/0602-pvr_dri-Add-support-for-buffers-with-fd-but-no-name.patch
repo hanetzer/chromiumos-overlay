@@ -1,0 +1,106 @@
+From c0c7f30fade295029697c0083f615864796694f3 Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@google.com>
+Date: Sat, 19 Dec 2015 15:57:31 +0800
+Subject: [PATCH 602/605] pvr_dri: Add support for buffers with fd but no name
+
+Change-Id: I814e52dba746051ea5e9623c6310549f2a7978eb
+---
+ src/mesa/drivers/dri/pvr/pvrdrawable.c | 26 +++++++++++++++++++++++---
+ src/mesa/drivers/dri/pvr/pvrdri.c      | 12 +++++++++++-
+ src/mesa/drivers/dri/pvr/pvrdri.h      |  1 +
+ 3 files changed, 35 insertions(+), 4 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+index 3527819..cfb95f1 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdrawable.c
++++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+@@ -475,6 +475,9 @@ static bool PVRDRI2DrawableRecreate(PVRDRIDrawable *psPVRDrawable)
+ 	bRecreate = (psPVRBuffer &&
+ 			psPVRBuffer->uBacking.sDRI2.uiName !=
+ 				psPVRDrawable->uDRI.sBuffer.sDRI.name) ||
++		(psPVRBuffer &&
++			psPVRBuffer->uBacking.sDRI2.uiFd !=
++				psPVRDrawable->uDRI.sBuffer.sDRI.fd) ||
+ 		(psDRIDrawable->w != psPVRDrawable->uDRI.sBuffer.w) ||
+ 		(psDRIDrawable->h != psPVRDrawable->uDRI.sBuffer.h) ||
+ 		(psPVRDrawable->uStride !=
+@@ -540,13 +543,29 @@ static void *PVRDRI2ObjectCacheInsert(void *pvCreateData, void *pvInsertData)
+ 
+ 	psPVRBuffer->eBackingType = PVRDRI_BUFFER_BACKING_DRI2;
+ 	psPVRBuffer->uBacking.sDRI2.uiName = psDRIBuffer->name;
+-	psPVRBuffer->uBacking.sDRI2.psBuffer =
+-		PVRDRIBufferCreateFromName(psPVRScreen->psImpl,
++	psPVRBuffer->uBacking.sDRI2.uiFd = psDRIBuffer->fd;
++
++	if (psDRIBuffer->fd != -1)
++	{
++		psPVRBuffer->uBacking.sDRI2.psBuffer =
++			PVRDRIBufferCreateFromFd(psPVRScreen->psImpl,
++					   psDRIBuffer->fd,
++					   psDRIDrawable->w,
++					   psDRIDrawable->h,
++					   psDRIBuffer->pitch,
++					   0);
++	}
++	else
++	{
++		psPVRBuffer->uBacking.sDRI2.psBuffer =
++			PVRDRIBufferCreateFromName(psPVRScreen->psImpl,
+ 					   psDRIBuffer->name,
+ 					   psDRIDrawable->w,
+ 					   psDRIDrawable->h,
+ 					   psDRIBuffer->pitch,
+ 					   0);
++	}
++
+ 	if (!psPVRBuffer->uBacking.sDRI2.psBuffer)
+ 	{
+ 		free(psPVRBuffer);																					
+@@ -489,7 +506,8 @@ static bool PVRDRI2ObjectCacheCompare(void *pvCreateData,
+ 	PVRDRIBuffer *psPVRBuffer = pvObjectData;
+ 	(void)pvCreateData;
+ 
+-	return psDRIBuffer->name == psPVRBuffer->uBacking.sDRI2.uiName;
++	return psDRIBuffer->name == psPVRBuffer->uBacking.sDRI2.uiName &&
++		psDRIBuffer->fd == psPVRBuffer->uBacking.sDRI2.uiFd;
+ }
+ 
+ 
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
+index 17a111c..9a2eca6 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdri.c
++++ b/src/mesa/drivers/dri/pvr/pvrdri.c
+@@ -1382,7 +1382,17 @@ static __DRIbuffer *PVRDRIAllocateBuffer(__DRIscreen *psDRIScreen,
+ 	}
+ 
+ 	psBuffer->sDRIBuffer.attachment = uAttachment;
+-	psBuffer->sDRIBuffer.name = PVRDRIBufferGetName(psBuffer->psImpl);
++	if (psDRIScreen->dri2.loader->base.version >= 4)
++	{
++		psBuffer->sDRIBuffer.name = 0;
++		psBuffer->sDRIBuffer.fd = PVRDRIBufferGetFd(psBuffer->psImpl);
++	}
++	else
++	{
++		psBuffer->sDRIBuffer.name =
++			PVRDRIBufferGetName(psBuffer->psImpl);
++		psBuffer->sDRIBuffer.fd = -1;
++	}
+ 	psBuffer->sDRIBuffer.cpp = uiBpp / 8;
+ 
+ 	return &psBuffer->sDRIBuffer;
+diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
+index 1561a95..3900ee2 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdri.h
++++ b/src/mesa/drivers/dri/pvr/pvrdri.h
+@@ -180,6 +180,7 @@ typedef struct PVRDRIBuffer_TAG
+ 		struct
+ 		{
+ 			uint32_t uiName;
++			uint32_t uiFd;
+ 			PVRDRIBufferImpl *psBuffer;
+ 
+ 		} sDRI2;
+-- 
+2.8.0.rc3.226.g39d4020
+

@@ -1,0 +1,45 @@
+From 35733eaf065c4bd268a7cf58889e7180b31a9e64 Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@google.com>
+Date: Mon, 11 Apr 2016 16:57:47 +0800
+Subject: [PATCH 603/605] mesa-img: Android build fixups
+
+Change-Id: I98d79aa4947a8948195a1d56e0bec0a193e7708b
+---
+ configure.ac                         | 2 +-
+ src/mesa/drivers/dri/pvr/Makefile.am | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index ada8711..b8291be 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1544,7 +1544,7 @@ if test -n "$with_dri_drivers"; then
+         xpvr)
+             HAVE_PVR_DRI=yes;
+             PKG_CHECK_MODULES([PVR], [libdrm >= $LIBDRM_PVR_REQUIRED])
+-            DRI_LIB_DEPS="$DRI_LIB_DEPS -lpvr_dri_support"
++            DRI_LIB_DEPS="$DRI_LIB_DEPS $PVR_LIBS"
+             ;;
+         xswrast)
+             HAVE_SWRAST_DRI=yes;
+diff --git a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
+index c3004da..b6f76ea 100644
+--- a/src/mesa/drivers/dri/pvr/Makefile.am
++++ b/src/mesa/drivers/dri/pvr/Makefile.am
+@@ -11,10 +11,11 @@ AM_CFLAGS = \
+ 	-I$(top_srcdir)/src/mesa/drivers/dri/common \
+ 	$(DEFINES) \
+ 	$(VISIBILITY_CFLAGS) \
++	$(LIBDRM_CFLAGS) \
+ 	$(PVR_CFLAGS)
+ 
+-AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM.so\"
+-AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2.so\"
++AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM_POWERVR_ROGUE.so\"
++AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2_POWERVR_ROGUE.so\"
+ 
+ AM_CXXFLAGS = $(AM_CFLAGS)
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+
