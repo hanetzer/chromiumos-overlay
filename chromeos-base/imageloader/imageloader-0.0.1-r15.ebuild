@@ -27,7 +27,10 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="test"
 
-RDEPEND="dev-libs/dbus-c++"
+RDEPEND="chromeos-base/libbrillo
+	dev-libs/dbus-c++
+	dev-libs/openssl"
+
 DEPEND="${RDEPEND}
 	test? (
 		dev-cpp/gtest
