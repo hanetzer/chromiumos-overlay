@@ -381,7 +381,8 @@ else:
     pass
 
 if invoke_clang and not skip_clang:
-  clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
+  clang_comp = os.environ.get(
+      'CLANG', os.path.join(sys.path[0],'../../../../../usr/bin/clang'))
 
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
