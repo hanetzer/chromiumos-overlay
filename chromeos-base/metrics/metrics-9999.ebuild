@@ -50,8 +50,13 @@ src_install() {
 		fi
 
 		if use metrics_uploader; then
-			sed -i '/DAEMON_FLAGS=/s:=.*:="-uploader":' \
-				"${D}"/etc/init/metrics_daemon.conf || die
+			if use systemd; then
+				sed -i '/ExecStart=/s:metrics_daemon:metrics_daemon -uploader:' \
+					"${D}"/usr/lib/systemd/system/metrics-daemon.service || die
+			else
+				sed -i '/DAEMON_FLAGS=/s:=.*:="-uploader":' \
+					"${D}"/etc/init/metrics_daemon.conf || die
+			fi
 		fi
 	fi
 
