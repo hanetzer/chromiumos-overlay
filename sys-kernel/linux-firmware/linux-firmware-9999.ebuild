@@ -138,7 +138,7 @@ src_install() {
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
-	(use_fw marvell-pcie8897 || use_fw marvell-pcie8997) && doins_subdir mrvl/pcie8897_uapsta.bin
+	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use_fw marvell-pcie8997 && doins_subdir mrvl/pcieuart8997_combo_v2.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use video_cards_radeon && doins_subdir radeon/*
