@@ -64,20 +64,18 @@ src_install() {
 	dosbin "${OUT}"/tpm_managerd
 	dobin "${OUT}"/tpm_manager_client
 	dolib.so "${OUT}"/lib/libtpm_manager.so
+	dolib.a "${OUT}"/libtpm_manager_test.a
 
 	# Install seccomp policy files.
 	insinto /usr/share/policy
 	newins server/tpm_manager-seccomp-${ARCH}.policy tpm_managerd-seccomp.policy
 
 	# Install header files.
-	insinto /usr/include/tpm_manager/tpm_manager_client
-	doins client/tpm_nvram_dbus_proxy.h
-	doins client/tpm_ownership_dbus_proxy.h
+	insinto /usr/include/tpm_manager/client
+	doins client/*.h
 	insinto /usr/include/tpm_manager/common
-	doins common/export.h
-	doins common/tpm_manager_constants.h
-	doins common/tpm_nvram_interface.h
-	doins common/tpm_ownership_interface.h
+	doins common/*.h
+	doins "${OUT}"/gen/include/tpm_manager/common/*.h
 }
 
 platform_pkg_test() {
