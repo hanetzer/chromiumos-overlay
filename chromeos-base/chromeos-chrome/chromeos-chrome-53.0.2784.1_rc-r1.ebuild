@@ -40,6 +40,7 @@ IUSE="
 	+chrome_remoting
 	clang
 	component_build
+	cups
 	envoy
 	evdev_gestures
 	+fonts
@@ -129,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2782.6_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2782.6_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2782.6_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-53.0.2784.1_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-53.0.2784.1_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-53.0.2784.1_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -184,6 +185,7 @@ RDEPEND="${RDEPEND}
 	v4lplugin? ( media-libs/libv4lplugins )
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
+	cups? ( net-print/cups )
 	opengl? ( virtual/opengl )
 	opengles? ( virtual/opengles )
 	sys-apps/pciutils
@@ -286,6 +288,7 @@ set_build_defines() {
 		"use_cras=1"
 		"use_system_minigbm=1"
 		"use_system_harfbuzz=1"
+		"use_cups=$(use10 cups)"
 
 		# Clang features.
 		asan=$(use10 asan)
@@ -310,6 +313,7 @@ set_build_defines() {
 		use_cras=true
 		# use_system_minigbm is set under 'if use ozone' below.
 		use_system_harfbuzz=true
+		use_cups=$(usetf cups)
 
 		# Clang features.
 		is_asan=$(usetf asan)
