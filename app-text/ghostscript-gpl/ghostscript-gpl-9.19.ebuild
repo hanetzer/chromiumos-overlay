@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -12,8 +12,9 @@ HOMEPAGE="http://ghostscript.com/"
 MY_P=${P/-gpl}
 GSDJVU_PV=1.6
 PVM=$(get_version_component_range 1-2)
+PVM_S=$(replace_all_version_separators "" ${PVM})
 SRC_URI="
-	http://downloads.ghostscript.com/public/${MY_P}.tar.bz2
+	https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs${PVM_S}/${MY_P}.tar.bz2
 	mirror://gentoo/${PN}-9.12-patchset-1.tar.bz2
 	djvu? ( mirror://sourceforge/djvu/gsdjvu-${GSDJVU_PV}.tar.gz )"
 
@@ -59,7 +60,7 @@ RDEPEND="${COMMON_DEPEND}
 
 S="${WORKDIR}/${MY_P}"
 
-LANGS="ja ko zh_CN zh_TW"
+LANGS="ja ko zh-CN zh-TW"
 for X in ${LANGS} ; do
 	IUSE="${IUSE} linguas_${X}"
 done
@@ -90,16 +91,17 @@ src_prepare() {
 	EPATCH_SUFFIX="patch" EPATCH_FORCE="yes"
 	EPATCH_SOURCE="${WORKDIR}/patches/"
 	EPATCH_EXCLUDE="
+		ghostscript-gpl-8.61-multilib.patch
 		ghostscript-gpl-8.64-noopt.patch
 		ghostscript-gpl-9.07-wrf-snprintf.patch
+		ghostscript-gpl-9.12-gs694154.patch
 		ghostscript-gpl-9.12-icc-missing-check.patch
 		ghostscript-gpl-9.12-sys-zlib.patch
 	"
 	epatch
 
-	epatch "${FILESDIR}"/${P}-gserrors.h-backport.patch
-	epatch "${FILESDIR}/${PN}-9.18-endian.patch"
-	epatch "${FILESDIR}/${PN}-9.18-ccaux.patch"
+	epatch "${FILESDIR}/${PN}-9.19-ccaux.patch"
+	epatch "${FILESDIR}/${PN}-9.18-libdata-deps.patch"
 
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
@@ -229,7 +231,7 @@ src_install() {
 		"${WORKDIR}/fontmaps/cidfmap"
 	for X in ${LANGS} ; do
 		if use linguas_${X} ; then
-			doins "${WORKDIR}/fontmaps/cidfmap.${X}"
+			doins "${WORKDIR}/fontmaps/cidfmap.${X/-/_}"
 		fi
 	done
 
