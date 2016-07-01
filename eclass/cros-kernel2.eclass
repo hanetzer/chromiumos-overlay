@@ -205,9 +205,10 @@ cifs_config="
 CONFIG_CIFS=m
 "
 
-cros_ec_mec="LPC Support for Microchip Embedded Controller"
+cros_ec_mec_desc="LPC Support for Microchip Embedded Controller"
 cros_ec_mec_config="
 CONFIG_MFD_CROS_EC_LPC_MEC=y
+CONFIG_CROS_EC_LPC_MEC=y
 "
 
 dm_snapshot_desc="Snapshot device mapper target"
