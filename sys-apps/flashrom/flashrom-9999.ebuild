@@ -122,5 +122,5 @@ src_test() {
 src_install() {
 	dosbin flashrom
 	doman flashrom.8
-	dodoc README Documentation/*.txt
+	dodoc README.chromiumos Documentation/*.txt
 }
