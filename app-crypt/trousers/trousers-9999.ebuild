@@ -6,14 +6,14 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
-inherit autotools base cros-debug cros-workon libchrome user
+inherit autotools base cros-debug cros-workon libchrome systemd user
 
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
 HOMEPAGE="http://trousers.sf.net"
 LICENSE="CPL-1.0"
 KEYWORDS="~*"
 SLOT="0"
-IUSE="doc tss_trace"
+IUSE="doc systemd tss_trace"
 
 RDEPEND=">=dev-libs/openssl-0.9.7"
 
@@ -56,8 +56,16 @@ src_install() {
 	doins "${S}"/dist/system.data.*
 
 	# Install the init scripts
-	insinto /etc/init
-	doins init/*.conf
+	if use systemd; then
+		systemd_dounit init/tpm-probe.service
+		systemd_enable_service boot-services.target tpm-probe.service
+		systemd_dounit init/tcsd.service
+	else
+		insinto /etc/init
+		doins init/*.conf
+	fi
+	insinto /usr/share/cros/init
+	doins init/tcsd-pre-start.sh
 }
 
 pkg_postinst() {
