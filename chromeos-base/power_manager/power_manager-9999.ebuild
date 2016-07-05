@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="power_manager"
 
-inherit cros-workon platform udev user
+inherit cros-workon platform systemd udev user
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
@@ -18,7 +18,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
+IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone systemd test"
 
 RDEPEND="
 	chromeos-base/metrics
@@ -89,8 +89,19 @@ src_install() {
 
 	udev_dorules udev/*.rules
 
-	insinto /etc/init
-	doins init/*.conf
+	# Init scripts
+	if use systemd; then
+		systemd_dounit init/powerd.service
+		systemd_enable_service boot-services.target powerd.service
+		systemd_dounit init/report-power-metrics.service
+		systemd_enable_service system-services.target report-power-metrics.service
+		systemd_dotmpfilesd init/powerd_directories.conf
+	else
+		insinto /etc/init
+		doins init/*.conf
+	fi
+	insinto /usr/share/cros/init
+	doins init/powerd-pre-start.sh
 
 	if use buffet; then
 		# Buffet command handler definition
