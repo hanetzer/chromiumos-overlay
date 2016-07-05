@@ -1,0 +1,52 @@
+From 32bcaafb7078d4cb37c15df28352ee16bb3c6a61 Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Tue, 5 Jul 2016 16:35:19 +0100
+Subject: [PATCH] pvr/dri: Pass buffer source to CreateFromFd
+
+The IMG DDK's implementation of DMA_buf is not complete.  In particular,
+DMA_buf objects allocated via the DDK do not have an associated
+reservation object.  This is mostly not a problem as we normally don't
+export DMA_buf objects allocated by the DDK.  Synchronisation on these
+objects was done using internal DDK mechanisms.
+
+Unfortunately, the Android PBuffer implementation uses DMA_buf objects
+allocated by the DDK.  To deal with this, we  we need to tell the DDK
+whether the DMA_buf object is coming in via the image extension (and is
+therefore externally allocated) or via the dri extension (and therefore
+internally-allocated.)
+
+In future we will implement full support for the DMA_buf API in
+DDK-allocated buffers.  When this happens, this change can be removed.
+
+Change-Id: Ie0c98a101cfd514d6a10aa2b8be40c97542aecfc
+Signed-off-by: Rufus Hamade <rufus.hamade@imgtec.com>
+---
+ src/mesa/drivers/dri/pvr/pvrdrawable.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+index 4eade1b..ae26097 100644
+--- a/src/mesa/drivers/dri/pvr/pvrdrawable.c
++++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
+@@ -494,7 +494,8 @@ static void *PVRDRI2ObjectCacheInsert(void *pvCreateData, void *pvInsertData)
+ 					   psDRIDrawable->w,
+ 					   psDRIDrawable->h,
+ 					   psDRIBuffer->pitch,
+-					   0);
++					   0,
++					   true);
+ 	}
+ 	else
+ 	{
+@@ -509,7 +510,7 @@ static void *PVRDRI2ObjectCacheInsert(void *pvCreateData, void *pvInsertData)
+ 
+ 	if (!psPVRBuffer->uBacking.sDRI2.psBuffer)
+ 	{
+-		free(psPVRBuffer);																					
++		free(psPVRBuffer);
+ 		return NULL;
+ 	}
+ 
+-- 
+1.9.1
+

@@ -130,6 +130,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
 	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
 	epatch "${FILESDIR}"/0104-pvr_dri-fix-pbuffer-synchronisation.patch
+	epatch "${FILESDIR}"/0105-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
 
 	# Android specific patches
 	epatch "${FILESDIR}"/0500-UPSTREAM-mesa-Build-EGL-without-X11-headers-after-in.patch
@@ -159,6 +160,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/0606-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
 	epatch "${FILESDIR}"/0607-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
 	epatch "${FILESDIR}"/0608-platform_android-prevent-deadlock-in-droid_get_buffe.patch
+
+	# Patches on patches
+	epatch "${FILESDIR}"/0701-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
 
 	base_src_prepare
 
