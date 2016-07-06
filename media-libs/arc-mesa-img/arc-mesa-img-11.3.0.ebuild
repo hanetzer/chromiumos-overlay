@@ -158,6 +158,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0605-PVRDRIAllocateBuffer-Fix-test-when-allocating-buffer.patch
 	epatch "${FILESDIR}"/0606-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
 	epatch "${FILESDIR}"/0607-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
+	epatch "${FILESDIR}"/0608-platform_android-prevent-deadlock-in-droid_get_buffe.patch
 
 	base_src_prepare
 
