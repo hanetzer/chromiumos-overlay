@@ -13,7 +13,9 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host dev_debug_force minimal -mtd pd_sync tpmtests"
+IUSE="32bit_au cros_host dev_debug_force minimal -mtd pd_sync tpmtests tpm tpm2"
+
+REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="!minimal? ( dev-libs/libyaml )
 	mtd? ( sys-apps/flashrom )
@@ -34,6 +36,7 @@ _src_compile_main() {
 	unset CFLAGS
 	emake BUILD="${WORKDIR}"/build-main \
 	      ARCH=$(tc-arch) \
+	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
 	      USE_MTD=$(usev mtd) \
 	      MINIMAL=$(usev minimal) all
@@ -47,6 +50,7 @@ _src_compile_au() {
 	tc-export CC AR CXX PKG_CONFIG
 	emake BUILD="${WORKDIR}"/build-au/ \
 	      ARCH=$(tc-arch) \
+	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
 	      USE_MTD=$(usev mtd) \
 	      MINIMAL=$(usev minimal) tinyhostlib
@@ -64,6 +68,7 @@ src_test() {
 	emake BUILD="${WORKDIR}"/build-main \
 	      SRCDIR="${S}" \
 	      ARCH=$(tc-arch) \
+	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
 	      MINIMAL=$(usev minimal) runtests
 }
@@ -74,6 +79,7 @@ src_install() {
 		# Installing on the target
 		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}" \
 		      LIBDIR="$(get_libdir)" \
+		      TPM2_MODE=$(usev tpm2) \
 		      PD_SYNC=$(usev pd_sync) \
 		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
 		      USE_MTD=$(usev mtd) \
@@ -82,6 +88,7 @@ src_install() {
 		# Installing on the host
 		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}/usr" \
 		      LIBDIR="$(get_libdir)" \
+		      TPM2_MODE=$(usev tpm2) \
 		      PD_SYNC=$(usev pd_sync) \
 		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
 		      USE_MTD=$(usev mtd) \
