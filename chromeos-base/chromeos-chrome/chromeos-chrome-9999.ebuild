@@ -897,6 +897,7 @@ src_configure() {
 		cros_target_cc="${CC}"
 		cros_target_cxx="${CXX}"
 		host_toolchain="//build/toolchain/cros:host"
+		custom_toolchain="//build/toolchain/cros:target"
 		v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot"
 		cros_target_ld="${LD}"
 		cros_target_extra_cflags="${CFLAGS} ${EBUILD_CFLAGS[*]}"
