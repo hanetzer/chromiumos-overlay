@@ -25,7 +25,7 @@ IUSE="tpm tpm2"
 REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
-	tpm? (
+	!tpm2? (
 		app-crypt/trousers
 	)
 	tpm2? (
