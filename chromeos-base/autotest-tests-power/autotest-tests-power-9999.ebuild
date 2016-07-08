@@ -28,7 +28,6 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	+tests_hardware_Backlight
 	+tests_platform_CheckPowerdProcesses
-	+tests_platform_SuspendStress
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightControl
