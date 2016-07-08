@@ -59,6 +59,7 @@ PATCHES=(
 	"${FILESDIR}"/0001-Support-oak-board.patch
 	"${FILESDIR}"/0001-null-use-EGL_DEFAULT_DISPLAY.patch
 	"${FILESDIR}"/0002-null-Fix-null-code-to-work-with-Mesa-11.0.2.patch
+	"${FILESDIR}"/0003-eglChooseConfig.patch
 )
 
 src_configure() {
