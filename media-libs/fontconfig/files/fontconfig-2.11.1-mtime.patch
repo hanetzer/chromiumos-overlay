@@ -1,0 +1,23 @@
+This patch removes the directory mtime check for the font cache.  This will
+allow us to build the font cache on a separate machine and distribute the
+cache files as a pre-built package, which will speed up developer build times
+for ARM devices by up to 9 minutes.  See crbug.com/205424 for more details.
+
+--- fontconfig-2.11.1.old/src/fccache.c	2017-01-13 13:13:23.814625771 -0800
++++ fontconfig-2.11.1/src/fccache.c	2017-01-13 13:17:13.974578009 -0800
+@@ -542,7 +542,14 @@ FcCacheTimeValid (FcCache *cache, struct
+     if (FcDebug () & FC_DBG_CACHE)
+ 	printf ("FcCacheTimeValid dir \"%s\" cache checksum %d dir checksum %d\n",
+ 		FcCacheDir (cache), cache->checksum, (int) dir_stat->st_mtime);
+-    return cache->checksum == (int) dir_stat->st_mtime;
++    /* 
++     * Always assume the directory mtime is valid.  On Chrome OS, we build the
++     * font cache on the builders and distribute them as a pre-built package.
++     * This means that the mtimes on the target systems will not match the mtime
++     * stored in the cache.  However, the contents of the cache should still be
++     * valid so just ignore this check.
++     */
++    return FcTrue;
+ }
+ 
+ /*
