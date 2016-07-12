@@ -22,7 +22,7 @@ if [[ ${PV} == *9999 ]]; then
 		EGIT_BRANCH=branch-${PV/.9999}
 	fi
 else
-	SRC_URI="http://www.cups.org/software/${MY_PV}/${MY_P}-source.tar.bz2"
+	SRC_URI="https://github.com/apple/${PN}/archive/release-${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="*"
 fi
 
@@ -80,9 +80,7 @@ RDEPEND="${CDEPEND}
 	selinux? ( sec-policy/selinux-cups )
 "
 
-PDEPEND="
-	>=net-print/cups-filters-1.0.43
-"
+PDEPEND=">=net-print/cups-filters-1.0.43"
 
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
@@ -93,7 +91,7 @@ REQUIRED_USE="
 # upstream includes an interactive test which is a nono for gentoo
 RESTRICT="test"
 
-S="${WORKDIR}/${MY_P}"
+S="${WORKDIR}/${PN}-release-${MY_PV}"
 
 # systemd-socket.patch from Fedora
 PATCHES=(
@@ -106,7 +104,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.0.3-cross-compile.patch"
 	"${FILESDIR}/${PN}-2.0.3-Add-printerroot-to-configure.patch"
 	"${FILESDIR}/${PN}-2.1.2-PrinterRoot.patch"
-	"${FILESDIR}/${PN}-2.0.3-debug-printfs.patch"
 	"${FILESDIR}/${PN}-2.0.3-upstart-on-demand.patch"
 )
 
