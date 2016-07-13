@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-54.0.2792.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-54.0.2792.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-54.0.2792.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-54.0.2795.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-54.0.2795.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-54.0.2795.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -897,6 +897,7 @@ src_configure() {
 		cros_target_cc="${CC}"
 		cros_target_cxx="${CXX}"
 		host_toolchain="//build/toolchain/cros:host"
+		custom_toolchain="//build/toolchain/cros:target"
 		v8_snapshot_toolchain="//build/toolchain/cros:v8_snapshot"
 		cros_target_ld="${LD}"
 		cros_target_extra_cflags="${CFLAGS} ${EBUILD_CFLAGS[*]}"
