@@ -35,6 +35,10 @@ src_prepare() {
 	rm "${AUTOTEST_WORK}"/shadow_config.ini
 }
 
+src_compile() {
+	protoc --proto_path "${S}" --python_out="${AUTOTEST_WORK}" "${S}/tko/tko.proto"
+}
+
 src_configure() {
 	cros-workon_src_configure
 }
