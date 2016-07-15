@@ -41,6 +41,7 @@ src_install() {
 	pushd "${OUT}" >/dev/null
 	dobin alsa_api_test
 	dobin audiofuntest
+	dobin cras_api_test
 	dobin test_tones
 	dobin looptest
 	dobin loopback_latency
