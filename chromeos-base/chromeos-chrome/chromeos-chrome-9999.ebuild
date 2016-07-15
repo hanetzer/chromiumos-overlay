@@ -681,6 +681,40 @@ src_unpack() {
 	fi
 }
 
+add_api_keys() {
+	if use gn; then
+		# awk script to extract the values out of the file.
+		local EXTRACT="{ gsub(/[',]/, \"\", \$2); print \$2 }"
+		local api_key=$(awk "/google_api_key/ ${EXTRACT}" "$1")
+		local client_id=$(awk "/google_default_client_id/ ${EXTRACT}" "$1")
+		local client_secret=$(awk "/google_default_client_secret/ ${EXTRACT}" "$1")
+
+		BUILD_STRING_ARGS+=(
+			google_api_key="${api_key}"
+			google_default_client_id="${client_id}"
+			google_default_client_secret="${client_secret}"
+		)
+	else
+		# RE to match the allowed names.
+		local NRE="('google_(api_key|default_client_(id|secret))')"
+		# RE to match whitespace.
+		local WS="[[:space:]]*"
+		# RE to match allowed values.
+		local CRE="('[^\\\\']*')"
+		# And combining them into one RE for describing the lines
+		# we want to allow.
+		local TRE="^${WS}${NRE}${WS}[:=]${WS}${CRE}.*"
+
+		mkdir "${HOME}"/.gyp
+		cat <<-EOF >"${HOME}/.gyp/include.gypi"
+		{
+			'variables': {
+			$(sed -nr -e "/^${TRE}/{s//\1: \4,/;p;}" "$1")
+			}
+		}
+		EOF
+	fi
+}
 src_prepare() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
 			"${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
@@ -721,29 +755,12 @@ src_prepare() {
 		# Then look for ChromeOS supplied credentials.
 		local PRIVATE_OVERLAYS_DIR=/home/${WHOAMI}/trunk/src/private-overlays
 		local GAPI_CONFIG_FILE=${PRIVATE_OVERLAYS_DIR}/chromeos-overlay/googleapikeys
-		# RE to match the allowed names.
-		local NRE="('google_(api_key|default_client_(id|secret))')"
-		# RE to match whitespace.
-		local WS="[[:space:]]*"
-		# RE to match allowed values.
-		local CRE="('[^\\\\']*')"
-		# And combining them into one RE for describing the lines
-		# we want to allow.
-		local TRE="^${WS}${NRE}${WS}[:=]${WS}${CRE}.*"
 		if [[ ! -f "${GAPI_CONFIG_FILE}" ]]; then
 			# Then developer credentials.
 			GAPI_CONFIG_FILE=/home/${WHOAMI}/.googleapikeys
 		fi
 		if [[ -f "${GAPI_CONFIG_FILE}" ]]; then
-			mkdir "${HOME}"/.gyp
-			cat <<-EOF >"${HOME}/.gyp/include.gypi"
-			{
-				'variables': {
-				$(sed -nr -e "/^${TRE}/{s//\1: \4,/;p;}" \
-					"${GAPI_CONFIG_FILE}")
-				}
-			}
-			EOF
+			add_api_keys "${GAPI_CONFIG_FILE}"
 		fi
 	fi
 }
