@@ -60,7 +60,7 @@ RDEPEND="${COMMON_DEPEND}
 
 S="${WORKDIR}/${MY_P}"
 
-LANGS="ja ko zh-CN zh-TW"
+LANGS="ja ko zh_CN zh_TW"
 for X in ${LANGS} ; do
 	IUSE="${IUSE} linguas_${X}"
 done
