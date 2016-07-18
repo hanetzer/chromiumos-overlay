@@ -10,13 +10,13 @@ CROS_WORKON_INCREMENTAL_BUILD="1"
 
 PLATFORM_SUBDIR="shill"
 
-inherit cros-workon platform udev user
+inherit cros-workon platform systemd udev user
 
 DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular dhcpv6 json_store pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
+IUSE="+cellular dhcpv6 json_store pppoe +seccomp systemd test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
 KEYWORDS="~*"
 
 # Sorted by the package we depend on. (Not by use flag!)
@@ -65,7 +65,12 @@ get_dependent_services() {
 	if use wifi || use wired_8021x; then
 		dependent_services+=(wpasupplicant)
 	fi
-	echo "started network-services ${dependent_services[*]/#/and started }"
+	if use systemd; then
+		echo "network-services.service ${dependent_services[*]/%/.service }"
+	else
+		echo "started network-services " \
+			"${dependent_services[*]/#/and started }"
+	fi
 }
 
 load_cfg80211() {
@@ -150,17 +155,40 @@ src_install() {
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.dbus-xml
 
-	# Install init scripts
-	insinto /etc/init
-	doins init/*.conf
+	# Replace template parameters inside init scripts
+	local shill_name="shill.$(usex systemd service conf)"
+	local network_services_name="network-services.$(usex systemd service conf)"
 	sed \
 		"s,@expected_started_services@,$(get_dependent_services)," \
-		init/shill.conf.in \
-		> "${D}/etc/init/shill.conf"
+		"init/${shill_name}.in" \
+		> "${T}/${shill_name}"
 	sed \
 		"s,@load_cfg80211@,$(load_cfg80211)," \
-		init/network-services.conf.in \
-		> "${D}/etc/init/network-services.conf"
+		init/${network_services_name}.in \
+		> "${T}/${network_services_name}"
+
+	# Install init scripts
+	if use systemd; then
+		systemd_dounit init/netfilter-queue.service
+		systemd_enable_service network.target netfilter-queue.service
+		systemd_dounit init/shill-start-user-session.service
+		systemd_dounit init/shill-stop-user-session.service
+
+		local dependent_services=$(get_dependent_services)
+		systemd_dounit "${T}/shill.service"
+		for dependent_service in ${dependent_services}; do
+			systemd_enable_service "${dependent_service}" shill.service
+		done
+		systemd_enable_service shill.service network.target
+
+		systemd_dounit "${T}/network-services.service"
+		systemd_enable_service boot-services.target network-services.service
+	else
+		insinto /etc/init
+		doins init/*.conf "${T}"/*.conf
+	fi
+	insinto /usr/share/cros/init
+	doins init/*.sh
 
 	udev_dorules udev/*.rules
 }
