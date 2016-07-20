@@ -207,6 +207,17 @@ do
 	    "${arch_to_dir}/usr/include/libdrm/intel"
     fi
 
+    # arm only
+    if [[ "$arch" == "arm" ]]; then
+	runcmd mkdir -p "${arch_to_dir}/usr/include/libdrm/rockchip"
+	runcmd cp -pP ${MNC_DR_ARC_DEV_TREE}/external/libdrm/rockchip/*.h \
+	    "${arch_to_dir}/usr/include/libdrm/rockchip"
+
+	runcmd mkdir -p "${arch_to_dir}/usr/include/libdrm/mediatek"
+	runcmd cp -pP ${MNC_DR_ARC_DEV_TREE}/external/libdrm/mediatek/*.h \
+	    "${arch_to_dir}/usr/include/libdrm/mediatek"
+    fi
+
     ### 4.5 Expat includes
 
     runcmd cp -pP ${MNC_DR_ARC_DEV_TREE}/external/expat/lib/expat*.h \
@@ -240,6 +251,7 @@ runcmd tar zcf "${TARBALL}" -C ${TO_DIR_BASE} .
 
 
 ### 6. Manually upload
+### Or you try this command: gsutil cp -a public-read arc-libs-* gs://chromeos-localmirror/distfiles/
 echo "Done! Please upload ${TARBALL} manually to: " \
      "https://pantheon.corp.google.com/storage/browser/chromeos-localmirror/distfiles/?debugUI=DEVELOPERS"
 echo "If this is based on the same Bionic HEAD of a previous tarball bump up _p0 to the latest step number."
