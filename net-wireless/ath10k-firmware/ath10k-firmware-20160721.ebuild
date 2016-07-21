@@ -6,8 +6,8 @@ EAPI="5"
 DESCRIPTION="Atheros 10k firmware"
 HOMEPAGE="http://wireless.kernel.org/en/users/Drivers/ath10k/firmware"
 
-GIT_SHA1="3f44d0368a2d44b389246d8db65a310b09c2f999"
-MY_P=${PN}-3f44d03
+GIT_SHA1="1a375ea191dba3900b7432b465aaa51939c2dd0a"
+MY_P=${PN}-1a375ea
 SRC_URI="http://github.com/kvalo/ath10k-firmware/archive/${GIT_SHA1}.tar.gz -> ${MY_P}.tar.gz"
 
 LICENSE="LICENSE.qca_firmware"
@@ -26,6 +26,6 @@ src_prepare() {
 src_install() {
 	insinto /lib/firmware/ath10k/QCA988X/hw2.0
 	doins QCA988X/board.bin
-	newins QCA988X/10.2.4/firmware-5.bin_10.2.4.70.52 firmware-5.bin
-	newins QCA988X/10.2.4/notice.txt_10.2.4.70.52 notice.txt
+	newins QCA988X/10.2.4/firmware-5.bin_10.2.4.70.54 firmware-5.bin
+	newins QCA988X/10.2.4/notice.txt_10.2.4.70.54 notice.txt
 }
