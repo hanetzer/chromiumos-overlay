@@ -62,6 +62,7 @@ IUSE_LINUX_FIRMWARE=(
 	marvell-pcie8897
 	marvell-pcie8997
 	nvidia-xusb
+	rockchip-dptx
 	rt2870
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
@@ -81,6 +82,7 @@ LICENSE="
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8997? ( LICENCE.Marvell )
 	linux_firmware_nvidia-xusb? ( LICENCE.nvidia )
+	linux_firmware_rockchip-dptx? ( LICENCE.rockchip )
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
 	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
@@ -141,6 +143,7 @@ src_install() {
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v2.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
+	use_fw rockchip-dptx && doins_subdir rockchip/dptx.bin
 	use video_cards_radeon && doins_subdir radeon/*
 
 	# The extra file rt3070.bin is a symlink.
