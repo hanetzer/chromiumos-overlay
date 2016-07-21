@@ -33,6 +33,7 @@ IUSE_TESTS="
 	+tests_audio_Aplay
 	+tests_audio_CRASFormatConversion
 	+tests_audio_CrasLoopback
+	+tests_audio_CrasOutputStress
 	+tests_audio_LoopbackLatency
 	+tests_audio_Microphone
 "
