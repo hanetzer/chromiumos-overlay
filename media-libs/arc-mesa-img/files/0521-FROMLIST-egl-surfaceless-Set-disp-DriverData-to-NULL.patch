@@ -1,0 +1,33 @@
+From f7dbc2b83c9a9ea86acf5950ba09f02e39d7c260 Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@chromium.org>
+Date: Thu, 4 Aug 2016 09:28:42 +0800
+Subject: [PATCH 521/522] FROMLIST: egl/surfaceless: Set disp->DriverData to
+ NULL on error
+
+Avoid use-after-free on error.
+
+Fixes: 9ee683f877 (egl/dri2: Add reference count for dri2_egl_display)
+Cc: "12.0" <mesa-stable@lists.freedesktop.org>
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+(am from https://patchwork.freedesktop.org/patch/102868/)
+
+Change-Id: Ic61aba5d07fdb79385e1cc3b9c524099a642e854
+---
+ src/egl/drivers/dri2/platform_surfaceless.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/egl/drivers/dri2/platform_surfaceless.c b/src/egl/drivers/dri2/platform_surfaceless.c
+index b3def20..8c8670a 100644
+--- a/src/egl/drivers/dri2/platform_surfaceless.c
++++ b/src/egl/drivers/dri2/platform_surfaceless.c
+@@ -408,6 +408,7 @@ cleanup_driver:
+       close(dri2_dpy->fd);
+ cleanup_display:
+    free(dri2_dpy);
++   disp->DriverData = NULL;
+ 
+    return _eglError(EGL_NOT_INITIALIZED, err);
+ }
+-- 
+2.8.0.rc3.226.g39d4020
+

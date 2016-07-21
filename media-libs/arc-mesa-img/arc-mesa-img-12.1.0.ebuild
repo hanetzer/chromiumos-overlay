@@ -155,6 +155,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/0516-CHROMIUM-egl-android-Disable-EGL_ANDROID_framebuffer.patch
 	epatch "${FILESDIR}"/0517-CHROMIUM-egl-Add-missing-flags-for-Android-builds.patch
 	epatch "${FILESDIR}"/0518-UPSTREAM-egl-dri2-dri2_make_current-Set-EGL-error-if.patch
+	epatch "${FILESDIR}"/0519-UPSTREAM-egl-dri2-Add-reference-count-for-dri2_egl_d.patch
+	epatch "${FILESDIR}"/0520-FROMLIST-egl-dri2-dri2_initialize-Do-not-reference-c.patch
+	epatch "${FILESDIR}"/0521-FROMLIST-egl-surfaceless-Set-disp-DriverData-to-NULL.patch
+	epatch "${FILESDIR}"/0522-FROMLIST-egl-android-Set-dpy-DriverData-to-NULL-on-e.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0600-pvr_dri-Add-RGBA-image-format.patch

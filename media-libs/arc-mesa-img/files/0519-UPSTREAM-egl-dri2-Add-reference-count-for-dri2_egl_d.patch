@@ -1,0 +1,256 @@
+From 35c1c395f174510f361d2a1880b2c8193bc7845a Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@chromium.org>
+Date: Fri, 22 Jul 2016 11:27:41 +0800
+Subject: [PATCH 519/522] UPSTREAM: egl/dri2: Add reference count for
+ dri2_egl_display
+
+android.opengl.cts.WrapperTest#testGetIntegerv1 CTS test calls
+eglTerminate, followed by eglReleaseThread. A similar case is
+observed in this bug: https://bugs.freedesktop.org/show_bug.cgi?id=69622,
+where the test calls eglTerminate, then eglMakeCurrent(dpy, NULL, NULL, NULL).
+
+With the current code, dri2_dpy structure is freed on eglTerminate
+call, so the display is not initialized when eglReleaseThread calls
+MakeCurrent with NULL parameters, to unbind the context, which
+causes a a segfault in drv->API.MakeCurrent (dri2_make_current),
+either in glFlush or in a latter call.
+
+eglTerminate specifies that "If contexts or surfaces associated
+with display is current to any thread, they are not released until
+they are no longer current as a result of eglMakeCurrent."
+
+However, to properly free the current context/surface (i.e., call
+glFlush, unbindContext, driDestroyContext), we still need the
+display vtbl (and possibly an active dri dpy connection). Therefore,
+we add some reference counter to dri2_egl_display, to make sure
+the structure is kept allocated as long as it is required.
+
+One drawback of this is that eglInitialize may not completely reinitialize
+the display (if eglTerminate was called with a current context), however,
+this seems to meet the EGL spec quite well, and does not permanently
+leak any context/display even for incorrectly written apps.
+
+Cc: "12.0" <mesa-stable@lists.freedesktop.org>
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit 9ee683f877b283020c6f24776236f1145cb7a4ea)
+Signed-off-by: Nicolas Boichat <drinkcat@google.com>
+
+BUG=b/28431498
+BUG=chrome-os-partner:54024
+TEST=android.opengl.cts.WrapperTest CTS
+
+Change-Id: I7e8a82a4b039c12be2cc527a7fc40c8409bb5ec1
+---
+ src/egl/drivers/dri2/egl_dri2.c | 111 ++++++++++++++++++++++++++++++++--------
+ src/egl/drivers/dri2/egl_dri2.h |   4 ++
+ 2 files changed, 95 insertions(+), 20 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index a3a1cac..6a01004 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -761,10 +761,33 @@ dri2_create_screen(_EGLDisplay *disp)
+ 
+ /**
+  * Called via eglInitialize(), GLX_drv->API.Initialize().
++ *
++ * This must be guaranteed to be called exactly once, even if eglInitialize is
++ * called many times (without a eglTerminate in between).
+  */
+ static EGLBoolean
+ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+ {
++   EGLBoolean ret = EGL_FALSE;
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   /* In the case where the application calls eglMakeCurrent(context1),
++    * eglTerminate, then eglInitialize again (without a call to eglReleaseThread
++    * or eglMakeCurrent(NULL) before that), dri2_dpy structure is still
++    * initialized, as we need it to be able to free context1 correctly.
++    *
++    * It would probably be safest to forcibly release the display with
++    * dri2_display_release, to make sure the display is reinitialized correctly.
++    * However, the EGL spec states that we need to keep a reference to the
++    * current context (so we cannot call dri2_make_current(NULL)), and therefore
++    * we would leak context1 as we would be missing the old display connection
++    * to free it up correctly.
++    */
++   if (dri2_dpy) {
++      dri2_dpy->ref_count++;
++      return EGL_TRUE;
++   }
++
+    /* not until swrast_dri is supported */
+    if (disp->Options.UseFallback)
+       return EGL_FALSE;
+@@ -773,52 +796,75 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+ #ifdef HAVE_SURFACELESS_PLATFORM
+    case _EGL_PLATFORM_SURFACELESS:
+       if (disp->Options.TestOnly)
+-         return EGL_TRUE;
+-      return dri2_initialize_surfaceless(drv, disp);
++         ret = EGL_TRUE;
++      else
++         ret = dri2_initialize_surfaceless(drv, disp);
++      break;
+ #endif
+-
+ #ifdef HAVE_X11_PLATFORM
+    case _EGL_PLATFORM_X11:
+       if (disp->Options.TestOnly)
+-         return EGL_TRUE;
+-      return dri2_initialize_x11(drv, disp);
++         ret = EGL_TRUE;
++      else
++         ret = dri2_initialize_x11(drv, disp);
++      break;
+ #endif
+-
+ #ifdef HAVE_DRM_PLATFORM
+    case _EGL_PLATFORM_DRM:
+       if (disp->Options.TestOnly)
+-         return EGL_TRUE;
+-      return dri2_initialize_drm(drv, disp);
++         ret = EGL_TRUE;
++      else
++         ret = dri2_initialize_drm(drv, disp);
++      break;
+ #endif
+ #ifdef HAVE_WAYLAND_PLATFORM
+    case _EGL_PLATFORM_WAYLAND:
+       if (disp->Options.TestOnly)
+-         return EGL_TRUE;
+-      return dri2_initialize_wayland(drv, disp);
++         ret = EGL_TRUE;
++      else
++         ret = dri2_initialize_wayland(drv, disp);
++      break;
+ #endif
+ #ifdef HAVE_ANDROID_PLATFORM
+    case _EGL_PLATFORM_ANDROID:
+       if (disp->Options.TestOnly)
+-         return EGL_TRUE;
+-      return dri2_initialize_android(drv, disp);
++         ret = EGL_TRUE;
++      else
++         ret = dri2_initialize_android(drv, disp);
++      break;
+ #endif
+-
+    default:
+       _eglLog(_EGL_WARNING, "No EGL platform enabled.");
+       return EGL_FALSE;
+    }
++
++   if (ret) {
++      dri2_dpy = dri2_egl_display(disp);
++
++      if (!dri2_dpy) {
++         return EGL_FALSE;
++      }
++
++      dri2_dpy->ref_count++;
++   }
++
++   return ret;
+ }
+ 
+ /**
+- * Called via eglTerminate(), drv->API.Terminate().
++ * Decrement display reference count, and free up display if necessary.
+  */
+-static EGLBoolean
+-dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
+-{
++static void
++dri2_display_release(_EGLDisplay *disp) {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    unsigned i;
+ 
+-   _eglReleaseDisplayResources(drv, disp);
++   assert(dri2_dpy->ref_count > 0);
++   dri2_dpy->ref_count--;
++
++   if (dri2_dpy->ref_count > 0)
++      return;
++
+    _eglCleanupDisplay(disp);
+ 
+    if (dri2_dpy->own_dri_screen)
+@@ -873,6 +919,21 @@ dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
+    }
+    free(dri2_dpy);
+    disp->DriverData = NULL;
++}
++
++/**
++ * Called via eglTerminate(), drv->API.Terminate().
++ *
++ * This must be guaranteed to be called exactly once, even if eglTerminate is
++ * called many times (without a eglInitialize in between).
++ */
++static EGLBoolean
++dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
++{
++   /* Release all non-current Context/Surfaces. */
++   _eglReleaseDisplayResources(drv, disp);
++
++   dri2_display_release(disp);
+ 
+    return EGL_TRUE;
+ }
+@@ -1192,6 +1253,10 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+    _EGLSurface *tmp_dsurf, *tmp_rsurf;
+    __DRIdrawable *ddraw, *rdraw;
+    __DRIcontext *cctx;
++   EGLBoolean unbind;
++
++   if (!dri2_dpy)
++      return _eglError(EGL_NOT_INITIALIZED, "eglMakeCurrent");
+ 
+    /* make new bindings */
+    if (!_eglBindContext(ctx, dsurf, rsurf, &old_ctx, &old_dsurf, &old_rsurf)) {
+@@ -1212,8 +1277,9 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+       dri2_dpy->core->unbindContext(old_cctx);
+    }
+ 
+-   if ((cctx == NULL && ddraw == NULL && rdraw == NULL) ||
+-       dri2_dpy->core->bindContext(cctx, ddraw, rdraw)) {
++   unbind = (cctx == NULL && ddraw == NULL && rdraw == NULL);
++
++   if (unbind || dri2_dpy->core->bindContext(cctx, ddraw, rdraw)) {
+       if (old_dsurf)
+          drv->API.DestroySurface(drv, disp, old_dsurf);
+       if (old_rsurf)
+@@ -1221,6 +1287,11 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+       if (old_ctx)
+          drv->API.DestroyContext(drv, disp, old_ctx);
+ 
++      if (!unbind)
++         dri2_dpy->ref_count++;
++      if (old_dsurf || old_rsurf || old_ctx)
++         dri2_display_release(disp);
++
+       return EGL_TRUE;
+    } else {
+       /* undo the previous _eglBindContext */
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 92165de..644ff68 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -179,6 +179,10 @@ struct dri2_egl_display
+    const __DRI2interopExtension *interop;
+    int                       fd;
+ 
++   /* dri2_initialize/dri2_terminate increment/decrement this count, so does
++    * dri2_make_current (tracks if there are active contexts/surfaces). */
++   int                       ref_count;
++
+    int                       own_device;
+    int                       swap_available;
+    int                       invalidate_available;
+-- 
+2.8.0.rc3.226.g39d4020
+

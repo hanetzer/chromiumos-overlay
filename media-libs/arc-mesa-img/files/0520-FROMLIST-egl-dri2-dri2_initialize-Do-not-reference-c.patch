@@ -1,0 +1,86 @@
+From 0da216796ebaf77f990d60b1386bb2fefd6abcd4 Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@chromium.org>
+Date: Wed, 3 Aug 2016 21:33:37 +0800
+Subject: [PATCH 520/522] FROMLIST: egl/dri2: dri2_initialize: Do not
+ reference-count TestOnly display
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In the case where dri2_initialize is called with a TestOnly display,
+the display is not actually initialized, so dri2_egl_display always
+fails, and we cannot do any reference counting.
+
+Fixes: 9ee683f877 (egl/dri2: Add reference count for dri2_egl_display)
+Cc: "12.0" <mesa-stable@lists.freedesktop.org>
+Reported-by: Michel Dänzer <michel@daenzer.net>
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+(am from https://patchwork.freedesktop.org/patch/102770/)
+
+Change-Id: I2d982030946d039649c581c7acdd06ce793f1ccc
+---
+ src/egl/drivers/dri2/egl_dri2.c | 29 +++++++++--------------------
+ 1 file changed, 9 insertions(+), 20 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 6a01004..dea0cfd 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -792,45 +792,34 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+    if (disp->Options.UseFallback)
+       return EGL_FALSE;
+ 
++   /* Nothing to initialize for a test only display */
++   if (disp->Options.TestOnly)
++      return EGL_TRUE;
++
+    switch (disp->Platform) {
+ #ifdef HAVE_SURFACELESS_PLATFORM
+    case _EGL_PLATFORM_SURFACELESS:
+-      if (disp->Options.TestOnly)
+-         ret = EGL_TRUE;
+-      else
+-         ret = dri2_initialize_surfaceless(drv, disp);
++      ret = dri2_initialize_surfaceless(drv, disp);
+       break;
+ #endif
+ #ifdef HAVE_X11_PLATFORM
+    case _EGL_PLATFORM_X11:
+-      if (disp->Options.TestOnly)
+-         ret = EGL_TRUE;
+-      else
+-         ret = dri2_initialize_x11(drv, disp);
++      ret = dri2_initialize_x11(drv, disp);
+       break;
+ #endif
+ #ifdef HAVE_DRM_PLATFORM
+    case _EGL_PLATFORM_DRM:
+-      if (disp->Options.TestOnly)
+-         ret = EGL_TRUE;
+-      else
+-         ret = dri2_initialize_drm(drv, disp);
++      ret = dri2_initialize_drm(drv, disp);
+       break;
+ #endif
+ #ifdef HAVE_WAYLAND_PLATFORM
+    case _EGL_PLATFORM_WAYLAND:
+-      if (disp->Options.TestOnly)
+-         ret = EGL_TRUE;
+-      else
+-         ret = dri2_initialize_wayland(drv, disp);
++      ret = dri2_initialize_wayland(drv, disp);
+       break;
+ #endif
+ #ifdef HAVE_ANDROID_PLATFORM
+    case _EGL_PLATFORM_ANDROID:
+-      if (disp->Options.TestOnly)
+-         ret = EGL_TRUE;
+-      else
+-         ret = dri2_initialize_android(drv, disp);
++      ret = dri2_initialize_android(drv, disp);
+       break;
+ #endif
+    default:
+-- 
+2.8.0.rc3.226.g39d4020
+
