@@ -131,6 +131,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
 	epatch "${FILESDIR}"/0104-pvr_dri-fix-pbuffer-synchronisation.patch
 	epatch "${FILESDIR}"/0105-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
+	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
 
 	# Android specific patches
 	epatch "${FILESDIR}"/0500-UPSTREAM-mesa-Build-EGL-without-X11-headers-after-in.patch
