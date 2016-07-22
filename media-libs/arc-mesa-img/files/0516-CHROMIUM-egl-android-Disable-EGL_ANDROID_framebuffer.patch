@@ -1,8 +1,8 @@
-From 86e1c4fa2c1e3b700a4bd27eb3ab3ff65668f19a Mon Sep 17 00:00:00 2001
+From 1edc11dbe8cd8b93a63952097b6a4be0e40bc35a Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
 Date: Fri, 13 May 2016 15:17:23 +0900
-Subject: [PATCH 510/513] egl/android: Disable EGL_ANDROID_framebuffer_target
- for unsupported formats
+Subject: [PATCH 516/517] CHROMIUM: egl/android: Disable
+ EGL_ANDROID_framebuffer_target for unsupported formats
 
 Currently our HWC module supports only RGBA8888 format, so advertising
 EGL_ANDROID_framebuffer_target for other formats is invalid and will end
@@ -12,17 +12,22 @@ chosen as a framebuffer target.
 Let's hardcode the support only for RGBA8888 for the time being to keep
 us going and figure out a way to query HWC for supported formats later.
 
-Change-Id: I41ea5ed9423c2fab4098f0c4044ddd04e3e51fdb
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+(cherry picked from commit 35925c11bca367b1b27169e79e1900665f10c752)
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: I535fb90e6a70653ce166bb3dd020ed52b6d1b69e
 ---
  src/egl/drivers/dri2/platform_android.c | 16 +++++++++-------
  1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 0cda303..0cd7ad3 100644
+index f0afca1..54c01a4 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -545,18 +545,19 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+@@ -800,18 +800,19 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
     const struct {
        int format;
        unsigned int rgba_masks[4];
@@ -47,9 +52,9 @@ index 0cda303..0cd7ad3 100644
 -     EGL_FRAMEBUFFER_TARGET_ANDROID, EGL_TRUE,
 +     EGL_FRAMEBUFFER_TARGET_ANDROID, 0,
       EGL_RECORDABLE_ANDROID, EGL_TRUE,
-      EGL_NONE
-    };
-@@ -568,6 +569,7 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+      EGL_MAX_PBUFFER_WIDTH, 4096,
+      EGL_MAX_PBUFFER_HEIGHT, 4096,
+@@ -825,6 +826,7 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
  
        config_attrs[1] = visuals[i].format;
        config_attrs[3] = visuals[i].format;

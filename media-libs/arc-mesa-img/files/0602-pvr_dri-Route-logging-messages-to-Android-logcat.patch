@@ -1,7 +1,7 @@
-From 7946d213283a138c16958e84a156c6b2ff939204 Mon Sep 17 00:00:00 2001
+From 49945d40dfeef337d0a26c2913973a9f4b2bee0e Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Mon, 16 May 2016 14:23:18 +0800
-Subject: [PATCH] pvr_dri: Route logging messages to Android logcat
+Subject: [PATCH 602/607] pvr_dri: Route logging messages to Android logcat
 
 On Android, we lose the information if it is printed to stderr.
 

@@ -1,0 +1,62 @@
+From 1d0a87f50f8380eecf8556f7d26bd1fb2d45dc9a Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 29 Jun 2016 14:52:40 +0900
+Subject: [PATCH 500/517] CHROMIUM: gallium/dri: Add shared glapi to LIBADD on
+ Android
+
+An earlier patch fixed the problem for classic drivers, however Gallium
+was still left broken. This patch applies the same workaround to
+Gallium, when compiled for Android. Following is a quote from the
+original patch:
+
+0cbc90c57cfc mesa: dri: Add shared glapi to LIBADD on Android
+
+/system/vendor/lib/dri/*_dri.so actually depend on libglapi: without
+this, loading the so file fails with:
+cannot locate symbol "__emutls_v._glapi_tls_Context"
+
+On non-Android (non-bionic) platform, EGL uses the following
+workflow, which works fine:
+  dlopen("libglapi.so", RTLD_LAZY | RTLD_GLOBAL);
+  dlopen("dri/<driver>_dri.so", RTLD_NOW | RTLD_GLOBAL);
+
+However, bionic does not respect the RTLD_GLOBAL flag, and the dri
+library cannot find symbols in libglapi.so, so we need to link
+to libglapi.so explicitly. Android.mk already does this.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: Ib6040d4f129fd8a39e2043acdcfe95c159f99806
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/gallium/targets/dri/Makefile.am | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/gallium/targets/dri/Makefile.am b/src/gallium/targets/dri/Makefile.am
+index f42dd25..06ade45 100644
+--- a/src/gallium/targets/dri/Makefile.am
++++ b/src/gallium/targets/dri/Makefile.am
+@@ -1,5 +1,11 @@
+ include $(top_srcdir)/src/gallium/Automake.inc
+ 
++if HAVE_ANDROID
++if HAVE_SHARED_GLAPI
++SHARED_GLAPI_LIB = $(top_builddir)/src/mapi/shared-glapi/libglapi.la
++endif
++endif
++
+ AM_CFLAGS = \
+ 	-I$(top_srcdir)/src/mapi \
+ 	-I$(top_srcdir)/src/mesa \
+@@ -49,6 +55,7 @@ gallium_dri_la_LIBADD = \
+ 	$(top_builddir)/src/gallium/drivers/noop/libnoop.la \
+ 	$(top_builddir)/src/gallium/drivers/rbug/librbug.la \
+ 	$(top_builddir)/src/gallium/drivers/trace/libtrace.la \
++	$(SHARED_GLAPI_LIB) \
+ 	$(SELINUX_LIBS) \
+ 	$(EXPAT_LIBS) \
+ 	$(LIBDRM_LIBS) \
+-- 
+2.8.0.rc3.226.g39d4020
+

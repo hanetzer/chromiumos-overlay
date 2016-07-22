@@ -1,7 +1,7 @@
-From e756922a6747dce87abe515102823165bd3645ce Mon Sep 17 00:00:00 2001
+From d163bb0c73032f145ba140af6ac63a0e8346c2f3 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Tue, 28 Jun 2016 15:58:42 +0800
-Subject: [PATCH 607/609] pvrimage: Do not recompute strides, no matter the
+Subject: [PATCH 605/607] pvrimage: Do not recompute strides, no matter the
  number of planes.
 
 When using an EGL image where width != stride, Android's

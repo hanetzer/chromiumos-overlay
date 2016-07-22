@@ -1,0 +1,62 @@
+From d5eb44959faa1913d866d595bf1e35822dd11f86 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Fri, 24 Jun 2016 17:36:22 +0900
+Subject: [PATCH 507/517] CHROMIUM: egl/android: Stop leaking DRI images
+
+Current implementation of the DRI image loader does not free the images
+created in get_back_bo() and so leaks memory. Moreover, it creates a new
+image every time the DRI driver queries for buffers, even if the backing
+native buffer has not changed. leaking memory again.
+
+This patch adds missing call to destroyImage() in droid_enqueue_buffer()
+and a check if image is already created to get_back_bo() to fix the
+above.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: Ia95b83f01833eabc988cc082dab3ca80d89fa83b
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index a3e96f8..de1e5e6 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -162,6 +162,8 @@ droid_window_dequeue_buffer(struct dri2_egl_surface *dri2_surf)
+ static EGLBoolean
+ droid_window_enqueue_buffer(_EGLDisplay *disp, struct dri2_egl_surface *dri2_surf)
+ {
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
+    /* To avoid blocking other EGL calls, release the display mutex before
+     * we enter droid_window_enqueue_buffer() and re-acquire the mutex upon
+     * return.
+@@ -192,6 +194,12 @@ droid_window_enqueue_buffer(_EGLDisplay *disp, struct dri2_egl_surface *dri2_sur
+    dri2_surf->buffer = NULL;
+ 
+    mtx_lock(&disp->Mutex);
++
++   if (dri2_surf->dri_image) {
++      dri2_dpy->image->destroyImage(dri2_surf->dri_image);
++      dri2_surf->dri_image = NULL;
++   }
++
+    return EGL_TRUE;
+ }
+ 
+@@ -377,6 +385,9 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+    int fourcc, pitch;
+    int offset = 0, fd;
+ 
++   if (dri2_surf->dri_image)
++	   return 0;
++
+    if (!dri2_surf->buffer)
+       return -1;
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

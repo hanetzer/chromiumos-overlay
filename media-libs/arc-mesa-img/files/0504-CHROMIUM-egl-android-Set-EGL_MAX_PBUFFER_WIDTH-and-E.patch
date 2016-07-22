@@ -1,0 +1,43 @@
+From 4583f2df343bf1f9c589553a77e402792ada766f Mon Sep 17 00:00:00 2001
+From: Haixia Shi <hshi@chromium.org>
+Date: Tue, 14 Jun 2016 17:07:46 -0700
+Subject: [PATCH 504/517] CHROMIUM: egl/android: Set EGL_MAX_PBUFFER_WIDTH and
+ EGL_MAX_PBUFFER_HEIGHT
+
+Set config attributes EGL_MAX_PBUFFER_WIDTH and EGL_MAX_PBUFFER_HEIGHT to
+hard-coded non-zero values. These two attributes are required on Android.
+
+BUG=b/29359794
+TEST=dEQP-EGL.function.create_surface.pbuffer
+
+Reviewed-on: https://chromium-review.googlesource.com/352700
+Tested-by: Haixia Shi <hshi@chromium.org>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+(cherry picked from commit b2b27d09c1d7f694a37a80f7b04e4f79df557b1f)
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+Change-Id: I56dbffcd919b71a22ec3e8d921e16212f9069934
+---
+ src/egl/drivers/dri2/platform_android.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index b33f4e8..f42febc 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -655,6 +655,8 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+      EGL_NATIVE_VISUAL_TYPE, 0,
+      EGL_FRAMEBUFFER_TARGET_ANDROID, EGL_TRUE,
+      EGL_RECORDABLE_ANDROID, EGL_TRUE,
++     EGL_MAX_PBUFFER_WIDTH, 4096,
++     EGL_MAX_PBUFFER_HEIGHT, 4096,
+      EGL_NONE
+    };
+    int count, i, j;
+-- 
+2.8.0.rc3.226.g39d4020
+

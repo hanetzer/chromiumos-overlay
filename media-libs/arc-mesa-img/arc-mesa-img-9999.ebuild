@@ -63,6 +63,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# workaround for cros-workon not preserving git metadata
+	if [[ ${PV} == 9999* && "${CROS_WORKON_INPLACE}" != "1" ]]; then
+		echo "#define MESA_GIT_SHA1 \"git-deadbeef\"" > src/git_sha1.h
+	fi
+
 	# apply patches
 	if [[ ${PV} != 9999* && -n ${SRC_PATCHES} ]]; then
 		EPATCH_FORCE="yes" \
@@ -76,8 +81,6 @@ src_prepare() {
 			-e "s/-DHAVE_POSIX_MEMALIGN//" \
 			configure.ac || die
 	fi
-
-	echo "#define MESA_GIT_SHA1 \"git-9999\"" > src/mesa/git_sha1.h
 
 	base_src_prepare
 
@@ -96,6 +99,9 @@ src_configure() {
 
 	export EXPAT_LIBS="-lexpat"
 	export PTHREAD_LIBS="-lc"
+
+	export PTHREADSTUBS_CFLAGS=" "
+	export PTHREADSTUBS_LIBS="-lc"
 
 	export DRM_GRALLOC_CFLAGS="-I${ARC_SYSROOT}/usr/include/drm_gralloc"
 	export DRM_GRALLOC_LIBS=" "

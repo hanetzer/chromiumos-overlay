@@ -1,14 +1,12 @@
-From 3655252fce29748c014f8dbd845b0ec86de4b3c4 Mon Sep 17 00:00:00 2001
+From da95de7c0e72bd9c751e91bd7e60f343e7d93f7d Mon Sep 17 00:00:00 2001
 From: Haixia Shi <hshi@chromium.org>
-Date: Tue, 27 Jan 2015 14:23:08 -0800
-Subject: [PATCH] CHROMIUM: egl/dri2: platform_drm should also try render node
- first.
+Date: Tue, 3 May 2016 16:00:25 -0700
+Subject: [PATCH 1/2] CHROMIUM: egl/dri2: platform_drm should also try render
+ node first.
 
 BUG=chromium:446653
 TEST=build chrome with use_mesa_platform_null=1 and mesa with
 platform_gbm and verify that chrome still works
-
-Change-Id: I7d845a7b993f59bfd0595ddc3d18d5091bb74ec5
 ---
  src/egl/drivers/dri2/platform_drm.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
@@ -36,5 +34,5 @@ index 3f4f7e7..567ca9e 100644
           fd = loader_open_device(buf);
        if (fd < 0)
 -- 
-1.9.1
+2.5.0
 

@@ -1,7 +1,7 @@
-From 85c64c31a525df130e7e1efe5ff52933fc7e0212 Mon Sep 17 00:00:00 2001
+From cd86e8a4e86aa37236ef45e2251f10584464e812 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Tue, 15 Dec 2015 17:18:40 +0800
-Subject: [PATCH 600/605] pvr_dri: Add RGBA image format
+Subject: [PATCH 600/607] pvr_dri: Add RGBA image format
 
 Change-Id: I5375cb295227430870a9202f573fb1252f500f87
 ---
@@ -10,10 +10,10 @@ Change-Id: I5375cb295227430870a9202f573fb1252f500f87
  2 files changed, 16 insertions(+)
 
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
-index f179871..71f95cc 100644
+index b1e3708..eddae95 100644
 --- a/src/mesa/drivers/dri/pvr/pvrdri.c
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.c
-@@ -1111,6 +1111,20 @@ static IMG_PIXFMT PVRDRIGetPixelFormat(const struct gl_config *psGLMode)
+@@ -1112,6 +1112,20 @@ static IMG_PIXFMT PVRDRIGetPixelFormat(const struct gl_config *psGLMode)
  				}
  			}
  
@@ -35,10 +35,10 @@ index f179871..71f95cc 100644
  			return IMG_PIXFMT_UNKNOWN;
  
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
-index 0395fad..69d9e27 100644
+index a253831..e020214 100644
 --- a/src/mesa/drivers/dri/pvr/pvrutil.c
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -286,6 +286,8 @@ const __DRIconfig **PVRDRICreateConfigs(void)
+@@ -316,6 +316,8 @@ const __DRIconfig **PVRDRICreateConfigs(void)
  		{
  			MESA_FORMAT_B8G8R8A8_UNORM,
  			MESA_FORMAT_B8G8R8X8_UNORM,

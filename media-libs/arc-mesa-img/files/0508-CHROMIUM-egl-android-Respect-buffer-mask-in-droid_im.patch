@@ -1,0 +1,54 @@
+From c36ca2b10eb7917d5f45166303cf9bc4b5856443 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Sat, 25 Jun 2016 10:33:19 +0900
+Subject: [PATCH 508/517] CHROMIUM: egl/android: Respect buffer mask in
+ droid_image_get_buffers
+
+Drivers can request different set of buffers depending on the buffer
+mask they pass to the get_buffers callback. This patch makes
+droid_image_get_buffers() respect this mask.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: Id012b4109419b35375d54b21956204880f486546
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index de1e5e6..7495445 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -434,16 +434,23 @@ droid_image_get_buffers(__DRIdrawable *driDrawable,
+ {
+    struct dri2_egl_surface *dri2_surf = loaderPrivate;
+ 
++   images->image_mask = 0;
++
+    if (update_buffers(dri2_surf) < 0)
+       return 0;
+ 
+-   if (get_back_bo(dri2_surf) < 0) {
+-      _eglError(EGL_BAD_PARAMETER, "get_back_bo");
++   if (buffer_mask & __DRI_IMAGE_BUFFER_FRONT) {
++      _eglLog(_EGL_WARNING, "Front buffer is not supported for window surfaces");
+       return 0;
+    }
+ 
+-   images->image_mask = __DRI_IMAGE_BUFFER_BACK;
+-   images->back = dri2_surf->dri_image;
++   if (buffer_mask & __DRI_IMAGE_BUFFER_BACK) {
++      if (get_back_bo(dri2_surf) < 0)
++         return 0;
++
++      images->back = dri2_surf->dri_image;
++      images->image_mask |= __DRI_IMAGE_BUFFER_BACK;
++   }
+ 
+    return 1;
+ }
+-- 
+2.8.0.rc3.226.g39d4020
+

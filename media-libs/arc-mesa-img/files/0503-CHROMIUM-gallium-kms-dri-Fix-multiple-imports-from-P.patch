@@ -1,0 +1,87 @@
+From 54e37dda5b215026c9e48d054918edd44233dd4f Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 29 Jun 2016 14:55:37 +0900
+Subject: [PATCH 503/517] CHROMIUM: gallium/kms-dri: Fix multiple imports from
+ PRIME FDs
+
+When a buffer with a GEM handle already existing in our context is
+(re-)imported from a PRIME FD, the resulting GEM handle is exactly the
+same as the original one. Since the GEM handles are not reference
+counted, we need to detect duplicate imports and reference count our
+internal buffer structs ourselves.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: If4630ef55dec1e0f4c933b05feccb00ad108dab5
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/gallium/winsys/sw/kms-dri/kms_dri_sw_winsys.c | 30 +++++++++++++++++------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
+
+diff --git a/src/gallium/winsys/sw/kms-dri/kms_dri_sw_winsys.c b/src/gallium/winsys/sw/kms-dri/kms_dri_sw_winsys.c
+index 21ac0d7..c4f56cb 100644
+--- a/src/gallium/winsys/sw/kms-dri/kms_dri_sw_winsys.c
++++ b/src/gallium/winsys/sw/kms-dri/kms_dri_sw_winsys.c
+@@ -211,7 +211,9 @@ kms_sw_displaytarget_map(struct sw_winsys *ws,
+ }
+ 
+ static struct kms_sw_displaytarget *
+-kms_sw_displaytarget_add_from_prime(struct kms_sw_winsys *kms_sw, int fd)
++kms_sw_displaytarget_add_from_prime(struct kms_sw_winsys *kms_sw, int fd,
++                                    unsigned width, unsigned height,
++                                    unsigned stride)
+ {
+    uint32_t handle = -1;
+    struct kms_sw_displaytarget * kms_sw_dt;
+@@ -222,6 +224,17 @@ kms_sw_displaytarget_add_from_prime(struct kms_sw_winsys *kms_sw, int fd)
+    if (ret)
+       return NULL;
+ 
++   LIST_FOR_EACH_ENTRY(kms_sw_dt, &kms_sw->bo_list, link) {
++      if (kms_sw_dt->handle == handle) {
++         kms_sw_dt->ref_count++;
++
++         DEBUG_PRINT("KMS-DEBUG: imported buffer %u (size %u)\n",
++                     kms_sw_dt->handle, kms_sw_dt->size);
++
++         return kms_sw_dt;
++      }
++   }
++
+    kms_sw_dt = CALLOC_STRUCT(kms_sw_displaytarget);
+    if (!kms_sw_dt)
+       return NULL;
+@@ -229,6 +242,9 @@ kms_sw_displaytarget_add_from_prime(struct kms_sw_winsys *kms_sw, int fd)
+    kms_sw_dt->ref_count = 1;
+    kms_sw_dt->handle = handle;
+    kms_sw_dt->size = lseek(fd, 0, SEEK_END);
++   kms_sw_dt->width = width;
++   kms_sw_dt->height = height;
++   kms_sw_dt->stride = stride;
+ 
+    if (kms_sw_dt->size == (off_t)-1) {
+       FREE(kms_sw_dt);
+@@ -274,14 +290,12 @@ kms_sw_displaytarget_from_handle(struct sw_winsys *ws,
+ 
+    switch(whandle->type) {
+    case DRM_API_HANDLE_TYPE_FD:
+-      kms_sw_dt = kms_sw_displaytarget_add_from_prime(kms_sw, whandle->handle);
+-      if (kms_sw_dt) {
+-         kms_sw_dt->ref_count++;
+-         kms_sw_dt->width = templ->width0;
+-         kms_sw_dt->height = templ->height0;
+-         kms_sw_dt->stride = whandle->stride;
++      kms_sw_dt = kms_sw_displaytarget_add_from_prime(kms_sw, whandle->handle,
++                                                      templ->width0,
++                                                      templ->height0,
++                                                      whandle->stride);
++      if (kms_sw_dt)
+          *stride = kms_sw_dt->stride;
+-      }
+       return (struct sw_displaytarget *)kms_sw_dt;
+    case DRM_API_HANDLE_TYPE_KMS:
+       LIST_FOR_EACH_ENTRY(kms_sw_dt, &kms_sw->bo_list, link) {
+-- 
+2.8.0.rc3.226.g39d4020
+

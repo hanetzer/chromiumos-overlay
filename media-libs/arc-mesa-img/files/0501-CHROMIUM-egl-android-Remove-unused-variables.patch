@@ -1,0 +1,35 @@
+From 43105db69af1f56903977ec273e59b6c8dc3c5c7 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Tue, 28 Jun 2016 15:39:44 +0900
+Subject: [PATCH 501/517] CHROMIUM: egl/android: Remove unused variables
+
+There are some unused variables left after previous clean-ups triggering
+compiler warnings. Let's remove them.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: Ib4b2a92c4336b7cefb30ab6b9bfc9f5f09c06701
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index b1d7272..b33f4e8 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -431,10 +431,8 @@ droid_image_get_buffers(__DRIdrawable *driDrawable,
+ static EGLBoolean
+ droid_swap_buffers(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw)
+ {
+-   struct dri2_egl_driver *dri2_drv = dri2_egl_driver(drv);
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
+-   _EGLContext *ctx;
+ 
+    if (dri2_surf->base.Type != EGL_WINDOW_BIT)
+       return EGL_TRUE;
+-- 
+2.8.0.rc3.226.g39d4020
+

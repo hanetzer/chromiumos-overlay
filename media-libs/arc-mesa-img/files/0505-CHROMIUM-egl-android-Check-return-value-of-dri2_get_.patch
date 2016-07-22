@@ -1,0 +1,33 @@
+From fea2cc671e30661edc9b0a4138474ddb7938088b Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Tue, 5 Jul 2016 15:05:51 +0900
+Subject: [PATCH 505/517] CHROMIUM: egl/android: Check return value of
+ dri2_get_dri_config()
+
+It might return NULL if specific config variant is unsupported.
+
+BUG=b:29036398
+TEST=No significant regressions in Android dEQP
+
+Change-Id: I0f5315b16a79dec00af6967f0c2efdeadd00fdd2
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index f42febc..a695e00 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -280,6 +280,8 @@ droid_create_surface(_EGLDriver *drv, _EGLDisplay *disp, EGLint type,
+ 
+    config = dri2_get_dri_config(dri2_conf, EGL_WINDOW_BIT,
+                                 dri2_surf->base.GLColorspace);
++   if (!config)
++      goto cleanup_surface;
+ 
+    dri2_surf->dri_drawable =
+       (*dri2_dpy->dri2->createNewDrawable)(dri2_dpy->dri_screen, config,
+-- 
+2.8.0.rc3.226.g39d4020
+

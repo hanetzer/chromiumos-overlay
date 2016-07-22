@@ -1,7 +1,7 @@
-From 35733eaf065c4bd268a7cf58889e7180b31a9e64 Mon Sep 17 00:00:00 2001
+From a75629af15227fdca5f08378360a668335eab3be Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Mon, 11 Apr 2016 16:57:47 +0800
-Subject: [PATCH 603/605] mesa-img: Android build fixups
+Subject: [PATCH 601/607] mesa-img: Android build fixups
 
 Change-Id: I98d79aa4947a8948195a1d56e0bec0a193e7708b
 ---
@@ -10,10 +10,10 @@ Change-Id: I98d79aa4947a8948195a1d56e0bec0a193e7708b
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index ada8711..b8291be 100644
+index c4afd0f..1604b3b 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1544,7 +1544,7 @@ if test -n "$with_dri_drivers"; then
+@@ -1609,7 +1609,7 @@ if test -n "$with_dri_drivers"; then
          xpvr)
              HAVE_PVR_DRI=yes;
              PKG_CHECK_MODULES([PVR], [libdrm >= $LIBDRM_PVR_REQUIRED])

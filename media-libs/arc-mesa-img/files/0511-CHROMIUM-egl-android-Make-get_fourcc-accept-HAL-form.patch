@@ -1,0 +1,80 @@
+From 7200e1540663f2a801c650d347298876f3e2db35 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 13 Jul 2016 18:58:45 +0900
+Subject: [PATCH 511/517] CHROMIUM: egl/android: Make get_fourcc() accept HAL
+ formats
+
+There are DRI_IMAGE_FOURCC macros, for which there are no corresponding
+DRI_IMAGE_FORMAT macros. To support such formats we need to make the
+lookup function take the native format directly. As a side effect, it
+simplifies all existing calls to this function, because they all called
+get_format() first to convert from native to DRI_IMAGE_FORMAT.
+
+Change-Id: I2c34c8218f9a9084f5de3aaaf67130b97944e40d
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 4473400..26d7b35 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -69,18 +69,20 @@ get_format_bpp(int native)
+ }
+ 
+ /* createImageFromFds requires fourcc format */
+-static int get_fourcc(int format)
++static int get_fourcc(int native)
+ {
+-   switch(format) {
+-   case __DRI_IMAGE_FORMAT_RGB565:   return __DRI_IMAGE_FOURCC_RGB565;
+-   case __DRI_IMAGE_FORMAT_ARGB8888: return __DRI_IMAGE_FOURCC_ARGB8888;
+-   case __DRI_IMAGE_FORMAT_XRGB8888: return __DRI_IMAGE_FOURCC_XRGB8888;
+-   case __DRI_IMAGE_FORMAT_ABGR8888: return __DRI_IMAGE_FOURCC_ABGR8888;
+-   case __DRI_IMAGE_FORMAT_XBGR8888: return __DRI_IMAGE_FOURCC_XBGR8888;
++   switch (native) {
++   case HAL_PIXEL_FORMAT_RGB_565:   return __DRI_IMAGE_FOURCC_RGB565;
++   case HAL_PIXEL_FORMAT_BGRA_8888: return __DRI_IMAGE_FOURCC_ARGB8888;
++   case HAL_PIXEL_FORMAT_RGBA_8888: return __DRI_IMAGE_FOURCC_ABGR8888;
++   case HAL_PIXEL_FORMAT_RGBX_8888: return __DRI_IMAGE_FOURCC_XBGR8888;
++   default:
++      _eglLog(_EGL_WARNING, "unsupported native buffer format 0x%x", native);
+    }
+    return -1;
+ }
+ 
++#ifdef HAS_GRALLOC_DRM_HEADERS
+ static int get_format(int format)
+ {
+    switch (format) {
+@@ -95,6 +97,8 @@ static int get_format(int format)
+    }
+    return -1;
+ }
++#endif
++
+ static int
+ get_native_buffer_fd(struct ANativeWindowBuffer *buf)
+ {
+@@ -435,7 +439,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+       return -1;
+    }
+ 
+-   fourcc = get_fourcc(get_format(dri2_surf->buffer->format));
++   fourcc = get_fourcc(dri2_surf->buffer->format);
+ 
+    pitch = dri2_surf->buffer->stride *
+       get_format_bpp(dri2_surf->buffer->format);
+@@ -525,7 +529,7 @@ droid_create_image_from_prime_fd(_EGLDisplay *disp, _EGLContext *ctx,
+    if (fd < 0)
+ 	   return NULL;
+ 
+-   const int fourcc = get_fourcc(get_format(buf->format));
++   const int fourcc = get_fourcc(buf->format);
+    const int pitch = buf->stride * get_format_bpp(buf->format);
+ 
+    const EGLint attr_list[14] = {
+-- 
+2.8.0.rc3.226.g39d4020
+

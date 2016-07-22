@@ -4,12 +4,12 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="c3b88cc2c15f19e748c9c406e9ab053975adab7e"
+CROS_WORKON_COMMIT="a0f3c3c9d4002ffc1dd987c816a1462e4a91a5f4"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
-CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
-CROS_WORKON_LOCALNAME="mesa"
+CROS_WORKON_PROJECT="chromiumos/third_party/mesa-img"
+CROS_WORKON_LOCALNAME="mesa-img"
 CROS_WORKON_BLACKLIST="1"
 
 if [[ ${PV} = 9999* ]]; then
@@ -67,6 +67,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# workaround for cros-workon not preserving git metadata
+	if [[ ${PV} == 9999* && "${CROS_WORKON_INPLACE}" != "1" ]]; then
+		echo "#define MESA_GIT_SHA1 \"git-deadbeef\"" > src/git_sha1.h
+	fi
+
 	# apply patches
 	if [[ ${PV} != 9999* && -n ${SRC_PATCHES} ]]; then
 		EPATCH_FORCE="yes" \
@@ -103,9 +108,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
-	epatch "${FILESDIR}"/11.6-intel-trig.patch
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 
 	# IMG patches
@@ -118,7 +121,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0014-GL_EXT_geometry_shader-entry-points.patch
 	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
 	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0018-GL_KHR_robustness-entry-points.patch
 	epatch "${FILESDIR}"/0021-GL_OES_tessellation_shader-entry-points.patch
 	epatch "${FILESDIR}"/0023-GL_EXT_sparse_texture-entry-points.patch
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
@@ -134,36 +136,33 @@ src_prepare() {
 	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
 
 	# Android specific patches
-	epatch "${FILESDIR}"/0500-UPSTREAM-mesa-Build-EGL-without-X11-headers-after-in.patch
-	epatch "${FILESDIR}"/0501-UPSTREAM-mesa-dri-Add-shared-glapi-to-LIBADD-on-Andr.patch
-	epatch "${FILESDIR}"/0502-UPSTREAM-configure.ac-Add-support-for-Android-builds.patch
-	epatch "${FILESDIR}"/0503-FROMLIST-automake-egl-Android-Add-libEGL-dependencie.patch
-	epatch "${FILESDIR}"/0504-dri-Add-fd-parameter-to-__DRIbuffer.patch
-	epatch "${FILESDIR}"/0505-egl-android-Convert-DRI2-EGL-platform-to-use-Prime-F.patch
-	epatch "${FILESDIR}"/0506-dri-common-Allow-32-bit-RGBA-RGBX-visuals.patch
-	epatch "${FILESDIR}"/0507-egl-android-Do-not-ask-gralloc-for-DRM-device.patch
-	epatch "${FILESDIR}"/0508-egl-dri2-Change-loading-errors-from-DEBUG-to-WARNING.patch
-	epatch "${FILESDIR}"/0509-egl-android-Use-dri2_create_image_khr-instead-of-cal.patch
-	epatch "${FILESDIR}"/0510-egl-android-Disable-EGL_ANDROID_framebuffer_target-f.patch
-	epatch "${FILESDIR}"/0511-egl-android-Add-support-for-YV12-pixel-format.patch
-	epatch "${FILESDIR}"/0512-dri-Add-YVU-formats.patch
-	epatch "${FILESDIR}"/0513-platform_android-prevent-deadlock-in-droid_swap_buff.patch
-	epatch "${FILESDIR}"/0514-FIXUP-egl-android-Add-support-for-YV12-pixel-format.patch
-	epatch "${FILESDIR}"/0515-egl-dri2-dri2_make_current-Set-EGL-error-if-bindCont.patch
+	epatch "${FILESDIR}"/0500-CHROMIUM-gallium-dri-Add-shared-glapi-to-LIBADD-on-A.patch
+	epatch "${FILESDIR}"/0501-CHROMIUM-egl-android-Remove-unused-variables.patch
+	epatch "${FILESDIR}"/0502-CHROMIUM-i965-store-reference-to-the-context-within-.patch
+	epatch "${FILESDIR}"/0503-CHROMIUM-gallium-kms-dri-Fix-multiple-imports-from-P.patch
+	epatch "${FILESDIR}"/0504-CHROMIUM-egl-android-Set-EGL_MAX_PBUFFER_WIDTH-and-E.patch
+	epatch "${FILESDIR}"/0505-CHROMIUM-egl-android-Check-return-value-of-dri2_get_.patch
+	epatch "${FILESDIR}"/0506-CHROMIUM-egl-android-Add-some-useful-error-messages.patch
+	epatch "${FILESDIR}"/0507-CHROMIUM-egl-android-Stop-leaking-DRI-images.patch
+	epatch "${FILESDIR}"/0508-CHROMIUM-egl-android-Respect-buffer-mask-in-droid_im.patch
+	epatch "${FILESDIR}"/0509-CHROMIUM-egl-android-Fix-support-for-pbuffers.patch
+	epatch "${FILESDIR}"/0510-CHROMIUM-egl-android-Make-drm_gralloc-headers-option.patch
+	epatch "${FILESDIR}"/0511-CHROMIUM-egl-android-Make-get_fourcc-accept-HAL-form.patch
+	epatch "${FILESDIR}"/0512-CHROMIUM-egl-android-Add-support-for-YV12-pixel-form.patch
+	epatch "${FILESDIR}"/0513-CHROMIUM-egl-android-Add-fallback-to-kms_swrast-driv.patch
+	epatch "${FILESDIR}"/0514-CHROMIUM-i965-Advertise-R8G8B8A8-and-R8G8B8X8-DRI-co.patch
+	epatch "${FILESDIR}"/0515-CHROMIUM-gallium-dri-Advertise-R8G8B8A8-and-R8G8B8X8.patch
+	epatch "${FILESDIR}"/0516-CHROMIUM-egl-android-Disable-EGL_ANDROID_framebuffer.patch
+	epatch "${FILESDIR}"/0517-CHROMIUM-egl-Add-missing-flags-for-Android-builds.patch
+	epatch "${FILESDIR}"/0518-UPSTREAM-egl-dri2-dri2_make_current-Set-EGL-error-if.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0600-pvr_dri-Add-RGBA-image-format.patch
-	epatch "${FILESDIR}"/0601-platform_android-Set-DRI2-loader-version-to-4.patch
-	epatch "${FILESDIR}"/0602-pvr_dri-Add-support-for-buffers-with-fd-but-no-name.patch
-	epatch "${FILESDIR}"/0603-mesa-img-Android-build-fixups.patch
-	epatch "${FILESDIR}"/0604-pvr_dri-Route-logging-messages-to-Android-logcat.patch
-	epatch "${FILESDIR}"/0605-PVRDRIAllocateBuffer-Fix-test-when-allocating-buffer.patch
-	epatch "${FILESDIR}"/0606-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
-	epatch "${FILESDIR}"/0607-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
-	epatch "${FILESDIR}"/0608-platform_android-prevent-deadlock-in-droid_get_buffe.patch
-
-	# Patches on patches
-	epatch "${FILESDIR}"/0701-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
+	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
+	epatch "${FILESDIR}"/0602-pvr_dri-Route-logging-messages-to-Android-logcat.patch
+	epatch "${FILESDIR}"/0603-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
+	epatch "${FILESDIR}"/0604-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
+	epatch "${FILESDIR}"/0605-platform_android-prevent-deadlock-in-droid_get_buffe.patch
 
 	base_src_prepare
 
@@ -182,6 +181,9 @@ src_configure() {
 
 	export EXPAT_LIBS="-lexpat"
 	export PTHREAD_LIBS="-lc"
+
+	export PTHREADSTUBS_CFLAGS=" "
+	export PTHREADSTUBS_LIBS="-lc"
 
 	export DRM_GRALLOC_CFLAGS="-I${ARC_SYSROOT}/usr/include/drm_gralloc"
 	export DRM_GRALLOC_LIBS=" "

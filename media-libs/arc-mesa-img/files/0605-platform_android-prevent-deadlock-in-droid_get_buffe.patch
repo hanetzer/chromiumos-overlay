@@ -1,7 +1,7 @@
-From 3dbea88a13d11a57987a7a2facc2ea2cdc51ca85 Mon Sep 17 00:00:00 2001
+From 4e590adcf114b072e22df8fb07b1e2df0b970297 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Wed, 6 Jul 2016 18:57:42 +0800
-Subject: [PATCH 608/609] platform_android: prevent deadlock in
+Subject: [PATCH 606/607] platform_android: prevent deadlock in
  droid_get_buffers_with_format
 
 Similarly to 1ea233c6f3 "platform_android: prevent deadlock in droid_swap_buffers",
@@ -22,10 +22,10 @@ Change-Id: I41e9ce43a0abb33bcd97c1a620d48f3e4039f0a6
  1 file changed, 16 insertions(+), 3 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 1b22868..f730633 100644
+index c20d1b9..2c66839 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -110,12 +110,21 @@ get_native_buffer_fd(struct ANativeWindowBuffer *buf)
+@@ -128,12 +128,21 @@ get_native_buffer_name(struct ANativeWindowBuffer *buf)
  static EGLBoolean
  droid_window_dequeue_buffer(struct dri2_egl_surface *dri2_surf)
  {
@@ -48,7 +48,7 @@ index 1b22868..f730633 100644
  
     /* If access to the buffer is controlled by a sync fence, then block on the
      * fence.
-@@ -147,13 +156,17 @@ droid_window_dequeue_buffer(struct dri2_egl_surface *dri2_surf)
+@@ -165,13 +174,17 @@ droid_window_dequeue_buffer(struct dri2_egl_surface *dri2_surf)
     dri2_surf->buffer->common.incRef(&dri2_surf->buffer->common);
  #else
     if (dri2_surf->window->dequeueBuffer(dri2_surf->window, &dri2_surf->buffer))

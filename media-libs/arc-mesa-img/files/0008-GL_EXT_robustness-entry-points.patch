@@ -1,7 +1,7 @@
-From fbab69ff21ea1de6f4b895d2f62ba0ea01b0ebc3 Mon Sep 17 00:00:00 2001
+From 0cd309cb3a434e1c42c56649fbf81d35425488fe Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 12:08:45 +0000
-Subject: [PATCH 10/40] GL_EXT_robustness entry points
+Subject: [PATCH 8/8] GL_EXT_robustness entry points
 
 ---
  src/mapi/glapi/gen/EXT_robustness.xml | 55 +++++++++++++++++++++++++++++++++++
@@ -77,7 +77,7 @@ index 0000000..cfd0d1a
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index ca0c161..d2c4150 100644
+index 6886dab..0059abf 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
 @@ -758,6 +758,9 @@
@@ -104,12 +104,12 @@ index ce97cc5..756bccf 100644
 +
  #endif
 diff --git a/src/mesa/main/getstring.c b/src/mesa/main/getstring.c
-index 9873fdb..c033578 100644
+index 6e90511..e7bcb1a 100644
 --- a/src/mesa/main/getstring.c
 +++ b/src/mesa/main/getstring.c
-@@ -361,3 +361,13 @@ _mesa_GetGraphicsResetStatusARB( void )
- 
-    return status;
+@@ -311,3 +311,13 @@ _mesa_GetError( void )
+    ctx->ErrorDebugCount = 0;
+    return e;
  }
 +
 +GLenum GLAPIENTRY
@@ -122,10 +122,10 @@ index 9873fdb..c033578 100644
 +   return GL_NO_ERROR;
 +}
 diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
-index 18ab06a..298d6e4 100644
+index 1cb06c7..99910b3 100644
 --- a/src/mesa/main/readpix.c
 +++ b/src/mesa/main/readpix.c
-@@ -1122,6 +1122,14 @@ _mesa_ReadnPixelsARB( GLint x, GLint y, GLsizei width, GLsizei height,
+@@ -1118,6 +1118,14 @@ _mesa_ReadnPixelsARB( GLint x, GLint y, GLsizei width, GLsizei height,
  }
  
  void GLAPIENTRY
@@ -155,7 +155,7 @@ index 481ad9d..d3b74d1 100644
 +
  #endif
 diff --git a/src/mesa/main/uniforms.c b/src/mesa/main/uniforms.c
-index 973b877..3ccdc2a 100644
+index 35b93d3..f5eb3bf 100644
 --- a/src/mesa/main/uniforms.c
 +++ b/src/mesa/main/uniforms.c
 @@ -844,6 +844,14 @@ _mesa_GetnUniformfvARB(GLuint program, GLint location,
@@ -189,7 +189,7 @@ index 973b877..3ccdc2a 100644
  {
     _mesa_GetnUniformivARB(program, location, INT_MAX, params);
 diff --git a/src/mesa/main/uniforms.h b/src/mesa/main/uniforms.h
-index c3c9c1e..cfbdda4 100644
+index 88fe958..caf2d99 100644
 --- a/src/mesa/main/uniforms.h
 +++ b/src/mesa/main/uniforms.h
 @@ -197,10 +197,14 @@ _mesa_ProgramUniformMatrix4x3fv(GLuint program, GLint location, GLsizei count,
