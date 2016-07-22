@@ -1,7 +1,7 @@
-From 3160c62ffd788ea0a51eaa19f5628eb48aae216c Mon Sep 17 00:00:00 2001
+From 3dbea88a13d11a57987a7a2facc2ea2cdc51ca85 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Wed, 6 Jul 2016 18:57:42 +0800
-Subject: [PATCH 2/2] platform_android: prevent deadlock in
+Subject: [PATCH 608/609] platform_android: prevent deadlock in
  droid_get_buffers_with_format
 
 Similarly to 1ea233c6f3 "platform_android: prevent deadlock in droid_swap_buffers",

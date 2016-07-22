@@ -1,7 +1,8 @@
-From d2709fd82fbbc825f106fab3e9473c5ad54a094c Mon Sep 17 00:00:00 2001
+From 977de81227b5126043a3018f1303ab9eb32a1c38 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Wed, 8 Jun 2016 23:59:46 +0800
-Subject: [PATCH] platform_android: Add support for DRI Query Buffer extension
+Subject: [PATCH 606/609] platform_android: Add support for DRI Query Buffer
+ extension
 
 CQ-DEPEND=CL:*262435
 BUG=chrome-os-partner:54012
@@ -13,7 +14,7 @@ Change-Id: I0f6d4be3537795c0cae3bf13d6d00b2d40d57e7c
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index abc7370..a3a10ee 100644
+index 547fde6..1b22868 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
 @@ -365,6 +365,9 @@ droid_swap_buffers(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw)

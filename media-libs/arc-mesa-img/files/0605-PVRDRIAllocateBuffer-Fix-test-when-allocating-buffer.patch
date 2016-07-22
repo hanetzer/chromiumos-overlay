@@ -1,8 +1,8 @@
-From 0747a27a4d888a38e168e43edcdcbfaa16e70fe3 Mon Sep 17 00:00:00 2001
+From 544af716a7f3a6213790ca2046f88d48f7773a50 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Tue, 31 May 2016 16:33:13 +0800
-Subject: [PATCH] PVRDRIAllocateBuffer: Fix test when allocating buffers with
- no name
+Subject: [PATCH 605/609] PVRDRIAllocateBuffer: Fix test when allocating
+ buffers with no name
 
 When DRI2 loader version >= 4, we do not use GEM names, and therefore
 do not need a DRM primary node.
@@ -16,11 +16,11 @@ Change-Id: I07f213cc0006f719d252319be5d07e086897394d
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
-index 920ad71..481935d 100644
+index ea9a383..0deebe2 100644
 --- a/src/mesa/drivers/dri/pvr/pvrdri.c
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.c
-@@ -1342,7 +1342,8 @@ static __DRIbuffer *PVRDRIAllocateBuffer(__DRIscreen *psDRIScreen,
- 	PVRBuffer *psBuffer;
+@@ -1338,7 +1338,8 @@ static __DRIbuffer *PVRDRIAllocateBuffer(__DRIscreen *psDRIScreen,
+ 	unsigned int uiBpp;
  
  	/* GEM names are only supported on primary nodes */
 -	if (drmGetNodeTypeFromFd(psDRIScreen->fd) != DRM_NODE_PRIMARY)

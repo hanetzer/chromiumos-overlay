@@ -1,7 +1,7 @@
-From 32bcaafb7078d4cb37c15df28352ee16bb3c6a61 Mon Sep 17 00:00:00 2001
+From 84fca94c86850ac9aa667475311fb4289f5b3105 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Tue, 5 Jul 2016 16:35:19 +0100
-Subject: [PATCH] pvr/dri: Pass buffer source to CreateFromFd
+Subject: [PATCH 609/609] pvr/dri: Pass buffer source to CreateFromFd
 
 The IMG DDK's implementation of DMA_buf is not complete.  In particular,
 DMA_buf objects allocated via the DDK do not have an associated
@@ -48,5 +48,5 @@ index 4eade1b..ae26097 100644
  	}
  
 -- 
-1.9.1
+2.8.0.rc3.226.g39d4020
 

@@ -1,7 +1,7 @@
-From 1c0769ef679a43ea33718ccf15da00bd1f08b3f4 Mon Sep 17 00:00:00 2001
+From 7946d213283a138c16958e84a156c6b2ff939204 Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Mon, 16 May 2016 14:23:18 +0800
-Subject: [PATCH 604/605] pvr_dri: Route logging messages to Android logcat
+Subject: [PATCH] pvr_dri: Route logging messages to Android logcat
 
 On Android, we lose the information if it is printed to stderr.
 
@@ -30,7 +30,7 @@ index b6f76ea..1fbd8dd 100644
  
  noinst_LTLIBRARIES = libpvr_dri.la
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
-index 69d9e27..a045d16 100644
+index e020214..7db43b8 100644
 --- a/src/mesa/drivers/dri/pvr/pvrutil.c
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
 @@ -37,6 +37,16 @@ THE SOFTWARE.
@@ -50,8 +50,8 @@ index 69d9e27..a045d16 100644
  static const PVRDRIImageFormat g_asFormats[] =
  {
  	{
-@@ -190,14 +200,13 @@ static const PVRDRIImageFormat g_asFormats[] =
- 	},
+@@ -220,14 +230,13 @@ static const PVRDRIImageFormat g_asFormats[] =
+ #endif
  };
  
 -
@@ -66,7 +66,7 @@ index 69d9e27..a045d16 100644
  	va_end(args);
  }
  
-@@ -206,15 +215,21 @@ void __attribute__((format(printf, 1, 2))) __driUtilMessage(const char *f, ...)
+@@ -236,15 +245,21 @@ void __attribute__((format(printf, 1, 2))) __driUtilMessage(const char *f, ...)
  	va_list args;
  	char *ev;
  
