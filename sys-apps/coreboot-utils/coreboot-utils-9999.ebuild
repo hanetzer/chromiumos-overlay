@@ -26,7 +26,7 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host mma bitmap_in_cbfs"
+IUSE="cros_host mma"
 
 src_configure() {
 	cros-workon_src_configure
