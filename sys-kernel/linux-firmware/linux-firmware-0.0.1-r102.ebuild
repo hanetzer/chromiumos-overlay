@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="96b8e87e98cf4f9b0d6c8af3eb89ffc9dd1292c4"
-CROS_WORKON_TREE="66b6c91f07906826d6aa80328d4c6a90c5f7554b"
+CROS_WORKON_COMMIT="20ed9464e50907419aa7fecbc8e388dab7a2e62c"
+CROS_WORKON_TREE="6dc41a65ff0fc020013fb7e90c45eb4298985a79"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -141,7 +141,7 @@ src_install() {
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
-	use_fw marvell-pcie8997 && doins_subdir mrvl/pcieuart8997_combo_v2.bin
+	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v2.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use video_cards_radeon && doins_subdir radeon/*
 
