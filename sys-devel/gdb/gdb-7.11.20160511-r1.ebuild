@@ -73,6 +73,7 @@ src_unpack() {
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
 	epatch_user
+	epatch "${FILESDIR}"/gdb-7.11-remote-arm64.patch
 	strip-linguas -u bfd/po opcodes/po
 }
 

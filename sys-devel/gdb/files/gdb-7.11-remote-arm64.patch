@@ -1,0 +1,26 @@
+From: Caroline Tice <cmtice@google.com>
+
+Incorporating patch from https://sourceware.org/bugzilla/show_bug.cgi?id=13984
+to deal with similar issue.
+
+Note 1. This patch has been proposed to fix the problem, but not actually
+accepted upstream.
+
+Note 2. This is an ugly hack/workaround, but I can't create a better patch
+at the moment, due to the difficulties in reproducing the issue.  This is
+to fix https://bugs.chromium.org/p/chromium/issues/detail?id=630015
+
+index f09a06e..ab9a331 100644
+--- a/gdb/remote.c
++++ b/gdb/remote.c
+@@ -7181,8 +7181,10 @@ process_g_packet (struct regcache *regcache)
+   buf_len = strlen (rs->buf);
+ 
+   /* Further sanity checks, with knowledge of the architecture.  */
++  /*
+   if (buf_len > 2 * rsa->sizeof_g_packet)
+     error (_("Remote 'g' packet reply is too long: %s"), rs->buf);
++  */
+ 
+   /* Save the size of the packet sent to us by the target.  It is used
+      as a heuristic when determining the max size of packets that the
