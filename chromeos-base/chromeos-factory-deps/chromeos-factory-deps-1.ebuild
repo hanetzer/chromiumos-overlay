@@ -19,6 +19,7 @@ FACTORY_FRAMEWORK_RDEPEND="
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/dpkt
+	dev-python/enum34
 	dev-python/imaging
 	dev-python/jsonrpclib
 	dev-python/jsonschema
