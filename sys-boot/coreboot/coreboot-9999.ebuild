@@ -133,7 +133,7 @@ CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
 	if use mocktpm; then
-		echo "CONFIG_VBOOT2_MOCK_SECDATA=y" >> .config
+		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> .config
 	fi
 	if use mma; then
 		echo "CONFIG_MMA=y" >> .config
