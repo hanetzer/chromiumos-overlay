@@ -161,7 +161,7 @@ else:
   #
   # Use of -Qunused-arguments allows this set to be small, just those
   # that clang still warns about.
-  clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-Wclobbered',
+  clang_unsupported = set(['-pass-exit-codes', '-Wclobbered',
                            '-Wunsafe-loop-optimizations', '-Wlogical-op',
                            '-Wmissing-parameter-type', '-Woverride-init',
                            '-Wold-style-declaration', '-Wno-psabi',
