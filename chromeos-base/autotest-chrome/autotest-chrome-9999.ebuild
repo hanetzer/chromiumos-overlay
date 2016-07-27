@@ -25,6 +25,7 @@ IUSE="
 
 RDEPEND="
 	!chromeos-base/autotest-telemetry
+	!<chromeos-base/autotest-tests-0.0.4
 	chromeos-base/autotest-deps-graphics
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
@@ -93,6 +94,7 @@ IUSE_TESTS=(
 	+tests_network_ChromeWifiConfigure
 	+tests_network_ChromeWifiTDLS
 	+tests_platform_ChromeCgroups
+	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_policy_CookiesAllowedForUrls
 	+tests_policy_CookiesBlockedForUrls

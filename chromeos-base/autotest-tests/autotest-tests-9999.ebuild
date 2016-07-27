@@ -208,7 +208,6 @@ CLIENT_IUSE_TESTS="
 	chromeless_tty? ( +tests_platform_MetricsUploader )
 	+tests_platform_NetParms
 	+tests_platform_OpenSSLActual
-	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
 	profile? (
 		+tests_platform_Perf
