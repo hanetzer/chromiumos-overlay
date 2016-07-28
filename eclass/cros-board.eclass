@@ -132,6 +132,7 @@ ALL_BOARDS=(
 	kefka
 	#kennet
 	kevin
+	kevin-tpm2
 	#kiev
 	kip
 	klang
