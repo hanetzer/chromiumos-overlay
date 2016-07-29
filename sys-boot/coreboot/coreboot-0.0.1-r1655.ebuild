@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("a6b43fa16a55d49e335b2c28e19e8d8baed7d76a" "bc469a84b5541bc717bc04712df73f4001847215" "16cacfa043c6153843873467ad4fc510b9fbcf44" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("18557b6b0285dc6e898327a85413d864995cb08c" "e9e5fd38f4b11e9490001177362385722b7745c4" "52af5f84d56ebce87c5cc8ec7ecb9ecbd2161a52" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("000c8b7220d1bd7433a3c7149cdbad5acc1e49a5" "bc469a84b5541bc717bc04712df73f4001847215" "16cacfa043c6153843873467ad4fc510b9fbcf44" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("1b2b11c94277956dc5d1c871967d3ea4989fbc4d" "e9e5fd38f4b11e9490001177362385722b7745c4" "52af5f84d56ebce87c5cc8ec7ecb9ecbd2161a52" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -135,7 +135,7 @@ CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
 	if use mocktpm; then
-		echo "CONFIG_VBOOT2_MOCK_SECDATA=y" >> .config
+		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> .config
 	fi
 	if use mma; then
 		echo "CONFIG_MMA=y" >> .config
