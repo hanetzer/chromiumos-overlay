@@ -11,6 +11,10 @@ CROS_EC_PATH="/sys/class/chromeos/cros_ec"
 IIO_DEVICE_PATH="${IIO_DEVICES}/${DEVICE}"
 LOCATION_PATH="${IIO_DEVICE_PATH}/location"
 IIO_SINGLE_SENSOR_DIR=false
+SYSFSTRIG_NAME="sysfstrig0"
+
+trigger=""
+
 test -f "${LOCATION_PATH}" && IIO_SINGLE_SENSOR_DIR=true
 
 if "${IIO_SINGLE_SENSOR_DIR}"; then
@@ -46,8 +50,18 @@ EOL
 # Be sure the sysfs trigger module is present.
 modprobe -q iio_trig_sysfs
 echo 0 > "${IIO_DEVICES}/iio_sysfs_trigger/add_trigger"
-cat "${IIO_DEVICES}/iio_sysfs_trigger/trigger0/name" > \
-    "${IIO_DEVICE_PATH}/trigger/current_trigger"
+
+# the name of the trigger is "sysfstrig0":
+# sysfstrig are the generic names of iio_sysfs_trigger, 0 is the index passed at
+# creaion.
+echo "${SYSFSTRIG_NAME}" > "${IIO_DEVICE_PATH}/trigger/current_trigger"
+
+# Find the name of the created trigger.
+for trigger in ${IIO_DEVICES}/trigger*; do
+  if grep -q "${SYSFSTRIG_NAME}" "${trigger}/name"; then
+    break
+  fi
+done
 
 echo 0 > "${IIO_DEVICE_PATH}/scan_elements/in_timestamp_en"
 
@@ -71,8 +85,8 @@ echo 1 > "${IIO_DEVICE_PATH}/buffer/length"
 echo 1 > "${IIO_DEVICE_PATH}/buffer/enable"
 
 # Allow chronos to trigger the accelerometer.
-chgrp chronos "${IIO_DEVICES}/trigger0/trigger_now"
-chmod g+w "${IIO_DEVICES}/trigger0/trigger_now"
+chgrp chronos "${trigger}/trigger_now"
+chmod g+w "${trigger}/trigger_now"
 
 # Allow powerd to set the keyboard wake angle.
 if "${IIO_SINGLE_SENSOR_DIR}"; then
