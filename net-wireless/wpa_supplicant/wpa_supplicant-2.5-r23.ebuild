@@ -3,8 +3,8 @@
 # $Id$
 
 EAPI=4
-CROS_WORKON_COMMIT="b5bf688de09bd60029cfe9876f84cd48887029c3"
-CROS_WORKON_TREE="bb0c004546e2397ce2903c1738c06e250ae9785b"
+CROS_WORKON_COMMIT="9c9d5c4c6b5c9b0a2ecc709cee9bbe4d7b7156be"
+CROS_WORKON_TREE="e152bf62aa3619e3d9f1e0dfe7a59955311b4a80"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 
 inherit cros-workon eutils toolchain-funcs qt4-r2 qmake-utils multilib systemd user
