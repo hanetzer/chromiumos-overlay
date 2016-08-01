@@ -87,7 +87,7 @@ DEPEND="
 	sys-apps/busybox[-make-symlinks]
 	virtual/chromeos-bsp-initramfs
 	chromeos-base/chromeos-init
-	frecon? ( sys-apps/frecon )
+	frecon? ( sys-apps/frecon-lite virtual/udev )
 	power_management? ( chromeos-base/power_manager ) "
 
 RDEPEND=""
@@ -104,10 +104,7 @@ src_prepare() {
 
 src_compile() {
 	local deps=()
-	# TODO(hungte) Enable frecon when it can really run inside initramfs.
-	# Currently it simply won't run and may exceed kernel size limit on some
-	# boards.
-	# use frecon && deps+=(/sbin/frecon)
+	use frecon && deps+=(/sbin/frecon-lite /sbin/udevd /sbin/udevadm )
 	use mtd && deps+=(/usr/bin/cgpt.bin)
 	if use netboot_ramfs; then
 		use power_management && deps+=(/usr/bin/backlight_tool)
