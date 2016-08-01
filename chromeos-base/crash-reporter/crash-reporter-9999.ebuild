@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="arc cros_embedded -cros_host systemd test"
+IUSE="cheets cros_embedded -cros_host systemd test"
 REQUIRED_USE="!cros_host"
 
 RDEPEND="
@@ -46,12 +46,12 @@ DEPEND="
 
 src_configure() {
 	platform_src_configure
-	use arc && use_i686 && platform_src_configure_i686
+	use cheets && use_i686 && platform_src_configure_i686
 }
 
 src_compile() {
 	platform_src_compile
-	use arc && use_i686 && platform_src_compile_i686 "core_collector"
+	use cheets && use_i686 && platform_src_compile_i686 "core_collector"
 }
 
 src_install() {
@@ -64,7 +64,7 @@ src_install() {
 	use cros_embedded || dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
 
-	if use arc; then
+	if use cheets; then
 		dobin "${OUT}"/core_collector
 		use_i686 && newbin "$(platform_out_i686)"/core_collector "core_collector32"
 	fi
