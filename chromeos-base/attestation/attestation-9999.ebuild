@@ -28,17 +28,18 @@ RDEPEND="
 	)
 	tpm2? (
 		chromeos-base/trunks
-		chromeos-base/tpm_manager
 	)
 	chromeos-base/chaps
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
+	chromeos-base/tpm_manager
 	"
 
 DEPEND="
 	${RDEPEND}
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
+	chromeos-base/vboot_reference
 	"
 
 pkg_preinst() {
