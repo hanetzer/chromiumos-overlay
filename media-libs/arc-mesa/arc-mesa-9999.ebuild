@@ -154,6 +154,7 @@ src_configure() {
 			--with-libdrm
 			--enable-sysfs
 			--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
+			--sysconfdir=/system/vendor/etc
 			--enable-cross_compiling
 			--target=i686
 		"
@@ -215,6 +216,10 @@ src_install_arc() {
 	if use gallium; then
 		newexe lib/gallium/kms_swrast_dri.so kms_swrast_dri.so
 	fi
+
+	# Set driconf option to enable S3TC hardware decompression
+	insinto "/opt/google/containers/android/vendor/etc/"
+	doins "${FILESDIR}"/drirc
 }
 
 src_install() {
