@@ -44,6 +44,7 @@ IUSE="
 	-binder
 	-android_test
 	-transparent_hugepage
+	tpm2
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -623,6 +624,9 @@ REQUIRED_USE="
 	recovery_ramfs? ( i2cdev )
 	netboot_ramfs? ( i2cdev )
 	factory_shim_ramfs? ( i2cdev )
+	recovery_ramfs? ( || ( tpm tpm2 ) )
+	netboot_ramfs? ( || ( tpm tpm2 ) )
+	factory_shim_ramfs? ( || ( tpm tpm2 ) )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
