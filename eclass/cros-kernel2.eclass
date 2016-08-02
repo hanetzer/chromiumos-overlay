@@ -620,9 +620,9 @@ REQUIRED_USE="
 	recovery_ramfs? ( !netboot_ramfs !factory_shim_ramfs )
 	netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
 	factory_shim_ramfs? ( !recovery_ramfs !netboot_ramfs )
-	recovery_ramfs? ( i2cdev tpm )
-	netboot_ramfs? ( i2cdev tpm )
-	factory_shim_ramfs? ( i2cdev tpm )
+	recovery_ramfs? ( i2cdev )
+	netboot_ramfs? ( i2cdev )
+	factory_shim_ramfs? ( i2cdev )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
