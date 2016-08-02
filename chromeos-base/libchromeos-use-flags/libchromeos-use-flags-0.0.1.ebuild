@@ -17,6 +17,7 @@ KEYWORDS="*"
 IUSE="
 	arc
 	asan
+	cheets
 	cros-debug
 	disable_login_animations
 	disable_webaudio
