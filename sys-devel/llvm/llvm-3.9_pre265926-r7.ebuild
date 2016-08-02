@@ -246,6 +246,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
 
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-build-id.patch
+	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-dwarf-version.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
