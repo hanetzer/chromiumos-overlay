@@ -124,6 +124,7 @@ src_configure() {
 	echo "CONFIG_FST=y" >> ${CONFIG}
 	echo "CONFIG_FST_TEST=y" >> ${CONFIG}
 	echo "CONFIG_ACS=y" >> ${CONFIG}
+	echo "CONFIG_P2P_MANAGER=y" >> ${CONFIG}
 
 	if use netlink; then
 		# Netlink support
@@ -152,6 +153,7 @@ src_configure() {
 		# Excitingly, this flag causes -DCONFIG_LIBNL20 to the added to the
 		# CFLAGS for the drivers. Do not be alarmed.
 		echo "CONFIG_LIBNL32=y" >> ${CONFIG}
+		echo "CONFIG_LIBNL3_ROUTE=y" >> ${CONFIG}
 		echo "CFLAGS += $($(tc-getPKG_CONFIG) --cflags libnl-3.0 libnl-genl-3.0)" >> ${CONFIG}
 	fi
 
