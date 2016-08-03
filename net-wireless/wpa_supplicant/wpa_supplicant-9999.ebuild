@@ -296,7 +296,9 @@ src_configure() {
 	if use ap ; then
 		Kconfig_style_config AP
 		# only AP currently support mesh networks.
-	    Kconfig_style_config MESH
+		Kconfig_style_config MESH
+		# AP does not support smart card and associated library.
+		Kconfig_style_config SMARTCARD n
 	fi
 
 	# Enable mitigation against certain attacks against TKIP
