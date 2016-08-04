@@ -1,9 +1,17 @@
 From 71bb9a0967dc9e9047cf647e3c5594ce379edb2c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Mon, 7 Mar 2016 18:25:25 -0800
-Subject: [PATCH] CHROMIUM: Avoid crash when overflowing the samplers array
+Subject: [PATCH] CHROMIUM: glsl: Avoid crash when overflowing the samplers array
 
-Change-Id: I191a833c3849011ff52a7c3da98a651e0e155c7a
+Fixes a crash when we have too many samplers.
+
+BUG=chromium:141901
+TEST=by hand
+
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/compiler/glsl/link_uniforms.cpp | 1 +
  1 file changed, 1 insertion(+)

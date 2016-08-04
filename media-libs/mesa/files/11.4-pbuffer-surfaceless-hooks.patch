@@ -1,10 +1,18 @@
 From 988e181eb2cc5d856edee3f0c0f205f6f208ac07 Mon Sep 17 00:00:00 2001
 From: Gurchetan Singh <gurchetansingh@chromium.org>
 Date: Fri, 22 Apr 2016 10:29:56 -0700
-Subject: [PATCH 1/2] Added pbuffer hooks for surfaceless platform
+Subject: [PATCH 1/2] CHROMIUM: egl/surfaceless: Add pbuffer hooks
 
 This change enables the creation of pbuffer
 surfaces on the surfaceless platform.
+
+BUG=b:27656575
+BUG=chromium:606472
+TEST=Ran dEQP GLES2, GLES3, and GLES31 tests on cyan and alex.
+ Only ~100 tests should fail for GLES3 and GLES31 now on cyan.
+ ~1000 GLES2 tests should fail on alex (GLES31/GLES3 tests are skipped).
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/egl_dri2.h             |   7 +-
  src/egl/drivers/dri2/platform_surfaceless.c | 178 +++++++++++++++++++++++++++-

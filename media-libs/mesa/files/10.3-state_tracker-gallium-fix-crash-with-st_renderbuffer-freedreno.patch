@@ -1,10 +1,25 @@
 From 57c09646d2be2d1e333789706f19e2ebc10923f2 Mon Sep 17 00:00:00 2001
 From: Rob Clark <robclark@freedesktop.org>
 Date: Mon, 7 Mar 2016 18:19:11 -0800
-Subject: [PATCH] CHROMIUM:
- 10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
+Subject: [PATCH] CHROMIUM: freedreno: Fix renderbuffer destruction crash
 
-Change-Id: I8ca2cc1e8309819160a188297656c0e80cb98486
+Avoid crash on surface/sampler_view destruction when the context is
+gone.
+
+When we delete the context, sometimes there are pending surfaces and
+sampler view left. Since mesa doesn't properly refcount them, the
+context can go away before its resources. Until mesa is fixed to
+properly refcount all these resources, let's just carry the destroy
+function on the resource itself, which gives us a way to free it.
+
+BUG=chromium:397801
+TEST=boot reptile board to gui
+
+Signed-off-by: Rob Clark <robdclark@gmail.com>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/gallium/drivers/freedreno/a2xx/fd2_texture.c  | 1 +
  src/gallium/drivers/freedreno/a3xx/fd3_texture.c  | 1 +

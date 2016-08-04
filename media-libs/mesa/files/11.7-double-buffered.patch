@@ -1,10 +1,15 @@
 From d3850812fe941a53efd1f73a89af0c0ee6a6d12e Mon Sep 17 00:00:00 2001
 From: Gurchetan Singh <gurchetansingh@chromium.org>
 Date: Mon, 2 May 2016 09:23:18 -0700
-Subject: [PATCH] Use double-buffered pbuffer configuration
+Subject: [PATCH] CHROMIUM: egl/surfaceless: Use double-buffered pbuffer configuration
 
-Using a double-buffered pbuffer makes an additional 74
-dEQP tests pass on the surfaceless platform.
+Some dEQP tests rely on a double-buffered configuration to work correctly.
+
+BUG=b:27656575
+BUG=chromium:606472
+TEST=Ran dEQP GLES2, GLES3, GLES31 on Cyan. 74 more GLES3 tests now pass. No regressions.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/egl_dri2.h             |  1 +
  src/egl/drivers/dri2/platform_surfaceless.c | 67 +++++++++++++++++++++++------

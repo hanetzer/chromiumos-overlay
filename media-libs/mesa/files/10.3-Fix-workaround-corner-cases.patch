@@ -1,13 +1,24 @@
 From 437488394df29da9ef9b9b59ac8518c963232fc7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Wed, 15 Oct 2014 13:34:56 -0700
-Subject: [PATCH 16/24] Fix workaround corner cases
+Subject: [PATCH 16/24] CHROMIUM: i965: Fix corner cases of brw depth stencil workaround
+
+Since we can't repro this bug, it's hard to track it down, but it
+looks like there are multiple issues with the workaround, which this
+patch tries to fix.
 
 This fixes two corner cases with the workaround:
 - Fix the case where there is a depth but no stencil
 - Fix the case there the depth mt hasn't been created
 
-Change-Id: I9358076efeb227cd0ed62fbec71c04e193da8aac
+BUG=chromium:423546
+TEST=builds and runs on link
+
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/drivers/dri/i965/brw_misc_state.c | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)

@@ -1,7 +1,7 @@
 From c285de794e3ca6769373d94b54a39503a60b8e20 Mon Sep 17 00:00:00 2001
 From: Frank Henigman <fjhenigman@chromium.org>
 Date: Wed, 28 May 2014 20:25:12 -0700
-Subject: [PATCH 11/24] draw: keep some unused items in the llvm cache
+Subject: [PATCH 11/24] CHROMIUM: draw: keep some unused items in the llvm cache
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,15 @@ in case they are needed again.
 When an upper limit is reached, delete the one that has been unused
 the longest.
 
-Change-Id: I9cdfb9d0de44ff0c3d9038259a172a7111becfe1
+BUG=chromium:130005
+TEST=saves a few seconds re-opening webgl aquarium
+
 Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 Signed-off-by: Frank Henigman <fjhenigman@chromium.org>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/gallium/auxiliary/draw/draw_llvm.c | 32 ++++++++++++++++++++++++++++++--
  src/gallium/auxiliary/draw/draw_llvm.h | 12 ++++++++++++

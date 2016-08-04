@@ -7,11 +7,17 @@ Subject: [PATCH 06/24] CHROMIUM: i965: Allow the case where multiple flush
 This happens when the miptree is allocated with intel_miptree_alloc_hiz
 which adds NEED_HIZ_RESOLVE and then NEED_DEPTH_RESOLVE is added to it.
 
-Conflicts:
+BUG=none
+TEST=by hand
 
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+
+Conflicts:
 	src/mesa/drivers/dri/i965/intel_resolve_map.c
 
-Change-Id: Iec0095836d47dafb32034f459dbef6343f7058b0
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/drivers/dri/i965/intel_resolve_map.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)

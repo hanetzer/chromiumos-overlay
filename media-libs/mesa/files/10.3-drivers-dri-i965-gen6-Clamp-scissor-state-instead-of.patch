@@ -1,17 +1,24 @@
 From 02f81d05cfd5a77ed7bafc363b91262154c43558 Mon Sep 17 00:00:00 2001
 From: Corbin Simpson <simpsoco@chromium.org>
 Date: Thu, 28 Aug 2014 14:48:31 -0700
-Subject: [PATCH 17/24] drivers/dri/i965/gen6: Clamp scissor state instead of
- truncating.
+Subject: [PATCH 17/24] CHROMIUM: i965: Clamp scissor state instead of
+ truncating on gen6.
 
 Replaces one undefined behavior with another, slightly more friendly,
 undefined behavior.
 
+This changes glScissor() behavior on i965 to clamp instead of truncate
+out-of-range scissors. Technically either behavior is acceptable, but
+clamping has more predictable results on out-of-range scissors.
+
 BUG=chromium:360217
 TEST=Watched some Youtube on Link; can't reproduce original bug as reported.
 
-Change-Id: I7ae0e053ffb6c7a57cb7b3232d27700b6703b3ff
 Signed-off-by: Corbin Simpson <simpsoco@chromium.org>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/drivers/dri/i965/gen6_scissor_state.c | 23 +++++++++++++++--------
  1 file changed, 15 insertions(+), 8 deletions(-)

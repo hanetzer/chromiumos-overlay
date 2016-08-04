@@ -1,7 +1,7 @@
 From 9d7f14fe76bfc1a502a633f2971236548e2a3d3c Mon Sep 17 00:00:00 2001
 From: Frank Henigman <fjhenigman@chromium.org>
 Date: Wed, 28 May 2014 20:24:47 -0700
-Subject: [PATCH 10/24] draw: cache LLVM compilation
+Subject: [PATCH 10/24] CHROMIUM: draw: cache LLVM compilation
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -11,9 +11,15 @@ instead of compiling every time.  The cache key consists of the TGSI
 tokens plus the variant key.  Cache items are deleted when no longer
 used by any variant.
 
-Change-Id: Ib8b31497b7fc634a677a67145e9a21f15ae39480
+BUG=chromium:130005
+TEST=saves a few seconds re-opening webgl aquarium
+
 Signed-off-by: Frank Henigman <fjhenigman@chromium.org>
 Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/gallium/auxiliary/draw/draw_llvm.c | 126 +++++++++++++++++++++++++++++++--
  src/gallium/auxiliary/draw/draw_llvm.h |  15 ++++

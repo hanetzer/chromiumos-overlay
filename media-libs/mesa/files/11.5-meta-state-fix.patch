@@ -1,7 +1,7 @@
 From 0b90ffd534ff592b71190f4a6f779e32be4b534e Mon Sep 17 00:00:00 2001
 From: Gurchetan Singh <gurchetansingh@chromium.org>
 Date: Fri, 22 Apr 2016 10:29:56 -0700
-Subject: [PATCH] media-libs/mesa: Removed code that returns a desktop GL enum
+Subject: [PATCH] CHROMIUM: mesa: Remove code that returns a desktop GL enum
 
 When the draw_buffer_enum_to_bitmask function
 is called while Mesa is in it's meta state,
@@ -19,6 +19,8 @@ BUG=b/27656575
 TEST=Ran dEQP-GLES2.functional.clipping.line.line_attrib_clip
 with the pbuffer option with on Cyan.  Verified it
 fails without the patch.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/main/buffers.c | 39 ++++++++++++++++++---------------------
  1 file changed, 18 insertions(+), 21 deletions(-)

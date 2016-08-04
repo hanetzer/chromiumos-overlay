@@ -1,8 +1,7 @@
 From 1376f9218c227c1dc33bdc8e973adf4aad438df0 Mon Sep 17 00:00:00 2001
 From: James Ausmus <james.ausmus@intel.com>
 Date: Mon, 4 May 2015 15:00:12 -0700
-Subject: [PATCH 03/24] CHROMIUM:
- 10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+Subject: [PATCH 03/24] CHROMIUM: gallium: Fix renderbuffer destruction crash
 
 Avoid crash on surface/sampler_view destruction when the context is gone
 
@@ -12,8 +11,13 @@ context can go away before its resources. Until mesa is fixed to
 properly refcount all these resources, let's just carry the destroy
 function on the resource itself, which gives us a way to free it.
 
-Change-Id: I06bc1feeab87f18a07d065e192328a052295196d
+BUG=none
+TEST=compile
+
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
 Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/gallium/auxiliary/util/u_inlines.h          | 4 ++--
  src/gallium/drivers/i915/i915_state.c           | 6 ++++++

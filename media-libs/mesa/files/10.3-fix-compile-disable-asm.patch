@@ -1,7 +1,7 @@
 From 398f3d5b9e4247cd21eefd23fee4a2481a9e8a9d Mon Sep 17 00:00:00 2001
 From: Jon TURNEY <jon.turney@dronecode.org.uk>
 Date: Mon, 9 Jun 2014 16:11:23 -0700
-Subject: [PATCH 08/24] Subject: Fix compilation when ./configure'd with
+Subject: [PATCH 08/24] CHROMIUM: glapi: Fix compilation when ./configure'd with
  --disable-asm
 
 In file included from glapi_dispatch.c:90:0:
@@ -19,8 +19,14 @@ reverted the fix to fix it somewhere else [1])
 
 [1] http://lists.freedesktop.org/archives/mesa-dev/2012-July/023899.html
 
-Change-Id: I66b5f480eff46ec513c5ad6b9704c96dd202b15e
+BUG=none
+TEST=compile
+
 Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mapi/glapi/glapi_dispatch.c | 7 +++++++
  1 file changed, 7 insertions(+)

@@ -1,7 +1,7 @@
 From 59365ccc4e374e318efac218f96a65203433637e Mon Sep 17 00:00:00 2001
 From: Frank Henigman <fjhenigman@chromium.org>
 Date: Wed, 28 May 2014 20:23:01 -0700
-Subject: [PATCH 09/24] draw: Move llvm stuff to be cached to new struct.
+Subject: [PATCH 09/24] CHROMIUM: draw: Move llvm stuff to be cached to new struct.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -9,9 +9,15 @@ Content-Transfer-Encoding: 8bit
 Move stuff out of draw_llvm_variant into a new struct llvm_cache_item
 in preparation for caching it.  No functional change.
 
-Change-Id: Ic074d320c5608b1918ba53b8e42d5bbe2b129c57
+BUG=chromium:130005
+TEST=saves a few seconds re-opening webgl aquarium
+
 Signed-off-by: Frank Henigman <fjhenigman@chromium.org>
 Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
 Conflicts:
 	src/gallium/auxiliary/draw/draw_llvm.c
