@@ -65,7 +65,7 @@ IUSE_LINUX_FIRMWARE=(
 	rockchip-dptx
 	rt2870
 )
-IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
+IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon video_cards_amdgpu"
 LICENSE="
 	linux_firmware_adsp_skl? ( LICENCE.adsp_sst )
 	linux_firmware_ath3k-all? ( LICENCE.atheros_firmware )
@@ -87,6 +87,7 @@ LICENSE="
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
 	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
 	video_cards_radeon? ( LICENSE.radeon )
+	video_cards_amdgpu? ( LICENSE.amdgpu )
 "
 
 DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
@@ -145,6 +146,7 @@ src_install() {
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use_fw rockchip-dptx && doins_subdir rockchip/dptx.bin
 	use video_cards_radeon && doins_subdir radeon/*
+	use video_cards_amdgpu && doins_subdir amdgpu/{carrizo,stoney}*
 
 	# The extra file rt3070.bin is a symlink.
 	use_fw rt2870 && doins rt2870.bin rt3070.bin
