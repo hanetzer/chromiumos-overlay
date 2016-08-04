@@ -12,7 +12,7 @@ inherit toolchain-funcs cros-debug cros-workon
 DESCRIPTION="TPM SmogCheck library"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
