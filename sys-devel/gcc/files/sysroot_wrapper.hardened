@@ -182,7 +182,6 @@ else:
       '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
       '-Wno-unused-but-set-variable': '-Wno-unused-variable',
       '-Wunused-but-set-variable': '-Wunused-variable',
-      '-fstack-protector-strong': '-fstack-protector-all',
       '-fvisibility=internal': '-fvisibility=hidden',
       '-Wno-error=cpp': '-Wno-#warnings',
   }
