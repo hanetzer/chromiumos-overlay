@@ -25,7 +25,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_hardware_TPMCheck
-	+tests_kernel_TPMPing
+	-tests_kernel_TPMPing
 	+tests_kernel_TPMStress
 	+tests_platform_Attestation
 	+tests_platform_Pkcs11InitUnderErrors
