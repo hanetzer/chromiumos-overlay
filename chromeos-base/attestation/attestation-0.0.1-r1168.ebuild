@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("d4774913e68a0daa4c754edc7e43f87ff1ca3b53" "f93af18ce5d75a5ac44e6088f63fb33832026d8d")
-CROS_WORKON_TREE=("88f89cdd34b7ebf7da77634489fa835c0912f1e7" "f8635b95ca097371f64f9a8c708808f437fccf18")
+CROS_WORKON_COMMIT=("d4774913e68a0daa4c754edc7e43f87ff1ca3b53" "2fd999172a963720eae7161e1d7fa48b2c22bd0a")
+CROS_WORKON_TREE=("88f89cdd34b7ebf7da77634489fa835c0912f1e7" "a5973a9ba6ed71dc7a0f0d9692118194426c022d")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
@@ -30,17 +30,18 @@ RDEPEND="
 	)
 	tpm2? (
 		chromeos-base/trunks
-		chromeos-base/tpm_manager
 	)
 	chromeos-base/chaps
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
+	chromeos-base/tpm_manager
 	"
 
 DEPEND="
 	${RDEPEND}
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
+	chromeos-base/vboot_reference
 	"
 
 pkg_preinst() {
