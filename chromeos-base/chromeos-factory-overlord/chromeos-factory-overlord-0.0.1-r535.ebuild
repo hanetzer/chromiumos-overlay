@@ -5,11 +5,11 @@ EAPI="4"
 
 CROS_WORKON_COMMIT="2d6a5ad7d1f7a342572b3eed2bd241f8ce40f5c4"
 CROS_WORKON_TREE="3c2105cd7504bf79e5c1b095e9151cd3d48d96db"
-inherit cros-workon
-
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 SRC_URI="gs://chromeos-localmirror/distfiles/overlord-deps-0.0.3.tar.gz"
+
+inherit cros-workon
 
 DESCRIPTION="Overlord factory monitor"
 
