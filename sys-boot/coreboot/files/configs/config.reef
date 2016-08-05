@@ -39,11 +39,6 @@ CONFIG_VBT_FILE="3rdparty/blobs/baseboard-reef/vbt.bin"
 CONFIG_HAVE_IFD_BIN=y
 CONFIG_IFD_BIN_PATH="3rdparty/blobs/mainboard/google/reef/descriptor.bin"
 
-# Empty Logical Boot Partition 2
-CONFIG_NEED_LBP2=y
-CONFIG_LBP2_FMAP_NAME="SIGN_CSE"
-CONFIG_LBP2_FILE_NAME="3rdparty/blobs/baseboard-reef/signature2.bin"
-
 # Management Engine
 # CONFIG_LOCK_MANAGEMENT_ENGINE is not set
 
