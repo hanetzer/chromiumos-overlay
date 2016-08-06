@@ -225,6 +225,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_TotalMemory
 	+tests_platform_UdevVars
 	+tests_suite_HWConfig
+	+tests_suite_HWQual
 	+tests_system_ColdBoot
 	+tests_touch_HasInput
 	+tests_touch_UpdateErrors
