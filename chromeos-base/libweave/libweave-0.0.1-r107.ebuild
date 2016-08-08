@@ -37,6 +37,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/libweave-int64.patch
 	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
 	epatch ${FILESDIR}/patches/libweave-fix-395517.patch
+	epatch ${FILESDIR}/patches/libweave-device-manager-dependencies.patch
 }
 
 src_unpack() {
