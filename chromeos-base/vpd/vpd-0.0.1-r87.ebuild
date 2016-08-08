@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="c0ce1732095ed3b16d478af8016fc23d14ffa000"
-CROS_WORKON_TREE="4b8070c497fbb08b4b9f0989b4d85d29948967d0"
+CROS_WORKON_COMMIT="925bfb7219e601a364eafa63fc15ee7c20d031ad"
+CROS_WORKON_TREE="6d86834aea5274200fed5d3b9048e8ebfdeeb59b"
 CROS_WORKON_PROJECT="chromiumos/platform/vpd"
 
-inherit cros-workon
+inherit cros-workon systemd
 
 DESCRIPTION="ChromeOS vital product data utilities"
 HOMEPAGE="http://www.chromium.org/"
@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
-IUSE="static"
+IUSE="static systemd"
 
 # util-linux is for libuuid.
 DEPEND="sys-apps/util-linux"
@@ -43,8 +43,13 @@ src_install() {
 	dosbin vpd vpd_s util/dump_vpd_log util/set_binary_flag_vpd
 
 	# install the init script
-	insinto /etc/init
-	doins init/vpd-log.conf
+	if use systemd; then
+		systemd_dounit init/vpd-log.service
+		systemd_enable_service boot-services.target vpd-log.service
+	else
+		insinto /etc/init
+		doins init/vpd-log.conf
+	fi
 }
 
 # disabled due to buildbot failure
