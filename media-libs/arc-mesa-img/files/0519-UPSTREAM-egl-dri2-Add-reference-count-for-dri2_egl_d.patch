@@ -1,8 +1,7 @@
-From 35c1c395f174510f361d2a1880b2c8193bc7845a Mon Sep 17 00:00:00 2001
+From a4629ab9cd01d33f4dc36a884f8cb76d2203289c Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@chromium.org>
 Date: Fri, 22 Jul 2016 11:27:41 +0800
-Subject: [PATCH 519/522] UPSTREAM: egl/dri2: Add reference count for
- dri2_egl_display
+Subject: [PATCH] UPSTREAM: egl/dri2: Add reference count for dri2_egl_display
 
 android.opengl.cts.WrapperTest#testGetIntegerv1 CTS test calls
 eglTerminate, followed by eglReleaseThread. A similar case is
@@ -48,10 +47,10 @@ Change-Id: I7e8a82a4b039c12be2cc527a7fc40c8409bb5ec1
  2 files changed, 95 insertions(+), 20 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index a3a1cac..6a01004 100644
+index c78bcb7..18d07a3 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -761,10 +761,33 @@ dri2_create_screen(_EGLDisplay *disp)
+@@ -772,10 +772,33 @@ dri2_create_screen(_EGLDisplay *disp)
  
  /**
   * Called via eglInitialize(), GLX_drv->API.Initialize().
@@ -85,7 +84,7 @@ index a3a1cac..6a01004 100644
     /* not until swrast_dri is supported */
     if (disp->Options.UseFallback)
        return EGL_FALSE;
-@@ -773,52 +796,75 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+@@ -784,52 +807,75 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
  #ifdef HAVE_SURFACELESS_PLATFORM
     case _EGL_PLATFORM_SURFACELESS:
        if (disp->Options.TestOnly)
@@ -179,7 +178,7 @@ index a3a1cac..6a01004 100644
     _eglCleanupDisplay(disp);
  
     if (dri2_dpy->own_dri_screen)
-@@ -873,6 +919,21 @@ dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
+@@ -884,6 +930,21 @@ dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
     }
     free(dri2_dpy);
     disp->DriverData = NULL;
@@ -201,7 +200,7 @@ index a3a1cac..6a01004 100644
  
     return EGL_TRUE;
  }
-@@ -1192,6 +1253,10 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+@@ -1225,6 +1286,10 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
     _EGLSurface *tmp_dsurf, *tmp_rsurf;
     __DRIdrawable *ddraw, *rdraw;
     __DRIcontext *cctx;
@@ -212,7 +211,7 @@ index a3a1cac..6a01004 100644
  
     /* make new bindings */
     if (!_eglBindContext(ctx, dsurf, rsurf, &old_ctx, &old_dsurf, &old_rsurf)) {
-@@ -1212,8 +1277,9 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+@@ -1245,8 +1310,9 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
        dri2_dpy->core->unbindContext(old_cctx);
     }
  
@@ -224,7 +223,7 @@ index a3a1cac..6a01004 100644
        if (old_dsurf)
           drv->API.DestroySurface(drv, disp, old_dsurf);
        if (old_rsurf)
-@@ -1221,6 +1287,11 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+@@ -1254,6 +1320,11 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
        if (old_ctx)
           drv->API.DestroyContext(drv, disp, old_ctx);
  
@@ -237,11 +236,11 @@ index a3a1cac..6a01004 100644
     } else {
        /* undo the previous _eglBindContext */
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index 92165de..644ff68 100644
+index 534fc27..e0d9afd 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
-@@ -179,6 +179,10 @@ struct dri2_egl_display
-    const __DRI2interopExtension *interop;
+@@ -181,6 +181,10 @@ struct dri2_egl_display
+    const __DRIqueryBuffersExtension *query_buffers;
     int                       fd;
  
 +   /* dri2_initialize/dri2_terminate increment/decrement this count, so does
