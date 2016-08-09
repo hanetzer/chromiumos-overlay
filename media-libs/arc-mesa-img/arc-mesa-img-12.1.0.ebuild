@@ -168,6 +168,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/0604-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
 	epatch "${FILESDIR}"/0605-platform_android-prevent-deadlock-in-droid_get_buffe.patch
 
+	# Android HACKs
+        epatch "${FILESDIR}"/0801-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
+        epatch "${FILESDIR}"/0802-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_YCbCr_420_8.patch
+
 	base_src_prepare
 
 	eautoreconf
