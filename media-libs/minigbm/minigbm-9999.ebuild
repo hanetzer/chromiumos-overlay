@@ -36,12 +36,12 @@ src_prepare() {
 
 src_configure() {
 	export LIBDIR="/usr/$(get_libdir)"
-	use video_cards_exynos && append-cppflags -DGBM_EXYNOS && export GBM_EXYNOS=1
-	use video_cards_intel && append-cppflags -DGBM_I915 && export GBM_I915=1
-	use video_cards_marvell && append-cppflags -DGBM_MARVELL && export GBM_MARVELL=1
-	use video_cards_mediatek && append-cppflags -DGBM_MEDIATEK && export GBM_MEDIATEK=1
-	use video_cards_rockchip && append-cppflags -DGBM_ROCKCHIP && export GBM_ROCKCHIP=1
-	use video_cards_tegra && append-cppflags -DGBM_TEGRA && export GBM_TEGRA=1
+	use video_cards_exynos && append-cppflags -DDRV_EXYNOS && export DRV_EXYNOS=1
+	use video_cards_intel && append-cppflags -DDRV_I915 && export DRV_I915=1
+	use video_cards_marvell && append-cppflags -DDRV_MARVELL && export DRV_MARVELL=1
+	use video_cards_mediatek && append-cppflags -DDRV_MEDIATEK && export DRV_MEDIATEK=1
+	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
+	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
 	cros-workon_src_configure
 }
 
