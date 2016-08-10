@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT="8978b9f8b27cb7bb981faf34496631e9a5a97992"
-CROS_WORKON_TREE="00dbcea9d0e06cf972c4e48bd789c5ac8d00d8b1"
+CROS_WORKON_COMMIT="8ddb250849caceb59502700684a0614ef1a3ec20"
+CROS_WORKON_TREE="9f856f84e4fce8688df21f1df4d27cdf1b0a2ad3"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 SRC_URI="gs://chromeos-localmirror/distfiles/overlord-deps-0.0.3.tar.gz"
