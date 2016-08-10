@@ -89,6 +89,7 @@ CONFIG_FRAGMENTS=(
 	kgdb
 	kvm
 	loader_kernel_ramfs
+	lockdebug
 	lxc
 	mbim
 	netboot_ramfs
@@ -299,6 +300,16 @@ CONFIG_KGDB_KDB=y
 # CONFIG_WATCHDOG is not set
 CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=1
 """
+
+lockdebug_desc="Additional lock debug settings"
+lockdebug_config="
+CONFIG_DEBUG_RT_MUTEXES=y
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_MUTEXES=y
+CONFIG_PROVE_RCU=y
+CONFIG_PROVE_LOCKING=y
+CONFIG_DEBUG_ATOMIC_SLEEP=y
+"
 
 nfc_desc="Enable NFC support"
 nfc_config="
