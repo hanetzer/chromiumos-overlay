@@ -170,7 +170,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
 	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
 	epatch "${FILESDIR}"/0104-pvr_dri-fix-pbuffer-synchronisation.patch
-	epatch "${FILESDIR}"/0105-pvr-dri-Pass-buffer-source-to-CreateFromFd.patch
 	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
 
 	base_src_prepare
