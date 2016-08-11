@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-VIDEO_CARDS="exynos intel marvell mediatek rockchip tegra"
+VIDEO_CARDS="amdgpu exynos intel marvell mediatek rockchip tegra"
 IUSE="-asan -clang"
 for card in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${card}"
@@ -25,7 +25,8 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	x11-libs/libdrm
-	!media-libs/mesa[gbm]"
+	!media-libs/mesa[gbm]
+	video_cards_amdgpu? ( media-libs/amdgpu-addrlib )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -42,6 +43,7 @@ src_configure() {
 	use video_cards_mediatek && append-cppflags -DDRV_MEDIATEK && export DRV_MEDIATEK=1
 	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
 	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
+	use video_cards_amdgpu && append-cppflags -DDRV_AMDGPU && export DRV_AMDGPU=1
 	cros-workon_src_configure
 }
 
