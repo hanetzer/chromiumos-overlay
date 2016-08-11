@@ -36,19 +36,8 @@ DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
-	sys-libs/glibc
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
-
-src_compile() {
-	platform_src_compile
-
-	# Build locale-archive for Chrome. This is a temporary workaround for
-	# crbug.com/116999.
-	# TODO(yusukes): Fix Chrome and remove the file.
-	mkdir -p "${T}/usr/lib64/locale"
-	localedef --prefix="${T}" -c -f UTF-8 -i en_US en_US.UTF-8 || die
-}
 
 platform_pkg_test() {
 	local tests=( session_manager_test )
@@ -85,10 +74,6 @@ src_install() {
 	# Adding init scripts
 	insinto /etc/init
 	doins init/*.conf
-
-	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
-	insinto /usr/$(get_libdir)/locale
-	doins "${T}/usr/lib64/locale/locale-archive"
 
 	# For user session processes.
 	dodir /etc/skel/log
