@@ -1,0 +1,3776 @@
+From: George Burgess <gbiv@chromium.org>
+
+This patch adds a clang-specific FORTIFY to our glibc implementation. No
+attempt has been made to upstream it yet, because we need two more
+attributes implemented in clang in order to have a "complete" FORTIFY
+implementation. However, this patch gets us ~99% of the way there. Once
+we update clang + this patch, we'll try to upstream this.
+
+For documentation on FORTIFY and some background on how a
+clang-specific FORTIFY works, please see this doc:
+https://docs.google.com/document/d/1DFfZDICTbL7RqS74wJVIJ-YnjQOj1SaoqfhbgddFYSM/edit?usp=sharing
+
+https://crbug.com/638456
+--- include/stdio.h
++++ include/stdio.h
+@@ -164,12 +164,36 @@ libc_hidden_proto (__obstack_vprintf_chk)
+ 
+ /* The <stdio.h> header does not include the declaration for gets
+    anymore when compiling with _GNU_SOURCE.  Provide a copy here.  */
+-extern char *gets (char *__s);
++__fortify_overloadable
++extern char *gets (char *__s) __CLANG_NO_MANGLE (gets);
++
+ #  if __USE_FORTIFY_LEVEL > 0
+ extern char *__gets_chk (char *__str, size_t) __wur;
++
++#   define __warn_gets_use_something_else \
++  "please use fgets or getline instead, gets can't specify buffer size"
++#   ifdef __use_clang_fortify
++__fortify_potential_overload __wur char *
++gets (char *const __clang_pass_object_size __str)
++     __clang_enable_if (__bos (__str) != (size_t) -1,
++			"selected if this call looks safe")
++{
++  return __gets_chk (__str, __bos (__str));
++}
++
++extern char *__REDIRECT (__gets_alias, (char *__str), gets) __wur;
++
++__fortify_potential_overload __wur
++__clang_warning (__warn_gets_use_something_else) char *
++gets (char *const __clang_pass_object_size __str)
++{
++  if (__bos (__str) != (size_t) -1)
++    return __gets_chk (__str, __bos (__str));
++  return __gets_alias (__str);
++}
++#   else
+ extern char *__REDIRECT (__gets_warn, (char *__str), gets)
+-     __wur __warnattr ("please use fgets or getline instead, gets can't "
+-		       "specify buffer size");
++     __wur __warnattr (__warn_gets_use_something_else);
+ 
+ __fortify_function __wur char *
+ gets (char *__str)
+@@ -178,6 +202,8 @@ gets (char *__str)
+     return __gets_chk (__str, __bos (__str));
+   return __gets_warn (__str);
+ }
++#   endif
++#   undef __warn_gets_use_something_else
+ #  endif
+ 
+ __END_DECLS
+--- io/bits/fcntl2.h
++++ io/bits/fcntl2.h
+@@ -32,10 +32,32 @@ extern int __REDIRECT (__open_2, (const char *__path, int __oflag),
+ extern int __REDIRECT (__open_alias, (const char *__path, int __oflag, ...),
+ 		       open64) __nonnull ((1));
+ #endif
+-__errordecl (__open_too_many_args,
+-	     "open can be called either with 2 or 3 arguments, not more");
+-__errordecl (__open_missing_mode,
+-	     "open with O_CREAT in second argument needs 3 arguments");
++
++#define __warn_open_too_many_args \
++  "open can be called either with 2 or 3 arguments, not more"
++#define __warn_open_missing_mode \
++  "open with O_CREAT in second argument needs 3 arguments"
++#ifdef __use_clang_fortify
++__fortify_error_function __clang_error (__warn_open_missing_mode) int
++open (const char *__path, int __oflag)
++     __clang_prefer_this_overload
++     __clang_enable_if (__oflag & O_CREAT,
++			"selected if open is given O_CREAT, but no mode");
++
++__fortify_overload __clang_prefer_this_overload int
++open (const char *__path, int __oflag)
++{
++  return __open_2 (__path, __oflag);
++}
++
++__fortify_overload int
++open (const char *__path, int __oflag, mode_t __mode)
++{
++  return __open_alias (__path, __oflag, __mode);
++}
++#else
++__errordecl (__open_too_many_args, __warn_open_too_many_args);
++__errordecl (__open_missing_mode, __warn_open_missing_mode);
+ 
+ __fortify_function int
+ open (const char *__path, int __oflag, ...)
+@@ -58,16 +80,44 @@ open (const char *__path, int __oflag, ...)
+ 
+   return __open_alias (__path, __oflag, __va_arg_pack ());
+ }
++#endif
++#undef __warn_open_too_many_args
++#undef __warn_open_missing_mode
+ 
+ 
+ #ifdef __USE_LARGEFILE64
+ extern int __open64_2 (const char *__path, int __oflag) __nonnull ((1));
+ extern int __REDIRECT (__open64_alias, (const char *__path, int __oflag,
+ 					...), open64) __nonnull ((1));
+-__errordecl (__open64_too_many_args,
+-	     "open64 can be called either with 2 or 3 arguments, not more");
+-__errordecl (__open64_missing_mode,
+-	     "open64 with O_CREAT in second argument needs 3 arguments");
++
++# define __warn_open64_too_many_args "open64 can be called either with 2 or " \
++  "3 arguments, not more"
++# define __warn_open64_missing_mode "open64 with O_CREAT in second argument " \
++  "needs 3 arguments"
++# ifdef __use_clang_fortify
++__fortify_error_function __clang_error (__warn_open64_too_many_args) int
++open64 (const char *__path, int __oflag, int __mode, ...);
++
++__fortify_error_function __clang_error (__warn_open64_missing_mode) int
++open64 (const char *__path, int __oflag)
++     __clang_prefer_this_overload
++     __clang_enable_if (__oflag & O_CREAT,
++			"selected if open64 is given O_CREAT, but no mode");
++
++__fortify_overload __clang_prefer_this_overload int
++open64 (const char *__path, int __oflag)
++{
++  return __open64_2 (__path, __oflag);
++}
++
++__fortify_overload __clang_prefer_this_overload int
++open64 (const char *__path, int __oflag, int __mode)
++{
++  return __open64_alias (__path, __oflag, __mode);
++}
++# else
++__errordecl (__open64_too_many_args, __warn_open64_too_many_args);
++__errordecl (__open64_missing_mode, __warn_open64_missing_mode);
+ 
+ __fortify_function int
+ open64 (const char *__path, int __oflag, ...)
+@@ -90,6 +140,9 @@ open64 (const char *__path, int __oflag, ...)
+ 
+   return __open64_alias (__path, __oflag, __va_arg_pack ());
+ }
++# endif
++# undef __warn_open64_too_many_args
++# undef __warn_open64_missing_mode
+ #endif
+ 
+ 
+@@ -108,10 +161,35 @@ extern int __REDIRECT (__openat_alias, (int __fd, const char *__path,
+ 					int __oflag, ...), openat64)
+      __nonnull ((2));
+ # endif
+-__errordecl (__openat_too_many_args,
+-	     "openat can be called either with 3 or 4 arguments, not more");
+-__errordecl (__openat_missing_mode,
+-	     "openat with O_CREAT in third argument needs 4 arguments");
++
++# define __warn_openat_too_many_args "openat can be called either with 3 or " \
++       "4 arguments, not more"
++# define __warn_openat_missing_mode "openat with O_CREAT in third argument " \
++       "needs 4 arguments"
++# ifdef __use_clang_fortify
++__fortify_error_function __clang_error (__warn_openat_too_many_args) int
++openat (int __fd, const char *__path, int __oflag, int __mode, ...);
++
++__fortify_error_function __clang_error (__warn_openat_missing_mode) int
++openat (int __fd, const char *__path, int __oflag)
++     __clang_prefer_this_overload
++     __clang_enable_if (__oflag & O_CREAT,
++			"selected if openat is given O_CREAT but no mode");
++
++__fortify_overload __clang_prefer_this_overload int
++openat (int __fd, const char *__path, int __oflag)
++{
++  return __openat_2 (__fd, __path, __oflag);
++}
++
++__fortify_overload __clang_prefer_this_overload int
++openat (int __fd, const char *__path, int __oflag, int __mode)
++{
++  return __openat_alias (__fd, __path, __oflag, __mode);
++}
++# else
++__errordecl (__openat_too_many_args, __warn_openat_too_many_args);
++__errordecl (__openat_missing_mode, __warn_openat_missing_mode);
+ 
+ __fortify_function int
+ openat (int __fd, const char *__path, int __oflag, ...)
+@@ -134,6 +212,9 @@ openat (int __fd, const char *__path, int __oflag, ...)
+ 
+   return __openat_alias (__fd, __path, __oflag, __va_arg_pack ());
+ }
++# endif
++# undef __warn_openat_too_many_args
++# undef __warn_openat_missing_mode
+ 
+ 
+ # ifdef __USE_LARGEFILE64
+@@ -142,11 +223,36 @@ extern int __openat64_2 (int __fd, const char *__path, int __oflag)
+ extern int __REDIRECT (__openat64_alias, (int __fd, const char *__path,
+ 					  int __oflag, ...), openat64)
+      __nonnull ((2));
+-__errordecl (__openat64_too_many_args,
+-	     "openat64 can be called either with 3 or 4 arguments, not more");
+-__errordecl (__openat64_missing_mode,
+-	     "openat64 with O_CREAT in third argument needs 4 arguments");
+ 
++#  define __warn_openat64_too_many_args "openat64 can be called either with " \
++       "3 or 4 arguments, not more"
++#  define __warn_openat64_missing_mode "openat64 with O_CREAT in third " \
++       "argument needs 4 arguments"
++
++#  ifdef __use_clang_fortify
++__fortify_error_function __clang_error (__warn_openat64_too_many_args) int
++openat64 (int __fd, const char *__path, int __oflag, int __mode, ...);
++
++__fortify_error_function __clang_error (__warn_openat64_missing_mode) int
++openat64 (int __fd, const char *__path, int __oflag)
++     __clang_prefer_this_overload
++     __clang_enable_if (__oflag & O_CREAT,
++			"selected if openat64 is given O_CREAT, but no mode");
++
++__fortify_overload __clang_prefer_this_overload int
++openat64 (int __fd, const char *__path, int __oflag)
++{
++  return __openat64_2 (__fd, __path, __oflag);
++}
++
++__fortify_overload __clang_prefer_this_overload int
++openat64 (int __fd, const char *__path, int __oflag, int __mode)
++{
++  return __openat64_alias (__fd, __path, __oflag, __mode);
++}
++#  else
++__errordecl (__openat64_too_many_args, __warn_openat64_too_many_args);
++__errordecl (__openat64_missing_mode, __warn_openat64_missing_mode);
+ __fortify_function int
+ openat64 (int __fd, const char *__path, int __oflag, ...)
+ {
+@@ -168,5 +274,8 @@ openat64 (int __fd, const char *__path, int __oflag, ...)
+ 
+   return __openat64_alias (__fd, __path, __oflag, __va_arg_pack ());
+ }
++#  endif
++#  undef __warn_openat64_too_many_args
++#  undef __warn_openat64_missing_mode
+ # endif
+ #endif
+--- io/bits/poll2.h
++++ io/bits/poll2.h
+@@ -27,10 +27,32 @@ extern int __REDIRECT (__poll_alias, (struct pollfd *__fds, nfds_t __nfds,
+ 				      int __timeout), poll);
+ extern int __poll_chk (struct pollfd *__fds, nfds_t __nfds, int __timeout,
+ 		       __SIZE_TYPE__ __fdslen);
++
++#define __warn_poll_nfds "poll called with fds buffer too small file nfds entries"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_poll_nfds) int
++poll (struct pollfd *const __clang_pass_object_size __fds, nfds_t __nfds,
++      int __timeout)
++     __clang_enable_if (__bos (__fds) != (__SIZE_TYPE__) -1
++			 && __bos (__fds) / sizeof (*__fds) < __nfds,
++			"selected if this call looks dangerous")
++{
++	return __poll_chk (__fds, __nfds, __timeout, __bos (__fds));
++}
++
++__fortify_overload int
++poll (struct pollfd *const __clang_pass_object_size __fds, nfds_t __nfds,
++      int __timeout)
++{
++  if (__bos (__fds) != (__SIZE_TYPE__) -1)
++    return __poll_chk (__fds, __nfds, __timeout, __bos (__fds));
++  return __poll_alias (__fds, __nfds, __timeout);
++}
++#else
+ extern int __REDIRECT (__poll_chk_warn, (struct pollfd *__fds, nfds_t __nfds,
+ 					 int __timeout, __SIZE_TYPE__ __fdslen),
+ 		       __poll_chk)
+-  __warnattr ("poll called with fds buffer too small file nfds entries");
++  __warnattr (__warn_poll_nfds);
+ 
+ __fortify_function int
+ poll (struct pollfd *__fds, nfds_t __nfds, int __timeout)
+@@ -45,6 +67,8 @@ poll (struct pollfd *__fds, nfds_t __nfds, int __timeout)
+ 
+   return __poll_alias (__fds, __nfds, __timeout);
+ }
++#endif
++#undef __warn_poll_nfds
+ 
+ 
+ #ifdef __USE_GNU
+@@ -54,12 +78,35 @@ extern int __REDIRECT (__ppoll_alias, (struct pollfd *__fds, nfds_t __nfds,
+ extern int __ppoll_chk (struct pollfd *__fds, nfds_t __nfds,
+ 			const struct timespec *__timeout,
+ 			const __sigset_t *__ss, __SIZE_TYPE__ __fdslen);
++
++# define __warn_ppoll_nfds \
++  "ppoll called with fds buffer too small file nfds entries"
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_ppoll_nfds) int
++ppoll (struct pollfd *const __clang_pass_object_size __fds, nfds_t __nfds,
++       const struct timespec *__timeout, const __sigset_t *__ss)
++     __clang_enable_if (__bos (__fds) != (__SIZE_TYPE__) -1
++			 && __bos (__fds) / sizeof (*__fds) < __nfds,
++			"selected if this call looks dangerous")
++{
++	return __ppoll_chk (__fds, __nfds, __timeout, __ss, __bos (__fds));
++}
++
++__fortify_overload int
++ppoll (struct pollfd *const __clang_pass_object_size __fds, nfds_t __nfds,
++       const struct timespec *__timeout, const __sigset_t *__ss)
++{
++  if (__bos (__fds) != (__SIZE_TYPE__) -1)
++    return __ppoll_chk (__fds, __nfds, __timeout, __ss, __bos (__fds));
++  return __ppoll_alias (__fds, __nfds, __timeout, __ss);
++}
++# else
+ extern int __REDIRECT (__ppoll_chk_warn, (struct pollfd *__fds, nfds_t __nfds,
+ 					  const struct timespec *__timeout,
+ 					  const __sigset_t *__ss,
+ 					  __SIZE_TYPE__ __fdslen),
+ 		       __ppoll_chk)
+-  __warnattr ("ppoll called with fds buffer too small file nfds entries");
++  __warnattr (__warn_ppoll_nfds);
+ 
+ __fortify_function int
+ ppoll (struct pollfd *__fds, nfds_t __nfds, const struct timespec *__timeout,
+@@ -76,6 +123,9 @@ ppoll (struct pollfd *__fds, nfds_t __nfds, const struct timespec *__timeout,
+ 
+   return __ppoll_alias (__fds, __nfds, __timeout, __ss);
+ }
++# endif
++# undef __warn_ppoll_nfds
++
+ #endif
+ 
+ __END_DECLS
+--- io/fcntl.h
++++ io/fcntl.h
+@@ -166,9 +166,12 @@ extern int fcntl (int __fd, int __cmd, ...);
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
+ #ifndef __USE_FILE_OFFSET64
+-extern int open (const char *__file, int __oflag, ...) __nonnull ((1));
++__fortify_overloadable
++extern int open (const char *__file, int __oflag, ...)
++     __nonnull ((1)) __CLANG_NO_MANGLE (open);
+ #else
+ # ifdef __REDIRECT
++__fortify_overloadable
+ extern int __REDIRECT (open, (const char *__file, int __oflag, ...), open64)
+      __nonnull ((1));
+ # else
+@@ -176,7 +179,9 @@ extern int __REDIRECT (open, (const char *__file, int __oflag, ...), open64)
+ # endif
+ #endif
+ #ifdef __USE_LARGEFILE64
+-extern int open64 (const char *__file, int __oflag, ...) __nonnull ((1));
++__fortify_overloadable
++extern int open64 (const char *__file, int __oflag, ...)
++     __nonnull ((1)) __CLANG_NO_MANGLE (open64);
+ #endif
+ 
+ #ifdef __USE_ATFILE
+@@ -190,10 +195,12 @@ extern int open64 (const char *__file, int __oflag, ...) __nonnull ((1));
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
+ # ifndef __USE_FILE_OFFSET64
++__fortify_overloadable
+ extern int openat (int __fd, const char *__file, int __oflag, ...)
+-     __nonnull ((2));
++     __nonnull ((2)) __CLANG_NO_MANGLE (openat);
+ # else
+ #  ifdef __REDIRECT
++__fortify_overloadable
+ extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
+ 				...), openat64) __nonnull ((2));
+ #  else
+@@ -201,8 +208,9 @@ extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
+ #  endif
+ # endif
+ # ifdef __USE_LARGEFILE64
++__fortify_overloadable
+ extern int openat64 (int __fd, const char *__file, int __oflag, ...)
+-     __nonnull ((2));
++     __nonnull ((2)) __CLANG_NO_MANGLE (openat64);
+ # endif
+ #endif
+ 
+@@ -298,7 +306,7 @@ extern int posix_fallocate64 (int __fd, off64_t __offset, off64_t __len);
+ 
+ /* Define some inlines helping to catch common problems.  */
+ #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function \
+-    && defined __va_arg_pack_len
++    && (defined __va_arg_pack_len || defined __use_clang_fortify)
+ # include <bits/fcntl2.h>
+ #endif
+ 
+--- io/sys/poll.h
++++ io/sys/poll.h
+@@ -54,7 +54,9 @@ __BEGIN_DECLS
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
+-extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout);
++__fortify_overloadable
++extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout)
++     __CLANG_NO_MANGLE (poll);
+ 
+ #ifdef __USE_GNU
+ /* Like poll, but before waiting the threads signal mask is replaced
+@@ -63,9 +65,11 @@ extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout);
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
++__fortify_overloadable
+ extern int ppoll (struct pollfd *__fds, nfds_t __nfds,
+ 		  const struct timespec *__timeout,
+-		  const __sigset_t *__ss);
++		  const __sigset_t *__ss)
++     __CLANG_NO_MANGLE (ppoll);
+ #endif
+ 
+ __END_DECLS
+--- libio/bits/stdio2.h
++++ libio/bits/stdio2.h
+@@ -26,7 +26,21 @@ extern int __vsprintf_chk (char *__restrict __s, int __flag, size_t __slen,
+ 			   const char *__restrict __format,
+ 			   _G_va_list __ap) __THROW;
+ 
+-#ifdef __va_arg_pack
++#ifdef __use_clang_fortify
++/* clang doesn't have __va_arg_pack, so we need to defer to the va_arg versions
++   of these functions.  */
++__fortify_overload int
++__NTH (sprintf (char *__restrict const __clang_pass_object_size __s,
++		const char *__restrict __fmt, ...))
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __builtin___vsprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
++					   __bos (__s), __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++#elif defined(__va_arg_pack)
+ __fortify_function int
+ __NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
+ {
+@@ -39,9 +53,9 @@ __NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
+ 			   __VA_ARGS__)
+ #endif
+ 
+-__fortify_function int
+-__NTH (vsprintf (char *__restrict __s, const char *__restrict __fmt,
+-		 _G_va_list __ap))
++__fortify_potential_overload int
++__NTH (vsprintf (char *__restrict const __clang_pass_object_size __s,
++		 const char *__restrict __fmt, _G_va_list __ap))
+ {
+   return __builtin___vsprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+ 				   __bos (__s), __fmt, __ap);
+@@ -56,7 +70,37 @@ extern int __vsnprintf_chk (char *__restrict __s, size_t __n, int __flag,
+ 			    size_t __slen, const char *__restrict __format,
+ 			    _G_va_list __ap) __THROW;
+ 
+-# ifdef __va_arg_pack
++# ifdef __use_clang_fortify
++#  define __warn_snprintf_buf_size \
++  "call to snprintf may overflow the destination buffer"
++__fortify_overload __clang_warning (__warn_snprintf_buf_size) int
++__NTH (snprintf (char *__restrict const __clang_pass_object_size __s,
++		 size_t __n, const char *__restrict __fmt, ...))
++     __clang_enable_if (__bos (__s) != (size_t) -1 && __bos (__s) < __n,
++			"selected if this call looks dangerous")
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
++				  __bos (__s), __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++
++#  undef __warn_snprintf_buf_size
++
++__fortify_overload int
++__NTH (snprintf (char *__restrict const __clang_pass_object_size __s,
++		 size_t __n, const char *__restrict __fmt, ...))
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
++				  __bos (__s), __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++# elif defined(__va_arg_pack)
+ __fortify_function int
+ __NTH (snprintf (char *__restrict __s, size_t __n,
+ 		 const char *__restrict __fmt, ...))
+@@ -70,6 +114,29 @@ __NTH (snprintf (char *__restrict __s, size_t __n,
+ 			    __VA_ARGS__)
+ # endif
+ 
++# ifdef __use_clang_fortify
++
++#  define __warn_vsnprintf_buf_size \
++  "call to vsnprintf may overflow the destination buffer"
++__fortify_overload __clang_warning (__warn_vsnprintf_buf_size) int
++__NTH (vsnprintf (char *__restrict const __clang_pass_object_size __s,
++		  size_t __n, const char *__restrict __fmt, _G_va_list __ap))
++     __clang_enable_if (__bos (__s) != (size_t) -1 && __bos (__s) < __n,
++			"selected if this call looks dangerous")
++{
++  return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
++				    __bos (__s), __fmt, __ap);
++}
++#  undef __warn_vsnprintf_buf_size
++
++__fortify_overload int
++__NTH (vsnprintf (char *__restrict const __clang_pass_object_size __s,
++		  size_t __n, const char *__restrict __fmt, _G_va_list __ap))
++{
++  return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
++				    __bos (__s), __fmt, __ap);
++}
++# else
+ __fortify_function int
+ __NTH (vsnprintf (char *__restrict __s, size_t __n,
+ 		  const char *__restrict __fmt, _G_va_list __ap))
+@@ -77,6 +144,7 @@ __NTH (vsnprintf (char *__restrict __s, size_t __n,
+   return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+ 				    __bos (__s), __fmt, __ap);
+ }
++# endif
+ 
+ #endif
+ 
+@@ -90,7 +158,28 @@ extern int __vfprintf_chk (FILE *__restrict __stream, int __flag,
+ extern int __vprintf_chk (int __flag, const char *__restrict __format,
+ 			  _G_va_list __ap);
+ 
+-# ifdef __va_arg_pack
++# ifdef __use_clang_fortify
++__fortify_function int
++fprintf (FILE *__restrict __stream, const char *__restrict __fmt, ...)
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __vfprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt,
++			__ap);
++  va_end (__ap);
++  return __result;
++}
++
++__fortify_function int
++printf (const char *__restrict __fmt, ...)
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __vprintf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++# elif defined(__va_arg_pack)
+ __fortify_function int
+ fprintf (FILE *__restrict __stream, const char *__restrict __fmt, ...)
+ {
+@@ -113,11 +202,11 @@ printf (const char *__restrict __fmt, ...)
+ __fortify_function int
+ vprintf (const char *__restrict __fmt, _G_va_list __ap)
+ {
+-#ifdef __USE_EXTERN_INLINES
++# ifdef __USE_EXTERN_INLINES
+   return __vfprintf_chk (stdout, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
+-#else
++# else
+   return __vprintf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __ap);
+-#endif
++# endif
+ }
+ 
+ __fortify_function int
+@@ -134,7 +223,17 @@ extern int __vdprintf_chk (int __fd, int __flag,
+ 			   const char *__restrict __fmt, _G_va_list __arg)
+      __attribute__ ((__format__ (__printf__, 3, 0)));
+ 
+-#  ifdef __va_arg_pack
++#  ifdef __use_clang_fortify
++__fortify_function int
++dprintf (int __fd, const char *__restrict __fmt, ...)
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __dprintf_chk (__fd, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++#  elif defined(__va_arg_pack)
+ __fortify_function int
+ dprintf (int __fd, const char *__restrict __fmt, ...)
+ {
+@@ -171,7 +270,40 @@ extern int __obstack_vprintf_chk (struct obstack *__restrict __obstack,
+ 				  _G_va_list __args)
+      __THROW __attribute__ ((__format__ (__printf__, 3, 0)));
+ 
+-#  ifdef __va_arg_pack
++#  ifdef __use_clang_fortify
++__fortify_function int
++__NTH (asprintf (char **__restrict __ptr, const char *__restrict __fmt, ...))
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __asprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++
++__fortify_function int
++__NTH (__asprintf (char **__restrict __ptr, const char *__restrict __fmt,
++		   ...))
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __asprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++
++__fortify_function int
++__NTH (obstack_printf (struct obstack *__restrict __obstack,
++		       const char *__restrict __fmt, ...))
++{
++  _G_va_list __ap;
++  va_start (__ap, __fmt);
++  int __result = __obstack_printf_chk (__obstack, __USE_FORTIFY_LEVEL - 1,
++    __fmt, __ap);
++  va_end (__ap);
++  return __result;
++}
++#  elif defined(__va_arg_pack)
+ __fortify_function int
+ __NTH (asprintf (char **__restrict __ptr, const char *__restrict __fmt, ...))
+ {
+@@ -225,9 +357,31 @@ __NTH (obstack_vprintf (struct obstack *__restrict __obstack,
+ #if !defined __USE_ISOC11 \
+     || (defined __cplusplus && __cplusplus <= 201103L && !defined __USE_GNU)
+ extern char *__gets_chk (char *__str, size_t) __wur;
++
++# define __warn_gets_use_something_else \
++  "please use fgets or getline instead, gets can't specify buffer size"
++# ifdef __use_clang_fortify
++__fortify_potential_overload __wur char *
++gets (char *const __clang_pass_object_size __str)
++     __clang_enable_if (__bos (__str) != (size_t) -1,
++			"selected if this call looks safe")
++{
++  return __gets_chk (__str, __bos (__str));
++}
++
++extern char *__REDIRECT (__gets_alias, (char *__str), gets) __wur;
++
++__fortify_potential_overload __wur
++__clang_warning (__warn_gets_use_something_else) char *
++gets (char *const __clang_pass_object_size __str)
++{
++  if (__bos (__str) != (size_t) -1)
++    return __gets_chk (__str, __bos (__str));
++  return __gets_alias (__str);
++}
++# else
+ extern char *__REDIRECT (__gets_warn, (char *__str), gets)
+-     __wur __warnattr ("please use fgets or getline instead, gets can't "
+-		       "specify buffer size");
++     __wur __warnattr (__warn_gets_use_something_else);
+ 
+ __fortify_function __wur char *
+ gets (char *__str)
+@@ -236,6 +390,8 @@ gets (char *__str)
+     return __gets_chk (__str, __bos (__str));
+   return __gets_warn (__str);
+ }
++# endif
++# undef __warn_gets_use_something_else
+ #endif
+ 
+ extern char *__fgets_chk (char *__restrict __s, size_t __size, int __n,
+@@ -243,11 +399,32 @@ extern char *__fgets_chk (char *__restrict __s, size_t __size, int __n,
+ extern char *__REDIRECT (__fgets_alias,
+ 			 (char *__restrict __s, int __n,
+ 			  FILE *__restrict __stream), fgets) __wur;
++
++#define __warn_fgets_bufsize \
++  "fgets called with bigger size than length of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fgets_bufsize) char *
++fgets (char *__restrict const __clang_pass_object_size __s, int __n,
++       FILE *__restrict __stream)
++     __clang_enable_if (__bos (__s) != (size_t) -1 && __bos (__s) < __n,
++			"selected if this call looks dangerous")
++{
++  return __fgets_chk (__s, __bos (__s), __n, __stream);
++}
++
++__fortify_overload __wur char *
++fgets (char *__restrict const __clang_pass_object_size __s, int __n,
++       FILE *__restrict __stream)
++{
++  if (__bos (__s) != (size_t) -1)
++    return __fgets_chk (__s, __bos (__s), __n, __stream);
++  return __fgets_alias (__s, __n, __stream);
++}
++#else
+ extern char *__REDIRECT (__fgets_chk_warn,
+ 			 (char *__restrict __s, size_t __size, int __n,
+ 			  FILE *__restrict __stream), __fgets_chk)
+-     __wur __warnattr ("fgets called with bigger size than length "
+-		       "of destination buffer");
++     __wur __warnattr (__warn_fgets_bufsize);
+ 
+ __fortify_function __wur char *
+ fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+@@ -262,6 +439,8 @@ fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+     }
+   return __fgets_alias (__s, __n, __stream);
+ }
++#endif
++#undef __warn_fgets_bufsize
+ 
+ extern size_t __fread_chk (void *__restrict __ptr, size_t __ptrlen,
+ 			   size_t __size, size_t __n,
+@@ -270,13 +449,38 @@ extern size_t __REDIRECT (__fread_alias,
+ 			  (void *__restrict __ptr, size_t __size,
+ 			   size_t __n, FILE *__restrict __stream),
+ 			  fread) __wur;
++
++#define __warn_fread_bufsize \
++  "fread called with bigger size * nmemb than length of destination buffer"
++#define __mul_may_overflow(size, n) \
++  ((size | n) >= (((size_t)1) << (8 * sizeof (size_t) / 2)))
++#ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fread_bufsize) size_t
++fread (void *__restrict const __clang_pass_object_size0 __ptr, size_t __size,
++       size_t __n, FILE *__restrict __stream)
++     __clang_enable_if (!__mul_may_overflow(__size, __n)
++			 && __bos0 (__ptr) != (size_t) -1
++			 && __bos0 (__ptr) < __size * __n,
++			"selected if this call looks dangerous")
++{
++	return __fread_chk (__ptr, __bos0 (__ptr), __size, __n, __stream);
++}
++
++__fortify_overload __wur size_t
++fread (void *__restrict const __clang_pass_object_size0 __ptr, size_t __size,
++       size_t __n, FILE *__restrict __stream)
++{
++  if (__bos0 (__ptr) != (size_t) -1)
++    return __fread_chk (__ptr, __bos0 (__ptr), __size, __n, __stream);
++  return __fread_alias (__ptr, __size, __n, __stream);
++}
++#else
+ extern size_t __REDIRECT (__fread_chk_warn,
+ 			  (void *__restrict __ptr, size_t __ptrlen,
+ 			   size_t __size, size_t __n,
+ 			   FILE *__restrict __stream),
+ 			  __fread_chk)
+-     __wur __warnattr ("fread called with bigger size * nmemb than length "
+-		       "of destination buffer");
++     __wur __warnattr (__warn_fread_bufsize);
+ 
+ __fortify_function __wur size_t
+ fread (void *__restrict __ptr, size_t __size, size_t __n,
+@@ -286,7 +490,7 @@ fread (void *__restrict __ptr, size_t __size, size_t __n,
+     {
+       if (!__builtin_constant_p (__size)
+ 	  || !__builtin_constant_p (__n)
+-	  || (__size | __n) >= (((size_t) 1) << (8 * sizeof (size_t) / 2)))
++	  || __mul_may_overflow(__size, __n))
+ 	return __fread_chk (__ptr, __bos0 (__ptr), __size, __n, __stream);
+ 
+       if (__size * __n > __bos0 (__ptr))
+@@ -294,6 +498,9 @@ fread (void *__restrict __ptr, size_t __size, size_t __n,
+     }
+   return __fread_alias (__ptr, __size, __n, __stream);
+ }
++#endif
++#undef __mul_may_overflow
++#undef __warn_fread_bufsize
+ 
+ #ifdef __USE_GNU
+ extern char *__fgets_unlocked_chk (char *__restrict __s, size_t __size,
+@@ -301,11 +508,33 @@ extern char *__fgets_unlocked_chk (char *__restrict __s, size_t __size,
+ extern char *__REDIRECT (__fgets_unlocked_alias,
+ 			 (char *__restrict __s, int __n,
+ 			  FILE *__restrict __stream), fgets_unlocked) __wur;
++
++# define __warn_fgets_unlocked_bufsize \
++  "fgets_unlocked called with bigger size than length of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fgets_unlocked_bufsize) char *
++fgets_unlocked (char *__restrict const __clang_pass_object_size __s, int __n,
++		FILE *__restrict __stream)
++     __clang_enable_if (__bos (__s) != (size_t) -1
++			 && (size_t) __n > __bos (__s),
++			"selected if this call looks dangerous")
++{
++	return __fgets_unlocked_chk (__s, __bos (__s), __n, __stream);
++}
++
++__fortify_overload __wur char *
++fgets_unlocked (char *__restrict const __clang_pass_object_size __s, int __n,
++		FILE *__restrict __stream)
++{
++  if (__bos (__s) != (size_t) -1)
++    return __fgets_unlocked_chk (__s, __bos (__s), __n, __stream);
++  return __fgets_unlocked_alias (__s, __n, __stream);
++}
++# else
+ extern char *__REDIRECT (__fgets_unlocked_chk_warn,
+ 			 (char *__restrict __s, size_t __size, int __n,
+ 			  FILE *__restrict __stream), __fgets_unlocked_chk)
+-     __wur __warnattr ("fgets_unlocked called with bigger size than length "
+-		       "of destination buffer");
++     __wur __warnattr (__warn_fgets_unlocked_bufsize);
+ 
+ __fortify_function __wur char *
+ fgets_unlocked (char *__restrict __s, int __n, FILE *__restrict __stream)
+@@ -320,6 +549,8 @@ fgets_unlocked (char *__restrict __s, int __n, FILE *__restrict __stream)
+     }
+   return __fgets_unlocked_alias (__s, __n, __stream);
+ }
++# endif
++# undef __warn_fgets_unlocked_bufsize
+ #endif
+ 
+ #ifdef __USE_MISC
+@@ -331,13 +562,40 @@ extern size_t __REDIRECT (__fread_unlocked_alias,
+ 			  (void *__restrict __ptr, size_t __size,
+ 			   size_t __n, FILE *__restrict __stream),
+ 			  fread_unlocked) __wur;
++
++# define __warn_fread_unlocked_buflen \
++  "fread_unlocked called with bigger size * nmemb than length of " \
++  "destination buffer"
++
++# ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fread_unlocked_buflen) size_t
++fread_unlocked (void *__restrict const __clang_pass_object_size0 __ptr,
++		size_t __size, size_t __n, FILE *__restrict __stream)
++     __clang_enable_if ((__size | __n)
++			 >= (((size_t) 1) << (8 * sizeof (size_t) / 2)),
++			"selected if we can guarantee no overflow")
++     __clang_enable_if (__bos0 (__ptr) != (size_t) -1
++			 && __size * __n > __bos0 (__ptr),
++			"selected if this call looks dangerous")
++{
++  return __fread_unlocked_chk (__ptr, __bos0 (__ptr), __size, __n, __stream);
++}
++
++__fortify_overload __wur size_t
++fread_unlocked (void *__restrict const __clang_pass_object_size0 __ptr,
++		size_t __size, size_t __n, FILE *__restrict __stream)
++{
++  if (__bos0 (__ptr) != (size_t) -1)
++    return __fread_unlocked_chk (__ptr, __bos0 (__ptr), __size, __n, __stream);
++  return __fread_unlocked_alias (__ptr, __size, __n, __stream);
++}
++# else
+ extern size_t __REDIRECT (__fread_unlocked_chk_warn,
+ 			  (void *__restrict __ptr, size_t __ptrlen,
+ 			   size_t __size, size_t __n,
+ 			   FILE *__restrict __stream),
+ 			  __fread_unlocked_chk)
+-     __wur __warnattr ("fread_unlocked called with bigger size * nmemb than "
+-		       "length of destination buffer");
++     __wur __warnattr (__warn_fread_unlocked_buflen);
+ 
+ __fortify_function __wur size_t
+ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
+@@ -356,7 +614,7 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
+ 					  __stream);
+     }
+ 
+-# ifdef __USE_EXTERN_INLINES
++#  ifdef __USE_EXTERN_INLINES
+   if (__builtin_constant_p (__size)
+       && __builtin_constant_p (__n)
+       && (__size | __n) < (((size_t) 1) << (8 * sizeof (size_t) / 2))
+@@ -376,7 +634,9 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
+ 	}
+       return (__cptr - (char *) __ptr) / __size;
+     }
+-# endif
++#  endif
+   return __fread_unlocked_alias (__ptr, __size, __n, __stream);
+ }
++# endif
++# undef __warn_fread_unlocked_buflen
+ #endif
+--- libio/stdio.h
++++ libio/stdio.h
+@@ -361,8 +361,10 @@ extern int fprintf (FILE *__restrict __stream,
+    marked with __THROW.  */
+ extern int printf (const char *__restrict __format, ...);
+ /* Write formatted output to S.  */
++__fortify_overloadable
+ extern int sprintf (char *__restrict __s,
+-		    const char *__restrict __format, ...) __THROWNL;
++		    const char *__restrict __format, ...)
++     __THROWNL __CLANG_NO_MANGLE (sprintf);
+ 
+ /* Write formatted output to S from argument list ARG.
+ 
+@@ -376,20 +378,25 @@ extern int vfprintf (FILE *__restrict __s, const char *__restrict __format,
+    marked with __THROW.  */
+ extern int vprintf (const char *__restrict __format, _G_va_list __arg);
+ /* Write formatted output to S from argument list ARG.  */
++__fortify_overloadable
+ extern int vsprintf (char *__restrict __s, const char *__restrict __format,
+-		     _G_va_list __arg) __THROWNL;
++		     _G_va_list __arg) __THROWNL __CLANG_NO_MANGLE (vsprintf);
+ __END_NAMESPACE_STD
+ 
+ #if defined __USE_BSD || defined __USE_ISOC99 || defined __USE_UNIX98
+ __BEGIN_NAMESPACE_C99
+ /* Maximum chars of output to write in MAXLEN.  */
++__fortify_overloadable
+ extern int snprintf (char *__restrict __s, size_t __maxlen,
+ 		     const char *__restrict __format, ...)
+-     __THROWNL __attribute__ ((__format__ (__printf__, 3, 4)));
++     __THROWNL __attribute__ ((__format__ (__printf__, 3, 4)))
++     __CLANG_NO_MANGLE (snprintf);
+ 
++__fortify_overloadable
+ extern int vsnprintf (char *__restrict __s, size_t __maxlen,
+ 		      const char *__restrict __format, _G_va_list __arg)
+-     __THROWNL __attribute__ ((__format__ (__printf__, 3, 0)));
++     __THROWNL __attribute__ ((__format__ (__printf__, 3, 0)))
++     __CLANG_NO_MANGLE (vsnprintf);
+ __END_NAMESPACE_C99
+ #endif
+ 
+@@ -619,8 +626,9 @@ __BEGIN_NAMESPACE_STD
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
++__fortify_overloadable
+ extern char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+-     __wur;
++     __wur __CLANG_NO_MANGLE (fgets);
+ 
+ #if !defined __USE_ISOC11 \
+     || (defined __cplusplus && __cplusplus <= 201103L)
+@@ -635,7 +643,9 @@ extern char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
+-extern char *gets (char *__s) __wur __attribute_deprecated__;
++__fortify_overloadable
++extern char *gets (char *__s) __wur __attribute_deprecated__
++     __CLANG_NO_MANGLE (gets);
+ #endif
+ __END_NAMESPACE_STD
+ 
+@@ -646,8 +656,10 @@ __END_NAMESPACE_STD
+    cancellation point.  But due to similarity with an POSIX interface
+    or due to the implementation it is a cancellation point and
+    therefore not marked with __THROW.  */
++__fortify_overloadable
+ extern char *fgets_unlocked (char *__restrict __s, int __n,
+-			     FILE *__restrict __stream) __wur;
++			     FILE *__restrict __stream)
++     __wur __CLANG_NO_MANGLE (fgets_unlocked);
+ #endif
+ 
+ 
+@@ -706,14 +718,18 @@ extern int ungetc (int __c, FILE *__stream);
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
++__fortify_overloadable
+ extern size_t fread (void *__restrict __ptr, size_t __size,
+-		     size_t __n, FILE *__restrict __stream) __wur;
++		     size_t __n, FILE *__restrict __stream)
++     __wur __CLANG_NO_MANGLE (fread);
+ /* Write chunks of generic data to STREAM.
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
++__fortify_overloadable
+ extern size_t fwrite (const void *__restrict __ptr, size_t __size,
+-		      size_t __n, FILE *__restrict __s);
++		      size_t __n, FILE *__restrict __s)
++     __CLANG_NO_MANGLE (fwrite);
+ __END_NAMESPACE_STD
+ 
+ #ifdef __USE_GNU
+@@ -734,8 +750,10 @@ extern int fputs_unlocked (const char *__restrict __s,
+    cancellation point.  But due to similarity with an POSIX interface
+    or due to the implementation they are cancellation points and
+    therefore not marked with __THROW.  */
++__fortify_overloadable
+ extern size_t fread_unlocked (void *__restrict __ptr, size_t __size,
+-			      size_t __n, FILE *__restrict __stream) __wur;
++			      size_t __n, FILE *__restrict __stream)
++__wur __CLANG_NO_MANGLE (fread_unlocked);
+ extern size_t fwrite_unlocked (const void *__restrict __ptr, size_t __size,
+ 			       size_t __n, FILE *__restrict __stream);
+ #endif
+--- misc/bits/syslog.h
++++ misc/bits/syslog.h
+@@ -20,11 +20,33 @@
+ # error "Never include <bits/syslog.h> directly; use <sys/syslog.h> instead."
+ #endif
+ 
++#ifdef __USE_BSD
++extern void __vsyslog_chk (int __pri, int __flag, const char *__fmt,
++			   __gnuc_va_list __ap)
++     __attribute__ ((__format__ (__printf__, 3, 0)));
++
++__fortify_function void
++vsyslog (int __pri, const char *__fmt, __gnuc_va_list __ap)
++{
++  __vsyslog_chk (__pri,  __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++}
++#endif
+ 
+ extern void __syslog_chk (int __pri, int __flag, const char *__fmt, ...)
+      __attribute__ ((__format__ (__printf__, 3, 4)));
+ 
+-#ifdef __va_arg_pack
++#if defined __use_clang_fortify && __USE_BSD
++/* clang doesn't support __va_arg_pack, so this is only possible if we have
++   vsyslog.  */
++__fortify_function void
++syslog (int __pri, const char *__fmt, ...)
++{
++  __gnuc_va_list __ap;
++  va_start (__ap, __fmt);
++  __vsyslog_chk (__pri, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++}
++#elif defined __va_arg_pack
+ __fortify_function void
+ syslog (int __pri, const char *__fmt, ...)
+ {
+@@ -35,15 +57,3 @@ syslog (int __pri, const char *__fmt, ...)
+   __syslog_chk (pri, __USE_FORTIFY_LEVEL - 1, __VA_ARGS__)
+ #endif
+ 
+-
+-#ifdef __USE_BSD
+-extern void __vsyslog_chk (int __pri, int __flag, const char *__fmt,
+-			   __gnuc_va_list __ap)
+-     __attribute__ ((__format__ (__printf__, 3, 0)));
+-
+-__fortify_function void
+-vsyslog (int __pri, const char *__fmt, __gnuc_va_list __ap)
+-{
+-  __vsyslog_chk (__pri,  __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
+-}
+-#endif
+--- misc/sys/cdefs.h
++++ misc/sys/cdefs.h
+@@ -129,9 +129,51 @@
+ 
+ 
+ /* Fortify support.  */
+-#define __bos(ptr) __builtin_object_size (ptr, __USE_FORTIFY_LEVEL > 1)
++#define __bos_level (__USE_FORTIFY_LEVEL > 1)
++#define __bos(ptr) __builtin_object_size (ptr, __bos_level)
+ #define __bos0(ptr) __builtin_object_size (ptr, 0)
+ #define __fortify_function __extern_always_inline __attribute_artificial__
++#if defined __clang__ && __USE_FORTIFY_LEVEL > 0 \
++    && !defined _CLANG_FORTIFY_DISABLE
++# define __use_clang_fortify 1
++/* Clang-style FORTIFY creates a different symbol for each FORTIFY'ed function,
++   whereas GCC-style doesn't.  Thus, GCC can assume that the FORTIFY'ed function
++   is always available externally, but clang can't.  */
++# define __attribute_overloadable__ __attribute__ ((__overloadable__))
++# define __fortify_overload static __always_inline __attribute_overloadable__
++/* FORTIFY functions that exist only as decls.  Some of them share the same
++   signature as the FORTIFY'ed function, so we sometimes can't put `static` on
++   them.  */
++# define __fortify_error_function static __attribute_overloadable__
++# define __clang_pass_object_size_n(n) __attribute__ ((pass_object_size (n)))
++# define __clang_enable_if(c, m) __attribute__ ((enable_if ((c), (m))))
++# define __clang_prefer_this_overload __clang_enable_if (1, "")
++# define __clang_warning(what) __attribute__ ((deprecated(what)))
++# define __clang_error(what) __attribute__ ((unavailable(what)))
++# define __fortify_potential_overload __fortify_overload
++# define __fortify_overloadable __attribute_overloadable__
++#else
++# define __fortify_potential_overload __fortify_function
++/* Some functions/decls can be shared between clang-style and non-clang-style
++   FORTIFY.  Turning these into nops makes that possible.  */
++# define __clang_pass_object_size_n(n)
++# define __attribute_overloadable__
++# define __fortify_overloadable
++#endif
++
++#define __clang_pass_object_size0 __clang_pass_object_size_n (0)
++#define __clang_pass_object_size __clang_pass_object_size_n (__bos_level)
++
++#ifdef __use_clang_fortify
++/* It's intentional that this allows macros to be expanded.  Some libraries
++   #define stdlib functions to custom function names; if we don't allow this
++   expansion to happen, the name of the function in user code will be the
++   custom one, but the symbol we emit for the function definition (and calls to
++   the function) will be the stdlib one.  This is *very* bad, and subtle.  */
++# define __CLANG_NO_MANGLE(name) __asm__ (__STRING (name))
++#else
++# define __CLANG_NO_MANGLE(name)
++#endif
+ 
+ #if __GNUC_PREREQ (4,3)
+ # define __warndecl(name, msg) \
+--- posix/bits/unistd.h
++++ posix/bits/unistd.h
+@@ -24,11 +24,31 @@ extern ssize_t __read_chk (int __fd, void *__buf, size_t __nbytes,
+ 			   size_t __buflen) __wur;
+ extern ssize_t __REDIRECT (__read_alias, (int __fd, void *__buf,
+ 					  size_t __nbytes), read) __wur;
++
++#define __warn_read_buf_size "read called with bigger length than size of " \
++		       "the destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_read_buf_size) ssize_t
++read (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1
++			 && __nbytes > __bos0 (__buf),
++			"selected if this read call seems unsafe")
++{
++  return __read_chk (__fd, __buf, __nbytes, __bos0 (__buf));
++}
++
++__fortify_overload __wur ssize_t
++read (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __read_chk (__fd, __buf, __nbytes, __bos0 (__buf));
++  return __read_alias (__fd, __buf, __nbytes);
++}
++#else
+ extern ssize_t __REDIRECT (__read_chk_warn,
+ 			   (int __fd, void *__buf, size_t __nbytes,
+ 			    size_t __buflen), __read_chk)
+-     __wur __warnattr ("read called with bigger length than size of "
+-		       "the destination buffer");
++     __wur __warnattr (__warn_read_buf_size);
+ 
+ __fortify_function __wur ssize_t
+ read (int __fd, void *__buf, size_t __nbytes)
+@@ -43,6 +63,8 @@ read (int __fd, void *__buf, size_t __nbytes)
+     }
+   return __read_alias (__fd, __buf, __nbytes);
+ }
++#endif
++#undef __warn_read_buf_size
+ 
+ #ifdef __USE_UNIX98
+ extern ssize_t __pread_chk (int __fd, void *__buf, size_t __nbytes,
+@@ -55,19 +77,42 @@ extern ssize_t __REDIRECT (__pread_alias,
+ extern ssize_t __REDIRECT (__pread64_alias,
+ 			   (int __fd, void *__buf, size_t __nbytes,
+ 			    __off64_t __offset), pread64) __wur;
++
++# define __warn_pread_bufsize \
++  "pread called with bigger length than size of the destination buffer"
++# define __warn_pread64_bufsize \
++  "pread64 called with bigger length than size of the destination buffer"
+ extern ssize_t __REDIRECT (__pread_chk_warn,
+ 			   (int __fd, void *__buf, size_t __nbytes,
+ 			    __off_t __offset, size_t __bufsize), __pread_chk)
+-     __wur __warnattr ("pread called with bigger length than size of "
+-		       "the destination buffer");
++     __wur __warnattr (__warn_pread_bufsize);
+ extern ssize_t __REDIRECT (__pread64_chk_warn,
+ 			   (int __fd, void *__buf, size_t __nbytes,
+ 			    __off64_t __offset, size_t __bufsize),
+ 			    __pread64_chk)
+-     __wur __warnattr ("pread64 called with bigger length than size of "
+-		       "the destination buffer");
++     __wur __warnattr (__warn_pread64_bufsize);
+ 
+ # ifndef __USE_FILE_OFFSET64
++#  ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_pread_bufsize) ssize_t
++pread (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++       __off_t __offset)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1
++			 && __nbytes > __bos0 (__buf),
++			"selected if this call looks dangerous")
++{
++	return __pread_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++}
++
++__fortify_overload __wur ssize_t
++pread (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++       __off_t __offset)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __pread_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++  return __pread_alias (__fd, __buf, __nbytes, __offset);
++}
++#  else
+ __fortify_function __wur ssize_t
+ pread (int __fd, void *__buf, size_t __nbytes, __off_t __offset)
+ {
+@@ -82,7 +127,28 @@ pread (int __fd, void *__buf, size_t __nbytes, __off_t __offset)
+     }
+   return __pread_alias (__fd, __buf, __nbytes, __offset);
+ }
++#  endif
+ # else
++#  ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_pread64_bufsize) ssize_t
++pread (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++       __off64_t __offset)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1
++			 && __nbytes > __bos0 (__buf),
++			"selected if this call looks dangerous")
++{
++	return __pread64_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++}
++
++__fortify_overload __wur ssize_t
++pread (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++       __off64_t __offset)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __pread64_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++  return __pread64_alias (__fd, __buf, __nbytes, __offset);
++}
++#  else
+ __fortify_function __wur ssize_t
+ pread (int __fd, void *__buf, size_t __nbytes, __off64_t __offset)
+ {
+@@ -98,9 +164,30 @@ pread (int __fd, void *__buf, size_t __nbytes, __off64_t __offset)
+ 
+   return __pread64_alias (__fd, __buf, __nbytes, __offset);
+ }
++#  endif
+ # endif
+ 
+ # ifdef __USE_LARGEFILE64
++#  ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_pread64_bufsize) ssize_t
++pread64 (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++	 __off64_t __offset)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1
++			 && __nbytes > __bos0 (__buf),
++			"selected if this call looks dangerous")
++{
++	return __pread64_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++}
++
++__fortify_overload __wur ssize_t
++pread64 (int __fd, void *const __clang_pass_object_size0 __buf, size_t __nbytes,
++	 __off64_t __offset)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __pread64_chk (__fd, __buf, __nbytes, __offset, __bos0 (__buf));
++  return __pread64_alias (__fd, __buf, __nbytes, __offset);
++}
++#  else
+ __fortify_function __wur ssize_t
+ pread64 (int __fd, void *__buf, size_t __nbytes, __off64_t __offset)
+ {
+@@ -116,7 +203,10 @@ pread64 (int __fd, void *__buf, size_t __nbytes, __off64_t __offset)
+ 
+   return __pread64_alias (__fd, __buf, __nbytes, __offset);
+ }
++#  endif
+ # endif
++# undef __warn_pread_bufsize
++# undef __warn_pread64_bufsize
+ #endif
+ 
+ #if defined __USE_BSD || defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+@@ -128,12 +218,36 @@ extern ssize_t __REDIRECT_NTH (__readlink_alias,
+ 			       (const char *__restrict __path,
+ 				char *__restrict __buf, size_t __len), readlink)
+      __nonnull ((1, 2)) __wur;
++
++# define __warn_readlink_buf_size "readlink called with bigger length than " \
++					  "size of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __nonnull ((1, 2)) __wur
++__clang_warning (__warn_readlink_buf_size) ssize_t
++__NTH (readlink (const char *__restrict __path,
++		 char *__restrict const __clang_pass_object_size __buf,
++		 size_t __len))
++     __clang_enable_if (__bos (__buf) != (size_t) -1 && __len > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++  return __readlink_chk (__path, __buf, __len, __bos (__buf));
++}
++
++__fortify_overload __nonnull ((1, 2)) __wur ssize_t
++__NTH (readlink (const char *__restrict __path,
++		 char *__restrict const __clang_pass_object_size __buf,
++		 size_t __len))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __readlink_chk (__path, __buf, __len, __bos (__buf));
++  return __readlink_alias (__path, __buf, __len);
++}
++# else
+ extern ssize_t __REDIRECT_NTH (__readlink_chk_warn,
+ 			       (const char *__restrict __path,
+ 				char *__restrict __buf, size_t __len,
+ 				size_t __buflen), __readlink_chk)
+-     __nonnull ((1, 2)) __wur __warnattr ("readlink called with bigger length "
+-					  "than size of destination buffer");
++     __nonnull ((1, 2)) __wur __warnattr (__warn_readlink_buf_size);
+ 
+ __fortify_function __nonnull ((1, 2)) __wur ssize_t
+ __NTH (readlink (const char *__restrict __path, char *__restrict __buf,
+@@ -149,6 +263,8 @@ __NTH (readlink (const char *__restrict __path, char *__restrict __buf,
+     }
+   return __readlink_alias (__path, __buf, __len);
+ }
++# endif
++# undef __warn_readlink_buf_size
+ #endif
+ 
+ #ifdef __USE_ATFILE
+@@ -161,13 +277,38 @@ extern ssize_t __REDIRECT_NTH (__readlinkat_alias,
+ 				char *__restrict __buf, size_t __len),
+ 			       readlinkat)
+      __nonnull ((2, 3)) __wur;
++
++# define __warn_readlinkat_buf_size "readlinkat called with bigger length " \
++					  "than size of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __nonnull ((2, 3)) __wur
++__clang_warning (__warn_readlinkat_buf_size) ssize_t
++__NTH (readlinkat (int __fd,
++		   const char *__restrict __path,
++		   char *__restrict const __clang_pass_object_size __buf,
++		   size_t __len))
++     __clang_enable_if (__bos (__buf) != (size_t) -1 && __bos (__buf) <= __len,
++			"selected if this call looks dangerous")
++{
++  return __readlinkat_chk (__fd, __path, __buf, __len, __bos (__buf));
++}
++
++__fortify_overload __nonnull ((2, 3)) __wur ssize_t
++__NTH (readlinkat (int __fd,
++		   const char *__restrict __path,
++		   char *__restrict const __clang_pass_object_size __buf,
++		   size_t __len))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __readlinkat_chk (__fd, __path, __buf, __len, __bos (__buf));
++  return __readlinkat_alias (__fd, __path, __buf, __len);
++}
++# else
+ extern ssize_t __REDIRECT_NTH (__readlinkat_chk_warn,
+ 			       (int __fd, const char *__restrict __path,
+ 				char *__restrict __buf, size_t __len,
+ 				size_t __buflen), __readlinkat_chk)
+-     __nonnull ((2, 3)) __wur __warnattr ("readlinkat called with bigger "
+-					  "length than size of destination "
+-					  "buffer");
++     __nonnull ((2, 3)) __wur __warnattr (__warn_readlinkat_buf_size);
+ 
+ __fortify_function __nonnull ((2, 3)) __wur ssize_t
+ __NTH (readlinkat (int __fd, const char *__restrict __path,
+@@ -184,17 +325,38 @@ __NTH (readlinkat (int __fd, const char *__restrict __path,
+     }
+   return __readlinkat_alias (__fd, __path, __buf, __len);
+ }
++# endif
++# undef __warn_readlinkat_buf_size
+ #endif
+ 
+ extern char *__getcwd_chk (char *__buf, size_t __size, size_t __buflen)
+      __THROW __wur;
+ extern char *__REDIRECT_NTH (__getcwd_alias,
+ 			     (char *__buf, size_t __size), getcwd) __wur;
++
++#define __warn_getcwd_buf_size \
++  "getcwd caller with bigger length than size of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_getcwd_buf_size) char *
++__NTH (getcwd (char *const __clang_pass_object_size __buf, size_t __size))
++     __clang_enable_if (__bos (__buf) != (size_t) -1 && __size > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++  return __getcwd_chk (__buf, __size, __bos (__buf));
++}
++
++__fortify_overload __wur char *
++__NTH (getcwd (char *const __clang_pass_object_size __buf, size_t __size))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __getcwd_chk (__buf, __size, __bos (__buf));
++  return __getcwd_alias (__buf, __size);
++}
++#else
+ extern char *__REDIRECT_NTH (__getcwd_chk_warn,
+ 			     (char *__buf, size_t __size, size_t __buflen),
+ 			     __getcwd_chk)
+-     __wur __warnattr ("getcwd caller with bigger length than size of "
+-		       "destination buffer");
++     __wur __warnattr (__warn_getcwd_buf_size);
+ 
+ __fortify_function __wur char *
+ __NTH (getcwd (char *__buf, size_t __size))
+@@ -209,32 +371,82 @@ __NTH (getcwd (char *__buf, size_t __size))
+     }
+   return __getcwd_alias (__buf, __size);
+ }
++#endif
++#undef __warn_getcwd_buf_size
+ 
+ #if defined __USE_BSD || defined __USE_XOPEN_EXTENDED
++# define __warn_getwd_use_something_else \
++  "please use getcwd instead, as getwd doesn't specify buffer size"
++
+ extern char *__getwd_chk (char *__buf, size_t buflen)
+      __THROW __nonnull ((1)) __wur;
++# ifdef __use_clang_fortify
++__fortify_potential_overload __nonnull ((1)) __attribute_deprecated__ __wur
++char *
++__NTH (getwd (char *const __clang_pass_object_size __buf))
++     __clang_enable_if (__bos (__buf) != (size_t) -1,
++			"selected if this call looks safe")
++{
++  return __getwd_chk (__buf, __bos (__buf));
++}
++
++extern char *__REDIRECT (__getwd_alias, (char *__str), getwd) __wur;
++
++__fortify_potential_overload __nonnull ((1)) __attribute_deprecated__
++__clang_warning (__warn_getwd_use_something_else) __wur
++char *
++__NTH (getwd (char *const __clang_pass_object_size __buf))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __getwd_chk (__buf, __bos (__buf));
++  return __getwd_alias (__buf);
++}
++# else
+ extern char *__REDIRECT_NTH (__getwd_warn, (char *__buf), getwd)
+-     __nonnull ((1)) __wur __warnattr ("please use getcwd instead, as getwd "
+-				       "doesn't specify buffer size");
++     __nonnull ((1)) __wur __warnattr (__warn_getwd_use_something_else);
+ 
+-__fortify_function __nonnull ((1)) __attribute_deprecated__ __wur char *
+-__NTH (getwd (char *__buf))
++__fortify_potential_overload __nonnull ((1)) __attribute_deprecated__ __wur
++char *
++__NTH (getwd (char *const __clang_pass_object_size __buf))
+ {
+   if (__bos (__buf) != (size_t) -1)
+     return __getwd_chk (__buf, __bos (__buf));
+   return __getwd_warn (__buf);
+ }
++# endif
++# undef __warn_getwd_use_something_else
+ #endif
+ 
+ extern size_t __confstr_chk (int __name, char *__buf, size_t __len,
+ 			     size_t __buflen) __THROW;
+ extern size_t __REDIRECT_NTH (__confstr_alias, (int __name, char *__buf,
+ 						size_t __len), confstr);
++
++#define __warn_confstr_dest_size \
++  "confstr called with bigger length than size of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_confstr_dest_size) size_t
++__NTH (confstr (int __name, char *const __clang_pass_object_size __buf,
++		size_t __len))
++     __clang_enable_if (__bos (__buf) != (size_t) -1 && __bos (__buf) < __len,
++			"selected if this call looks dangerous")
++{
++  return __confstr_chk (__name, __buf, __len, __bos (__buf));
++}
++
++__fortify_overload size_t
++__NTH (confstr (int __name, char *const __clang_pass_object_size __buf,
++		size_t __len))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __confstr_chk (__name, __buf, __len, __bos (__buf));
++  return __confstr_alias (__name, __buf, __len);
++}
++#else
+ extern size_t __REDIRECT_NTH (__confstr_chk_warn,
+ 			      (int __name, char *__buf, size_t __len,
+ 			       size_t __buflen), __confstr_chk)
+-     __warnattr ("confstr called with bigger length than size of destination "
+-		 "buffer");
++     __warnattr (__warn_confstr_dest_size);
+ 
+ __fortify_function size_t
+ __NTH (confstr (int __name, char *__buf, size_t __len))
+@@ -249,17 +461,40 @@ __NTH (confstr (int __name, char *__buf, size_t __len))
+     }
+   return __confstr_alias (__name, __buf, __len);
+ }
++#endif
++#undef __warn_confstr_dest_size
+ 
+ 
+ extern int __getgroups_chk (int __size, __gid_t __list[], size_t __listlen)
+      __THROW __wur;
+ extern int __REDIRECT_NTH (__getgroups_alias, (int __size, __gid_t __list[]),
+ 			   getgroups) __wur;
++
++#define __warn_getgroups_count \
++  "getgroups called with bigger group count than what can fit into " \
++  "destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_getgroups_count) int
++__NTH (getgroups (int __size, __gid_t *const __clang_pass_object_size __list))
++     __clang_enable_if (__bos (__list) != (size_t) -1
++			 && __size * sizeof (__gid_t) > __bos (__list),
++			"selected if this call looks dangerous")
++{
++  return __getgroups_chk (__size, __list, __bos (__list));
++}
++
++__fortify_overload int
++__NTH (getgroups (int __size, __gid_t *const __clang_pass_object_size __list))
++{
++  if (__bos (__list) != (size_t) -1)
++    return __getgroups_chk (__size, __list, __bos (__list));
++  return __getgroups_alias (__size, __list);
++}
++#else
+ extern int __REDIRECT_NTH (__getgroups_chk_warn,
+ 			   (int __size, __gid_t __list[], size_t __listlen),
+ 			   __getgroups_chk)
+-     __wur __warnattr ("getgroups called with bigger group count than what "
+-		       "can fit into destination buffer");
++     __wur __warnattr (__warn_getgroups_count);
+ 
+ __fortify_function int
+ __NTH (getgroups (int __size, __gid_t __list[]))
+@@ -274,6 +509,8 @@ __NTH (getgroups (int __size, __gid_t __list[]))
+     }
+   return __getgroups_alias (__size, __list);
+ }
++#endif
++#undef __warn_getgroups_count
+ 
+ 
+ extern int __ttyname_r_chk (int __fd, char *__buf, size_t __buflen,
+@@ -281,11 +518,33 @@ extern int __ttyname_r_chk (int __fd, char *__buf, size_t __buflen,
+ extern int __REDIRECT_NTH (__ttyname_r_alias, (int __fd, char *__buf,
+ 					       size_t __buflen), ttyname_r)
+      __nonnull ((2));
++
++#define __warn_ttyname_buflen "ttyname_r called with bigger buflen than " \
++				 "size of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_ttyname_buflen) int
++__NTH (ttyname_r (int __fd, char *const __clang_pass_object_size __buf,
++		  size_t __buflen))
++     __clang_enable_if (__bos (__buf) != (size_t) -1
++			 && __buflen > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++  return __ttyname_r_chk (__fd, __buf, __buflen, __bos (__buf));
++}
++
++__fortify_overload int
++__NTH (ttyname_r (int __fd, char *const __clang_pass_object_size __buf,
++		  size_t __buflen))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __ttyname_r_chk (__fd, __buf, __buflen, __bos (__buf));
++  return __ttyname_r_alias (__fd, __buf, __buflen);
++}
++#else
+ extern int __REDIRECT_NTH (__ttyname_r_chk_warn,
+ 			   (int __fd, char *__buf, size_t __buflen,
+ 			    size_t __nreal), __ttyname_r_chk)
+-     __nonnull ((2)) __warnattr ("ttyname_r called with bigger buflen than "
+-				 "size of destination buffer");
++     __nonnull ((2)) __warnattr (__warn_ttyname_buflen);
+ 
+ __fortify_function int
+ __NTH (ttyname_r (int __fd, char *__buf, size_t __buflen))
+@@ -300,6 +559,8 @@ __NTH (ttyname_r (int __fd, char *__buf, size_t __buflen))
+     }
+   return __ttyname_r_alias (__fd, __buf, __buflen);
+ }
++#endif
++#undef __warn_ttyname_buflen
+ 
+ 
+ #if defined __USE_REENTRANT || defined __USE_POSIX199506
+@@ -307,11 +568,31 @@ extern int __getlogin_r_chk (char *__buf, size_t __buflen, size_t __nreal)
+      __nonnull ((1));
+ extern int __REDIRECT (__getlogin_r_alias, (char *__buf, size_t __buflen),
+ 		       getlogin_r) __nonnull ((1));
++
++# define __warn_getlogin_r_buflen "getlogin_r called with bigger buflen than " \
++				  "size of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload int
++getlogin_r (char *const __clang_pass_object_size __buf, size_t __buflen)
++     __clang_enable_if (__bos (__buf) != (size_t) -1
++			 && __buflen > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++	return __getlogin_r_chk (__buf, __buflen, __bos (__buf));
++}
++
++__fortify_overload int
++getlogin_r (char *const __clang_pass_object_size __buf, size_t __buflen)
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __getlogin_r_chk (__buf, __buflen, __bos (__buf));
++  return __getlogin_r_alias (__buf, __buflen);
++}
++# else
+ extern int __REDIRECT (__getlogin_r_chk_warn,
+ 		       (char *__buf, size_t __buflen, size_t __nreal),
+ 		       __getlogin_r_chk)
+-     __nonnull ((1)) __warnattr ("getlogin_r called with bigger buflen than "
+-				 "size of destination buffer");
++     __nonnull ((1)) __warnattr (__warn_getlogin_r_buflen);
+ 
+ __fortify_function int
+ getlogin_r (char *__buf, size_t __buflen)
+@@ -326,6 +607,8 @@ getlogin_r (char *__buf, size_t __buflen)
+     }
+   return __getlogin_r_alias (__buf, __buflen);
+ }
++# endif
++# undef __warn_getlogin_r_buflen
+ #endif
+ 
+ 
+@@ -334,11 +617,32 @@ extern int __gethostname_chk (char *__buf, size_t __buflen, size_t __nreal)
+      __THROW __nonnull ((1));
+ extern int __REDIRECT_NTH (__gethostname_alias, (char *__buf, size_t __buflen),
+ 			   gethostname) __nonnull ((1));
++
++# define __warn_gethostname_buflen "gethostname called with bigger buflen " \
++				  "than size of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_gethostname_buflen) int
++__NTH (gethostname (char *const __clang_pass_object_size __buf, size_t __buflen))
++     __clang_enable_if (__bos (__buf) != (size_t) -1
++			 && __buflen > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++	return __gethostname_chk (__buf, __buflen, __bos (__buf));
++}
++
++__fortify_overload int
++__NTH (gethostname (char *const __clang_pass_object_size __buf,
++		    size_t __buflen))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __gethostname_chk (__buf, __buflen, __bos (__buf));
++  return __gethostname_alias (__buf, __buflen);
++}
++# else
+ extern int __REDIRECT_NTH (__gethostname_chk_warn,
+ 			   (char *__buf, size_t __buflen, size_t __nreal),
+ 			   __gethostname_chk)
+-     __nonnull ((1)) __warnattr ("gethostname called with bigger buflen than "
+-				 "size of destination buffer");
++     __nonnull ((1)) __warnattr (__warn_gethostname_buflen);
+ 
+ __fortify_function int
+ __NTH (gethostname (char *__buf, size_t __buflen))
+@@ -353,6 +657,8 @@ __NTH (gethostname (char *__buf, size_t __buflen))
+     }
+   return __gethostname_alias (__buf, __buflen);
+ }
++# endif
++# undef __warn_gethostname_buflen
+ #endif
+ 
+ 
+@@ -362,12 +668,34 @@ extern int __getdomainname_chk (char *__buf, size_t __buflen, size_t __nreal)
+ extern int __REDIRECT_NTH (__getdomainname_alias, (char *__buf,
+ 						   size_t __buflen),
+ 			   getdomainname) __nonnull ((1)) __wur;
++
++# define __warn_getdomainname_buflen \
++  "getdomainname called with bigger buflen than size of destination buffer"
++
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_getdomainname_buflen) int
++__NTH (getdomainname (char *const __clang_pass_object_size __buf,
++		      size_t __buflen))
++     __clang_enable_if (__bos (__buf) != (size_t) -1
++			 && __buflen > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++	return __getdomainname_chk (__buf, __buflen, __bos (__buf));
++}
++
++__fortify_overload int
++__NTH (getdomainname (char *const __clang_pass_object_size __buf,
++		      size_t __buflen))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __getdomainname_chk (__buf, __buflen, __bos (__buf));
++  return __getdomainname_alias (__buf, __buflen);
++}
++# else
+ extern int __REDIRECT_NTH (__getdomainname_chk_warn,
+ 			   (char *__buf, size_t __buflen, size_t __nreal),
+ 			   __getdomainname_chk)
+-     __nonnull ((1)) __wur __warnattr ("getdomainname called with bigger "
+-				       "buflen than size of destination "
+-				       "buffer");
++     __nonnull ((1)) __wur __warnattr (__warn_getdomainname_buflen);
+ 
+ __fortify_function int
+ __NTH (getdomainname (char *__buf, size_t __buflen))
+@@ -382,4 +710,6 @@ __NTH (getdomainname (char *__buf, size_t __buflen))
+     }
+   return __getdomainname_alias (__buf, __buflen);
+ }
++# endif
++# undef __warn_getdomainname_buflen
+ #endif
+--- posix/unistd.h
++++ posix/unistd.h
+@@ -357,7 +357,9 @@ extern int close (int __fd);
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
+-extern ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur;
++__fortify_overloadable
++extern ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur
++  __CLANG_NO_MANGLE (read);
+ 
+ /* Write N bytes of BUF to FD.  Return the number written, or -1.
+ 
+@@ -373,8 +375,9 @@ extern ssize_t write (int __fd, const void *__buf, size_t __n) __wur;
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
++__fortify_overloadable
+ extern ssize_t pread (int __fd, void *__buf, size_t __nbytes,
+-		      __off_t __offset) __wur;
++		      __off_t __offset) __wur __CLANG_NO_MANGLE (pread);
+ 
+ /* Write N bytes of BUF to FD at the given position OFFSET without
+    changing the file pointer.  Return the number written, or -1.
+@@ -385,6 +388,7 @@ extern ssize_t pwrite (int __fd, const void *__buf, size_t __n,
+ 		       __off_t __offset) __wur;
+ # else
+ #  ifdef __REDIRECT
++__fortify_overloadable
+ extern ssize_t __REDIRECT (pread, (int __fd, void *__buf, size_t __nbytes,
+ 				   __off64_t __offset),
+ 			   pread64) __wur;
+@@ -401,8 +405,9 @@ extern ssize_t __REDIRECT (pwrite, (int __fd, const void *__buf,
+ /* Read NBYTES into BUF from FD at the given position OFFSET without
+    changing the file pointer.  Return the number read, -1 for errors
+    or 0 for EOF.  */
++__fortify_overloadable
+ extern ssize_t pread64 (int __fd, void *__buf, size_t __nbytes,
+-			__off64_t __offset) __wur;
++			__off64_t __offset) __wur __CLANG_NO_MANGLE (pread64);
+ /* Write N bytes of BUF to FD at the given position OFFSET without
+    changing the file pointer.  Return the number written, or -1.  */
+ extern ssize_t pwrite64 (int __fd, const void *__buf, size_t __n,
+@@ -508,7 +513,9 @@ extern int fchdir (int __fd) __THROW __wur;
+    an array is allocated with `malloc'; the array is SIZE
+    bytes long, unless SIZE == 0, in which case it is as
+    big as necessary.  */
+-extern char *getcwd (char *__buf, size_t __size) __THROW __wur;
++__fortify_overloadable
++extern char *getcwd (char *__buf, size_t __size) __THROW __wur
++  __CLANG_NO_MANGLE (getcwd);
+ 
+ #ifdef	__USE_GNU
+ /* Return a malloc'd string containing the current directory name.
+@@ -522,8 +529,10 @@ extern char *get_current_dir_name (void) __THROW;
+ /* Put the absolute pathname of the current working directory in BUF.
+    If successful, return BUF.  If not, put an error message in
+    BUF and return NULL.  BUF should be at least PATH_MAX bytes long.  */
++__fortify_overloadable
+ extern char *getwd (char *__buf)
+-     __THROW __nonnull ((1)) __attribute_deprecated__ __wur;
++     __THROW __nonnull ((1)) __attribute_deprecated__ __wur
++     __CLANG_NO_MANGLE (getwd);
+ #endif
+ 
+ 
+@@ -620,7 +629,9 @@ extern long int sysconf (int __name) __THROW;
+ 
+ #ifdef	__USE_POSIX2
+ /* Get the value of the string-valued system variable NAME.  */
+-extern size_t confstr (int __name, char *__buf, size_t __len) __THROW;
++__fortify_overloadable
++extern size_t confstr (int __name, char *__buf, size_t __len) __THROW
++  __CLANG_NO_MANGLE (confstr);
+ #endif
+ 
+ 
+@@ -686,7 +697,9 @@ extern __gid_t getegid (void) __THROW;
+ /* If SIZE is zero, return the number of supplementary groups
+    the calling process is in.  Otherwise, fill in the group IDs
+    of its supplementary groups in LIST and return the number written.  */
+-extern int getgroups (int __size, __gid_t __list[]) __THROW __wur;
++__fortify_overloadable
++extern int getgroups (int __size, __gid_t __list[]) __THROW __wur
++  __CLANG_NO_MANGLE (getgroups);
+ 
+ #ifdef	__USE_GNU
+ /* Return nonzero iff the calling process is in group GID.  */
+@@ -767,12 +780,14 @@ extern __pid_t vfork (void) __THROW;
+ 
+ /* Return the pathname of the terminal FD is open on, or NULL on errors.
+    The returned storage is good only until the next call to this function.  */
+-extern char *ttyname (int __fd) __THROW;
++__fortify_overloadable
++extern char *ttyname (int __fd) __THROW __CLANG_NO_MANGLE (ttyname);
+ 
+ /* Store at most BUFLEN characters of the pathname of the terminal FD is
+    open on in BUF.  Return 0 on success, otherwise an error number.  */
++__fortify_overloadable
+ extern int ttyname_r (int __fd, char *__buf, size_t __buflen)
+-     __THROW __nonnull ((2)) __wur;
++     __THROW __nonnull ((2)) __wur __CLANG_NO_MANGLE (ttyname_r);
+ 
+ /* Return 1 if FD is a valid descriptor associated
+    with a terminal, zero if not.  */
+@@ -806,9 +821,10 @@ extern int symlink (const char *__from, const char *__to)
+ /* Read the contents of the symbolic link PATH into no more than
+    LEN bytes of BUF.  The contents are not null-terminated.
+    Returns the number of characters read, or -1 for errors.  */
++__fortify_overloadable
+ extern ssize_t readlink (const char *__restrict __path,
+ 			 char *__restrict __buf, size_t __len)
+-     __THROW __nonnull ((1, 2)) __wur;
++     __THROW __nonnull ((1, 2)) __wur __CLANG_NO_MANGLE (readlink);
+ #endif /* Use BSD.  */
+ 
+ #ifdef __USE_ATFILE
+@@ -817,9 +833,10 @@ extern int symlinkat (const char *__from, int __tofd,
+ 		      const char *__to) __THROW __nonnull ((1, 3)) __wur;
+ 
+ /* Like readlink but a relative PATH is interpreted relative to FD.  */
++__fortify_overloadable
+ extern ssize_t readlinkat (int __fd, const char *__restrict __path,
+ 			   char *__restrict __buf, size_t __len)
+-     __THROW __nonnull ((2, 3)) __wur;
++     __THROW __nonnull ((2, 3)) __wur __CLANG_NO_MANGLE (readlinkat);
+ #endif
+ 
+ /* Remove the link NAME.  */
+@@ -854,7 +871,9 @@ extern char *getlogin (void);
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
+-extern int getlogin_r (char *__name, size_t __name_len) __nonnull ((1));
++__fortify_overloadable
++extern int getlogin_r (char *__name, size_t __name_len) __nonnull ((1))
++  __CLANG_NO_MANGLE (getlogin_r);
+ #endif
+ 
+ #ifdef	__USE_BSD
+@@ -876,7 +895,9 @@ extern int setlogin (const char *__name) __THROW __nonnull ((1));
+ /* Put the name of the current host in no more than LEN bytes of NAME.
+    The result is null-terminated if LEN is large enough for the full
+    name and the terminator.  */
+-extern int gethostname (char *__name, size_t __len) __THROW __nonnull ((1));
++__fortify_overloadable
++extern int gethostname (char *__name, size_t __len) __THROW __nonnull ((1))
++  __CLANG_NO_MANGLE (gethostname);
+ #endif
+ 
+ 
+@@ -894,8 +915,9 @@ extern int sethostid (long int __id) __THROW __wur;
+ /* Get and set the NIS (aka YP) domain name, if any.
+    Called just like `gethostname' and `sethostname'.
+    The NIS domain name is usually the empty string when not using NIS.  */
++__fortify_overloadable
+ extern int getdomainname (char *__name, size_t __len)
+-     __THROW __nonnull ((1)) __wur;
++     __THROW __nonnull ((1)) __wur __CLANG_NO_MANGLE (getdomainname);
+ extern int setdomainname (const char *__name, size_t __len)
+      __THROW __nonnull ((1)) __wur;
+ 
+--- rt/bits/mqueue2.h
++++ rt/bits/mqueue2.h
+@@ -22,17 +22,60 @@
+ 
+ /* Check that calls to mq_open with O_CREAT set have an appropriate third and fourth
+    parameter.  */
++__fortify_overloadable
+ extern mqd_t mq_open (const char *__name, int __oflag, ...)
+-     __THROW __nonnull ((1));
++     __THROW __nonnull ((1)) __CLANG_NO_MANGLE (mq_open);
+ extern mqd_t __mq_open_2 (const char *__name, int __oflag)
+      __THROW __nonnull ((1));
+ extern mqd_t __REDIRECT_NTH (__mq_open_alias, (const char *__name,
+ 					       int __oflag, ...), mq_open)
+      __nonnull ((1));
++
++#define __warn_mq_open_wrong_number_of_args "mq_open can be called either " \
++  "with 2 or 4 arguments"
++#define __warn_mq_open_missing_mode_and_attr "mq_open with O_CREAT in second " \
++  "argument needs 4 arguments"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_prefer_this_overload
++__clang_error (__warn_mq_open_missing_mode_and_attr) mqd_t
++__NTH (mq_open (const char *__name, int __oflag))
++     __clang_enable_if ((__oflag & O_CREAT),
++			"selected if mq_open is given O_CREAT, but no mode or attr")
++{
++  return __mq_open_alias (__name, __oflag);
++}
++
++__fortify_overload __clang_error (__warn_mq_open_wrong_number_of_args) mqd_t
++__NTH (mq_open (const char *__name, int __oflag, int __mode))
++{
++  return __mq_open_alias (__name, __oflag, __mode);
++}
++
++__fortify_overload __clang_error (__warn_mq_open_wrong_number_of_args)
++mqd_t
++__NTH (mq_open (const char *__name, int __oflag, int __mode,
++		struct mq_attr *__attr, ...))
++{
++  return __mq_open_alias (__name, __oflag, __mode, __attr);
++}
++
++__fortify_overload __clang_prefer_this_overload mqd_t
++__NTH (mq_open (const char *__name, int __oflag))
++{
++  return __mq_open_alias (__name, __oflag);
++}
++
++__fortify_overload __clang_prefer_this_overload mqd_t
++__NTH (mq_open (const char *__name, int __oflag, int __mode,
++		struct mq_attr *__attr))
++{
++  return __mq_open_alias (__name, __oflag, __mode, __attr);
++}
++#else
+ __errordecl (__mq_open_wrong_number_of_args,
+-	     "mq_open can be called either with 2 or 4 arguments");
++  __warn_mq_open_wrong_number_of_args);
+ __errordecl (__mq_open_missing_mode_and_attr,
+-	     "mq_open with O_CREAT in second argument needs 4 arguments");
++  __warn_mq_open_missing_mode_and_attr);
+ 
+ __fortify_function mqd_t
+ __NTH (mq_open (const char *__name, int __oflag, ...))
+@@ -55,3 +98,6 @@ __NTH (mq_open (const char *__name, int __oflag, ...))
+ 
+   return __mq_open_alias (__name, __oflag, __va_arg_pack ());
+ }
++#endif
++#undef __warn_mq_open_wrong_number_of_args
++#undef __warn_mq_open_missing_mode_and_attr
+--- rt/mqueue.h
++++ rt/mqueue.h
+@@ -37,8 +37,9 @@ __BEGIN_DECLS
+    argument is taken as `struct mq_attr *', pointer to message queue
+    attributes.  If the fourth argument is NULL, default attributes are
+    used.  */
++__fortify_overloadable
+ extern mqd_t mq_open (const char *__name, int __oflag, ...)
+-  __THROW __nonnull ((1));
++  __THROW __nonnull ((1)) __CLANG_NO_MANGLE (mq_open);
+ 
+ /* Removes the association between message queue descriptor MQDES and its
+    message queue.  */
+@@ -91,7 +92,7 @@ extern int mq_timedsend (mqd_t __mqdes, const char *__msg_ptr,
+ 
+ /* Define some inlines helping to catch common problems.  */
+ #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function \
+-    && defined __va_arg_pack_len
++    && (defined __va_arg_pack_len || defined __use_clang_fortify)
+ # include <bits/mqueue2.h>
+ #endif
+ 
+--- socket/bits/socket2.h
++++ socket/bits/socket2.h
+@@ -24,11 +24,32 @@ extern ssize_t __recv_chk (int __fd, void *__buf, size_t __n, size_t __buflen,
+ 			   int __flags);
+ extern ssize_t __REDIRECT (__recv_alias, (int __fd, void *__buf, size_t __n,
+ 					  int __flags), recv);
++
++#define __warn_recv_buflen "recv called with bigger length than size of " \
++		 "destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_recv_buflen) ssize_t
++recv (int __fd, void *const __clang_pass_object_size0 __buf, size_t __n,
++      int __flags)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1 && __bos0 (__buf) < __n,
++			"selected if this call looks dangerous")
++{
++	return __recv_chk (__fd, __buf, __n, __bos0 (__buf), __flags);
++}
++
++__fortify_overload ssize_t
++recv (int __fd, void *const __clang_pass_object_size0 __buf, size_t __n,
++      int __flags)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __recv_chk (__fd, __buf, __n, __bos0 (__buf), __flags);
++  return __recv_alias (__fd, __buf, __n, __flags);
++}
++#else
+ extern ssize_t __REDIRECT (__recv_chk_warn,
+ 			   (int __fd, void *__buf, size_t __n, size_t __buflen,
+ 			    int __flags), __recv_chk)
+-     __warnattr ("recv called with bigger length than size of destination "
+-		 "buffer");
++     __warnattr (__warn_recv_buflen);
+ 
+ __fortify_function ssize_t
+ recv (int __fd, void *__buf, size_t __n, int __flags)
+@@ -43,6 +64,8 @@ recv (int __fd, void *__buf, size_t __n, int __flags)
+     }
+   return __recv_alias (__fd, __buf, __n, __flags);
+ }
++#endif
++#undef __warn_recv_buflen
+ 
+ extern ssize_t __recvfrom_chk (int __fd, void *__restrict __buf, size_t __n,
+ 			       size_t __buflen, int __flags,
+@@ -52,13 +75,38 @@ extern ssize_t __REDIRECT (__recvfrom_alias,
+ 			   (int __fd, void *__restrict __buf, size_t __n,
+ 			    int __flags, __SOCKADDR_ARG __addr,
+ 			    socklen_t *__restrict __addr_len), recvfrom);
++
++#define __warn_recvfrom_buflen "recvfrom called with bigger length than size " \
++		 "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_recvfrom_buflen) ssize_t
++recvfrom (int __fd, void *__restrict const __clang_pass_object_size0 __buf,
++	  size_t __n, int __flags, __SOCKADDR_ARG __addr,
++	  socklen_t *__restrict __addr_len)
++     __clang_enable_if (__bos0 (__buf) != (size_t) -1 && __bos0 (__buf) < __n,
++			"selected if this call looks dangerous")
++{
++	return __recvfrom_chk (__fd, __buf, __n, __bos0 (__buf), __flags,
++			       __addr, __addr_len);
++}
++
++__fortify_overload ssize_t
++recvfrom (int __fd, void *__restrict const __clang_pass_object_size0 __buf,
++	  size_t __n, int __flags, __SOCKADDR_ARG __addr,
++	  socklen_t *__restrict __addr_len)
++{
++  if (__bos0 (__buf) != (size_t) -1)
++    return __recvfrom_chk (__fd, __buf, __n, __bos0 (__buf), __flags,
++               __addr, __addr_len);
++  return __recvfrom_alias (__fd, __buf, __n, __flags, __addr, __addr_len);
++}
++#else
+ extern ssize_t __REDIRECT (__recvfrom_chk_warn,
+ 			   (int __fd, void *__restrict __buf, size_t __n,
+ 			    size_t __buflen, int __flags,
+ 			    __SOCKADDR_ARG __addr,
+ 			    socklen_t *__restrict __addr_len), __recvfrom_chk)
+-     __warnattr ("recvfrom called with bigger length than size of "
+-		 "destination buffer");
++     __warnattr (__warn_recvfrom_buflen);
+ 
+ __fortify_function ssize_t
+ recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
+@@ -75,3 +123,6 @@ recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
+     }
+   return __recvfrom_alias (__fd, __buf, __n, __flags, __addr, __addr_len);
+ }
++#endif
++#undef __warn_recvfrom_buflen
++
+--- socket/sys/socket.h
++++ socket/sys/socket.h
+@@ -153,7 +153,9 @@ extern ssize_t send (int __fd, const void *__buf, size_t __n, int __flags);
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
+-extern ssize_t recv (int __fd, void *__buf, size_t __n, int __flags);
++__fortify_overloadable
++extern ssize_t recv (int __fd, void *__buf, size_t __n, int __flags)
++  __CLANG_NO_MANGLE (recv);
+ 
+ /* Send N bytes of BUF on socket FD to peer at address ADDR (which is
+    ADDR_LEN bytes long).  Returns the number sent, or -1 for errors.
+@@ -171,9 +173,11 @@ extern ssize_t sendto (int __fd, const void *__buf, size_t __n,
+ 
+    This function is a cancellation point and therefore not marked with
+    __THROW.  */
++__fortify_overloadable
+ extern ssize_t recvfrom (int __fd, void *__restrict __buf, size_t __n,
+ 			 int __flags, __SOCKADDR_ARG __addr,
+-			 socklen_t *__restrict __addr_len);
++			 socklen_t *__restrict __addr_len)
++     __CLANG_NO_MANGLE (recvfrom);
+ 
+ 
+ /* Send a message described MESSAGE on socket FD.
+--- stdlib/bits/stdlib.h
++++ stdlib/bits/stdlib.h
+@@ -26,27 +26,55 @@ extern char *__realpath_chk (const char *__restrict __name,
+ extern char *__REDIRECT_NTH (__realpath_alias,
+ 			     (const char *__restrict __name,
+ 			      char *__restrict __resolved), realpath) __wur;
++
++#define __warn_realpath_arg_too_small \
++  "second argument of realpath must be either NULL or at least PATH_MAX " \
++  "bytes long buffer"
++#ifdef __use_clang_fortify
++# if defined _LIBC_LIMITS_H_ && defined PATH_MAX
++__fortify_overload __wur __clang_warning (__warn_realpath_arg_too_small) char *
++__NTH (realpath (const char *__restrict __name,
++		 char *__restrict const __clang_pass_object_size __resolved))
++     __clang_enable_if (__bos (__resolved) != (size_t) -1, "")
++     __clang_enable_if (__bos (__resolved) < PATH_MAX,
++			"selected if this call looks dangerous")
++{
++  return __realpath_chk (__name, __resolved, __bos (__resolved));
++}
++# endif
++__fortify_overload __wur char *
++__NTH (realpath (const char *__restrict __name,
++		 char *__restrict const __clang_pass_object_size __resolved))
++     __clang_enable_if (__bos (__resolved) != (size_t) -1,
++			"selected if this call looks dangerous")
++{
++  if (__bos (__resolved) != (size_t) -1)
++    return __realpath_chk (__name, __resolved, __bos (__resolved));
++  return __realpath_alias (__name, __resolved);
++}
++#else
+ extern char *__REDIRECT_NTH (__realpath_chk_warn,
+ 			     (const char *__restrict __name,
+ 			      char *__restrict __resolved,
+ 			      size_t __resolvedlen), __realpath_chk) __wur
+-     __warnattr ("second argument of realpath must be either NULL or at "
+-		 "least PATH_MAX bytes long buffer");
++     __warnattr (__warn_realpath_arg_too_small);
+ 
+ __fortify_function __wur char *
+ __NTH (realpath (const char *__restrict __name, char *__restrict __resolved))
+ {
+   if (__bos (__resolved) != (size_t) -1)
+     {
+-#if defined _LIBC_LIMITS_H_ && defined PATH_MAX
++# if defined _LIBC_LIMITS_H_ && defined PATH_MAX
+       if (__bos (__resolved) < PATH_MAX)
+ 	return __realpath_chk_warn (__name, __resolved, __bos (__resolved));
+-#endif
++# endif
+       return __realpath_chk (__name, __resolved, __bos (__resolved));
+     }
+ 
+   return __realpath_alias (__name, __resolved);
+ }
++#endif
++#undef __warn_realpath_arg_too_small
+ 
+ 
+ extern int __ptsname_r_chk (int __fd, char *__buf, size_t __buflen,
+@@ -54,11 +82,34 @@ extern int __ptsname_r_chk (int __fd, char *__buf, size_t __buflen,
+ extern int __REDIRECT_NTH (__ptsname_r_alias, (int __fd, char *__buf,
+ 					       size_t __buflen), ptsname_r)
+      __nonnull ((2));
++
++#define __warn_ptsname_r_arg_too_small "ptsname_r called with buflen bigger " \
++     "than size of buf"
++
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_ptsname_r_arg_too_small) int
++__NTH (ptsname_r (int __fd, char *const __clang_pass_object_size __buf,
++		  size_t __buflen))
++     __clang_enable_if (__bos (__buf) != (size_t) -1
++			 && __buflen > __bos (__buf),
++			"selected if this call looks dangerous")
++{
++  return __ptsname_r_chk (__fd, __buf, __buflen, __bos (__buf));
++}
++
++__fortify_overload int
++__NTH (ptsname_r (int __fd, char *const __clang_pass_object_size __buf,
++		  size_t __buflen))
++{
++  if (__bos (__buf) != (size_t) -1)
++    return __ptsname_r_chk (__fd, __buf, __buflen, __bos (__buf));
++  return __ptsname_r_alias (__fd, __buf, __buflen);
++}
++#else
+ extern int __REDIRECT_NTH (__ptsname_r_chk_warn,
+ 			   (int __fd, char *__buf, size_t __buflen,
+ 			    size_t __nreal), __ptsname_r_chk)
+-     __nonnull ((2)) __warnattr ("ptsname_r called with buflen bigger than "
+-				 "size of buf");
++     __nonnull ((2)) __warnattr (__warn_ptsname_r_arg_too_small);
+ 
+ __fortify_function int
+ __NTH (ptsname_r (int __fd, char *__buf, size_t __buflen))
+@@ -72,6 +123,8 @@ __NTH (ptsname_r (int __fd, char *__buf, size_t __buflen))
+     }
+   return __ptsname_r_alias (__fd, __buf, __buflen);
+ }
++#endif
++#undef __warn_ptsname_r_arg_too_small
+ 
+ 
+ extern int __wctomb_chk (char *__s, wchar_t __wchar, size_t __buflen)
+@@ -79,8 +132,8 @@ extern int __wctomb_chk (char *__s, wchar_t __wchar, size_t __buflen)
+ extern int __REDIRECT_NTH (__wctomb_alias, (char *__s, wchar_t __wchar),
+ 			   wctomb) __wur;
+ 
+-__fortify_function __wur int
+-__NTH (wctomb (char *__s, wchar_t __wchar))
++__fortify_potential_overload __wur int
++__NTH (wctomb (char *const __clang_pass_object_size __s, wchar_t __wchar))
+ {
+   /* We would have to include <limits.h> to get a definition of MB_LEN_MAX.
+      But this would only disturb the namespace.  So we define our own
+@@ -102,12 +155,35 @@ extern size_t __REDIRECT_NTH (__mbstowcs_alias,
+ 			      (wchar_t *__restrict __dst,
+ 			       const char *__restrict __src,
+ 			       size_t __len), mbstowcs);
++
++#define __warn_mbstowcs_too_small_dst \
++  "mbstowcs called with dst buffer smaller than len * sizeof (wchar_t)"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_mbstowcs_too_small_dst) size_t
++__NTH (mbstowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		 const char *__restrict __src, size_t __len))
++     __clang_enable_if (__bos (__dst) != (size_t) -1
++			 && __len > __bos (__dst) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __mbstowcs_chk (__dst, __src, __len, __bos (__dst) / sizeof (wchar_t));
++}
++
++__fortify_overload size_t
++__NTH (mbstowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		 const char *__restrict __src, size_t __len))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __mbstowcs_chk (__dst, __src, __len,
++			       __bos (__dst) / sizeof (wchar_t));
++  return __mbstowcs_alias (__dst, __src, __len);
++}
++#else
+ extern size_t __REDIRECT_NTH (__mbstowcs_chk_warn,
+ 			      (wchar_t *__restrict __dst,
+ 			       const char *__restrict __src,
+ 			       size_t __len, size_t __dstlen), __mbstowcs_chk)
+-     __warnattr ("mbstowcs called with dst buffer smaller than len "
+-		 "* sizeof (wchar_t)");
++     __warnattr (__warn_mbstowcs_too_small_dst);
+ 
+ __fortify_function size_t
+ __NTH (mbstowcs (wchar_t *__restrict __dst, const char *__restrict __src,
+@@ -125,6 +201,8 @@ __NTH (mbstowcs (wchar_t *__restrict __dst, const char *__restrict __src,
+     }
+   return __mbstowcs_alias (__dst, __src, __len);
+ }
++#endif
++#undef __warn_mbstowcs_too_small_dst
+ 
+ 
+ extern size_t __wcstombs_chk (char *__restrict __dst,
+@@ -134,11 +212,33 @@ extern size_t __REDIRECT_NTH (__wcstombs_alias,
+ 			      (char *__restrict __dst,
+ 			       const wchar_t *__restrict __src,
+ 			       size_t __len), wcstombs);
++
++#define __warn_wcstombs_dst_too_small \
++  "wcstombs called with dst buffer smaller than len"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wcstombs_dst_too_small) size_t
++__NTH (wcstombs (char *__restrict const __clang_pass_object_size __dst,
++		 const wchar_t *__restrict __src, size_t __len))
++     __clang_enable_if (__bos (__dst) != (size_t) -1 && __len > __bos (__dst),
++			"selected if this call looks dangerous")
++{
++	return __wcstombs_chk (__dst, __src, __len, __bos (__dst));
++}
++
++__fortify_overload size_t
++__NTH (wcstombs (char *__restrict const __clang_pass_object_size __dst,
++		 const wchar_t *__restrict __src, size_t __len))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __wcstombs_chk (__dst, __src, __len, __bos (__dst));
++  return __wcstombs_alias (__dst, __src, __len);
++}
++#else
+ extern size_t __REDIRECT_NTH (__wcstombs_chk_warn,
+ 			      (char *__restrict __dst,
+ 			       const wchar_t *__restrict __src,
+ 			       size_t __len, size_t __dstlen), __wcstombs_chk)
+-     __warnattr ("wcstombs called with dst buffer smaller than len");
++     __warnattr (__warn_wcstombs_dst_too_small);
+ 
+ __fortify_function size_t
+ __NTH (wcstombs (char *__restrict __dst, const wchar_t *__restrict __src,
+@@ -153,3 +253,5 @@ __NTH (wcstombs (char *__restrict __dst, const wchar_t *__restrict __src,
+     }
+   return __wcstombs_alias (__dst, __src, __len);
+ }
++#endif
++#undef __warn_wcstombs_dst_too_small
+--- stdlib/stdlib.h
++++ stdlib/stdlib.h
+@@ -731,8 +731,10 @@ extern char *canonicalize_file_name (const char *__name)
+    PATH_MAX chars or more, returns null with `errno' set to
+    ENAMETOOLONG; if the name fits in fewer than PATH_MAX chars,
+    returns the name in RESOLVED.  */
++__fortify_overloadable
+ extern char *realpath (const char *__restrict __name,
+-		       char *__restrict __resolved) __THROW __wur;
++		       char *__restrict __resolved) __THROW __wur
++  __CLANG_NO_MANGLE (realpath);
+ #endif
+ 
+ 
+@@ -867,16 +869,21 @@ extern int mbtowc (wchar_t *__restrict __pwc,
+ 		   const char *__restrict __s, size_t __n) __THROW;
+ /* Put the multibyte character represented
+    by WCHAR in S, returning its length.  */
+-extern int wctomb (char *__s, wchar_t __wchar) __THROW;
++__fortify_overloadable
++extern int wctomb (char *__s, wchar_t __wchar) __THROW
++  __CLANG_NO_MANGLE (wctomb);
+ 
+ 
+ /* Convert a multibyte string to a wide char string.  */
++__fortify_overloadable
+ extern size_t mbstowcs (wchar_t *__restrict  __pwcs,
+-			const char *__restrict __s, size_t __n) __THROW;
++			const char *__restrict __s, size_t __n)
++     __THROW __CLANG_NO_MANGLE (mbstowcs);
+ /* Convert a wide char string to multibyte string.  */
++__fortify_overloadable
+ extern size_t wcstombs (char *__restrict __s,
+ 			const wchar_t *__restrict __pwcs, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wcstombs);
+ __END_NAMESPACE_STD
+ 
+ 
+@@ -937,8 +944,9 @@ extern char *ptsname (int __fd) __THROW __wur;
+ /* Store at most BUFLEN characters of the pathname of the slave pseudo
+    terminal associated with the master FD is open on in BUF.
+    Return 0 on success, otherwise an error number.  */
++__fortify_overloadable
+ extern int ptsname_r (int __fd, char *__buf, size_t __buflen)
+-     __THROW __nonnull ((2));
++     __THROW __nonnull ((2)) __CLANG_NO_MANGLE (ptsname_r);
+ 
+ /* Open a master pseudo terminal and return its file descriptor.  */
+ extern int getpt (void);
+--- string/bits/string3.h
++++ string/bits/string3.h
+@@ -19,9 +19,6 @@
+ # error "Never use <bits/string3.h> directly; include <string.h> instead."
+ #endif
+ 
+-__warndecl (__warn_memset_zero_len,
+-	    "memset used with constant zero length parameter; this could be due to transposed parameters");
+-
+ #ifndef __cplusplus
+ /* XXX This is temporarily.  We should not redefine any of the symbols
+    and instead integrate the error checking into the original
+@@ -43,30 +40,130 @@ __warndecl (__warn_memset_zero_len,
+ # endif
+ #endif
+ 
++#ifdef __use_clang_fortify
++# define __warn_len_too_large \
++  "called with bigger length than the destination buffer"
++# define __enable_if_dest_too_small_impl(dest, len, bos) \
++  __clang_enable_if (bos (dest) != (size_t) -1 && bos (dest) < len, \
++                     "selected if this call looks dangerous")
++# define __enable_if_dest_too_small0(dest, len) \
++	__enable_if_dest_too_small_impl(dest, len, __bos0)
++# define __enable_if_dest_too_small(dest, len) \
++	__enable_if_dest_too_small_impl(dest, len, __bos)
++
++# define __warn_input_str_too_large \
++  "destination buffer will always be overflown by source"
++# define __enable_if_src_too_large(dest, src) \
++  __clang_enable_if (__bos (dest) != (size_t) -1 \
++		     && __bos (dest) <= __builtin_strlen(src), \
++		     "enabled if this call looks dangerous")
++#endif
++
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void *
++__NTH (memcpy (void *__restrict const __clang_pass_object_size0 __dest,
++	       const void *__restrict __src, size_t __len))
++     __enable_if_dest_too_small0 (__dest, __len)
++{
++  return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
++}
+ 
++__fortify_overload void *
++__NTH (memcpy (void *__restrict const __clang_pass_object_size0 __dest,
++	       const void *__restrict __src, size_t __len))
++{
++  return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
++}
++#else
+ __fortify_function void *
+ __NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
+ 	       size_t __len))
+ {
+   return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
+ }
++#endif
+ 
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void *
++__NTH (memmove (void *const __clang_pass_object_size0 __dest,
++		const void *__src, size_t __len))
++     __enable_if_dest_too_small0 (__dest, __len)
++{
++  return __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
++}
++
++__fortify_overload void *
++__NTH (memmove (void *const __clang_pass_object_size0 __dest,
++		const void *__src, size_t __len))
++{
++  return __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
++}
++#else
+ __fortify_function void *
+ __NTH (memmove (void *__dest, const void *__src, size_t __len))
+ {
+   return __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
+ }
++#endif
+ 
+ #ifdef __USE_GNU
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void *
++__NTH (mempcpy (void *__restrict const __clang_pass_object_size0 __dest,
++		const void *__restrict __src, size_t __len))
++     __enable_if_dest_too_small0 (__dest, __len)
++{
++  return __builtin___mempcpy_chk (__dest, __src, __len, __bos0 (__dest));
++}
++
++__fortify_overload void *
++__NTH (mempcpy (void *__restrict const __clang_pass_object_size0 __dest,
++		const void *__restrict __src, size_t __len))
++{
++  return __builtin___mempcpy_chk (__dest, __src, __len, __bos0 (__dest));
++}
++# else
+ __fortify_function void *
+ __NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
+ 		size_t __len))
+ {
+   return __builtin___mempcpy_chk (__dest, __src, __len, __bos0 (__dest));
+ }
++# endif
+ #endif
+ 
+ 
++#define __warn_memset_zero_len_msg \
++  "memset used with constant zero length parameter; this could be due to " \
++  "transposed parameters"
++
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void *
++__NTH (memset (void *__dest, int __ch, size_t __len))
++     __enable_if_dest_too_small0 (__dest, __len)
++{
++  return __dest;
++}
++
++/* If the second and third parameter look like they're transposed, be sure to
++   emit a warning.  */
++__fortify_overload __clang_warning (__warn_memset_zero_len_msg) void *
++__NTH (memset (void *__dest, int __ch, size_t __len))
++     __clang_enable_if (__len == 0 && __ch != 0,
++			"called if __len/__ch seem to be flipped")
++{
++  return __dest;
++}
++
++__fortify_overload void *
++__NTH (memset (void *const __clang_pass_object_size0 __dest, int __ch,
++	       size_t __len))
++{
++  return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
++}
++#else
++__warndecl (__warn_memset_zero_len, __warn_memset_zero_len_msg);
++
+ /* The first two tests here help to catch a somewhat common problem
+    where the second and third parameter are transposed.  This is
+    especially problematic if the intended fill value is zero.  In this
+@@ -83,42 +180,129 @@ __NTH (memset (void *__dest, int __ch, size_t __len))
+     }
+   return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
+ }
++#endif
++#undef __warn_memset_zero_len_msg
+ 
+ #ifdef __USE_BSD
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void
++__NTH (bcopy (const void *__src, void *const __clang_pass_object_size0 __dest,
++	      size_t __len))
++	__enable_if_dest_too_small0 (__dest, __len)
++{
++  (void) __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
++}
++
++__fortify_overload void
++__NTH (bcopy (const void *__src, void *const __clang_pass_object_size0 __dest,
++	      size_t __len))
++{
++  (void) __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
++}
++# else
+ __fortify_function void
+ __NTH (bcopy (const void *__src, void *__dest, size_t __len))
+ {
+   (void) __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
+ }
++# endif
++
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) void
++__NTH (bzero (void *const __clang_pass_object_size0 __dest, size_t __len))
++     __enable_if_dest_too_small0 (__dest, __len)
++{
++  (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
++}
+ 
++__fortify_overload void
++__NTH (bzero (void *const __clang_pass_object_size0 __dest, size_t __len))
++{
++  (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
++}
++# else
+ __fortify_function void
+ __NTH (bzero (void *__dest, size_t __len))
+ {
+   (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
+ }
++# endif
+ #endif
+ 
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_input_str_too_large) char *
++__NTH (strcpy (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++     __enable_if_src_too_large (__dest, __src)
++{
++  return __builtin___strcpy_chk (__dest, __src, __bos (__dest));
++}
++
++__fortify_overload char *
++__NTH (strcpy (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++{
++  return __builtin___strcpy_chk (__dest, __src, __bos (__dest));
++}
++#else
+ __fortify_function char *
+ __NTH (strcpy (char *__restrict __dest, const char *__restrict __src))
+ {
+   return __builtin___strcpy_chk (__dest, __src, __bos (__dest));
+ }
++#endif
+ 
+ #ifdef __USE_GNU
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_input_str_too_large) char *
++__NTH (stpcpy (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++     __enable_if_src_too_large (__dest, __src)
++{
++  return __builtin___stpcpy_chk (__dest, __src, __bos (__dest));
++}
++
++__fortify_overload char *
++__NTH (stpcpy (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++{
++  return __builtin___stpcpy_chk (__dest, __src, __bos (__dest));
++}
++# else
+ __fortify_function char *
+ __NTH (stpcpy (char *__restrict __dest, const char *__restrict __src))
+ {
+   return __builtin___stpcpy_chk (__dest, __src, __bos (__dest));
+ }
++# endif
+ #endif
+ 
++#ifdef __use_clang_fortify
++/* We explicitly don't include checks for when __builtin_strlen (__src) is
++   provably less than __bos (__dest), but __len > __bos (__dest).  In those
++   cases, the user should just fix their code.  */
++__fortify_overload __clang_warning (__warn_len_too_large) char *
++__NTH (strncpy (char *__restrict const __clang_pass_object_size __dest,
++		const char *__restrict __src, size_t __len))
++     __enable_if_dest_too_small (__dest, __len)
++{
++  return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
++}
+ 
++__fortify_overload char *
++__NTH (strncpy (char *__restrict const __clang_pass_object_size __dest,
++		const char *__restrict __src, size_t __len))
++{
++  return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
++}
++#else
+ __fortify_function char *
+ __NTH (strncpy (char *__restrict __dest, const char *__restrict __src,
+ 		size_t __len))
+ {
+   return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
+ }
++#endif
+ 
+ // XXX We have no corresponding builtin yet.
+ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+@@ -126,6 +310,24 @@ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+ extern char *__REDIRECT_NTH (__stpncpy_alias, (char *__dest, const char *__src,
+ 					       size_t __n), stpncpy);
+ 
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) char *
++__NTH (stpncpy (char *const __clang_pass_object_size __dest, const char *__src,
++		size_t __n))
++     __enable_if_dest_too_small (__dest, __n)
++{
++  return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
++}
++
++__fortify_overload char *
++__NTH (stpncpy (char *const __clang_pass_object_size __dest, const char *__src,
++		size_t __n))
++{
++  if (__bos (__dest) != (size_t) -1)
++    return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
++  return __stpncpy_alias (__dest, __src, __n);
++}
++#else
+ __fortify_function char *
+ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+ {
+@@ -134,18 +336,61 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+     return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
+   return __stpncpy_alias (__dest, __src, __n);
+ }
++#endif
+ 
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_input_str_too_large) char *
++__NTH (strcat (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++     __enable_if_src_too_large (__dest, __src)
++{
++  return __builtin___strcat_chk (__dest, __src, __bos (__dest));
++}
+ 
++__fortify_overload char *
++__NTH (strcat (char *__restrict const __clang_pass_object_size __dest,
++	       const char *__restrict __src))
++{
++  return __builtin___strcat_chk (__dest, __src, __bos (__dest));
++}
++#else
+ __fortify_function char *
+ __NTH (strcat (char *__restrict __dest, const char *__restrict __src))
+ {
+   return __builtin___strcat_chk (__dest, __src, __bos (__dest));
+ }
++#endif
++
+ 
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_len_too_large) char *
++__NTH (strncat (char *__restrict const __clang_pass_object_size __dest,
++		const char *__restrict __src, size_t __len))
++     __enable_if_dest_too_small (__dest, __len)
++{
++  return __builtin___strncat_chk (__dest, __src, __len, __bos (__dest));
++}
+ 
++__fortify_overload char *
++__NTH (strncat (char *__restrict const __clang_pass_object_size __dest,
++		const char *__restrict __src, size_t __len))
++{
++  return __builtin___strncat_chk (__dest, __src, __len, __bos (__dest));
++}
++#else
+ __fortify_function char *
+ __NTH (strncat (char *__restrict __dest, const char *__restrict __src,
+ 		size_t __len))
+ {
+   return __builtin___strncat_chk (__dest, __src, __len, __bos (__dest));
+ }
++#endif
++
++#ifdef __use_clang_fortify
++# undef __warn_len_too_large
++# undef __enable_if_dest_too_small_impl
++# undef __enable_if_dest_too_small0
++# undef __enable_if_dest_too_small
++# undef __warn_input_str_too_large
++# undef __enable_if_src_too_large
++#endif
+--- string/string.h
++++ string/string.h
+@@ -43,12 +43,15 @@ __BEGIN_DECLS
+ 
+ __BEGIN_NAMESPACE_STD
+ /* Copy N bytes of SRC to DEST.  */
++__fortify_overloadable
+ extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+-		     size_t __n) __THROW __nonnull ((1, 2));
++                    size_t __n)
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (memcpy);
+ /* Copy N bytes of SRC to DEST, guaranteeing
+    correct behavior for overlapping strings.  */
++__fortify_overloadable
+ extern void *memmove (void *__dest, const void *__src, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (memmove);
+ __END_NAMESPACE_STD
+ 
+ /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
+@@ -63,11 +66,14 @@ extern void *memccpy (void *__restrict __dest, const void *__restrict __src,
+ 
+ __BEGIN_NAMESPACE_STD
+ /* Set N bytes of S to C.  */
+-extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
++__fortify_overloadable
++extern void *memset (void *__s, int __c, size_t __n)
++     __THROW __nonnull ((1)) __CLANG_NO_MANGLE (memset);
+ 
+ /* Compare N bytes of S1 and S2.  */
++__fortify_overloadable
+ extern int memcmp (const void *__s1, const void *__s2, size_t __n)
+-     __THROW __attribute_pure__ __nonnull ((1, 2));
++     __THROW __attribute_pure__ __nonnull ((1, 2)) __CLANG_NO_MANGLE (memcmp);
+ 
+ /* Search N bytes of S for C.  */
+ #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
+@@ -126,19 +132,24 @@ extern void *memrchr (const void *__s, int __c, size_t __n)
+ 
+ __BEGIN_NAMESPACE_STD
+ /* Copy SRC to DEST.  */
++__fortify_overloadable
+ extern char *strcpy (char *__restrict __dest, const char *__restrict __src)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (strcpy);
+ /* Copy no more than N characters of SRC to DEST.  */
++__fortify_overloadable
+ extern char *strncpy (char *__restrict __dest,
+ 		      const char *__restrict __src, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (strncpy);
+ 
+ /* Append SRC onto DEST.  */
++__fortify_overloadable
+ extern char *strcat (char *__restrict __dest, const char *__restrict __src)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (strcat);
+ /* Append no more than N characters from SRC onto DEST.  */
++__fortify_overloadable
+ extern char *strncat (char *__restrict __dest, const char *__restrict __src,
+-		      size_t __n) __THROW __nonnull ((1, 2));
++		      size_t __n)
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (strncat);
+ 
+ /* Compare S1 and S2.  */
+ extern int strcmp (const char *__s1, const char *__s2)
+@@ -388,9 +399,11 @@ extern void *memmem (const void *__haystack, size_t __haystacklen,
+ extern void *__mempcpy (void *__restrict __dest,
+ 			const void *__restrict __src, size_t __n)
+      __THROW __nonnull ((1, 2));
++
++__fortify_overloadable
+ extern void *mempcpy (void *__restrict __dest,
+ 		      const void *__restrict __src, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (mempcpy);
+ #endif
+ 
+ 
+@@ -452,11 +465,14 @@ extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+ 
+ #ifdef __USE_BSD
+ /* Copy N bytes of SRC to DEST (like memmove, but args reversed).  */
++__fortify_overloadable
+ extern void bcopy (const void *__src, void *__dest, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (bcopy);
+ 
+ /* Set N bytes of S to 0.  */
+-extern void bzero (void *__s, size_t __n) __THROW __nonnull ((1));
++__fortify_overloadable
++extern void bzero (void *__s, size_t __n)
++     __THROW __nonnull ((1)) __CLANG_NO_MANGLE (bzero);
+ 
+ /* Compare N bytes of S1 and S2 (same as memcmp).  */
+ extern int bcmp (const void *__s1, const void *__s2, size_t __n)
+@@ -566,17 +582,20 @@ extern char *strsignal (int __sig) __THROW;
+ /* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
+ extern char *__stpcpy (char *__restrict __dest, const char *__restrict __src)
+      __THROW __nonnull ((1, 2));
++__fortify_overloadable
+ extern char *stpcpy (char *__restrict __dest, const char *__restrict __src)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (stpcpy);
+ 
+ /* Copy no more than N characters of SRC to DEST, returning the address of
+    the last character written into DEST.  */
++__fortify_overloadable
+ extern char *__stpncpy (char *__restrict __dest,
+ 			const char *__restrict __src, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (__stpncpy);
++__fortify_overloadable
+ extern char *stpncpy (char *__restrict __dest,
+ 		      const char *__restrict __src, size_t __n)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (stpncpy);
+ #endif
+ 
+ #ifdef	__USE_GNU
+--- wcsmbs/bits/wchar2.h
++++ wcsmbs/bits/wchar2.h
+@@ -28,12 +28,34 @@ extern wchar_t *__REDIRECT_NTH (__wmemcpy_alias,
+ 				(wchar_t *__restrict __s1,
+ 				 const wchar_t *__restrict __s2, size_t __n),
+ 				wmemcpy);
++
++#define __warn_wmemcpy_buflen "wmemcpy called with length bigger than size " \
++       "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wmemcpy_buflen) wchar_t *
++__NTH (wmemcpy (wchar_t *__restrict const __clang_pass_object_size0 __s1,
++		const wchar_t *__restrict __s2, size_t __n))
++     __clang_enable_if (__bos0 (__s1) != (size_t) -1
++			 && __n > __bos0 (__s1) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __wmemcpy_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wmemcpy (wchar_t *__restrict const __clang_pass_object_size0 __s1,
++		const wchar_t *__restrict __s2, size_t __n))
++{
++  if (__bos0 (__s1) != (size_t) -1)
++    return __wmemcpy_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++  return __wmemcpy_alias (__s1, __s2, __n);
++}
++#else
+ extern wchar_t *__REDIRECT_NTH (__wmemcpy_chk_warn,
+ 				(wchar_t *__restrict __s1,
+ 				 const wchar_t *__restrict __s2, size_t __n,
+ 				 size_t __ns1), __wmemcpy_chk)
+-     __warnattr ("wmemcpy called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wmemcpy_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wmemcpy (wchar_t *__restrict __s1, const wchar_t *__restrict __s2,
+@@ -51,6 +73,8 @@ __NTH (wmemcpy (wchar_t *__restrict __s1, const wchar_t *__restrict __s2,
+     }
+   return __wmemcpy_alias (__s1, __s2, __n);
+ }
++#endif
++#undef __warn_wmemcpy_buflen
+ 
+ 
+ extern wchar_t *__wmemmove_chk (wchar_t *__s1, const wchar_t *__s2,
+@@ -58,11 +82,33 @@ extern wchar_t *__wmemmove_chk (wchar_t *__s1, const wchar_t *__s2,
+ extern wchar_t *__REDIRECT_NTH (__wmemmove_alias, (wchar_t *__s1,
+ 						   const wchar_t *__s2,
+ 						   size_t __n), wmemmove);
++
++#define __warn_wmemmove_buflen "wmemmove called with length bigger than size " \
++		 " of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wmemmove_buflen) wchar_t *
++__NTH (wmemmove (wchar_t *const __clang_pass_object_size0 __s1,
++		 const wchar_t *__s2, size_t __n))
++     __clang_enable_if (__bos0 (__s1) != (size_t) -1
++			 && __n > __bos0 (__s1) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __wmemmove_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wmemmove (wchar_t *const __clang_pass_object_size0 __s1,
++		 const wchar_t *__s2, size_t __n))
++{
++  if (__bos0 (__s1) != (size_t) -1)
++    return __wmemmove_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++  return __wmemmove_alias (__s1, __s2, __n);
++}
++#else
+ extern wchar_t *__REDIRECT_NTH (__wmemmove_chk_warn,
+ 				(wchar_t *__s1, const wchar_t *__s2,
+ 				 size_t __n, size_t __ns1), __wmemmove_chk)
+-     __warnattr ("wmemmove called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wmemmove_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wmemmove (wchar_t *__s1, const wchar_t *__s2, size_t __n))
+@@ -79,6 +125,8 @@ __NTH (wmemmove (wchar_t *__s1, const wchar_t *__s2, size_t __n))
+     }
+   return __wmemmove_alias (__s1, __s2, __n);
+ }
++#endif
++#undef __warn_wmemmove_buflen
+ 
+ 
+ #ifdef __USE_GNU
+@@ -89,12 +137,34 @@ extern wchar_t *__REDIRECT_NTH (__wmempcpy_alias,
+ 				(wchar_t *__restrict __s1,
+ 				 const wchar_t *__restrict __s2,
+ 				 size_t __n), wmempcpy);
++
++# define __warn_wmemcpy_buflen \
++	"wmempcpy called with length bigger than size of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wmemcpy_buflen) wchar_t *
++__NTH (wmempcpy (wchar_t *__restrict const __clang_pass_object_size0 __s1,
++		 const wchar_t *__restrict __s2, size_t __n))
++     __clang_enable_if (__bos0 (__s1) != (size_t) -1
++			 && __n > __bos0 (__s1) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __wmempcpy_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wmempcpy (wchar_t *__restrict const __clang_pass_object_size0 __s1,
++		 const wchar_t *__restrict __s2, size_t __n))
++{
++  if (__bos0 (__s1) != (size_t) -1)
++    return __wmempcpy_chk (__s1, __s2, __n, __bos0 (__s1) / sizeof (wchar_t));
++  return __wmempcpy_alias (__s1, __s2, __n);
++}
++# else
+ extern wchar_t *__REDIRECT_NTH (__wmempcpy_chk_warn,
+ 				(wchar_t *__restrict __s1,
+ 				 const wchar_t *__restrict __s2, size_t __n,
+ 				 size_t __ns1), __wmempcpy_chk)
+-     __warnattr ("wmempcpy called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wmemcpy_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wmempcpy (wchar_t *__restrict __s1, const wchar_t *__restrict __s2,
+@@ -112,6 +182,8 @@ __NTH (wmempcpy (wchar_t *__restrict __s1, const wchar_t *__restrict __s2,
+     }
+   return __wmempcpy_alias (__s1, __s2, __n);
+ }
++# endif
++# undef __warn_wmemcpy_buflen
+ #endif
+ 
+ 
+@@ -119,11 +191,33 @@ extern wchar_t *__wmemset_chk (wchar_t *__s, wchar_t __c, size_t __n,
+ 			       size_t __ns) __THROW;
+ extern wchar_t *__REDIRECT_NTH (__wmemset_alias, (wchar_t *__s, wchar_t __c,
+ 						  size_t __n), wmemset);
++
++#define __warn_wmemset_buflen "wmemset called with length bigger than size " \
++		 "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wmemset_buflen) wchar_t *
++__NTH (wmemset (wchar_t *const __clang_pass_object_size0 __s, wchar_t __c,
++		size_t __n))
++     __clang_enable_if (__bos0 (__s) != (size_t) -1
++			 && __n > __bos0 (__s) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __wmemset_chk (__s, __c, __n, __bos0 (__s) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wmemset (wchar_t *const __clang_pass_object_size0 __s, wchar_t __c,
++		size_t __n))
++{
++  if (__bos0 (__s) != (size_t) -1)
++    return __wmemset_chk (__s, __c, __n, __bos0 (__s) / sizeof (wchar_t));
++  return __wmemset_alias (__s, __c, __n);
++}
++#else
+ extern wchar_t *__REDIRECT_NTH (__wmemset_chk_warn,
+ 				(wchar_t *__s, wchar_t __c, size_t __n,
+ 				 size_t __ns), __wmemset_chk)
+-     __warnattr ("wmemset called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wmemset_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wmemset (wchar_t *__s, wchar_t __c, size_t __n))
+@@ -139,6 +233,8 @@ __NTH (wmemset (wchar_t *__s, wchar_t __c, size_t __n))
+     }
+   return __wmemset_alias (__s, __c, __n);
+ }
++#endif
++#undef __warn_wmemset_buflen
+ 
+ 
+ extern wchar_t *__wcscpy_chk (wchar_t *__restrict __dest,
+@@ -148,8 +244,9 @@ extern wchar_t *__REDIRECT_NTH (__wcscpy_alias,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src), wcscpy);
+ 
+-__fortify_function wchar_t *
+-__NTH (wcscpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
++__fortify_potential_overload wchar_t *
++__NTH (wcscpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++	       const wchar_t *__restrict __src))
+ {
+   if (__bos (__dest) != (size_t) -1)
+     return __wcscpy_chk (__dest, __src, __bos (__dest) / sizeof (wchar_t));
+@@ -164,8 +261,9 @@ extern wchar_t *__REDIRECT_NTH (__wcpcpy_alias,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src), wcpcpy);
+ 
+-__fortify_function wchar_t *
+-__NTH (wcpcpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
++__fortify_potential_overload wchar_t *
++__NTH (wcpcpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++	       const wchar_t *__restrict __src))
+ {
+   if (__bos (__dest) != (size_t) -1)
+     return __wcpcpy_chk (__dest, __src, __bos (__dest) / sizeof (wchar_t));
+@@ -180,12 +278,35 @@ extern wchar_t *__REDIRECT_NTH (__wcsncpy_alias,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src,
+ 				 size_t __n), wcsncpy);
++
++#define __warn_wcsncpy_buflen "wcsncpy called with length bigger than size " \
++		 "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wcsncpy_buflen) wchar_t *
++__NTH (wcsncpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++		const wchar_t *__restrict __src, size_t __n))
++     __clang_enable_if (__bos (__dest) != (size_t) -1
++			 && __n > __bos (__dest) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++	return __wcsncpy_chk (__dest, __src, __n, __bos (__dest) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wcsncpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++		const wchar_t *__restrict __src, size_t __n))
++{
++  if (__bos (__dest) != (size_t) -1)
++    return __wcsncpy_chk (__dest, __src, __n,
++			  __bos (__dest) / sizeof (wchar_t));
++  return __wcsncpy_alias (__dest, __src, __n);
++}
++#else
+ extern wchar_t *__REDIRECT_NTH (__wcsncpy_chk_warn,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src,
+ 				 size_t __n, size_t __destlen), __wcsncpy_chk)
+-     __warnattr ("wcsncpy called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wcsncpy_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wcsncpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+@@ -202,6 +323,8 @@ __NTH (wcsncpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+     }
+   return __wcsncpy_alias (__dest, __src, __n);
+ }
++#endif
++#undef __warn_wcsncpy_buflen
+ 
+ 
+ extern wchar_t *__wcpncpy_chk (wchar_t *__restrict __dest,
+@@ -211,12 +334,35 @@ extern wchar_t *__REDIRECT_NTH (__wcpncpy_alias,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src,
+ 				 size_t __n), wcpncpy);
++
++#define __warn_wcpncpy_buflen "wcpncpy called with length bigger than size " \
++		 "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wcpncpy_buflen) wchar_t *
++__NTH (wcpncpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++		const wchar_t *__restrict __src, size_t __n))
++     __clang_enable_if (__bos (__dest) != (size_t) -1
++			 && __n > __bos (__dest) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++	return __wcpncpy_chk (__dest, __src, __n, __bos (__dest) / sizeof (wchar_t));
++}
++
++__fortify_overload wchar_t *
++__NTH (wcpncpy (wchar_t *__restrict const __clang_pass_object_size __dest,
++		const wchar_t *__restrict __src, size_t __n))
++{
++  if (__bos (__dest) != (size_t) -1)
++    return __wcpncpy_chk (__dest, __src, __n,
++			  __bos (__dest) / sizeof (wchar_t));
++  return __wcpncpy_alias (__dest, __src, __n);
++}
++#else
+ extern wchar_t *__REDIRECT_NTH (__wcpncpy_chk_warn,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src,
+ 				 size_t __n, size_t __destlen), __wcpncpy_chk)
+-     __warnattr ("wcpncpy called with length bigger than size of destination "
+-		 "buffer");
++     __warnattr (__warn_wcpncpy_buflen);
+ 
+ __fortify_function wchar_t *
+ __NTH (wcpncpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+@@ -233,6 +379,8 @@ __NTH (wcpncpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+     }
+   return __wcpncpy_alias (__dest, __src, __n);
+ }
++#endif
++#undef __warn_wcpncpy_buflen
+ 
+ 
+ extern wchar_t *__wcscat_chk (wchar_t *__restrict __dest,
+@@ -242,8 +390,9 @@ extern wchar_t *__REDIRECT_NTH (__wcscat_alias,
+ 				(wchar_t *__restrict __dest,
+ 				 const wchar_t *__restrict __src), wcscat);
+ 
+-__fortify_function wchar_t *
+-__NTH (wcscat (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
++__fortify_potential_overload wchar_t *
++__NTH (wcscat (wchar_t *__restrict const __clang_pass_object_size __dest,
++	       const wchar_t *__restrict __src))
+ {
+   if (__bos (__dest) != (size_t) -1)
+     return __wcscat_chk (__dest, __src, __bos (__dest) / sizeof (wchar_t));
+@@ -259,9 +408,9 @@ extern wchar_t *__REDIRECT_NTH (__wcsncat_alias,
+ 				 const wchar_t *__restrict __src,
+ 				 size_t __n), wcsncat);
+ 
+-__fortify_function wchar_t *
+-__NTH (wcsncat (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+-		size_t __n))
++__fortify_potential_overload wchar_t *
++__NTH (wcsncat (wchar_t *__restrict const __clang_pass_object_size __dest,
++		const wchar_t *__restrict __src, size_t __n))
+ {
+   if (__bos (__dest) != (size_t) -1)
+     return __wcsncat_chk (__dest, __src, __n,
+@@ -280,7 +429,36 @@ extern int __REDIRECT_NTH_LDBL (__swprintf_alias,
+ 				 const wchar_t *__restrict __fmt, ...),
+ 				swprintf);
+ 
+-#ifdef __va_arg_pack
++extern int __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
++			    int __flag, size_t __s_len,
++			    const wchar_t *__restrict __format,
++			    __gnuc_va_list __arg)
++     __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 0))) */;
++
++extern int __REDIRECT_NTH_LDBL (__vswprintf_alias,
++				(wchar_t *__restrict __s, size_t __n,
++				 const wchar_t *__restrict __fmt,
++				 __gnuc_va_list __ap), vswprintf);
++
++
++#ifdef __use_clang_fortify
++__fortify_overload int
++__NTH (swprintf (wchar_t *__restrict const __clang_pass_object_size __s,
++		 size_t __n, const wchar_t *__restrict __fmt, ...))
++{
++  __gnuc_va_list __va;
++  va_start (__va, __fmt);
++  int __result;
++  if (__bos (__s) != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
++    __result = __vswprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
++				__bos (__s) / sizeof (wchar_t),
++				__fmt, __va);
++  else
++    __result = __vswprintf_alias (__s, __n, __fmt, __va);
++  va_end (__va);
++  return __result;
++}
++#elif defined (__va_arg_pack)
+ __fortify_function int
+ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
+ 		 const wchar_t *__restrict __fmt, ...))
+@@ -300,20 +478,10 @@ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
+    : swprintf (s, n, __VA_ARGS__))
+ #endif
+ 
+-extern int __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
+-			    int __flag, size_t __s_len,
+-			    const wchar_t *__restrict __format,
+-			    __gnuc_va_list __arg)
+-     __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 0))) */;
+-
+-extern int __REDIRECT_NTH_LDBL (__vswprintf_alias,
+-				(wchar_t *__restrict __s, size_t __n,
+-				 const wchar_t *__restrict __fmt,
+-				 __gnuc_va_list __ap), vswprintf);
+-
+-__fortify_function int
+-__NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
+-		  const wchar_t *__restrict __fmt, __gnuc_va_list __ap))
++__fortify_potential_overload int
++__NTH (vswprintf (wchar_t *__restrict const __clang_pass_object_size __s,
++		  size_t __n, const wchar_t *__restrict __fmt,
++		  __gnuc_va_list __ap))
+ {
+   if (__bos (__s) != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
+     return __vswprintf_chk (__s, __n,  __USE_FORTIFY_LEVEL - 1,
+@@ -334,7 +502,27 @@ extern int __vfwprintf_chk (__FILE *__restrict __stream, int __flag,
+ extern int __vwprintf_chk (int __flag, const wchar_t *__restrict __format,
+ 			   __gnuc_va_list __ap);
+ 
+-# ifdef __va_arg_pack
++# ifdef __use_clang_fortify
++__fortify_function int
++wprintf (const wchar_t *__restrict __fmt, ...)
++{
++  __gnuc_va_list __ap;
++  va_start (__ap, __fmt);
++  int __r = __vwprintf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __r;
++}
++
++__fortify_function int
++fwprintf (__FILE *__restrict __stream, const wchar_t *__restrict __fmt, ...)
++{
++  __gnuc_va_list __ap;
++  va_start (__ap, __fmt);
++  int __r = __vfwprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
++  va_end (__ap);
++  return __r;
++}
++# elif defined __va_arg_pack
+ __fortify_function int
+ wprintf (const wchar_t *__restrict __fmt, ...)
+ {
+@@ -374,11 +562,33 @@ extern wchar_t *__fgetws_chk (wchar_t *__restrict __s, size_t __size, int __n,
+ extern wchar_t *__REDIRECT (__fgetws_alias,
+ 			    (wchar_t *__restrict __s, int __n,
+ 			     __FILE *__restrict __stream), fgetws) __wur;
++
++#define __warn_fgetws_buflen "fgetws called with bigger size than length " \
++       "of destination buffer"
++#ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fgetws_buflen) wchar_t *
++fgetws (wchar_t *__restrict const __clang_pass_object_size __s, int __n,
++	__FILE *__restrict __stream)
++     __clang_enable_if (__bos (__s) != (size_t) -1
++			 && __n > __bos (__s) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __fgetws_chk (__s, __bos (__s) / sizeof (wchar_t), __n, __stream);
++}
++
++__fortify_overload __wur wchar_t *
++fgetws (wchar_t *__restrict const __clang_pass_object_size __s, int __n,
++	__FILE *__restrict __stream)
++{
++  if (__bos (__s) != (size_t) -1)
++    return __fgetws_chk (__s, __bos (__s) / sizeof (wchar_t), __n, __stream);
++  return __fgetws_alias (__s, __n, __stream);
++}
++#else
+ extern wchar_t *__REDIRECT (__fgetws_chk_warn,
+ 			    (wchar_t *__restrict __s, size_t __size, int __n,
+ 			     __FILE *__restrict __stream), __fgetws_chk)
+-     __wur __warnattr ("fgetws called with bigger size than length "
+-		       "of destination buffer");
++     __wur __warnattr (__warn_fgetws_buflen);
+ 
+ __fortify_function __wur wchar_t *
+ fgetws (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+@@ -395,6 +605,8 @@ fgetws (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+     }
+   return __fgetws_alias (__s, __n, __stream);
+ }
++#endif
++#undef __warn_fgetws_buflen
+ 
+ #ifdef __USE_GNU
+ extern wchar_t *__fgetws_unlocked_chk (wchar_t *__restrict __s, size_t __size,
+@@ -404,12 +616,36 @@ extern wchar_t *__REDIRECT (__fgetws_unlocked_alias,
+ 			    (wchar_t *__restrict __s, int __n,
+ 			     __FILE *__restrict __stream), fgetws_unlocked)
+   __wur;
++
++# define __warn_fgetws_buflen \
++    "fgetws_unlocked called with bigger size than length of destination buffer"
++# ifdef __use_clang_fortify
++__fortify_overload __wur __clang_warning (__warn_fgetws_buflen) wchar_t *
++fgetws_unlocked (wchar_t *__restrict const __clang_pass_object_size __s,
++		 int __n, __FILE *__restrict __stream)
++     __clang_enable_if (__bos (__s) != (size_t) -1
++			 && __n > __bos (__s) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __fgetws_unlocked_chk (__s, __bos (__s) / sizeof (wchar_t), __n,
++				__stream);
++}
++
++__fortify_overload __wur wchar_t *
++fgetws_unlocked (wchar_t *__restrict const __clang_pass_object_size __s,
++		 int __n, __FILE *__restrict __stream)
++{
++  if (__bos (__s) != (size_t) -1)
++    return __fgetws_unlocked_chk (__s, __bos (__s) / sizeof (wchar_t),
++				  __n, __stream);
++  return __fgetws_unlocked_alias (__s, __n, __stream);
++}
++# else
+ extern wchar_t *__REDIRECT (__fgetws_unlocked_chk_warn,
+ 			    (wchar_t *__restrict __s, size_t __size, int __n,
+ 			     __FILE *__restrict __stream),
+ 			    __fgetws_unlocked_chk)
+-     __wur __warnattr ("fgetws_unlocked called with bigger size than length "
+-		       "of destination buffer");
++     __wur __warnattr (__warn_fgetws_buflen);
+ 
+ __fortify_function __wur wchar_t *
+ fgetws_unlocked (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+@@ -426,6 +662,8 @@ fgetws_unlocked (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+     }
+   return __fgetws_unlocked_alias (__s, __n, __stream);
+ }
++# endif
++# undef __warn_fgetws_buflen
+ #endif
+ 
+ 
+@@ -436,9 +674,9 @@ extern size_t __REDIRECT_NTH (__wcrtomb_alias,
+ 			      (char *__restrict __s, wchar_t __wchar,
+ 			       mbstate_t *__restrict __ps), wcrtomb) __wur;
+ 
+-__fortify_function __wur size_t
+-__NTH (wcrtomb (char *__restrict __s, wchar_t __wchar,
+-		mbstate_t *__restrict __ps))
++__fortify_potential_overload __wur size_t
++__NTH (wcrtomb (char *__restrict const __clang_pass_object_size __s,
++		wchar_t __wchar, mbstate_t *__restrict __ps))
+ {
+   /* We would have to include <limits.h> to get a definition of MB_LEN_MAX.
+      But this would only disturb the namespace.  So we define our own
+@@ -462,13 +700,39 @@ extern size_t __REDIRECT_NTH (__mbsrtowcs_alias,
+ 			       const char **__restrict __src,
+ 			       size_t __len, mbstate_t *__restrict __ps),
+ 			      mbsrtowcs);
++
++#define __warn_mbsrtowcs_buflen "mbsrtowcs called with dst buffer smaller " \
++		 "than len * sizeof (wchar_t)"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_mbsrtowcs_buflen) size_t
++__NTH (mbsrtowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		  const char **__restrict __src, size_t __len,
++		  mbstate_t *__restrict __ps))
++     __clang_enable_if (__bos (__dst) != (size_t) -1
++			 && __len > __bos (__dst) / sizeof (wchar_t),
++			"selected if this call looks dangerous")
++{
++  return __mbsrtowcs_chk (__dst, __src, __len, __ps,
++			  __bos (__dst) / sizeof (wchar_t));
++}
++
++__fortify_overload size_t
++__NTH (mbsrtowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		  const char **__restrict __src, size_t __len,
++		  mbstate_t *__restrict __ps))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __mbsrtowcs_chk (__dst, __src, __len, __ps,
++			    __bos (__dst) / sizeof (wchar_t));
++  return __mbsrtowcs_alias (__dst, __src, __len, __ps);
++}
++#else
+ extern size_t __REDIRECT_NTH (__mbsrtowcs_chk_warn,
+ 			      (wchar_t *__restrict __dst,
+ 			       const char **__restrict __src,
+ 			       size_t __len, mbstate_t *__restrict __ps,
+ 			       size_t __dstlen), __mbsrtowcs_chk)
+-     __warnattr ("mbsrtowcs called with dst buffer smaller than len "
+-		 "* sizeof (wchar_t)");
++     __warnattr (__warn_mbsrtowcs_buflen);
+ 
+ __fortify_function size_t
+ __NTH (mbsrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+@@ -486,6 +750,8 @@ __NTH (mbsrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+     }
+   return __mbsrtowcs_alias (__dst, __src, __len, __ps);
+ }
++#endif
++#undef __warn_mbsrtowcs_buflen
+ 
+ 
+ extern size_t __wcsrtombs_chk (char *__restrict __dst,
+@@ -497,12 +763,36 @@ extern size_t __REDIRECT_NTH (__wcsrtombs_alias,
+ 			       const wchar_t **__restrict __src,
+ 			       size_t __len, mbstate_t *__restrict __ps),
+ 			      wcsrtombs);
++
++#define __warn_wcsrtombs_buflen "wcsrtombs called with dst buffer smaller " \
++      "than len"
++#ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wcsrtombs_buflen) size_t
++__NTH (wcsrtombs (char *__restrict const __clang_pass_object_size __dst,
++		  const wchar_t **__restrict __src, size_t __len,
++		  mbstate_t *__restrict __ps))
++     __clang_enable_if (__bos (__dst) != (size_t) -1 && __len > __bos (__dst),
++			"selected if this call looks dangerous")
++{
++  return __wcsrtombs_chk (__dst, __src, __len, __ps, __bos (__dst));
++}
++
++__fortify_overload size_t
++__NTH (wcsrtombs (char *__restrict const __clang_pass_object_size __dst,
++		  const wchar_t **__restrict __src, size_t __len,
++		  mbstate_t *__restrict __ps))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __wcsrtombs_chk (__dst, __src, __len, __ps, __bos (__dst));
++  return __wcsrtombs_alias (__dst, __src, __len, __ps);
++}
++#else
+ extern size_t __REDIRECT_NTH (__wcsrtombs_chk_warn,
+ 			      (char *__restrict __dst,
+ 			       const wchar_t **__restrict __src,
+ 			       size_t __len, mbstate_t *__restrict __ps,
+ 			       size_t __dstlen), __wcsrtombs_chk)
+-    __warnattr ("wcsrtombs called with dst buffer smaller than len");
++    __warnattr (__warn_wcsrtombs_buflen);
+ 
+ __fortify_function size_t
+ __NTH (wcsrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+@@ -518,6 +808,8 @@ __NTH (wcsrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+     }
+   return __wcsrtombs_alias (__dst, __src, __len, __ps);
+ }
++#endif
++#undef __warn_wcsrtombs_buflen
+ 
+ 
+ #ifdef __USE_GNU
+@@ -530,13 +822,38 @@ extern size_t __REDIRECT_NTH (__mbsnrtowcs_alias,
+ 			       const char **__restrict __src, size_t __nmc,
+ 			       size_t __len, mbstate_t *__restrict __ps),
+ 			      mbsnrtowcs);
++
++# define __warn_mbsnrtowcs_buflen "mbsnrtowcs called with dst buffer smaller " \
++		 "than len * sizeof (wchar_t)"
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_mbsnrtowcs_buflen) size_t
++__NTH (mbsnrtowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		   const char **__restrict __src, size_t __nmc, size_t __len,
++		   mbstate_t *__restrict __ps))
++     __clang_enable_if (__bos (__dst) != (size_t) -1 && __bos (__dst) < __len,
++			"selected if this call looks dangerous")
++{
++  return __mbsnrtowcs_chk (__dst, __src, __nmc, __len, __ps,
++			   __bos (__dst) / sizeof (wchar_t));
++}
++
++__fortify_overload size_t
++__NTH (mbsnrtowcs (wchar_t *__restrict const __clang_pass_object_size __dst,
++		   const char **__restrict __src, size_t __nmc, size_t __len,
++		   mbstate_t *__restrict __ps))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __mbsnrtowcs_chk (__dst, __src, __nmc, __len, __ps,
++			     __bos (__dst) / sizeof (wchar_t));
++  return __mbsnrtowcs_alias (__dst, __src, __nmc, __len, __ps);
++}
++# else
+ extern size_t __REDIRECT_NTH (__mbsnrtowcs_chk_warn,
+ 			      (wchar_t *__restrict __dst,
+ 			       const char **__restrict __src, size_t __nmc,
+ 			       size_t __len, mbstate_t *__restrict __ps,
+ 			       size_t __dstlen), __mbsnrtowcs_chk)
+-     __warnattr ("mbsnrtowcs called with dst buffer smaller than len "
+-		 "* sizeof (wchar_t)");
++     __warnattr (__warn_mbsnrtowcs_buflen);
+ 
+ __fortify_function size_t
+ __NTH (mbsnrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+@@ -554,6 +871,8 @@ __NTH (mbsnrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+     }
+   return __mbsnrtowcs_alias (__dst, __src, __nmc, __len, __ps);
+ }
++# endif
++# undef __warn_mbsnrtowcs_buflen
+ 
+ 
+ extern size_t __wcsnrtombs_chk (char *__restrict __dst,
+@@ -566,13 +885,38 @@ extern size_t __REDIRECT_NTH (__wcsnrtombs_alias,
+ 			       const wchar_t **__restrict __src,
+ 			       size_t __nwc, size_t __len,
+ 			       mbstate_t *__restrict __ps), wcsnrtombs);
++
++# define __warn_wcsnrtombs_buflen \
++       "wcsnrtombs called with dst buffer smaller than len"
++# ifdef __use_clang_fortify
++__fortify_overload __clang_warning (__warn_wcsnrtombs_buflen) size_t
++__NTH (wcsnrtombs (char *__restrict const __clang_pass_object_size __dst,
++		   const wchar_t **__restrict __src, size_t __nwc, size_t __len,
++		   mbstate_t *__restrict __ps))
++     __clang_enable_if (__bos (__dst) != (size_t) -1 && __bos (__dst) < __len,
++			"selected if this call looks dangerous")
++{
++  return __wcsnrtombs_chk (__dst, __src, __nwc, __len, __ps,
++			   __bos (__dst));
++}
++
++__fortify_overload size_t
++__NTH (wcsnrtombs (char *__restrict const __clang_pass_object_size __dst,
++		   const wchar_t **__restrict __src, size_t __nwc, size_t __len,
++		   mbstate_t *__restrict __ps))
++{
++  if (__bos (__dst) != (size_t) -1)
++    return __wcsnrtombs_chk (__dst, __src, __nwc, __len, __ps, __bos (__dst));
++  return __wcsnrtombs_alias (__dst, __src, __nwc, __len, __ps);
++}
++# else
+ extern size_t __REDIRECT_NTH (__wcsnrtombs_chk_warn,
+ 			      (char *__restrict __dst,
+ 			       const wchar_t **__restrict __src,
+ 			       size_t __nwc, size_t __len,
+ 			       mbstate_t *__restrict __ps,
+ 			       size_t __dstlen), __wcsnrtombs_chk)
+-     __warnattr ("wcsnrtombs called with dst buffer smaller than len");
++     __warnattr (__warn_wcsnrtombs_buflen);
+ 
+ __fortify_function size_t
+ __NTH (wcsnrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+@@ -590,4 +934,6 @@ __NTH (wcsnrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+     }
+   return __wcsnrtombs_alias (__dst, __src, __nwc, __len, __ps);
+ }
++# endif
++# undef __warn_wcsnrtombs_buflen
+ #endif
+--- wcsmbs/wchar.h
++++ wcsmbs/wchar.h
+@@ -144,20 +144,26 @@ __USING_NAMESPACE_STD(tm)
+ 
+ __BEGIN_NAMESPACE_STD
+ /* Copy SRC to DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcscpy (wchar_t *__restrict __dest,
+-			const wchar_t *__restrict __src) __THROW;
++			const wchar_t *__restrict __src)
++     __THROW __CLANG_NO_MANGLE (wcscpy);
+ /* Copy no more than N wide-characters of SRC to DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcsncpy (wchar_t *__restrict __dest,
+ 			 const wchar_t *__restrict __src, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wcsncpy);
+ 
+ /* Append SRC onto DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcscat (wchar_t *__restrict __dest,
+-			const wchar_t *__restrict __src) __THROW;
++			const wchar_t *__restrict __src) __THROW
++			__CLANG_NO_MANGLE (wcscat);
+ /* Append no more than N wide-characters of SRC onto DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcsncat (wchar_t *__restrict __dest,
+ 			 const wchar_t *__restrict __src, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wcsncat);
+ 
+ /* Compare S1 and S2.  */
+ extern int wcscmp (const wchar_t *__s1, const wchar_t *__s2)
+@@ -326,24 +332,30 @@ extern int wmemcmp (const wchar_t *__s1, const wchar_t *__s2, size_t __n)
+      __THROW __attribute_pure__;
+ 
+ /* Copy N wide characters of SRC to DEST.  */
++__fortify_overloadable
+ extern wchar_t *wmemcpy (wchar_t *__restrict __s1,
+-			 const wchar_t *__restrict __s2, size_t __n) __THROW;
++			 const wchar_t *__restrict __s2, size_t __n)
++     __THROW __CLANG_NO_MANGLE (wmemcpy);
+ 
+ /* Copy N wide characters of SRC to DEST, guaranteeing
+    correct behavior for overlapping strings.  */
++__fortify_overloadable
+ extern wchar_t *wmemmove (wchar_t *__s1, const wchar_t *__s2, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wmemmove);
+ 
+ /* Set N wide characters of S to C.  */
+-extern wchar_t *wmemset (wchar_t *__s, wchar_t __c, size_t __n) __THROW;
++__fortify_overloadable
++extern wchar_t *wmemset (wchar_t *__s, wchar_t __c, size_t __n)
++     __THROW __CLANG_NO_MANGLE (wmemset);
+ __END_NAMESPACE_STD
+ 
+ #ifdef __USE_GNU
+ /* Copy N wide characters of SRC to DEST and return pointer to following
+    wide character.  */
++__fortify_overloadable
+ extern wchar_t *wmempcpy (wchar_t *__restrict __s1,
+ 			  const wchar_t *__restrict __s2, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wmempcpy);
+ #endif
+ 
+ 
+@@ -367,8 +379,10 @@ extern size_t mbrtowc (wchar_t *__restrict __pwc,
+ 		       mbstate_t *__restrict __p) __THROW;
+ 
+ /* Write multibyte representation of wide character WC to S.  */
++__fortify_overloadable
+ extern size_t wcrtomb (char *__restrict __s, wchar_t __wc,
+-		       mbstate_t *__restrict __ps) __THROW;
++		       mbstate_t *__restrict __ps)
++     __THROW __CLANG_NO_MANGLE (wcrtomb);
+ 
+ /* Return number of bytes in multibyte character pointed to by S.  */
+ extern size_t __mbrlen (const char *__restrict __s, size_t __n,
+@@ -405,31 +419,39 @@ __NTH (mbrlen (const char *__restrict __s, size_t __n,
+ __BEGIN_NAMESPACE_STD
+ /* Write wide character representation of multibyte character string
+    SRC to DST.  */
++__fortify_overloadable
+ extern size_t mbsrtowcs (wchar_t *__restrict __dst,
+ 			 const char **__restrict __src, size_t __len,
+-			 mbstate_t *__restrict __ps) __THROW;
++			 mbstate_t *__restrict __ps)
++     __THROW __CLANG_NO_MANGLE (mbsrtowcs);
+ 
+ /* Write multibyte character representation of wide character string
+    SRC to DST.  */
++__fortify_overloadable
+ extern size_t wcsrtombs (char *__restrict __dst,
+ 			 const wchar_t **__restrict __src, size_t __len,
+-			 mbstate_t *__restrict __ps) __THROW;
++			 mbstate_t *__restrict __ps)
++     __THROW __CLANG_NO_MANGLE (wcsrtombs);
+ __END_NAMESPACE_STD
+ 
+ 
+ #ifdef	__USE_XOPEN2K8
+ /* Write wide character representation of at most NMC bytes of the
+    multibyte character string SRC to DST.  */
++__fortify_overloadable
+ extern size_t mbsnrtowcs (wchar_t *__restrict __dst,
+ 			  const char **__restrict __src, size_t __nmc,
+-			  size_t __len, mbstate_t *__restrict __ps) __THROW;
++			  size_t __len, mbstate_t *__restrict __ps)
++     __THROW __CLANG_NO_MANGLE (mbsnrtowcs);
+ 
+ /* Write multibyte character representation of at most NWC characters
+    from the wide character string SRC to DST.  */
++__fortify_overloadable
+ extern size_t wcsnrtombs (char *__restrict __dst,
+ 			  const wchar_t **__restrict __src,
+ 			  size_t __nwc, size_t __len,
+-			  mbstate_t *__restrict __ps) __THROW;
++			  mbstate_t *__restrict __ps)
++     __THROW __CLANG_NO_MANGLE (wcsnrtombs);
+ #endif	/* use POSIX 2008 */
+ 
+ 
+@@ -563,14 +585,17 @@ extern long double wcstold_l (const wchar_t *__restrict __nptr,
+ #ifdef __USE_XOPEN2K8
+ /* Copy SRC to DEST, returning the address of the terminating L'\0' in
+    DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcpcpy (wchar_t *__restrict __dest,
+-			const wchar_t *__restrict __src) __THROW;
++			const wchar_t *__restrict __src)
++     __THROW __CLANG_NO_MANGLE (wcpcpy);
+ 
+ /* Copy no more than N characters of SRC to DEST, returning the address of
+    the last character written into DEST.  */
++__fortify_overloadable
+ extern wchar_t *wcpncpy (wchar_t *__restrict __dest,
+ 			 const wchar_t *__restrict __src, size_t __n)
+-     __THROW;
++     __THROW __CLANG_NO_MANGLE (wcpncpy);
+ 
+ 
+ /* Wide character I/O functions.  */
+@@ -601,9 +626,11 @@ extern int fwprintf (__FILE *__restrict __stream,
+ extern int wprintf (const wchar_t *__restrict __format, ...)
+      /* __attribute__ ((__format__ (__wprintf__, 1, 2))) */;
+ /* Write formatted output of at most N characters to S.  */
++__fortify_overloadable
+ extern int swprintf (wchar_t *__restrict __s, size_t __n,
+ 		     const wchar_t *__restrict __format, ...)
+-     __THROW /* __attribute__ ((__format__ (__wprintf__, 3, 4))) */;
++     __THROW /* __attribute__ ((__format__ (__wprintf__, 3, 4))) */
++     __CLANG_NO_MANGLE (swprintf);
+ 
+ /* Write formatted output to S from argument list ARG.
+ 
+@@ -622,10 +649,12 @@ extern int vwprintf (const wchar_t *__restrict __format,
+      /* __attribute__ ((__format__ (__wprintf__, 1, 0))) */;
+ /* Write formatted output of at most N character to S from argument
+    list ARG.  */
++__fortify_overloadable
+ extern int vswprintf (wchar_t *__restrict __s, size_t __n,
+ 		      const wchar_t *__restrict __format,
+ 		      __gnuc_va_list __arg)
+-     __THROW /* __attribute__ ((__format__ (__wprintf__, 3, 0))) */;
++     __THROW /* __attribute__ ((__format__ (__wprintf__, 3, 0))) */
++     __CLANG_NO_MANGLE (vswprintf);
+ 
+ 
+ /* Read formatted input from STREAM.
+@@ -771,8 +800,10 @@ extern wint_t putwchar (wchar_t __wc);
+ 
+    This function is a possible cancellation point and therefore not
+    marked with __THROW.  */
++__fortify_overloadable
+ extern wchar_t *fgetws (wchar_t *__restrict __ws, int __n,
+-			__FILE *__restrict __stream);
++			__FILE *__restrict __stream)
++     __CLANG_NO_MANGLE (fgetws);
+ 
+ /* Write a string to STREAM.
+ 
+@@ -834,8 +865,10 @@ extern wint_t putwchar_unlocked (wchar_t __wc);
+    cancellation point.  But due to similarity with an POSIX interface
+    or due to the implementation it is a cancellation point and
+    therefore not marked with __THROW.  */
++__fortify_overloadable
+ extern wchar_t *fgetws_unlocked (wchar_t *__restrict __ws, int __n,
+-				 __FILE *__restrict __stream);
++				 __FILE *__restrict __stream)
++     __CLANG_NO_MANGLE (fgetws_unlocked);
+ 
+ /* This function does the same as `fputws' but does not lock the stream.
+ 
