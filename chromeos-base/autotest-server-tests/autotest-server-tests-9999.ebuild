@@ -189,7 +189,6 @@ SERVER_IUSE_TESTS="
 	+tests_security_kASLR
 	+tests_sequences
 	+tests_video_PowerConsumption
-	+tests_video_VimeoVideoWPR
 "
 
 IUSE_TESTS="${IUSE_TESTS}

@@ -148,7 +148,6 @@ IUSE_TESTS=(
 	+tests_video_VideoReload
 	+tests_video_VideoSanity
 	+tests_video_VideoSeek
-	+tests_video_VimeoVideo
 	+tests_video_WebRtcCamera
 	+tests_video_WebRtcMediaRecorder
 	+tests_video_WebRtcPerf
