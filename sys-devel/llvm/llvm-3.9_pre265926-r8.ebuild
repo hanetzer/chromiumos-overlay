@@ -324,6 +324,7 @@ multilib_src_configure() {
 
 		-DHAVE_HISTEDIT_H=$(usex libedit)
 		-DENABLE_LINKER_BUILD_ID=ON
+		-DCLANG_VENDOR="Chromium OS ${PVR}"
 	)
 
 	if use clang; then
