@@ -322,17 +322,13 @@ def exec_and_bisect(execargs, bisect_stage):
   """Execute compiler, return and invoke bisection driver."""
   import bisect
 
+  bisect_dir = os.environ.get('BISECT_DIR', '/tmp/sysroot_bisect')
   try:
-    retval = bisect.exec_and_return(execargs)
+    ret = bisect.bisect_driver(bisect_stage, bisect_dir, execargs)
   except OSError as e:
     handle_exec_exception(e)
 
-  if retval != 0:
-    sys.exit(retval)
-
-  bisect.bisect_driver(bisect_stage, execargs)
-
-  sys.exit(0)
+  sys.exit(ret)
 
 
 sysroot = os.environ.get('SYSROOT', '')
