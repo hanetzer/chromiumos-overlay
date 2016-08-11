@@ -18,9 +18,9 @@ IUSE="device_tree frecon +interactive_recovery -mtd +power_management"
 
 # Build Targets
 TARGETS_IUSE="
+	factory_netboot_ramfs
 	factory_shim_ramfs
 	loader_kernel_ramfs
-	netboot_ramfs
 	recovery_ramfs
 "
 IUSE+=" ${TARGETS_IUSE}"
@@ -80,9 +80,9 @@ LOADER_KERNEL_DEPENDS="
 	"
 
 DEPEND="
+	factory_netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
 	factory_shim_ramfs? ( ${FACTORY_SHIM_DEPENDS} )
 	loader_kernel_ramfs? ( ${LOADER_KERNEL_DEPENDS} )
-	netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
 	recovery_ramfs? ( ${RECOVERY_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
 	virtual/chromeos-bsp-initramfs
@@ -106,15 +106,14 @@ src_compile() {
 	local deps=()
 	use frecon && deps+=(/sbin/frecon-lite /sbin/udevd /sbin/udevadm )
 	use mtd && deps+=(/usr/bin/cgpt.bin)
-	if use netboot_ramfs; then
+	if use factory_netboot_ramfs; then
 		use power_management && deps+=(/usr/bin/backlight_tool)
 	fi
 
 	local targets=()
-	use factory_shim_ramfs && targets+=(factory_shim)
-	use loader_kernel_ramfs && targets+=(loader_kernel)
-	use netboot_ramfs && targets+=(factory_netboot)
-	use recovery_ramfs && targets+=(recovery)
+	for target in ${TARGETS_IUSE}; do
+		use ${target}_ramfs && targets+=(${target})
+	done
 	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
@@ -125,8 +124,8 @@ src_compile() {
 
 src_install() {
 	insinto /var/lib/initramfs
-	use factory_shim_ramfs && doins "${WORKDIR}"/factory_shim_ramfs.cpio.xz
-	use loader_kernel_ramfs && doins "${WORKDIR}"/loader_kernel_ramfs.cpio.xz
-	use netboot_ramfs && doins "${WORKDIR}"/netboot_ramfs.cpio.xz
-	use recovery_ramfs && doins "${WORKDIR}"/recovery_ramfs.cpio.xz
+	for target in ${TARGETS_IUSE}; do
+		use ${target}_ramfs &&
+			doins "${WORKDIR}"/${target}_ramfs.cpio.xz
+	done
 }

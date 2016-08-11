@@ -18,9 +18,9 @@ SLOT="0"
 
 DEPEND="sys-apps/debianutils
 	sys-kernel/linux-firmware
+	factory_netboot_ramfs? ( chromeos-base/chromeos-initramfs[factory_netboot_ramfs] )
 	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs[factory_shim_ramfs] )
 	loader_kernel_ramfs? ( chromeos-base/chromeos-initramfs[loader_kernel_ramfs] )
-	netboot_ramfs? ( chromeos-base/chromeos-initramfs[netboot_ramfs] )
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 	builtin_fw_t210_bpmp? ( sys-kernel/tegra_bpmp-t210 )
@@ -78,6 +78,7 @@ CONFIG_FRAGMENTS=(
 	dwc2_dual_role
 	dyndebug
 	fbconsole
+	factory_netboot_ramfs
 	factory_shim_ramfs
 	gdmwimax
 	gobi
@@ -92,7 +93,6 @@ CONFIG_FRAGMENTS=(
 	lockdebug
 	lxc
 	mbim
-	netboot_ramfs
 	nfc
 	nfs
 	nowerror
@@ -346,9 +346,9 @@ CONFIG_INITRAMFS_COMPRESSION_XZ=y
 CONFIG_KEXEC=y
 '
 
-netboot_ramfs_desc="Initramfs for factory netboot installer"
-netboot_ramfs_config='
-CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/netboot_ramfs.cpio.xz"
+factory_netboot_ramfs_desc="Initramfs for factory netboot installer"
+factory_netboot_ramfs_config='
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/factory_netboot_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
@@ -633,15 +633,15 @@ CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
 # Add all config and firmware fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]} ${FIRMWARE_BINARIES[@]}"
 REQUIRED_USE="
-	recovery_ramfs? ( !netboot_ramfs !factory_shim_ramfs )
-	netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
-	factory_shim_ramfs? ( !recovery_ramfs !netboot_ramfs )
-	recovery_ramfs? ( i2cdev )
-	netboot_ramfs? ( i2cdev )
+	factory_netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
+	factory_shim_ramfs? ( !recovery_ramfs !factory_netboot_ramfs )
+	recovery_ramfs? ( !factory_netboot_ramfs !factory_shim_ramfs )
+	factory_netboot_ramfs? ( i2cdev )
 	factory_shim_ramfs? ( i2cdev )
-	recovery_ramfs? ( || ( tpm tpm2 ) )
-	netboot_ramfs? ( || ( tpm tpm2 ) )
+	recovery_ramfs? ( i2cdev )
+	factory_netboot_ramfs? ( || ( tpm tpm2 ) )
 	factory_shim_ramfs? ( || ( tpm tpm2 ) )
+	recovery_ramfs? ( || ( tpm tpm2 ) )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
@@ -1208,7 +1208,7 @@ cros-kernel2_src_install() {
 	# size limit as the image is downloaded over network.
 	local kernel_image_size=$(stat -c '%s' -L "${D}"/boot/vmlinuz)
 	einfo "Kernel image size is ${kernel_image_size} bytes."
-	if use netboot_ramfs; then
+	if use factory_netboot_ramfs; then
 		# No need to check kernel image size.
 		true
 	else
