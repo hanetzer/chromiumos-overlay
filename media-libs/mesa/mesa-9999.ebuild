@@ -140,6 +140,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
+	epatch "${FILESDIR}"/12.0-mesa-Fix-glFramebufferTexture-error-codes-v2.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
