@@ -189,6 +189,12 @@ pick_cherries() {
 	# can't be picked directly due to a conflict.
 	epatch "${FILESDIR}"/clang-3.8-fortify-fix.patch
 
+	# "Cherry-pick" of r278471 (d6290c5e5b763ba2aef19f621b95a41c5dee761f); it
+	# can't be picked directly because Function->param_size() changed type
+	# since we pulled down a clang version. As a result, std::min fails to
+	# deduce its template argument.
+	epatch "${FILESDIR}"/clang-3.8-fortify-fix-varargs.patch
+
 	# compiler-rt
 	# Bug 27673 - [ASan] False alarm to recv/recvfrom
 	# https://llvm.org/bugs/show_bug.cgi?id=27673
