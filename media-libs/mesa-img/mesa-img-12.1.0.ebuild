@@ -166,12 +166,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
 	epatch "${FILESDIR}"/0036-Add-DRI-Query-Buffers-extension.patch
 
-	epatch "${FILESDIR}"/0101-dri-pvr-Add-support-for-YV12.patch
-	epatch "${FILESDIR}"/0102-dri-pvr-convert-format-into-bits-per-pixel-in-Alloca.patch
-	epatch "${FILESDIR}"/0103-Add-a-DRI-Query-Buffers-extension-to-Mesa.patch
-	epatch "${FILESDIR}"/0104-pvr_dri-fix-pbuffer-synchronisation.patch
-	epatch "${FILESDIR}"/0106-dri-pvr-Garbage-collect-sync-objects-more-often.patch
-
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
