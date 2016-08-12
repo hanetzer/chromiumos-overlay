@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-workon
+inherit cros-workon systemd
 
 DESCRIPTION="Log scripts used by userfeedback to report cros system information"
 HOMEPAGE="http://www.chromium.org/"
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+mmc X"
+IUSE="+mmc systemd X"
 
 RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
@@ -50,6 +50,16 @@ src_install() {
 	insinto /usr/share/userfeedback/etc
 	doins etc/*
 
-	insinto /etc/init
-	doins init/*
+	# Install init scripts.
+	if use systemd; then
+		local units=("mosys-info.service" "firmware-version.service"
+			"storage-info.service")
+		systemd_dounit init/*.service
+		for unit in "${units[@]}"; do
+			systemd_enable_service system-services.target ${unit}
+		done
+	else
+		insinto /etc/init
+		doins init/*.conf
+	fi
 }
