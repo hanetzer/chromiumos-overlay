@@ -125,6 +125,7 @@ ALL_BOARDS=(
 	heli
 	hsb
 	ironhide
+	jadeite
 	#jaguar
 	jecht
 	kayle
