@@ -112,6 +112,7 @@ CONFIG_FRAGMENTS=(
 	usb_gadget_audio
 	usb_gadget_ncm
 	vfat
+	video_cards_amdgpu
 	vlan
 	vtconsole
 	wifi_testbed_ap
@@ -494,6 +495,11 @@ usb_gadget_ncm_config="
 CONFIG_USB_CONFIGFS_NCM=y
 "
 
+video_cards_amdgpu_desc="AMDGPU driver"
+video_cards_amdgpu_config="
+CONFIG_DRM_AMDGPU=y
+"
+
 vlan_desc="802.1Q VLAN"
 vlan_config="
 CONFIG_VLAN_8021Q=m
@@ -592,10 +598,33 @@ CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
 # be built into the kernel using CONFIG_EXTRA_FIRMWARE.
 
 FIRMWARE_BINARIES=(
+	builtin_fw_amdgpu
 	builtin_fw_t124_xusb
 	builtin_fw_t210_xusb
 	builtin_fw_t210_nouveau
 	builtin_fw_t210_bpmp
+)
+
+builtin_fw_amdgpu_desc="Firmware for AMD GPU"
+builtin_fw_amdgpu_files=(
+	amdgpu/carrizo_ce.bin
+	amdgpu/carrizo_me.bin
+	amdgpu/carrizo_mec.bin
+	amdgpu/carrizo_mec2.bin
+	amdgpu/carrizo_pfp.bin
+	amdgpu/carrizo_rlc.bin
+	amdgpu/carrizo_sdma.bin
+	amdgpu/carrizo_sdma1.bin
+	amdgpu/carrizo_uvd.bin
+	amdgpu/carrizo_vce.bin
+	amdgpu/stoney_ce.bin
+	amdgpu/stoney_me.bin
+	amdgpu/stoney_mec.bin
+	amdgpu/stoney_pfp.bin
+	amdgpu/stoney_rlc.bin
+	amdgpu/stoney_sdma.bin
+	amdgpu/stoney_uvd.bin
+	amdgpu/stoney_vce.bin
 )
 
 builtin_fw_t124_xusb_desc="Tegra124 XHCI controller"
