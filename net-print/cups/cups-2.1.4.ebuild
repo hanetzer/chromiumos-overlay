@@ -115,6 +115,7 @@ pkg_setup() {
 	enewgroup lp
 	enewuser lp -1 -1 -1 lp
 	enewgroup lpadmin
+        enewuser lpadmin -1 -1 -1 lpadmin
 	enewgroup cups
 	enewuser cups -1 -1 -1 cups
 
