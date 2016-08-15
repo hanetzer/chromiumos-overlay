@@ -108,20 +108,13 @@ build_image() {
 		--add-config-int load-environment 0 \
 		${verified_flags}"
 
-	# Build an RO-normal image, and an RW (twostop) image. This assumes
-	# that the fdt has the flags set to 1 by default.
 	cros_bundle_firmware ${cmdline} \
 		--add-blob ro-boot "${uboot_file}" \
 		--outdir "out-${board}.ro" \
 		--output "image-${board}.bin" ||
-		die "failed to build RO image: ${cmdline}"
-	cros_bundle_firmware ${cmdline} --force-rw \
-		--add-blob ro-boot "${uboot_file}" \
-		--outdir "out-${board}.rw" \
-		--output "image-${board}.rw.bin" ||
-		die "failed to build RW image: ${cmdline}"
+		die "failed to build regular image: ${cmdline}"
 	if use efs; then
-		cros_bundle_firmware ${cmdline} --force-rw \
+		cros_bundle_firmware ${cmdline} \
 			--add-blob ro-boot "${uboot_ro_file}" \
 			--force-efs  \
 			--outdir "out-${board}.efs" \
@@ -311,7 +304,6 @@ src_compile_depthcharge() {
 	netboot_ro="${froot}/depthcharge/depthcharge.elf"
 	COREBOOT_VARIANT=.serial \
 	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
-		--force-rw \
 		--coreboot-elf="${netboot_ro}" \
 		--outdir "out.net" --output "image.net.bin" \
 		--uboot "${netboot_rw}" ||
@@ -342,7 +334,6 @@ src_compile_depthcharge() {
 		einfo "Building fastboot image."
 		COREBOOT_VARIANT=.serial \
 		cros_bundle_firmware "${common[@]}" "${serial[@]}" \
-			--force-rw \
 			--coreboot-elf="${fastboot_ro}" \
 			--outdir "out.fastboot" --output "image.fastboot.bin" \
 			--uboot "${fastboot_rw}" \
