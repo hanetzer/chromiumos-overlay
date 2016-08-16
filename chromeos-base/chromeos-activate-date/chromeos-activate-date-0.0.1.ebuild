@@ -3,11 +3,14 @@
 
 EAPI=4
 
+inherit systemd
+
 DESCRIPTION="Chrome OS activate date mechanism"
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
+IUSE="systemd"
 
 RDEPEND="
 	!<chromeos-base/chromeos-bsp-spring-private-0.0.1-r15
@@ -24,6 +27,13 @@ S=${WORKDIR}
 src_install() {
 	dosbin "${FILESDIR}/activate_date"
 
-	insinto "/etc/init"
-	doins "${FILESDIR}/activate_date.conf"
+	if use systemd; then
+		systemd_dounit "${FILESDIR}/activate_date.service"
+		systemd_enable_service system-services.target activate_date.service
+	else
+		insinto "/etc/init"
+		doins "${FILESDIR}/activate_date.conf"
+	fi
+	insinto /usr/share/cros/init
+	doins "${FILESDIR}/activate_date.sh"
 }
