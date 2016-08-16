@@ -1,0 +1,28 @@
+From f5181ec28fc872843e59e1e87cec700fcf76875c Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Tue, 16 Aug 2016 09:49:44 +0100
+Subject: [PATCH] dri/pvr: Advertise configs with 24-bit depth support.
+
+Change-Id: I702c96b4b2455cba6383f0cffef65ae5a6025bb8
+---
+ src/mesa/drivers/dri/pvr/pvrutil.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
+index 927c105..0f337e6 100644
+--- a/src/mesa/drivers/dri/pvr/pvrutil.c
++++ b/src/mesa/drivers/dri/pvr/pvrutil.c
+@@ -335,8 +335,8 @@ const __DRIconfig **PVRDRICreateConfigs(void)
+ 			MESA_FORMAT_R8G8B8X8_UNORM,
+ 			MESA_FORMAT_B5G6R5_UNORM
+ 		};
+-	uint8_t auDepthBits[] = { 0, 32 };
+-	uint8_t auStencilBits[] = { 0, 8 };
++	uint8_t auDepthBits[] = { 0, 24, 32 };
++	uint8_t auStencilBits[] = { 0, 8, 8 };
+ 	uint8_t auMSAASamples[] = { 0, 2, 4, 8 };
+ 	unsigned uNumBackBufferModes;
+ 	unsigned uNumDepthStencilBits;
+-- 
+1.9.1
+
