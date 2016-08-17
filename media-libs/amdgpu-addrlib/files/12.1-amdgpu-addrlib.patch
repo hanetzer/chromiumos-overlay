@@ -1,0 +1,166 @@
+From 18e97f63a80daa1683a1f245ff98be1edea83674 Mon Sep 17 00:00:00 2001
+From: Akshu Agrawal <akshu.agrawal@amd.com>
+Date: Tue, 9 Aug 2016 15:27:17 +0530
+Subject: [PATCH] Making a shared library out of amdgpu addrlib
+
+addrlib is used for allocating buffers. Thus, creating
+a shared lib which can be linked to buffer managers
+such as minigbm.
+
+Signed-off-by: Akshu Agrawal <akshu.agrawal@amd.com>
+---
+ configure.ac                                         |  1 +
+ src/gallium/Makefile.am                              |  1 +
+ src/gallium/winsys/amdgpu/drm/addrlib/Makefile.am    | 20 ++++++++++++++++++++
+ .../winsys/amdgpu/drm/addrlib/Makefile.sources       | 20 ++++++++++++++++++++
+ .../winsys/amdgpu/drm/addrlib/addrinterface.cpp      |  5 +++++
+ src/gallium/winsys/amdgpu/drm/addrlib/core/util.h    | 16 ++++++++++++++++
+ 6 files changed, 63 insertions(+)
+ create mode 100644 src/gallium/winsys/amdgpu/drm/addrlib/Makefile.am
+ create mode 100644 src/gallium/winsys/amdgpu/drm/addrlib/Makefile.sources
+ create mode 100644 src/gallium/winsys/amdgpu/drm/addrlib/core/util.h
+
+diff --git a/configure.ac b/configure.ac
+index c492e15..e330edd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2687,6 +2687,7 @@ AC_CONFIG_FILES([Makefile
+		src/gallium/winsys/intel/drm/Makefile
+		src/gallium/winsys/nouveau/drm/Makefile
+		src/gallium/winsys/radeon/drm/Makefile
++		src/gallium/winsys/amdgpu/drm/addrlib/Makefile
+		src/gallium/winsys/amdgpu/drm/Makefile
+		src/gallium/winsys/svga/drm/Makefile
+		src/gallium/winsys/sw/dri/Makefile
+diff --git a/src/gallium/Makefile.am b/src/gallium/Makefile.am
+index 34671ca..0ed32bb 100644
+--- a/src/gallium/Makefile.am
++++ b/src/gallium/Makefile.am
+@@ -60,6 +60,7 @@ endif
+ ## radeonsi
+ if HAVE_GALLIUM_RADEONSI
+ SUBDIRS += drivers/radeonsi
++SUBDIRS += winsys/amdgpu/drm/addrlib
+ SUBDIRS += winsys/amdgpu/drm
+ endif
+
+diff --git a/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.am b/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.am
+new file mode 100644
+index 0000000..9166692
+--- /dev/null
++++ b/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.am
+@@ -0,0 +1,20 @@
++include Makefile.sources
++include $(top_srcdir)/src/gallium/Automake.inc
++
++AM_CFLAGS = \
++	$(GALLIUM_WINSYS_CFLAGS) \
++	$(AMDGPU_CFLAGS) \
++	-I$(srcdir) \
++	-I$(srcdir)/../ \
++	-I$(srcdir)/core \
++	-I$(srcdir)/inc/chip/r800 \
++	-I$(srcdir)/r800/chip \
++	-DBRAHMA_BUILD=1
++
++AM_CXXFLAGS = $(AM_CFLAGS)
++
++lib_LTLIBRARIES = libamdgpuaddr.la
++include_HEADERS = $(srcdir)/addrinterface.h \
++		  $(srcdir)/addrtypes.h
++
++libamdgpuaddr_la_SOURCES = $(C_SOURCES)
+diff --git a/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.sources b/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.sources
+new file mode 100644
+index 0000000..d280003
+--- /dev/null
++++ b/src/gallium/winsys/amdgpu/drm/addrlib/Makefile.sources
+@@ -0,0 +1,20 @@
++C_SOURCES := \
++	addrinterface.cpp \
++	addrinterface.h \
++	addrtypes.h \
++	core/addrcommon.h \
++	core/addrelemlib.cpp \
++	core/addrelemlib.h \
++	core/addrlib.cpp \
++	core/addrlib.h \
++	core/addrobject.cpp \
++	core/addrobject.h \
++	inc/chip/r800/si_gb_reg.h \
++	inc/lnx_common_defs.h \
++	r800/chip/si_ci_vi_merged_enum.h \
++	r800/ciaddrlib.cpp \
++	r800/ciaddrlib.h \
++	r800/egbaddrlib.cpp \
++	r800/egbaddrlib.h \
++	r800/siaddrlib.cpp \
++	r800/siaddrlib.h
+diff --git a/src/gallium/winsys/amdgpu/drm/addrlib/addrinterface.cpp b/src/gallium/winsys/amdgpu/drm/addrlib/addrinterface.cpp
+index 6556927..1607665 100644
+--- a/src/gallium/winsys/amdgpu/drm/addrlib/addrinterface.cpp
++++ b/src/gallium/winsys/amdgpu/drm/addrlib/addrinterface.cpp
+@@ -35,6 +35,7 @@
+
+ #include "addrcommon.h"
+
++#include "util.h"
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+ //                               Create/Destroy/Config functions
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+@@ -50,6 +51,7 @@
+ *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
+ ***************************************************************************************************
+ */
++PUBLIC
+ ADDR_E_RETURNCODE ADDR_API AddrCreate(
+     const ADDR_CREATE_INPUT*    pAddrCreateIn,  ///< [in] infomation for creating address lib object
+     ADDR_CREATE_OUTPUT*         pAddrCreateOut) ///< [out] address lib handle
+@@ -74,6 +76,7 @@ ADDR_E_RETURNCODE ADDR_API AddrCreate(
+ *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
+ ***************************************************************************************************
+ */
++PUBLIC
+ ADDR_E_RETURNCODE ADDR_API AddrDestroy(
+     ADDR_HANDLE hLib) ///< [in] address lib handle
+ {
+@@ -109,6 +112,7 @@ ADDR_E_RETURNCODE ADDR_API AddrDestroy(
+ *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
+ ***************************************************************************************************
+ */
++PUBLIC
+ ADDR_E_RETURNCODE ADDR_API AddrComputeSurfaceInfo(
+     ADDR_HANDLE                             hLib, ///< [in] address lib handle
+     const ADDR_COMPUTE_SURFACE_INFO_INPUT*  pIn,  ///< [in] surface information
+@@ -856,6 +860,7 @@ BOOL_32 ADDR_API ElemGetExportNorm(
+ *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
+ ***************************************************************************************************
+ */
++PUBLIC
+ ADDR_E_RETURNCODE ADDR_API AddrConvertTileInfoToHW(
+     ADDR_HANDLE                             hLib, ///< [in] address lib handle
+     const ADDR_CONVERT_TILEINFOTOHW_INPUT*  pIn,  ///< [in] tile info with real value
+diff --git a/src/gallium/winsys/amdgpu/drm/addrlib/core/util.h b/src/gallium/winsys/amdgpu/drm/addrlib/core/util.h
+new file mode 100644
+index 0000000..9606336
+--- /dev/null
++++ b/src/gallium/winsys/amdgpu/drm/addrlib/core/util.h
+@@ -0,0 +1,16 @@
++/*
++ * Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
++ * Use of this source code is governed by a BSD-style license that can be
++ * found in the LICENSE file.
++ */
++
++#ifndef UTIL_H
++#define UTIL_H
++
++#define MAX(A, B) ((A) > (B) ? (A) : (B))
++#define ARRAY_SIZE(A) (sizeof(A)/sizeof(*(A)))
++#define PUBLIC __attribute__((visibility("default")))
++#define ALIGN(A, B) (((A) + (B) - 1) / (B) * (B))
++#define DIV_ROUND_UP(n,d) (((n) + (d) - 1) / (d))
++
++#endif
+--
+2.6.6
