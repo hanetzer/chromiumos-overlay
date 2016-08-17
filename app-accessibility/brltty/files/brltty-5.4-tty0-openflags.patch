@@ -3,15 +3,16 @@ It has group memberships to allow it access to the tty.
 This patch changes an open call so that /dev/tty0 is only opened for
 writing (it just issues some ioctl calls on the device), which is necessary
 because the tty group only has write access to /dev/tty0.
-
+diff --git a/Drivers/Screen/Linux/screen.c b/Drivers/Screen/Linux/screen.c
+index bc2f2c4..dafbfb8 100644
 --- a/Drivers/Screen/Linux/screen.c
 +++ b/Drivers/Screen/Linux/screen.c
-@@ -351,7 +351,7 @@
-   int opened = 0;
+@@ -362,7 +362,7 @@ openConsole (int *fd, int vt) {
    char *name = vtName(consoleName, vt);
+ 
    if (name) {
--    int console = openCharacterDevice(name, O_RDWR|O_NOCTTY, 4, vt);
-+    int console = openCharacterDevice(name, O_WRONLY|O_NOCTTY, 4, vt);
+-    int console = openCharacterDevice(name, O_RDWR|O_NOCTTY, TTY_MAJOR, vt);
++    int console = openCharacterDevice(name, O_WRONLY|O_NOCTTY, TTY_MAJOR, vt);
+ 
      if (console != -1) {
-       logMessage(LOG_DEBUG, "console opened: %s: fd=%d", name, console);
-       closeConsole();
+       logMessage(LOG_CATEGORY(SCREEN_DRIVER),

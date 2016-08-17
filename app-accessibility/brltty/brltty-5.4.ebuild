@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/app-accessibility/brltty/brltty-4.5-r1.ebuild,v 1.2 2013/08/20 23:25:35 vapier Exp $
+# $Id$
 
 EAPI=4
 
@@ -11,13 +11,13 @@ inherit findlib eutils multilib toolchain-funcs java-pkg-opt-2 flag-o-matic \
 
 DESCRIPTION="Daemon that provides access to the Linux/Unix console for a blind person"
 HOMEPAGE="http://mielke.cc/brltty/"
-SRC_URI="http://mielke.cc/brltty/releases/${P}.tar.gz"
+SRC_URI="http://mielke.cc/brltty/archive/${P}.tar.gz"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
 KEYWORDS="*"
 IUSE="+api +beeper bluetooth +contracted-braille doc +fm gpm iconv icu
-		java +learn-mode +midi ncurses nls ocaml +pcm python usb +speech
+		java +midi ncurses nls ocaml +pcm python usb +speech
 		tcl X"
 REQUIRED_USE="doc? ( api )
 	java? ( api )
@@ -42,9 +42,7 @@ RDEPEND="java? ( >=virtual/jre-1.4 )
 	${COMMON_DEP}"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-fix-ldflags.patch \
-		"${FILESDIR}"/${P}-udev.patch \
-		"${FILESDIR}"/${P}-fix-mk4build-cross.patch
+	epatch "${FILESDIR}"/${P}-fix-ldflags.patch
 
 	java-pkg-opt-2_src_prepare
 
@@ -71,33 +69,35 @@ src_configure() {
 	# Change the directory for the api unix socket from its default
 	# (under /var/lib) to a location under /var/run because the latter
 	# is backed by tmpfs.
-	econf \
-		--prefix=/ \
-		--includedir=/usr/include \
-		--localstatedir=/var \
-		--disable-stripping \
-		--with-install-root="${D}" \
-		--with-api-socket-path=/var/run/brltty/BrlAPI \
-		$(use_enable api) \
-		$(use_enable beeper beeper-support) \
-		$(use_enable contracted-braille) \
-		$(use_enable fm fm-support) \
-		$(use_enable gpm) \
-		$(use_enable iconv) \
-		$(use_enable icu) \
-		$(use_enable java java-bindings) \
-		$(use_enable learn-mode) \
-		$(use_enable midi midi-support) \
-		$(use_enable nls i18n) \
-		$(use_enable ocaml ocaml-bindings) \
-		$(use_enable pcm pcm-support) \
-		$(use_enable python python-bindings) \
-		$(use_enable speech speech-support) \
-		$(use_enable tcl tcl-bindings) \
-		$(use_enable X x) \
-		$(use_with bluetooth bluetooth-package) \
-		$(use_with ncurses curses) \
-		$(use_with usb usb-package)
+	local myconf=(
+		--prefix=/
+		--includedir=/usr/include
+		--localstatedir=/var
+		--disable-stripping
+		--without-attributes-table
+		--without-text-table
+		--with-install-root="${D}"
+		--with-api-socket-path=/var/run/brltty/BrlAPI
+		$(use_enable api)
+		$(use_with beeper beep-package)
+		$(use_enable contracted-braille)
+		$(use_with fm fm-package)
+		$(use_enable gpm)
+		$(use_enable iconv)
+		$(use_enable icu)
+		$(use_enable java java-bindings)
+		$(use_with midi midi-package)
+		$(use_enable nls i18n)
+		$(use_enable ocaml ocaml-bindings)
+		$(use_with pcm pcm-package)
+		$(use_enable speech speech-support)
+		$(use_enable tcl tcl-bindings)
+		$(use_enable X x)
+		$(use_with bluetooth bluetooth-package)
+		$(use_with ncurses curses)
+		$(use_with usb usb-package) )
+
+	econf "${myconf[@]}"
 }
 
 src_compile() {
@@ -128,7 +128,7 @@ src_install() {
 
 	insinto /etc
 	doins Documents/brltty.conf
-	udev_newrules Hotplug/udev.rules 70-brltty.rules
+	udev_newrules Autostart/Udev/udev.rules 70-brltty.rules
 	newinitd "${FILESDIR}"/brltty.rc brltty
 
 	libdir="$(get_libdir)"

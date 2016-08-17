@@ -6,11 +6,6 @@ cros_pre_src_prepare_brltty_config() {
 	epatch "${FILESDIR}"/${P}-tty0-openflags.patch
 	epatch "${FILESDIR}/"${P}-supress-messages.patch
 	epatch "${FILESDIR}"/${P}-udev-run-script.patch
-	epatch "${FILESDIR}"/${P}-remove-umask-calls.patch
-	epatch "${FILESDIR}"/${P}-updusbdevs.patch
-	epatch "${FILESDIR}"/${P}-hims.patch
-	epatch "${FILESDIR}"/${P}-handytech.patch
-	epatch "${FILESDIR}"/${P}-api-socket-path.patch
 }
 
 cros_post_src_prepare_brltty_config() {
@@ -23,7 +18,7 @@ cros_post_src_prepare_brltty_config() {
 	# modify the usb device definitions in the C source, and for those
 	# to be picked up by updusbdevs, those patches need to be applied
 	# before the below line.
-	./updusbdevs -nogeneric udev:Hotplug/udev.rules || die
+	./updusbdevs -nogeneric udev:Autostart/Udev/udev.rules || die
 }
 
 cros_post_src_install_brltty_config() {

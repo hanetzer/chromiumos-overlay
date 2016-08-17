@@ -1,0 +1,65 @@
+Makes brltty not show confusing messages such as 'screen not in text mode'
+to the user when the api client is not connected.  This is needed because
+it is hard to localize those messages and they don't mean anything to
+the end user.
+diff --git a/Drivers/Screen/Linux/screen.c b/Drivers/Screen/Linux/screen.c
+index bc2f2c4..556ee9c 100644
+--- a/Drivers/Screen/Linux/screen.c
++++ b/Drivers/Screen/Linux/screen.c
+@@ -52,15 +52,17 @@ typedef enum {
+   PARM_CHARSET,
+   PARM_DEBUGSFM,
+   PARM_HFB,
++  PARM_MSGS,
+   PARM_VT,
+ } ScreenParameters;
+-#define SCRPARMS "charset", "debugsfm", "hfb", "vt"
++#define SCRPARMS "charset", "debugsfm", "hfb", "msgs", "vt"
+ 
+ #include "scr_driver.h"
+ #include "screen.h"
+ 
+ static const char *problemText;
+ static unsigned int debugScreenFontMap;
++static unsigned int showProblemText = 1;
+ static int virtualTerminal;
+ 
+ #define UNICODE_ROW_DIRECT 0XF000
+@@ -1093,6 +1095,15 @@ processParameters_LinuxScreen (char **parameters) {
+     }
+   }
+ 
++  showProblemText = 1;
++  if (*parameters[PARM_MSGS]) {
++    if (!validateYesNo(&showProblemText, parameters[PARM_MSGS])) {
++      logMessage(LOG_WARNING, "%s: %s", "invalid value for msgs",
++                 parameters[PARM_MSGS]);
++      showProblemText = 1;
++    }
++  }
++
+   return 1;
+ }
+ 
+@@ -1388,7 +1399,7 @@ readCharacters_LinuxScreen (const ScreenBox *box, ScreenCharacter *buffer) {
+   if (readScreenSize(&size)) {
+     if (validateScreenBox(box, size.columns, size.rows)) {
+       if (problemText) {
+-        setScreenMessage(box, buffer, problemText);
++        setScreenMessage(box, buffer, showProblemText ? problemText : "");
+         return 1;
+       }
+ 
+diff --git a/Programs/scr_driver.c b/Programs/scr_driver.c
+index 16d60d7..0797468 100644
+--- a/Programs/scr_driver.c
++++ b/Programs/scr_driver.c
+@@ -38,7 +38,7 @@ typedef enum {
+ #define DRIVER_DEVELOPERS ""
+ #include "scr_driver.h"
+ 
+-static const char defaultScreenMessage[] = strtext("no screen");
++static const char defaultScreenMessage[] = "";
+ static const char *screenMessage = defaultScreenMessage;
+ 
+ static int
