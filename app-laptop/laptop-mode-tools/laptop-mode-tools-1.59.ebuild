@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit eutils udev
+inherit eutils systemd udev
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
 HOMEPAGE="http://www.samwel.tk/laptop_mode/"
@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="-acpi -apm bluetooth -hal -pmu -scsi wifi_force_powersave"
+IUSE="-acpi -apm bluetooth -hal -pmu -scsi systemd wifi_force_powersave"
 
 DEPEND=""
 
@@ -94,9 +94,17 @@ src_install() {
 		doins "${FILESDIR}/wifi-force-powersave.conf"
 	fi
 
-	insinto /etc/init
-	doins "${FILESDIR}"/laptop-mode-boot.conf
-	doins "${FILESDIR}"/laptop-mode-resume.conf
+	# Install init scripts.
+	if use systemd; then
+		systemd_dounit "${FILESDIR}"/*.service
+		systemd_dotmpfilesd "${FILESDIR}"/laptop-mode-boot-directories.conf
+		systemd_enable_service system-services.target laptop-mode-boot.service
+		systemd_enable_service suspend.target laptop-mode-resume.service
+	else
+		insinto /etc/init
+		doins "${FILESDIR}"/laptop-mode-boot.conf
+		doins "${FILESDIR}"/laptop-mode-resume.conf
+	fi
 }
 
 pkg_postinst() {
