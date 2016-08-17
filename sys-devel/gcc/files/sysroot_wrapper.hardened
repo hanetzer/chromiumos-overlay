@@ -320,11 +320,11 @@ def handle_exec_exception(exc):
 
 def exec_and_bisect(execargs, bisect_stage):
   """Execute compiler, return and invoke bisection driver."""
-  import bisect
+  import bisect_driver
 
   bisect_dir = os.environ.get('BISECT_DIR', '/tmp/sysroot_bisect')
   try:
-    ret = bisect.bisect_driver(bisect_stage, bisect_dir, execargs)
+    ret = bisect_driver.bisect_driver(bisect_stage, bisect_dir, execargs)
   except OSError as e:
     handle_exec_exception(e)
 

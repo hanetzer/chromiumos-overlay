@@ -351,7 +351,7 @@ EOF
 		then
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
 			insinto "$(get_bin_dir)"
-			doins "${FILESDIR}/bisect.py" || die
+			doins "${FILESDIR}/bisect_driver.py" || die
 		else
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi
