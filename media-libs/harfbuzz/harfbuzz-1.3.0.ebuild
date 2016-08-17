@@ -69,6 +69,10 @@ src_prepare() {
 
 	# failing test, https://bugs.freedesktop.org/show_bug.cgi?id=89190
 	sed -e 's#tests/arabic-fallback-shaping.tests##' -i test/shaping/Makefile.in || die "sed failed"
+
+	epatch "${FILESDIR}/${P}-int-overflow.patch"
+	epatch "${FILESDIR}/${P}-lang2ottag.patch"
+	epatch "${FILESDIR}/${P}-lang2ottag2.patch"
 }
 
 multilib_src_configure() {
