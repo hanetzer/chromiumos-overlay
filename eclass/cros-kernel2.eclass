@@ -132,7 +132,7 @@ CONFIG_SLUB=n
 "
 
 android_test_desc="Allow android user space tests"
-android_test_config="
+android_test_config='
 CONFIG_ANDROID=y
 CONFIG_ANDROID_BINDER_IPC=y
 CONFIG_ANDROID_BINDER_IPC_32BIT=n
@@ -183,7 +183,8 @@ CONFIG_NETFILTER_XT_TARGET_IDLETIMER=y
 CONFIG_NF_CONNTRACK_SECMARK=y
 CONFIG_DEFAULT_SECURITY_SELINUX=y
 CONFIG_DEFAULT_SECURITY="selinux"
-"
+CONFIG_LSM_MMAP_MIN_ADDR=32768
+'
 
 binder_desc="binder IPC"
 binder_config="
