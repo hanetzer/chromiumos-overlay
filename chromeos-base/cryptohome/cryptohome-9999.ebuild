@@ -46,7 +46,6 @@ RDEPEND="
 	sys-fs/lvm2
 "
 DEPEND="${RDEPEND}
-	chromeos-base/attestation
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-cpp/gtest
