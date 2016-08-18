@@ -12,7 +12,7 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
-	feedback +fonts gobi mtd +network_time nfc pam peerd
+	eclog feedback +fonts gobi mtd +network_time nfc pam peerd
 	+power_management +profile cups +readahead scanner +shill
 	intel_lpe +syslog touchview +tpm -tpm2 +trim_supported +vpn watchdog
 	wifi_bootstrapping wimax X"
@@ -128,6 +128,7 @@ CROS_COMMON_RDEPEND+="
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
 	cups? ( net-print/cups )
+	eclog? ( chromeos-base/timberslide )
 	chromeos-base/chromeos-machine-id-regen
 	sys-kernel/linux-firmware
 	virtual/chromeos-bsp

@@ -10,6 +10,7 @@ USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -poppler-data -nls -openrc"
 USE="${USE} -mime -peerd scanner"
 USE="${USE} -gtk2 -gtk3 -qt4"
+USE="${USE} -eclog"
 USE="${USE} cups"
 USE="${USE} tpm"
 
