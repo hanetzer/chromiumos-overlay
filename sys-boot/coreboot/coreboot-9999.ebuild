@@ -145,6 +145,10 @@ EOF
 
 	# disable coreboot's own EC firmware building mechanism
 	echo "CONFIG_EC_EXTERNAL_FIRMWARE=y" >> .config
+	# enable common GBB flags for development
+	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> .config
+	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> .config
+	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> .config
 
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
