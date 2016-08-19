@@ -32,6 +32,9 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.BiometricsDaemon.conf
 }
 
 pkg_preinst() {
