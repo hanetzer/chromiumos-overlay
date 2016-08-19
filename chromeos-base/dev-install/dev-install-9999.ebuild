@@ -90,7 +90,7 @@ src_compile() {
 			tr -d ' ' | \
 			sort > ${pkg##*/}.packages
 		_pipestatus=${PIPESTATUS[*]}
-		[[ ${_pipestatus// } -eq 0 ]] || die "\`emerge-${BOARD} ${pkg}\` failed"
+		[[ ${_pipestatus// } -eq 0 ]] || die "\`USE=\"${useflags}\" emerge-${BOARD} ${pkg}\` failed"
 		) &
 		multijob_post_fork
 	done
