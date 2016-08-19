@@ -150,7 +150,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 
 	# IMG patches
-	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
+	epatch "${FILESDIR}"/0001-dri-pvr-Introduce-PowerVR-DRI-driver.patch
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
 	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch

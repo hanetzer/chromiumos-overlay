@@ -1,9 +1,9 @@
-From 2704d29c9b74bb78bb19054453481e15bc1efbeb Mon Sep 17 00:00:00 2001
+From 54e05526dcd225d80deefc4b665a61f7e14dadbe Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
-Date: Mon, 8 Aug 2016 16:27:00 +0100
-Subject: [PATCH] pvr: Introduce PowerVR DRI driver.
+Date: Fri, 19 Aug 2016 10:20:21 +0100
+Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
 
-Change-Id: I0c0b1973ce94c80277f207411fb10bc99aa6b594
+Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
 ---
  configure.ac                                       |    8 +
  src/mesa/drivers/dri/Makefile.am                   |    6 +
@@ -20,17 +20,17 @@ Change-Id: I0c0b1973ce94c80277f207411fb10bc99aa6b594
  src/mesa/drivers/dri/pvr/pvr_object_cache.c        |  311 ++++
  src/mesa/drivers/dri/pvr/pvr_object_cache.h        |  137 ++
  src/mesa/drivers/dri/pvr/pvrdrawable.c             |  743 ++++++++++
- src/mesa/drivers/dri/pvr/pvrdri.c                  | 1514 ++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.c                  | 1528 ++++++++++++++++++++
  src/mesa/drivers/dri/pvr/pvrdri.h                  |  280 ++++
  src/mesa/drivers/dri/pvr/pvrext.c                  |  332 +++++
- src/mesa/drivers/dri/pvr/pvrimage.c                | 1084 ++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.c                | 1074 ++++++++++++++
  src/mesa/drivers/dri/pvr/pvrimage.h                |   96 ++
  src/mesa/drivers/dri/pvr/pvrmesa.h                 |   43 +
  src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
  src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  206 +++
  src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
- src/mesa/drivers/dri/pvr/pvrutil.c                 |  512 +++++++
- 25 files changed, 8461 insertions(+)
+ src/mesa/drivers/dri/pvr/pvrutil.c                 |  531 +++++++
+ 25 files changed, 8484 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
@@ -56,7 +56,7 @@ Change-Id: I0c0b1973ce94c80277f207411fb10bc99aa6b594
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index c492e15..ec1e90f 100644
+index cc9bc47..c4afd0f 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -72,6 +72,7 @@ LIBDRM_REQUIRED=2.4.66
@@ -79,7 +79,7 @@ index c492e15..ec1e90f 100644
          xswrast)
              HAVE_SWRAST_DRI=yes;
              ;;
-@@ -2537,6 +2543,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
+@@ -2540,6 +2546,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
@@ -87,7 +87,7 @@ index c492e15..ec1e90f 100644
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
  AM_CONDITIONAL(HAVE_INTEL_VULKAN, test "x$HAVE_INTEL_VULKAN" = xyes)
-@@ -2723,6 +2730,7 @@ AC_CONFIG_FILES([Makefile
+@@ -2726,6 +2733,7 @@ AC_CONFIG_FILES([Makefile
  		src/mesa/drivers/dri/nouveau/Makefile
  		src/mesa/drivers/dri/r200/Makefile
  		src/mesa/drivers/dri/radeon/Makefile
@@ -4450,10 +4450,10 @@ index 0000000..1806aea
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
 new file mode 100644
-index 0000000..b1e3708
+index 0000000..eddae95
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.c
-@@ -0,0 +1,1514 @@
+@@ -0,0 +1,1528 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -5568,6 +5568,20 @@ index 0000000..b1e3708
 +				}
 +			}
 +
++			if (psGLMode->redMask   == 0x000000FF &&
++			    psGLMode->greenMask == 0x0000FF00 &&
++			    psGLMode->blueMask  == 0x00FF0000)
++			{
++				if (psGLMode->alphaMask == 0xFF000000)
++				{
++					return IMG_PIXFMT_R8G8B8A8_UNORM;
++				}
++				else if (psGLMode->alphaMask == 0)
++				{
++					return IMG_PIXFMT_R8G8B8X8_UNORM;
++				}
++			}
++
 +			__driUtilMessage("%s: Unsupported buffer format", __func__);
 +			return IMG_PIXFMT_UNKNOWN;
 +
@@ -6594,10 +6608,10 @@ index 0000000..18b2417
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..f912cc4
+index 0000000..22e5249
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
-@@ -0,0 +1,1084 @@
+@@ -0,0 +1,1074 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -7576,7 +7590,6 @@ index 0000000..f912cc4
 +                                         void *loaderPrivate)
 +{
 +	__DRIimage *image;
-+	int iStride;
 +
 +	image = CommonImageSetup(loaderPrivate);
 +	if (!image)
@@ -7596,17 +7609,8 @@ index 0000000..f912cc4
 +		return NULL;
 +	}
 +
-+	if (image->psShared->psFormat->uiNumPlanes == 1)
-+	{
-+		iStride = strides[0];
-+	}
-+	else
-+	{
-+		iStride = width * PVRDRIPixFmtGetBlockSize(image->psShared->psFormat->eIMGPixelFormat);
-+	}
-+
 +	image->psEGLImage = PVRDRIEGLImageCreateFromBuffers(width, height,
-+							    iStride,
++							    strides[0],
 +							    image->psShared->psFormat->eIMGPixelFormat,
 +							    image->psShared->eColourSpace,
 +							    image->psShared->eChromaUInterp,
@@ -8181,10 +8185,10 @@ index 0000000..a850170
 +#endif /* !defined(__PVRSYNCOBJ_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
 new file mode 100644
-index 0000000..74fd4f6
+index 0000000..7fd54dd
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,512 @@
+@@ -0,0 +1,531 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -8223,6 +8227,16 @@ index 0000000..74fd4f6
 +#include "GL/gl.h"
 +
 +#include "pvrdri.h"
++
++#ifdef HAVE_ANDROID_PLATFORM
++#define LOG_TAG "PVR-MESA"
++#include <cutils/log.h>
++#define err_vprintf(f, args) LOG_PRI_VA(ANDROID_LOG_ERROR, LOG_TAG, f, args)
++#define dbg_vprintf(f, args) LOG_PRI_VA(ANDROID_LOG_DEBUG, LOG_TAG, f, args)
++#else
++#define err_vprintf(f, args) vfprintf(stderr, f, args)
++#define dbg_vprintf(f, args) vfprintf(stderr, f, args)
++#endif /* HAVE_ANDROID_PLATFORM */
 +
 +static const PVRDRIImageFormat g_asFormats[] =
 +{
@@ -8407,14 +8421,13 @@ index 0000000..74fd4f6
 +#endif
 +};
 +
-+
 +/* Standard error message */
 +void __attribute__((format(printf, 1, 2))) errorMessage(const char *f, ...)
 +{
 +	va_list args;
 +
 +	va_start(args, f);
-+	vfprintf(stderr, f, args);
++	err_vprintf(f, args);
 +	va_end(args);
 +}
 +
@@ -8423,15 +8436,21 @@ index 0000000..74fd4f6
 +	va_list args;
 +	char *ev;
 +
++#ifdef HAVE_ANDROID_PLATFORM
++	va_start(args, f);
++	dbg_vprintf(f, args);
++	va_end(args);
++#else
 +	ev = getenv("LIBGL_DEBUG");
 +	if (ev != NULL && (strcmp(ev, "verbose") == 0))
 +	{
 +		fputs("LibGL: ", stderr);
 +		va_start(args, f);
-+		vfprintf(stderr, f, args);
++		dbg_vprintf(f, args);
 +		va_end(args);
 +		fputc('\n', stderr);
 +	}
++#endif
 +}
 +
 +void *PVRDRILoadAPILib(const char *name)
@@ -8503,10 +8522,14 @@ index 0000000..74fd4f6
 +		{
 +			MESA_FORMAT_B8G8R8A8_UNORM,
 +			MESA_FORMAT_B8G8R8X8_UNORM,
++#ifdef HAVE_ANDROID_PLATFORM
++			MESA_FORMAT_R8G8B8A8_UNORM,
++			MESA_FORMAT_R8G8B8X8_UNORM,
++#endif
 +			MESA_FORMAT_B5G6R5_UNORM
 +		};
-+	uint8_t auDepthBits[] = { 0, 32 };
-+	uint8_t auStencilBits[] = { 0, 8 };
++	uint8_t auDepthBits[] = { 0, 24, 32 };
++	uint8_t auStencilBits[] = { 0, 8, 8 };
 +	uint8_t auMSAASamples[] = { 0, 2, 4, 8 };
 +	unsigned uNumBackBufferModes;
 +	unsigned uNumDepthStencilBits;

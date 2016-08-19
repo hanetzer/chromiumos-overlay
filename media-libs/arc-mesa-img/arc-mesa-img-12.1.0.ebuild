@@ -112,7 +112,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 
 	# IMG patches
-	epatch "${FILESDIR}"/0001-pvr-Introduce-PowerVR-DRI-driver.patch
+	epatch "${FILESDIR}"/0001-dri-pvr-Introduce-PowerVR-DRI-driver.patch
 	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
 	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
 	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
@@ -154,13 +154,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/0522-FROMLIST-egl-android-Set-dpy-DriverData-to-NULL-on-e.patch
 
 	# Android/IMG patches
-	epatch "${FILESDIR}"/0600-pvr_dri-Add-RGBA-image-format.patch
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
-	epatch "${FILESDIR}"/0602-pvr_dri-Route-logging-messages-to-Android-logcat.patch
 	epatch "${FILESDIR}"/0603-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
-	epatch "${FILESDIR}"/0604-pvrimage-Do-not-recompute-strides-no-matter-the-numb.patch
 	epatch "${FILESDIR}"/0605-platform_android-prevent-deadlock-in-droid_get_buffe.patch
-	epatch "${FILESDIR}"/0606-pvr-dri-Advertise-configs-with-24-bit-depth-support.patch
 
 	# Android HACKs
         epatch "${FILESDIR}"/0801-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
