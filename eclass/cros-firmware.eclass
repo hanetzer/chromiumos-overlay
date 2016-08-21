@@ -51,18 +51,6 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Version name of stabled PD firmware
 : ${CROS_FIRMWARE_STABLE_PD_VERSION:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_CR50_IMAGE
-# @DESCRIPTION: (Optional) Location of CR50 firmware image
-: ${CROS_FIRMWARE_CR50_IMAGE:=}
-
-# @ECLASS-VARIABLE: CROS_FIRMWARE_CR50_VERSION
-# @DESCRIPTION: (Optional) Version name of CR50 firmware
-: ${CROS_FIRMWARE_CR50_VERSION:=}
-
-# @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_CR50_VERSION
-# @DESCRIPTION: (Optional) Version name of stabled CR50 firmware
-: ${CROS_FIRMWARE_STABLE_CR50_VERSION:=}
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_SCRIPT
 # @DESCRIPTION: (Optional) Entry script file name of updater
 : ${CROS_FIRMWARE_SCRIPT:=}
@@ -132,7 +120,6 @@ FW_IMAGE_LOCATION=""
 FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
 PD_IMAGE_LOCATION=""
-CR50_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
 # New SRC_URI based approach.
@@ -195,7 +182,7 @@ cros-firmware_src_unpack() {
 	cros-workon_src_unpack
 	local i
 
-	for i in {FW,FW_RW,EC,PD,CR50}_IMAGE_LOCATION; do
+	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
 		_unpack_archive ${i}
 	done
 
@@ -230,12 +217,9 @@ cros-firmware_src_compile() {
 	image_cmd+="$(_add_param -b "${FW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -p "${PD_IMAGE_LOCATION}")"
-	image_cmd+="$(_add_param -c "${CR50_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
 	image_cmd+="$(_add_param --pd_version "${CROS_FIRMWARE_PD_VERSION}")"
-	image_cmd+="$(_add_param --cr50_version \
-		      "${CROS_FIRMWARE_CR50_VERSION}")"
 	image_cmd+="$(_add_bool_param --create_bios_rw_image \
 		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
@@ -251,8 +235,6 @@ cros-firmware_src_compile() {
 			"${CROS_FIRMWARE_STABLE_EC_VERSION}")"
 	ext_cmd+="$(_add_param --stable_pd_version \
 			"${CROS_FIRMWARE_STABLE_PD_VERSION}")"
-	ext_cmd+="$(_add_param --stable_cr50_version \
-			"${CROS_FIRMWARE_STABLE_CR50_VERSION}")"
 
 	# Pack firmware update script!
 	if [ -z "$image_cmd" ]; then
@@ -363,10 +345,9 @@ cros-firmware_setup_source() {
 	FW_RW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_RW_IMAGE}"
 	EC_IMAGE_LOCATION="${CROS_FIRMWARE_EC_IMAGE}"
 	PD_IMAGE_LOCATION="${CROS_FIRMWARE_PD_IMAGE}"
-	CR50_IMAGE_LOCATION="${CROS_FIRMWARE_CR50_IMAGE}"
 	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
 
-	for i in {FW,FW_RW,EC,PD,CR50}_IMAGE_LOCATION; do
+	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
 		_add_source ${i}
 	done
 
