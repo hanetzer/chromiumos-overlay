@@ -7,7 +7,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 CROS_WORKON_USE_VCSID=1
 
-inherit toolchain-funcs autotools cros-workon cros-board user
+inherit toolchain-funcs autotools cros-workon cros-board systemd user
 
 DESCRIPTION="Google A/V Daemon"
 HOMEPAGE="http://www.chromium.org"
@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="systemd"
 
 RDEPEND=">=media-libs/alsa-lib-1.0.27
 	media-sound/alsa-utils
@@ -75,7 +75,7 @@ src_install() {
 	# for daisy_spring-freon, search in this order:
 	# daisy_spring-freon, daisy_spring, daisy to find the files.
 	local board_all=( ${board} ${board_no_freon} ${board_no_variant} )
-	emake BOARD=${board} DESTDIR="${D}" install
+	emake BOARD=${board} DESTDIR="${D}" SYSTEMD=$(usex systemd) install
 
 	# install alsa config files
 	insinto /etc/modprobe.d
