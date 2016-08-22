@@ -1,0 +1,48 @@
+This patch plays with types a bit, so that we can compile strongswan with
+clang-style FORTIFY.
+
+See bug 638456.
+
+--- src/libstrongswan/plugins/pem/pem_encoder.c
++++ src/libstrongswan/plugins/pem/pem_encoder.c
+@@ -118,7 +118,7 @@ bool pem_encoder_encode(cred_encoding_type_t type, chunk_t *encoding,
+ 	len = encoding->len;
+ 
+ 	/* write PEM header */
+-	written = snprintf(pos, len, "-----BEGIN %s-----\n", label);
++	written = snprintf((char *)pos, len, "-----BEGIN %s-----\n", label);
+ 	pos += written;
+ 	len -= written;
+ 
+@@ -141,7 +141,7 @@ bool pem_encoder_encode(cred_encoding_type_t type, chunk_t *encoding,
+ 	chunk_clear(&to_free);
+ 
+ 	/* write PEM trailer */
+-	written = snprintf(pos, len, "-----END %s-----", label);
++	written = snprintf((char *)pos, len, "-----END %s-----", label);
+ 	pos += written;
+ 	len -= written;
+ 
+--- src/libhydra/plugins/kernel_netlink/kernel_netlink_shared.c
++++ src/libhydra/plugins/kernel_netlink/kernel_netlink_shared.c
+@@ -65,7 +65,8 @@ METHOD(netlink_socket_t, netlink_send, status_t,
+ 	private_netlink_socket_t *this, struct nlmsghdr *in, struct nlmsghdr **out,
+ 	size_t *out_len)
+ {
+-	int len, addr_len;
++	ssize_t len;
++	socklen_t addr_len;
+ 	struct sockaddr_nl addr;
+ 	chunk_t result = chunk_empty, tmp;
+ 	struct nlmsghdr *msg, peek;
+--- src/openac/openac.c
++++ src/openac/openac.c
+@@ -332,7 +332,7 @@ int main(int argc, char **argv)
+ 					usage("passphrase too long");
+ 					goto end;
+ 				}
+-				strncpy(passphrase.ptr, optarg, BUF_LEN);
++				strncpy((char *)passphrase.ptr, optarg, BUF_LEN);
+ 				passphrase.len = min(strlen(optarg), BUF_LEN);
+ 				continue;
+ 
