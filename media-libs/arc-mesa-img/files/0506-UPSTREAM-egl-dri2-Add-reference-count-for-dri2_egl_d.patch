@@ -1,7 +1,8 @@
-From a4629ab9cd01d33f4dc36a884f8cb76d2203289c Mon Sep 17 00:00:00 2001
+From e6abb0d6bbfd12bd907b728d2a30958c8ed2c48b Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@chromium.org>
 Date: Fri, 22 Jul 2016 11:27:41 +0800
-Subject: [PATCH] UPSTREAM: egl/dri2: Add reference count for dri2_egl_display
+Subject: [PATCH 506/521] UPSTREAM: egl/dri2: Add reference count for
+ dri2_egl_display
 
 android.opengl.cts.WrapperTest#testGetIntegerv1 CTS test calls
 eglTerminate, followed by eglReleaseThread. A similar case is
@@ -34,13 +35,16 @@ Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
 Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
 Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
 (cherry picked from commit 9ee683f877b283020c6f24776236f1145cb7a4ea)
-Signed-off-by: Nicolas Boichat <drinkcat@google.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
-BUG=b/28431498
-BUG=chrome-os-partner:54024
-TEST=android.opengl.cts.WrapperTest CTS
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
 
-Change-Id: I7e8a82a4b039c12be2cc527a7fc40c8409bb5ec1
+Change-Id: Ie16fd5d456b7c4a495b9ba9e1dae80608ba3c213
+Reviewed-on: https://chromium-review.googlesource.com/367196
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/egl_dri2.c | 111 ++++++++++++++++++++++++++++++++--------
  src/egl/drivers/dri2/egl_dri2.h |   4 ++
@@ -236,10 +240,10 @@ index c78bcb7..18d07a3 100644
     } else {
        /* undo the previous _eglBindContext */
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index 534fc27..e0d9afd 100644
+index 1061083..22d020e 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
-@@ -181,6 +181,10 @@ struct dri2_egl_display
+@@ -179,6 +179,10 @@ struct dri2_egl_display
     const __DRIqueryBuffersExtension *query_buffers;
     int                       fd;
  

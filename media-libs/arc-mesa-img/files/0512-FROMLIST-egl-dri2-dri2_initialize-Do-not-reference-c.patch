@@ -1,7 +1,7 @@
-From 0da216796ebaf77f990d60b1386bb2fefd6abcd4 Mon Sep 17 00:00:00 2001
+From 0a7d9294e0ce4a70ab52525629c77d7f2bbe0e1c Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@chromium.org>
-Date: Wed, 3 Aug 2016 21:33:37 +0800
-Subject: [PATCH 520/522] FROMLIST: egl/dri2: dri2_initialize: Do not
+Date: Wed, 3 Aug 2016 21:54:22 +0800
+Subject: [PATCH 512/521] FROMLIST: egl/dri2: dri2_initialize: Do not
  reference-count TestOnly display
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11,22 +11,34 @@ In the case where dri2_initialize is called with a TestOnly display,
 the display is not actually initialized, so dri2_egl_display always
 fails, and we cannot do any reference counting.
 
+Fixes piglit spec@egl_khr_create_context@verify gl flavor (reproducible
+with LIBGL_ALWAYS_SOFTWARE=1) and spec@egl_khr_fence_sync@conformance.
+
 Fixes: 9ee683f877 (egl/dri2: Add reference count for dri2_egl_display)
 Cc: "12.0" <mesa-stable@lists.freedesktop.org>
 Reported-by: Michel Dänzer <michel@daenzer.net>
 Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+Tested-by: Michel Dänzer <michel.daenzer@amd.com>
 (am from https://patchwork.freedesktop.org/patch/102770/)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
-Change-Id: I2d982030946d039649c581c7acdd06ce793f1ccc
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: Ia452de3646a4e7f4aacfcb46c85c114f0d0138be
+Reviewed-on: https://chromium-review.googlesource.com/367203
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/egl_dri2.c | 29 +++++++++--------------------
  1 file changed, 9 insertions(+), 20 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index 6a01004..dea0cfd 100644
+index 18d07a3..0a97de9 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -792,45 +792,34 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+@@ -803,45 +803,34 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
     if (disp->Options.UseFallback)
        return EGL_FALSE;
  

@@ -1,7 +1,7 @@
-From 10d1cad2cabcc90312c39a8e43a2860ce15792ff Mon Sep 17 00:00:00 2001
+From 57bef1fed539d6ba907c6855083db9658f659acb Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@chromium.org>
-Date: Thu, 4 Aug 2016 09:32:46 +0800
-Subject: [PATCH 522/522] FROMLIST: egl/android: Set dpy->DriverData to NULL on
+Date: Thu, 4 Aug 2016 10:07:54 +0800
+Subject: [PATCH 513/521] FROMLIST: egl/android: Set dpy->DriverData to NULL on
  error
 
 Avoid use-after-free on error.
@@ -10,17 +10,25 @@ Fixes: 9ee683f877 (egl/dri2: Add reference count for dri2_egl_display)
 Cc: "12.0" <mesa-stable@lists.freedesktop.org>
 Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
 (am from https://patchwork.freedesktop.org/patch/102870/)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
-Change-Id: Ic61aba5d07fdb79385e1cc3b9c524099a642e854
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I70c74a38922014d68fa4774a29aec5ad7c81478c
+Reviewed-on: https://chromium-review.googlesource.com/367204
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 54c01a4..582b1d6 100644
+index 25ceb0e..ae17f7c 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -1082,6 +1082,7 @@ cleanup_driver:
+@@ -957,6 +957,7 @@ cleanup_device:
     close(dri2_dpy->fd);
  cleanup_display:
     free(dri2_dpy);

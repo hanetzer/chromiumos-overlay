@@ -1,22 +1,32 @@
-From fea2cc671e30661edc9b0a4138474ddb7938088b Mon Sep 17 00:00:00 2001
+From 86d36212a6e14a002ca9b2988c5795331f460e74 Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Tue, 5 Jul 2016 15:05:51 +0900
-Subject: [PATCH 505/517] CHROMIUM: egl/android: Check return value of
+Date: Fri, 15 Jul 2016 16:53:48 +0900
+Subject: [PATCH 503/521] UPSTREAM: egl/android: Check return value of
  dri2_get_dri_config()
 
 It might return NULL if specific config variant is unsupported.
 
-BUG=b:29036398
-TEST=No significant regressions in Android dEQP
-
-Change-Id: I0f5315b16a79dec00af6967f0c2efdeadd00fdd2
+Cc: "11.2 12.0" <mesa-stable@lists.freedesktop.org>
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit 94282b6dd0e7c15030b09b6789a7aa5a15e8a869)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I635ffa7a596ed94f29471957c4f4c2e686882243
+Reviewed-on: https://chromium-review.googlesource.com/367193
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index f42febc..a695e00 100644
+index b33f4e8..302eb85 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
 @@ -280,6 +280,8 @@ droid_create_surface(_EGLDriver *drv, _EGLDisplay *disp, EGLint type,

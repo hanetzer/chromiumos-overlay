@@ -1,0 +1,44 @@
+From e514a7d8d796f9c170bb1238225d6d64066a70ef Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Tue, 2 Aug 2016 20:07:49 +0900
+Subject: [PATCH 507/521] UPSTREAM: egl/android: Remove unused variables in
+ droid_get_buffers_with_format()
+
+Fix compilation warnings due to unused variables left after some earlier
+code changes.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Rob Herring <rob@kernel.org>
+Reviewed-by: Chad Versace <chad@kiwitree.net>
+(cherry picked from commit c6c26bc589f57c083f040ad70d1606cfa382c66a)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: Iec09eb2a62887f3a38dff156756ed8385f3f3447
+Reviewed-on: https://chromium-review.googlesource.com/367197
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index e3d5f0b..124a30c 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -635,9 +635,6 @@ droid_get_buffers_with_format(__DRIdrawable * driDrawable,
+ 			     int *out_count, void *loaderPrivate)
+ {
+    struct dri2_egl_surface *dri2_surf = loaderPrivate;
+-   struct dri2_egl_display *dri2_dpy =
+-      dri2_egl_display(dri2_surf->base.Resource.Display);
+-   int i;
+ 
+    if (update_buffers(dri2_surf) < 0)
+       return NULL;
+-- 
+2.8.0.rc3.226.g39d4020
+

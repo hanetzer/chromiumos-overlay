@@ -1,7 +1,7 @@
-From dda1b2005149a58195f76296fd48e0e9748820ba Mon Sep 17 00:00:00 2001
+From 6efb8dc9c0089711eb481f3dabfbe0c1cb61badf Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
 Date: Thu, 30 Jun 2016 19:28:27 +0900
-Subject: [PATCH 1/2] HACK: egl/android: Handle
+Subject: [PATCH 520/521] HACK: egl/android: Handle
  HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED as RGBX_8888
 
 We don't have proper API to query such buffers for the real internal
@@ -12,22 +12,29 @@ drm_gralloc.
 TODO: Revert when we have the necessary API in place (see b/29886289).
 
 BUG=b:28671744
+TEST=android.view.cts.WindowTest#testSetLocalFocus
 
-Change-Id: I492e6045663ea2faa3b5b93821bfb78d7bfe5c25
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 Reviewed-on: https://chromium-review.googlesource.com/357733
 Reviewed-by: Bernie Thompson <bhthompson@chromium.org>
 (cherry picked from commit eab2777b9162e054b6331c7166acada60a8d29e2)
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Change-Id: I492e6045663ea2faa3b5b93821bfb78d7bfe5c25
+Reviewed-on: https://chromium-review.googlesource.com/367216
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 58ae00c..f0d6a9e 100644
+index 07b964f..80a07aa 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -52,6 +52,11 @@ get_format_bpp(int native)
+@@ -49,6 +49,11 @@ get_format_bpp(int native)
  
     switch (native) {
     case HAL_PIXEL_FORMAT_RGBA_8888:
@@ -39,7 +46,7 @@ index 58ae00c..f0d6a9e 100644
     case HAL_PIXEL_FORMAT_RGBX_8888:
     case HAL_PIXEL_FORMAT_BGRA_8888:
        bpp = 4;
-@@ -80,6 +85,11 @@ static int get_fourcc(int native)
+@@ -77,6 +82,11 @@ static int get_fourcc(int native)
     case HAL_PIXEL_FORMAT_RGB_565:   return __DRI_IMAGE_FOURCC_RGB565;
     case HAL_PIXEL_FORMAT_BGRA_8888: return __DRI_IMAGE_FOURCC_ARGB8888;
     case HAL_PIXEL_FORMAT_RGBA_8888: return __DRI_IMAGE_FOURCC_ABGR8888;
@@ -51,7 +58,7 @@ index 58ae00c..f0d6a9e 100644
     case HAL_PIXEL_FORMAT_RGBX_8888: return __DRI_IMAGE_FOURCC_XBGR8888;
     case HAL_PIXEL_FORMAT_YV12:      return __DRI_IMAGE_FOURCC_YVU420;
     default:
-@@ -95,6 +105,11 @@ static int get_format(int format)
+@@ -91,6 +101,11 @@ static int get_format(int format)
     case HAL_PIXEL_FORMAT_BGRA_8888: return __DRI_IMAGE_FORMAT_ARGB8888;
     case HAL_PIXEL_FORMAT_RGB_565:   return __DRI_IMAGE_FORMAT_RGB565;
     case HAL_PIXEL_FORMAT_RGBA_8888: return __DRI_IMAGE_FORMAT_ABGR8888;

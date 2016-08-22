@@ -1,7 +1,7 @@
-From 7200e1540663f2a801c650d347298876f3e2db35 Mon Sep 17 00:00:00 2001
+From fa53d28c9b6ed151d017c567a1eae8497dfca72e Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 13 Jul 2016 18:58:45 +0900
-Subject: [PATCH 511/517] CHROMIUM: egl/android: Make get_fourcc() accept HAL
+Date: Tue, 2 Aug 2016 20:07:53 +0900
+Subject: [PATCH 510/521] UPSTREAM: egl/android: Make get_fourcc() accept HAL
  formats
 
 There are DRI_IMAGE_FOURCC macros, for which there are no corresponding
@@ -10,17 +10,29 @@ lookup function take the native format directly. As a side effect, it
 simplifies all existing calls to this function, because they all called
 get_format() first to convert from native to DRI_IMAGE_FORMAT.
 
-Change-Id: I2c34c8218f9a9084f5de3aaaf67130b97944e40d
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Rob Herring <rob@kernel.org>
+Reviewed-by: Chad Versace <chad@kiwitree.net>
+(cherry picked from commit 7dfb1a4074328bcdff4b407b8f44be538180791d)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I4674000fb5ccfd02e38b8fa89bc567ac1d4fc16b
+Reviewed-on: https://chromium-review.googlesource.com/367200
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
- src/egl/drivers/dri2/platform_android.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ src/egl/drivers/dri2/platform_android.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 4473400..26d7b35 100644
+index 94e765d..596833e 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -69,18 +69,20 @@ get_format_bpp(int native)
+@@ -66,14 +66,15 @@ get_format_bpp(int native)
  }
  
  /* createImageFromFds requires fourcc format */
@@ -43,21 +55,15 @@ index 4473400..26d7b35 100644
     }
     return -1;
  }
- 
-+#ifdef HAS_GRALLOC_DRM_HEADERS
- static int get_format(int format)
- {
-    switch (format) {
-@@ -95,6 +97,8 @@ static int get_format(int format)
+@@ -92,6 +93,7 @@ static int get_format(int format)
     }
     return -1;
  }
-+#endif
 +
  static int
  get_native_buffer_fd(struct ANativeWindowBuffer *buf)
  {
-@@ -435,7 +439,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+@@ -397,7 +399,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
        return -1;
     }
  
@@ -66,10 +72,10 @@ index 4473400..26d7b35 100644
  
     pitch = dri2_surf->buffer->stride *
        get_format_bpp(dri2_surf->buffer->format);
-@@ -525,7 +529,7 @@ droid_create_image_from_prime_fd(_EGLDisplay *disp, _EGLContext *ctx,
-    if (fd < 0)
- 	   return NULL;
- 
+@@ -481,7 +483,7 @@ static _EGLImage *
+ droid_create_image_from_prime_fd(_EGLDisplay *disp, _EGLContext *ctx,
+                                  struct ANativeWindowBuffer *buf, int fd)
+ {
 -   const int fourcc = get_fourcc(get_format(buf->format));
 +   const int fourcc = get_fourcc(buf->format);
     const int pitch = buf->stride * get_format_bpp(buf->format);

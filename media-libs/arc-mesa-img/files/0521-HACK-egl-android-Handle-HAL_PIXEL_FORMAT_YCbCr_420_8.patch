@@ -1,8 +1,8 @@
-From df757ecd47e17609201612150774d493f35a1039 Mon Sep 17 00:00:00 2001
+From 20af6e742e663d8f54e4ad58912290ca6434f9ff Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
 Date: Mon, 25 Jul 2016 20:54:32 +0900
-Subject: [PATCH 2/2] HACK: egl/android: Handle HAL_PIXEL_FORMAT_YCbCr_420_888
- as YV12
+Subject: [PATCH 521/521] HACK: egl/android: Handle
+ HAL_PIXEL_FORMAT_YCbCr_420_888 as YV12
 
 We don't have proper API to query such buffers for the real internal
 format in a generic, scalable way, so let's just hardcode this format to
@@ -12,23 +12,29 @@ for all platforms using Mesa.
 TODO: Revert when we have the necessary API in place (see b/29886289).
 
 BUG=b:29061386
-TEST=CTS:MediaCodecCapabilitiesTest#testAllNonTunneledVideoCodecsSupportFlexibleYUV
+TEST=android.media.cts.MediaCodecCapabilitiesTest#testAllNonTunneledVideoCodecsSupportFlexibleYUV
 
-Change-Id: If19199c695335d6c81fbf1839f4c8f7fc2b32cc1
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 Reviewed-on: https://chromium-review.googlesource.com/362736
 Reviewed-by: Owen Lin <owenlin@chromium.org>
 (cherry picked from commit 1de4518c9912ea7b47538ac794320b3c689904e5)
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Change-Id: If19199c695335d6c81fbf1839f4c8f7fc2b32cc1
+Reviewed-on: https://chromium-review.googlesource.com/367217
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index f0d6a9e..d5a90b0 100644
+index 80a07aa..53566a5 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -67,6 +67,11 @@ get_format_bpp(int native)
+@@ -64,6 +64,11 @@ get_format_bpp(int native)
     case HAL_PIXEL_FORMAT_RGB_565:
        bpp = 2;
        break;
@@ -40,7 +46,7 @@ index f0d6a9e..d5a90b0 100644
     case HAL_PIXEL_FORMAT_YV12:
        bpp = 1;
        break;
-@@ -91,6 +96,11 @@ static int get_fourcc(int native)
+@@ -88,6 +93,11 @@ static int get_fourcc(int native)
         * TODO: Revert this once b/29886289 is fixed.
         */
     case HAL_PIXEL_FORMAT_RGBX_8888: return __DRI_IMAGE_FOURCC_XBGR8888;
@@ -52,8 +58,8 @@ index f0d6a9e..d5a90b0 100644
     case HAL_PIXEL_FORMAT_YV12:      return __DRI_IMAGE_FOURCC_YVU420;
     default:
        _eglLog(_EGL_WARNING, "unsupported native buffer format 0x%x", native);
-@@ -577,6 +587,11 @@ droid_create_image_from_prime_fd(_EGLDisplay *disp, _EGLContext *ctx,
-       return NULL;
+@@ -549,6 +559,11 @@ droid_create_image_from_prime_fd(_EGLDisplay *disp, _EGLContext *ctx,
+    }
  
     switch (buf->format) {
 +   case HAL_PIXEL_FORMAT_YCbCr_420_888:
@@ -62,7 +68,7 @@ index f0d6a9e..d5a90b0 100644
 +       * TODO: Revert this once b/29886289 is fixed.
 +       */
     case HAL_PIXEL_FORMAT_YV12:
-       /* Y plane is at offset 0 and fds[0] is already set. */
+       /* Y plane is assumed to be at offset 0. */
        /* Cr plane is located after Y plane */
 -- 
 2.8.0.rc3.226.g39d4020

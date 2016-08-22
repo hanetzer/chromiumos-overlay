@@ -1,7 +1,7 @@
-From db5ec94a05d14e367bda21f324475d8f599c1524 Mon Sep 17 00:00:00 2001
+From 50845db0690227145346ece62e9222e2663e5cb6 Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
 Date: Mon, 30 May 2016 17:12:36 +0900
-Subject: [PATCH 517/517] CHROMIUM: egl: Add missing flags for Android builds
+Subject: [PATCH 518/521] CHROMIUM: egl: Add missing flags for Android builds
 
 Android builds depend on libhardware, libcutils, libsync and
 drm_gralloc. This patch adds necessary CFLAGS and LIBADD entries.
@@ -9,15 +9,19 @@ drm_gralloc. This patch adds necessary CFLAGS and LIBADD entries.
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
 BUG=b:29036398
-TEST=No significant regressions in Android dEQP
+TEST=No significant regressions in dEQP inside the container
 
 Change-Id: I742991163c1368c4f4df61b43bf54d52213d86f6
+Reviewed-on: https://chromium-review.googlesource.com/367210
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/Makefile.am | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/src/egl/Makefile.am b/src/egl/Makefile.am
-index 95ee6cc..f2bcdfd 100644
+index e6ed8e6..89af114 100644
 --- a/src/egl/Makefile.am
 +++ b/src/egl/Makefile.am
 @@ -85,6 +85,9 @@ dri2_backend_FILES += drivers/dri2/platform_surfaceless.c
@@ -28,8 +32,8 @@ index 95ee6cc..f2bcdfd 100644
 +libEGL_la_LIBADD += $(DRM_GRALLOC_LIBS)
 +AM_CFLAGS += $(DRM_GRALLOC_CFLAGS)
  AM_CFLAGS += -DHAVE_ANDROID_PLATFORM
- dri2_backend_FILES += drivers/dri2/platform_android.c
- endif
+ dri2_backend_FILES += \
+ 	drivers/dri2/platform_android.c \
 -- 
 2.8.0.rc3.226.g39d4020
 

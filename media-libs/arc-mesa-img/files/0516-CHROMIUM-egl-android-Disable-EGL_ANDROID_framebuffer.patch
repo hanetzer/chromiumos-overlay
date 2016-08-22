@@ -1,7 +1,7 @@
-From 1edc11dbe8cd8b93a63952097b6a4be0e40bc35a Mon Sep 17 00:00:00 2001
+From cad70a5e467a540fe883f3673caab7e2b1518019 Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
 Date: Fri, 13 May 2016 15:17:23 +0900
-Subject: [PATCH 516/517] CHROMIUM: egl/android: Disable
+Subject: [PATCH 516/521] CHROMIUM: egl/android: Disable
  EGL_ANDROID_framebuffer_target for unsupported formats
 
 Currently our HWC module supports only RGBA8888 format, so advertising
@@ -19,15 +19,19 @@ BUG=b:29036398
 TEST=No significant regressions in Android dEQP
 
 Change-Id: I535fb90e6a70653ce166bb3dd020ed52b6d1b69e
+Reviewed-on: https://chromium-review.googlesource.com/367214
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 16 +++++++++-------
  1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index f0afca1..54c01a4 100644
+index 12e42c4..e7f46c7 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -800,18 +800,19 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+@@ -759,18 +759,19 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
     const struct {
        int format;
        unsigned int rgba_masks[4];
@@ -52,9 +56,9 @@ index f0afca1..54c01a4 100644
 -     EGL_FRAMEBUFFER_TARGET_ANDROID, EGL_TRUE,
 +     EGL_FRAMEBUFFER_TARGET_ANDROID, 0,
       EGL_RECORDABLE_ANDROID, EGL_TRUE,
-      EGL_MAX_PBUFFER_WIDTH, 4096,
-      EGL_MAX_PBUFFER_HEIGHT, 4096,
-@@ -825,6 +826,7 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+      EGL_NONE
+    };
+@@ -782,6 +783,7 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
  
        config_attrs[1] = visuals[i].format;
        config_attrs[3] = visuals[i].format;

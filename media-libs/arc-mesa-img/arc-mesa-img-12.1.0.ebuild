@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="a0f3c3c9d4002ffc1dd987c816a1462e4a91a5f4"
+CROS_WORKON_COMMIT="b010fa85675b98962426fe8961466fbae2d25499"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -108,6 +108,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
+	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 
@@ -129,38 +130,33 @@ src_prepare() {
 	epatch "${FILESDIR}"/0036-Add-DRI-Query-Buffers-extension.patch
 
 	# Android specific patches
-	epatch "${FILESDIR}"/0500-CHROMIUM-gallium-dri-Add-shared-glapi-to-LIBADD-on-A.patch
-	epatch "${FILESDIR}"/0501-CHROMIUM-egl-android-Remove-unused-variables.patch
-	epatch "${FILESDIR}"/0502-CHROMIUM-i965-store-reference-to-the-context-within-.patch
-	epatch "${FILESDIR}"/0503-CHROMIUM-gallium-kms-dri-Fix-multiple-imports-from-P.patch
-	epatch "${FILESDIR}"/0504-CHROMIUM-egl-android-Set-EGL_MAX_PBUFFER_WIDTH-and-E.patch
-	epatch "${FILESDIR}"/0505-CHROMIUM-egl-android-Check-return-value-of-dri2_get_.patch
-	epatch "${FILESDIR}"/0506-CHROMIUM-egl-android-Add-some-useful-error-messages.patch
-	epatch "${FILESDIR}"/0507-CHROMIUM-egl-android-Stop-leaking-DRI-images.patch
-	epatch "${FILESDIR}"/0508-CHROMIUM-egl-android-Respect-buffer-mask-in-droid_im.patch
-	epatch "${FILESDIR}"/0509-CHROMIUM-egl-android-Fix-support-for-pbuffers.patch
-	epatch "${FILESDIR}"/0510-CHROMIUM-egl-android-Make-drm_gralloc-headers-option.patch
-	epatch "${FILESDIR}"/0511-CHROMIUM-egl-android-Make-get_fourcc-accept-HAL-form.patch
-	epatch "${FILESDIR}"/0512-CHROMIUM-egl-android-Add-support-for-YV12-pixel-form.patch
-	epatch "${FILESDIR}"/0513-CHROMIUM-egl-android-Add-fallback-to-kms_swrast-driv.patch
-	epatch "${FILESDIR}"/0514-CHROMIUM-i965-Advertise-R8G8B8A8-and-R8G8B8X8-DRI-co.patch
-	epatch "${FILESDIR}"/0515-CHROMIUM-gallium-dri-Advertise-R8G8B8A8-and-R8G8B8X8.patch
+	epatch "${FILESDIR}"/0500-UPSTREAM-egl-Fix-the-bad-surface-attributes-combinat.patch
+	epatch "${FILESDIR}"/0501-UPSTREAM-egl-android-Remove-unused-variables.patch
+	epatch "${FILESDIR}"/0502-UPSTREAM-egl-dri2-dri2_make_current-Set-EGL-error-if.patch
+	epatch "${FILESDIR}"/0503-UPSTREAM-egl-android-Check-return-value-of-dri2_get_.patch
+	epatch "${FILESDIR}"/0504-UPSTREAM-egl-android-Add-some-useful-error-messages.patch
+	epatch "${FILESDIR}"/0505-UPSTREAM-egl-android-Stop-leaking-DRI-images.patch
+	epatch "${FILESDIR}"/0506-UPSTREAM-egl-dri2-Add-reference-count-for-dri2_egl_d.patch
+	epatch "${FILESDIR}"/0507-UPSTREAM-egl-android-Remove-unused-variables-in-droi.patch
+	epatch "${FILESDIR}"/0508-UPSTREAM-egl-android-Respect-buffer-mask-in-droid_im.patch
+	epatch "${FILESDIR}"/0509-UPSTREAM-egl-android-Refactor-image-creation-to-sepa.patch
+	epatch "${FILESDIR}"/0510-UPSTREAM-egl-android-Make-get_fourcc-accept-HAL-form.patch
+	epatch "${FILESDIR}"/0511-UPSTREAM-egl-android-Add-support-for-YV12-pixel-form.patch
+	epatch "${FILESDIR}"/0512-FROMLIST-egl-dri2-dri2_initialize-Do-not-reference-c.patch
+	epatch "${FILESDIR}"/0513-FROMLIST-egl-android-Set-dpy-DriverData-to-NULL-on-e.patch
+	epatch "${FILESDIR}"/0514-FROMLIST-egl-android-Fix-support-for-pbuffers-v2.patch
+	epatch "${FILESDIR}"/0515-FROMLIST-egl-android-Make-drm_gralloc-headers-option.patch
 	epatch "${FILESDIR}"/0516-CHROMIUM-egl-android-Disable-EGL_ANDROID_framebuffer.patch
-	epatch "${FILESDIR}"/0517-CHROMIUM-egl-Add-missing-flags-for-Android-builds.patch
-	epatch "${FILESDIR}"/0518-UPSTREAM-egl-dri2-dri2_make_current-Set-EGL-error-if.patch
-	epatch "${FILESDIR}"/0519-UPSTREAM-egl-dri2-Add-reference-count-for-dri2_egl_d.patch
-	epatch "${FILESDIR}"/0520-FROMLIST-egl-dri2-dri2_initialize-Do-not-reference-c.patch
-	epatch "${FILESDIR}"/0521-FROMLIST-egl-surfaceless-Set-disp-DriverData-to-NULL.patch
-	epatch "${FILESDIR}"/0522-FROMLIST-egl-android-Set-dpy-DriverData-to-NULL-on-e.patch
+	epatch "${FILESDIR}"/0517-CHROMIUM-egl-android-Support-opening-render-nodes-fr.patch
+	epatch "${FILESDIR}"/0518-CHROMIUM-egl-Add-missing-flags-for-Android-builds.patch
+	epatch "${FILESDIR}"/0519-CHROMIUM-egl-android-Set-EGL_MAX_PBUFFER_WIDTH-and-E.patch
+	epatch "${FILESDIR}"/0520-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
+	epatch "${FILESDIR}"/0521-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_YCbCr_420_8.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
 	epatch "${FILESDIR}"/0603-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
 	epatch "${FILESDIR}"/0605-platform_android-prevent-deadlock-in-droid_get_buffe.patch
-
-	# Android HACKs
-        epatch "${FILESDIR}"/0801-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
-        epatch "${FILESDIR}"/0802-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_YCbCr_420_8.patch
 
 	base_src_prepare
 

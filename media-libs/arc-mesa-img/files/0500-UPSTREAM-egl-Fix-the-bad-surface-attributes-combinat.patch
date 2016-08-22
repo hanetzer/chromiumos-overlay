@@ -1,0 +1,117 @@
+From 6ced9277319df9796b05359d3eb9522caff52d29 Mon Sep 17 00:00:00 2001
+From: Guillaume Charifi <guillaume.charifi@sfr.fr>
+Date: Mon, 20 Jun 2016 15:27:33 +0200
+Subject: [PATCH 500/521] UPSTREAM: egl: Fix the bad surface attributes
+ combination checking for pbuffers. (v3)
+
+Fixes a regression induced by commit a0674ce5c41903ccd161e89abb149621bfbc40d2:
+When EGL_TEXTURE_FORMAT and EGL_TEXTURE_TARGET were both specified (and
+both != EGL_NO_TEXTURE), an error was instantly triggered, before the
+other one had even a chance to be checked, which is obviously not the
+intended behaviour.
+
+v2: Full commit hash, remove useless variables.
+v3: [chadv] Add Fixes footers.
+
+Fixes: piglit "spec/egl 1.4/eglcreatepbuffersurface and then glclear"
+Fixes: piglit "spec/egl 1.4/largest possible eglcreatepbuffersurface and then glclear"
+Signed-off-by: Guillaume Charifi <guillaume.charifi@sfr.fr>
+Reviewed-by: Frank Binns <frank.binns@imgtec.com>
+Reviewed-by: Chad Versace <chad.versace@intel.com>
+(cherry picked from commit 9fea9d6f8e862a8b3f569d37d06d1ff69c6e18f5)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I039b5e24f58d6c74eb2a58e727bb2a7749a33a6c
+Reviewed-on: https://chromium-review.googlesource.com/367190
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/main/eglsurface.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
+
+diff --git a/src/egl/main/eglsurface.c b/src/egl/main/eglsurface.c
+index 99e24dd..231a5f0 100644
+--- a/src/egl/main/eglsurface.c
++++ b/src/egl/main/eglsurface.c
+@@ -71,8 +71,8 @@ _eglParseSurfaceAttribList(_EGLSurface *surf, const EGLint *attrib_list)
+    EGLint type = surf->Type;
+    EGLint texture_type = EGL_PBUFFER_BIT;
+    EGLint i, err = EGL_SUCCESS;
+-   EGLint tex_target = -1;
+-   EGLint tex_format = -1;
++   EGLint attr = EGL_NONE;
++   EGLint val = EGL_NONE;
+ 
+    if (!attrib_list)
+       return EGL_SUCCESS;
+@@ -81,8 +81,8 @@ _eglParseSurfaceAttribList(_EGLSurface *surf, const EGLint *attrib_list)
+       texture_type |= EGL_PIXMAP_BIT;
+ 
+    for (i = 0; attrib_list[i] != EGL_NONE; i++) {
+-      EGLint attr = attrib_list[i++];
+-      EGLint val = attrib_list[i];
++      attr = attrib_list[i++];
++      val = attrib_list[i];
+ 
+       switch (attr) {
+       /* common attributes */
+@@ -189,7 +189,6 @@ _eglParseSurfaceAttribList(_EGLSurface *surf, const EGLint *attrib_list)
+             break;
+          }
+ 
+-         tex_format = val;
+          switch (val) {
+          case EGL_TEXTURE_RGB:
+          case EGL_TEXTURE_RGBA:
+@@ -209,7 +208,6 @@ _eglParseSurfaceAttribList(_EGLSurface *surf, const EGLint *attrib_list)
+             break;
+          }
+ 
+-         tex_target = val;
+          switch (val) {
+          case EGL_TEXTURE_2D:
+          case EGL_NO_TEXTURE:
+@@ -235,25 +233,21 @@ _eglParseSurfaceAttribList(_EGLSurface *surf, const EGLint *attrib_list)
+          break;
+       }
+ 
+-      if (type == EGL_PBUFFER_BIT) {
+-         if (tex_target == -1)
+-            tex_target = surf->TextureTarget;
+-
+-         if (tex_format == -1)
+-            tex_format = surf->TextureFormat;
+-
+-         if ((tex_target == EGL_NO_TEXTURE && tex_format != EGL_NO_TEXTURE) ||
+-             (tex_format == EGL_NO_TEXTURE && tex_target != EGL_NO_TEXTURE)) {
+-            err = EGL_BAD_MATCH;
+-         }
+-      }
+-
+-      if (err != EGL_SUCCESS) {
+-         _eglLog(_EGL_WARNING, "bad surface attribute 0x%04x", attr);
++      if (err != EGL_SUCCESS)
+          break;
++   }
++
++   if (err == EGL_SUCCESS && type == EGL_PBUFFER_BIT) {
++      if ((surf->TextureTarget == EGL_NO_TEXTURE && surf->TextureFormat != EGL_NO_TEXTURE) ||
++          (surf->TextureFormat == EGL_NO_TEXTURE && surf->TextureTarget != EGL_NO_TEXTURE)) {
++         attr = surf->TextureTarget == EGL_NO_TEXTURE ? EGL_TEXTURE_TARGET : EGL_TEXTURE_FORMAT;
++         err = EGL_BAD_MATCH;
+       }
+    }
+ 
++   if (err != EGL_SUCCESS)
++      _eglLog(_EGL_WARNING, "bad surface attribute 0x%04x", attr);
++
+    return err;
+ }
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

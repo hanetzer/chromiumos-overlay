@@ -1,7 +1,7 @@
-From 29a5af9641017d06a5b0a73eea851353e713d19f Mon Sep 17 00:00:00 2001
+From ab1665f9ad20f4b99e3b898f26462a5e29a5799d Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@chromium.org>
 Date: Fri, 15 Jul 2016 16:24:20 +0800
-Subject: [PATCH 518/522] UPSTREAM: egl/dri2: dri2_make_current: Set EGL error
+Subject: [PATCH 502/521] UPSTREAM: egl/dri2: dri2_make_current: Set EGL error
  if bindContext fails
 
 Without this, if a configuration is, say, available only on GLES2/3, but
@@ -15,21 +15,25 @@ Cc: "11.2 12.0" <mesa-stable@lists.freedesktop.org>
 Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
 Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
 (cherry picked from commit 9bebef4034c79d0f223a6e61943dd44bcb6442ee)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
-BUG=chrome-os-partner:53869
-TEST=dEQP-EGL.functional.surfaceless_context#rgb565_no_depth_no_stencil
-     passes.
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
 
-Change-Id: I2944cef5ab3912cbd01e6bdedd0a05966d57bb22
+Change-Id: Iecb36a821aa6ad7a16cd4f1020626aec978f8554
+Reviewed-on: https://chromium-review.googlesource.com/367192
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/egl_dri2.c | 10 ++++++++--
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index c5c0c36..a3a1cac 100644
+index c6f96ef..c78bcb7 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -1194,8 +1194,10 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+@@ -1227,8 +1227,10 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
     __DRIcontext *cctx;
  
     /* make new bindings */
@@ -41,7 +45,7 @@ index c5c0c36..a3a1cac 100644
  
     /* flush before context switch */
     if (old_ctx && dri2_drv->glFlush)
-@@ -1235,7 +1237,11 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
+@@ -1268,7 +1270,11 @@ dri2_make_current(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *dsurf,
        _eglPutSurface(old_rsurf);
        _eglPutContext(old_ctx);
  

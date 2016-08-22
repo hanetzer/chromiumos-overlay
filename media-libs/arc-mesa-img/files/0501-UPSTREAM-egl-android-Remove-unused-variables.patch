@@ -1,16 +1,25 @@
-From 43105db69af1f56903977ec273e59b6c8dc3c5c7 Mon Sep 17 00:00:00 2001
+From 0f7c8a02069631a24e6b82b4188c173b2a7ea4bd Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Tue, 28 Jun 2016 15:39:44 +0900
-Subject: [PATCH 501/517] CHROMIUM: egl/android: Remove unused variables
+Date: Wed, 13 Jul 2016 11:33:24 +0800
+Subject: [PATCH 501/521] UPSTREAM: egl/android: Remove unused variables
 
 There are some unused variables left after previous clean-ups triggering
 compiler warnings. Let's remove them.
 
-BUG=b:29036398
-TEST=No significant regressions in Android dEQP
-
-Change-Id: Ib4b2a92c4336b7cefb30ab6b9bfc9f5f09c06701
+Cc: "12.0" <mesa-stable@lists.freedesktop.org>
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit ccda100a5a2838adec16ac10b2cc1c73e666e7d2)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I0a991a19876da45a602786da7d75b55ff83f6059
+Reviewed-on: https://chromium-review.googlesource.com/367191
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 2 --
  1 file changed, 2 deletions(-)

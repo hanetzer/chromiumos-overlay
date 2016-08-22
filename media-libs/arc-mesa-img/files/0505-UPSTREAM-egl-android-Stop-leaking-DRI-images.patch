@@ -1,7 +1,7 @@
-From d5eb44959faa1913d866d595bf1e35822dd11f86 Mon Sep 17 00:00:00 2001
+From 7b801293c7aab37c00ee4c20ecef7715ab65e916 Mon Sep 17 00:00:00 2001
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Fri, 24 Jun 2016 17:36:22 +0900
-Subject: [PATCH 507/517] CHROMIUM: egl/android: Stop leaking DRI images
+Date: Fri, 15 Jul 2016 16:53:50 +0900
+Subject: [PATCH 505/521] UPSTREAM: egl/android: Stop leaking DRI images
 
 Current implementation of the DRI image loader does not free the images
 created in get_back_bo() and so leaks memory. Moreover, it creates a new
@@ -12,17 +12,27 @@ This patch adds missing call to destroyImage() in droid_enqueue_buffer()
 and a check if image is already created to get_back_bo() to fix the
 above.
 
-BUG=b:29036398
-TEST=No significant regressions in Android dEQP
-
-Change-Id: Ia95b83f01833eabc988cc082dab3ca80d89fa83b
+Cc: "11.2 12.0" <mesa-stable@lists.freedesktop.org>
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit 9e1248d0752e692714b58ef1f2211ec7e172c8cf)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: Ic01af360dbcd83c3d99b034b6f342a0373ea755b
+Reviewed-on: https://chromium-review.googlesource.com/367195
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
 ---
  src/egl/drivers/dri2/platform_android.c | 11 +++++++++++
  1 file changed, 11 insertions(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index a3e96f8..de1e5e6 100644
+index 37616f9..e3d5f0b 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
 @@ -162,6 +162,8 @@ droid_window_dequeue_buffer(struct dri2_egl_surface *dri2_surf)
