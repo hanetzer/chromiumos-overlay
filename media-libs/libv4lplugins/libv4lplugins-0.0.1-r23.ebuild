@@ -17,7 +17,7 @@ SRC_URI="http://linuxtv.org/downloads/v4l-utils/${MY_P}.tar.bz2"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="*"
-PLUGIN_IUSE="rockchip"
+PLUGIN_IUSE="rockchip rockchip_v2"
 IUSE="${PLUGIN_IUSE}"
 REQUIRED_USE="^^ ( ${PLUGIN_IUSE} )"
 
@@ -34,6 +34,8 @@ src_unpack() {
 src_prepare() {
 	if use rockchip; then
 		PLUGIN_DIR="libv4l-rockchip"
+	elif use rockchip_v2; then
+		PLUGIN_DIR="libv4l-rockchip_v2"
 	fi
 	mv ${PLUGIN_DIR} lib || die
 	# Append "SUBDIRS += ${PLUGIN_DIR}" at the end of lib/Makefile.am
