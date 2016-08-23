@@ -1,0 +1,42 @@
+From 7a7af023607fd8489008aab1fc2dfafc5e243214 Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Sat, 10 Jan 2015 03:32:23 +0900
+Subject: [PATCH] CHROMIUM: v4l: Add V4L2_PIX_FMT_VP9 definition.
+
+BUG=chromium:430638
+TEST=None
+Signed-off-by: Pawel Osciak <posciak@chromium.org>
+
+Reviewed-on: https://chromium-review.googlesource.com/239836
+Reviewed-by: Olof Johansson <olofj@chromium.org>
+Commit-Queue: Pawel Osciak <posciak@chromium.org>
+Tested-by: Pawel Osciak <posciak@chromium.org>
+(cherry picked from commit af6743d548ce4c03220d89ee03a5af061e846517)
+Signed-off-by: Pawel Osciak <posciak@chromium.org>
+
+This is a retry of https://chromium-review.googlesource.com/#/c/244644.
+
+Change-Id: Ic9317887f2d27aa06a0831ce5f725d8d9c8090b3
+Reviewed-on: https://chromium-review.googlesource.com/245241
+Reviewed-by: Pawel Osciak <posciak@chromium.org>
+Commit-Queue: Pawel Osciak <posciak@chromium.org>
+Tested-by: Pawel Osciak <posciak@chromium.org>
+---
+ include/uapi/linux/videodev2.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 71c63b9..c019187 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -595,6 +595,7 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_VC1_ANNEX_L v4l2_fourcc('V', 'C', '1', 'L') /* SMPTE 421M Annex L compliant stream */
+ #define V4L2_PIX_FMT_VP8      v4l2_fourcc('V', 'P', '8', '0') /* VP8 */
+ #define V4L2_PIX_FMT_VP8_FRAME v4l2_fourcc('V', 'P', '8', 'F') /* VP8 parsed frames */
++#define V4L2_PIX_FMT_VP9      v4l2_fourcc('V', 'P', '9', '0') /* VP9 */
+ 
+ /*  Vendor-specific formats   */
+ #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
+-- 
+2.8.0.rc3.226.g39d4020
+

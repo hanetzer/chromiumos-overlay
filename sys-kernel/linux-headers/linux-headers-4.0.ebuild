@@ -33,6 +33,9 @@ src_prepare() {
 	epatch "${FILESDIR}/0003-v4l-add-pixelformat-change-event.patch"
 	epatch "${FILESDIR}/0004-v4l-add-force-key-frame-control.patch"
 	epatch "${FILESDIR}/0005-UPSTREAM-sched-new-clone-flag-CLONE_NEWCGROUP-for-cg.patch"
+	epatch "${FILESDIR}/0006-CHROMIUM-v4l-Add-V4L2_PIX_FMT_VP9-definition.patch"
+	epatch "${FILESDIR}/0007-CHROMIUM-v4l-Add-VP9-low-level-decoder-API-controls.patch"
+	epatch "${FILESDIR}/0008-CHROMIUM-v4l-Add-V4L2_CID_MPEG_VIDEO_H264_SPS_PPS_BE.patch"
 }
 
 src_install() {
