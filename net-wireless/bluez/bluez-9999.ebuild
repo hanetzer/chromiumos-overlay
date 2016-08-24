@@ -15,7 +15,7 @@ HOMEPAGE="http://www.bluez.org/"
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cups debug test-programs readline"
+IUSE="cups debug systemd test-programs readline"
 
 CDEPEND="
 	>=dev-libs/glib-2.14:2
@@ -107,8 +107,15 @@ src_install() {
 	dobin "${FILESDIR}/dbus_send_blutooth_class.awk"
 	dobin "${FILESDIR}/get_bluetooth_device_class.sh"
 
-	insinto /etc/init
-	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
+	# Install init scripts.
+	if use systemd; then
+		systemd_dounit "${FILESDIR}/bluetoothd.service"
+		systemd_enable_service system-services.target bluetoothd.service
+		systemd_dotmpfilesd "${FILESDIR}/bluetoothd-directories.conf"
+	else
+		insinto /etc/init
+		newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
+	fi
 
 	udev_dorules "${FILESDIR}/99-uhid.rules"
 	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
