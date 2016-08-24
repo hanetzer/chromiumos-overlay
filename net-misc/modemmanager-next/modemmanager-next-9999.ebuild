@@ -10,7 +10,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 # TODO: Re-enable this once the hangs have been figured out.
 RESTRICT="test"
 
-inherit eutils autotools cros-workon flag-o-matic udev user
+inherit eutils autotools cros-workon flag-o-matic systemd udev user
 
 # ModemManager likes itself with capital letters
 MY_P=${P/modemmanager/ModemManager}
@@ -22,7 +22,7 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang doc gobi mbim qmi"
+IUSE="-asan -clang doc gobi mbim systemd qmi"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND=">=dev-libs/glib-2.32
@@ -88,8 +88,14 @@ src_install() {
 		-name 'libmm-plugin-zte.so' \
 		\) -delete
 
-	insinto /etc/init
-	doins "${FILESDIR}/modemmanager.conf"
+	# Install init scripts.
+	if use systemd; then
+		systemd_dounit "${FILESDIR}/modemmanager.service"
+		systemd_enable_service system-services.target modemmanager.service
+	else
+		insinto /etc/init
+		doins "${FILESDIR}/modemmanager.conf"
+	fi
 
 	# Override the ModemManager DBus configuration file to constrain how
 	# ModemManager exposes its DBus service on Chrome OS.
