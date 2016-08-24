@@ -116,6 +116,7 @@ CONFIG_FRAGMENTS=(
 	vtconsole
 	wifi_testbed_ap
 	wifi_debug
+	wifi_diag
 	wireless34
 	x32
 )
@@ -513,6 +514,11 @@ CONFIG_MAC80211_BEACON_FOOTER=y
 wifi_debug_desc="Enable extra debug flags for WiFi"
 wifi_debug_config="
 CONFIG_IWL7000_XVT=m
+"
+
+wifi_diag_desc="mac80211 WiFi diagnostic support"
+wifi_diag_config="
+CONFIG_MAC80211_WIFI_DIAG=y
 "
 
 x32_desc="x32 ABI support"
