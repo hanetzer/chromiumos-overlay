@@ -190,6 +190,7 @@ ALL_BOARDS=(
 	peach_pit
 	pedra
 	peppy
+	plaso
 	ppcbe-32-generic
 	ppcbe-64-generic
 	ppcle-32-generic
