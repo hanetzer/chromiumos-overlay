@@ -9,10 +9,9 @@ or portage actions."
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
-IUSE="skl_lpe apl_lpe"
+IUSE="skl_lpe"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	apl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_apl] )
 	media-libs/lpe-support-topology
 	media-libs/lpe-support-blacklist
 	skl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_skl] )
