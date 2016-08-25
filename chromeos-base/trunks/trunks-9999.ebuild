@@ -19,7 +19,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ftdi_tpm test tpm2_simulator"
+IUSE="cr50_onboard ftdi_tpm test tpm2_simulator"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
@@ -47,6 +47,8 @@ src_install() {
 	insinto /etc/init
 	if use tpm2_simulator; then
 		newins trunksd.conf.tpm2_simulator trunksd.conf
+	elif use cr50_onboard; then
+		newins trunksd.conf.cr50 trunksd.conf
 	else
 		doins trunksd.conf
 	fi

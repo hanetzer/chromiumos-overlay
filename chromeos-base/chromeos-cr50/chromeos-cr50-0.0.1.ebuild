@@ -22,6 +22,9 @@ src_install() {
 
 	insinto /opt/google/cr50/firmware
 	newins "${CR50_NAME}"/*.bin cr50.bin
+
+	insinto /etc/init
+	doins "${FILESDIR}"/*.conf
 }
 
 
