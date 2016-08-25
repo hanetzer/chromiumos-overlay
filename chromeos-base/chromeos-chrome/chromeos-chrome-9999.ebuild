@@ -1278,7 +1278,11 @@ src_install() {
 		# stevenjb: It is unclear why the .proto is in gen/policy/policy
 		# in GYP and gen/policy/ in GN, but once we move away from GYP
 		# that shouldn't matter.
-		if use gn; then
+		# TODO(nya): Remove old paths once they are no longer used.
+		# See: crbug.com/640896
+		if [[ -f "${FROM}"/gen/components/policy/proto/cloud_policy.proto ]]; then
+			doins "${FROM}"/gen/components/policy/proto/cloud_policy.proto
+		elif use gn; then
 			doins "${FROM}"/gen/policy/cloud_policy.proto
 		else
 			doins "${FROM}"/gen/policy/policy/cloud_policy.proto
