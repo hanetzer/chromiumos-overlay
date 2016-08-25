@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/tlsdate"
 
-inherit autotools flag-o-matic toolchain-funcs cros-workon cros-debug user
+inherit autotools flag-o-matic toolchain-funcs cros-workon cros-debug systemd user
 
 DESCRIPTION="Update local time over HTTPS"
 HOMEPAGE="https://github.com/ioerror/tlsdate"
@@ -12,7 +12,7 @@ HOMEPAGE="https://github.com/ioerror/tlsdate"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="asan clang +dbus +seccomp"
+IUSE="asan clang +dbus +seccomp systemd"
 REQUIRED_USE="asan? ( clang )"
 
 DEPEND="dev-libs/openssl
@@ -52,8 +52,15 @@ src_install() {
 	doins "${S}/dbus/org.torproject.tlsdate.xml"
 	insinto /usr/share/dbus-1/services
 	doins "${S}/dbus/org.torproject.tlsdate.service"
-	insinto /etc/init
-	doins init/tlsdated.conf
+
+	if use systemd; then
+		systemd_dounit init/tlsdated.service
+		systemd_enable_service system-services.target tlsdated.service
+		systemd_dotmpfilesd init/tlsdated-directories.conf
+	else
+		insinto /etc/init
+		doins init/tlsdated.conf
+	fi
 }
 
 pkg_preinst() {
