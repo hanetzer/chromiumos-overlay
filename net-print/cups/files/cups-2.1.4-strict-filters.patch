@@ -1,0 +1,50 @@
+Makes cupstestppd extra strict, preventing filters from having '/' or
+'.' in the name. This is to ensure that filters don't use an absolute
+path or even relative path with '..' in it. Yes, it's extra strict,
+b/c a filter name like 'myfilter.foo' would be stopped by this script,
+but doesn't pose a problem. That said, we don't see that in practice.
+
+From: Andrew de los Reyes <adlr@chromium.org>
+Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=633384
+--- a/systemv/cupstestppd.c
++++ b/systemv/cupstestppd.c
+@@ -2406,6 +2406,19 @@ check_filters(ppd_file_t *ppd,		/* I - PPD file */
+ 
+     if (strcmp(program, "-"))
+     {
++      if (strchr(program, '/') || strchr(program, '.'))
++      {
++	if (!warn && !errors && !verbose)
++	  _cupsLangPuts(stdout, _(" FAIL"));
++
++	if (verbose >= 0)
++	  _cupsLangPrintf(stdout, _("      %s  %s %s contains '/' or '.'."),
++	                  prefix, "cupsFilter", pathprog);
++
++	if (!warn)
++	  errors ++;
++      }
++
+       if (program[0] == '/')
+ 	snprintf(pathprog, sizeof(pathprog), "%s%s", root, program);
+       else
+@@ -2534,6 +2547,19 @@ check_filters(ppd_file_t *ppd,		/* I - PPD file */
+ 	_cups_strcpy(program, ptr);
+       }
+ 
++      if (strchr(program, '/') || strchr(program, '.'))
++      {
++	if (!warn && !errors && !verbose)
++	  _cupsLangPuts(stdout, _(" FAIL"));
++
++	if (verbose >= 0)
++	  _cupsLangPrintf(stdout, _("      %s  %s %s contains '/' or '.'."),
++			  prefix, "cupsFilter2", pathprog);
++
++	if (!warn)
++	  errors ++;
++      }
++
+       if (program[0] == '/')
+ 	snprintf(pathprog, sizeof(pathprog), "%s%s", root, program);
+       else
