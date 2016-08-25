@@ -37,6 +37,7 @@ IUSE="
 	opengles
 	ozone
 	pointer_events
+	rialto
 	test
 	touchview
 	+X
