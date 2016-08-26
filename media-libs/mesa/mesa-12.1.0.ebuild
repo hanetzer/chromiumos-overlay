@@ -54,7 +54,7 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X"
+	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 
@@ -152,9 +152,9 @@ src_prepare() {
 src_configure() {
 	tc-getPROG PKG_CONFIG pkg-config
 
-	if use !gallium && use !classic; then
-		ewarn "You enabled neither classic nor gallium USE flags. No hardware"
-		ewarn "drivers will be built."
+	if use !gallium && use !classic && use !vulkan; then
+		ewarn "You enabled neither classic, gallium, nor vulkan "
+		ewarn "USE flags. No hardware drivers will be built."
 	fi
 
 	if use classic; then
@@ -190,6 +190,12 @@ src_configure() {
 		gallium_driver_enable video_cards_freedreno freedreno
 	fi
 
+	if use vulkan; then
+		if use video_cards_intel; then
+			VULKAN_DRIVERS+=",intel"
+		fi
+	fi
+
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
@@ -221,6 +227,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
+		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		$(use egl && echo "--with-egl-platforms=surfaceless")
 }
 
