@@ -11,12 +11,12 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="arc -chromeless_tests +bluetooth buffet +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty peerd +power_management +shill wifi_bootstrapping wimax +tpm"
+IUSE="cheets -chromeless_tests +bluetooth buffet +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty peerd +power_management +shill wifi_bootstrapping wimax +tpm"
 
 RDEPEND="
 	chromeos-base/autotest-client
 	chromeos-base/autotest-server-tests
-	arc? ( chromeos-base/autotest-tests-arc-public )
+	cheets? ( chromeos-base/autotest-tests-arc-public )
 	bluetooth? ( chromeos-base/autotest-server-tests-bluetooth )
 	shill? ( chromeos-base/autotest-server-tests-shill )
 	chromeos-base/autotest-tests

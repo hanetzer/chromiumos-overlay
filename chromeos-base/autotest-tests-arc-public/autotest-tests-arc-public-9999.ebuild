@@ -32,7 +32,6 @@ DEPEND="${RDEPEND}"
 
 IUSE="
 	+autotest
-	arc
 	${IUSE_TESTS}
 "
 
