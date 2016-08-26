@@ -30,7 +30,7 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X arc"
+	shared-glapi kernel_FreeBSD xlib-glx X cheets"
 
 DEPEND=""
 
@@ -115,9 +115,9 @@ src_configure() {
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 	EGL_PLATFORM="surfaceless"
 
-	if use arc; then
+	if use cheets; then
 		#
-		# arc-specific overrides
+		# cheets-specific overrides
 		#
 
 		# FIXME(tfiga): Could this and the append-*flags below go to arc-build?
@@ -223,7 +223,7 @@ src_install_arc() {
 }
 
 src_install() {
-	if use arc; then
+	if use cheets; then
 		src_install_arc
 		return
 	fi
@@ -281,7 +281,7 @@ src_install() {
 }
 
 pkg_postinst() {
-	if use arc; then
+	if use cheets; then
 		return
 	fi
 
