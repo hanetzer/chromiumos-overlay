@@ -144,6 +144,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/11.7-double-buffered.patch
 	epatch "${FILESDIR}"/12.0-mesa-Fix-glFramebufferTexture-error-codes-v2.patch
+	epatch "${FILESDIR}"/12.0-anv-install-the-intel_icd.json-to-datarootdir-by-def.patch
+	epatch "${FILESDIR}"/12.1-configure.ac-Use-datarootdir-for-with-vulkan-icddir-.patch
 	base_src_prepare
 
 	eautoreconf
