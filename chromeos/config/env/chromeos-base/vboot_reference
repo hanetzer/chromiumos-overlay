@@ -7,3 +7,8 @@ if [[ $(cros_target) != "board_sysroot" ]]; then
 	INSTALL_MASK+=" /usr/bin/futility_s"
 	PKG_INSTALL_MASK+=" /usr/bin/futility_s"
 fi
+
+# We want to continue to use gcc to build firmware.  http://crbug.com/641388
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+}
