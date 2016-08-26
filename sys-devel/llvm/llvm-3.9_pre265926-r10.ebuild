@@ -182,7 +182,9 @@ pick_cherries() {
 	CHERRIES+=" 35470639d335074ed5f7de4644627496a4d03f32 " # r272080
 
 	pushd "${S}"/tools/clang >/dev/null || die
-	git cherry-pick -n ${CHERRIES} >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
 	popd >/dev/null || die
 
 	# "Cherry-pick" of r272971 (bf13b30ff28e64528806076cc88cc46aa2634e62); it
@@ -198,10 +200,10 @@ pick_cherries() {
 	# compiler-rt
 	# Bug 27673 - [ASan] False alarm to recv/recvfrom
 	# https://llvm.org/bugs/show_bug.cgi?id=27673
-	CHERRIES=" f0ccaf3554182da4c7a038ae96a869e0e202bd2c " # r269749
+	CHERRIES="f0ccaf3554182da4c7a038ae96a869e0e202bd2c" # r269749
 
 	pushd "${S}"/projects/compiler-rt >/dev/null || die
-	git cherry-pick -n ${CHERRIES} >/dev/null || die
+	epatch "${FILESDIR}/cherry/${CHERRIES}.patch"
 	popd >/dev/null || die
 
 	# llvm
@@ -215,7 +217,9 @@ pick_cherries() {
 	CHERRIES+=" 2474f04f67a34476c16316ba0299237c3e6df6b0 " # r270806
 
 	pushd "${S}" >/dev/null || die
-	git cherry-pick -n ${CHERRIES} >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
 	popd >/dev/null || die
 }
 
