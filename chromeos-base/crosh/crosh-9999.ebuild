@@ -49,9 +49,15 @@ src_test() {
 }
 
 src_install() {
-	dobin crosh crosh-{dev,usb}
+	dobin crosh
 	dobin network_diag
-	use cups && dobin crosh-cups
-	insinto /usr/share/misc
+	local d="/usr/share/crosh"
+	insinto "${d}/dev.d"
+	doins dev.d/*.sh
+	insinto "${d}/removable.d"
+	doins removable.d/*.sh
+	insinto "${d}/extra.d"
+	use cups && doins extra.d/??-cups.sh
+	insinto "${d}"
 	doins "${WORKDIR}"/inputrc.crosh
 }
