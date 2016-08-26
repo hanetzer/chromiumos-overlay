@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test arc cheets"
+IUSE="test cheets"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
