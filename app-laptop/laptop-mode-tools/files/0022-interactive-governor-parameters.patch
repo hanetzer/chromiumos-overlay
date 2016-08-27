@@ -1,6 +1,6 @@
 --- laptop-mode-tools-1.59//usr/share/laptop-mode-tools/modules/cpufreq	2011-08-07 12:30:43.000000000 -0700
 +++ laptop-mode-tools-1.59//usr/share/laptop-mode-tools/modules/cpufreq	2012-06-20 11:46:24.465328480 -0700
-@@ -139,3 +139,39 @@
+@@ -139,3 +139,40 @@
  	done
  fi
  
@@ -38,5 +38,6 @@
 +	set_optional_interactive_value go_hispeed_load GO_HISPEED_LOAD
 +	set_optional_interactive_value hispeed_freq HISPEED_FREQ
 +	set_optional_interactive_value min_sample_time MIN_SAMPLE_TIME
++	set_optional_interactive_value target_loads TARGET_LOADS
 +	set_optional_interactive_value timer_rate TIMER_RATE
 +fi
