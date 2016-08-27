@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-CR50_NAME="cr50-8722"
+CR50_NAME="cr50.r0.0.8.w0.0.5"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 cros-binary_add_uri "gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
 S="${DISTDIR}"
