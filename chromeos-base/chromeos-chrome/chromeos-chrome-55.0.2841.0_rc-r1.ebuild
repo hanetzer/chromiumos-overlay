@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-54.0.2827.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-54.0.2827.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-54.0.2827.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2841.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2841.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2841.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -1278,7 +1278,11 @@ src_install() {
 		# stevenjb: It is unclear why the .proto is in gen/policy/policy
 		# in GYP and gen/policy/ in GN, but once we move away from GYP
 		# that shouldn't matter.
-		if use gn; then
+		# TODO(nya): Remove old paths once they are no longer used.
+		# See: crbug.com/640896
+		if [[ -f "${FROM}"/gen/components/policy/proto/cloud_policy.proto ]]; then
+			doins "${FROM}"/gen/components/policy/proto/cloud_policy.proto
+		elif use gn; then
 			doins "${FROM}"/gen/policy/cloud_policy.proto
 		else
 			doins "${FROM}"/gen/policy/policy/cloud_policy.proto
