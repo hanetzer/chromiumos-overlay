@@ -9,7 +9,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="cryptohome"
 
-inherit cros-workon platform udev user
+inherit cros-workon platform systemd udev user
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test tpm tpm2"
+IUSE="test systemd tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -60,13 +60,32 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins etc/Cryptohome.conf
 
-	insinto /etc/init
-	doins init/*.conf
-	if use tpm2; then
-		sed -i 's/started tcsd/started attestationd/' \
-			"${D}/etc/init/cryptohomed.conf" ||
-			die "Can't replace tcsd with attestationd in cryptohomed.conf"
+	# Install init scripts
+	if use systemd; then
+		if use tpm2; then
+			sed 's/tcsd.service/attestationd.service/' \
+				init/cryptohomed.service \
+				> "${T}/cryptohomed.service"
+			systemd_dounit "${T}/cryptohomed.service"
+		else
+			systemd_dounit init/cryptohomed.service
+		fi
+		systemd_dounit init/mount-encrypted.service
+		systemd_dounit init/lockbox-cache.service
+		systemd_enable_service boot-services.target cryptohomed.service
+		systemd_enable_service system-services.target mount-encrypted.service
+		systemd_enable_service ui.target lockbox-cache.service
+	else
+		insinto /etc/init
+		doins init/*.conf
+		if use tpm2; then
+			sed -i 's/started tcsd/started attestationd/' \
+				"${D}/etc/init/cryptohomed.conf" ||
+				die "Can't replace tcsd with attestationd in cryptohomed.conf"
+		fi
 	fi
+	insinto /usr/share/cros/init
+	doins init/lockbox-cache.sh
 }
 
 platform_pkg_test() {
