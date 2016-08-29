@@ -26,6 +26,7 @@ DEPEND="${RDEPEND}
 SERVER_IUSE_TESTS="
 	+tests_audio_AudioAfterReboot
 	+tests_audio_AudioAfterSuspend
+	+tests_audio_AudioARCRecord
 	+tests_audio_AudioBasicBluetoothPlayback
 	+tests_audio_AudioBasicBluetoothPlaybackRecord
 	+tests_audio_AudioBasicBluetoothRecord
