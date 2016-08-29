@@ -45,6 +45,7 @@ SERVER_IUSE_TESTS="
 	+tests_audio_InternalCardNodes
 	+tests_audio_MediaBasicVerification
 	+tests_audio_PowerConsumption
+	+tests_audiovideo_AVSync
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
 	+tests_bluetooth_AdapterPairing
