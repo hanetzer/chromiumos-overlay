@@ -39,7 +39,6 @@ XORG_EAUTORECONF=yes
 
 src_prepare() {
 	xorg-2_src_prepare
-	epatch "${FILESDIR}"/headers-Update-drm_fourcc.h.patch
 }
 
 src_configure() {
