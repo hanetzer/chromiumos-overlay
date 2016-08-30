@@ -39,6 +39,7 @@ IUSE_TESTS="
 	+tests_security_AltSyscall
 	+tests_security_ASLR
 	+tests_security_ChromiumOSLSM
+	+tests_security_CroshModules
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
 	+tests_security_Firewall
