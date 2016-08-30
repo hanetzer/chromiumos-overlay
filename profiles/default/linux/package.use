@@ -52,7 +52,7 @@ sys-devel/clang		multitarget
 sys-devel/llvm		multitarget
 # pciutils is required by flashrom / mosys which is required to be statically
 # compiled to reduce dependency during auto update.
-sys-apps/pciutils	static-libs
+sys-apps/pciutils	static-libs -udev
 # xz-utils includes liblzma, which is picked by bmpblk_utility (vboot_reference)
 # and may be executed outside chroot.
 app-arch/xz-utils	static-libs
