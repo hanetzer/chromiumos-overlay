@@ -3,9 +3,9 @@
 
 EAPI=4
 
-inherit autotest-deponly
+inherit autotest-external-dep
 
-# The autotest-dep package name.
+# The autotest-external-dep package name.
 PACKAGE="uiautomator"
 
 DESCRIPTION="Ebuild that installs cheets autotest-dep package into dep directory"
@@ -35,31 +35,7 @@ src_unpack() {
 	S=${PWD}
 }
 
-src_prepare() {
-	autotest-deponly_src_prepare
-}
-
-src_compile() {
-	# Unlike all other autotest-dep projects which are under autotest repo, this
-	# ebuild needs to manully create autotest package-like environment during
-	# emerge stage. In addition, all autotest package requires basic fake test
-	# during compile stage, so we also need to create ${PACKAGE}.py to workdir
-	# and create autotest_workdir manually.
-	cp "${FILESDIR}/setup.py" "${WORKDIR}/${PACKAGE}.py" || die
-	if [[ ! -e "${AUTOTEST_WORKDIR}/client/deps/${PACKAGE}" ]]; then
-		mkdir -p "${AUTOTEST_WORKDIR}/client/deps"
-		ln -s "${WORKDIR}" "${AUTOTEST_WORKDIR}/client/deps/${PACKAGE}" || die
-	fi
-	autotest_src_compile
-	if [[ -e "${ROOT}/${AUTOTEST_BASE}/client/deps/${PACKAGE}/.version" ]]; then
-		cp "${ROOT}/${AUTOTEST_BASE}/client/deps/${PACKAGE}/.version" "${WORKDIR}/" || die
-	fi
-	# Clean up autotest workdir which we don't need in final package.
-	rm -rf "${AUTOTEST_WORKDIR}"
-}
-
 src_install() {
-	insinto "${AUTOTEST_BASE}"/client/deps/${PACKAGE}
-	doins -r .
+	autotest-external-dep_src_install
 	dosym "${PACKAGE}-${GIT_HASH}/${PACKAGE}" "${AUTOTEST_BASE}/client/deps/${PACKAGE}/${PACKAGE}"
 }
