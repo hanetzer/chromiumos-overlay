@@ -134,6 +134,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.1-anv-formats-Update-the-three-channel-BC1-ma.patch
 	epatch "${FILESDIR}"/17.1-i965-formats-Update-the-three-channel-DXT1-.patch
 	epatch "${FILESDIR}"/0001-Always-release-disp-before-waiting-in-ClientWaitSync.patch
+	epatch "${FILESDIR}"/17.1-i965-Improve-same-buffer-restriction-for-imports.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
