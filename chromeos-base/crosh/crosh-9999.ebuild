@@ -44,6 +44,10 @@ src_compile() {
 		> "${WORKDIR}"/inputrc.crosh || die
 }
 
+src_test() {
+	./run_tests.sh || die
+}
+
 src_install() {
 	dobin crosh crosh-{dev,usb}
 	dobin network_diag
