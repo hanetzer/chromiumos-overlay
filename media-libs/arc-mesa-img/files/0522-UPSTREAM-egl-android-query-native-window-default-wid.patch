@@ -1,0 +1,127 @@
+From 5277cf9092172ddbb664cfdecba21a42fcb5d536 Mon Sep 17 00:00:00 2001
+From: Haixia Shi <hshi@chromium.org>
+Date: Thu, 28 Jul 2016 10:51:12 -0700
+Subject: [PATCH] UPSTREAM: egl: android: query native window default width and
+ height (v2)
+
+On android platform, the width and height of a native window surface may
+be updated after initialization. It is therefore necessary to query android
+framework for the current width and height.
+
+v2: remove Android specific #ifdef's and just implement the fallback directly
+if the platform query_surface() callback is not provided.
+
+TEST=dEQP-EGL.functional.resize.surface_size#* on cyan-cheets
+
+Reviewed-by: Kristian H. Kristensen <hoegsberg@chromium.org> (v1)
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Chad Versace <chad@kiwitree.net>
+(cherry picked from commit a7c6993a33e894556e45fc2882ad19f34274d689)
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Change-Id: I37e5c237befda50f6462b09272a177e30a948f0d
+Reviewed-on: https://chromium-review.googlesource.com/367207
+Reviewed-by: Haixia Shi <hshi@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/egl_dri2.c         | 11 +++++++++++
+ src/egl/drivers/dri2/egl_dri2.h         |  4 ++++
+ src/egl/drivers/dri2/platform_android.c | 27 +++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index a4bbf7d..37ecc68 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1837,6 +1837,16 @@ dri2_create_image_khr_texture(_EGLDisplay *disp, _EGLContext *ctx,
+    return &dri2_img->base;
+ }
+ 
++static EGLBoolean
++dri2_query_surface(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSurface *surf,
++                   EGLint attribute, EGLint *value)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(dpy);
++   if (!dri2_dpy->vtbl->query_surface)
++      return _eglQuerySurface(drv, dpy, surf, attribute, value);
++   return dri2_dpy->vtbl->query_surface(drv, dpy, surf, attribute, value);
++}
++
+ static struct wl_buffer*
+ dri2_create_wayland_buffer_from_image(_EGLDriver *drv, _EGLDisplay *dpy,
+                                       _EGLImage *img)
+@@ -2908,6 +2918,7 @@ _eglBuiltInDriverDRI2(const char *args)
+    dri2_drv->base.API.CreateImageKHR = dri2_create_image;
+    dri2_drv->base.API.DestroyImageKHR = dri2_destroy_image_khr;
+    dri2_drv->base.API.CreateWaylandBufferFromImageWL = dri2_create_wayland_buffer_from_image;
++   dri2_drv->base.API.QuerySurface = dri2_query_surface;
+ #ifdef HAVE_LIBDRM
+    dri2_drv->base.API.CreateDRMImageMESA = dri2_create_drm_image_mesa;
+    dri2_drv->base.API.ExportDRMImageMESA = dri2_export_drm_image_mesa;
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 4a25fcd..7aaa95c 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -143,6 +143,10 @@ struct dri2_egl_display_vtbl {
+    EGLint (*query_buffer_age)(_EGLDriver *drv, _EGLDisplay *dpy,
+                               _EGLSurface *surf);
+ 
++   EGLBoolean (*query_surface)(_EGLDriver *drv, _EGLDisplay *dpy,
++                               _EGLSurface *surf, EGLint attribute,
++                               EGLint *value);
++
+    struct wl_buffer* (*create_wayland_buffer_from_image)(
+                         _EGLDriver *drv, _EGLDisplay *dpy, _EGLImage *img);
+ 
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 53566a5..2adfabb 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -652,6 +652,32 @@ droid_create_image_from_name(_EGLDisplay *disp, _EGLContext *ctx,
+    return &dri2_img->base;
+ }
+ 
++static EGLBoolean
++droid_query_surface(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSurface *surf,
++                    EGLint attribute, EGLint *value)
++{
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(surf);
++   switch (attribute) {
++      case EGL_WIDTH:
++         if (dri2_surf->base.Type == EGL_WINDOW_BIT && dri2_surf->window) {
++            dri2_surf->window->query(dri2_surf->window,
++                                     NATIVE_WINDOW_DEFAULT_WIDTH, value);
++            return EGL_TRUE;
++         }
++         break;
++      case EGL_HEIGHT:
++         if (dri2_surf->base.Type == EGL_WINDOW_BIT && dri2_surf->window) {
++            dri2_surf->window->query(dri2_surf->window,
++                                     NATIVE_WINDOW_DEFAULT_HEIGHT, value);
++            return EGL_TRUE;
++         }
++         break;
++      default:
++         break;
++   }
++   return _eglQuerySurface(drv, dpy, surf, attribute, value);
++}
++
+ static _EGLImage *
+ dri2_create_image_android_native_buffer(_EGLDisplay *disp,
+                                         _EGLContext *ctx,
+@@ -968,6 +994,7 @@ static struct dri2_egl_display_vtbl droid_display_vtbl = {
+    .post_sub_buffer = dri2_fallback_post_sub_buffer,
+    .copy_buffers = dri2_fallback_copy_buffers,
+    .query_buffer_age = dri2_fallback_query_buffer_age,
++   .query_surface = droid_query_surface,
+    .create_wayland_buffer_from_image = dri2_fallback_create_wayland_buffer_from_image,
+    .get_sync_values = dri2_fallback_get_sync_values,
+    .get_dri_drawable = dri2_surface_get_dri_drawable,
+-- 
+2.8.0.rc3.226.g39d4020
+

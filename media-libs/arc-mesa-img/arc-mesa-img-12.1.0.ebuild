@@ -127,7 +127,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
 	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
-	epatch "${FILESDIR}"/0036-Add-DRI-Query-Buffers-extension.patch
 
 	# Android specific patches
 	epatch "${FILESDIR}"/0500-UPSTREAM-egl-Fix-the-bad-surface-attributes-combinat.patch
@@ -152,11 +151,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/0519-CHROMIUM-egl-android-Set-EGL_MAX_PBUFFER_WIDTH-and-E.patch
 	epatch "${FILESDIR}"/0520-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
 	epatch "${FILESDIR}"/0521-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_YCbCr_420_8.patch
+	epatch "${FILESDIR}"/0522-UPSTREAM-egl-android-query-native-window-default-wid.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
-	epatch "${FILESDIR}"/0603-platform_android-Add-support-for-DRI-Query-Buffer-ex.patch
-	epatch "${FILESDIR}"/0605-platform_android-prevent-deadlock-in-droid_get_buffe.patch
 
 	base_src_prepare
 
