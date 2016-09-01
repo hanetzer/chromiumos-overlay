@@ -59,13 +59,9 @@ src_install() {
 		doins 50-touchpad-cmt-stout.conf
 	elif use mario; then
 		doins 50-touchpad-cmt-mario.conf
-	elif [[ "${board}" = "x86-zgb" || "${board}" = "x86-zgb32" ]]; then
+	elif [[ "${board}" = "x86-zgb" ]]; then
 		doins 50-touchpad-cmt-zgb.conf
-	elif [ "${board_variant}" = "tegra2_aebl" ]; then
-		doins 50-touchpad-cmt-aebl.conf
-	elif [ "${board_variant}" = "tegra2_kaen" ]; then
-		doins 50-touchpad-cmt-kaen.conf
-	elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
+	elif [[ "${board}" = "lumpy" ]]; then
 		doins 50-touchpad-cmt-lumpy.conf
 	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
@@ -88,7 +84,7 @@ src_install() {
 
 	insinto "/usr/share/gestures"
 	case ${board} in
-	lumpy|lumpy64)
+	lumpy)
 		doins "files/lumpy_linearity.dat" ;;
 	daisy)
 		doins "files/daisy_linearity.dat" ;;

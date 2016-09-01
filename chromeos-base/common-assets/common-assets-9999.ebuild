@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="alex +fonts lumpy lumpy64 mario tegra2-ldk"
+IUSE="alex +fonts lumpy mario"
 
 DEPEND=""
 # display_boot_message calls ply-image directly.
@@ -168,23 +168,16 @@ src_install() {
 	insinto /usr/share/color/icc
 	doins "${S}"/color_profiles/*.icc
 
-	# Don't install cursors when building for Tegra, since the
-	# current ARGB cursor implementation is performing badly,
-	# and the fallback to 2-bit hardware cursor works better.
-	# TODO: Remove this when the display driver has been fixed to
-	# remove the performance bottlenecks.
-	if ! use tegra2-ldk; then
-		local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
+	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
-		mkdir -p "${CURSOR_DIR}"
-		for i in ${REAL_CURSOR_NAMES}; do
-			xcursorgen -p "${S}"/cursors "${S}"/cursors/$i.cfg >"${CURSOR_DIR}/$i"
-		done
+	mkdir -p "${CURSOR_DIR}"
+	for i in ${REAL_CURSOR_NAMES}; do
+		xcursorgen -p "${S}"/cursors "${S}"/cursors/$i.cfg >"${CURSOR_DIR}/$i"
+	done
 
-		for i in ${LINK_CURSORS}; do
-			ln -s ${i#*:} "${CURSOR_DIR}/${i%:*}"
-		done
-	fi
+	for i in ${LINK_CURSORS}; do
+		ln -s ${i#*:} "${CURSOR_DIR}/${i%:*}"
+	done
 
 	mkdir -p "${D}"/usr/share/cursors/xorg-x11/default
 	echo Inherits=chromeos \
