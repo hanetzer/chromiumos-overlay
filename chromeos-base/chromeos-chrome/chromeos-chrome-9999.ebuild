@@ -1378,6 +1378,11 @@ src_install() {
 	fi
 }
 
+pkg_preinst() {
+	enewuser "wayland"
+	enewgroup "wayland"
+}
+
 pkg_postinst() {
 	autotest_pkg_postinst
 	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
