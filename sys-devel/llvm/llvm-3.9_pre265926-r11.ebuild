@@ -180,6 +180,8 @@ pick_cherries() {
 	CHERRIES+=" 90ce5cd716419c04a9402de118534ecb5f279ede " # r270781
 	CHERRIES+=" 5d36cf313ae9c9e6d475891ec2c0cb3a25ee62b1 " # r270784
 	CHERRIES+=" 35470639d335074ed5f7de4644627496a4d03f32 " # r272080
+	CHERRIES+=" 567da71b9bac96d6e87854f330139710fa2653a7 " # r280553
+	CHERRIES+=" 2cef254afa0c2c82d87d37e7e5d57788061d44a2 " # r280847
 
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
