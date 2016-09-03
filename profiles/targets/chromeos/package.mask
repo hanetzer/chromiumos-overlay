@@ -7,9 +7,6 @@
 # version of these packages even if a newer stable version becomes
 # available in portage:
 
-# Custom patches
->=sys-boot/syslinux-3.84
-
 # We want to pin to the libpng version Chromium itself is using on targets.
 >=media-libs/libpng-1.3
 
