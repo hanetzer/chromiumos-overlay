@@ -12,7 +12,7 @@ SRC_URI="http://www.netfilter.org/projects/conntrack-tools/files/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=*
-IUSE="doc"
+IUSE="doc +seccomp"
 
 RDEPEND="
 	>=net-libs/libmnl-1.0.3
@@ -82,4 +82,8 @@ src_install() {
 
 	insinto /etc/init
 	doins "${FILESDIR}/init/conntrackd.conf"
+
+	insinto /usr/share/policy/
+	use seccomp && newins "${FILESDIR}/conntrackd-seccomp-${ARCH}.policy" \
+		conntrackd-seccomp.policy
 }
