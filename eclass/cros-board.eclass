@@ -31,6 +31,7 @@ ALL_BOARDS=(
 	amd64-corei7
 	#amd64-drm
 	amd64-generic
+	amd64-generic-cheets
 	amd64-generic-goofy
 	amd64-generic_embedded
 	#amd64-generic_freon
