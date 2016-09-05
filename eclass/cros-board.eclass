@@ -185,6 +185,7 @@ ALL_BOARDS=(
 	parrot64
 	parrot_ivb
 	#parry
+	pbody
 	peach
 	peach_kirby
 	peach_pi
