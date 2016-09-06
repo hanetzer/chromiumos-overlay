@@ -14,16 +14,20 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="vulkan"
 
 RDEPEND="virtual/opengles
-	|| ( media-libs/mesa[gbm] media-libs/minigbm )"
+	|| ( media-libs/mesa[gbm] media-libs/minigbm )
+	vulkan? (
+		media-libs/vulkan-loader
+		virtual/vulkan-icd
+	)"
 DEPEND="${RDEPEND}
 	x11-drivers/opengles-headers"
 
 src_compile() {
 	tc-export CC
-	emake
+	emake USE_VULKAN=$(usex vulkan 1 0)
 }
 
 src_install() {
@@ -31,4 +35,8 @@ src_install() {
 	dobin atomictest drm_cursor_test gamma_test linear_bo_test \
 	mapped_texture_test mmap_test null_platform_test plane_test \
 	swrast_test vgem_test
+
+	if use vulkan; then
+		dobin vk_glow
+	fi
 }
