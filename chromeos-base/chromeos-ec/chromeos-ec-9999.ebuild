@@ -121,5 +121,4 @@ src_install() {
 src_test() {
 	# Verify compilation of all boards
 	emake buildall
-	emake runtests
 }
