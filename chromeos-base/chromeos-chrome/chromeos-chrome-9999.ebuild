@@ -835,6 +835,14 @@ setup_compile_flags() {
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
 	fi
 
+	# The .dwp file for x86 and arm exceeds 4GB limit. Adding this flag as a
+	# workaround. The generated symbol files are the same with/without this
+	# flag. See https://crbug.com/641188
+	if use chrome_debug && ( use x86 || use arm ) && ! use clang; then
+		EBUILD_CFLAGS+=( -femit-struct-debug-reduced )
+		EBUILD_CXXFLAGS+=( -femit-struct-debug-reduced )
+	fi
+
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
 
