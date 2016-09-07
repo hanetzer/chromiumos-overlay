@@ -24,6 +24,7 @@ DEPEND="${RDEPEND}
 "
 
 SERVER_IUSE_TESTS="
+	+tests_android_ACTS
 	+tests_audio_AudioAfterReboot
 	+tests_audio_AudioAfterSuspend
 	+tests_audio_AudioARCRecord
