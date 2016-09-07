@@ -5,6 +5,8 @@ EAPI=4
 
 DESCRIPTION="Init script to run agetty on selected terminals."
 
+inherit systemd
+
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
@@ -24,10 +26,11 @@ ALL_PORTS=(
 )
 
 IUSE_PORTS="${ALL_PORTS[@]/#/${USE_PREFIX}}"
-IUSE="${IUSE_PORTS}"
+IUSE="${IUSE_PORTS} systemd"
 
 RDEPEND="
-	sys-apps/upstart
+	systemd? ( sys-apps/systemd )
+	!systemd? ( sys-apps/upstart )
 	!chromeos-base/tty1
 	!chromeos-base/serial-tty
 "
@@ -38,9 +41,11 @@ src_compile() {
 	# Generate a file for each activated tty console.
 	local item
 
-	for item in ${IUSE_PORTS}; do
-		use ${item} && generate_init_script ${item}
-	done
+	if use !systemd; then
+		for item in ${IUSE_PORTS}; do
+			use ${item} && generate_init_script ${item}
+		done
+	fi
 }
 
 generate_init_script() {
@@ -55,7 +60,20 @@ generate_init_script() {
 
 src_install() {
 	if [[ -n ${TTY_CONSOLE} ]]; then
-		insinto /etc/init
-		doins console-*.conf
+		if use systemd; then
+			systemd_dounit "${FILESDIR}/chromeos-tty@.service"
+			local item
+			for item in ${IUSE_PORTS}; do
+				if use ${item}; then
+					local port="${item#${USE_PREFIX}}"
+					local unit_dir=$(systemd_get_unitdir)
+					dosym  "../chromeos-tty@.service" \
+						"${unit_dir}/boot-services.target.wants/chromeos-tty@${port}.service"
+				fi
+        		done
+		else
+			insinto /etc/init
+			doins console-*.conf
+		fi
 	fi
 }
