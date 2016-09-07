@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("b347f91af67d3b36fa630a627abf1c64c98760de" "27c67f4ee994ea38bdaa584f21f6f9a90b871f80" "61c4ee12be495fe60b94b60f768be0f6a539fd05" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("815e721512dfa67dd0c5dcf1ff2cf13a21a07e8a" "ffcce4121b461f9bb17b30d554be0b803ff5d90c" "86327aa6b1caa210cbe483d0aa8760ff40c6feba" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("d3edecdb135939c3264ab1b831e7821d3a3e0149" "27c67f4ee994ea38bdaa584f21f6f9a90b871f80" "61c4ee12be495fe60b94b60f768be0f6a539fd05" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("acd3e7f608ed07aae00890bfa8da0fc61c017c60" "ffcce4121b461f9bb17b30d554be0b803ff5d90c" "86327aa6b1caa210cbe483d0aa8760ff40c6feba" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
