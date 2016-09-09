@@ -39,6 +39,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-options-fix.patch"
 	# Upstream fix for buffer overflow fix in radius (crbug.com/481874).
 	epatch "${FILESDIR}/${P}-buffer-overflow-in-radius.patch"
+	# Fix for clang FORTIFY (crbug.com/640358).
+	epatch "${FILESDIR}/${PN}-remove-ttyname.patch"
 
 	if use atm ; then
 		einfo "Enabling PPPoATM support"
