@@ -30,3 +30,8 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 }
+
+pkg_preinst() {
+        enewuser biod
+        enewgroup biod
+}
