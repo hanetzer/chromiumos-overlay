@@ -122,6 +122,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-libs/opensc
 	dev-libs/protobuf-python
 	dev-python/btsocket
+	dev-python/contextlib2
 	dev-python/dbus-python
 	dev-python/dpkt
 	dev-python/imaging
@@ -137,6 +138,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/pyyaml
 	dev-python/selenium
 	dev-python/setproctitle
+	dev-python/setuptools
 	dev-python/ws4py
 	dev-util/stressapptest
 	games-util/joystick
