@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="login_manager"
 
-inherit cros-workon platform
+inherit cros-workon platform systemd
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test cheets"
+IUSE="test cheets systemd"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
@@ -72,8 +72,22 @@ src_install() {
 	doins SessionManager.conf
 
 	# Adding init scripts
-	insinto /etc/init
-	doins init/*.conf
+	if use systemd; then
+		systemd_dounit init/systemd/*
+		systemd_enable_service x-started.target clear-framebuffer.service
+		systemd_enable_service multi-user.target ui.target
+		systemd_enable_service ui.target ui.service
+		systemd_enable_service ui.service machine-info.service
+		systemd_enable_service login-prompt-visible.target send-uptime-metrics.service
+		systemd_enable_service login-prompt-visible.target ui-init-late.service
+		systemd_enable_service start-user-session.target login.service
+		systemd_enable_service system-services.target ui-collect-machine-info.service
+	else
+		insinto /etc/init
+		doins init/upstart/*.conf
+	fi
+	exeinto /usr/share/cros/init/
+	doexe init/scripts/*
 
 	# For user session processes.
 	dodir /etc/skel/log
