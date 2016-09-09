@@ -17,8 +17,7 @@ IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="media-libs/alsa-lib
-	media-sound/adhd
-	sci-libs/fftw"
+	media-sound/adhd"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
@@ -39,11 +38,9 @@ src_install() {
 
 	# Install built tools
 	pushd "${OUT}" >/dev/null
-	dobin alsa_api_test
-	dobin audiofuntest
-	dobin cras_api_test
-	dobin test_tones
-	dobin looptest
-	dobin loopback_latency
+	dobin src/alsa_api_test
+	dobin src/audiofuntest
+	dobin src/cras_api_test
+	dobin src/loopback_latency
 	popd >/dev/null
 }
