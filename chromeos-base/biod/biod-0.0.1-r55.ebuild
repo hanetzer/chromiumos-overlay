@@ -29,6 +29,9 @@ DEPEND="${RDEPEND}"
 src_install() {
 	dobin "${OUT}"/biod
 
+	into /usr/local
+	dobin "${OUT}"/fake_biometric_tool
+
 	insinto /etc/init
 	doins init/*.conf
 }
