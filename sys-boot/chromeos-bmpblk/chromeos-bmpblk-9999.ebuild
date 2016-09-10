@@ -100,13 +100,25 @@ src_compile() {
 	emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
 }
 
+doins_if_exist() {
+	local f
+	for f in "$@"; do
+		if [[ -r "${f}" ]]; then
+			doins "${f}"
+		fi
+	done
+}
+
 src_install() {
 	# Bitmaps need to reside in the RO CBFS only. Many boards do
 	# not have enough space in the RW CBFS regions to contain
 	# all image files.
 	insinto /firmware/rocbfs
-	doins "${WORKDIR}/${BOARD}"/vbgfx.bin
-	doins "${WORKDIR}/${BOARD}"/locales
-	doins "${WORKDIR}/${BOARD}"/locale_*.bin
-	doins "${WORKDIR}/${BOARD}"/font.bin
+	# These files aren't necessary for debug builds. When these files
+	# are missing, Depthcharge will render text-only screens. They look
+	# obviously not ready for release.
+	doins_if_exist "${WORKDIR}/${BOARD}"/vbgfx.bin
+	doins_if_exist "${WORKDIR}/${BOARD}"/locales
+	doins_if_exist "${WORKDIR}/${BOARD}"/locale_*.bin
+	doins_if_exist "${WORKDIR}/${BOARD}"/font.bin
 }
