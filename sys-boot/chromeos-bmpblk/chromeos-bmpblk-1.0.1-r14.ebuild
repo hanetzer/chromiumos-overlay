@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="9ae0ed8d0443971d7298e354223df5b50b4a55d6"
-CROS_WORKON_TREE="75e279b96350420f4454e46aaab1459411019179"
+CROS_WORKON_COMMIT="1c971a6cb97481c7fee41991453a22c552aeead7"
+CROS_WORKON_TREE="ac827136552bd3b547b8f60bbb29929c203aa3db"
 CROS_WORKON_PROJECT="chromiumos/platform/bmpblk"
 CROS_WORKON_LOCALNAME="../platform/bmpblk"
 CROS_WORKON_OUTOFTREE_BUILD="1"
@@ -102,13 +102,25 @@ src_compile() {
 	emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
 }
 
+doins_if_exist() {
+	local f
+	for f in "$@"; do
+		if [[ -r "${f}" ]]; then
+			doins "${f}"
+		fi
+	done
+}
+
 src_install() {
 	# Bitmaps need to reside in the RO CBFS only. Many boards do
 	# not have enough space in the RW CBFS regions to contain
 	# all image files.
 	insinto /firmware/rocbfs
-	doins "${WORKDIR}/${BOARD}"/vbgfx.bin
-	doins "${WORKDIR}/${BOARD}"/locales
-	doins "${WORKDIR}/${BOARD}"/locale_*.bin
-	doins "${WORKDIR}/${BOARD}"/font.bin
+	# These files aren't necessary for debug builds. When these files
+	# are missing, Depthcharge will render text-only screens. They look
+	# obviously not ready for release.
+	doins_if_exist "${WORKDIR}/${BOARD}"/vbgfx.bin
+	doins_if_exist "${WORKDIR}/${BOARD}"/locales
+	doins_if_exist "${WORKDIR}/${BOARD}"/locale_*.bin
+	doins_if_exist "${WORKDIR}/${BOARD}"/font.bin
 }
