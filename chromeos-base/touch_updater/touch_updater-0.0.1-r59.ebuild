@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="002d36922396e45b745dff32b0244f3c1744fd5b"
-CROS_WORKON_TREE="23da1b20372ed21718bcc687ec84dcff2fe82676"
+CROS_WORKON_COMMIT="84bd46190900251f4a21cb1dfc518d3c12fde424"
+CROS_WORKON_TREE="e417bb714e873bb70068d8c85ae3a92c7fcb5677"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_updater"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -30,4 +30,7 @@ src_install() {
 
 	exeinto "/opt/google/touch/scripts"
 	doexe scripts/*.sh
+
+	insinto "/opt/google/touch/policies"
+	doins policies/*.policy
 }
