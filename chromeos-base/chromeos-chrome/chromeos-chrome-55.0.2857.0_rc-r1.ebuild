@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-54.0.2840.14_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-54.0.2840.14_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-54.0.2840.14_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2855.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2855.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2855.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -833,6 +833,14 @@ setup_compile_flags() {
 		)
 		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
+	fi
+
+	# The .dwp file for x86 and arm exceeds 4GB limit. Adding this flag as a
+	# workaround. The generated symbol files are the same with/without this
+	# flag. See https://crbug.com/641188
+	if use chrome_debug && ( use x86 || use arm ) && ! use clang; then
+		EBUILD_CFLAGS+=( -femit-struct-debug-reduced )
+		EBUILD_CXXFLAGS+=( -femit-struct-debug-reduced )
 	fi
 
 	# Enable std::vector []-operator bounds checking.
