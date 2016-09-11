@@ -66,6 +66,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${P}-mdns-helper.patch
 	epatch "${FILESDIR}"/${P}-lazy-binding.patch
+	epatch "${FILESDIR}"/${P}-upnp-helper.patch
 	eautoreconf
 }
 
