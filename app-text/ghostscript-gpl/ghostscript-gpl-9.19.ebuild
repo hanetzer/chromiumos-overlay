@@ -21,7 +21,7 @@ SRC_URI="
 LICENSE="AGPL-3 CPL-1.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cups dbus djvu gtk idn linguas_de static-libs tiff X"
+IUSE="cups dbus djvu gtk idn linguas_de crosfonts static-libs tiff X"
 RESTRICT="djvu? ( bindist )"
 
 COMMON_DEPEND="
@@ -47,8 +47,8 @@ DEPEND="${COMMON_DEPEND}
 "
 
 RDEPEND="${COMMON_DEPEND}
-	>=app-text/poppler-data-0.4.5-r1
-	>=media-fonts/urw-fonts-2.4.9
+	!crosfonts? ( >=app-text/poppler-data-0.4.5-r1 )
+	!crosfonts? ( >=media-fonts/urw-fonts-2.4.9 )
 	linguas_ja? ( media-fonts/kochi-substitute )
 	linguas_ko? ( media-fonts/baekmuk-fonts )
 	linguas_zh_CN? ( media-fonts/arphicfonts )
@@ -122,6 +122,11 @@ src_prepare() {
 		sed -i -e "s:\$(GSSOX)::" \
 			-e "s:.*\$(GSSOX_XENAME)$::" \
 			"${S}"/base/unix-dll.mak || die "sed failed"
+	fi
+
+	if use crosfonts ; then
+		rm -rf "${S}/Resource/Font"
+		rm -rf "${S}/Resource/CIDFSubst"
 	fi
 
 	# Force the include dirs to a neutral location.
@@ -243,5 +248,9 @@ src_install() {
 
 	if ! use linguas_de; then
 		rm -r "${ED}"/usr/share/man/de || die
+	fi
+
+	if use crosfonts; then
+		cat "${FILESDIR}"/Fontmap.cros >> "${ED}"/usr/share/ghostscript/${PVM}/Resource/Init/Fontmap.GS
 	fi
 }
