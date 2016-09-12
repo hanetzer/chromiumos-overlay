@@ -57,6 +57,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0028-usb-autosuspend-on-ac.patch" \
           "0029-Enable-SATA-min_power-on-AC-mode.patch" \
           "0030-Allow-WiFi-PowerSave-Override.patch" \
+          "0031-interactive-goverener-parameters-for-hmp-cpus.patch" \
         )
 
 src_prepare() {

@@ -1,0 +1,54 @@
+diff --git laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/cpufreq laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/cpufreq
+index ce8f0c0..a2c294a 100755
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/cpufreq
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/cpufreq
+@@ -141,6 +141,7 @@ fi
+ 
+ # Optional setting for the interactive governor.
+ INTERACTIVE_DIR=/sys/devices/system/cpu/cpufreq/interactive
++POLICY_INTERACTIVE_DIR=/sys/devices/system/cpu/cpufreq/policy*/interactive
+ 
+ get_setting() {
+ 	if [ $ON_AC -eq 1 ] ; then
+@@ -161,18 +162,31 @@ set_optional_interactive_value() {
+ 	if [ -z "${config_value}" ]; then
+ 		return;
+ 	fi
+-	if [ -f ${INTERACTIVE_DIR}/$sysfs_name ]; then
+-		log "VERBOSE" "Setting $sysfs_name for all cpus"
+-		set_sysctl $INTERACTIVE_DIR/$sysfs_name "${config_value}"
++	if [ -f $3/$sysfs_name ]; then
++		log "VERBOSE" "Setting $sysfs_name for $3/$sysfs_name"
++		set_sysctl $3/$sysfs_name "${config_value}"
+ 	fi
+ }
+ 
+ if [ -d ${INTERACTIVE_DIR} ]; then
+-	set_optional_interactive_value input_boost INPUT_BOOST
+-	set_optional_interactive_value above_hispeed_delay ABOVE_HISPEED_DELAY
+-	set_optional_interactive_value go_hispeed_load GO_HISPEED_LOAD
+-	set_optional_interactive_value hispeed_freq HISPEED_FREQ
+-	set_optional_interactive_value min_sample_time MIN_SAMPLE_TIME
+-	set_optional_interactive_value target_loads TARGET_LOADS
+-	set_optional_interactive_value timer_rate TIMER_RATE
++	set_optional_interactive_value input_boost INPUT_BOOST ${INTERACTIVE_DIR}
++	set_optional_interactive_value above_hispeed_delay ABOVE_HISPEED_DELAY ${INTERACTIVE_DIR}
++	set_optional_interactive_value go_hispeed_load GO_HISPEED_LOAD ${INTERACTIVE_DIR}
++	set_optional_interactive_value hispeed_freq HISPEED_FREQ ${INTERACTIVE_DIR}
++	set_optional_interactive_value min_sample_time MIN_SAMPLE_TIME ${INTERACTIVE_DIR}
++	set_optional_interactive_value target_loads TARGET_LOADS ${INTERACTIVE_DIR}
++	set_optional_interactive_value timer_rate TIMER_RATE ${INTERACTIVE_DIR}
++else
++  for THIS_POLICY in $POLICY_INTERACTIVE_DIR; do
++    POLICY_NUM=$(echo "$THIS_POLICY" | sed -E -n 's:.*policy([0-9]+)\/.*:\1:p')
++    if [ -n "$POLICY_NUM" ]; then
++      set_optional_interactive_value input_boost "INPUT_BOOST_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value above_hispeed_delay "ABOVE_HISPEED_DELAY_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value go_hispeed_load "GO_HISPEED_LOAD_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value hispeed_freq "HISPEED_FREQ_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value min_sample_time "MIN_SAMPLE_TIME_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value target_loads "TARGET_LOADS_POLICY_$POLICY_NUM" ${THIS_POLICY}
++      set_optional_interactive_value timer_rate "TIMER_RATE_POLICY_$POLICY_NUM" ${THIS_POLICY}
++    fi
++  done
+ fi
