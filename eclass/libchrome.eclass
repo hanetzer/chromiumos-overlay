@@ -14,6 +14,8 @@
 # eclass centralizes the logic used to depend on libchrome and sets up the
 # environment variables to reduce the amount of change needed.
 
+inherit cros-debug
+
 [[ -z ${LIBCHROME_VERS} ]] && LIBCHROME_VERS=( 395517 )
 export BASE_VER="${LIBCHROME_VERS[0]}"
 
