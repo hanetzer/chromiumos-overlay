@@ -272,6 +272,7 @@ RDEPEND="${RDEPEND}
 	dev-python/sqlalchemy
 	dev-python/pyparsing
 	dev-python/python-statsd
+	dev-python/virtualenv
 	"
 
 # Host dependencies that are needed for unit tests
