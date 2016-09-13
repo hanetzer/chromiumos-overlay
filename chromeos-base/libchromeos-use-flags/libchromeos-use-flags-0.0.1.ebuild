@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit cros-board cros-debug
+inherit cros-debug
 
 DESCRIPTION="Text file listing USE flags for chromeos-base/libchromeos"
 
@@ -29,8 +29,10 @@ IUSE="
 	has_diamond_key
 	has_hdd
 	highdpi
+	kevin
 	legacy_keyboard
 	legacy_power_button
+	link
 	moblab
 	native_gpu_memory_buffers
 	natural_scroll_default
@@ -41,6 +43,8 @@ IUSE="
 	rialto
 	test
 	touchview
+	veyron_mickey
+	veyron_minnie
 	+X
 "
 
