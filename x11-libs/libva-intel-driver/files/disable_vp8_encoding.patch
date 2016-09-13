@@ -1,8 +1,8 @@
 diff --git a/src/i965_device_info.c b/src/i965_device_info.c
-index d5b5cb8..0698df9 100644
+index 96ea43c..0258cf0 100644
 --- a/src/i965_device_info.c
 +++ b/src/i965_device_info.c
-@@ -296,7 +296,6 @@ static struct hw_codec_info chv_hw_codec_info = {
+@@ -305,7 +305,6 @@ static struct hw_codec_info chv_hw_codec_info = {
      .has_di_motion_adptive = 1,
      .has_di_motion_compensated = 1,
      .has_vp8_decoding = 1,
@@ -10,7 +10,23 @@ index d5b5cb8..0698df9 100644
      .has_h264_mvc_encoding = 1,
      .has_hevc_decoding = 1,
  
-@@ -344,7 +343,6 @@ static struct hw_codec_info skl_hw_codec_info = {
+@@ -353,7 +352,6 @@ static struct hw_codec_info skl_hw_codec_info = {
+     .has_di_motion_adptive = 1,
+     .has_di_motion_compensated = 1,
+     .has_vp8_decoding = 1,
+-    .has_vp8_encoding = 1,
+     .has_h264_mvc_encoding = 1,
+     .has_hevc_decoding = 1,
+     .has_hevc_encoding = 1,
+@@ -406,7 +404,6 @@ static struct hw_codec_info bxt_hw_codec_info = {
+     .has_di_motion_adptive = 1,
+     .has_di_motion_compensated = 1,
+     .has_vp8_decoding = 1,
+-    .has_vp8_encoding = 1,
+     .has_h264_mvc_encoding = 1,
+     .has_hevc_decoding = 1,
+     .has_hevc_encoding = 1,
+@@ -461,7 +458,6 @@ static struct hw_codec_info kbl_hw_codec_info = {
      .has_di_motion_adptive = 1,
      .has_di_motion_compensated = 1,
      .has_vp8_decoding = 1,
