@@ -5,5 +5,5 @@
 # libgcrypt does not use --noexecstack when build with clang -g.
 # See https://crbug.com/554708
 cros_pre_src_prepare_use_gcc() {
-        cros_use_gcc
+	cros_use_gcc
 }
