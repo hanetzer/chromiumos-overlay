@@ -20,6 +20,7 @@ IUSE="
 	cheets
 	cros-debug
 	disable_login_animations
+	disable_low_latency_audio
 	disable_webaudio
 	fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
