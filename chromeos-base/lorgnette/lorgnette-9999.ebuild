@@ -23,7 +23,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	media-gfx/sane-backends
-	media-libs/libpng[pnm2png]
+	media-gfx/pnm2png
 "
 
 DEPEND="${RDEPEND}
