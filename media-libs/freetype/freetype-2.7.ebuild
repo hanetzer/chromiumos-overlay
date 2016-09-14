@@ -55,8 +55,21 @@ src_prepare() {
 	}
 
 	# This is the same as the 01 patch from infinality
-	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
+	# TODO(jshin): Consider dropping this patch.
+	epatch "${FILESDIR}"/${PN}-2.7-enable-valid.patch
+
+	# Enable stem-darkening for CFF font
+	# TODO(jshin): Evaluate the impact of disabling stem-darkening.
 	epatch "${FILESDIR}"/${PN}-2.6.2-enable-cff-stem-darkening.patch
+
+	# Disable subpixel hinting for now.
+	# TODO(jshin): Evaluate the impact of turning it on.
+	# The following does not work.
+	#   disable_option TT_CONFIG_OPTION_SUBPIXEL_HINTING
+	epatch "${FILESDIR}"/${PN}-2.7-disable-subpixel-hinting.patch
+
+	# Apply additional changes beyond 2.7 up to c38be52bf8 in the upstream.
+	epatch "${FILESDIR}"/${PN}-2.7-c38be52bf8.patch
 
 	if use infinality; then
 		epatch "${WORKDIR}/${INFINALITY_PATCH}"
