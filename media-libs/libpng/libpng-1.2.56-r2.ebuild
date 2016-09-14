@@ -1,1 +1,0 @@
-libpng-1.2.56.ebuild
