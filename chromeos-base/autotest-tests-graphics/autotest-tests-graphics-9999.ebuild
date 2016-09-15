@@ -22,7 +22,10 @@ RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
 	chromeos-base/autotest-deps-glbench
 	chromeos-base/autotest-deps-graphics
-	ozone? ( tests_graphics_Gbm? ( media-libs/minigbm ) )
+	ozone? (
+		tests_graphics_Drm? ( chromeos-base/drm-tests )
+		tests_graphics_Gbm? ( media-libs/minigbm )
+	)
 	tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
 	tests_graphics_SanAngeles? ( media-libs/waffle )
 	tests_graphics_Sanity? ( x11-libs/libdrm )
@@ -36,6 +39,7 @@ IUSE_TESTS="
 	)
 	ozone? (
 		+tests_graphics_dEQP
+		+tests_graphics_Drm
 		+tests_graphics_Gbm
 	)
 	+tests_graphics_GLAPICheck
