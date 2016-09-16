@@ -11,4 +11,4 @@ inherit cros-workon cros-kernel2
 DESCRIPTION="Chrome OS Linux Kernel 3.10"
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 KEYWORDS="~*"
-
+RDEPEND="!sys-kernel/kernel-freon"
