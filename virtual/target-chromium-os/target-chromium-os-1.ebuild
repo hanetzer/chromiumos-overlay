@@ -221,6 +221,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
 	chromeos-base/crosh
+	chromeos-base/crosh-extension
 	chromeos-base/dev-install
 	chromeos-base/inputcontrol
 	chromeos-base/mtpd

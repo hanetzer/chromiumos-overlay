@@ -151,11 +151,6 @@ src_install() {
 	insinto /usr/share/chromeos-assets/connectivity_diagnostics_kiosk
 	doins -r "${S}"/connectivity_diagnostics_kiosk_deploy/*
 
-	insinto /usr/share/chromeos-assets/crosh_builtin/
-	unzip -d crosh_builtin_deploy/ "${S}"/chromeapps/crosh_builtin/crosh_builtin.zip
-
-	doins -r "${S}"/crosh_builtin_deploy/*
-
 	insinto /usr/share/color/bin
 	if use mario; then
 		newins "${S}"/color_profiles/mario.bin internal_display.bin
