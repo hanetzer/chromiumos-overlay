@@ -20,7 +20,7 @@ EMERGE_DEFAULT_OPTS="--oneshot"
 PORTAGE_BZIP2_COMMAND="pbzip2"
 PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 
-FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /mnt/host/source/chromite/bin/gs_fetch_binpkg \"${URI}\" \"${DISTDIR}/${FILE}\"'"
+FETCHCOMMAND_GS='/mnt/host/source/chromite/bin/gs_fetch_binpkg --boto "/home/${PORTAGE_USERNAME}/.boto" "\${URI}" "\${DISTDIR}/\${FILE}"'
 RESUMECOMMAND_GS="${FETCHCOMMAND_GS}"
 
 FETCHCOMMAND_AB='/mnt/host/source/chromite/bin/abutil fetch "\${URI}" "\${DISTDIR}/\${FILE}"'
