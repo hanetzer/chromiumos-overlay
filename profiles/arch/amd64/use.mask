@@ -38,6 +38,11 @@
 # codec support x264
 -x264
 
+# Michał Górny <mgorny@gentoo.org> (26 Jan 2013)
+# Unmask the multilib flags for this arch.
+-abi_x86_32
+-abi_x86_64
+
 # 2006/01/28 - Donnie Berkholz <dberkholz@gentoo.org>
 # Modular X: unmask for architectures on which they are available
 -input_devices_synaptics

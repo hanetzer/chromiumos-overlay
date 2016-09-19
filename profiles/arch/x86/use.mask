@@ -38,6 +38,11 @@
 # Unmask yellownet, used by aqbanking (bug 149970)
 -yellownet
 
+# Michał Górny <mgorny@gentoo.org> (26 Jan 2013)
+# Unmask the flag corresponding to the only ABI. This allows x86 binary
+# packages to have uniform dependencies for amd64-multilib & x86.
+-abi_x86_32
+
 # Modular X: unmask for architectures on which they are available
 -input_devices_synaptics
 -input_devices_virtualbox
