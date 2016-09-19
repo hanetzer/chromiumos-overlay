@@ -44,6 +44,16 @@ src_prepare() {
 	# that gets blown away anyways by the Configure script in src_configure
 	rm -f Makefile
 
+	# bugs 585142 and 585276
+	epatch "${FILESDIR}"/${P}-CVE-2016-2177.patch
+	epatch "${FILESDIR}"/${P}-CVE-2016-2178.patch
+
+	epatch "${FILESDIR}"/${P}-CVE-2016-2179.patch
+	epatch "${FILESDIR}"/${P}-CVE-2016-2181.patch
+	epatch "${FILESDIR}"/${P}-CVE-2016-2182.patch
+	epatch "${FILESDIR}"/${P}-CVE-2016-6302.patch
+	epatch "${FILESDIR}"/${P}-CVE-2016-6303.patch
+
 	if ! use vanilla ; then
 		epatch "${FILESDIR}"/${PN}-1.0.0a-ldflags.patch #327421
 		epatch "${FILESDIR}"/${PN}-1.0.0d-windres.patch #373743
