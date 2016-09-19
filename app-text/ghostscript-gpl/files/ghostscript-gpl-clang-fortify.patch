@@ -1,0 +1,37 @@
+This is a partial cherrypick of
+http://git.ghostscript.com/?p=ghostpdl.git;a=commitdiff;h=eb30a6927cf172c45bda4717a8bb8e21e7a5fe95
+
+Clang FORTIFY doesn't like redeclarations of FORTIFY'ed functions without the
+overloadable attribute on them, and base/memento.c redeclares memset if memset
+isn't #defined. This is problematic if <memory.h> is included, since that
+includes <string.h>, which contains the FORTIFY'ed version of memset.
+
+If we no longer include <memory.h>, though, everything seems to work.
+
+Only a partial cherrypick, since the original commit doesn't apply cleanly.
+
+commit eb30a6927cf172c45bda4717a8bb8e21e7a5fe95
+Author: Robin Watts <robin.watts@artifex.com>
+Date:   Mon Jul 25 16:51:03 2016 +0100
+
+    Import latest Memento from MuPDF.
+
+    Reintroduce the Memento_tick, and Mememto_event changes which haven't
+    made it to MuPDF yet.
+
+--- a/base/memento.h
++++ b/base/memento.h
+@@ -161,12 +161,11 @@
+ 
+ #ifndef MEMENTO_H
+ 
+-#include <memory.h>
++#include <stdlib.h>
+ 
+ #ifdef __ANDROID__
+ #define MEMENTO_ANDROID
+ #include <stdio.h>
+-#include <stdlib.h>
+ #endif
+ 
+ #define MEMENTO_H

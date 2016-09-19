@@ -102,6 +102,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}/${PN}-9.19-ccaux.patch"
 	epatch "${FILESDIR}/${PN}-9.18-libdata-deps.patch"
+	epatch "${FILESDIR}/${PN}-clang-fortify.patch"
 
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
