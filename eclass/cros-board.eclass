@@ -123,6 +123,7 @@ ALL_BOARDS=(
 	guado
 	guado_moblab
 	guado_labstation
+	hana
 	heli
 	hsb
 	ironhide
