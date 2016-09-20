@@ -46,3 +46,6 @@ CONFIG_IFD_BIN_PATH="3rdparty/blobs/mainboard/google/reef/descriptor.bin"
 CONFIG_NEED_IFWI=y
 CONFIG_IFWI_FMAP_NAME="IFWI"
 CONFIG_IFWI_FILE_NAME="3rdparty/blobs/mainboard/google/reef/fitimage.bin"
+
+# Microcode
+CONFIG_CPU_UCODE_BINARIES="3rdparty/blobs/baseboard-reef/ucode.bin"
