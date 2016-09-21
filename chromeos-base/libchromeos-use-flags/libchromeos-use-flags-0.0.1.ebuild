@@ -39,6 +39,7 @@ IUSE="
 	neon
 	opengles
 	ozone
+	passive_event_listeners
 	pointer_events
 	rialto
 	test
