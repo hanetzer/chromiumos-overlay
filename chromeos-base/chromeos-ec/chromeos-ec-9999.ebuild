@@ -83,17 +83,23 @@ board_install() {
 	# Intermediate file for debugging.
 	doins RW/ec.RW.elf
 
-	if [ `grep "^CONFIG_FW_INCLUDE_RO=y" .config` ];
-		then
-			newins RO/ec.RO.flat ec.RO.bin
-			doins RO/ec.RO.hash
-			# Intermediate file for debugging.
-			doins RO/ec.RO.elf
+	if grep -q '^CONFIG_RW_B=y' .config; then
+		openssl dgst -sha256 -binary RW/ec.RW_B.flat > RW/ec.RW_B.hash
+		newins RW/ec.RW_B.flat ec.RW_B.bin
+		doins RW/ec.RW_B.hash
+		# Intermediate file for debugging.
+		doins RW/ec.RW_B.elf
+	fi
+
+	if grep -q '^CONFIG_FW_INCLUDE_RO=y' .config; then
+		newins RO/ec.RO.flat ec.RO.bin
+		doins RO/ec.RO.hash
+		# Intermediate file for debugging.
+		doins RO/ec.RO.elf
 	fi
 
 	# The shared objects library is not built by default.
-	if [ `grep "^CONFIG_SHAREDLIB=y" .config` ];
-		then
+	if grep -q '^CONFIG_SHAREDLIB=y' .config; then
 		doins libsharedobjs/libsharedobjs.elf
 	fi
 
