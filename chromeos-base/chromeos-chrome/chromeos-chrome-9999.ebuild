@@ -953,6 +953,7 @@ src_configure() {
 	done
 	export GN_ARGS="${BUILD_ARGS[*]}"
 	if use gn; then
+		einfo "GN_ARGS = ${GN_ARGS}"
 		${EGN} gen "${CHROME_ROOT}/src/${BUILD_OUT_SYM}/${BUILDTYPE}" \
 			--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 	fi
