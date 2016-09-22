@@ -4,6 +4,8 @@
 
 EAPI=4
 
+inherit eutils
+
 DESCRIPTION="C library that resolves names asynchronously"
 HOMEPAGE="http://c-ares.haxx.se/"
 SRC_URI="http://${PN}.haxx.se/download/${P}.tar.gz"
@@ -14,6 +16,11 @@ KEYWORDS="*"
 IUSE="static-libs"
 
 DOCS=( AUTHORS CHANGES README README.cares RELEASE-NOTES TODO )
+
+src_prepare() {
+	# chromium:649040
+	epatch "${FILESDIR}"/c-ares-1.7.5-mkquery-heap-overflow.patch
+}
 
 src_configure() {
 	econf \
