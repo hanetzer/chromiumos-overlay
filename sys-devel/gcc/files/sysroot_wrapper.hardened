@@ -114,25 +114,6 @@ if '-fstack-check' in myargs:
         file=sys.stderr)
   sys.exit(1)
 
-# We will start to enable ASAN for cros-workon packages.
-# For ASAN, if a library is built with ASAN, then all the binaries that use
-# this library should at least link against ASAN.
-# Our solution is to add '-fsanitize=address' to LDFLAGS for asan bot.
-# This causes another problem. Packages that are built with gcc.real have the
-# '-fsanitize=address' option in the link time. We use clang for all asan
-# built. This is a conflict. Our solution is if we see a gcc command with
-# '-fsanitize=address', we first try to run it without '-fsanitize=address'.
-# If it is successful, then we are fine. otherwise, we check the output of the
-# command, if it contains some thing like undefinited symbol "asan_init", we
-# invoke clang and run again. If there is an error in the gcc command, that is
-# not related to ASAN, we just exit.
-
-ASAN_FLAG = '-fsanitize=address'
-# some package will translate '-fsanitize=address' to '-Wl,-fsanitize=address'.
-myargs = [ASAN_FLAG if ASAN_FLAG in x else x for x in myargs]
-use_asan = ASAN_FLAG in myargs
-link_with_asan = not clang_codegen and use_asan
-clang_codegen |= link_with_asan
 invoke_clang = '-clang-syntax' in myargs or clang_codegen
 
 if '-noccache' in myargs:
@@ -260,37 +241,6 @@ def get_linker_path(cmd):
   return None
 
 
-def link_asan():
-  """link process when '-fsanitize=address' appears in a gcc command."""
-  orig_gcc_cmdline = [x for x in gcc_cmdline if ASAN_FLAG not in x]
-  gcc_execargs = (execargs + [real_gcc] + gcc_flags + orig_gcc_cmdline)
-
-  p = subprocess.Popen(gcc_execargs,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE)
-  out, err = p.communicate()
-  errorcode = p.returncode
-  found_clang_undef = False
-  if (out and '__asan_' in out or
-      err and '__asan_' in err):
-    found_clang_undef = True
-
-  if errorcode != 0 and found_clang_undef:
-    if print_cmdline:
-      print('%s %s\n' % (clang_comp, ' '.join(clang_cmdline)))
-    clang_execargs = [clang_comp] + clang_cmdline
-    sys.stdout.flush()
-    os.execv(clang_comp, clang_execargs)
-  else:
-    if print_cmdline:
-      print('[%s] %s' % (argv0, ' '.join(gcc_execargs)))
-    if out:
-      print(out)
-    if err:
-      print(err, file=sys.stderr)
-    sys.exit(errorcode)
-
-
 def get_gomacc_command():
   """Return the gomacc command if it is found in $GOMACC_PATH."""
   gomacc = os.environ.get('GOMACC_PATH')
@@ -378,20 +328,17 @@ if invoke_clang and not skip_clang:
   linker = arch + '-ld'
   linker_path = get_linker_path(linker)
   clang_cmdline += ['-B' + linker_path]
-  if not re.match(r'i.86', arch):
-    clang_cmdline += ['-target', arch]
-  else:
-    if not use_asan:
-      clang_cmdline += ['-target', arch]
-    else:
-      # We can not set -target for x86 because our target is i686-pc-linux-gnu.
-      # If the target is set, it will search for libclang_rt.asan-i686.a
-      # when linking against ASAN. However, this file does not exist.
-      # The libclang_rt.asan-i386.a is there, but we can not set target to
-      # i386-pc-linux-gnu, because the i386-pc-linux-gnu-ld does not exist.
-      clang_cmdline += ['-m32']
+  if re.match(r'i.86', arch):
+    # TODO: -target i686-pc-linux-gnu causes clang to search for
+    # libclang_rt.asan-i686.a which doesn't exist because it's packaged
+    # as libclang_rt.asan-i386.a. We can't use -target i386-pc-linux-gnu
+    # because then it would try to run i386-pc-linux-gnu-ld which doesn't
+    # exist. Consider renaming the runtime library to use i686 in its name.
+    clang_cmdline += ['-m32']
     # clang does not support -mno-movbe. This is the alternate way to do it.
     clang_cmdline += ['-Xclang', '-target-feature', '-Xclang', '-movbe']
+  else:
+    clang_cmdline += ['-target', arch]
 
   # All armv7a systems are built with hardfp, unlike gcc, which has
   # "-mfloat-abi" baked in compiler binaries in configuration phase, for clang,
@@ -467,9 +414,6 @@ else:
 
   argv0 = '/usr/bin/ccache'
   execargs += ['ccache']
-
-if link_with_asan:
-  link_asan()
 
 if clang_codegen:
   execargs += [clang_comp] + clang_cmdline
