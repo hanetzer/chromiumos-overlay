@@ -135,11 +135,7 @@ link_with_asan = not clang_codegen and use_asan
 clang_codegen |= link_with_asan
 invoke_clang = '-clang-syntax' in myargs or clang_codegen
 
-if '-noccache' in myargs or clang_codegen and not link_with_asan:
-  # TODO make clang work with ccache.
-  # Clang does not work with ccache well. At lease it fails at
-  # package adhd.
-
+if '-noccache' in myargs:
   # Only explicitly disable so we can set defaults up top.
   use_ccache = False
 cmdline = [x for x in myargs if x not in wrapper_only_options]
@@ -416,7 +412,9 @@ gomacc = get_gomacc_command()
 if gomacc:
   argv0 = gomacc
   execargs += [gomacc]
-elif use_ccache:
+elif not use_ccache:
+  argv0 = clang_comp if clang_codegen else real_gcc
+else:
   # Portage likes to set this for us when it has FEATURES=-ccache.
   # The other vars we need to setup manually because of tools like
   # scons that scrubs the env before we get executed.
@@ -469,15 +467,16 @@ elif use_ccache:
 
   argv0 = '/usr/bin/ccache'
   execargs += ['ccache']
-else:
-  argv0 = real_gcc
 
 if link_with_asan:
   link_asan()
 
 if clang_codegen:
   execargs += [clang_comp] + clang_cmdline
-  argv0 = clang_comp
+  # ccache may generate false positive warnings.
+  # Workaround bug https://crbug.com/649740
+  if use_ccache:
+    os.environ['CCACHE_CPP2'] = 'yes'
 else:
   execargs += [real_gcc] + gcc_flags + gcc_cmdline
 
