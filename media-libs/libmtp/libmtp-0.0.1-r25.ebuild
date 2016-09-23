@@ -30,6 +30,10 @@ src_prepare() {
 	if [[ ${PV} == *9999* ]]; then
 		touch config.rpath # This is from upstream autogen.sh
 		eautoreconf
+	else
+		# We have generated autotools.  Touch the files to make sure the
+		# timestamps from git don't mess us up.  https://crbug.com/649592
+		find -type f -exec touch -r . {} +
 	fi
 }
 
