@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="alex +fonts lumpy mario"
+IUSE="+fonts"
 
 DEPEND=""
 # display_boot_message calls ply-image directly.
@@ -150,18 +150,6 @@ src_install() {
 		-d "${S}"/connectivity_diagnostics_kiosk_deploy
 	insinto /usr/share/chromeos-assets/connectivity_diagnostics_kiosk
 	doins -r "${S}"/connectivity_diagnostics_kiosk_deploy/*
-
-	insinto /usr/share/color/bin
-	if use mario; then
-		newins "${S}"/color_profiles/mario.bin internal_display.bin
-	elif use alex; then
-		newins "${S}"/color_profiles/alex.bin internal_display.bin
-	elif use lumpy; then
-		newins "${S}"/color_profiles/lumpy.bin internal_display.bin
-	fi
-
-	insinto /usr/share/color/icc
-	doins "${S}"/color_profiles/*.icc
 
 	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
