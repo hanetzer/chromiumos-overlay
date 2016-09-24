@@ -95,6 +95,7 @@ IUSE_TESTS=(
 	+tests_platform_ChromeCgroups
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
+	+tests_policy_AutoFillEnabled
 	+tests_policy_CookiesAllowedForUrls
 	+tests_policy_CookiesBlockedForUrls
 	+tests_policy_EditBookmarksEnabled
@@ -106,8 +107,8 @@ IUSE_TESTS=(
 	+tests_policy_JavaScriptBlockedForUrls
 	+tests_policy_ManagedBookmarks
 	+tests_policy_PluginsAllowedForUrls
+	+tests_policy_PluginsBlockedForUrls
 	+tests_policy_PopupsAllowedForUrls
-	+tests_policy_PopupsBlockedForUrls
 	+tests_policy_ProxySettings
 	+tests_policy_RestoreOnStartupURLs
 	+tests_policy_URLBlacklist
