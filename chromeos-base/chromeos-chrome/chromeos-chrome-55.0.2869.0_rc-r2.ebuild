@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2868.3_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2868.3_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2868.3_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -953,6 +953,7 @@ src_configure() {
 	done
 	export GN_ARGS="${BUILD_ARGS[*]}"
 	if use gn; then
+		einfo "GN_ARGS = ${GN_ARGS}"
 		${EGN} gen "${CHROME_ROOT}/src/${BUILD_OUT_SYM}/${BUILDTYPE}" \
 			--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 	fi
