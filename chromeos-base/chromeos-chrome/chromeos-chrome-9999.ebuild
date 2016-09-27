@@ -1338,6 +1338,7 @@ src_install() {
 		--board="${BOARD}"
 		--build-dir="${FROM}"
 		--gyp-defines="${GYP_DEFINES}"
+		--gn-args="${GN_ARGS}"
 		# If this is enabled, we need to re-enable `prepstrip` above for autotests.
 		# You'll also have to re-add "strip" to the RESTRICT at the top of the file.
 		--nostrip
