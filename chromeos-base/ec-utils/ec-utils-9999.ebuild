@@ -19,10 +19,7 @@ IUSE="-asan -clang -cr50_onboard static"
 REQUIRED_USE="asan? ( clang )"
 
 DEPEND="dev-embedded/libftdi"
-RDEPEND="
-	${DEPEND}
-	cr50_onboard? ( chromeos-base/chromeos-cr50 )
-"
+RDEPEND="${DEPEND}"
 
 set_board() {
 	# bds should be fine for everyone, but for link board, we need to fetch
