@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="27e5923b5604e3ce3c92ad2c1b784a51f486d43e"
-CROS_WORKON_TREE="21b679b16d0736c4ee424daf8ab1e662a05b4c8b"
+CROS_WORKON_COMMIT="eb62387504ffea771d5cbef968292b458ff2cf8a"
+CROS_WORKON_TREE="c8a364304aafade28c63ac9ca9588c330df43583"
 CROS_WORKON_PROJECT="chromiumos/chromite"
 CROS_WORKON_LOCALNAME="../../chromite"
 
