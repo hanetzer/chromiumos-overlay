@@ -130,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2869.0_rc-r2.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-55.0.2872.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-55.0.2872.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-55.0.2872.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -1338,6 +1338,7 @@ src_install() {
 		--board="${BOARD}"
 		--build-dir="${FROM}"
 		--gyp-defines="${GYP_DEFINES}"
+		--gn-args="${GN_ARGS}"
 		# If this is enabled, we need to re-enable `prepstrip` above for autotests.
 		# You'll also have to re-add "strip" to the RESTRICT at the top of the file.
 		--nostrip
