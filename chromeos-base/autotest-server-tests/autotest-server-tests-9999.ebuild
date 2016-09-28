@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="-chromeless_tests +autotest +cellular -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
+IUSE="-chromeless_tests +cheets +autotest +cellular -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -54,6 +54,7 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_AdapterStandalone
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
+	cheets? ( +tests_cheets_CTS )
 	debugd? ( +tests_debugd_DevTools )
 	!chromeless_tty? (
 		!chromeless_tests? (
