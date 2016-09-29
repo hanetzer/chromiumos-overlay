@@ -52,6 +52,8 @@ src_install() {
 	doins org.chromium.ImageLoader.conf
 	insinto /usr/share/dbus-1/system-services
 	doins org.chromium.ImageLoader.service
+	insinto /etc/init
+	doins imageloader.conf
 }
 
 platform_pkg_test() {
