@@ -225,6 +225,7 @@ ALL_BOARDS=(
 	smaug
 	smaug-cheets
 	smaug-kasan
+	snappy
 	sonic
 	#space
 	squawks
