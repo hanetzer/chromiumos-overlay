@@ -185,6 +185,7 @@ SERVER_IUSE_TESTS="
 	)
 	+tests_platform_Powerwash
 	+tests_platform_RebootAfterUpdate
+	+tests_platform_RotationFps
 	+tests_platform_ServoPowerStateController
 	+tests_platform_SyncCrash
 	readahead? ( +tests_platform_UReadAheadServer )
