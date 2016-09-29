@@ -145,7 +145,7 @@ src_install() {
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
-	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v{2,4}.bin
+	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v4.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use_fw rockchip-dptx && doins_subdir rockchip/dptx.bin
 	use video_cards_radeon && doins_subdir radeon/*
