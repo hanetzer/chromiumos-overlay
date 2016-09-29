@@ -47,12 +47,12 @@ CROS_COMMON_RDEPEND="
 	tpm? ( app-crypt/tpm-tools )
 	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
+	chromeos-base/ec-utils
 	chromeos-base/recover-duts
 	chromeos-base/verity
 	chromeos-base/vpd
 	cros_ec? (
 		chromeos-base/ec-devutils
-		chromeos-base/ec-utils
 		chromeos-base/ec-utils-test
 	)
 	!chromeless_tty? (
