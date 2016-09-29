@@ -69,6 +69,7 @@ ALL_BOARDS=(
 	bwtm2
 	#bxt-rvp
 	candy
+	caroline
 	cardhu
 	cave
 	celes
