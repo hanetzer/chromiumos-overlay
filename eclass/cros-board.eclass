@@ -202,6 +202,7 @@ ALL_BOARDS=(
 	ppcle-64-generic
 	puppy
 	purin
+	pyro
 	quawks
 	rambi
 	raspberrypi
