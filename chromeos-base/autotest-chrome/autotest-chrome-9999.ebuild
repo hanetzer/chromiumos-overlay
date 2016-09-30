@@ -112,6 +112,7 @@ IUSE_TESTS=(
 	+tests_policy_PopupsBlockedForUrls
 	+tests_policy_ProxySettings
 	+tests_policy_RestoreOnStartupURLs
+	+tests_policy_SearchSuggestEnabled
 	+tests_policy_URLBlacklist
 	+tests_policy_URLWhitelist
 	+tests_power_AudioDetector
