@@ -61,6 +61,7 @@ PATCHES=(
 	"${FILESDIR}"/0002-null-Fix-null-code-to-work-with-Mesa-11.0.2.patch
 	"${FILESDIR}"/0003-eglChooseConfig.patch
 	"${FILESDIR}"/0004-Pass-dma_buf-import-modifiers-if-driver-supports-thi.patch
+	"${FILESDIR}"/0005-Add-support-for-EXT_image_flush_external-extension.patch
 )
 
 src_configure() {
