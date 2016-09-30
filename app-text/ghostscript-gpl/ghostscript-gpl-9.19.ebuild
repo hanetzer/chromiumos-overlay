@@ -18,11 +18,18 @@ SRC_URI="
 	mirror://gentoo/${PN}-9.12-patchset-1.tar.bz2
 	djvu? ( mirror://sourceforge/djvu/gsdjvu-${GSDJVU_PV}.tar.gz )"
 
-LICENSE="AGPL-3 CPL-1.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cups dbus djvu gtk idn linguas_de crosfonts static-libs tiff X"
+IUSE="cups dbus djvu gtk idn internal linguas_de crosfonts static-libs tiff X"
 RESTRICT="djvu? ( bindist )"
+
+# Google has a commercial license for ghostscript when distributed with Chrome OS (Not
+# Chromium OS).  So toggle the license to the required copyright when building for Chrome OS,
+# and use the open source licensing text otherwise.
+LICENSE="
+	internal? ( LICENSE.artifex_commercial )
+	!internal? ( AGPL-3 CPL-1.0 )
+"
 
 COMMON_DEPEND="
 	app-text/libpaper

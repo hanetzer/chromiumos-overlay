@@ -4,4 +4,4 @@
 
 # List of all the non-free licenses that we use in ChromeOS.
 # People building ChromiumOS have to accept these themselves.
-CHROMEOS Google-TOS NVIDIA NVIDIA-codecs
+CHROMEOS Google-TOS NVIDIA NVIDIA-codecs LICENSE.artifex_commercial
