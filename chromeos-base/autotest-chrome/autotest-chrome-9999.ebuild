@@ -74,7 +74,6 @@ IUSE_TESTS=(
 	+tests_enterprise_RemoraRequisition
 	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
-	+tests_graphics_KhronosGLCTSChrome
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
