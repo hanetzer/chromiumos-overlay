@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="chaps"
 
-inherit cros-workon platform user
+inherit cros-workon platform systemd user
 
 DESCRIPTION="PKCS #11 layer over TrouSerS"
 HOMEPAGE="http://www.chromium.org/developers/design-documents/chaps-technical-design"
@@ -20,7 +20,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="tpm tpm2"
+IUSE="systemd tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -59,14 +59,29 @@ src_install() {
 		"org.chromium.Chaps.conf.in" \
 		> "${D}/etc/dbus-1/system.d/org.chromium.Chaps.conf"
 
-	# Install upstart config file.
-	insinto /etc/init
-	doins chapsd.conf
-	if use tpm2; then
-		sed -i 's/started tcsd/started trunksd/' \
-			"${D}/etc/init/chapsd.conf" ||
-			die "Can't replace tcsd with trunksd in chapsd.conf"
+	# Install init scripts.
+	if use systemd; then
+		if use tpm2; then
+			sed 's/tcsd.service/trunksd.service' \
+				init/chapsd.service \
+				> "${T}/chapsd.service"
+			systemd_dounit "${T}/chapsd.service"
+		else
+			systemd_dounit init/chapsd.service
+		fi
+		systemd_enable_service boot-services.target chapsd.service
+		systemd_dotmpfilesd init/chapsd_directories.conf
+	else
+		insinto /etc/init
+		doins init/chapsd.conf
+		if use tpm2; then
+			sed -i 's/started tcsd/started trunksd/' \
+				"${D}/etc/init/chapsd.conf" ||
+				die "Can't replace tcsd with trunksd in chapsd.conf"
+		fi
 	fi
+	exeinto /usr/share/cros/init
+	doexe init/chapsd.sh
 
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
