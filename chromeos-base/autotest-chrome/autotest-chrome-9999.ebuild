@@ -80,6 +80,7 @@ IUSE_TESTS=(
 	+tests_graphics_Stress
 	 tests_logging_AsanCrash
 	+tests_logging_CrashServices
+	+tests_logging_FeedbackReport
 	+tests_login_ChromeProfileSanitary
 	+tests_login_Cryptohome
 	+tests_login_CryptohomeIncognito
