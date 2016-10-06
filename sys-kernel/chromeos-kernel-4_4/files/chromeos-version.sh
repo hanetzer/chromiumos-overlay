@@ -17,5 +17,8 @@ fi
 
 cd "$1" || exit
 
+# Hack around known bad tag https://crbug.com/653672
+git tag -d "v4.4.21-baseline" >/dev/null 2>&1 || :
+
 git describe --match "${PATTERN}" --abbrev=0 HEAD | egrep "${PATTERN}" |
   sed s/v\\.*//g | sed s/-/_/g
