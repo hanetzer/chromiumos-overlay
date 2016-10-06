@@ -93,13 +93,26 @@ start() {
                 $((swaptotalkb / 1024)) $HIST_ARGS
 }
 
+stop() {
+  logger -t "$JOB" "turning off swap"
+
+  # This is safe to call even if no swap is turned on.
+  swapoff -av
+
+  # When we start up, we try to configure zram0, but it doesn't like to
+  # be reconfigured on the fly.  Reset it so we can changes its params.
+  echo 1 > /sys/block/zram0/reset || :
+}
+
 usage() {
   cat <<EOF
-Usage: $0 <start>
+Usage: $0 <start|stop>
 
-Start the use of the compressed swap file.
+Start or stop the use of the compressed swap file.
 
-The start phase is normally invoked by init during boot.
+The start phase is normally invoked by init during boot, but we never run the
+stop phase when shutting down (since there's no point).  The stop phase is used
+by developers via debugd to restart things on the fly.
 EOF
   exit $1
 }
@@ -114,7 +127,7 @@ main() {
   # Make sure the subcommand is one we know.
   local cmd="$1"
   case "${cmd}" in
-  start) ;;
+  start|stop) ;;
   *) usage 1 ;;
   esac
 
