@@ -11,7 +11,7 @@ KEYWORDS="*"
 
 RDEPEND="chromeos-base/ec-utils"
 
-CR50_NAME="cr50.r0.0.8.w0.0.5"
+CR50_NAME="cr50.r0.0.9.w0.0.8"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
 S="${WORKDIR}"
