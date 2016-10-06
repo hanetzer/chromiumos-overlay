@@ -18,6 +18,20 @@ HIST_BUCKETS=50
 HIST_ARGS="$HIST_MIN $HIST_MAX $HIST_BUCKETS"
 JOB="swap"
 
+valid_size() {
+  local size="$1"
+
+  case "${size}" in
+  500|1000|2000|3000|4000|4500|6000)
+    return 0
+    ;;
+  *)
+    # Reject all other values.
+    return 1
+    ;;
+  esac
+}
+
 start() {
   # Extract second field of MemTotal entry in /proc/meminfo.
   # NOTE: this could be done with "read", "case", and a function
@@ -55,13 +69,7 @@ start() {
   elif [ "$REQUESTED_SIZE_MB" = 0 ]; then
     metrics_client Platform.CompressedSwapSize 0 $HIST_ARGS
     exit 0
-  elif [ "$REQUESTED_SIZE_MB" != 500 -a \
-         "$REQUESTED_SIZE_MB" != 1000 -a \
-         "$REQUESTED_SIZE_MB" != 2000 -a \
-         "$REQUESTED_SIZE_MB" != 3000 -a \
-         "$REQUESTED_SIZE_MB" != 4000 -a \
-         "$REQUESTED_SIZE_MB" != 4500 -a \
-         "$REQUESTED_SIZE_MB" != 6000 ]; then
+  elif ! valid_size "${REQUESTED_SIZE_MB}"; then
     logger -t "$JOB" "invalid value $REQUESTED_SIZE_MB for swap"
     metrics_client Platform.CompressedSwapSize 0 $HIST_ARGS
     exit 1
@@ -104,15 +112,58 @@ stop() {
   echo 1 > /sys/block/zram0/reset || :
 }
 
+status() {
+  # Show general swap info first.
+  cat /proc/swaps
+
+  # Then spam various zram settings.
+  local dir="/sys/block/zram0"
+  printf '\n%s:\n' "${dir}"
+  cd "${dir}"
+  grep -s '^' * || :
+}
+
+enable() {
+  local size="$1"
+
+  # Size of 0 is special for enable.  We interpret this to be automatic.
+  # Don't confuse this with setting 0 in the file in the disable code path.
+  if [ "${size}" = "0" ]; then
+    size=""
+
+    logger -t "$JOB" "enabling swap via config with automatic size"
+  else
+    if ! valid_size "${size}"; then
+      echo "${JOB}: error: invalid size: ${size}" >&2
+      exit 1
+    fi
+
+    logger -t "$JOB" "enabling swap via config with size ${size}"
+  fi
+
+  # Delete it first in case the permissions have gotten ... weird.
+  rm -f "${SWAP_ENABLE_FILE}"
+  echo "${size}" > "${SWAP_ENABLE_FILE}"
+}
+
+disable() {
+  logger -t "$JOB" "disabling swap via config"
+  # Delete it first in case the permissions have gotten ... weird.
+  rm -f "${SWAP_ENABLE_FILE}"
+  echo "0" > "${SWAP_ENABLE_FILE}"
+}
+
 usage() {
   cat <<EOF
-Usage: $0 <start|stop>
+Usage: $0 <start|stop|status|enable <size>|disable>
 
 Start or stop the use of the compressed swap file.
 
 The start phase is normally invoked by init during boot, but we never run the
 stop phase when shutting down (since there's no point).  The stop phase is used
 by developers via debugd to restart things on the fly.
+
+Disabling things changes the config, but doesn't actually turn on/off swap.
 EOF
   exit $1
 }
@@ -120,18 +171,30 @@ EOF
 main() {
   set -e
 
-  if [ $# -ne 1 ]; then
+  if [ $# -lt 1 ]; then
     usage 1
   fi
 
   # Make sure the subcommand is one we know.
   local cmd="$1"
+  shift
   case "${cmd}" in
-  start|stop) ;;
-  *) usage 1 ;;
+  start|stop|status|disable)
+    if [ $# -ne 0 ]; then
+      usage 1
+    fi
+    ;;
+  enable)
+    if [ $# -ne 1 ]; then
+      usage 1
+    fi
+    ;;
+  *)
+    usage 1
+    ;;
   esac
 
   # Just call the func requested directly.
-  ${cmd}
+  ${cmd} "$@"
 }
 main "$@"
