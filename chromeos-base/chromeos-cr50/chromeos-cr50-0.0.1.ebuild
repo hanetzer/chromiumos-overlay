@@ -9,6 +9,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
+RDEPEND="chromeos-base/ec-utils"
+
 CR50_NAME="cr50.r0.0.8.w0.0.5"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
