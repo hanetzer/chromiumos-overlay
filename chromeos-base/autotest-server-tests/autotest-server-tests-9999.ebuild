@@ -50,6 +50,7 @@ SERVER_IUSE_TESTS="
 	+tests_audiovideo_AVSync
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
+	+tests_bluetooth_AdapterLEAdvertising
 	+tests_bluetooth_AdapterPairing
 	+tests_bluetooth_AdapterStandalone
 	+tests_brillo_gTests
