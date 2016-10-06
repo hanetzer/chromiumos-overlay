@@ -26,6 +26,6 @@ src_install() {
 		insinto /etc/init
 		doins "${FILESDIR}"/init/*.conf
 	fi
-	insinto /usr/share/cros/init
-	doins "${FILESDIR}"/init/swap.sh
+	exeinto /usr/share/cros/init
+	doexe "${FILESDIR}"/init/swap.sh
 }

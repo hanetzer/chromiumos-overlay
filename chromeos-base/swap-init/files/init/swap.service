@@ -8,4 +8,4 @@ After=system-services.target
 
 [Service]
 Environment=MIN_LOW_MEMORY_MARGIN=
-ExecStart=/bin/sh /usr/share/cros/init/swap.sh
+ExecStart=/usr/share/cros/init/swap.sh
