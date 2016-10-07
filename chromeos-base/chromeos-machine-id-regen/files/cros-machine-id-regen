@@ -5,7 +5,7 @@
 
 set -e -u
 
-STATE_DIR=/var/run/cros-machine-id-regen
+STATE_DIR=/run/cros-machine-id-regen
 DEFAULT_MACHINE_ID_FILE=/var/lib/dbus/machine-id
 
 bail_if_not_root() {
