@@ -148,8 +148,13 @@ src_install() {
 	dosym /var/run/shill/resolv.conf /etc/resolv.conf
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
-	insinto /usr/share/shill
-	use cellular && doins "${OUT}"/serviceproviders.pbf
+
+	if use cellular; then
+		insinto /usr/share/shill
+		doins "${OUT}"/serviceproviders.pbf
+		insinto /usr/share/protofiles
+		doins "${S}/mobile_operator_db/mobile_operator_db.proto"
+	fi
 
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
