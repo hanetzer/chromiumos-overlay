@@ -218,6 +218,9 @@ pick_cherries() {
 	# https://llvm.org/bugs/show_bug.cgi?id=11740
 	CHERRIES+=" 2474f04f67a34476c16316ba0299237c3e6df6b0 " # r270806
 
+	# BUG https://crbug.com/651262
+	CHERRIES+=" 7c4f7f326e3913a48168269198196efc9058b4b1 " # r268662
+
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
