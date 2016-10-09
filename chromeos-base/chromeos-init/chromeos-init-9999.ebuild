@@ -106,6 +106,7 @@ src_install() {
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
 		doins system-services.conf
 		doins uinput.conf
+		doins static-nodes.conf
 
 		if use syslog; then
 			doins log-rotate.conf syslog.conf
