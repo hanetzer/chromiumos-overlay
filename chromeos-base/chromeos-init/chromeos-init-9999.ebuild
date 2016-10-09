@@ -18,7 +18,10 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful frecon -s3halt +syslog systemd +udev vtconsole"
+IUSE="
+	cros_embedded +encrypted_stateful frecon
+	kernel-3_8 kernel-3_10 kernel-3_14 kernel-3_18 +midi
+	-s3halt +syslog systemd +udev vtconsole"
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
@@ -120,6 +123,11 @@ src_install() {
 		doins *.conf
 
 		dosbin display_low_battery_alert
+	fi
+	if use midi; then
+		if use kernel-3_8 || use kernel-3_10 || use kernel-3_14 || use kernel-3_18; then
+			doins workaround-init/midi-workaround.conf
+		fi
 	fi
 
 	if use s3halt; then
