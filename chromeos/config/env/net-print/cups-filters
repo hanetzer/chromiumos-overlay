@@ -15,3 +15,10 @@ unset cups_filters_mask
 cros_pre_src_prepare_enable_cxx_exceptions() {
 	cros_enable_cxx_exceptions
 }
+
+# The autoconf code needs to be migrated from AC_PATH_PROG to
+# AC_PATH_TOOL.
+cros_pre_src_configure_cups_config() {
+	[[ $(cros_target) != "board_sysroot" ]] && return 0
+	export CUPSCONFIG="${CROS_BUILD_BOARD_BIN}/${CHOST}-cups-config"
+}
