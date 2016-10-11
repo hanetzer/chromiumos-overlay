@@ -143,6 +143,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.0-mesa-Fix-glFramebufferTexture-error-codes-v2.patch
 	epatch "${FILESDIR}"/12.0-anv-install-the-intel_icd.json-to-datarootdir-by-def.patch
 	epatch "${FILESDIR}"/12.1-configure.ac-Use-datarootdir-for-with-vulkan-icddir-.patch
+	epatch "${FILESDIR}"/12.1-i915g-fix-incorrect-gl_FragCoord-value.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
