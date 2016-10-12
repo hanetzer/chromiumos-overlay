@@ -49,10 +49,8 @@ src_configure() {
 		return
 	fi
 
-	# Force to use gcc even CC=clang is set.
-	if [[ ${CC:-gcc} != *"gcc"* ]]; then
-		unset CC CXX
-	fi
+	# Unset CC and CXX to let libgcc select the right compiler.
+	unset CC CXX
 
 	local confgcc=(
 		--prefix=/usr
