@@ -8,7 +8,7 @@
 EAPI="4"
 
 CROS_WORKON_PROJECT="aosp/platform/external/libchrome"
-CROS_WORKON_COMMIT="a6cbc3661fcae9e3eb330d5cf0eb1f3314968b38"
+CROS_WORKON_COMMIT="b86156c4a5e2cb10b69a2bccbade9b8d359f3662"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
