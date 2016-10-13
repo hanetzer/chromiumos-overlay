@@ -61,9 +61,10 @@ PROVIDED_DEPEND="
 COMMON_DEPEND="
 	chromeos-base/chromeos-init
 	!chromeos-base/chromeos-factoryinstall"
+	!chromeos-base/chromeos-factory
 
 DEPEND="$COMMON_DEPEND
-	chromeos-base/chromeos-factory
+	chromeos-base/factory
 	x86? ( sys-boot/syslinux )"
 
 RDEPEND="$COMMON_DEPEND
@@ -142,7 +143,7 @@ src_install() {
 	esac
 	newins $PMBR_SOURCE .pmbr_code
 
-	einfo "Install cutoff scripts from chromeos-base/chromeos-factory."
+	einfo "Install cutoff scripts from chromeos-base/factory."
 	factory_unpack_resource cutoff "${ED}usr/share"
 }
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
@@ -19,9 +19,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-DEPEND="virtual/chromeos-interface
+DEPEND="virtual/chromeos-bsp-factory
+	virtual/chromeos-interface
 	virtual/chromeos-regions
-	chromeos-base/chromeos-factory-board
 	dev-python/jsonrpclib
 	dev-python/pyyaml
 	dev-libs/protobuf-python

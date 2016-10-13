@@ -11,8 +11,10 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
+DEPEND="!chromeos-base/chromeos-factory"
 RDEPEND="
-	chromeos-base/chromeos-factory
 	chromeos-base/chromeos-hwid
+	chromeos-base/factory
 	chromeos-base/memento_softwareupdate
+	${DEPEND}
 "
