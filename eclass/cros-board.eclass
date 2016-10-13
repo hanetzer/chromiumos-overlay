@@ -127,6 +127,7 @@ ALL_BOARDS=(
 	gonzo
 	gru
 	guado
+	guado-accelerator
 	guado_moblab
 	guado_labstation
 	hana
