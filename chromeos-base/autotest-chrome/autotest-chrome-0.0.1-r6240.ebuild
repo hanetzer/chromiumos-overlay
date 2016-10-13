@@ -108,6 +108,7 @@ IUSE_TESTS=(
 	+tests_policy_JavaScriptAllowedForUrls
 	+tests_policy_JavaScriptBlockedForUrls
 	+tests_policy_ManagedBookmarks
+	+tests_policy_NotificationsAllowedForUrls
 	+tests_policy_PluginsAllowedForUrls
 	+tests_policy_PluginsBlockedForUrls
 	+tests_policy_PopupsAllowedForUrls

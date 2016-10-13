@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="596c97aee8609e8bc3fa505670b3ee73c16a3faf"
-CROS_WORKON_TREE="eb79481f6d6ab416bc2ee226d6efffc5e2ef0a7c"
+CROS_WORKON_COMMIT="09f2b72836132f09522c723b21c16f16550dbcaf"
+CROS_WORKON_TREE="77f635f25898b7ccd52dcd68611d98bc460a60a1"
 CROS_WORKON_PROJECT="chromiumos/platform/frecon"
 CROS_WORKON_LOCALNAME="../platform/frecon"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -11,7 +11,7 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 
 inherit cros-constants cros-workon toolchain-funcs
 
-DESCRIPTION="Chrome OS KMS console (without DBUS support)"
+DESCRIPTION="Chrome OS KMS console"
 HOMEPAGE="${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}"
 SRC_URI=""
 
@@ -22,6 +22,7 @@ IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="virtual/udev
+	sys-apps/dbus
 	media-libs/libpng
 	sys-apps/libtsm"
 
@@ -31,8 +32,6 @@ DEPEND="${RDEPEND}
 	x11-libs/libdrm"
 
 src_prepare() {
-	export DBUS=0
-	export TARGET=frecon-lite
 	cros-workon_src_prepare
 }
 
@@ -46,5 +45,7 @@ src_compile() {
 
 src_install() {
 	cros-workon_src_install
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.frecon.conf
 	default
 }
