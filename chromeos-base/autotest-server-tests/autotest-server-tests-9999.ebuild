@@ -175,7 +175,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_Flashrom
 	+tests_platform_HWwatchdog
 	+tests_platform_InstallTestImage
-        +tests_platform_InternalDisplay
+	+tests_platform_InternalDisplay
 	+tests_platform_KernelErrorPaths
 	+tests_platform_LabFirmwareUpdate
 	power_management? (
@@ -196,6 +196,7 @@ SERVER_IUSE_TESTS="
 	+tests_provision_AutoUpdate
 	+tests_security_kASLR
 	+tests_sequences
+	+tests_servohost_Reboot
 	+tests_video_PowerConsumption
 "
 
