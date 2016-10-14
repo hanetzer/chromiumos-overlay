@@ -284,11 +284,19 @@ def exec_and_bisect(execargs, bisect_stage):
   sys.exit(ret)
 
 
+def get_relocatable_root():
+  """Get the root dir location relative to this wrapper's install dir."""
+  install_dir = os.path.dirname(os.path.realpath(__file__))
+  root_dir = os.path.join(install_dir, '../../../../..')
+  return os.path.normpath(root_dir)
+
+
 sysroot = os.environ.get('SYSROOT', '')
-if sysroot:
-  clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
-  gcc_cmdline.insert(0, '--sysroot=%s' % sysroot)
-else:
+if not sysroot:
+  # Use the bundled sysroot by default.
+  sysroot = os.path.join(get_relocatable_root(), 'usr', arch)
+
+  # Log the wrapper invocation without SYSROOT.
   import logging
   import logging.handlers
   import traceback
@@ -316,9 +324,12 @@ else:
   except OSError:
     pass
 
+clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
+gcc_cmdline.insert(0, '--sysroot=%s' % sysroot)
+
 if invoke_clang and not skip_clang:
   clang_comp = os.environ.get(
-      'CLANG', os.path.join(sys.path[0],'../../../../../usr/bin/clang'))
+      'CLANG', os.path.join(get_relocatable_root(), 'usr/bin/clang'))
 
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
