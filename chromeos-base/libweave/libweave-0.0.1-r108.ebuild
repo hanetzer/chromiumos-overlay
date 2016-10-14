@@ -38,6 +38,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
 	epatch ${FILESDIR}/patches/libweave-fix-395517.patch
 	epatch ${FILESDIR}/patches/libweave-device-manager-dependencies.patch
+	epatch ${FILESDIR}/patches/libweave-dont-update-when-offline.patch
 }
 
 src_unpack() {
