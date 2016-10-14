@@ -45,9 +45,9 @@ IUSE="-chromeless_tests chromeless_tty cros_ec cros_embedded opengl opengles ozo
 
 CROS_COMMON_RDEPEND="
 	tpm? ( app-crypt/tpm-tools )
-	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
 	chromeos-base/ec-utils
+	chromeos-base/factory-deps
 	chromeos-base/recover-duts
 	chromeos-base/verity
 	chromeos-base/vpd
