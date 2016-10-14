@@ -72,6 +72,12 @@ ARRAY_VARIABLES=(
 # It will also be disabled by using project arrays, rather than a single project.
 : ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_TO_REV
+# @DESCRIPTION:
+# Array of directories in the source tree. If defined, this causes this ebuild
+# to only uprev if there are changes within the specified subdirectories.
+: ${CROS_WORKON_SUBDIRS_TO_REV:=/}
+
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_BLACKLIST
 # @DESCRIPTION:
 # Array of directories in the source tree to explicitly ignore and not even copy
