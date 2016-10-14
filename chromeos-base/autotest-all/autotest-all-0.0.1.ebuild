@@ -25,7 +25,6 @@ RDEPEND="
 	)
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-security
-	chromeos-base/autotest-factory-install
 	chromeos-base/autotest-private-all
 	cellular? (
 		chromeos-base/autotest-tests-cellular

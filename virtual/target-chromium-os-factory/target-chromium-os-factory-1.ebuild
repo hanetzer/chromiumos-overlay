@@ -12,7 +12,6 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
-	chromeos-base/autotest-factory-install
 	chromeos-base/chromeos-factory
 	chromeos-base/chromeos-hwid
 	chromeos-base/memento_softwareupdate
