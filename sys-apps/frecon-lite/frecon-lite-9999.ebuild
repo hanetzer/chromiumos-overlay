@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/platform/frecon"
 CROS_WORKON_LOCALNAME="../platform/frecon"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -20,7 +20,7 @@ IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="virtual/udev
-	media-libs/libpng
+	media-libs/libpng:0=
 	sys-apps/libtsm"
 
 DEPEND="${RDEPEND}
