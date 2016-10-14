@@ -99,9 +99,9 @@ DEPEND="$DEPEND
 # updater are also runtime dependencies for the install shim.
 #
 # The contents of RDEPEND below must also be present in the
-# chromeos-base/chromeos-factoryinstall ebuild in PROVIDED_DEPEND.
+# chromeos-base/factory_installer ebuild in PROVIDED_DEPEND.
 # If you make any change to the list below, you may need to make a
-# matching change in the factory install ebuild.
+# matching change in the factory_installer ebuild.
 #
 # TODO(hungte) remove gzip/tar if we have busybox
 RDEPEND="

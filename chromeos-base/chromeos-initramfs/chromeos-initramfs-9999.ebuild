@@ -50,10 +50,10 @@ FACTORY_NETBOOT_DEPENDS="
 	app-arch/sharutils
 	app-shells/bash
 	chromeos-base/chromeos-base
-	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-installshim
 	chromeos-base/ec-utils
+	chromeos-base/factory_installer
 	chromeos-base/memento_softwareupdate
 	chromeos-base/vboot_reference
 	chromeos-base/vpd

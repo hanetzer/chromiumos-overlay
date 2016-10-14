@@ -46,7 +46,9 @@ PROVIDED_DEPEND="
 # jobs depend on upstart jobs in that package.  There's a build-time
 # dependency because pkg_postinst in this ebuild edits specifc jobs
 # in that package.
-COMMON_DEPEND="chromeos-base/chromeos-init"
+COMMON_DEPEND="
+	chromeos-base/chromeos-init
+	!chromeos-base/chromeos-factoryinstall"
 
 DEPEND="$COMMON_DEPEND
 	x86? ( sys-boot/syslinux )"

@@ -36,9 +36,9 @@ IUSE=""
 # generated from the factor branch due to lack of those packages.
 # Add them into test image to fix the failure.
 # The contents of RDEPEND below must also be present in the
-# chromeos-base/chromeos-factoryinstall ebuild in PROVIDED_DEPEND.
+# chromeos-base/factory_installer ebuild in PROVIDED_DEPEND.
 # If you make any change to the list below, you may need to make a
-# matching change in the factory install ebuild.
+# matching change in the factory_installer ebuild.
 RDEPEND="
 	app-arch/gzip
 	app-arch/sharutils

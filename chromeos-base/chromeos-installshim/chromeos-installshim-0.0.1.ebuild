@@ -28,9 +28,9 @@ RDEPEND="
 	app-shells/bash
 	app-shells/dash
 	chromeos-base/chromeos-base
-	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-init
 	chromeos-base/dev-install
+	chromeos-base/factory_installer
 	chromeos-base/power_manager
 	shill? ( chromeos-base/shill )
 	!shill? ( net-misc/dhcpcd )
@@ -61,7 +61,6 @@ RDEPEND="
 	sys-process/procps
 	virtual/chromeos-auth-config
 	virtual/chromeos-bsp
-	virtual/chromeos-factoryinstall-bsp
 	virtual/modutils
 	virtual/udev
 "
