@@ -112,8 +112,8 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
 	chromeos-base/avtest_label_detect
-	chromeos-base/chromeos-factory-mini
 	ozone? ( chromeos-base/drm-tests )
+	chromeos-base/factory-mini
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
