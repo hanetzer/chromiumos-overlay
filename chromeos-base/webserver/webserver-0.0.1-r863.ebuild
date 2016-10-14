@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("a6a894b6c9f50e22d114e25b1580f1bf769a16eb" "b470b41a117a213f5b8cf2d7badcc208da001b72")
-CROS_WORKON_TREE=("a8ee4c0ba9db926aafc7e551f40103b2661cb298" "ce097c51b1aa49708188c52ca071d9703e637112")
+CROS_WORKON_COMMIT=("a6a894b6c9f50e22d114e25b1580f1bf769a16eb" "4da81ccb6cbe745c0f4c6e272963082a08eae7ab")
+CROS_WORKON_TREE=("a8ee4c0ba9db926aafc7e551f40103b2661cb298" "97a7d103d2b0ef6a7dbd2a8f1ff9a00541111e18")
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/webservd")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/webservd")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/webserver")
