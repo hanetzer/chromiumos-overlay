@@ -25,7 +25,7 @@ HOMEPAGE="https://www.freedesktop.org/wiki/Software/systemd"
 
 LICENSE="LGPL-2.1 MIT GPL-2"
 SLOT="0"
-IUSE="acl +kmod selinux static-libs"
+IUSE="acl +kmod openrc selinux static-libs"
 
 RESTRICT="test"
 
@@ -55,10 +55,9 @@ DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xsl-stylesheets
 	dev-libs/libxslt"
 RDEPEND="${COMMON_DEPEND}
-	!<sys-fs/lvm2-2.02.103
 	!<sec-policy/selinux-base-2.20120725-r10"
 PDEPEND=">=sys-apps/hwids-20140304[udev]
-	>=sys-fs/udev-init-scripts-26"
+	openrc? ( >=sys-fs/udev-init-scripts-26 )"
 
 S=${WORKDIR}/systemd-${PV}
 
@@ -296,6 +295,10 @@ multilib_src_install() {
 			)
 		emake -j1 DESTDIR="${D}" "${targets[@]}"
 	fi
+
+	# Move back to the old path since we filter out */systemd/* from images.
+	dodir /sbin
+	mv "${ED}"/lib/systemd/systemd-udevd "${ED}"/sbin/udevd || die
 }
 
 multilib_src_install_all() {
