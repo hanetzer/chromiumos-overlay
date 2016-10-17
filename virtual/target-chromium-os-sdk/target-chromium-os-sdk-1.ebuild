@@ -124,6 +124,7 @@ RDEPEND="${RDEPEND}
 	app-text/docbook-xml-dtd:4.2
 	app-text/docbook-xml-dtd:4.5
 	app-text/docbook-xsl-stylesheets
+	app-text/libpaper
 	app-text/texi2html
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-base
@@ -188,6 +189,7 @@ RDEPEND="${RDEPEND}
 	>=dev-vcs/git-1.7.2
 	dev-vcs/subversion[-dso]
 	>=media-libs/freetype-2.2.1
+	>=media-libs/lcms-2.6:2
 	net-misc/gsutil
 	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
