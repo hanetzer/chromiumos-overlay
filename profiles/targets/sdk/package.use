@@ -28,7 +28,8 @@ sys-fs/squashfs-tools lzo lz4 lzma
 # some prebuilt binaries created on Ubuntu like to link against libtinfo.
 sys-libs/ncurses tinfo
 
-# We don't want cups (and indirectly ghostscript) in the SDK.
-dev-java/icedtea-bin -cups -X
+# icedtea-bin still has some linking issues when built without USE=cups. See
+# https://bugs.gentoo.org/486042 and https://crbug.com/656717
+dev-java/icedtea-bin cups
 # We don't want cups-filters to pull in ghostscript.
 net-print/cups-filters -postscript
