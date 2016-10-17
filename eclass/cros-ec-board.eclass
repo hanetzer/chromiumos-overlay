@@ -64,6 +64,7 @@ EC_BOARD_NAMES=(
 	ryu_sh_loader
 	samus
 	samus_pd
+	snappy
 	strago
 	twinkie
 	zinger
