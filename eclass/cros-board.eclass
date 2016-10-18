@@ -171,8 +171,8 @@ ALL_BOARDS=(
 	nyan
 	nyan_big
 	nyan_blaze
-	nyan_blaze-freon
-	nyan_freon
+	#nyan_blaze-freon
+	#nyan_freon
 	nyan_kitty
 	oak
 	oak-cheets
