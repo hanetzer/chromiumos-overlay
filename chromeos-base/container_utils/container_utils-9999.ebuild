@@ -7,7 +7,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 PLATFORM_SUBDIR="container_utils"
 
-inherit cros-workon platform user
+inherit cros-workon platform udev user
 
 DESCRIPTION="Helper utilities for generic containers"
 
@@ -20,15 +20,31 @@ RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libcontainer
 	virtual/udev
+	sys-fs/fuse
 "
 DEPEND="${RDEPEND}"
+
+pkg_setup() {
+	enewuser "devicejail"
+	enewgroup "devicejail"
+	cros-workon_pkg_setup
+}
 
 src_install() {
 	cd "${OUT}"
 	dobin run_oci
+	dobin device_jail_fs
+
+	fowners devicejail:devicejail /usr/bin/device_jail_fs
 
 	into /usr/local
 	dobin device_jail_utility
+
+	cd "${S}"
+	insinto /etc/init
+	doins device-jail.conf
+
+	udev_dorules udev/*.rules
 }
 
 platform_pkg_test() {
