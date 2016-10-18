@@ -64,19 +64,19 @@ src_compile() {
 	emake defconfig BOARD="${board}"
 	emake dts BOARD="${board}"
 
-	emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake depthcharge VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
-	emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake dev VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
-	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake netboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 	          PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	if use fastboot; then
-		emake fastboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		emake fastboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
 	fi
