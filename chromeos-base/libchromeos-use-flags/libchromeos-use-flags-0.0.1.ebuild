@@ -19,6 +19,7 @@ IUSE="
 	asan
 	cheets
 	cros-debug
+	disable_flash_hw_video_decode
 	disable_login_animations
 	disable_low_latency_audio
 	disable_webaudio
