@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The build is all messed up.  http://crbug.com/577836
+# The build is all messed up.  https://crbug.com/577836
+# and https://crbug.com/656818
 cros_pre_src_compile_use_gcc() {
-	cros_use_gcc
+	unset CC CXX
 	filter_clang_syntax
 }
