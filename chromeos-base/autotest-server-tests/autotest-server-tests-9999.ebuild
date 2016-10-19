@@ -139,6 +139,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_RONormalBoot
 	+tests_firmware_SelfSignedBoot
 	+tests_firmware_SoftwareSync
+	+tests_firmware_StandbyPowerConsumption
 	tpm? ( +tests_firmware_TPMExtend )
 	tpm? ( +tests_firmware_TPMVersionCheck )
 	tpm? ( +tests_firmware_TPMKernelVersion )
