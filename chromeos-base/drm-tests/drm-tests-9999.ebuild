@@ -18,7 +18,8 @@ IUSE=""
 
 RDEPEND="virtual/opengles
 	|| ( media-libs/mesa[gbm] media-libs/minigbm )"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	x11-drivers/opengles-headers"
 
 src_compile() {
 	tc-export CC

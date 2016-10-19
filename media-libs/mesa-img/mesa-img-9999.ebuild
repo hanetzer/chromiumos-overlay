@@ -167,6 +167,8 @@ src_install() {
 	# Glew includes
 	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
 		|| die "Removing glew includes failed."
+	# GLES headers
+	rm -f "${D}"/usr/include/{EGL,GLES2,GLES3,KHR}/*.h || die "Removing GLES headers failed."
 
 	# Remove GLES libraries as IMG DDK installs its own versions.
 	rm -f "${D}"/usr/$(get_libdir)/libGLES*

@@ -25,6 +25,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	x11-drivers/opengles-headers
 	x11-libs/libX11
 "
 

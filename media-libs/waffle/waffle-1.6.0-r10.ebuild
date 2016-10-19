@@ -47,6 +47,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	opengl? ( x11-proto/glproto )
+	x11-drivers/opengles-headers
 	x11-libs/libX11
 	X? ( x11-proto/xcb-proto )
 	doc? (

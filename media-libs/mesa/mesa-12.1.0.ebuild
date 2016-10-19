@@ -246,6 +246,8 @@ src_install() {
 	# Glew includes
 	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
 		|| die "Removing glew includes failed."
+	# GLES headers
+	rm -f "${D}"/usr/include/{EGL,GLES2,GLES3,KHR}/*.h || die "Removing GLES headers failed."
 
 	# Move libGL and others from /usr/lib to /usr/lib/opengl/blah/lib
 	# because user can eselect desired GL provider.
