@@ -113,6 +113,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/audiotest
 	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-factory-mini
+	ozone? ( chromeos-base/drm-tests )
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
@@ -200,5 +201,4 @@ RDEPEND="${CROS_COMMON_RDEPEND}
 # unit tests
 DEPEND="
 	chromeos-base/chromite
-	ozone? ( chromeos-base/drm-tests )
 "
