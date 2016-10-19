@@ -26,6 +26,9 @@
 		Install ALL the iwlwifi driver firmware files;
 		otherwise see the individual iwlwifi-xxx flags
 	</flag>
+	<flag name='linux_firmware_i915_bxt'>
+		Install BXT firmware files for i915 driver
+	</flag>
 	<flag name='linux_firmware_i915_skl'>
 		Install SKL firmware files for i915 driver
 	</flag>
