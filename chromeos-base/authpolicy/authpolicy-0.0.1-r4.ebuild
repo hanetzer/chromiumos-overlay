@@ -1,0 +1,36 @@
+# Copyright 2016 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+
+CROS_WORKON_COMMIT="98b59a7350ddd4c040db7fb0071cbda5e9f5ccb3"
+CROS_WORKON_TREE="5c7d919398895cde958364e09d583e7663fe3edf"
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+PLATFORM_SUBDIR="authpolicy"
+
+inherit cros-workon platform user
+
+DESCRIPTION="Provides authentication to LDAP and fetching device/user policies"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+
+pkg_preinst() {
+	# Create user and group for authpolicyd.
+	enewuser "authpolicyd"
+	enewgroup "authpolicyd"
+}
+
+src_install() {
+	dosbin "${OUT}"/authpolicyd
+	insinto /etc/dbus-1/system.d
+	doins etc/dbus-1/org.chromium.authpolicy.conf
+	insinto /etc/init
+	doins etc/init/authpolicyd.conf
+}
