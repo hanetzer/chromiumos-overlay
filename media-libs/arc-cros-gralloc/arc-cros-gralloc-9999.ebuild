@@ -3,7 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/minigbm"
-CROS_WORKON_LOCALNAME="../platform/minigbm/cros_gralloc"
+CROS_WORKON_LOCALNAME="../platform/minigbm"
 CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 
@@ -50,11 +50,12 @@ src_compile() {
 		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/mediatek
 	fi
 
-	export TARGET_DIR=$(cros-workon_get_build_dir)/
+	export TARGET_DIR="$(cros-workon_get_build_dir)/"
+	cd "${S}/cros_gralloc/"
 	emake
 }
 
 src_install() {
 	exeinto /opt/google/containers/android/vendor/lib/hw/
-	doexe "${TARGET_DIR}"/gralloc.cros.so
+	doexe "${TARGET_DIR}"gralloc.cros.so
 }
