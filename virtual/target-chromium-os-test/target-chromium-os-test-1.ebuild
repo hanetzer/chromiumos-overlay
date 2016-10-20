@@ -114,10 +114,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-factory-mini
 	ozone? ( chromeos-base/drm-tests )
-	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
+	shill? ( chromeos-base/shill-test-scripts )
 	!chromeless_tests? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
 	dev-libs/opensc
