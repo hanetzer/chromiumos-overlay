@@ -63,6 +63,7 @@ PATCHES=(
 	"${FILESDIR}"/0003-eglChooseConfig.patch
 	"${FILESDIR}"/0004-Pass-dma_buf-import-modifiers-if-driver-supports-thi.patch
 	"${FILESDIR}"/0005-Add-support-for-EXT_image_flush_external-extension.patch
+	"${FILESDIR}"/0006-Transition-to-the-official-DMA-BUF-import-modifier-t.patch
 )
 
 src_configure() {
