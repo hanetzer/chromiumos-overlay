@@ -35,7 +35,6 @@ RECOVERY_DEPENDS="
 	media-gfx/ply-image
 	sys-apps/flashrom
 	sys-apps/pv
-	sys-fs/lvm2
 	virtual/assets
 	virtual/chromeos-regions
 	"
@@ -85,6 +84,7 @@ DEPEND="
 	loader_kernel_ramfs? ( ${LOADER_KERNEL_DEPENDS} )
 	recovery_ramfs? ( ${RECOVERY_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
+	sys-fs/lvm2
 	virtual/chromeos-bsp-initramfs
 	chromeos-base/chromeos-init
 	frecon? ( sys-apps/frecon-lite virtual/udev )
