@@ -28,7 +28,7 @@ pkg_preinst() {
 src_install() {
 	dosbin "${OUT}"/authpolicyd
 	insinto /etc/dbus-1/system.d
-	doins etc/dbus-1/org.chromium.authpolicy.conf
+	doins etc/dbus-1/org.chromium.AuthPolicy.conf
 	insinto /etc/init
 	doins etc/init/authpolicyd.conf
 }
