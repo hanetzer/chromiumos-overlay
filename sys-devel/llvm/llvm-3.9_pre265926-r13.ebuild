@@ -231,17 +231,18 @@ pick_cherries() {
 src_prepare() {
 	use llvm-next || pick_cherries
 	use llvm-next || epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
-	epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
+	use llvm-next || epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
+	use llvm-next && epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
 
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 	# Fix libdir for ocaml bindings install, bug #559134
-	epatch "${FILESDIR}"/cmake/${PN}-3.7.0-ocaml-multilib.patch
+	use llvm-next || epatch "${FILESDIR}"/cmake/${PN}-3.7.0-ocaml-multilib.patch
 
 	# Make it possible to override Sphinx HTML install dirs
 	# https://llvm.org/bugs/show_bug.cgi?id=23780
-	epatch "${FILESDIR}"/cmake/0002-cmake-Support-overriding-Sphinx-HTML-doc-install-dir.patch
+	use llvm-next || epatch "${FILESDIR}"/cmake/0002-cmake-Support-overriding-Sphinx-HTML-doc-install-dir.patch
 
 	# Prevent race conditions with parallel Sphinx runs
 	# https://llvm.org/bugs/show_bug.cgi?id=23781
