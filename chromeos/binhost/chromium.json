@@ -90,6 +90,54 @@
       ]
     }, 
     "key": {
+      "board": "arm-generic", 
+      "useflags": [
+        "-chrome_internal"
+      ]
+    }
+  }, 
+  {
+    "compat_id": {
+      "arch": "arm", 
+      "cflags": [
+        "-O2", 
+        "-O2", 
+        "-pipe", 
+        "-march=armv7-a", 
+        "-mtune=cortex-a15", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "cups", 
+        "evdev_gestures", 
+        "fonts", 
+        "gn", 
+        "gold", 
+        "hardfp", 
+        "highdpi", 
+        "nacl", 
+        "neon", 
+        "opengles", 
+        "ozone", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
       "board": "arm-generic_freon", 
       "useflags": [
         "-chrome_internal"
@@ -234,50 +282,6 @@
     }, 
     "key": {
       "board": "x86-generic", 
-      "useflags": [
-        "-chrome_internal"
-      ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "arm", 
-      "cflags": [
-        "-O2", 
-        "-O2", 
-        "-pipe", 
-        "-march=armv7-a", 
-        "-mtune=cortex-a15", 
-        "-mfpu=neon", 
-        "-mfloat-abi=hard", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "X", 
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "cups", 
-        "fonts", 
-        "gn", 
-        "gold", 
-        "hardfp", 
-        "highdpi", 
-        "nacl", 
-        "neon", 
-        "opengles", 
-        "runhooks", 
-        "v4l2_codec"
-      ]
-    }, 
-    "key": {
-      "board": "arm-generic", 
       "useflags": [
         "-chrome_internal"
       ]
