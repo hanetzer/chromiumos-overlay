@@ -274,7 +274,6 @@ src_compile_depthcharge() {
 	fi
 
 	# bitmaps will be installed through --rocbfs-files
-	common+=( --skip-bmpblk )
 	common+=( --rocbfs-files "${froot}/rocbfs" )
 	serial+=( --gbb-flags "+enable-serial" )
 	einfo "Building production image."
