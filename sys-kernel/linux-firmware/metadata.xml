@@ -6,7 +6,10 @@
 	<flag name='linux_firmware_adsp_apl'>
 		Install APL static firmware binary for audio
 	</flag>
-	<flag name='linux_firmware_adsp_skl'>
+	<flag name='linux_firmware_adsp_kbl'>
+		Install KBL static firmware binary for audio
+	</flag>
+        <flag name='linux_firmware_adsp_skl'>
 		Install SKL static firmware binary for audio
 	</flag>
 	<flag name='linux_firmware_ath3k-all'>
