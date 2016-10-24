@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# chromeos-factory-mini is a subset of the factory software that can
+# factory-mini is a subset of the factory software that can
 # be used to run utilities like gooftool, hwid, and regcode, which may
 # be useful in the CrOS test environment.  For instance, this would
 # allow "gooftool probe" to be used to probe hardware components in
@@ -32,6 +32,7 @@ KEYWORDS="*"
 IUSE=""
 
 DEPEND="${PYTHON_DEPS}"
+RDEPEND="!chromeos-base/chromeos-factory-mini"
 
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
