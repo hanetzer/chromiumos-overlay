@@ -55,7 +55,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	for v in "${LIBCHROME_VERS[@]}"; do
 		./platform2_preinstall.sh "${OUT}" "${v}"
-		dolib.so "${OUT}"/lib/lib{brillo,policy}*-"${v}".so
+		dolib.so "${OUT}"/lib/lib{brillo,installattributes,policy}*-"${v}".so
 		dolib.a "${OUT}"/libbrillo*-"${v}".a
 		doins "${OUT}"/lib/libbrillo*-"${v}".pc
 	done
@@ -70,12 +70,15 @@ src_install() {
 
 	insinto /usr/include/policy
 	doins policy/*.h
+	insinto /usr/include/install_attributes
+	doins install_attributes/libinstallattributes.h
 }
 
 platform_pkg_test() {
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
 		platform_test "run" "${OUT}/libbrillo-${v}_unittests"
+		platform_test "run" "${OUT}/libinstallattributes-${v}_unittests"
 		platform_test "run" "${OUT}/libpolicy-${v}_unittests"
 	done
 }
