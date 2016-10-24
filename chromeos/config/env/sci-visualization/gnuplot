@@ -5,4 +5,4 @@
 # This package causes build breakages due to redeclarations of standard library
 # functions. The fix seems trivial, but we need this fix in ASAP, so disabling
 # FORTIFY (temporarily) is the most sure path forward.
-export CFLAGS+=' -D_CLANG_FORTIFY_DISABLE '
+export CPPFLAGS+=' -D_CLANG_FORTIFY_DISABLE '

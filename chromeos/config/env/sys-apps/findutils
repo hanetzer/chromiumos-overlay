@@ -8,4 +8,4 @@
 # doesn't disable FORTIFY entirely; it just disables the enhanced,
 # clang-specific version.
 
-export CFLAGS+=' -D_CLANG_FORTIFY_DISABLE '
+export CPPFLAGS+=' -D_CLANG_FORTIFY_DISABLE '

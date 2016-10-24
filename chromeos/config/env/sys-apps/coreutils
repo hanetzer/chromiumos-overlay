@@ -7,4 +7,4 @@
 # FORTIFY entirely; it just disables the enhanced, clang-specific version.
 #
 # Fix was accepted upstream as e0953783024a113b186547aca186777f9ce3b798.
-export CFLAGS+=' -D_CLANG_FORTIFY_DISABLE '
+export CPPFLAGS+=' -D_CLANG_FORTIFY_DISABLE '
