@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("9c3873dfbcb429992dfdbbfb6954a2620b5f9f06" "bf6263d52994937033b397833be836d081b61958")
-CROS_WORKON_TREE=("88a74d7b3805c74147df4b5f8bda2e183ada0331" "b66ca55c4f0435f0b83d70a187e0598e45f319d1")
+CROS_WORKON_COMMIT=("f336711410dd8ae5aacf8aaf144158dccdf76313" "bf6263d52994937033b397833be836d081b61958")
+CROS_WORKON_TREE=("c86ab1f09801686c55c9dcaaadc3ab0fd8090735" "b66ca55c4f0435f0b83d70a187e0598e45f319d1")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/depthcharge"
 	"chromiumos/platform/vboot_reference"
@@ -66,19 +66,19 @@ src_compile() {
 	emake defconfig BOARD="${board}"
 	emake dts BOARD="${board}"
 
-	emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake depthcharge VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
-	emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake dev VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
-	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	emake netboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 	          PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	if use fastboot; then
-		emake fastboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		emake fastboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
 	fi
