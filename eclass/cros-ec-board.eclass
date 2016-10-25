@@ -41,6 +41,7 @@ EC_BOARD_NAMES=(
 	cyan
 	dingdong
 	elm
+	eve
 	glados
 	glados_pd
 	gru

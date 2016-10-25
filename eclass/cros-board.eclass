@@ -102,6 +102,7 @@ ALL_BOARDS=(
 	#emeraldlake2
 	enguarde
 	envoy-jerry
+	eve
 	expresso
 	falco
 	falco_gles
