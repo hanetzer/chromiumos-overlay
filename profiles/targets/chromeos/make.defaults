@@ -4,7 +4,7 @@
 # Dummy setting so we can use the same append form below.
 USE=""
 
-USE="${USE} acpi bluetooth cairo cros_p2p fbconsole mbim opengl pam usb vlan vtconsole X"
+USE="${USE} acpi bluetooth cairo cros_p2p -fbconsole mbim opengl pam usb vlan -vtconsole X"
 USE="${USE} zlib bindist cros-debug -introspection"
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -poppler-data -nls -openrc"
@@ -19,7 +19,7 @@ USE="${USE} compupdates"
 USE="${USE} hardened"
 
 # Most targets will override these.
-VIDEO_CARDS="-* fbdev"
+VIDEO_CARDS="-*"
 INPUT_DEVICES="-* evdev cmt"
 
 # Various runtime features that control emerge behavior.
