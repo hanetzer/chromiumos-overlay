@@ -14,7 +14,7 @@ IUSE="bluetooth bootchart bootimage buffet +cellular coreboot cr50_onboard
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	eclog feedback +fonts gobi mtd +network_time nfc pam peerd postscript
 	+power_management +profile cups +readahead scanner +shill
-	intel_lpe +syslog touchview +tpm -tpm2 +trim_supported +vpn watchdog
+	intel_lpe +syslog +system_locales touchview +tpm -tpm2 +trim_supported +vpn watchdog
 	wifi_bootstrapping wimax X"
 
 REQUIRED_USE="cellular? ( shill )"
@@ -227,6 +227,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/inputcontrol
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
+	system_locales? ( chromeos-base/system-locales )
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
