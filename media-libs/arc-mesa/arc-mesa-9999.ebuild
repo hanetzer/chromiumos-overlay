@@ -128,30 +128,10 @@ src_configure() {
 		append-flags -m32
 		append-ldflags -m32
 
-		# FIXME(tfiga): Could we create pkgconfig files for required packages instead?
-		export PKG_CONFIG="false"
-
-		export EXPAT_LIBS="-lexpat"
-		export PTHREAD_LIBS="-lc"
-
-		export PTHREADSTUBS_CFLAGS=" "
-		export PTHREADSTUBS_LIBS="-lc"
-
-		export DRM_GRALLOC_CFLAGS="-I${ARC_SYSROOT}/usr/include/drm_gralloc"
-		export DRM_GRALLOC_LIBS="-lgralloc_drm"
-
-		export LIBDRM_CFLAGS="-I${ARC_SYSROOT}/usr/include/libdrm"
-		export LIBDRM_LIBS="-ldrm"
-
-		# requires: libdrm
-		export INTEL_CFLAGS="${LIBDRM_CFLAGS} -I${ARC_SYSROOT}/usr/include/libdrm/intel"
-		export INTEL_LIBS="${LIBDRM_LIBS} -ldrm_intel"
-
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
 			--host=x86_64-linux-android
 			--with-sysroot=${ARC_SYSROOT}
-			--with-libdrm
 			--enable-sysfs
 			--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
 			--sysconfdir=/system/vendor/etc

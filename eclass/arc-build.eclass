@@ -68,6 +68,8 @@ _arc-build-select-common() {
 	export ARC_SYSROOT="${ARC_SYSROOT_BASE}/${ARCH}"
 	append-flags --sysroot="${ARC_SYSROOT}"
 
+	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
+
 	# Strip out flags that are specific to our compiler wrapper.
 	filter-flags -clang-syntax
 
