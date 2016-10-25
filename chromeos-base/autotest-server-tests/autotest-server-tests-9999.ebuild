@@ -55,7 +55,10 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_AdapterStandalone
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
-	cheets? ( +tests_cheets_CTS )
+	cheets? (
+		+tests_cheets_CTS
+		+tests_cheets_GTS
+	)
 	debugd? ( +tests_debugd_DevTools )
 	!chromeless_tty? (
 		!chromeless_tests? (
