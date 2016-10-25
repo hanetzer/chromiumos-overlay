@@ -44,7 +44,7 @@ ALL_BOARDS=(
 	aries
 	arkham
 	arm-generic
-	arm-generic_freon
+	#arm-generic_freon
 	arm64-generic
 	arm64-llvmpipe
 	asuka
