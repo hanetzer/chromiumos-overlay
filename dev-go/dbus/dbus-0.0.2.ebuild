@@ -4,15 +4,11 @@
 EAPI=5
 
 # Disable cros-workon auto-uprev since this is an external package.
-# Must manage commit/tree hashes manually.
+# Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_COMMIT="25c3068a42a0b50b877953fb249dbcffc6bd1bca"
-CROS_WORKON_TREE="9de3ae512491f80bd387ed687ce943259acadd13"
 CROS_WORKON_PROJECT="external/github.com/godbus/dbus"
 CROS_WORKON_DESTDIR="${S}/src/github.com/godbus/dbus"
-
-DESCRIPTION="D-Bus library for Go."
-HOMEPAGE="https://github.com/godbus/dbus"
 
 CROS_GO_PACKAGES=(
 	"github.com/godbus/dbus"
@@ -21,6 +17,9 @@ CROS_GO_PACKAGES=(
 )
 
 inherit cros-workon cros-go
+
+DESCRIPTION="Native Go client bindings for the D-Bus message bus system"
+HOMEPAGE="https://github.com/godbus/dbus"
 
 LICENSE="BSD-Google"
 SLOT="0"

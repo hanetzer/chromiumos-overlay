@@ -4,10 +4,9 @@
 EAPI=5
 
 # Disable cros-workon auto-uprev since this is an external package.
-# Must manage commit/tree hashes manually.
+# Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_COMMIT="9313baa13d9262e49d07b20ed57dceafcd7240cc"
-CROS_WORKON_TREE="ff5ac4f882fe80a20d838792b0d7d4c405a6797a"
 CROS_WORKON_REPO="https://go.googlesource.com"
 CROS_WORKON_PROJECT="net"
 CROS_WORKON_DESTDIR="${S}/src/golang.org/x/net"

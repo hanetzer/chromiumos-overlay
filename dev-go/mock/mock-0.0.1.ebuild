@@ -4,10 +4,9 @@
 EAPI=5
 
 # Disable cros-workon auto-uprev since this is an external package.
-# Must manage commit/tree hashes manually.
+# Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_COMMIT="d581abfc04272f381d7a05e4b80163ea4e2b9447"
-CROS_WORKON_TREE="71cd201d7c192c08ff55a08766cb8c8c44dea752"
 CROS_WORKON_PROJECT="external/github.com/golang/mock"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/mock"
 
@@ -22,7 +21,7 @@ CROS_GO_BINARIES=(
 
 inherit cros-workon cros-go
 
-DESCRIPTION="Mocking framework for the Go programming language"
+DESCRIPTION="A mocking framework for the Go programming language"
 HOMEPAGE="https://github.com/golang/mock"
 
 LICENSE="Apache-2.0"

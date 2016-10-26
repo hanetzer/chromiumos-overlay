@@ -4,10 +4,9 @@
 EAPI=5
 
 # Disable cros-workon auto-uprev since this is an external package.
-# Must manage commit/tree hashes manually.
+# Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_COMMIT="44145f04b68cf362d9c4df2182967c2275eaefed"
-CROS_WORKON_TREE="ff88a8670fe235f678315b4ede0378ba88585a54"
 CROS_WORKON_PROJECT="external/github.com/golang/glog"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/glog"
 
