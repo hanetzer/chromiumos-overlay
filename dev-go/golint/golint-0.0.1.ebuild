@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="1dc973e526beec42f14ad7273ad036751bd4a833"
+CROS_WORKON_COMMIT="3390df4df2787994aea98de825b964ac7944b817"
 CROS_WORKON_PROJECT="external/github.com/golang/lint"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/lint"
 

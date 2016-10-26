@@ -21,9 +21,9 @@
 # For example:
 #   CROS_GO_BINARIES=(
 #     "golang.org/x/tools/cmd/godoc"
-#     "golang.org/x/tools/cmd/vet:govet"
+#     "golang.org/x/tools/cmd/guru:goguru"
 #   )
-# will build and install "godoc" and "govet" binaries.
+# will build and install "godoc" and "goguru" binaries.
 
 # @ECLASS-VARIABLE: CROS_GO_PACKAGES
 # @DESCRIPTION:
@@ -33,13 +33,13 @@
 # can be imported later from Go code using the exact paths
 # listed here. For example:
 #   CROS_GO_PACKAGES=(
-#     "golang.org/x/tools/go/types"
+#     "github.com/golang/glog"
 #   )
 # will install package files
-#   from "${CROS_GO_WORKSPACE}/src/golang.org/x/tools/go/types"
-#   to "/usr/lib/gopath/src/golang.org/x/tools/go/types"
+#   from "${CROS_GO_WORKSPACE}/src/github.com/golang/glog"
+#   to "/usr/lib/gopath/src/github.com/golang/glog"
 # and other Go projects can use the package with
-#   import "golang.org/x/tools/go/types"
+#   import "github.com/golang/glog"
 
 # @ECLASS-VARIABLE: CROS_GO_TEST
 # @DESCRIPTION:
