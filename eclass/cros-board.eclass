@@ -60,6 +60,7 @@ ALL_BOARDS=(
 	beaglebone_vv1
 	beltino
 	blackwall
+	bob
 	bobcat
 	bolt
 	bruteus
