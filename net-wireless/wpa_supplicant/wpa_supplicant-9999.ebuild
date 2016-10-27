@@ -385,9 +385,9 @@ src_install() {
 	# Install the init scripts
 	if use systemd; then
 		insinto /usr/share
-		systemd_dounit ${FILESDIR}/init/wpa_supplicant.service
-		systemd_enable_service boot-services.target wpa_supplicant.service
-		systemd_dotmpfilesd ${FILESDIR}/init/wpa_supplicant.conf
+		systemd_dounit ${FILESDIR}/init/wpasupplicant.service
+		systemd_enable_service boot-services.target wpasupplicant.service
+		systemd_dotmpfilesd ${FILESDIR}/init/wpasupplicant-directories.conf
 	else
 		insinto /etc/init
 		doins ${FILESDIR}/init/wpasupplicant.conf
