@@ -355,9 +355,11 @@ multilib_src_install_all() {
 	chmod 700 "${ED}"/etc/cups/ssl
 
 	if use seccomp; then
-		# Install seccomp policy file.
+		# Install seccomp policy files.
 		insinto /usr/share/policy
 		newins "${FILESDIR}/cupsd-seccomp-${ARCH}.policy" cupsd-seccomp.policy
+		newins "${FILESDIR}/cupstestppd-seccomp-${ARCH}.policy" cupstestppd-seccomp.policy
+		newins "${FILESDIR}/lpadmin-seccomp-${ARCH}.policy" lpadmin-seccomp.policy
 	else
 		sed -i '/^env seccomp_flags=/s:=.*:="":' "${ED}"/etc/init/cupsd.conf
 	fi
