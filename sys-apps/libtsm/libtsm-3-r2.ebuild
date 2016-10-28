@@ -20,4 +20,5 @@ RDEPEND="${DEPEND}"
 
 src_prepare() {
         epatch "${FILESDIR}"/0001-libtsm-add-OSC-string-callback.patch
+        epatch "${FILESDIR}"/0002-libtsm-do-not-reset-scrollback-position-and-age-if-i.patch
 }
