@@ -49,9 +49,4 @@ src_install() {
 	doexe \
 		src/split_write \
 		src/memento_updater
-
-	# Install factory cutoff scripts
-
-	exeinto /usr/local/factory/sh
-	doexe battery_cutoff/*.sh
 }

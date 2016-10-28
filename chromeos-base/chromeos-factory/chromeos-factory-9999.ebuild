@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon python cros-constants
+inherit cros-workon python cros-constants cros-factory
 
 # External dependencies
 LOCAL_MIRROR_URL=http://commondatastorage.googleapis.com/chromeos-localmirror/
@@ -19,13 +19,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-# TODO(hungte) Remove chromeos-installer when we've removed chromeos-common.sh
-# TODO(hungte) Remove memento_softwareupdate when we've migrated cutoff scripts
 DEPEND="virtual/chromeos-interface
 	virtual/chromeos-regions
-	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-factory-board
-	chromeos-base/memento_softwareupdate
 	dev-python/jsonrpclib
 	dev-python/pyyaml
 	dev-libs/protobuf-python
@@ -41,7 +37,7 @@ src_configure() {
 	export BOARD="${SYSROOT##*/}"
 	export OUTOFTREE_BUILD="${CROS_WORKON_OUTOFTREE_BUILD}"
 	export PYTHON="$(PYTHON)"
-	export PYTHON_SITEDIR="${EROOT}/$(python_get_sitedir)"
+	export PYTHON_SITEDIR="${EROOT}$(python_get_sitedir)"
 	export TARGET_DIR=/usr/local/factory
 	export WEBGL_AQUARIUM_DIR="${WORKDIR}/webgl_aquarium_static"
 
@@ -49,9 +45,14 @@ src_configure() {
 	export BUILD_DIR="${WORKDIR}/build"
 
 	# The path of bundle is defined in chromite/cbuildbot/commands.py
-	export BUNDLE_DIR="${D}/usr/local/factory/bundle"
+	export BUNDLE_DIR="${ED}usr/local/factory/bundle"
 }
 
 src_install() {
 	emake bundle
+
+	# Create cutoff resource from $(TOOLKIT_TEMP_DIR) for
+	# chromeos-base/factory_installer.
+	factory_create_resource cutoff \
+		"${BUILD_DIR}/tmp/toolkit/usr/local/factory/sh" "" "cutoff"
 }

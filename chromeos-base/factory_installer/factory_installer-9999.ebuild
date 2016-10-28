@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon toolchain-funcs cros-factory
 
 DESCRIPTION="Chrome OS Factory Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -63,6 +63,7 @@ COMMON_DEPEND="
 	!chromeos-base/chromeos-factoryinstall"
 
 DEPEND="$COMMON_DEPEND
+	chromeos-base/chromeos-factory
 	x86? ( sys-boot/syslinux )"
 
 RDEPEND="$COMMON_DEPEND
@@ -128,7 +129,6 @@ src_install() {
 	insinto /root
 	doins factory_verify.fio
 	newins $FILESDIR/dot.factory_installer .factory_installer
-	newins $FILESDIR/dot.gpt_layout .gpt_layout
 	# install PMBR code
 	case "$(tc-arch)" in
 		"x86")
@@ -141,6 +141,9 @@ src_install() {
 		;;
 	esac
 	newins $PMBR_SOURCE .pmbr_code
+
+	einfo "Install cutoff scripts from chromeos-base/chromeos-factory."
+	factory_unpack_resource cutoff "${ED}usr/share"
 }
 
 pkg_postinst() {
