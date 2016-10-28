@@ -52,7 +52,10 @@ src_install() {
 	fi
 }
 
-# disabled due to buildbot failure
-#src_test() {
-#	emake test || die "test failed."
-#}
+src_test() {
+	if ! use x86 && ! use amd64; then
+		ewarn "Skipping unittests for non-x86 arches"
+		return
+	fi
+	emake test
+}
