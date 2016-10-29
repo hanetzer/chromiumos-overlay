@@ -19,6 +19,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
+RDEPEND="chromeos-base/libbrillo"
+DEPEND="${RDEPEND}"
+
 pkg_preinst() {
 	# Create user and group for authpolicyd.
 	enewuser "authpolicyd"
