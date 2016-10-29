@@ -56,6 +56,7 @@ src_install() {
 	fi
 
 	dosbin "${OUT}"/trunks_client
+	dosbin "${OUT}"/trunks_send
 	dosbin tpm_version
 	dosbin "${OUT}"/trunksd
 	dolib.so "${OUT}"/lib/libtrunks.so
