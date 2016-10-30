@@ -15,7 +15,7 @@ CROS_GO_PACKAGES=(
 inherit cros-workon cros-go
 
 DESCRIPTION="Go support for Chromium OS Seccomp-BPF policy files"
-HOMEPAGE="http://chromium.org/chromium-os/developer-guide/chromium-os-sandboxing"
+HOMEPAGE="https://chromium.org/chromium-os/developer-guide/chromium-os-sandboxing"
 
 LICENSE="BSD-Google"
 SLOT="0"
