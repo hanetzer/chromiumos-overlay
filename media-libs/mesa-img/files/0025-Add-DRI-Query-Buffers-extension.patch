@@ -1,7 +1,7 @@
-From 9e17b77b6cea698d234cb1209c45e4f9e8601e0e Mon Sep 17 00:00:00 2001
+From e37da0fbc0daa3e72ad1131f5731b46f4b09efb4 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Wed, 25 May 2016 11:51:42 +0100
-Subject: [PATCH] Add DRI Query Buffers extension.
+Subject: [PATCH 25/29] Add DRI Query Buffers extension.
 
 The DRI Query Buffers extension allows a driver to specify a
 callback to notify the driver that it should query for new buffers
@@ -27,7 +27,7 @@ used, if the driver supports it.
  7 files changed, 59 insertions(+), 9 deletions(-)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index ee067a3..236f5bd 100644
+index 3958724..e3c18c3 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
 @@ -80,6 +80,7 @@ typedef struct __DRI2flushExtensionRec	__DRI2flushExtension;
@@ -85,7 +85,7 @@ index ee067a3..236f5bd 100644
   * available interfaces provided by the driver.  To start using the
   * driver, dlsym() for the __DRI_DRIVER_EXTENSIONS symbol and look for
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index 27197ab..c6f96ef 100644
+index 593d97d..4d4f78b 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
 @@ -78,6 +78,10 @@ const __DRIuseInvalidateExtension use_invalidate = {
@@ -99,7 +99,7 @@ index 27197ab..c6f96ef 100644
  EGLint dri2_to_egl_attribute_map[] = {
     0,
     EGL_BUFFER_SIZE,		/* __DRI_ATTRIB_BUFFER_SIZE */
-@@ -373,6 +377,7 @@ static struct dri2_extension_match dri2_core_extensions[] = {
+@@ -391,6 +395,7 @@ static struct dri2_extension_match dri2_core_extensions[] = {
     { __DRI2_FLUSH, 1, offsetof(struct dri2_egl_display, flush) },
     { __DRI_TEX_BUFFER, 2, offsetof(struct dri2_egl_display, tex_buffer) },
     { __DRI_IMAGE, 1, offsetof(struct dri2_egl_display, image) },
@@ -108,7 +108,7 @@ index 27197ab..c6f96ef 100644
  };
  
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index cc1dc69..1061083 100644
+index df48362..720a7b2 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
 @@ -176,6 +176,7 @@ struct dri2_egl_display
@@ -128,7 +128,7 @@ index cc1dc69..1061083 100644
     const __DRIextension    **driver_extensions;
  
  #ifdef HAVE_X11_PLATFORM
-@@ -335,6 +336,7 @@ _EGL_DRIVER_TYPECAST(dri2_egl_sync, _EGLSync, obj)
+@@ -329,6 +330,7 @@ _EGL_DRIVER_TYPECAST(dri2_egl_sync, _EGLSync, obj)
  
  extern const __DRIimageLookupExtension image_lookup_extension;
  extern const __DRIuseInvalidateExtension use_invalidate;
@@ -173,10 +173,10 @@ index ff0d5c8..dbcceaa 100644
     dri2_dpy->swap_available = EGL_TRUE;
  
 diff --git a/src/egl/drivers/dri2/platform_x11.c b/src/egl/drivers/dri2/platform_x11.c
-index c0a4005..5369282 100644
+index acdbf9e..366123d 100644
 --- a/src/egl/drivers/dri2/platform_x11.c
 +++ b/src/egl/drivers/dri2/platform_x11.c
-@@ -866,15 +866,17 @@ dri2_x11_swap_buffers_msc(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw,
+@@ -871,15 +871,17 @@ dri2_x11_swap_buffers_msc(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw,
      * the way xlib does), and SwapBuffers is a common cause of invalidate
      * events, just shove one down to the driver, even though we haven't told
      * the driver that we're the kind of loader that provides reliable
@@ -198,7 +198,7 @@ index c0a4005..5369282 100644
     return swap_count;
  }
  
-@@ -1423,7 +1425,8 @@ dri2_initialize_x11_dri2(_EGLDriver *drv, _EGLDisplay *disp)
+@@ -1428,7 +1430,8 @@ dri2_initialize_x11_dri2(_EGLDriver *drv, _EGLDisplay *disp)
        
     dri2_dpy->extensions[0] = &dri2_dpy->dri2_loader_extension.base;
     dri2_dpy->extensions[1] = &image_lookup_extension.base;
@@ -234,5 +234,5 @@ index 7d7c633..9cfc330 100644
  
      struct {
 -- 
-1.9.1
+2.7.4
 

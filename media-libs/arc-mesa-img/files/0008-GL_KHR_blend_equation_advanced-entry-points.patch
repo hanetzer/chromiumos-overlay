@@ -1,7 +1,7 @@
-From d0769ca38816166a78d0ee02dbc98619375e7e3a Mon Sep 17 00:00:00 2001
+From 0ac71bf01ace340e9d8498e9d72d1e2920c51eef Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Tue, 2 Sep 2014 18:19:12 +0100
-Subject: [PATCH 09/34] GL_KHR_blend_equation_advanced entry points
+Subject: [PATCH 08/29] GL_KHR_blend_equation_advanced entry points
 
 ---
  src/mapi/glapi/gen/KHR_blend_equation_advanced.xml | 31 ++++++++++++++++++++++
@@ -49,7 +49,7 @@ index 0000000..4a2fc11
 +</OpenGLAPI>
 +
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 7701961..460bf5a 100644
+index 0059abf..f73d34d 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
 @@ -801,6 +801,9 @@
@@ -59,9 +59,9 @@ index 7701961..460bf5a 100644
 +<!-- 168. GL_KHR_blend_equation_advanced -->
 +<xi:include href="KHR_blend_equation_advanced.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- <!-- 174. GL_OES_texture_storage_multisample_2d_array -->
- <category name="GL_OES_texture_storage_multisample_2d_array" number="174">
-     <enum name="TEXTURE_2D_MULTISAMPLE_ARRAY_OES"              value="0x9102"/>
+ <category name="GL_OES_sample_shading" number="169">
+     <function name="MinSampleShadingOES" alias="MinSampleShading" es2="3.0">
+         <param name="value" type="GLfloat"/>
 diff --git a/src/mesa/main/blend.c b/src/mesa/main/blend.c
 index 2ae22e9..92f85b3 100644
 --- a/src/mesa/main/blend.c
@@ -94,5 +94,5 @@ index 8ab9e02..5826e76 100644
  
  
 -- 
-1.9.1
+2.7.4
 

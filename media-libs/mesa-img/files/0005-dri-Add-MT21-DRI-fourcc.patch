@@ -1,13 +1,13 @@
-From dd14d47f68a914618fa1106682a566866e96700f Mon Sep 17 00:00:00 2001
-From: Daniel Kurtz <djkurtz@chromium.org>
-Date: Wed, 27 Jan 2016 18:46:37 +0800
-Subject: [PATCH 6/6] dri: Add MT21 DRI fourcc
+From df4566f954020c2d8331c913b7b283822bb9195d Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 19 Mar 2015 14:07:23 +0000
+Subject: [PATCH 05/29] dri: Add MT21 DRI fourcc
 
 Add MT21 DRI fourcc that corresponds to DRM_FORMAT_MT21.
 ---
  include/GL/internal/dri_interface.h | 1 +
- src/egl/drivers/dri2/egl_dri2.c     | 1 +
- 2 files changed, 2 insertions(+)
+ src/egl/drivers/dri2/egl_dri2.c     | 3 +++
+ 2 files changed, 4 insertions(+)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
 index a1d1c2d..ce0fb48 100644
@@ -22,17 +22,19 @@ index a1d1c2d..ce0fb48 100644
  #define __DRI_IMAGE_FOURCC_YVU410	0x39555659
  #define __DRI_IMAGE_FOURCC_YVU411	0x31315659
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index c5c0c36..877abee 100644
+index bfde640..614c66f 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -1900,6 +1900,7 @@ dri2_check_dma_buf_format(const _EGLImageAttribs *attrs)
+@@ -1896,6 +1896,9 @@ dri2_check_dma_buf_format(const _EGLImageAttribs *attrs)
     case DRM_FORMAT_NV21:
     case DRM_FORMAT_NV16:
     case DRM_FORMAT_NV61:
++#ifdef DRM_FORMAT_MT21
 +   case DRM_FORMAT_MT21:
++#endif
        plane_n = 2;
        break;
     case DRM_FORMAT_YUV410:
 -- 
-1.9.1
+2.7.4
 

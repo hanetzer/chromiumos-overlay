@@ -79,7 +79,11 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86vidmodeproto
 	)
 	!arm? ( sys-devel/llvm )
-	video_cards_powervr? ( virtual/img-ddk )
+	video_cards_powervr? (
+			virtual/img-ddk
+			!<media-libs/img-ddk-1.7
+			!<media-libs/img-ddk-bin-1.7
+	)
 "
 
 S="${WORKDIR}/${MY_P}"
@@ -169,9 +173,6 @@ src_install() {
 		|| die "Removing glew includes failed."
 	# GLES headers
 	rm -f "${D}"/usr/include/{EGL,GLES2,GLES3,KHR}/*.h || die "Removing GLES headers failed."
-
-	# Remove GLES libraries as IMG DDK installs its own versions.
-	rm -f "${D}"/usr/$(get_libdir)/libGLES*
 
 	# Move libGL and others from /usr/lib to /usr/lib/opengl/blah/lib
 	# because user can eselect desired GL provider.

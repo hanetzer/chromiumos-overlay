@@ -1,7 +1,7 @@
-From 248a6937efec266efc09b92f51b25ecdaade7bb9 Mon Sep 17 00:00:00 2001
+From 7b3446b45ffde77f39e0cfcd26be6eddfc098d06 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Thu, 4 Feb 2016 14:09:26 +0000
-Subject: [PATCH 34/34] GL_EXT_shader_pixel_local_storage2 entry points
+Subject: [PATCH 23/29] GL_EXT_shader_pixel_local_storage2 entry points
 
 ---
  .../glapi/gen/EXT_shader_pixel_local_storage2.xml  | 33 ++++++++++++++++++++++
@@ -51,10 +51,10 @@ index 0000000..4223ab1
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index fae9c73..c46bb43 100644
+index 602043e..f8280aa 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1116,4 +1116,7 @@
+@@ -1402,4 +1402,7 @@
  <!-- 240. EXT_sparse_texture -->
  <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
@@ -116,5 +116,5 @@ index 6838454..4761980 100644
  extern bool
  _mesa_compressed_pixel_storage_error_check(
 -- 
-1.9.1
+2.7.4
 

@@ -1,7 +1,7 @@
-From d7c4f7fc30fc22e2f570607d1bffd43e160e7432 Mon Sep 17 00:00:00 2001
+From 83375ebf45be5d009a9f98d77a4acefe6d30c547 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Fri, 5 Dec 2014 11:05:03 +0000
-Subject: [PATCH 16/16] GL_EXT_primitive_bounding_box entry points
+Subject: [PATCH 10/29] GL_EXT_primitive_bounding_box entry points
 
 ---
  src/mapi/glapi/gen/EXT_primitive_bounding_box.xml | 23 +++++++++++++++++++++++
@@ -41,22 +41,24 @@ index 0000000..0766d12
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 11d5546..e68fa6d 100644
+index fa33525..0b88382 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1304,4 +1304,7 @@
- <!-- 177. GL_EXT_geometry_shader-->
- <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+@@ -933,6 +933,9 @@
+ 
+ </category>
  
 +<!-- 186. GL_EXT_primitive_bounding_box -->
 +<xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- </OpenGLAPI>
+ <xi:include href="KHR_robustness_es.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+ <category name="GL_EXT_base_instance" number="203">
 diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
-index b28b5ce..4dcdf07 100644
+index 167e06f..23879d7 100644
 --- a/src/mesa/main/shaderapi.c
 +++ b/src/mesa/main/shaderapi.c
-@@ -2761,3 +2761,13 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
+@@ -2783,3 +2783,13 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
        _mesa_shader_init_subroutine_defaults(shProg->_LinkedShaders[i]);
     }
  }
@@ -89,5 +91,5 @@ index d2d7f16..81a92e7 100644
  }
  #endif
 -- 
-1.9.1
+2.7.4
 

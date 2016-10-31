@@ -1,0 +1,62 @@
+From 5580aa32c1ff32d7bae264215875d14c9c4ec2d8 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 26 Aug 2016 14:25:28 +0100
+Subject: [PATCH 32/33] OpenGLES3.2 BlendBarrier.
+
+---
+ src/mapi/glapi/gen/gl_and_es_API.xml | 5 +++++
+ src/mesa/main/blend.c                | 7 +++++++
+ src/mesa/main/blend.h                | 3 +++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/src/mapi/glapi/gen/gl_and_es_API.xml b/src/mapi/glapi/gen/gl_and_es_API.xml
+index fc15284..79ef654 100644
+--- a/src/mapi/glapi/gen/gl_and_es_API.xml
++++ b/src/mapi/glapi/gen/gl_and_es_API.xml
+@@ -280,6 +280,11 @@
+     <enum name="RGB565"                                       value="0x8D62"/>
+ </category>
+ 
++<category name="es3.2">
++    <function name="BlendBarrier" es2="3.2" desktop="false">
++    </function>
++</category>
++
+ <xi:include href="es_EXT.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+ </OpenGLAPI>
+diff --git a/src/mesa/main/blend.c b/src/mesa/main/blend.c
+index 92f85b3..6bfd5f9 100644
+--- a/src/mesa/main/blend.c
++++ b/src/mesa/main/blend.c
+@@ -586,6 +586,13 @@ _mesa_BlendColor( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
+ }
+ 
+ void GLAPIENTRY
++_mesa_BlendBarrier(void)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glBlendBarrier");
++}
++
++void GLAPIENTRY
+ _mesa_BlendBarrierKHR(void)
+ {
+    GET_CURRENT_CONTEXT(ctx);
+diff --git a/src/mesa/main/blend.h b/src/mesa/main/blend.h
+index 5826e76..014aa42 100644
+--- a/src/mesa/main/blend.h
++++ b/src/mesa/main/blend.h
+@@ -79,6 +79,9 @@ _mesa_BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+ 
+ 
+ extern void GLAPIENTRY
++_mesa_BlendBarrier(void);
++
++extern void GLAPIENTRY
+ _mesa_BlendBarrierKHR(void);
+ 
+ extern void GLAPIENTRY
+-- 
+2.7.4
+

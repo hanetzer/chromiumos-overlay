@@ -1,6 +1,6 @@
-From 54e05526dcd225d80deefc4b665a61f7e14dadbe Mon Sep 17 00:00:00 2001
-From: Rufus Hamade <rufus.hamade@imgtec.com>
-Date: Fri, 19 Aug 2016 10:20:21 +0100
+From ad652429d631482ed078db8cf92f8568a7cbb533 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Wed, 30 Nov 2016 12:05:14 +0000
 Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
 
 Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
@@ -9,37 +9,31 @@ Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
  src/mesa/drivers/dri/Makefile.am                   |    6 +
  src/mesa/drivers/dri/pvr/Makefile.am               |   24 +
  src/mesa/drivers/dri/pvr/Makefile.sources          |   13 +
- src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h | 1130 +++++++++++++++
+ src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h | 1130 ++++++++++++++
  .../drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h   |  364 +++++
- .../drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h   |  792 ++++++++++
- src/mesa/drivers/dri/pvr/imgpixfmts.h              |   68 +
- src/mesa/drivers/dri/pvr/imgyuv.h                  |   58 +
+ .../drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h   |  833 +++++++++++
  src/mesa/drivers/dri/pvr/mesa_context.c            |  230 +++
- src/mesa/drivers/dri/pvr/pvr_dri_support.h         |  349 +++++
  src/mesa/drivers/dri/pvr/pvr_mesa_version.h        |   39 +
- src/mesa/drivers/dri/pvr/pvr_object_cache.c        |  311 ++++
+ src/mesa/drivers/dri/pvr/pvr_object_cache.c        |  317 ++++
  src/mesa/drivers/dri/pvr/pvr_object_cache.h        |  137 ++
  src/mesa/drivers/dri/pvr/pvrdrawable.c             |  743 ++++++++++
- src/mesa/drivers/dri/pvr/pvrdri.c                  | 1528 ++++++++++++++++++++
- src/mesa/drivers/dri/pvr/pvrdri.h                  |  280 ++++
- src/mesa/drivers/dri/pvr/pvrext.c                  |  332 +++++
- src/mesa/drivers/dri/pvr/pvrimage.c                | 1074 ++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.c                  | 1535 ++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.h                  |  268 ++++
+ src/mesa/drivers/dri/pvr/pvrext.c                  |  336 +++++
+ src/mesa/drivers/dri/pvr/pvrimage.c                | 1087 ++++++++++++++
  src/mesa/drivers/dri/pvr/pvrimage.h                |   96 ++
  src/mesa/drivers/dri/pvr/pvrmesa.h                 |   43 +
  src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
  src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  206 +++
  src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
- src/mesa/drivers/dri/pvr/pvrutil.c                 |  531 +++++++
- 25 files changed, 8484 insertions(+)
+ src/mesa/drivers/dri/pvr/pvrutil.c                 |  469 ++++++
+ 22 files changed, 8006 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
- create mode 100644 src/mesa/drivers/dri/pvr/imgpixfmts.h
- create mode 100644 src/mesa/drivers/dri/pvr/imgyuv.h
  create mode 100644 src/mesa/drivers/dri/pvr/mesa_context.c
- create mode 100644 src/mesa/drivers/dri/pvr/pvr_dri_support.h
  create mode 100644 src/mesa/drivers/dri/pvr/pvr_mesa_version.h
  create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.c
  create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.h
@@ -56,7 +50,7 @@ Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index cc9bc47..c4afd0f 100644
+index c492e15..ec1e90f 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -72,6 +72,7 @@ LIBDRM_REQUIRED=2.4.66
@@ -79,7 +73,7 @@ index cc9bc47..c4afd0f 100644
          xswrast)
              HAVE_SWRAST_DRI=yes;
              ;;
-@@ -2540,6 +2546,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
+@@ -2537,6 +2543,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
@@ -87,7 +81,7 @@ index cc9bc47..c4afd0f 100644
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
  AM_CONDITIONAL(HAVE_INTEL_VULKAN, test "x$HAVE_INTEL_VULKAN" = xyes)
-@@ -2726,6 +2733,7 @@ AC_CONFIG_FILES([Makefile
+@@ -2723,6 +2730,7 @@ AC_CONFIG_FILES([Makefile
  		src/mesa/drivers/dri/nouveau/Makefile
  		src/mesa/drivers/dri/r200/Makefile
  		src/mesa/drivers/dri/radeon/Makefile
@@ -1669,10 +1663,10 @@ index 0000000..844e417
 +#endif /* __g_pvrogles1_set_mesa_dispatch_h_ */
 diff --git a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
 new file mode 100644
-index 0000000..d15cc3d
+index 0000000..49ff704
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
-@@ -0,0 +1,792 @@
+@@ -0,0 +1,833 @@
 +#ifndef __g_pvrogles2_set_mesa_dispatch_h_
 +#define __g_pvrogles2_set_mesa_dispatch_h_
 +
@@ -2141,6 +2135,15 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glDeleteVertexArraysOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGenVertexArraysOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glIsVertexArrayOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glViewportArrayvOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glViewportIndexedfOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glViewportIndexedfvOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glScissorArrayvOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glScissorIndexedOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glScissorIndexedvOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glDepthRangeArrayfvOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glDepthRangeIndexedfOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glGetFloati_vOES", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetPerfMonitorGroupsAMD", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetPerfMonitorCountersAMD", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetPerfMonitorGroupStringAMD", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2176,6 +2179,8 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetProgramResourceLocationIndexEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetFragDataIndexEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glBufferStorageEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glClearTexImageEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glClearTexSubImageEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glCopyImageSubDataEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glLabelObjectEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetObjectLabelEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2295,6 +2300,13 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glTextureStorage2DEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glTextureStorage3DEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glTextureViewEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glWindowRectanglesEXT", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glGetTextureHandleIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glGetTextureSamplerHandleIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniformHandleui64IMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniformHandleui64vIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniformHandleui64IMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniformHandleui64vIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glFramebufferTexture2DDownsampleIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glFramebufferTextureLayerDownsampleIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glRenderbufferStorageMultisampleIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2328,6 +2340,7 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glBeginConditionalRenderNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glEndConditionalRenderNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glSubpixelPrecisionBiasNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glConservativeRasterParameteriNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glCopyBufferSubDataNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glCoverageMaskNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glCoverageOperationNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2347,6 +2360,39 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetCoverageModulationTableNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glCoverageModulationNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glRenderbufferStorageMultisampleNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform1i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform2i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform3i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform4i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform1i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform2i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform3i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform4i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform1ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform2ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform3ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform4ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform1ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform2ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform3ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glUniform4ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glGetUniformi64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform1i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform2i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform3i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform4i64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform1i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform2i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform3i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform4i64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform1ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform2ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform3ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform4ui64NV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform1ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform2ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform3ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glProgramUniform4ui64vNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glVertexAttribDivisorNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glGetInternalformatSampleivNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glUniformMatrix2x3fvNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2429,18 +2475,7 @@ index 0000000..d15cc3d
 +    pvrogles2_add_mesa_dispatch(psTab, "glEnableiNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glDisableiNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glIsEnablediNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glViewportArrayvIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glViewportIndexedfIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glViewportIndexedfvIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glScissorArrayvIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glScissorIndexedIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glScissorIndexedvIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glDepthRangeArrayfvIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glDepthRangeIndexedfIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glGetFloati_vIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glEnableiIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glDisableiIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
-+    pvrogles2_add_mesa_dispatch(psTab, "glIsEnablediIMG", psScreenImpl, pvLibHandle, pfGetProcAddress);
++    pvrogles2_add_mesa_dispatch(psTab, "glViewportSwizzleNV", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glFramebufferTextureMultiviewOVR", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glFramebufferTextureMultisampleMultiviewOVR", psScreenImpl, pvLibHandle, pfGetProcAddress);
 +    pvrogles2_add_mesa_dispatch(psTab, "glAlphaFuncQCOM", psScreenImpl, pvLibHandle, pfGetProcAddress);
@@ -2465,147 +2500,9 @@ index 0000000..d15cc3d
 +}
 +
 +#endif /* __g_pvrogles2_set_mesa_dispatch_h_ */
-diff --git a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/imgpixfmts.h
-new file mode 100644
-index 0000000..ff5625e
---- /dev/null
-+++ b/src/mesa/drivers/dri/pvr/imgpixfmts.h
-@@ -0,0 +1,68 @@
-+/*************************************************************************/ /*!
-+@File           imgpixfmts_km.h
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+/*****************************************************************************
-+ **
-+ ** WARNING: This file is autogenerated - DO NOT EDIT.
-+ **
-+ *****************************************************************************/
-+
-+#if !defined(_IMGPIXFMTS_KM_H_)
-+#define _IMGPIXFMTS_KM_H_
-+
-+#include "imgyuv.h"
-+
-+
-+typedef enum _IMG_PIXFMT_
-+{
-+	IMG_PIXFMT_UNKNOWN = 0,
-+	IMG_PIXFMT_R8G8B8A8_UNORM = 31,
-+	IMG_PIXFMT_R8G8B8X8_UNORM = 36,
-+	IMG_PIXFMT_R8G8_UNORM = 61,
-+	IMG_PIXFMT_R8_UNORM = 75,
-+	IMG_PIXFMT_B5G6R5_UNORM = 84,
-+	IMG_PIXFMT_B5G5R5A1_UNORM = 85,
-+	IMG_PIXFMT_B5G5R5X1_UNORM = 86,
-+	IMG_PIXFMT_B8G8R8A8_UNORM = 87,
-+	IMG_PIXFMT_B8G8R8X8_UNORM = 88,
-+	IMG_PIXFMT_B4G4R4A4_UNORM = 143,
-+	IMG_PIXFMT_UYVY = 169,
-+	IMG_PIXFMT_VYUY = 170,
-+	IMG_PIXFMT_YUYV = 171,
-+	IMG_PIXFMT_YVYU = 172,
-+	IMG_PIXFMT_YVU420_2PLANE = 173,
-+	IMG_PIXFMT_YUV420_2PLANE = 174,
-+	IMG_PIXFMT_YVU420_2PLANE_MACRO_BLOCK = 175,
-+	IMG_PIXFMT_YUV420_3PLANE = 176,
-+	IMG_PIXFMT_YVU420_3PLANE = 177,
-+	IMG_PIXFMT_V8U8Y8A8 = 182,
-+	IMG_PIXFMT_YVU8_420_2PLANE_PACK8_P = 243,
-+	IMG_PIXFMT_YUV8_420_2PLANE_PACK8_P = 247,
-+	IMG_PIXFMT_UYVY10_422_1PLANE_PACK10_CUST1 = 250,
-+	IMG_PIXFMT_R5G6B5_UNORM = 252,
-+}	IMG_PIXFMT;
-+
-+#endif /* _IMGPIXFMTS_KM_H_ */
-diff --git a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv.h
-new file mode 100644
-index 0000000..a91ee10
---- /dev/null
-+++ b/src/mesa/drivers/dri/pvr/imgyuv.h
-@@ -0,0 +1,58 @@
-+/*************************************************************************/ /*!
-+@File
-+@Title          YUV defines
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(_IMGYUV_H_)
-+#define _IMGYUV_H_
-+
-+typedef enum
-+{
-+	IMG_COLORSPACE_UNDEFINED = 0,
-+	IMG_COLORSPACE_BT601_CONFORMANT_RANGE = 1,
-+	IMG_COLORSPACE_BT601_FULL_RANGE = 2,
-+	IMG_COLORSPACE_BT709_CONFORMANT_RANGE = 3,
-+	IMG_COLORSPACE_BT709_FULL_RANGE = 4,
-+	IMG_COLORSPACE_BT2020_CONFORMANT_RANGE = 5,
-+	IMG_COLORSPACE_BT2020_FULL_RANGE = 6,
-+	IMG_COLORSPACE_BT601_CONFORMANT_RANGE_INVERSE = 7,
-+	IMG_COLORSPACE_BT601_FULL_RANGE_INVERSE = 8,
-+	IMG_COLORSPACE_BT709_CONFORMANT_RANGE_INVERSE = 9,
-+	IMG_COLORSPACE_BT709_FULL_RANGE_INVERSE = 10,
-+	IMG_COLORSPACE_BT2020_CONFORMANT_RANGE_INVERSE = 11,
-+	IMG_COLORSPACE_BT2020_FULL_RANGE_INVERSE = 12
-+} IMG_YUV_COLORSPACE;
-+
-+typedef enum
-+{
-+	IMG_CHROMA_INTERP_UNDEFINED = 0,
-+	IMG_CHROMA_INTERP_ZERO = 1,
-+	IMG_CHROMA_INTERP_QUARTER = 2,
-+	IMG_CHROMA_INTERP_HALF = 3,
-+	IMG_CHROMA_INTERP_THREEQUARTERS = 4
-+} IMG_YUV_CHROMA_INTERP;
-+
-+
-+#endif /* _IMGYUV_H_ */
 diff --git a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
 new file mode 100644
-index 0000000..8f84d56
+index 0000000..468a1b2
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/mesa_context.c
 @@ -0,0 +1,230 @@
@@ -2670,7 +2567,7 @@ index 0000000..8f84d56
 +#include "dispatch.h"
 +#include "pvrmesa.h"
 +
-+#include "pvr_dri_support.h"
++#include "powervr/dri_support.h"
 +
 +#include "compiler/glsl/glsl_parser_extras.h"
 +
@@ -2763,15 +2660,15 @@ index 0000000..8f84d56
 +	{
 +		case PVRDRI_API_GL:
 +			ppsTable = &psPVRScreen->psPVROGLDispatch;
-+			pvLibHandle = psPVRScreen->pvLibHandleOGL;
++			pvLibHandle = PVRDRIEGLGetLibHandleOGL(psScreenImpl);
 +			break;
 +		case PVRDRI_API_GLES1:
 +			ppsTable = &psPVRScreen->psOGLES1Dispatch;
-+			pvLibHandle = psPVRScreen->pvLibHandleOGLES1;
++			pvLibHandle = PVRDRIEGLGetLibHandleOGLES1(psScreenImpl);
 +			break;
 +		case PVRDRI_API_GLES2:
 +			ppsTable = &psPVRScreen->psOGLES2Dispatch;
-+			pvLibHandle = psPVRScreen->pvLibHandleOGLES2;
++			pvLibHandle = PVRDRIEGLGetLibHandleOGLES2(psScreenImpl);
 +			break;
 +		default:
 +			return GL_FALSE;
@@ -2805,7 +2702,7 @@ index 0000000..8f84d56
 +			pvrogles2_set_mesa_dispatch((struct _glapi_table *)*ppsTable, psScreenImpl, pvLibHandle, pvrdri_get_proc_address_ogles2);
 +			break;
 +		default:
-+			break;
++			return GL_FALSE;
 +	}
 +
 +	return GL_TRUE;
@@ -2839,361 +2736,6 @@ index 0000000..8f84d56
 +
 +	_glapi_set_dispatch((struct _glapi_table *)psTable);
 +}
-diff --git a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
-new file mode 100644
-index 0000000..fb26b12
---- /dev/null
-+++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
-@@ -0,0 +1,349 @@
-+/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
-+/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI interface definition
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(__PVRDRIIFCE_H__)
-+#define __PVRDRIIFCE_H__
-+
-+#include <stdint.h>
-+#include <stdbool.h>
-+
-+#include "imgpixfmts.h"
-+
-+#if !defined(ARRAY_SIZE)
-+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-+#endif
-+
-+typedef enum
-+{
-+	PVRDRI_DEVICE_TYPE_INVALID = 0,
-+	PVRDRI_DEVICE_TYPE_UNKNOWN,
-+	PVRDRI_DEVICE_TYPE_DISPLAY,
-+	PVRDRI_DEVICE_TYPE_RENDER,
-+} PVRDRIDeviceType;
-+
-+typedef enum
-+{
-+	PVRDRI_API_GL,
-+	PVRDRI_API_GLES1,
-+	PVRDRI_API_GLES2
-+} pvrdri_api_type;
-+
-+typedef enum
-+{
-+	PVRDRI_IMAGE = 1,
-+	PVRDRI_IMAGE_FROM_NAMES,
-+	PVRDRI_IMAGE_FROM_EGLIMAGE,
-+	PVRDRI_IMAGE_FROM_DMABUFS,
-+} PVRDRIImageType;
-+
-+typedef enum
-+{
-+	PVRDRI_IMAGE_ERROR_SUCCESS,
-+	PVRDRI_IMAGE_ERROR_BAD_PARAMETER,
-+	PVRDRI_IMAGE_ERROR_BAD_MATCH,
-+	PVRDRI_IMAGE_ERROR_BAD_ALLOC,
-+	PVRDRI_IMAGE_ERROR_BAD_ACCESS,
-+} PVRDRIImageError;
-+
-+/* The buffer flags should match the __DRI_IMAGE_USE_* flags */
-+#define PVDRI_BUFFER_USE_SHARE		0x0001
-+#define PVDRI_BUFFER_USE_SCANOUT	0x0002
-+#define PVDRI_BUFFER_USE_CURSOR		0x0004
-+#define PVDRI_BUFFER_USE_LINEAR		0x0008
-+
-+typedef struct 
-+{
-+	IMG_PIXFMT          ePixFormat;
-+	uint32_t            uiWidth;
-+	uint32_t            uiHeight;
-+	uint32_t            uiStrideInBytes;
-+} PVRDRIBufferAttribs;
-+
-+typedef struct
-+{
-+	int sampleBuffers;
-+	int samples;
-+
-+	int redBits;
-+	int greenBits;
-+	int blueBits;
-+	int alphaBits;
-+
-+	int rgbBits;
-+	int depthBits;
-+	int stencilBits;
-+
-+	bool doubleBufferMode;
-+
-+	int bindToTextureRgb;
-+	int bindToTextureRgba;
-+} PVRDRIConfigInfo;
-+
-+typedef struct EGLImageRec _EGLImage;
-+typedef struct __DRIimageRec __DRIimage;
-+
-+/* PVRDRI interface opaque types */
-+typedef struct PVRDRIScreenImplRec PVRDRIScreenImpl;
-+typedef struct PVRDRIContextImplRec PVRDRIContextImpl;
-+typedef struct PVRDRIDrawableImplRec PVRDRIDrawableImpl;
-+typedef struct PVRDRIBufferImplRec PVRDRIBufferImpl;
-+typedef struct PVRSRV_CLIENT_SYNC_PRIM PVRSRV_CLIENT_SYNC_PRIM;
-+
-+typedef struct PVRDRIDrawable_TAG PVRDRIDrawable;
-+
-+typedef struct _SyncCommand_ SyncCommand;
-+
-+PVRDRIDeviceType PVRDRIGetDeviceTypeFromFd(int iFd);
-+
-+bool PVRScreenGlobalInit(void);
-+void PVRScreenGlobalDeinit(void);
-+
-+uint32_t PVRScreenCountInc(void);
-+uint32_t PVRScreenCountDec(void);
-+
-+uint32_t PVRDRIPixFmtGetDepth(IMG_PIXFMT eFmt);
-+uint32_t PVRDRIPixFmtGetBPP(IMG_PIXFMT eFmt);
-+uint32_t PVRDRIPixFmtGetBlockSize(IMG_PIXFMT eFmt);
-+
-+/* ScreenImpl functions */
-+PVRDRIScreenImpl *PVRDRICreateScreenImpl(int iFd);
-+void PVRDRIDestroyScreenImpl(PVRDRIScreenImpl *psScreenImpl);
-+bool PVRDRIScreenImplInitRenderContext(PVRDRIScreenImpl *psScreenImpl, uint32_t uiPriority);
-+
-+/* EGL function table functions */
-+bool PVRDRIEGLGetPVROGLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOGLES2FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOGLES1FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOCLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+
-+typedef void (*pvrdri_glapi_proc)(void);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGL(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES1(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES2(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+
-+bool PVRDRIEGLFlushBuffers(pvrdri_api_type eAPI,
-+                           PVRDRIScreenImpl *psScreenImpl,
-+                           PVRDRIContextImpl *psContextImpl,
-+                           PVRDRIDrawableImpl *psDrawableImpl,
-+                           bool bFlushAllSurfaces,
-+                           bool bSwapBuffers,
-+                           bool bWaitForHW);
-+bool PVRDRIEGLFreeResources(PVRDRIScreenImpl *psPVRScreenImpl);
-+void PVRDRIEGLMarkRendersurfaceInvalid(pvrdri_api_type eAPI,
-+                                       PVRDRIScreenImpl *psScreenImpl,
-+                                       PVRDRIContextImpl *psContextImpl);
-+void PVRDRIEGLSetOGLFrontBufferCallback(pvrdri_api_type eAPI,
-+                                        PVRDRIScreenImpl *psScreenImpl,
-+                                        PVRDRIDrawableImpl *psDrawableImpl,
-+                                        void (*pfnCallback)(PVRDRIDrawable *));
-+
-+
-+bool
-+PVRDRICreateGC(pvrdri_api_type eAPI,
-+               PVRDRIScreenImpl *psScreenImpl,
-+               PVRDRIContextImpl *psContextImpl,
-+               PVRDRIContextImpl *psSharedContextImpl);
-+bool
-+PVRDRIDestroyGC(pvrdri_api_type eAPI,
-+                PVRDRIScreenImpl *psScreenImpl,
-+                PVRDRIContextImpl *psContextImpl);
-+bool
-+PVRDRIMakeCurrentGC(pvrdri_api_type eAPI,
-+                    PVRDRIScreenImpl *psScreenImpl,
-+                    PVRDRIContextImpl *psContextImpl,
-+                    PVRDRIDrawableImpl *psWriteImpl,
-+                    PVRDRIDrawableImpl *psReadImpl);
-+void
-+PVRDRIMakeUnCurrentGC(pvrdri_api_type eAPI,
-+                      PVRDRIScreenImpl *psScreenImpl);
-+
-+PVRDRIImageError
-+PVRDRIGetImageSource(pvrdri_api_type eAPI,
-+                     PVRDRIScreenImpl *psScreenImpl,
-+                     PVRDRIContextImpl *psContextImpl,
-+                     uint32_t  uiTarget,
-+                     uintptr_t uiBuffer,
-+                     uint32_t  uiLevel,
-+                     _EGLImage *psEGLImage);
-+
-+PVRDRIImageError
-+PVRDRIGetImageSourceOCL(PVRDRIScreenImpl *psScreenImpl,
-+                        uint32_t uiTarget,
-+                        void *pBuffer,
-+                        _EGLImage *psEGLImage);
-+
-+bool
-+PVRDRI2BindTexImage(pvrdri_api_type eAPI,
-+                    PVRDRIScreenImpl *psScreenImpl,
-+                    PVRDRIContextImpl *psContextImpl,
-+                    PVRDRIDrawableImpl *psDrawableImpl);
-+
-+void
-+PVRDRI2ReleaseTexImage(pvrdri_api_type eAPI,
-+                       PVRDRIScreenImpl *psScreenImpl,
-+                       PVRDRIContextImpl *psContextImpl,
-+                       PVRDRIDrawableImpl *psDrawableImpl);
-+
-+/* ContextImpl functions */
-+PVRDRIContextImpl *PVRDRICreateContextImpl(unsigned uMajorVersion,
-+                                           unsigned uMinorVersion,
-+                                           bool     bIsRobustContext,
-+                                           bool     bNotifyReset);
-+void PVRDRIDestroyContextImpl(PVRDRIContextImpl *psContextImpl);
-+void PVRDRIContextImplSetVersion(PVRDRIContextImpl *psContextImpl,
-+                                 unsigned uMajorVersion,
-+                                 unsigned uMinorVersion);
-+/* DrawableImpl functions */
-+PVRDRIDrawableImpl *PVRDRICreateDrawableImpl(PVRDRIDrawable *psPVRDrawable);
-+void PVRDRIDestroyDrawableImpl(PVRDRIDrawableImpl *psScreenImpl);
-+bool PVREGLDrawableCreate(PVRDRIScreenImpl *psScreenImpl,
-+                          PVRDRIDrawableImpl *psDrawableImpl);
-+bool PVREGLDrawableRecreate(PVRDRIScreenImpl *psScreenImpl,
-+                            PVRDRIDrawableImpl *psDrawableImpl);
-+bool PVREGLDrawableDestroy(PVRDRIScreenImpl *psScreenImpl,
-+                           PVRDRIDrawableImpl *psDrawableImpl);
-+void PVREGLDrawableDestroyConfig(PVRDRIDrawableImpl *psDrawableImpl);
-+
-+/* Buffer functions */
-+PVRDRIBufferImpl *PVRDRIBufferCreate(PVRDRIScreenImpl *psScreenImpl,
-+				     int iWidth,
-+				     int iHeight,
-+				     unsigned int uiBpp,
-+				     unsigned int uiUseFlags,
-+				     unsigned int *puiStride);
-+
-+PVRDRIBufferImpl *PVRDRIBufferCreateFromName(PVRDRIScreenImpl *psScreenImpl,
-+					     int iName,
-+					     int iWidth,
-+					     int iHeight,
-+					     unsigned int uiStride,
-+					     unsigned int uiOffset);
-+
-+PVRDRIBufferImpl *PVRDRIBufferCreateFromFd(PVRDRIScreenImpl *psScreenImpl,
-+					   int iFd,
-+					   int iWidth,
-+					   int iHeight,
-+					   unsigned int uiStride,
-+					   unsigned int uiOffset);
-+
-+void PVRDRIBufferDestroy(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetFd(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetHandle(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetName(PVRDRIBufferImpl *psBuffer);
-+
-+
-+/* Image functions */
-+_EGLImage *PVRDRIEGLImageCreate(void);
-+_EGLImage *PVRDRIEGLImageCreateFromBuffers(int iWidth,
-+					   int iHeight,
-+					   int iStride,
-+					   IMG_PIXFMT ePixelFormat,
-+					   IMG_YUV_COLORSPACE eColourSpace,
-+					   IMG_YUV_CHROMA_INTERP eChromaUInterp,
-+					   IMG_YUV_CHROMA_INTERP eChromaVInterp,
-+					   PVRDRIBufferImpl **apsBuffers,
-+					   int iNumBuffers);
-+_EGLImage *PVRDRIEGLImageDup(_EGLImage *psIn);
-+
-+void PVRDRIEGLImageSetCallbackData(_EGLImage *psEGLImage, __DRIimage *image);
-+
-+void PVRDRIEGLImageDestroyExternal(PVRDRIScreenImpl *psScreenImpl,
-+                                   _EGLImage *psEGLImage);
-+void PVRDRIEGLImageFree(_EGLImage *psEGLImage);
-+
-+void PVRDRIEGLImageGetAttribs(_EGLImage *psEGLImage, PVRDRIBufferAttribs *psAttribs);
-+
-+/* Sync functions */
-+bool PVRDRISyncPrimAlloc(PVRDRIScreenImpl *psScreenImpl,
-+                         PVRSRV_CLIENT_SYNC_PRIM **psEGLSyncSyncPrim);
-+
-+void PVRDRISyncPrimDelete(PVRDRIScreenImpl *psScreenImpl,
-+                          PVRSRV_CLIENT_SYNC_PRIM *psEGLSyncSyncPrim,
-+                          SyncCommand *psSyncCommand);
-+
-+bool PVRDRIInsertClientFence(pvrdri_api_type eAPI,
-+                             PVRDRIContextImpl *psContextImpl,
-+                             PVRDRIScreenImpl *psScreenImpl,
-+                             PVRSRV_CLIENT_SYNC_PRIM *psEGLSyncSyncPrim,
-+                             SyncCommand **ppsSyncCommand);
-+
-+bool PVRDRIInsertServerFence(pvrdri_api_type eAPI,
-+                             PVRDRIContextImpl *psContextImpl,
-+                             PVRDRIScreenImpl *psScreenImpl,
-+                             SyncCommand *psSyncCommand);
-+
-+bool PVRDRIIsFenceSyncComplete(PVRSRV_CLIENT_SYNC_PRIM *psEGLSyncSyncPrim);
-+
-+bool PVRDRIEventObjectWait(PVRDRIScreenImpl *psScreenImpl,
-+                           PVRSRV_CLIENT_SYNC_PRIM *psEGLSyncSyncPrim,
-+                           bool with_timeout,
-+                           uint64_t timeout_ns);
-+
-+/* EGL/OGL interface functions */
-+void
-+InitialiseEGLModeInfo(PVRDRIContextImpl *psContextImpl,
-+                      const uint32_t uFlags,
-+                      const uint32_t uiPriority);
-+void
-+SetEGLModeInfoFromGLMode(PVRDRIContextImpl *psContextImpl,
-+                         PVRDRIConfigInfo *psConfigInfo);
-+bool
-+PVRDRIEGLDrawableConfigFromGLMode(PVRDRIDrawableImpl *psPVRDrawable,
-+                                  PVRDRIConfigInfo *psConfigInfo,
-+                                  int supportedAPIs,
-+                                  IMG_PIXFMT ePixFmt);
-+
-+/* Callbacks into non-impl layer */
-+typedef struct
-+{
-+	bool                 (*DrawableCreate)(PVRDRIDrawable *psPVRDrawable);
-+	bool                 (*DrawableRecreate)(PVRDRIDrawable *psPVRDrawable);
-+	PVRDRIBufferImpl    *(*DrawableGetDstBuffer)(PVRDRIDrawable *psPVRDrawable);
-+	PVRDRIBufferImpl    *(*DrawableGetAccumBuffer)(PVRDRIDrawable *psPVRDrawable);
-+	bool                 (*DrawableGetParameters)(PVRDRIDrawable *psPVRDrawable,
-+	                                              PVRDRIBufferImpl **psDstBuffer,
-+	                                              PVRDRIBufferImpl **psAccumBuffer,
-+	                                              PVRDRIBufferAttribs *psAttribs,
-+	                                              bool *pbDoubleBuffered);
-+
-+	PVRDRIImageType      (*ImageGetSharedType)(__DRIimage *image);
-+	PVRDRIBufferImpl    *(*ImageGetSharedBuffer)(__DRIimage *image);
-+	_EGLImage           *(*ImageGetSharedEGLImage)(__DRIimage *image);
-+	_EGLImage           *(*ImageGetEGLImage)(__DRIimage *image);
-+	__DRIimage          *(*ScreenGetDRIImage)(void *hEGLImage);
-+	void                 (*RefImage)(__DRIimage *image);
-+	void                 (*UnrefImage)(__DRIimage *image);
-+} PVRDRICallbacks;
-+
-+void PVRDRIRegisterCallbacks(PVRDRICallbacks *callbacks);
-+
-+#endif /* defined(__PVRDRIIFCE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
 new file mode 100644
 index 0000000..4da617e
@@ -3241,10 +2783,10 @@ index 0000000..4da617e
 +#endif /* defined(__PVR_MESA_VERSION_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
 new file mode 100644
-index 0000000..0ce43e3
+index 0000000..1e0df31
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
-@@ -0,0 +1,311 @@
+@@ -0,0 +1,317 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -3400,6 +2942,12 @@ index 0000000..0ce43e3
 +		/* Cache hit? */
 +		if (PVRObjectInCache(psCache, psObj, pvInsertData))
 +		{
++			/* Cache hit on first element? */
++			if (psQElem == psCache->sQHead.pvForw)
++			{
++				return true;
++			}
++
 +			/* The old object purge will bump the age to 1 */
 +			psObj->uAge = 0;
 +			bInserted = true;
@@ -4450,10 +3998,10 @@ index 0000000..1806aea
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
 new file mode 100644
-index 0000000..eddae95
+index 0000000..806e39d
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.c
-@@ -0,0 +1,1528 @@
+@@ -0,0 +1,1535 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -4501,6 +4049,22 @@ index 0000000..eddae95
 +
 +#define PVR_IMAGE_LOADER_VER_MIN 1
 +#define PVR_DRI2_LOADER_VER_MIN 3
++
++/* We assume the DRI context flags match their EGL counterparts */
++#if __DRI_CTX_FLAG_DEBUG != EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR || \
++    __DRI_CTX_FLAG_FORWARD_COMPATIBLE != EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR || \
++   __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS != EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR
++#error "Mismatch between DRI and EGL context flags"
++#endif
++
++/* We assume the DRI context priority macros have certain values */
++#if defined(__DRI_PRIORITY)
++#if __DRI_CTX_PRIORITY_LOW != 0 ||	\
++    __DRI_CTX_PRIORITY_MEDIUM != 1 ||	\
++    __DRI_CTX_PRIORITY_HIGH != 2
++#error "DRI context priority macros don't have the expected values"
++#endif
++#endif
 +
 +typedef struct PVRBufferRec
 +{
@@ -4855,11 +4419,15 @@ index 0000000..eddae95
 +static inline GLboolean
 +PVRContextCreateGC(PVRDRIContext *psPVRContext,
 +                   const struct gl_config *psGLMode,
-+                   uint32_t uFlags,
++		   unsigned uMajorVersion,
++		   unsigned uMinorVersion,
 +                   void *pvSharedContextPrivate)
 +{
 +	InitialiseEGLModeInfo(psPVRContext->psImpl,
-+	                      uFlags,
++			      uMajorVersion,
++			      uMinorVersion,
++	                      psPVRContext->bNotifyReset,
++			      psPVRContext->uContextFlags,
 +	                      psPVRContext->uPriority);
 +
 +	if (psGLMode != NULL)
@@ -4888,20 +4456,13 @@ index 0000000..eddae95
 +                    const struct gl_config *psGLMode,
 +                    unsigned uMajorVersion,
 +                    unsigned uMinorVersion,
-+                    uint32_t uFlags,
 +                    unsigned *puError,
 +                    void *pvSharedContextPrivate)
 +{
 +	PVRDRIScreen *psPVRScreen = psPVRContext->psPVRScreen;
++	PVRDRIScreenImpl *psScreenImpl = psPVRScreen->psImpl;
 +
-+	assert(eMesaAPI == API_OPENGL_COMPAT || eMesaAPI == API_OPENGL_CORE);
-+
-+	if (!PVRDRILoadLibOGL(psPVRScreen))
-+	{
-+		return GL_FALSE;
-+	}
-+
-+	if (!PVRDRIEGLGetPVROGLFunctionTable(psPVRScreen->psImpl, psPVRScreen->pvLibHandleOGL))
++	if (!PVRDRIEGLLoadLibOGL(psScreenImpl))
 +	{
 +		return GL_FALSE;
 +	}
@@ -4961,12 +4522,12 @@ index 0000000..eddae95
 +			return GL_FALSE;
 +	}
 +
-+	/* Throw a BAD_FLAG error for any flags we don't recognise */
-+	if ((uFlags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_FORWARD_COMPATIBLE)) != 0)
++	/* Throw a BAD_FLAG error for any flags we don't support */
++	if (psPVRContext->uContextFlags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_FORWARD_COMPATIBLE))
 +	{
-+		__driUtilMessage("%s: Unknown flags: 0x%x.",
++		__driUtilMessage("%s: Unknown DRI context flags: 0x%x.",
 +				 __func__,
-+				 uFlags);
++				 psPVRContext->uContextFlags);
 +		*puError = __DRI_CTX_ERROR_BAD_FLAG;
 +		return GL_FALSE;
 +	}
@@ -4981,7 +4542,7 @@ index 0000000..eddae95
 +		uMajorVersion = 3;
 +		uMinorVersion = 0;
 +
-+		if (uFlags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE)
++		if (psPVRContext->uContextFlags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE)
 +		{
 +			__driUtilMessage("%s: FORWARD_COMPATIBLE flag not supported in this version.",
 +					 __func__);
@@ -4990,27 +4551,23 @@ index 0000000..eddae95
 +		}
 +	}
 +
-+	PVRDRIContextImplSetVersion(psPVRContext->psImpl, uMajorVersion, uMinorVersion);
-+	return PVRContextCreateGC(psPVRContext, psGLMode, uFlags, pvSharedContextPrivate);
++	return PVRContextCreateGC(psPVRContext, psGLMode, uMajorVersion, uMinorVersion, pvSharedContextPrivate);
 +}
 +
 +static GLboolean
 +PVRContextCreateOGLES1(PVRDRIContext *psPVRContext,
 +                       const struct gl_config *psGLMode,
-+                       uint32_t uFlags,
++                       unsigned uMajorVersion,
++                       unsigned uMinorVersion,
 +                       unsigned *puError,
 +                       void *pvSharedContextPrivate)
 +{
 +	PVRDRIScreen *psPVRScreen = psPVRContext->psPVRScreen;
++	PVRDRIScreenImpl *psScreenImpl = psPVRScreen->psImpl;
 +
 +	psPVRContext->eAPI = PVRDRI_API_GLES1;
 +
-+	if (!PVRDRILoadLibOGLES1(psPVRScreen))
-+	{
-+		return GL_FALSE;
-+	}
-+
-+	if (!PVRDRIEGLGetOGLES1FunctionTable(psPVRScreen->psImpl, psPVRScreen->pvLibHandleOGLES1))
++	if (!PVRDRIEGLLoadLibOGLES1(psScreenImpl))
 +	{
 +		return GL_FALSE;
 +	}
@@ -5022,38 +4579,33 @@ index 0000000..eddae95
 +		return GL_FALSE;
 +	}
 +
-+	/* Ignore DEBUG flag and throw a BAD_FLAG error if unrecognised */
-+	uFlags &= ~__DRI_CTX_FLAG_DEBUG;
-+	if (uFlags != 0)
++	/* Check for any flags we don't support. */
++	if (psPVRContext->uContextFlags & ~__DRI_CTX_FLAG_DEBUG)
 +	{
-+		__driUtilMessage("%s: Unknown flags: 0x%x.",
++		__driUtilMessage("%s: Unknown DRI context flags: 0x%x.",
 +				 __func__,
-+				 uFlags);
++				 psPVRContext->uContextFlags);
 +		*puError = __DRI_CTX_ERROR_BAD_FLAG;
 +		return GL_FALSE;
 +	}
 +
-+	return PVRContextCreateGC(psPVRContext, psGLMode, uFlags, pvSharedContextPrivate);
++	return PVRContextCreateGC(psPVRContext, psGLMode, uMajorVersion, uMinorVersion, pvSharedContextPrivate);
 +}
 +
 +static GLboolean
 +PVRContextCreateOGLES2(PVRDRIContext *psPVRContext,
 +                       const struct gl_config *psGLMode,
 +                       unsigned uMajorVersion,
-+                       uint32_t uFlags,
++                       unsigned uMinorVersion,
 +                       unsigned *puError,
 +                       void *pvSharedContextPrivate)
 +{
 +	PVRDRIScreen *psPVRScreen = psPVRContext->psPVRScreen;
++	PVRDRIScreenImpl *psScreenImpl = psPVRScreen->psImpl;
 +
 +	psPVRContext->eAPI = PVRDRI_API_GLES2;
 +
-+	if (!PVRDRILoadLibOGLES2(psPVRScreen))
-+	{
-+		return GL_FALSE;
-+	}
-+
-+	if (!PVRDRIEGLGetOGLES2FunctionTable(psPVRScreen->psImpl, psPVRScreen->pvLibHandleOGLES2))
++	if (!PVRDRIEGLLoadLibOGLES2(psScreenImpl))
 +	{
 +		return GL_FALSE;
 +	}
@@ -5078,20 +4630,17 @@ index 0000000..eddae95
 +			return GL_FALSE;
 +	}
 +
-+	/* Ignore flags that have already been processed */
-+	uFlags &= ~(__DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS);
-+	
 +	/* Check for any flags we don't support. */
-+	if ((uFlags & ~__DRI_CTX_FLAG_DEBUG) != 0)
++	if (psPVRContext->uContextFlags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS))
 +	{
-+		__driUtilMessage("%s: Unknown flags: 0x%x.",
++		__driUtilMessage("%s: Unknown DRI context flags: 0x%x.",
 +				 __func__,
-+				 uFlags);
++				 psPVRContext->uContextFlags);
 +		*puError = __DRI_CTX_ERROR_BAD_FLAG;
 +		return GL_FALSE;
 +	}
 +
-+	return PVRContextCreateGC(psPVRContext, psGLMode, uFlags, pvSharedContextPrivate);
++	return PVRContextCreateGC(psPVRContext, psGLMode, uMajorVersion, uMinorVersion, pvSharedContextPrivate);
 +}
 +
 +static void PVRContextDestroy(PVRDRIContext *psPVRContext)
@@ -5305,22 +4854,28 @@ index 0000000..eddae95
 +
 +	uiDisplayCount = PVRScreenCountInc();
 +
-+#if defined(PVR_OGL_LIB)
-+	/*
-+	 * OpenGL doesn't support concurrent EGL displays so only advertise
-+	 * OpenGL support for the first display.
-+	 */
-+	if (uiDisplayCount == 1)
++	if (PVRDRIEGLIsOpenGLSupported())
 +	{
-+		psDRIScreen->max_gl_compat_version = 30;
-+		psDRIScreen->max_gl_core_version = 33;
++		/*
++		 * OpenGL doesn't support concurrent EGL displays so only
++		 * advertise OpenGL support for the first display.
++		 */
++		if (uiDisplayCount == 1)
++		{
++			psDRIScreen->max_gl_compat_version = 30;
++			psDRIScreen->max_gl_core_version = 33;
++		}
 +	}
-+#else
-+	(void) uiDisplayCount;
-+#endif
 +
-+	psDRIScreen->max_gl_es1_version = 11;
-+	psDRIScreen->max_gl_es2_version = 31;
++	if (PVRDRIEGLIsOpenGLES1Supported())
++	{
++		psDRIScreen->max_gl_es1_version = 11;
++	}
++
++	if (PVRDRIEGLIsOpenGLES2Supported())
++	{
++		psDRIScreen->max_gl_es2_version = PVRDRIGLES2Version();
++	}
 +
 +	configs = PVRDRICreateConfigs();
 +	if (configs == NULL)
@@ -5420,13 +4975,10 @@ index 0000000..eddae95
 +	PVRDRIContext *psPVRContext = NULL;
 +	PVRDRIContextImpl *psContextImpl = NULL;
 +	GLboolean res;
-+	unsigned uPriority;
 +
 +	*puError = __DRI_CTX_ERROR_SUCCESS;
 +
-+	psContextImpl = PVRDRICreateContextImpl(uMajorVersion, uMinorVersion,
-+	                                        (uFlags & __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS) != 0,
-+	                                        notify_reset);
++	psContextImpl = PVRDRICreateContextImpl();
 +	if (psContextImpl == NULL)
 +	{
 +		__driUtilMessage("%s: Couldn't allocate PVRDRIContextImpl", __func__);
@@ -5448,25 +5000,28 @@ index 0000000..eddae95
 +	psPVRContext->psPVRScreen = psPVRScreen;
 +
 +#if defined(__DRI_PRIORITY)
-+	switch (psDRIContext->priority)
++	if (psDRIContext->priority > __DRI_CTX_PRIORITY_HIGH)
 +	{
-+		case __DRI_CTX_PRIORITY_LOW:
-+			uPriority = 0;
-+			break;
-+		case __DRI_CTX_PRIORITY_MEDIUM:
-+			uPriority = 1;
-+			break;
-+		case __DRI_CTX_PRIORITY_HIGH:
-+			uPriority = 2;
-+			break;
-+		default:
-+			*puError = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
-+			goto ErrorExit;
++		*puError = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
++		goto ErrorExit;
 +	}
++
++
++	psPVRContext->uPriority = psDRIContext->priority;
 +#else
-+	uPriority = 1;
++	psPVRContext->uPriority = 1;
 +#endif
-+	psPVRContext->uPriority = uPriority;
++
++	if (uFlags & ~(__DRI_CTX_FLAG_DEBUG |
++			__DRI_CTX_FLAG_FORWARD_COMPATIBLE |
++			__DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS))
++	{
++		*puError = __DRI_CTX_ERROR_UNKNOWN_FLAG;
++		goto ErrorExit;
++	}
++	psPVRContext->uContextFlags = uFlags;
++
++	psPVRContext->bNotifyReset = notify_reset;
 +
 +	psDRIContext->driverPrivate = (void *)psPVRContext;
 +
@@ -5475,18 +5030,18 @@ index 0000000..eddae95
 +		case API_OPENGL_COMPAT:
 +		case API_OPENGL_CORE:
 +			res = PVRContextCreateOGL(psPVRContext,
-+							eMesaAPI,
++						  eMesaAPI,
 +						  psGLMode,
 +						  uMajorVersion,
 +						  uMinorVersion,
-+						  uFlags,
 +						  puError,
 +						  pvSharedContextPrivate);
 +			break;
 +		case API_OPENGLES:
 +			res = PVRContextCreateOGLES1(psPVRContext,
 +						     psGLMode,
-+						     uFlags,
++						     uMajorVersion,
++						     uMinorVersion,
 +						     puError,
 +						     pvSharedContextPrivate);
 +			break;
@@ -5494,7 +5049,7 @@ index 0000000..eddae95
 +			res = PVRContextCreateOGLES2(psPVRContext,
 +						     psGLMode,
 +						     uMajorVersion,
-+						     uFlags,
++						     uMinorVersion,
 +						     puError,
 +						     pvSharedContextPrivate);
 +			break;
@@ -5905,7 +5460,7 @@ index 0000000..eddae95
 + Function Name	: PVRDRIDrawableLock
 + Inputs		: psPVRDrawable - PVRDRI drawable structure
 + Returns	: Boolean
-+ Description	: Lock drawable mutex (can be called recursivly)
++ Description	: Lock drawable mutex (can be called recursively)
 +************************************************************************************/
 +void PVRDRIDrawableLock(PVRDRIDrawable *psPVRDrawable)
 +{
@@ -5923,7 +5478,7 @@ index 0000000..eddae95
 + Function Name	: PVRDRIDrawableUnlock
 + Inputs		: psPVRDrawable - PVRDRI drawable structure
 + Returns	: Boolean
-+ Description	: Unlock drawable mutex (can be called recursivly)
++ Description	: Unlock drawable mutex (can be called recursively)
 +************************************************************************************/
 +void PVRDRIDrawableUnlock(PVRDRIDrawable *psPVRDrawable)
 +{
@@ -5941,7 +5496,7 @@ index 0000000..eddae95
 + Function Name	: PVRDRIScreenLock
 + Inputs		: psPVRScreen - PVRDRI screen structure
 + Returns	: Boolean
-+ Description	: Lock screen mutex (can be called recursivly)
++ Description	: Lock screen mutex (can be called recursively)
 +************************************************************************************/
 +void PVRDRIScreenLock(PVRDRIScreen *psPVRScreen)
 +{
@@ -5959,7 +5514,7 @@ index 0000000..eddae95
 + Function Name	: PVRDRIScreenUnlock
 + Inputs		: psPVRScreen - PVRDRI screen structure
 + Returns	: Boolean
-+ Description	: Unlock screen mutex (can be called recursivly)
++ Description	: Unlock screen mutex (can be called recursively)
 +************************************************************************************/
 +void PVRDRIScreenUnlock(PVRDRIScreen *psPVRScreen)
 +{
@@ -5984,10 +5539,10 @@ index 0000000..eddae95
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
 new file mode 100644
-index 0000000..51b1743
+index 0000000..6830c12
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.h
-@@ -0,0 +1,280 @@
+@@ -0,0 +1,268 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -6027,13 +5582,11 @@ index 0000000..51b1743
 +#include "pvr_mesa_version.h"
 +#include "GL/internal/dri_interface.h"
 +
-+#include "imgpixfmts.h"
-+#include "pvr_dri_support.h"
++#include "powervr/dri_support.h"
 +#include "pvrqueue.h"
-+#include "EGL/egl.h"
 +#include "pvr_object_cache.h"
 +
-+/* This should match EGL_MAX_ALLOCS */
++/* This should match EGL_MAX_PLANES */
 +#define DRI_PLANES_MAX 3
 +
 +#define	DRI2_BUFFERS_MAX (3)
@@ -6061,15 +5614,6 @@ index 0000000..51b1743
 +	/* PVR OGLES 2/3 dispatch table */
 +	_glapi_proc        *psOGLES2Dispatch;
 +
-+	/* PVR OGL library handle */
-+	void               *pvLibHandleOGL;
-+	/* PVR OGLES 1 library handle */
-+	void               *pvLibHandleOGLES1;
-+	/* PVR OGLES 2/3 library handle */
-+	void               *pvLibHandleOGLES2;
-+	/* PVR OCL library handle */
-+	void               *pvLibHandleOCL;
-+
 +	PVRDRIScreenImpl   *psImpl;
 +} PVRDRIScreen;
 +
@@ -6087,6 +5631,12 @@ index 0000000..51b1743
 +
 +	/* API */
 +	pvrdri_api_type            eAPI;
++
++	/* EGL reset notification behaviour */
++	bool                       bNotifyReset;
++
++	/* EGL context flags */
++	uint32_t                   uContextFlags;
 +
 +	/* Context priority */
 +	unsigned                   uPriority;
@@ -6219,13 +5769,6 @@ index 0000000..51b1743
 +void __attribute__((format(printf, 1, 2))) __driUtilMessage(const char *f, ...);
 +void __attribute__((format(printf, 1, 2))) errorMessage(const char *f, ...);
 +
-+void *PVRDRILoadAPILib(const char *name);
-+
-+bool PVRDRILoadLibOGL(PVRDRIScreen *psPVRScreen);
-+bool PVRDRILoadLibOGLES2(PVRDRIScreen *psPVRScreen);
-+bool PVRDRILoadLibOGLES1(PVRDRIScreen *psPVRScreen);
-+bool PVRDRILoadLibOCL(PVRDRIScreen *psPVRScreen);
-+
 +const __DRIconfig **PVRDRICreateConfigs(void);
 +
 +const PVRDRIImageFormat *PVRDRIFormatToImageFormat(int iDRIFormat);
@@ -6260,8 +5803,8 @@ index 0000000..51b1743
 +
 +PVRDRIImageType PVRDRIImageGetSharedType(__DRIimage *image);
 +PVRDRIBufferImpl *PVRDRIImageGetSharedBuffer(__DRIimage *image);
-+_EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *image);
-+_EGLImage *PVRDRIImageGetEGLImage(__DRIimage *image);
++__EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *image);
++__EGLImage *PVRDRIImageGetEGLImage(__DRIimage *image);
 +
 +__DRIimage *PVRDRIScreenGetDRIImage(void *hEGLImage);
 +void PVRDRIRefImage(__DRIimage *image);
@@ -6270,10 +5813,10 @@ index 0000000..51b1743
 +#endif /* defined(__PVRDRI2_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
 new file mode 100644
-index 0000000..18b2417
+index 0000000..44db51f
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrext.c
-@@ -0,0 +1,332 @@
+@@ -0,0 +1,336 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -6341,8 +5884,12 @@ index 0000000..18b2417
 +
 +#include "dri_util.h"
 +
++#include "pvrdri.h"
 +#include "pvrimage.h"
 +#include "pvrsyncobj.h"
++
++#include "EGL/egl.h"
++#include "EGL/eglext.h"
 +
 +/* Maximum version numbers for each supported extension */
 +#define PVR_DRI_TEX_BUFFER_VERSION	2
@@ -6514,7 +6061,7 @@ index 0000000..18b2417
 +	.fromPlanar			= PVRDRIFromPlanar,
 +	.createImageFromTexture		= PVRDRICreateImageFromTexture,
 +	.createImageFromFds		= PVRDRICreateImageFromFds,
-+#if defined(PVR_OCL_LIB)
++#if defined(EGL_IMG_cl_image)
 +	.createImageFromBuffer		= PVRDRICreateImageFromBuffer,
 +#endif
 +	.createImageFromDmaBufs		= PVRDRICreateImageFromDmaBufs,
@@ -6608,10 +6155,10 @@ index 0000000..18b2417
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..22e5249
+index 0000000..82e419c
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
-@@ -0,0 +1,1074 @@
+@@ -0,0 +1,1087 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -6646,9 +6193,9 @@ index 0000000..22e5249
 +
 +#include "dri_util.h"
 +
-+#include "imgpixfmts.h"
 +#include "pvrdri.h"
 +#include "pvrimage.h"
++#include "EGL/egl.h"
 +#include "EGL/eglext.h"
 +
 +struct PVRDRIImageShared
@@ -6664,7 +6211,8 @@ index 0000000..22e5249
 +	IMG_YUV_CHROMA_INTERP eChromaVInterp;
 +
 +	PVRDRIBufferImpl *apsBuffers[DRI_PLANES_MAX];
-+	_EGLImage *psEGLImage;
++	__EGLImage *psEGLImage;
++	PVRDRIEGLImageType eglImageType;
 +};
 +
 +struct __DRIimageRec
@@ -6675,7 +6223,7 @@ index 0000000..22e5249
 +
 +	struct PVRDRIImageShared *psShared;
 +
-+	_EGLImage *psEGLImage;
++	__EGLImage *psEGLImage;
 +};
 +
 +
@@ -6727,11 +6275,15 @@ index 0000000..22e5249
 +			}
 +			break;
 +		case PVRDRI_IMAGE:
-+			PVRDRIBufferDestroy(shared->apsBuffers[0]);
++			if (shared->apsBuffers[0])
++			{
++				PVRDRIBufferDestroy(shared->apsBuffers[0]);
++			}
 +			break;
 +		case PVRDRI_IMAGE_FROM_EGLIMAGE:
 +			PVRDRIEGLImageDestroyExternal(shared->psPVRScreen->psImpl,
-+			                              shared->psEGLImage);
++			                              shared->psEGLImage,
++						      shared->eglImageType);
 +			break;
 +		default:
 +			errorMessage("%s: Unknown image type: %d\n", __func__, (int)shared->eType);
@@ -6743,7 +6295,8 @@ index 0000000..22e5249
 +
 +static struct PVRDRIImageShared *
 +CreateImageSharedFromEGLImage(__DRIscreen *screen,
-+                              _EGLImage *psEGLImage)
++                              __EGLImage *psEGLImage,
++			      PVRDRIEGLImageType eglImageType)
 +{
 +	struct PVRDRIImageShared *shared;
 +	PVRDRIBufferAttribs sAttribs;
@@ -6765,6 +6318,7 @@ index 0000000..22e5249
 +
 +	shared->psEGLImage = psEGLImage;
 +	shared->psFormat = psFormat;
++	shared->eglImageType = eglImageType;
 +
 +	return shared;
 +}
@@ -7029,7 +6583,11 @@ index 0000000..22e5249
 +		DestroyImageShared(image->psShared);
 +	}
 +
-+	PVRDRIEGLImageFree(image->psEGLImage);
++	if (image->psEGLImage)
++	{
++		PVRDRIEGLImageFree(image->psEGLImage);
++	}
++
 +	free(image);
 +}
 +
@@ -7077,24 +6635,20 @@ index 0000000..22e5249
 +}
 +
 +/*
-+ * Calling GetImageSourceOCL adds a reference to the resulting EGLImage.
++ * Calling GetImageSourceOCL adds a reference to the resulting _EGLImage.
 + * Bump the reference count on the image after calling this function.
 + */
 +static PVRDRIImageError
 +GetImageSourceOCL(PVRDRIContext *psPVRContext,
 +                  uint32_t target,
 +                  void *buffer,
-+                  _EGLImage *psEGLImage)
++                  __EGLImage *psEGLImage)
 +{
 +	PVRDRIImageError e;
 +	PVRDRIScreen *psPVRScreen = psPVRContext->psPVRScreen;
++	PVRDRIScreenImpl *psScreenImpl = psPVRScreen->psImpl;
 +
-+	if (!PVRDRILoadLibOCL(psPVRScreen))
-+	{
-+		return __DRI_IMAGE_ERROR_BAD_MATCH;
-+	}
-+
-+	if (!PVRDRIEGLGetOCLFunctionTable(psPVRScreen->psImpl, psPVRScreen->pvLibHandleOCL))
++	if (!PVRDRIEGLLoadLibOCL(psScreenImpl))
 +	{
 +		return __DRI_IMAGE_ERROR_BAD_MATCH;
 +	}
@@ -7114,7 +6668,7 @@ index 0000000..22e5249
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
 +	PVRDRIImageError e;
-+	_EGLImage *psEGLImage;
++	__EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +
 +	image = CommonImageSetup(loaderPrivate);
@@ -7151,7 +6705,9 @@ index 0000000..22e5249
 +	 * We can't destroy the image after this point, as the
 +	 * renderbuffer now has a reference to it.
 +	 */
-+	image->psShared = CreateImageSharedFromEGLImage(screen, psEGLImage);
++	image->psShared = CreateImageSharedFromEGLImage(screen,
++							psEGLImage,
++							PVRDRI_EGLIMAGE_IMGEGL);
 +	if (!image->psShared)
 +	{
 +		return NULL;
@@ -7421,7 +6977,7 @@ index 0000000..22e5249
 +{
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
-+	_EGLImage *psEGLImage;
++	__EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +	uint32_t eglTarget;
 +	PVRDRIImageError e;
@@ -7475,7 +7031,9 @@ index 0000000..22e5249
 +	 * We can't destroy the image after this point, as the
 +	 * texture now has a reference to it.
 +	 */
-+	image->psShared = CreateImageSharedFromEGLImage(screen, psEGLImage);
++	image->psShared = CreateImageSharedFromEGLImage(screen,
++							psEGLImage,
++							PVRDRI_EGLIMAGE_IMGEGL);
 +	if (!image->psShared)
 +	{
 +		return NULL;
@@ -7519,7 +7077,7 @@ index 0000000..22e5249
 +{
 +	PVRDRIContext *psPVRContext = context->driverPrivate;
 +	__DRIscreen *screen = psPVRContext->psPVRScreen->psDRIScreen;
-+	_EGLImage *psEGLImage;
++	__EGLImage *psEGLImage;
 +	struct __DRIimageRec *image;
 +
 +	switch (target)
@@ -7561,7 +7119,9 @@ index 0000000..22e5249
 +	 * We can't destroy the image after this point, as the
 +	 * OCL image now has a reference to it.
 +	 */
-+	image->psShared = CreateImageSharedFromEGLImage(screen, psEGLImage);
++	image->psShared = CreateImageSharedFromEGLImage(screen,
++							psEGLImage,
++							PVRDRI_EGLIMAGE_IMGOCL);
 +	if (!image->psShared)
 +	{
 +		return NULL;
@@ -7661,13 +7221,13 @@ index 0000000..22e5249
 +	return NULL;
 +}
 +
-+_EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *pImage)
++__EGLImage *PVRDRIImageGetSharedEGLImage(__DRIimage *pImage)
 +{
 +	assert(pImage->psShared->eType == PVRDRI_IMAGE_FROM_EGLIMAGE);
 +	return pImage->psShared->psEGLImage;
 +}
 +
-+_EGLImage *PVRDRIImageGetEGLImage(__DRIimage *pImage)
++__EGLImage *PVRDRIImageGetEGLImage(__DRIimage *pImage)
 +{
 +	return pImage->psEGLImage;
 +}
@@ -7688,7 +7248,7 @@ index 0000000..22e5249
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvrimage.h
 new file mode 100644
-index 0000000..773ccb4
+index 0000000..039a915
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.h
 @@ -0,0 +1,96 @@
@@ -7723,7 +7283,7 @@ index 0000000..773ccb4
 +
 +#if !defined(__PVRIMAGE_H__)
 +#define __PVRIMAGE_H__
-+#include "pvr_dri_support.h"
++#include "powervr/dri_support.h"
 +
 +__DRIimage *PVRDRICreateImageFromName(__DRIscreen *screen,
 +				      int width, int height, int format,
@@ -7919,7 +7479,7 @@ index 0000000..3fdc0a8
 +#endif /* defined(__PVRQUEUE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
 new file mode 100644
-index 0000000..d1f9ec6
+index 0000000..bb8e26b
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
 @@ -0,0 +1,206 @@
@@ -7956,7 +7516,7 @@ index 0000000..d1f9ec6
 +#include <search.h>
 +
 +#include "dri_util.h"
-+#include "pvr_dri_support.h"
++#include "powervr/dri_support.h"
 +#include "pvrsyncobj.h"
 +
 +#if defined(__DRI2_FENCE)
@@ -8131,7 +7691,7 @@ index 0000000..d1f9ec6
 +#endif /* defined(__DRI2_FENCE) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
 new file mode 100644
-index 0000000..a850170
+index 0000000..e79e2d1
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
 @@ -0,0 +1,48 @@
@@ -8169,7 +7729,7 @@ index 0000000..a850170
 +
 +#include "dri_util.h"
 +#include "pvrdri.h"
-+#include "pvr_dri_support.h"
++#include "powervr/dri_support.h"
 +
 +#if defined(__DRI2_FENCE)
 +
@@ -8185,10 +7745,10 @@ index 0000000..a850170
 +#endif /* !defined(__PVRSYNCOBJ_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
 new file mode 100644
-index 0000000..7fd54dd
+index 0000000..bb977df
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,531 @@
+@@ -0,0 +1,469 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -8453,68 +8013,6 @@ index 0000000..7fd54dd
 +#endif
 +}
 +
-+void *PVRDRILoadAPILib(const char *name)
-+{
-+	const char *error;
-+	void *handle;
-+
-+	(void) dlerror();
-+
-+	handle = dlopen(name, RTLD_NOW);
-+	if (handle == NULL)
-+	{
-+		error = dlerror();
-+
-+		__driUtilMessage("%s: dlopen of %s failed: %s",
-+				 __func__, name, ((error != NULL) ? error : "unknown"));
-+
-+	}
-+
-+	return handle;
-+}
-+
-+bool PVRDRILoadLibOGL(PVRDRIScreen *psPVRScreen)
-+{
-+#if defined(PVR_OGL_LIB)
-+	if (psPVRScreen->pvLibHandleOGL == NULL)
-+	{
-+		psPVRScreen->pvLibHandleOGL = PVRDRILoadAPILib(PVR_OGL_LIB);
-+	}
-+#endif
-+	return psPVRScreen->pvLibHandleOGL != NULL;
-+}
-+
-+bool PVRDRILoadLibOGLES2(PVRDRIScreen *psPVRScreen)
-+{
-+	if (psPVRScreen->pvLibHandleOGLES2 == NULL)
-+	{
-+		psPVRScreen->pvLibHandleOGLES2 = PVRDRILoadAPILib(PVR_OGLES2_LIB);
-+	}
-+
-+	return psPVRScreen->pvLibHandleOGLES2 != NULL;
-+}
-+
-+bool PVRDRILoadLibOGLES1(PVRDRIScreen *psPVRScreen)
-+{
-+	if (psPVRScreen->pvLibHandleOGLES1 == NULL)
-+	{
-+		psPVRScreen->pvLibHandleOGLES1 = PVRDRILoadAPILib(PVR_OGLES1_LIB);
-+	}
-+
-+	return psPVRScreen->pvLibHandleOGLES1 != NULL;
-+}
-+
-+bool PVRDRILoadLibOCL(PVRDRIScreen *psPVRScreen)
-+{
-+#if defined(PVR_OCL_LIB)
-+	if (psPVRScreen->pvLibHandleOCL == NULL)
-+	{
-+		psPVRScreen->pvLibHandleOCL = PVRDRILoadAPILib(PVR_OCL_LIB);
-+	}
-+#endif
-+	return psPVRScreen->pvLibHandleOCL != NULL;
-+}
-+
 +const __DRIconfig **PVRDRICreateConfigs(void)
 +{
 +	static const GLenum asBackBufferModes[]	= { GLX_NONE, GLX_SWAP_COPY_OML };
@@ -8721,5 +8219,5 @@ index 0000000..7fd54dd
 +	}
 +}
 -- 
-1.9.1
+2.7.4
 

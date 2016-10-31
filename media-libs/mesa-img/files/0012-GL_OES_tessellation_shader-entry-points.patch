@@ -1,7 +1,7 @@
-From c96229375465aae1234b2b470db4cc2413b8be3c Mon Sep 17 00:00:00 2001
+From ba9acc27d73d073e918c3f235c7b626faa6f8164 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Tue, 11 Aug 2015 13:36:25 +0100
-Subject: [PATCH 21/21] GL_OES_tessellation_shader entry points
+Subject: [PATCH 12/29] GL_OES_tessellation_shader entry points
 
 ---
  src/mapi/glapi/gen/OES_tessellation_shader.xml | 73 ++++++++++++++++++++++++++
@@ -91,17 +91,19 @@ index 0000000..3eca9e5
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index ad791ff..970a047 100644
+index b09e188..5500729 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1312,4 +1312,7 @@
- <!-- 186. GL_EXT_primitive_bounding_box -->
- <xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+@@ -1257,6 +1257,9 @@
+     </function>
+ </category>
  
 +<!-- 214. GL_EXT_tessellation_shader -->
 +<xi:include href="OES_tessellation_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- </OpenGLAPI>
+ <category name="GL_OES_texture_border_clamp" number="215">
+ 
+     <enum name="TEXTURE_BORDER_COLOR_OES" value ="0x1004"/>
 diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
 index b575862..58945f7 100644
 --- a/src/mesa/main/shaderapi.c
@@ -139,5 +141,5 @@ index d3ec784..914a60d 100644
  void
  _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg);
 -- 
-1.9.1
+2.7.4
 

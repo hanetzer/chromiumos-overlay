@@ -1,7 +1,7 @@
-From c3da39b92f412d596fe804e48646f4894428b35c Mon Sep 17 00:00:00 2001
+From 30fdef624fb1a001b5359e1b73c462a54a86fce1 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Wed, 12 Aug 2015 09:11:51 +0100
-Subject: [PATCH 23/23] GL_EXT_sparse_texture entry points
+Subject: [PATCH 13/29] GL_EXT_sparse_texture entry points
 
 ---
  src/mapi/glapi/gen/EXT_sparse_texture.xml | 56 +++++++++++++++++++++++++++++++
@@ -74,22 +74,22 @@ index 0000000..dec09bc
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 10a3796..2deb07d 100644
+index 5500729..f589bda 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1316,4 +1316,7 @@
- <!-- 214. GL_EXT_tessellation_shader -->
- <xi:include href="OES_tessellation_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+@@ -1315,4 +1315,7 @@
+ 
+ </category>
  
 +<!-- 240. EXT_sparse_texture -->
 +<xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
  </OpenGLAPI>
 diff --git a/src/mesa/main/texobj.c b/src/mesa/main/texobj.c
-index c9502bd..446b8d2 100644
+index ed630bd..1215811 100644
 --- a/src/mesa/main/texobj.c
 +++ b/src/mesa/main/texobj.c
-@@ -2202,4 +2202,24 @@ _mesa_InvalidateTexImage(GLuint texture, GLint level)
+@@ -2198,4 +2198,24 @@ _mesa_InvalidateTexImage(GLuint texture, GLint level)
     return;
  }
  
@@ -138,5 +138,5 @@ index 378d87a..fd25ee9 100644
  
  
 -- 
-1.9.1
+2.7.4
 

@@ -1,7 +1,7 @@
-From e045cecdabdcf2159c6f7c37562b2fd812bde32a Mon Sep 17 00:00:00 2001
+From 9eef9a1689c38a1b69fc02b73bbfaeb45c5e7568 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Wed, 3 Dec 2014 15:28:58 +0000
-Subject: [PATCH 14/14] GL_EXT_geometry_shader entry points
+Subject: [PATCH 09/29] GL_EXT_geometry_shader entry points
 
 ---
  src/mapi/glapi/gen/EXT_geometry_shader.xml | 65 ++++++++++++++++++++++++++++++
@@ -83,22 +83,24 @@ index 0000000..0a45dbc
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index f27f8b8..11d5546 100644
+index f73d34d..fa33525 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1301,4 +1301,7 @@
+@@ -882,6 +882,9 @@
  
  </category>
  
 +<!-- 177. GL_EXT_geometry_shader-->
 +<xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- </OpenGLAPI>
+ <category name="GL_EXT_texture_border_clamp" number="182">
+ 
+     <!-- The *TexParameter* functions are added in EXT_texture_integer -->
 diff --git a/src/mesa/main/fbobject.c b/src/mesa/main/fbobject.c
-index 6086154..106dd16 100644
+index 5d06a7f..7b692b2 100644
 --- a/src/mesa/main/fbobject.c
 +++ b/src/mesa/main/fbobject.c
-@@ -3465,6 +3465,17 @@ _mesa_FramebufferTexture(GLenum target, GLenum attachment,
+@@ -3478,6 +3478,17 @@ _mesa_FramebufferTexture(GLenum target, GLenum attachment,
  
  
  void GLAPIENTRY
@@ -132,5 +134,5 @@ index 8774ece..1eb47a3 100644
                                GLuint texture, GLint level);
  
 -- 
-1.9.1
+2.7.4
 

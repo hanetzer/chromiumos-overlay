@@ -1,15 +1,15 @@
-From 0cd309cb3a434e1c42c56649fbf81d35425488fe Mon Sep 17 00:00:00 2001
+From 7aaf0613a53d5782c07baab6370bab84ea728e98 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 12:08:45 +0000
-Subject: [PATCH 8/8] GL_EXT_robustness entry points
+Subject: [PATCH 07/29] GL_EXT_robustness entry points
 
 ---
  src/mapi/glapi/gen/EXT_robustness.xml | 55 +++++++++++++++++++++++++++++++++++
  src/mapi/glapi/gen/es_EXT.xml         |  3 ++
  src/mesa/main/get.h                   |  4 +++
- src/mesa/main/getstring.c             | 10 +++++++
  src/mesa/main/readpix.c               |  8 +++++
  src/mesa/main/readpix.h               |  5 ++++
+ src/mesa/main/robustness.c            | 10 +++++++
  src/mesa/main/uniforms.c              | 16 ++++++++++
  src/mesa/main/uniforms.h              |  4 +++
  8 files changed, 105 insertions(+)
@@ -103,24 +103,6 @@ index ce97cc5..756bccf 100644
 +_mesa_GetGraphicsResetStatusEXT( void );
 +
  #endif
-diff --git a/src/mesa/main/getstring.c b/src/mesa/main/getstring.c
-index 6e90511..e7bcb1a 100644
---- a/src/mesa/main/getstring.c
-+++ b/src/mesa/main/getstring.c
-@@ -311,3 +311,13 @@ _mesa_GetError( void )
-    ctx->ErrorDebugCount = 0;
-    return e;
- }
-+
-+GLenum GLAPIENTRY
-+_mesa_GetGraphicsResetStatusEXT( void )
-+{
-+   GET_CURRENT_CONTEXT(ctx);
-+
-+   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetGraphicsResetStatusEXT");
-+
-+   return GL_NO_ERROR;
-+}
 diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
 index 1cb06c7..99910b3 100644
 --- a/src/mesa/main/readpix.c
@@ -154,6 +136,24 @@ index 481ad9d..d3b74d1 100644
 +                      GLvoid *pixels );
 +
  #endif
+diff --git a/src/mesa/main/robustness.c b/src/mesa/main/robustness.c
+index f54d9f3..0b94e22 100644
+--- a/src/mesa/main/robustness.c
++++ b/src/mesa/main/robustness.c
+@@ -163,3 +163,13 @@ _mesa_GetGraphicsResetStatusARB( void )
+ 
+    return status;
+ }
++
++GLenum GLAPIENTRY
++_mesa_GetGraphicsResetStatusEXT( void )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetGraphicsResetStatusEXT");
++
++   return GL_NO_ERROR;
++}
 diff --git a/src/mesa/main/uniforms.c b/src/mesa/main/uniforms.c
 index 35b93d3..f5eb3bf 100644
 --- a/src/mesa/main/uniforms.c
@@ -208,5 +208,5 @@ index 88fe958..caf2d99 100644
  void GLAPIENTRY
  _mesa_GetnUniformuivARB(GLuint, GLint, GLsizei, GLuint *);
 -- 
-1.9.1
+2.7.4
 

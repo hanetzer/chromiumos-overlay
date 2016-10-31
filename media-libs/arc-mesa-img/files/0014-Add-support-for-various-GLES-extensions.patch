@@ -1,7 +1,7 @@
-From 463329b05201a231e8a5cc946fd12a4398ece813 Mon Sep 17 00:00:00 2001
+From f34171d4e80cf9145044f9e57e2aec052a66ca09 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Mon, 10 Mar 2014 12:27:03 +0000
-Subject: [PATCH 24/34] Add support for various GLES extensions
+Subject: [PATCH 14/29] Add support for various GLES extensions
 
 Add support for:
 	EXT_multisampled_render_to_texture
@@ -19,7 +19,7 @@ Add support for:
  create mode 100644 src/mesa/main/es_extension_stubs.h
 
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index d39527f..fae9c73 100644
+index f589bda..602043e 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
 @@ -285,28 +285,25 @@
@@ -178,7 +178,7 @@ index 72d7b6f..c3b031f 100644
  #include "main/eval.h"
  #include "main/get.h"
 diff --git a/src/mesa/Makefile.sources b/src/mesa/Makefile.sources
-index 48647ad..42698d7 100644
+index 84db5a8..4c7ee8f 100644
 --- a/src/mesa/Makefile.sources
 +++ b/src/mesa/Makefile.sources
 @@ -3,7 +3,9 @@
@@ -371,5 +371,5 @@ index 0000000..385b20f
 +
 +#endif
 -- 
-1.9.1
+2.7.4
 

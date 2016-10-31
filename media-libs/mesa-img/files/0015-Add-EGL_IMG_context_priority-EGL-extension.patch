@@ -1,7 +1,7 @@
-From d534d67e0b552c37f0712fa97295961b36552971 Mon Sep 17 00:00:00 2001
+From 6462781b84b24493e668a156091c49a93c5b0884 Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 11:31:26 +0000
-Subject: [PATCH 25/25] Add EGL_IMG_context_priority EGL extension
+Subject: [PATCH 15/29] Add EGL_IMG_context_priority EGL extension
 
 Add support for the EGL_IMG_context_priority extension to EGL, and the
 DRI2 EGL driver.
@@ -18,7 +18,7 @@ DRI2 EGL driver.
  9 files changed, 101 insertions(+), 5 deletions(-)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index 12985fb..2612302 100644
+index ce0fb48..ee067a3 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
 @@ -1015,6 +1015,21 @@ struct __DRIdri2LoaderExtensionRec {
@@ -43,7 +43,7 @@ index 12985fb..2612302 100644
   * \name Reasons that __DRIdri2Extension::createContextAttribs might fail
   */
  /*@{*/
-@@ -1576,4 +1591,19 @@ struct __DRIimageDriverExtensionRec {
+@@ -1613,4 +1628,19 @@ struct __DRIimageDriverExtensionRec {
     __DRIgetAPIMaskFunc                  getAPIMask;
  };
  
@@ -64,7 +64,7 @@ index 12985fb..2612302 100644
 +
  #endif
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index df1d12e..ae55ba6 100644
+index 614c66f..b2bc303 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
 @@ -617,6 +617,9 @@ dri2_setup_screen(_EGLDisplay *disp)
@@ -148,7 +148,7 @@ index df1d12e..ae55ba6 100644
           if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
                                          &num_attribs))
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index 3e9f991..0401d9e 100644
+index 925294b..df48362 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
 @@ -175,6 +175,7 @@ struct dri2_egl_display
@@ -160,7 +160,7 @@ index 3e9f991..0401d9e 100644
  
     int                       own_device;
 diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
-index eb612c0..0c53dcf 100644
+index 4700dbe..3d4c4a9 100644
 --- a/src/egl/main/eglapi.c
 +++ b/src/egl/main/eglapi.c
 @@ -422,6 +422,7 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
@@ -291,5 +291,5 @@ index 6987f55..7d7c633 100644
  
  /**
 -- 
-1.9.1
+2.7.4
 

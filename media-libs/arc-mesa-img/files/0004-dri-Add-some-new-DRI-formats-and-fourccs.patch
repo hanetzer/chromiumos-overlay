@@ -1,7 +1,7 @@
-From e7446a2c91898d9fa46fb356a1954f6fab8df1b9 Mon Sep 17 00:00:00 2001
+From a7cf453e58b75abf7691781c1a15f1c3a58fedf3 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Thu, 5 Jun 2014 12:07:01 +0100
-Subject: [PATCH 05/40] dri: Add some new DRI formats and fourccs
+Subject: [PATCH 04/29] dri: Add some new DRI formats and fourccs
 
 Add ARGB4444 and ARGB1555 DRI formats and fourccs.
 ---
@@ -10,10 +10,10 @@ Add ARGB4444 and ARGB1555 DRI formats and fourccs.
  2 files changed, 12 insertions(+)
 
 diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
-index a0f155a..fd3e467 100644
+index 1c73cce..a1d1c2d 100644
 --- a/include/GL/internal/dri_interface.h
 +++ b/include/GL/internal/dri_interface.h
-@@ -1086,6 +1086,8 @@ struct __DRIdri2ExtensionRec {
+@@ -1121,6 +1121,8 @@ struct __DRIdri2ExtensionRec {
  #define __DRI_IMAGE_FORMAT_XRGB2101010  0x1009
  #define __DRI_IMAGE_FORMAT_ARGB2101010  0x100a
  #define __DRI_IMAGE_FORMAT_SARGB8       0x100b
@@ -22,7 +22,7 @@ index a0f155a..fd3e467 100644
  
  #define __DRI_IMAGE_USE_SHARE		0x0001
  #define __DRI_IMAGE_USE_SCANOUT		0x0002
-@@ -1103,6 +1105,8 @@ struct __DRIdri2ExtensionRec {
+@@ -1148,6 +1150,8 @@ struct __DRIdri2ExtensionRec {
  
  #define __DRI_IMAGE_FOURCC_R8		0x20203852
  #define __DRI_IMAGE_FOURCC_GR88		0x38385247
@@ -32,10 +32,10 @@ index a0f155a..fd3e467 100644
  #define __DRI_IMAGE_FOURCC_ARGB8888	0x34325241
  #define __DRI_IMAGE_FOURCC_XRGB8888	0x34325258
 diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
-index d35ac26..736934a 100644
+index 79cb050..6c1d0f8 100644
 --- a/src/mesa/drivers/dri/common/dri_util.c
 +++ b/src/mesa/drivers/dri/common/dri_util.c
-@@ -827,6 +827,10 @@ driGLFormatToImageFormat(mesa_format format)
+@@ -850,6 +850,10 @@ driGLFormatToImageFormat(mesa_format format)
        return __DRI_IMAGE_FORMAT_NONE;
     case MESA_FORMAT_B8G8R8A8_SRGB:
        return __DRI_IMAGE_FORMAT_SARGB8;
@@ -46,7 +46,7 @@ index d35ac26..736934a 100644
     default:
        return 0;
     }
-@@ -858,6 +862,10 @@ driImageFormatToGLFormat(uint32_t image_format)
+@@ -881,6 +885,10 @@ driImageFormatToGLFormat(uint32_t image_format)
        return MESA_FORMAT_B8G8R8A8_SRGB;
     case __DRI_IMAGE_FORMAT_NONE:
        return MESA_FORMAT_NONE;
@@ -58,5 +58,5 @@ index d35ac26..736934a 100644
        return MESA_FORMAT_NONE;
     }
 -- 
-1.9.1
+2.7.4
 

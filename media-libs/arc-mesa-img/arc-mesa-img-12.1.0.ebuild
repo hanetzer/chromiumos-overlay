@@ -49,7 +49,10 @@ IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx X"
 
-DEPEND="video_cards_powervr? ( media-libs/arc-img-ddk )
+DEPEND="video_cards_powervr? (
+		media-libs/arc-img-ddk
+		!<media-libs/arc-img-ddk-1.7
+	)
 "
 
 S="${WORKDIR}/${MY_P}"
@@ -114,19 +117,24 @@ src_prepare() {
 
 	# IMG patches
 	epatch "${FILESDIR}"/0001-dri-pvr-Introduce-PowerVR-DRI-driver.patch
-	epatch "${FILESDIR}"/0005-dri-Add-some-new-DRI-formats-and-fourccs.patch
-	epatch "${FILESDIR}"/0006-dri-Add-MT21-DRI-fourcc.patch
-	epatch "${FILESDIR}"/0007-Separate-EXT_framebuffer_object-from-ARB-version.patch
-	epatch "${FILESDIR}"/0008-GL_EXT_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0009-GL_KHR_blend_equation_advanced-entry-points.patch
-	epatch "${FILESDIR}"/0014-GL_EXT_geometry_shader-entry-points.patch
-	epatch "${FILESDIR}"/0016-GL_EXT_primitive_bounding_box-entry-points.patch
-	epatch "${FILESDIR}"/0017-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0021-GL_OES_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0023-GL_EXT_sparse_texture-entry-points.patch
-	epatch "${FILESDIR}"/0024-Add-support-for-various-GLES-extensions.patch
-	epatch "${FILESDIR}"/0025-Add-EGL_IMG_context_priority-EGL-extension.patch
-	epatch "${FILESDIR}"/0034-GL_EXT_shader_pixel_local_storage2-entry-points.patch
+	epatch "${FILESDIR}"/0004-dri-Add-some-new-DRI-formats-and-fourccs.patch
+	epatch "${FILESDIR}"/0005-dri-Add-MT21-DRI-fourcc.patch
+	epatch "${FILESDIR}"/0006-Separate-EXT_framebuffer_object-from-ARB-version.patch
+	epatch "${FILESDIR}"/0007-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0008-GL_KHR_blend_equation_advanced-entry-points.patch
+	epatch "${FILESDIR}"/0009-GL_EXT_geometry_shader-entry-points.patch
+	epatch "${FILESDIR}"/0010-GL_EXT_primitive_bounding_box-entry-points.patch
+	epatch "${FILESDIR}"/0011-GL_EXT_tessellation_shader-entry-points.patch
+	epatch "${FILESDIR}"/0012-GL_OES_tessellation_shader-entry-points.patch
+	epatch "${FILESDIR}"/0013-GL_EXT_sparse_texture-entry-points.patch
+	epatch "${FILESDIR}"/0014-Add-support-for-various-GLES-extensions.patch
+	epatch "${FILESDIR}"/0015-Add-EGL_IMG_context_priority-EGL-extension.patch
+	epatch "${FILESDIR}"/0023-GL_EXT_shader_pixel_local_storage2-entry-points.patch
+	epatch "${FILESDIR}"/0026-GL_IMG_framebuffer_downsample-entry-points.patch
+	epatch "${FILESDIR}"/0027-GL_OVR_multiview-entry-points.patch
+	epatch "${FILESDIR}"/0028-Add-OVR_multiview_multisampled_render_to_texture.patch
+	epatch "${FILESDIR}"/0032-OpenGLES3.2-BlendBarrier.patch
+	epatch "${FILESDIR}"/0033-OpenGLES3.2-PrimitiveBoundingBox.patch
 
 	# Android specific patches
 	epatch "${FILESDIR}"/0500-UPSTREAM-egl-Fix-the-bad-surface-attributes-combinat.patch
@@ -186,7 +194,7 @@ src_configure() {
 	export LIBDRM_CFLAGS="-I${ARC_SYSROOT}/usr/include/libdrm"
 	export LIBDRM_LIBS="-ldrm"
 
-	export PVR_CFLAGS=" "
+	export PVR_CFLAGS="-I${SYSROOT}/opt/google/containers/android/vendor/include"
 	export PVR_LIBS="-L${SYSROOT}/opt/google/containers/android/vendor/lib -lpvr_dri_support "
 	export LLVM_CONFIG=""
 

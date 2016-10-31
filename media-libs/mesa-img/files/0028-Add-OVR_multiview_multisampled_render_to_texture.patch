@@ -1,0 +1,84 @@
+From 3eb07eca444273b1f419680769f2c4b64e70c1ad Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 11 Jul 2016 13:29:51 +0100
+Subject: [PATCH 28/31] Add OVR_multiview_multisampled_render_to_texture
+
+---
+ .../OVR_multiview_multisampled_render_to_texture.xml | 20 ++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                        |  3 +++
+ src/mesa/main/es_extension_stubs.c                   |  8 ++++++++
+ src/mesa/main/es_extension_stubs.h                   |  3 +++
+ 4 files changed, 34 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+
+diff --git a/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml b/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+new file mode 100644
+index 0000000..539d64c
+--- /dev/null
++++ b/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+@@ -0,0 +1,20 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_OVR_multiview_multisampled_render_to_texture" number="250">
++
++    <function name="FramebufferTextureMultisampleMultiviewOVR" es2="3.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment"  type="GLenum"/>
++        <param name="texture"  type="GLuint"/>
++        <param name="level"  type="GLint"/>
++        <param name="samples"  type="GLsizei"/>
++        <param name="baseViewIndex"  type="GLint"/>
++        <param name="numViews"  type="GLsizei"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index f3eb88b..2c282ef 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1402,6 +1402,9 @@
+ <!-- 240. EXT_sparse_texture -->
+ <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 250. GL_OVR_multiview_multisampled_render_to_texture -->
++<xi:include href="OVR_multiview_multisampled_render_to_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 253. GL_EXT_shader_pixel_local_storage2 -->
+ <xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mesa/main/es_extension_stubs.c b/src/mesa/main/es_extension_stubs.c
+index b5f3b96..5a85b01 100644
+--- a/src/mesa/main/es_extension_stubs.c
++++ b/src/mesa/main/es_extension_stubs.c
+@@ -132,3 +132,11 @@ _mesa_FramebufferTextureLayerDownsampleIMG(GLenum target, GLenum attachment, GLu
+ 
+     _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTextureLayerDownsampleIMG");
+ }
++
++void GLAPIENTRY
++_mesa_FramebufferTextureMultisampleMultiviewOVR(GLenum target, GLenum attachment, GLuint texture, GLint level, GLsizei samples, GLint baseViewIndex, GLsizei numViews)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTextureMultisampleMultiviewOVR");
++}
+diff --git a/src/mesa/main/es_extension_stubs.h b/src/mesa/main/es_extension_stubs.h
+index 351fc44..d6d6790 100644
+--- a/src/mesa/main/es_extension_stubs.h
++++ b/src/mesa/main/es_extension_stubs.h
+@@ -51,4 +51,7 @@ _mesa_FramebufferTexture2DDownsampleIMG(GLenum target, GLenum attachment, GLenum
+ void GLAPIENTRY
+ _mesa_FramebufferTextureLayerDownsampleIMG(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLint xscale, GLint yscale);
+ 
++void GLAPIENTRY
++_mesa_FramebufferTextureMultisampleMultiviewOVR(GLenum target, GLenum attachment, GLuint texture, GLint level, GLsizei samples, GLint baseViewIndex, GLsizei numViews);
++
+ #endif
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
-From 878f8a433f64efecff589da11f73aa10f1b41024 Mon Sep 17 00:00:00 2001
+From fac5791793b20bef365e39ced70ca113bcffd24a Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Fri, 5 Dec 2014 12:00:58 +0000
-Subject: [PATCH 17/17] GL_EXT_tessellation_shader entry points
+Subject: [PATCH 11/29] GL_EXT_tessellation_shader entry points
 
 ---
  src/mapi/glapi/gen/EXT_tessellation_shader.xml | 73 ++++++++++++++++++++++++++
@@ -91,24 +91,24 @@ index 0000000..178f541
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index e68fa6d..1e8d9a8 100644
+index 0b88382..b09e188 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1304,6 +1304,9 @@
- <!-- 177. GL_EXT_geometry_shader-->
- <xi:include href="EXT_geometry_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+@@ -915,6 +915,9 @@
+ 
+ </category>
  
 +<!-- 181. GL_EXT_tessellation_shader -->
 +<xi:include href="EXT_tessellation_shader.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- <!-- 186. GL_EXT_primitive_bounding_box -->
- <xi:include href="EXT_primitive_bounding_box.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ <category name="GL_EXT_texture_buffer" number="183">
  
+     <function name="TexBufferEXT" es2="3.1" alias="TexBuffer">
 diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
-index 4dcdf07..13fffff 100644
+index 23879d7..b575862 100644
 --- a/src/mesa/main/shaderapi.c
 +++ b/src/mesa/main/shaderapi.c
-@@ -2246,6 +2246,16 @@ _mesa_PatchParameterfv(GLenum pname, const GLfloat *values)
+@@ -2256,6 +2256,16 @@ _mesa_PatchParameterfv(GLenum pname, const GLfloat *values)
  }
  
  /**
@@ -141,5 +141,5 @@ index 81a92e7..d3ec784 100644
  void
  _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg);
 -- 
-1.9.1
+2.7.4
 

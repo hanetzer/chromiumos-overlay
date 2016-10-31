@@ -1,0 +1,74 @@
+From 85f99933136230704ebe2d1ff24f4ac6563e6c1e Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 26 Aug 2016 14:52:14 +0100
+Subject: [PATCH 33/33] OpenGLES3.2 PrimitiveBoundingBox.
+
+---
+ src/mapi/glapi/gen/gl_and_es_API.xml | 11 +++++++++++
+ src/mesa/main/shaderapi.c            | 10 ++++++++++
+ src/mesa/main/shaderapi.h            |  6 ++++++
+ 3 files changed, 27 insertions(+)
+
+diff --git a/src/mapi/glapi/gen/gl_and_es_API.xml b/src/mapi/glapi/gen/gl_and_es_API.xml
+index 79ef654..a0c778a 100644
+--- a/src/mapi/glapi/gen/gl_and_es_API.xml
++++ b/src/mapi/glapi/gen/gl_and_es_API.xml
+@@ -283,6 +283,17 @@
+ <category name="es3.2">
+     <function name="BlendBarrier" es2="3.2" desktop="false">
+     </function>
++
++    <function name="PrimitiveBoundingBox" es2="3.2" desktop="false">
++    <param name="minX" type="GLfloat"/>
++    <param name="minY" type="GLfloat"/>
++    <param name="minZ" type="GLfloat"/>
++    <param name="minW" type="GLfloat"/>
++    <param name="maxX" type="GLfloat"/>
++    <param name="maxY" type="GLfloat"/>
++    <param name="maxZ" type="GLfloat"/>
++    <param name="maxW" type="GLfloat"/>
++    </function>
+ </category>
+ 
+ <xi:include href="es_EXT.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
+index 58945f7..4f4ebfa 100644
+--- a/src/mesa/main/shaderapi.c
++++ b/src/mesa/main/shaderapi.c
+@@ -2805,6 +2805,16 @@ _mesa_shader_program_init_subroutine_defaults(struct gl_shader_program *shProg)
+ }
+ 
+ void GLAPIENTRY
++_mesa_PrimitiveBoundingBox(GLfloat minX, GLfloat minY,
++                           GLfloat minZ, GLfloat minW,
++                           GLfloat maxX, GLfloat maxY,
++                           GLfloat maxZ, GLfloat maxW)
++{
++    GET_CURRENT_CONTEXT(ctx);
++    _mesa_error(ctx, GL_INVALID_OPERATION, "PrimitiveBoundingBox");
++}
++
++void GLAPIENTRY
+ _mesa_PrimitiveBoundingBoxEXT(GLfloat minX, GLfloat minY,
+                               GLfloat minZ, GLfloat minW,
+                               GLfloat maxX, GLfloat maxY,
+diff --git a/src/mesa/main/shaderapi.h b/src/mesa/main/shaderapi.h
+index 914a60d..639ef9f 100644
+--- a/src/mesa/main/shaderapi.h
++++ b/src/mesa/main/shaderapi.h
+@@ -327,6 +327,12 @@ extern GLvoid GLAPIENTRY
+ _mesa_GetProgramStageiv(GLuint program, GLenum shadertype,
+                         GLenum pname, GLint *values);
+ 
++void GLAPIENTRY
++_mesa_PrimitiveBoundingBox(GLfloat minX, GLfloat minY,
++                           GLfloat minZ, GLfloat minW,
++                           GLfloat maxX, GLfloat maxY,
++                           GLfloat maxZ, GLfloat maxW);
++
+ /* EXT_primitive_bounding_box */
+ void GLAPIENTRY
+ _mesa_PrimitiveBoundingBoxEXT(GLfloat minX, GLfloat minY,
+-- 
+2.7.4
+

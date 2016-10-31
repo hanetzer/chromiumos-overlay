@@ -1,0 +1,108 @@
+From 086107d97a7a2c760face54df007d6daa080d74a Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 11 Jul 2016 10:58:37 +0100
+Subject: [PATCH 26/31] GL_IMG_framebuffer_downsample entry points
+
+---
+ src/mapi/glapi/gen/IMG_framebuffer_downsample.xml | 35 +++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                     |  3 ++
+ src/mesa/main/es_extension_stubs.c                | 16 +++++++++++
+ src/mesa/main/es_extension_stubs.h                |  6 ++++
+ 4 files changed, 60 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/IMG_framebuffer_downsample.xml
+
+diff --git a/src/mapi/glapi/gen/IMG_framebuffer_downsample.xml b/src/mapi/glapi/gen/IMG_framebuffer_downsample.xml
+new file mode 100644
+index 0000000..b1769e9
+--- /dev/null
++++ b/src/mapi/glapi/gen/IMG_framebuffer_downsample.xml
+@@ -0,0 +1,35 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_IMG_framebuffer_downsample" number="255">
++
++    <enum name="FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_AND_DOWNSAMPLE_IMG"                    value="0x913C"/>
++    <enum name="NUM_DOWNSAMPLE_SCALES_IMG"                                                value="0x913D"/>
++    <enum name="DOWNSAMPLE_SCALES_IMG"                                                    value="0x913E"/>
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_SCALE_IMG"                                 value="0x913F"/>
++
++    <function name="FramebufferTexture2DDownsampleIMG" es1="1.0" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment" type="GLenum"/>
++        <param name="textarget" type="GLenum"/>
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="xscale" type="GLint"/>
++        <param name="yscale" type="GLint"/>
++    </function>
++
++    <function name="FramebufferTextureLayerDownsampleIMG" es1="1.0" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment" type="GLenum"/>
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="layer" type="GLint"/>
++        <param name="xscale" type="GLint"/>
++        <param name="yscale" type="GLint"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index f8280aa..f3eb88b 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1405,4 +1405,7 @@
+ <!-- 253. GL_EXT_shader_pixel_local_storage2 -->
+ <xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 255. GL_IMG_framebuffer_downsample -->
++<xi:include href="IMG_framebuffer_downsample.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/es_extension_stubs.c b/src/mesa/main/es_extension_stubs.c
+index ce074fc..b5f3b96 100644
+--- a/src/mesa/main/es_extension_stubs.c
++++ b/src/mesa/main/es_extension_stubs.c
+@@ -116,3 +116,19 @@ _mesa_WeightPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
+ 
+     _mesa_error(ctx, GL_INVALID_OPERATION, "glWeightPointerOES");
+ }
++
++void GLAPIENTRY
++_mesa_FramebufferTexture2DDownsampleIMG(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint xscale, GLint yscale)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTexture2DDownsampleIMG");
++}
++
++void GLAPIENTRY
++_mesa_FramebufferTextureLayerDownsampleIMG(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLint xscale, GLint yscale)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTextureLayerDownsampleIMG");
++}
+diff --git a/src/mesa/main/es_extension_stubs.h b/src/mesa/main/es_extension_stubs.h
+index 385b20f..351fc44 100644
+--- a/src/mesa/main/es_extension_stubs.h
++++ b/src/mesa/main/es_extension_stubs.h
+@@ -45,4 +45,10 @@ _mesa_MatrixIndexPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *poi
+ void GLAPIENTRY
+ _mesa_WeightPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+ 
++void GLAPIENTRY
++_mesa_FramebufferTexture2DDownsampleIMG(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint xscale, GLint yscale);
++
++void GLAPIENTRY
++_mesa_FramebufferTextureLayerDownsampleIMG(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLint xscale, GLint yscale);
++
+ #endif
+-- 
+2.7.4
+

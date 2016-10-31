@@ -45,7 +45,10 @@ IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx X"
 
-DEPEND="video_cards_powervr? ( media-libs/arc-img-ddk )
+DEPEND="video_cards_powervr? (
+		media-libs/arc-img-ddk
+		!<media-libs/arc-img-ddk-1.7
+	)
 "
 
 S="${WORKDIR}/${MY_P}"
@@ -112,7 +115,7 @@ src_configure() {
 	export LIBDRM_CFLAGS="-I${ARC_SYSROOT}/usr/include/libdrm"
 	export LIBDRM_LIBS="-ldrm"
 
-	export PVR_CFLAGS=" "
+	export PVR_CFLAGS="-I${SYSROOT}/opt/google/containers/android/vendor/include"
 	export PVR_LIBS="-L${SYSROOT}/opt/google/containers/android/vendor/lib -lpvr_dri_support "
 	export LLVM_CONFIG=""
 
