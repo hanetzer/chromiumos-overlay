@@ -30,7 +30,6 @@ CROS_BOARDS=(
 	daisy_skate-freon
 	daisy_freon
 	enguarde
-	eve
 	expresso
 	falco
 	glados
