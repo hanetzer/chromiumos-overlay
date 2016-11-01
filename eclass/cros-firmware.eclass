@@ -75,7 +75,7 @@ esac
 
 # $board-overlay/make.conf may contain these flags to always create "firmware
 # from source".
-IUSE="bootimage cros_ec depthcharge"
+IUSE="bootimage cros_ec"
 
 # Some tools (flashrom, iotools, mosys, ...) were bundled in the updater so we
 # don't write RDEPEND=$DEPEND. RDEPEND should have an explicit list of what it
@@ -258,27 +258,15 @@ cros-firmware_src_compile() {
 		fi
 	fi
 	if use bootimage; then
-		if use depthcharge; then
-			einfo "Updater for local fw"
-			output_file="updater.sh"
-			./pack_firmware.sh -b $root/firmware/image.bin \
-				-o $output_file $local_image_cmd $ext_cmd ||
-				die "Cannot pack local firmware."
-			if [[ -z "$image_cmd" ]]; then
-				# When no pre-built binaries are available,
-				# dupe local updater to system updater.
-				cp -f "$output_file" "$UPDATE_SCRIPT"
-			fi
-		else
-			for fw_file in $root/firmware/image-*.bin; do
-				einfo "Updater for local fw - $fw_file"
-				output_bom=${fw_file##*/image-}
-				output_bom=${output_bom%%.bin}
-				output_file=updater-$output_bom.sh
-				./pack_firmware.sh -b $fw_file -o $output_file \
-					$local_image_cmd $ext_cmd ||
-					die "Cannot pack local firmware."
-			done
+		einfo "Updater for local fw"
+		output_file="updater.sh"
+		./pack_firmware.sh -b $root/firmware/image.bin \
+			-o $output_file $local_image_cmd $ext_cmd ||
+			die "Cannot pack local firmware."
+		if [[ -z "$image_cmd" ]]; then
+			# When no pre-built binaries are available,
+			# dupe local updater to system updater.
+			cp -f "$output_file" "$UPDATE_SCRIPT"
 		fi
 	elif use cros_ec; then
 		# TODO(hungte) Deal with a platform that has only EC and no

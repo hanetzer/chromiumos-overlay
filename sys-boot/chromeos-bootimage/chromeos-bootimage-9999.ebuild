@@ -21,7 +21,7 @@ BOARDS="${BOARDS} gizmo glados jecht kunimitsu link lumpy lumpy64 mario panther"
 BOARDS="${BOARDS} parrot peppy pyro rambi reef samus sklrvp slippy snappy squawks stout strago"
 BOARDS="${BOARDS} stumpy sumo"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
-IUSE="${IUSE} cros_ec depthcharge efs exynos fsp"
+IUSE="${IUSE} cros_ec efs exynos fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra vboot2 fastboot"
 
 REQUIRED_USE="

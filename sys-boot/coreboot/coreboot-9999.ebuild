@@ -32,7 +32,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk cros_ec pd_sync depthcharge qca-framework"
+IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco fox gizmo glados
@@ -171,12 +171,6 @@ make_coreboot() {
 	if use em100-mode; then
 		ifdtool --em100 "${builddir}/coreboot.rom" || die
 		mv "${builddir}/coreboot.rom"{.new,} || die
-	fi
-
-	if ! use depthcharge; then
-		# pre-depthcarge builds don't know our new CBFS-based world,
-		# so the following image changes aren't relevant for them.
-		return
 	fi
 
 	if use cros_ec; then
