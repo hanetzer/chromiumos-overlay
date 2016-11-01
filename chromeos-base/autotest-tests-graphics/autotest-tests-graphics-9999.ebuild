@@ -33,10 +33,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	!ozone? (
-		+tests_graphics_Piglit
-		+tests_graphics_PiglitBVT
-	)
 	ozone? (
 		+tests_graphics_dEQP
 		+tests_graphics_Drm
