@@ -16,7 +16,11 @@ case "${EAPI:-0}" in
 		die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
-# @FUNCTION: factory_install_resource
+# @ECLASS-VARIABLE: CROS_FACTORY_BOARD_RESOURCES_DIR
+# @DESCRIPTION: Folder of factory resources to current board.
+: ${CROS_FACTORY_BOARD_RESOURCES_DIR:=/var/lib/factory/resources}
+
+# @FUNCTION: factory_create_resource
 # @USAGE: <name> <local_dir> <resource_dir> <objects...>
 # @DESCRIPTION:
 # Adds a resource for ChromeOS Factory (chromeos-base/chromeos-factory) to merge
@@ -40,17 +44,16 @@ esac
 #
 # <objects> are files or directories to be copied into resource archive.
 #
-# Example:
+# @EXAMPLE:
+# To copy files from ${WORKDIR}/dist/webgl_aquarium_static as
+#  /usr/local/factory/py/test/pytests/webgl_aquarium_static/* in resource file
+#  ${D}/var/lib/factory/resources/factory-board.tar:
 #
 # @CODE
-#  factory_install_resource factory-board "${WORKDIR}/dist" \
+#  factory_create_resource factory-board "${WORKDIR}/dist" \
 #    py/test/pytests webgl_aquarium_static
 # @CODE
-#
-# Will copy files from ${WORKDIR}/dist/webgl_aquarium_static as
-#  /usr/local/factory/py/test/pytests/webgl_aquarium_static/* in resource file
-#  ${D}/var/lib/factory/resources/factory-board.tar.
-factory_install_resource() {
+factory_create_resource() {
 	local params="<name> <local_dir> <resource_dir> <objects>..."
 	[[ $# -gt 3 ]] || die "Usage: ${FUNCNAME} ${params}"
 
@@ -61,7 +64,7 @@ factory_install_resource() {
 	shift
 	shift
 
-	local archive_dir="${D}var/lib/factory/resources"
+	local archive_dir="${ED}${CROS_FACTORY_BOARD_RESOURCES_DIR}"
 	mkdir -p "${archive_dir}"
 
 	# Normalize resource_dir.
@@ -72,4 +75,33 @@ factory_install_resource() {
 	tar -cf "${archive_dir}/${name}.tar" \
 		-C "${local_dir}" --transform "s'^'${resource_dir}/'" \
 		"$@"
+}
+
+# @FUNCTION: factory_unpack_resource
+# @USAGE: <name> [output_dir]
+# @DESCRIPTION:
+# Unpacks a resource file prepared for ChromeOS Factory
+# (chromeos-base/chromeos-factory). See factory_create_resource for more
+# details.
+#
+# <name> is the name of resource archive without file name extension.
+#
+# [output_dir] is the path to unpack resource contents, for example ${WORKDIR}.
+# Defaults to "${WORKDIR}" if param is empty.
+#
+# @EXAMPLE:
+# To extract files from ${EROOT}var/lib/factory/resources/factory-board.tar
+# to ${WORKDIR}/py/test/pytests:
+#
+# @CODE
+#  factory_unpack_resource factory-board "${WORKDIR}/py/test/pytests"
+# @CODE
+factory_unpack_resource() {
+	local name="$1"
+	local output_dir="${2:-${WORKDIR}}"
+	[[ $# -gt 2 ]] && die "Usage: ${FUNCNAME} <name> [output dir]"
+
+	mkdir -p "${output_dir}"
+	tar -xvf "${EROOT}${CROS_FACTORY_BOARD_RESOURCES_DIR}/${name}.tar" \
+		-C "${output_dir}"
 }
