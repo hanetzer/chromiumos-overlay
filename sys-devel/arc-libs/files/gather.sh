@@ -19,7 +19,7 @@ set -e
 # 1. Location of the android "mnc-dr-arc-dev" branch tree.
 # FIXME: Important: please make sure external/libdrm is checked out to
 # https://chromium.googlesource.com/chromiumos/third_party/libdrm
-# branch chromeos-2.4.66 (won't be needed when b/26864637 is fixed).
+# branch chromeos-2.4.70 (won't be needed when b/26864637 is fixed).
 MNC_DR_ARC_DEV_TREE=${HOME}/android/mnc-dr-arc-dev
 
 # ARCH names used in sysroot.
