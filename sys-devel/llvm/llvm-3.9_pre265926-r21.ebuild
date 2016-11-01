@@ -333,8 +333,8 @@ src_prepare() {
 
 		# Fix WX sections, bug #421527
 		find "${S}"/projects/compiler-rt/lib/builtins -type f -name \*.S -exec sed \
-			 -e '$a\\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,"",%progbits\n#endif' \
-			 -i {} \; || die
+			-e '$a\\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,"",%progbits\n#endif' \
+			-i {} \; || die
 	fi
 
 	if use lldb; then
@@ -373,7 +373,8 @@ multilib_src_configure() {
 		"${mycmakeargs[@]}"
 		-DLLVM_LIBDIR_SUFFIX=${libdir#lib}
 
-		-DBUILD_SHARED_LIBS=ON
+		-DLLVM_BUILD_LLVM_DYLIB=ON
+		-DLLVM_LINK_LLVM_DYLIB=ON
 		-DLLVM_ENABLE_TIMESTAMPS=OFF
 		-DLLVM_TARGETS_TO_BUILD="${targets}"
 		-DLLVM_BUILD_TESTS=$(usex test)
