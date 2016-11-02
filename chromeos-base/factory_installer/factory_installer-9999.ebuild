@@ -102,7 +102,7 @@ src_test() {
 }
 
 src_install() {
-	local service_file="factory_install_service.sh"
+	local service_file="factory_tty.sh"
 	local tmp_service_file="${T}/${service_file}"
 	local scripts=(*.sh)
 	scripts=(${scripts[@]#${service_file}})

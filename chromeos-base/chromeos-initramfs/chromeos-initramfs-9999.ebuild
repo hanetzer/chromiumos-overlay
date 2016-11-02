@@ -41,6 +41,7 @@ RECOVERY_DEPENDS="
 
 # Packages required for building factory installer shim initramfs.
 FACTORY_SHIM_DEPENDS="
+	chromeos-base/factory_installer
 	chromeos-base/vboot_reference
 	"
 
