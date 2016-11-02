@@ -1,0 +1,69 @@
+From 673959c1b6564b384b8b1625ce971c5f5b14b518 Mon Sep 17 00:00:00 2001
+From: Dave Mielke <dave@mielke.cc>
+Date: Mon, 31 Oct 2016 17:24:29 -0400
+Subject: [PATCH 3/7] Add a (so far, manually settable) flag for retaining the
+ chord dot. (dm)
+
+---
+ Programs/ktb_translate.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/Programs/ktb_translate.c b/Programs/ktb_translate.c
+index 6c3e619..d4963f8 100644
+--- a/Programs/ktb_translate.c
++++ b/Programs/ktb_translate.c
+@@ -199,7 +199,7 @@ findMappedKeyEntry (const KeyContext *ctx, const KeyValue *keyValue) {
+ }
+ 
+ static int
+-makeKeyboardCommand (KeyTable *table, unsigned char context) {
++makeKeyboardCommand (KeyTable *table, unsigned char context, int allowChords) {
+   const KeyContext *ctx;
+ 
+   if ((ctx = getKeyContext(table, context))) {
+@@ -214,12 +214,17 @@ makeKeyboardCommand (KeyTable *table, unsigned char context) {
+     }
+ 
+     {
+-      int dotPressed = !!(keyboardCommand & (BRL_DOT1 | BRL_DOT2 | BRL_DOT3 | BRL_DOT4 | BRL_DOT5 | BRL_DOT6 | BRL_DOT7 | BRL_DOT8));
+-      int spacePressed = !!(keyboardCommand & BRL_DOTC);
+-
+-      if (dotPressed == spacePressed) return EOF;
+-      if (dotPressed) keyboardCommand |= ctx->mappedKeys.superimpose;
+-      keyboardCommand &= ~BRL_DOTC;
++      int space = keyboardCommand & BRL_DOTC;
++      int dots = keyboardCommand & (
++        BRL_DOT1 | BRL_DOT2 | BRL_DOT3 | BRL_DOT4 |
++        BRL_DOT5 | BRL_DOT6 | BRL_DOT7 | BRL_DOT8
++      );
++
++      if (!(allowChords && ((space | dots) == keyboardCommand))) {
++        if (!space == !dots) return EOF;
++        if (dots) keyboardCommand |= ctx->mappedKeys.superimpose;
++        keyboardCommand &= ~BRL_DOTC;
++      }
+     }
+ 
+     return keyboardCommand;
+@@ -484,12 +489,17 @@ processKeyEvent (
+       const KeyBinding *binding = findKeyBinding(table, context, &keyValue, &isIncomplete);
+       int inserted = insertPressedKey(table, &keyValue, keyPosition);
+ 
++      if (0 && ((command = makeKeyboardCommand(table, context, 1)) != EOF)) {
++        binding = NULL;
++        isImmediate = 0;
++      }
++
+       if (binding) {
+         command = binding->primaryCommand.value;
+       } else if ((binding = findKeyBinding(table, context, NULL, &isIncomplete))) {
+         command = binding->primaryCommand.value;
+         isImmediate = 0;
+-      } else if ((command = makeKeyboardCommand(table, context)) != EOF) {
++      } else if ((command = makeKeyboardCommand(table, context, 0)) != EOF) {
+         isImmediate = 0;
+       } else if (context == KTB_CTX_DEFAULT) {
+         command = EOF;
+-- 
+2.8.0.rc3.226.g39d4020
+

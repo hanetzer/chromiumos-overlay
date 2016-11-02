@@ -1,0 +1,30 @@
+From 951da7856f63e16e04377a9dac8cc543f379a57f Mon Sep 17 00:00:00 2001
+From: Dave Mielke <dave@mielke.cc>
+Date: Mon, 31 Oct 2016 20:13:19 -0400
+Subject: [PATCH 5/7] Retain the chord key when converting from a brltty to a
+ brlapi command. (dm)
+
+---
+ Programs/cmd_brlapi.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/Programs/cmd_brlapi.c b/Programs/cmd_brlapi.c
+index ff10054..24618cb 100644
+--- a/Programs/cmd_brlapi.c
++++ b/Programs/cmd_brlapi.c
+@@ -42,11 +42,7 @@ cmdBrlttyToBrlapi (brlapi_keyCode_t *code, int command, int retainDots) {
+       break;
+ 
+     case BRL_CMD_BLK(PASSDOTS):
+-      if (retainDots) {
+-        if (arg == (BRLAPI_DOTC >> BRLAPI_KEY_CMD_ARG_SHIFT)) arg = 0;
+-        goto doDefault;
+-      }
+-
++      if (retainDots) goto doDefault;
+       *code = cmdWCharToBrlapi(convertDotsToCharacter(textTable, arg));
+       break;
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

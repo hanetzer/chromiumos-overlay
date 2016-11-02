@@ -1,0 +1,61 @@
+From 6f9e01bc4782ae6f70eecc308c6e3b12cdb8ccbc Mon Sep 17 00:00:00 2001
+From: Dave Mielke <dave@mielke.cc>
+Date: Sun, 17 Jul 2016 06:25:43 -0400
+Subject: [PATCH 1/7] The autorelease alarm wasn't correctly cancelled on
+ driver stop. (dm)
+
+---
+ Programs/ktb_internal.h  |  2 +-
+ Programs/ktb_translate.c | 17 +++++++----------
+ 2 files changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/Programs/ktb_internal.h b/Programs/ktb_internal.h
+index ed8157f..bab0d8b 100644
+--- a/Programs/ktb_internal.h
++++ b/Programs/ktb_internal.h
+@@ -163,7 +163,7 @@ struct KeyTableStruct {
+ 
+   struct {
+     AsyncHandle alarm;
+-    unsigned char time;
++    int time;
+   } autorelease;
+ 
+   struct {
+diff --git a/Programs/ktb_translate.c b/Programs/ktb_translate.c
+index e617a84..cf79695 100644
+--- a/Programs/ktb_translate.c
++++ b/Programs/ktb_translate.c
+@@ -68,22 +68,19 @@ cancelAutoreleaseAlarm (KeyTable *table) {
+ 
+ static void
+ setAutoreleaseAlarm (KeyTable *table) {
+-  if (!prefs.autoreleaseTime || !table->pressedKeys.count) {
++  if (!table->autorelease.time || !table->pressedKeys.count) {
+     cancelAutoreleaseAlarm(table);
++  } else if (table->autorelease.alarm) {
++    asyncResetAlarmIn(table->autorelease.alarm, table->autorelease.time);
+   } else {
+-    int time = 5000 << (prefs.autoreleaseTime - 1);
+-
+-    if (table->autorelease.alarm) {
+-      asyncResetAlarmIn(table->autorelease.alarm, time);
+-    } else {
+-      asyncSetAlarmIn(&table->autorelease.alarm, time, handleKeyAutoreleaseAlarm, table);
+-    }
++    asyncSetAlarmIn(&table->autorelease.alarm, table->autorelease.time,
++                    handleKeyAutoreleaseAlarm, table);
+   }
+ }
+ 
+ void
+-setKeyAutoreleaseTime (KeyTable *table, unsigned char seconds) {
+-  table->autorelease.time = seconds;
++setKeyAutoreleaseTime (KeyTable *table, unsigned char setting) {
++  table->autorelease.time = setting? (5000 << (setting - 1)): 0;
+   setAutoreleaseAlarm(table);
+ }
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

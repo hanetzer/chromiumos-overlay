@@ -1,0 +1,91 @@
+From a815915cab86a9d6b2637e00673ed949f73a0106 Mon Sep 17 00:00:00 2001
+From: Dave Mielke <dave@mielke.cc>
+Date: Mon, 8 Aug 2016 00:18:23 -0400
+Subject: [PATCH 2/7] Hotkey handling shouldn't interfere with non-hotkey
+ handling. (dm)
+
+---
+ Programs/ktb_compile.c   |  5 ++---
+ Programs/ktb_translate.c | 25 ++++++++++++-------------
+ 2 files changed, 14 insertions(+), 16 deletions(-)
+
+diff --git a/Programs/ktb_compile.c b/Programs/ktb_compile.c
+index 20ba4ef..5a7bbfe 100644
+--- a/Programs/ktb_compile.c
++++ b/Programs/ktb_compile.c
+@@ -1191,8 +1191,6 @@ static DATA_OPERANDS_PROCESSOR(processKeyTableOperands) {
+ 
+ void
+ resetLongPressData (KeyTable *table) {
+-  table->release.command = BRL_CMD_NOOP;
+-
+   if (table->longPress.alarm) {
+     asyncCancelRequest(table->longPress.alarm);
+     table->longPress.alarm = NULL;
+@@ -1210,8 +1208,9 @@ resetLongPressData (KeyTable *table) {
+ void
+ resetKeyTable (KeyTable *table) {
+   resetLongPressData(table);
+-  table->context.current = table->context.next = table->context.persistent = KTB_CTX_DEFAULT;
++  table->release.command = BRL_CMD_NOOP;
+   table->pressedKeys.count = 0;
++  table->context.current = table->context.next = table->context.persistent = KTB_CTX_DEFAULT;
+ }
+ 
+ static int
+diff --git a/Programs/ktb_translate.c b/Programs/ktb_translate.c
+index cf79695..6c3e619 100644
+--- a/Programs/ktb_translate.c
++++ b/Programs/ktb_translate.c
+@@ -468,14 +468,10 @@ processKeyEvent (
+   }
+ 
+   if (hotkey) {
+-    state = KTS_HOTKEY;
+-    resetLongPressData(table);
+-
+-    {
+-      const BoundCommand *cmd = press? &hotkey->pressCommand: &hotkey->releaseCommand;
++    const BoundCommand *cmd = press? &hotkey->pressCommand: &hotkey->releaseCommand;
+ 
+-      if (cmd->value != BRL_CMD_NOOP) processCommand(table, (command = cmd->value));
+-    }
++    if (cmd->value != BRL_CMD_NOOP) processCommand(table, (command = cmd->value));
++    state = KTS_HOTKEY;
+   } else {
+     int isImmediate = 1;
+     unsigned int keyPosition;
+@@ -525,6 +521,7 @@ processKeyEvent (
+         int secondaryCommand = BRL_CMD_NOOP;
+ 
+         resetLongPressData(table);
++        table->release.command = BRL_CMD_NOOP;
+ 
+         if (binding) {
+           addCommandArguments(table, &command, binding->primaryCommand.entry, binding);
+@@ -564,14 +561,16 @@ processKeyEvent (
+         processCommand(table, command);
+       }
+     } else {
+-      int *cmd = &table->release.command;
++      resetLongPressData(table);
+ 
+-      if (*cmd != BRL_CMD_NOOP) {
+-        processCommand(table, (command = *cmd));
+-        *cmd = BRL_CMD_NOOP;
+-      }
++      if (1 || (table->pressedKeys.count == 0)) {
++        int *cmd = &table->release.command;
+ 
+-      resetLongPressData(table);
++        if (*cmd != BRL_CMD_NOOP) {
++          processCommand(table, (command = *cmd));
++          *cmd = BRL_CMD_NOOP;
++        }
++      }
+     }
+ 
+     setAutoreleaseAlarm(table);
+-- 
+2.8.0.rc3.226.g39d4020
+

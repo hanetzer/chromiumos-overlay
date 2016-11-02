@@ -6,6 +6,13 @@ cros_pre_src_prepare_brltty_config() {
 	epatch "${FILESDIR}"/${P}-tty0-openflags.patch
 	epatch "${FILESDIR}/"${P}-supress-messages.patch
 	epatch "${FILESDIR}"/${P}-udev-run-script.patch
+	epatch "${FILESDIR}"/${P}-r1-0001-The-autorelease-alarm-wasn-t-correctly-cancelled-on-.patch
+	epatch "${FILESDIR}"/${P}-r1-0002-Hotkey-handling-shouldn-t-interfere-with-non-hotkey-.patch
+	epatch "${FILESDIR}"/${P}-r1-0003-Add-a-so-far-manually-settable-flag-for-retaining-th.patch
+	epatch "${FILESDIR}"/${P}-r1-0004-Fixes-to-chord-key-retention.-dm.patch
+	epatch "${FILESDIR}"/${P}-r1-0005-Retain-the-chord-key-when-converting-from-a-brltty-t.patch
+	epatch "${FILESDIR}"/${P}-r1-0006-A-bit-of-retain-chords-code-cleanup.-dm.patch
+	epatch "${FILESDIR}"/${P}-r1-0007-Customize-retain-dots-for-Chrome-OS-and-ChromeVox.patch
 }
 
 cros_post_src_prepare_brltty_config() {

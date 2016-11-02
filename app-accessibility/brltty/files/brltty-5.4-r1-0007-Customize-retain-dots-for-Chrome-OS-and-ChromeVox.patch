@@ -1,0 +1,25 @@
+From f2774b22e358c724c086b14e800c0b3719dc1c99 Mon Sep 17 00:00:00 2001
+From: David Tseng <dtseng@chromium.org>
+Date: Thu, 3 Nov 2016 11:25:18 -0700
+Subject: [PATCH 7/7] Customize retain dots for Chrome OS and ChromeVox
+
+---
+ Programs/ktb_translate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Programs/ktb_translate.c b/Programs/ktb_translate.c
+index 1ed58c3..9c595c5 100644
+--- a/Programs/ktb_translate.c
++++ b/Programs/ktb_translate.c
+@@ -33,7 +33,7 @@
+ #include "cmd_enqueue.h"
+ #include "async_alarm.h"
+ 
+-#define RETAIN_CHORD_KEY 0
++#define RETAIN_CHORD_KEY 1
+ #define ON_FIRST_RELEASE 1
+ 
+ #define BRL_CMD_ALERT(alert) BRL_CMD_ARG(ALERT, ALERT_##alert)
+-- 
+2.8.0.rc3.226.g39d4020
+
