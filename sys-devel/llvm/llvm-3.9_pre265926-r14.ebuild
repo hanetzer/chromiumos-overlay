@@ -16,6 +16,22 @@ SRC_URI=""
 EGIT_REPO_URI="http://llvm.org/git/llvm.git
 	https://github.com/llvm-mirror/llvm.git"
 
+if use llvm-next; then
+EGIT_REPO_URIS=(
+	"llvm"
+		""
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+		"67d80b9ced88e3f2692598401ee85a91325e4513" # EGIT_COMMIT
+	"compiler-rt"
+		"projects/compiler-rt"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"3d648ece9a58c83420fd5554df885f8c90c3790a" # EGIT_COMMIT
+	"clang"
+		"tools/clang"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
+		"19f548b5dbb998d818b3fa689fdf16a31f995ea0"  # EGIT_COMMIT
+)
+else
 EGIT_REPO_URIS=(
 	"llvm"
 		""
@@ -30,7 +46,7 @@ EGIT_REPO_URIS=(
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
 		"af6a0b98569cf7981fe27327ac4bf19bd0d6b162"  # EGIT_COMMIT
 )
-
+fi
 
 LICENSE="UoI-NCSA"
 SLOT="0/${PV}"
@@ -156,19 +172,15 @@ trunk_src_unpack() {
 
 
 src_unpack() {
-	if use llvm-next; then
-		trunk_src_unpack
-	else
-		set -- "${EGIT_REPO_URIS[@]}"
-			while [[ $# -gt 0 ]]; do
-				ESVN_PROJECT=$1 \
-				EGIT_SOURCEDIR="${S}/$2" \
-				EGIT_REPO_URI=$3 \
-				EGIT_COMMIT=$4 \
-				git-2_src_unpack
-				shift 4
-			done
-	fi
+	set -- "${EGIT_REPO_URIS[@]}"
+		while [[ $# -gt 0 ]]; do
+			ESVN_PROJECT=$1 \
+			EGIT_SOURCEDIR="${S}/$2" \
+			EGIT_REPO_URI=$3 \
+			EGIT_COMMIT=$4 \
+			git-2_src_unpack
+			shift 4
+		done
 }
 
 pick_cherries() {
