@@ -32,7 +32,6 @@ RDEPEND="
 	chromeos-base/chromeos-chrome
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/telemetry
-	tests_graphics_Stress? ( x11-apps/xsendevt )
 	vaapi? ( x11-libs/libva )
 "
 
@@ -72,7 +71,6 @@ IUSE_TESTS=(
 	+tests_enterprise_KioskEnrollment
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
-	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLManyPlanetsDeep
