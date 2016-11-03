@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="56155021d1fe7c9d2c34b78f9242898504f72129"
-CROS_WORKON_TREE="e70a278afeb68f2dd07acd0482035066ed87c085"
+CROS_WORKON_COMMIT="eaf463e262e347d4307b4afce9cb76a42736ed7d"
+CROS_WORKON_TREE="ca810aa54c18766e8434c97333e3533b63e32294"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon toolchain-funcs
@@ -104,7 +104,7 @@ src_test() {
 }
 
 src_install() {
-	local service_file="factory_install_service.sh"
+	local service_file="factory_tty.sh"
 	local tmp_service_file="${T}/${service_file}"
 	local scripts=(*.sh)
 	scripts=(${scripts[@]#${service_file}})

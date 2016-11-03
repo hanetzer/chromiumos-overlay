@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="6c6fc855a162cfb661b08827f47744128f635c3a"
-CROS_WORKON_TREE="4c2a69cd75f366b6c58c809c77807f01e11a4591"
+CROS_WORKON_COMMIT="dba27618ff1ee9027cf20718c9c2733f8b9a4c16"
+CROS_WORKON_TREE="dcdbc5787a46144293c6cec2c753dc58eb83ac6d"
 CROS_WORKON_PROJECT="chromiumos/platform/vpd"
 
 inherit cros-workon systemd
