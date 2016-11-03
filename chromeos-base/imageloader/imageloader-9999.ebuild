@@ -42,10 +42,14 @@ src_unpack() {
 }
 
 src_install() {
+	# Install seccomp policy file.
+	insinto /opt/google/imageloader
+	newins "imageloader-seccomp-${ARCH}.policy" imageloader-seccomp.policy
 	cd "${OUT}"
 	dosbin imageloader
 	dobin imageloadclient
 	cd "${S}"
+	dosbin imageloader_wrapper
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.ImageLoader.conf
 	insinto /usr/share/dbus-1/system-services
@@ -56,4 +60,9 @@ src_install() {
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/run_tests"
+}
+
+pkg_preinst() {
+	enewuser "imageloaderd"
+	enewgroup "imageloaderd"
 }
