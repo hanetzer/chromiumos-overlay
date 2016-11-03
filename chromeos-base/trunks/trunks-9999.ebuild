@@ -21,15 +21,20 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cr50_onboard ftdi_tpm test tpm2_simulator"
 
-RDEPEND="
+COMMON_DEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	ftdi_tpm? ( dev-embedded/libftdi )
 	tpm2_simulator? ( chromeos-base/tpm2 )
 	"
 
+RDEPEND="
+	${COMMON_DEPEND}
+	cr50_onboard? ( chromeos-base/chromeos-cr50 )
+	"
+
 DEPEND="
-	${RDEPEND}
+	${COMMON_DEPEND}
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
