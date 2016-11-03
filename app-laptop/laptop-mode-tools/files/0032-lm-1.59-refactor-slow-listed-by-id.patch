@@ -1,0 +1,50 @@
+usb-autosuspend: Refactor slow listed_by_id()
+
+The original listed_by_id() is horribly inefficient and can launch
+dozens of child processes for each USB device.
+
+From: Matthias Kaehlcke <mka@chromium.org>
+Project-Bug-URL: https://crosbug.com/p/58864
+
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/usb-autosuspend
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/usb-autosuspend
+@@ -7,15 +7,31 @@
+ listed_by_id() {
+ 	device=$1
+ 	list=$2
++
++	if ! idvendor=$(cat $device/idVendor 2>/dev/null) || \
++	   ! idproduct=$(cat $device/idProduct 2>/dev/null); then
++	    return 1
++	fi
++
+ 	for usbid in $list; do
+-		if ! echo $usbid | grep -q ':'; then
+-			log "MSG" "WARNING: Invalid entry \"$usbid\" in \"$2\"."
+-		fi
+-		vendor=$(echo $usbid | cut -d: -f1)
+-		product=$(echo $usbid | cut -d: -f2)
+-		grep -qi $vendor $device/idVendor 2>/dev/null\
+-		 && grep -qi $product $device/idProduct 2>/dev/null\
+-		 && return 0
++		case $usbid in
++		    *:*) ;;
++		    *) continue;;
++		esac
++
++		vendor=${usbid%:*}
++		product=${usbid#*:}
++
++		case $idvendor in
++		    ${vendor})
++			case $idproduct in
++			    ${product})	return 0;;
++			    *) ;;
++			esac
++			;;
++		    *);;
++		esac
+ 	done
++
+ 	return 1
+ }
