@@ -43,6 +43,7 @@ RDEPEND="java? ( >=virtual/jre-1.4 )
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-fix-ldflags.patch
+	epatch "${FILESDIR}"/${P}-fix-compile-list.patch
 
 	java-pkg-opt-2_src_prepare
 
