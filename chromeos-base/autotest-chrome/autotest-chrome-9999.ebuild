@@ -94,8 +94,10 @@ IUSE_TESTS=(
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_policy_AutoFillEnabled
+	+tests_policy_BlockThirdPartyCookies
 	+tests_policy_CookiesAllowedForUrls
 	+tests_policy_CookiesBlockedForUrls
+	+tests_policy_CookiesSessionOnlyForUrls
 	+tests_policy_EditBookmarksEnabled
 	+tests_policy_ForceGoogleSafeSearch
 	+tests_policy_ForceYouTubeSafetyMode
