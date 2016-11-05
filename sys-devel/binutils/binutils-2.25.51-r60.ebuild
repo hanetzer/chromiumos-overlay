@@ -120,16 +120,6 @@ src_unpack() {
 	mkdir -p "${MY_BUILDDIR}"
 }
 
-src_prepare() {
-	local patchfile="${FILESDIR}/${PV}-silence_mapping_symbols.patch"
-	if [[ -e "${patchfile}" ]] \
-		&& ! use mounted_binutils \
-		&& ! use next_binutils \
-		&& ! use prev_binutils ; then
-		epatch "${patchfile}"
-	fi
-}
-
 toolchain-binutils_bugurl() {
 	printf "http://code.google.com/p/chromium-os/issues/entry"
 }
