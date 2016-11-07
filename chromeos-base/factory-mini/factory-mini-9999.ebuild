@@ -29,7 +29,13 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-DEPEND="${PYTHON_DEPS}"
+DEPEND="${PYTHON_DEPS}
+	chromeos-base/chromeos-factory-board
+	dev-python/jsonrpclib
+	dev-python/pyyaml
+	dev-libs/protobuf-python
+	virtual/chromeos-regions
+"
 RDEPEND="!chromeos-base/chromeos-factory-mini"
 
 src_compile() {
