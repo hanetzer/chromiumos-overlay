@@ -16,5 +16,6 @@
 	<flag name='gdmwimax'>Enables WiMax dependencies.</flag>
 	<flag name='bootchart'>Enables bootchart.</flag>
 	<flag name='opengles'>Enables OpenGL ES.</flag>
+	<flag name='compupdates'>Enable component updates.</flag>
 </use>
 </pkgmetadata>

@@ -13,6 +13,7 @@ USE="${USE} -gtk2 -gtk3 -qt4"
 USE="${USE} -eclog"
 USE="${USE} cups crosfonts -postscript"
 USE="${USE} tpm"
+USE="${USE} compupdates"
 
 # Enable general security hardening by default.
 USE="${USE} hardened"

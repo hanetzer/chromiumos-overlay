@@ -16,7 +16,7 @@ CROS_WORKON_DESTDIR=(
 )
 PLATFORM_SUBDIR="imageloader"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Allow mounting verified utility images"
 
@@ -47,7 +47,6 @@ src_install() {
 	newins "imageloader-seccomp-${ARCH}.policy" imageloader-seccomp.policy
 	cd "${OUT}"
 	dosbin imageloader
-	dobin imageloadclient
 	cd "${S}"
 	dosbin imageloader_wrapper
 	insinto /etc/dbus-1/system.d

@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
-IUSE="bluetooth bootchart bootimage buffet +cellular coreboot cr50_onboard
+IUSE="bluetooth bootchart bootimage buffet +cellular compupdates coreboot cr50_onboard
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	eclog feedback +fonts gobi mtd +network_time nfc pam peerd postscript
 	+power_management +profile cups +readahead scanner +shill
@@ -224,6 +224,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/crosh
 	chromeos-base/crosh-extension
 	chromeos-base/dev-install
+	compupdates? ( chromeos-base/imageloader )
 	chromeos-base/inputcontrol
 	chromeos-base/mtpd
 	chromeos-base/permission_broker

@@ -3,6 +3,7 @@
 
 USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful"
 USE="${USE} -fonts mtd -pam -profile -readahead -scanner -vaapi -vpn -X"
+USE="${USE} -compupdates"
 
 # Printing is not yet evaluated for embedded.
 USE="${USE} -cups"
