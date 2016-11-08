@@ -17,7 +17,7 @@ else
 			https://dev.gentoo.org/~ssuominen/${P}-patches-${patchset}.tar.xz
 			https://dev.gentoo.org/~williamh/dist/${P}-patches-${patchset}.tar.xz"
 	fi
-	KEYWORDS=""
+	KEYWORDS="*"
 fi
 
 DESCRIPTION="Linux dynamic and persistent device naming support (aka userspace devfs)"
