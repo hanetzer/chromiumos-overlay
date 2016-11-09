@@ -122,6 +122,7 @@ src_configure() {
 src_compile() {
 	emake \
 		PREFIX=/usr \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 		CC="$(tc-getCC)" \
 		CFLAGS="${CFLAGS}" \
 		LDFLAGS="${LDFLAGS}" \
@@ -131,6 +132,7 @@ src_compile() {
 
 	use dhcp-tools && emake -C contrib/wrt \
 		PREFIX=/usr \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 		CC="$(tc-getCC)" \
 		CFLAGS="${CFLAGS}" \
 		LDFLAGS="${LDFLAGS}" \
