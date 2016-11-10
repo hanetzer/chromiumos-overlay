@@ -23,8 +23,15 @@ esac
 
 inherit flag-o-matic
 
+IUSE="-android-container-nyc"
+
 # These are internal variables the user should not need to mess with.
-ARC_BASE="/opt/android"
+
+if use android-container-nyc; then
+	ARC_BASE="/opt/android-n"
+else
+	ARC_BASE="/opt/android"
+fi
 
 ARC_CLANG_BASE="${ARC_BASE}/arc-llvm/3.8/bin"
 
