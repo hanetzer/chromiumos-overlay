@@ -46,7 +46,8 @@ src_configure() {
 		--disable-gles2 \
 		--disable-gbm \
 		--enable-shared-glapi \
-		--disable-dri
+		--disable-dri \
+		--disable-glx
 }
 
 src_compile() {
