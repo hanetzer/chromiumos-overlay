@@ -1,9 +1,9 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-5.0.2.ebuild,v 1.1 2013/02/02 17:34:50 gurligebis Exp $
+# $Id$
 
-EAPI=4
-inherit eutils linux-info user
+EAPI=5
+inherit eutils linux-info systemd user
 
 DESCRIPTION="IPsec-based VPN solution focused on security and ease of use, supporting IKEv1/IKEv2 and MOBIKE"
 HOMEPAGE="http://www.strongswan.org/"
@@ -12,41 +12,40 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 LICENSE="GPL-2 RSA DES"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+caps curl debug dhcp eap farp gcrypt ldap mysql +non-root +openssl sqlite pam"
+IUSE="+caps curl +constraints debug dhcp eap farp gcrypt +gmp ldap mysql networkmanager +non-root +openssl selinux sqlite pam +pkcs11"
+
+STRONGSWAN_PLUGINS_STD="led lookip systime-fix unity vici"
+STRONGSWAN_PLUGINS_OPT="blowfish ccm ctr gcm ha ipseckey ntru padlock rdrand unbound whitelist"
+for mod in $STRONGSWAN_PLUGINS_STD; do
+	IUSE="${IUSE} +strongswan_plugins_${mod}"
+done
+
+for mod in $STRONGSWAN_PLUGINS_OPT; do
+	IUSE="${IUSE} strongswan_plugins_${mod}"
+done
 
 COMMON_DEPEND="!net-misc/openswan
-	>=dev-libs/gmp-4.1.5
-	gcrypt? ( dev-libs/libgcrypt )
+	gmp? ( >=dev-libs/gmp-4.1.5:= )
+	gcrypt? ( dev-libs/libgcrypt:0 )
 	caps? ( sys-libs/libcap )
 	curl? ( net-misc/curl )
 	ldap? ( net-nds/openldap )
-	openssl? ( >=dev-libs/openssl-0.9.8 )
+	openssl? ( >=dev-libs/openssl-0.9.8:=[-bindist] )
 	mysql? ( virtual/mysql )
 	sqlite? ( >=dev-db/sqlite-3.3.1 )
-	pam? ( sys-libs/pam )"
+	networkmanager? ( net-misc/networkmanager )
+	pam? ( sys-libs/pam )
+	strongswan_plugins_unbound? ( net-dns/unbound net-libs/ldns )"
 DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger"
+	virtual/logger
+	sys-apps/iproute2
+	!net-misc/libreswan
+	selinux? ( sec-policy/selinux-ipsec )"
 
 UGID="ipsec"
-
-src_prepare() {
-	epatch "${FILESDIR}/${P}-initgroups.patch"
-	epatch "${FILESDIR}/${P}-quick-mode-select-proposal-subset.patch"
-	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
-	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
-	epatch "${FILESDIR}/${P}-is_asn1.patch"
-	epatch "${FILESDIR}/${P}-asn1_unwrap.patch"
-	epatch "${FILESDIR}/${P}-compare_dn.patch"
-	epatch "${FILESDIR}/${P}-handle_fragment.patch"
-	epatch "${FILESDIR}/${P}-reject-create-child-sa-exchange.patch"
-	epatch "${FILESDIR}/${P}-lenient-encryption.patch"
-	epatch "${FILESDIR}/${P}-modp_custom.patch"
-	epatch "${FILESDIR}/${PN}-5.0.0-5.0.2_enforce_remote_auth.patch"
-	epatch "${FILESDIR}/${PN}-4.4.0-5.3.3_eap_mschapv2_state.patch"
-}
 
 pkg_setup() {
 	linux-info_pkg_setup
@@ -91,10 +90,14 @@ pkg_setup() {
 		fi
 	fi
 
-	# The ebuild chowns files to these accounts, so we need them in
-	# this func so they are created in the sdk chroot.
-	enewuser "ipsec"
-	enewgroup "ipsec"
+	if use non-root; then
+		enewgroup ${UGID}
+		enewuser ${UGID} -1 -1 -1 ${UGID}
+	fi
+}
+
+src_prepare() {
+	epatch_user
 }
 
 src_configure() {
@@ -119,15 +122,31 @@ src_configure() {
 	else
 		myconf="${myconf} --disable-eap-gtc"
 	fi
+
+	for mod in $STRONGSWAN_PLUGINS_STD; do
+		if use strongswan_plugins_${mod}; then
+			myconf+=" --enable-${mod}"
+		fi
+	done
+
+	for mod in $STRONGSWAN_PLUGINS_OPT; do
+		if use strongswan_plugins_${mod}; then
+			myconf+=" --enable-${mod}"
+		fi
+	done
+
 	econf \
 		--disable-static \
 		--enable-ikev1 \
 		--enable-ikev2 \
-		--enable-pkcs11 \
+		--enable-swanctl \
+		--enable-socket-dynamic \
 		$(use_with caps capabilities libcap) \
 		$(use_enable curl) \
+		$(use_enable constraints) \
 		$(use_enable ldap) \
 		$(use_enable debug leak-detective) \
+		$(use_enable dhcp) \
 		$(use_enable eap eap-sim) \
 		$(use_enable eap eap-sim-file) \
 		$(use_enable eap eap-simaka-sql) \
@@ -137,19 +156,26 @@ src_configure() {
 		$(use_enable eap eap-md5) \
 		$(use_enable eap eap-aka) \
 		$(use_enable eap eap-aka-3gpp2) \
+		$(use_enable eap md4) \
 		$(use_enable eap eap-mschapv2) \
 		$(use_enable eap eap-radius) \
-		$(use_enable openssl) \
+		$(use_enable eap eap-tls) \
+		$(use_enable eap xauth-eap) \
+		$(use_enable farp) \
+		$(use_enable gmp) \
 		$(use_enable gcrypt) \
 		$(use_enable mysql) \
+		$(use_enable networkmanager nm) \
+		$(use_enable openssl) \
+		$(use_enable pam xauth-pam) \
+		$(use_enable pkcs11) \
 		$(use_enable sqlite) \
-		$(use_enable dhcp) \
-		$(use_enable farp) \
+		"$(systemd_with_unitdir)" \
 		${myconf}
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "Install failed"
+	emake DESTDIR="${D}" install
 
 	doinitd "${FILESDIR}"/ipsec
 
@@ -176,8 +202,8 @@ src_install() {
 		/etc/ipsec.d/reqs
 
 	# Replace various IPsec files with symbolic links to runtime generated
-	# files (by l2tpipsec_vpn) in /var/run on Chromium OS.
-	local link_path=/var/run/l2tpipsec_vpn/current
+	# files (by l2tpipsec_vpn) in /run on Chromium OS.
+	local link_path=/run/l2tpipsec_vpn/current
 	for cfg_file in \
 		/etc/ipsec.conf \
 		/etc/ipsec.secrets \
@@ -273,10 +299,9 @@ pkg_postinst() {
 		elog "user \"ipsec\" the appropriate rights."
 		elog "For example (the default case):"
 		elog "/etc/sudoers:"
-		elog "  Defaults:ipsec always_set_home,!env_reset"
-		elog "  ipsec ALL=(ALL) NOPASSWD: /usr/sbin/ipsec"
+		elog "  ipsec ALL=(ALL) NOPASSWD: SETENV: /usr/sbin/ipsec"
 		elog "Under the specific connection block in /etc/ipsec.conf:"
-		elog "  leftupdown=\"sudo ipsec _updown\""
+		elog "  leftupdown=\"sudo -E ipsec _updown iptables\""
 		elog
 	fi
 	elog
