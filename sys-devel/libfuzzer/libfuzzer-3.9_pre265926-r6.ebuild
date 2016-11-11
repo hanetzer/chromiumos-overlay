@@ -31,7 +31,7 @@ v() {
 }
 
 src_compile() {
-	v $(tc-getCXX) ${CPPFLAGS} ${CXXFLAGS} -c -std=c++11 lib/Fuzzer/*.cpp -Ilib/Fuzzer
+	v $(tc-getCXX) ${CPPFLAGS} ${CXXFLAGS} -Xclang-only=-fsanitize-coverage=0 -c -std=c++11 lib/Fuzzer/*.cpp -Ilib/Fuzzer
 	v $(tc-getAR) cqD libFuzzer.a Fuzzer*.o
 }
 
