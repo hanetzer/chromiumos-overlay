@@ -36,7 +36,7 @@ RDEPEND="
 RDEPEND="${RDEPEND}
 	tests_dbench? ( dev-libs/libaio )
 	cups? (
-		tests_platform_CUPSDaemon? ( net-print/cups[upstart] )
+		tests_platform_CUPSDaemon? ( net-print/cups )
 	)
 	tests_platform_MetricsUploader? (
 		chromeos-base/metrics
