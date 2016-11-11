@@ -54,6 +54,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/check-the-result-of-hsw_veb_post_format_convert.patch
 	epatch "${FILESDIR}"/Make-sure-a-right-VEBOX_IECP_STATE-is-used-on-BDW.patch
 	epatch "${FILESDIR}"/Update-PCI-IDs-for-Kabylake.patch
+	epatch "${FILESDIR}"/i965_encoder_shift32.patch
 	eautoreconf
 }
 
