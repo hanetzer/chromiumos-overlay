@@ -1,0 +1,35 @@
+Fix clang warning:
+ordered comparison between pointer and zero ('const char *' and 'int')
+The issue is already fixed in upstream opencv.
+
+--- OpenCV-2.3.0_old/modules/legacy/src/texture.cpp	2016-11-11 11:28:47.888228309 -0800
++++ OpenCV-2.3.0/modules/legacy/src/texture.cpp	2016-11-11 11:29:34.308192165 -0800
+@@ -469,7 +469,7 @@
+             descriptors[ CV_GLCMDESC_ENERGY ] += entryValue*entryValue;
+         }
+ 
+-        if( marginalProbability>0 )
++        if( marginalProbability )
+             marginalProbabilityEntropy += marginalProbability[ actualSideLoop1 ]*log(marginalProbability[ actualSideLoop1 ]);
+     }
+ 
+--- OpenCV-2.3.0_old/modules/core/src/persistence.cpp	2016-11-11 11:22:52.348511566 -0800
++++ OpenCV-2.3.0/modules/core/src/persistence.cpp	2016-11-11 11:23:32.020475029 -0800
+@@ -3434,7 +3434,7 @@
+     cols = cvReadIntByName( fs, node, "cols", -1 );
+     dt = cvReadStringByName( fs, node, "dt", 0 );
+ 
+-    if( rows < 0 || cols < 0 || dt < 0 )
++    if( rows < 0 || cols < 0 || !dt )
+         CV_Error( CV_StsError, "Some of essential matrix attributes are absent" );
+ 
+     elem_type = icvDecodeSimpleFormat( dt );
+@@ -4500,7 +4500,7 @@
+     if( header_dt )
+         header_size = icvCalcElemSize( header_dt, header_size );
+ 
+-    if( vtx_dt > 0 )
++    if( vtx_dt )
+     {
+         src_vtx_size = icvCalcElemSize( vtx_dt, 0 );
+         vtx_size = icvCalcElemSize( vtx_dt, vtx_size );
