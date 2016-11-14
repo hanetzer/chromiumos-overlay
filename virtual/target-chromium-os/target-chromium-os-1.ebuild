@@ -216,7 +216,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/chinese-input
 	app-i18n/keyboard-input
 	app-i18n/japanese-input
-	app-i18n/chromeos-hangul
+	app-i18n/hangul-input
 	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
 	chromeos-base/common-assets
