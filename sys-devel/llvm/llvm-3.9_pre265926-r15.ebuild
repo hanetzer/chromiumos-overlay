@@ -21,15 +21,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"67d80b9ced88e3f2692598401ee85a91325e4513" # EGIT_COMMIT
+		"77e7778b3e097ad88c71c7dac789e245c8f3e33a" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"3d648ece9a58c83420fd5554df885f8c90c3790a" # EGIT_COMMIT
+		"692b01cdac57043f8a69f5943142266a63cb721d" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"19f548b5dbb998d818b3fa689fdf16a31f995ea0"  # EGIT_COMMIT
+		"47592b1815f5423fa708fca47741886043e6bb32"  # EGIT_COMMIT
 )
 else
 EGIT_REPO_URIS=(
@@ -246,7 +246,8 @@ src_prepare() {
 	use llvm-next || epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
 	use llvm-next && epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
-
+	use llvm-next && epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
+	use llvm-next && epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 	# Fix libdir for ocaml bindings install, bug #559134
