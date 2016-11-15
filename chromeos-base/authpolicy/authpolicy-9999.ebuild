@@ -19,8 +19,14 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND="chromeos-base/libbrillo"
-DEPEND="${RDEPEND}"
+RDEPEND="
+	chromeos-base/libbrillo
+	dev-libs/protobuf
+"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/protofiles
+"
 
 pkg_preinst() {
 	# Create user and group for authpolicyd.

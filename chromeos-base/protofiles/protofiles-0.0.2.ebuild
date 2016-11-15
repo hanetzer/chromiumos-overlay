@@ -20,11 +20,16 @@ inherit cros-constants git-2
 #   - The repository URL
 #   - The commit to checkout
 EGIT_REPO_URIS=(
-	"proto/cloud"
-	"${CROS_GIT_HOST_URL}/chromium/src/components/policy/proto.git"
-	"1c29a8465c755c4e63fe818772307ab6f49ec52a"
+	"cloud/policy"
+	"${CROS_GIT_HOST_URL}/chromium/src/components/policy.git"
+	"4f0086f3c7023b264ae38e77050dcdb737d3bb0d"
 
-	"proto/chromeos"
+	# If you uprev these repos, also update files/VERSION to the corresponding
+	# revision of chromium/src/chrome/VERSION in the Chromium code base (only the
+	# MAJOR version matters, really). Also keep the revisions of policy.git and
+	# proto.git in sync. A failure to do so might result in broken unit tests.
+
+	"chromeos/policy/proto"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
 	"150784231d827c6bc4cb19fe1a4cd94a913b725f"
 )
@@ -52,10 +57,15 @@ src_unpack() {
 
 src_install() {
 	insinto /usr/include/proto
-	doins "${S}"/proto/{chromeos,cloud}/*.proto
+	doins "${S}"/{chromeos,cloud}/policy/proto/*.proto
 	insinto /usr/share/protofiles
-	doins "${S}"/proto/chromeos/chrome_device_policy.proto
-	doins "${S}"/proto/cloud/device_management_backend.proto
-	doins "${S}"/proto/cloud/chrome_extension_policy.proto
+	doins "${S}"/chromeos/policy/proto/chrome_device_policy.proto
+	doins "${S}"/cloud/policy/proto/device_management_backend.proto
+	doins "${S}"/cloud/policy/proto/chrome_extension_policy.proto
 	dobin "${FILESDIR}"/policy_reader
+	insinto /usr/share/policy_resources
+	doins "${S}"/cloud/policy/resources/policy_templates.json
+	doins "${FILESDIR}"/VERSION
+	insinto /usr/share/policy_tools
+	doins "${S}"/cloud/policy/tools/generate_policy_source.py
 }
