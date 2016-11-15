@@ -57,9 +57,9 @@ src_install() {
 
 	# Install the init scripts
 	if use systemd; then
-		systemd_dounit init/tpm-probe.service
+		systemd_dounit init/*.service
+		systemd_enable_service boot-services.target tcsd.service
 		systemd_enable_service boot-services.target tpm-probe.service
-		systemd_dounit init/tcsd.service
 	else
 		insinto /etc/init
 		doins init/*.conf
