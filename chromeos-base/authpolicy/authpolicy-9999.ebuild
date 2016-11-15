@@ -35,3 +35,14 @@ src_install() {
 	insinto /etc/init
 	doins etc/init/authpolicyd.conf
 }
+
+platform_pkg_test() {
+	local tests=(
+		authpolicy_test
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
+}
