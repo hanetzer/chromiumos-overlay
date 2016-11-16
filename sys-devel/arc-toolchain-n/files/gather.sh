@@ -81,6 +81,7 @@ do
 	arch_to_dir="${TO_DIR_BASE}/${arc_arch}"
 	runcmd mkdir -p "${arch_to_dir}/usr/lib"
 	runcmd mkdir -p "${arch_to_dir}/usr/include"
+	runcmd mkdir -p "${arch_to_dir}/usr/include/asm"
 	runcmd mkdir -p "${arch_to_dir}/usr/include/c++/4.9"
 	runcmd mkdir -p "${arch_to_dir}/usr/include/linux/asm"
 
@@ -103,7 +104,6 @@ do
 		libui.so \
 		libutils.so \
 		libz.so \
-		libpagemap.so \
 		crtbegin_so.o \
 		crtend_so.o"
 
@@ -161,7 +161,7 @@ do
 
 
 	### 4.2 Linux kernel assembly.
-	runcmd cp -pPR ${ANDROID_TREE}/bionic/libc/kernel/uapi/asm-${arch}/* \
+	runcmd cp -pPR ${ANDROID_TREE}/bionic/libc/kernel/uapi/asm-${arch}/asm/* \
 		${arch_to_dir}/usr/include/asm
 
 
@@ -242,8 +242,8 @@ done
 ### 5. Copy compiler over.
 
 ### 5.1 clang.
-runcmd mkdir -p ${TO_DIR_BASE}/arc-llvm
-runcmd cp -pPr ${ANDROID_TREE}/prebuilts/clang/host/linux-x86/clang-2690385 \
+runcmd mkdir -p ${TO_DIR_BASE}/arc-llvm/3.8
+runcmd cp -pPr ${ANDROID_TREE}/prebuilts/clang/host/linux-x86/clang-2690385/* \
 	${TO_DIR_BASE}/arc-llvm/3.8
 
 ### 5.2 gcc.
@@ -251,12 +251,23 @@ runcmd mkdir -p ${TO_DIR_BASE}/arc-gcc
 for arch in "${ARC_ARCH_ANDROID[@]}"
 do
 	arch_dir=${arch}
+	sysroot_arch=${arch}
+	abi="${arch}-linux-androideabi"
 	if [[ ${arch} == "x86" ]]; then
 		arch_dir="x86_64"
+		sysroot_arch="amd64"
+		abi="x86_64-linux-android"
 	fi
-	runcmd mkdir -p ${TO_DIR_BASE}/arc-gcc/${arch_dir}
-	runcmd cp -pPr ${ANDROID_TREE}/prebuilts/gcc/linux-x86/${arch}/*4.9 \
-		${TO_DIR_BASE}/arc-gcc/${arch_dir}/
+	gcc_dir="${TO_DIR_BASE}/arc-gcc/${arch_dir}"
+	runcmd mkdir -p ${gcc_dir}
+	runcmd cp -pPr ${ANDROID_TREE}/prebuilts/gcc/linux-x86/${arch}/${abi}-4.9 \
+		${gcc_dir}
+
+	runcmd mkdir -p "${gcc_dir}/${abi}-4.9/include/c++"
+	if [ ! -L "${gcc_dir}/${abi}-4.9/include/c++/4.9" ]; then
+		runcmd ln -s "../../../../../${sysroot_arch}/usr/include/c++/4.9/" \
+			"${gcc_dir}/${abi}-4.9/include/c++/4.9"
+	fi
 done
 
 ### 6. Do the pack

@@ -6,7 +6,7 @@
 
 # Clang is from
 # prebuilts/clang/host/linux-x86/clang-2690385
-# Last commit is 9e2d02a8a2f67a66163a95d6f48b0f244ae54871
+# Last commit is 45562a53b2a5eb7c6e8f400413d19a12c660d7b1
 
 # Gcc is from
 # prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
@@ -15,14 +15,14 @@
 # Last commit: 54c4ed4b1a910bcc8e37196acb7fa85e872de9e4
 
 # Libraries are from
-# https://android-build.googleplex.com/builds/submitted/3365227/cheets_arm-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/3366268/cheets_x86-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/3501667/cheets_arm-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/3501667/cheets_x86-userdebug/latest
 
 # Headers are from
 # bionic
-# Last commit: 7cdb481dfe626524c93e4b6a1aae4621b1beedbc
+# Last commit: c3474c7adbfd5f3f320dc569bd85bbfda1dab9ba
 # external/libcxx
-# Last commit: 8fd719529a85a9379dfe0095bf193e76481bb805
+# Last commit: d8170174bf66c98fca967b7133783c0c95292993
 
 EAPI=5
 
