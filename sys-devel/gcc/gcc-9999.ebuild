@@ -6,7 +6,8 @@ EAPI="4"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/gcc"
 CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
-NEXT_GCC="master"
+NEXT_GCC="origin/svn-mirror/google/gcc-4_9"
+NEXT_GCC_REPO="https://chromium.googlesource.com/chromiumos/third_party/gcc.git"
 
 # By default, PREV_GCC points to the parent of current tip of origin/master.
 # If that is a bad commit, override this to point to the last known good commit.
@@ -42,7 +43,7 @@ PDEPEND=">=sys-devel/gcc-config-1.7"
 
 RESTRICT="mirror strip"
 
-IUSE="gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
+IUSE="gcc_repo gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
       nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
       next_gcc prev_gcc"
 REQUIRED_USE="next_gcc? ( !prev_gcc )"
@@ -87,12 +88,20 @@ src_unpack() {
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
 	elif use git_gcc || use next_gcc || use prev_gcc ; then
-		git clone "${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git" "${S}"
+		aosp_git="${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git"
+		if use gcc_repo ; then
+			gcc_repository="${GCC_REPO}"
+		elif use next_gcc ; then
+			gcc_repository="${NEXT_GCC_REPO}"
+		else
+			gcc_repository="${aosp_git}"
+		fi
+		git clone "${gcc_repository}" "${S}"
 		if use next_gcc ; then
-		    GCC_GITHASH=${NEXT_GCC}
+		    GCC_GITHASH="${NEXT_GCC}"
 		fi
 		if use prev_gcc ; then
-		    GCC_GITHASH=${PREV_GCC}
+		    GCC_GITHASH="${PREV_GCC}"
 		fi
 		if [[ -n ${GCC_GITHASH} ]] ; then
 			einfo "Checking out: ${GCC_GITHASH}"
@@ -101,7 +110,9 @@ src_unpack() {
 				die "Couldn't checkout ${GCC_GITHASH}"
 			popd >/dev/null
 		fi
-		update_location_for_aosp
+		if [[ ${gcc_repository} == "${aosp_git}" ]] ; then
+			update_location_for_aosp
+		fi
 	else
 		cros-workon_src_unpack
 		update_location_for_aosp
