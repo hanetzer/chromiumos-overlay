@@ -1,4 +1,4 @@
-From 9dbded63bafaa7a1fe8eca4778d07da510d53b3f Mon Sep 17 00:00:00 2001
+From a5cde8bbf5117293e3fecb6c6f2d0f79f48c11f0 Mon Sep 17 00:00:00 2001
 From: "Ilja H. Friedel" <ihf@chromium.org>
 Date: Mon, 9 Mar 2015 23:26:21 -0700
 Subject: [PATCH] ChromeOS uinput wrappers.
@@ -10,15 +10,15 @@ This adds xdotool functionality under freon.
 BUG=chromium:459451
 TEST=Verified all keys on Link.
 ---
- src/cros_keys.py      | 288 +++++++++++++++++++++++++++++
- src/cros_type_keys.py |  19 ++
+ src/cros_keys.py      | 288 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/cros_type_keys.py |  19 ++++
  2 files changed, 307 insertions(+)
  create mode 100755 src/cros_keys.py
  create mode 100755 src/cros_type_keys.py
 
 diff --git src/cros_keys.py src/cros_keys.py
 new file mode 100755
-index 0000000..831576c
+index 0000000..6b830dc
 --- /dev/null
 +++ src/cros_keys.py
 @@ -0,0 +1,288 @@
@@ -43,6 +43,7 @@ index 0000000..831576c
 +# TODO(ihf): Create this table using xkbcommon to support arbirtrary
 +# character sets and keyboard layouts.
 +_CROS_CHAR_MAP = {
++    "\b": [KEY_BACKSPACE],
 +    "\t": [KEY_TAB],
 +    "\n": [KEY_ENTER],
 +
@@ -309,7 +310,6 @@ index 0000000..831576c
 +    device = _get_uinput_device_keyboard()
 +    for keys in events:
 +        _uinput_emit_keycombo(device, keys)
-+
 diff --git src/cros_type_keys.py src/cros_type_keys.py
 new file mode 100755
 index 0000000..0075b5d
@@ -335,6 +335,6 @@ index 0000000..0075b5d
 +    cros_keys.press_keys(args.text.split())
 +else:
 +    cros_keys.type_chars(args.text)
---
-2.2.0.rc0.207.ga3a616c
+-- 
+2.8.0.rc3.226.g39d4020
 
