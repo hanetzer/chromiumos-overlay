@@ -11,6 +11,7 @@ chown32: 1
 clone: 1
 close: 1
 connect: 1
+dup: 1
 dup2: 1
 epoll_create: 1
 epoll_ctl: 1
@@ -74,6 +75,7 @@ poll: 1
 prctl: 1
 pread64: 1
 prlimit64: 1
+pwrite64: 1
 read: 1
 recv: 1
 recvmmsg: 1
