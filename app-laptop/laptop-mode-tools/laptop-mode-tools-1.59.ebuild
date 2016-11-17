@@ -59,6 +59,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0030-Allow-WiFi-PowerSave-Override.patch" \
           "0031-interactive-goverener-parameters-for-hmp-cpus.patch" \
           "0032-lm-1.59-refactor-slow-listed-by-id.patch" \
+          "0033-Add-udev-rule-for-WiFi-devices.patch" \
         )
 
 src_prepare() {
