@@ -29,6 +29,8 @@ src_install() {
 	exeinto "/opt/google/touch/scripts"
 	doexe scripts/*.sh
 
-	insinto "/opt/google/touch/policies"
-	doins policies/*.policy
+	if [ -d "policies/${ARCH}" ]; then
+		insinto "/opt/google/touch/policies"
+		doins policies/${ARCH}/*.policy
+	fi
 }
