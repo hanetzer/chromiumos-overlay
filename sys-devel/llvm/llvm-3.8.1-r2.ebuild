@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=6
+EAPI=5
 
 : ${CMAKE_MAKEFILE_GENERATOR:=ninja}
 PYTHON_COMPAT=( python2_7 )
@@ -34,7 +34,7 @@ SLOT="0/3.8.0"
 KEYWORDS="~amd64 ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux"
 IUSE="clang debug default-compiler-rt default-libcxx doc gold libedit +libffi
 	lldb multitarget ncurses ocaml python +sanitize +static-analyzer test xml
-	video_cards_radeon elibc_musl kernel_Darwin kernel_FreeBSD"
+	video_cards_radeon video_cards_amdgpu elibc_musl kernel_Darwin kernel_FreeBSD"
 
 COMMON_DEPEND="
 	sys-libs/zlib:0=
@@ -150,6 +150,10 @@ src_unpack() {
 			|| die "lldb source directory move failed"
 	fi
 }
+# glue api call to replicate one of the changes of EAPI 6 in EAPI 5.
+eapply() {
+	epatch "$@"
+}
 
 src_prepare() {
 	python_setup
@@ -262,11 +266,69 @@ src_prepare() {
 		eapply "${FILESDIR}"/3.9.0/lldb/six.patch
 	fi
 
+	eapply "${FILESDIR}"/xconfigure.patch
+	eapply "${FILESDIR}"/xmakefile.patch
 	# User patches
-	eapply_user
+	epatch_user
 
 	# Native libdir is used to hold LLVMgold.so
 	NATIVE_LIBDIR=$(get_libdir)
+}
+
+set_build_tools_makeargs() {
+	local tools=( llvm-config )
+	use clang && tools+=( clang )
+
+	tools+=(
+		opt llvm-as llvm-dis llc llvm-ar llvm-nm llvm-link lli
+		llvm-extract llvm-mc llvm-bcanalyzer llvm-diff macho-dump
+		llvm-objdump llvm-readobj llvm-rtdyld llvm-dwarfdump llvm-cov
+		llvm-size llvm-stress llvm-mcmarkup llvm-profdata
+		llvm-symbolizer obj2yaml yaml2obj lto bugpoint
+	)
+
+	MAKEARGS+=(
+		# filter tools + disable unittests implicitly
+		ONLY_TOOLS="${tools[*]}"
+		REQUIRES_RTTI=1
+		# this disables unittests & docs from clang
+		BUILD_CLANG_ONLY=YES
+	)
+}
+
+llvm_build_host_tools() {
+	local conf_flags=(
+			--libdir=/usr/lib64
+			--disable-timestamps
+			--enable-keep-symbols
+			--enable-shared
+			--with-optimize-option=
+			--enable-optimized
+			--disable-assertions
+			--disable-expensive-checks
+			--disable-libedit
+			--enable-terminfo
+			--enable-libffi
+			ac_cv_prog_XML2CONFIG=
+			--enable-targets=host,cpp,r600
+			--enable-bindings=none
+	)
+
+	# prepare location for compiling host specific code
+	export HOST_DIR="${WORKDIR}/${PF}-${CBUILD}"
+	mkdir -p "${HOST_DIR}" || die
+	cd "${HOST_DIR}" || die
+
+	# force usage of host compiler to build the BuildTools
+	tc-export BUILD_CC BUILD_CXX
+	# configure source for enabling BuildTools
+	ECONF_SOURCE=${S} \
+	econf "${conf_flags[@]}"
+	# build and install tools in a temporary location
+	# as the config shall be overwritten when compiled for target
+	local MAKEARGS
+	set_build_tools_makeargs
+	emake "${MAKEARGS[@]}"
 }
 
 multilib_src_configure() {
@@ -275,20 +337,22 @@ multilib_src_configure() {
 		targets=all
 	else
 		targets='host;BPF;CppBackend'
-		use video_cards_radeon && targets+=';AMDGPU'
+		if use video_cards_radeon || use video_cards_amdgpu; then
+		   targets+=';AMDGPU'
+		fi
 	fi
 
 	local ffi_cflags ffi_ldflags
 	if use libffi; then
-		ffi_cflags=$(pkg-config --cflags-only-I libffi)
-		ffi_ldflags=$(pkg-config --libs-only-L libffi)
+		ffi_cflags=$($(tc-getPKG_CONFIG) --cflags-only-I libffi)
+		ffi_ldflags=$($(tc-getPKG_CONFIG) --libs-only-L libffi)
 	fi
 
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
 		-DLLVM_LIBDIR_SUFFIX=${libdir#lib}
 
-		-DBUILD_SHARED_LIBS=ON
+		-DBUILD_SHARED_LIBS=OFF
 		-DLLVM_ENABLE_TIMESTAMPS=OFF
 		-DLLVM_TARGETS_TO_BUILD="${targets}"
 		-DLLVM_BUILD_TESTS=$(usex test)
@@ -410,18 +474,21 @@ multilib_src_configure() {
 	fi
 
 	if tc-is-cross-compiler; then
-		[[ -x "/usr/bin/llvm-tblgen" ]] \
-			|| die "/usr/bin/llvm-tblgen not found or usable"
+		# build and install llvm-tools required for cross-compiling
+		llvm_build_host_tools
+		# die early if the build tools are not installed
+		[[ -x "${HOST_DIR}/BuildTools/Release/bin/llvm-tblgen" ]] \
+			|| die "${HOST_DIR}/BuildTools/Release/bin/llvm-tblgen not found or usable"
 		mycmakeargs+=(
 			-DCMAKE_CROSSCOMPILING=ON
-			-DLLVM_TABLEGEN=/usr/bin/llvm-tblgen
+			-DLLVM_TABLEGEN="${HOST_DIR}/BuildTools/Release/bin/llvm-tblgen"
 		)
 
 		if use clang; then
-			[[ -x "/usr/bin/clang-tblgen" ]] \
-				|| die "/usr/bin/clang-tblgen not found or usable"
+			[[ -x "${HOST_DIR}/BuildTools/Release/bin/clang-tblgen" ]] \
+				|| die "${HOST_DIR}/BuildTools/Release/bin/clang-tblgen not found or usable"
 			mycmakeargs+=(
-				-DCLANG_TABLEGEN=/usr/bin/clang-tblgen
+				-DCLANG_TABLEGEN="${HOST_DIR}/BuildTools/Release/bin/clang-tblgen"
 			)
 		fi
 	fi
@@ -569,6 +636,12 @@ multilib_src_install_all() {
 			python_optimize "${ED}"usr/share/scan-view
 		fi
 	fi
+
+	# Install host built llvm-config as llvm-config-host,
+	# this shall be used by mesa to learn about LLVM in $SYSROOT
+	# and has to be present in $SYSROOT/usr/bin/
+	# as relative paths of LLVM files are derived from it.
+	newbin "${HOST_DIR}/BuildTools/Release/bin/llvm-config" llvm-config-host
 }
 
 pkg_postinst() {

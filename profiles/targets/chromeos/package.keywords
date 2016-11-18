@@ -16,8 +16,8 @@
 =dev-util/gdbus-codegen-2.30.2	amd64 arm x86
 # This should be kept in sync with package.mask.
 # Here we keyword the version we want for the board.
-~sys-devel/llvm-3.5.0		*
-~sys-devel/clang-3.5.0		*
+~sys-devel/llvm-3.8.1		*
+~sys-devel/clang-3.8.1		*
 =x11-apps/xinput_calibrator-0.7.5	arm
 =x11-proto/glproto-1.4.14-r1	amd64 arm x86
 

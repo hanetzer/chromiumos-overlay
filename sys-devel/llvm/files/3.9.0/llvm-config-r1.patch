@@ -37,14 +37,6 @@ index 83794bb..eba6f45 100644
 +set(LLVM_CXXFLAGS "${CMAKE_CPP_FLAGS} -std=c++11 ${CMAKE_CXX_FLAGS_${uppercase_CMAKE_BUILD_TYPE}} ${LLVM_DEFINITIONS}")
  set(LLVM_BUILD_SYSTEM cmake)
  set(LLVM_HAS_RTTI ${LLVM_CONFIG_HAS_RTTI})
-@@ -31,5 +35,6 @@ set(LLVM_HAS_RTTI ${LLVM_CONFIG_HAS_RTTI})
- set(LLVM_LDFLAGS "${CMAKE_CXX_LINK_FLAGS}")
- set(LLVM_BUILDMODE ${CMAKE_BUILD_TYPE})
--set(LLVM_SYSTEM_LIBS ${SYSTEM_LIBS})
-+# We don't do static libs, so we don't need to supply any system-libs
-+set(LLVM_SYSTEM_LIBS "")
- if(BUILD_SHARED_LIBS)
-   set(LLVM_ENABLE_SHARED ON)
 diff --git a/tools/llvm-config/llvm-config.cpp b/tools/llvm-config/llvm-config.cpp
 index 80f6279..309c5dc 100644
 --- a/tools/llvm-config/llvm-config.cpp
