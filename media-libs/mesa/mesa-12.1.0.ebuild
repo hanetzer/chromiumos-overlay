@@ -146,6 +146,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.0-mesa-Fix-glFramebufferTexture-error-codes-v2.patch
 	epatch "${FILESDIR}"/12.0-anv-install-the-intel_icd.json-to-datarootdir-by-def.patch
 	epatch "${FILESDIR}"/12.1-configure.ac-Use-datarootdir-for-with-vulkan-icddir-.patch
+	epatch "${FILESDIR}"/12.1-configure.ac-extract-HAVE_LLVM-macro-properly.patch
 	epatch "${FILESDIR}"/12.1-i915g-fix-incorrect-gl_FragCoord-value.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-gbm-configure.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
