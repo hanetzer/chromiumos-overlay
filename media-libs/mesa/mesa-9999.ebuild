@@ -43,8 +43,8 @@ SLOT="0"
 KEYWORDS="~*"
 
 INTEL_CARDS="intel"
-RADEON_CARDS="radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau r128 savage sis vmware tdfx via freedreno"
+RADEON_CARDS="amdgpu radeon"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau r128 radeonsi savage sis vmware tdfx via freedreno"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -145,6 +145,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.1-configure.ac-Use-datarootdir-for-with-vulkan-icddir-.patch
 	epatch "${FILESDIR}"/12.1-configure.ac-extract-HAVE_LLVM-macro-properly.patch
 	epatch "${FILESDIR}"/12.1-i915g-fix-incorrect-gl_FragCoord-value.patch
+	epatch "${FILESDIR}"/12.1-radeonsi-gbm-configure.patch
+	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
@@ -189,6 +191,7 @@ src_configure() {
 
 		# ATI code
 		gallium_driver_enable video_cards_radeon r300 r600
+		gallium_driver_enable video_cards_amdgpu radeonsi
 
 		# Freedreno code
 		gallium_driver_enable video_cards_freedreno freedreno
