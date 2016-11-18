@@ -91,6 +91,8 @@ IUSE_TESTS=(
 	+tests_network_ChromeWifiConfigure
 	+tests_network_ChromeWifiTDLS
 	+tests_platform_ChromeCgroups
+        +tests_platform_InputBrowserNav
+        +tests_platform_InputVolume
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_policy_AutoFillEnabled
