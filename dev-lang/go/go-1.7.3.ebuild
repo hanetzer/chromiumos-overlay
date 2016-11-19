@@ -76,12 +76,14 @@ src_compile() {
 		CXX_FOR_TARGET="$(tc-getCXX ${CTARGET})" \
 		./make.bash || die
 
-	einfo "Building the standard library with -buildmode=pie."
-	GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
-		CC="$(tc-getCC ${CTARGET})" \
-		CXX="$(tc-getCXX ${CTARGET})" \
-		GOROOT="${S}" \
-		"${S}/bin/go" install -v -buildmode=pie std || die
+	if is_cross ; then
+		einfo "Building the standard library with -buildmode=pie."
+		GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
+			CC="$(tc-getCC ${CTARGET})" \
+			CXX="$(tc-getCXX ${CTARGET})" \
+			GOROOT="${S}" \
+			"${S}/bin/go" install -v -buildmode=pie std || die
+	fi
 }
 
 src_install() {
@@ -97,7 +99,9 @@ src_install() {
 	insinto "${goroot}/pkg"
 	doins -r "pkg/include"
 	doins -r "pkg/linux_$(get_goarch ${CTARGET})"
-	doins -r "pkg/linux_$(get_goarch ${CTARGET})_shared"
+	if is_cross ; then
+		doins -r "pkg/linux_$(get_goarch ${CTARGET})_shared"
+	fi
 
 	exeinto "${goroot}/${tooldir}"
 	doexe "${tooldir}/"{asm,cgo,compile,link,pack}
