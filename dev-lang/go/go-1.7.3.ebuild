@@ -130,14 +130,18 @@ src_install() {
 		# Setup the wrapper for invoking the cross compiler.
 		# See "files/pie_wrapper.py" for details.
 		newbin "${FILESDIR}/pie_wrapper.py" "${CTARGET}-go"
-		sed -e "s:@GOARCH@:$(get_goarch ${CTARGET}):" \
-			-e "s:@CC@:$(tc-getCC ${CTARGET}):" \
-			-e "s:@CXX@:$(tc-getCXX ${CTARGET}):" \
-			-e "s:@GOTOOL@:${GOROOT_FINAL}/bin/go:" \
-			-i "${D}/usr/bin/${CTARGET}-go" || die
 	else
 		dosym "${goroot}/bin/go" /usr/bin/go
 		dosym "${goroot}/bin/gofmt" /usr/bin/gofmt
-		dosym go "/usr/bin/${CTARGET}-go"
+		# Setup the wrapper for invoking the host compiler.
+		# See "files/host_wrapper.py" for details.
+		newbin "${FILESDIR}/host_wrapper.py" "${CTARGET}-go"
 	fi
+
+	# Fill in variable values in the compiler wrapper.
+	sed -e "s:@GOARCH@:$(get_goarch ${CTARGET}):" \
+		-e "s:@CC@:$(tc-getCC ${CTARGET}):" \
+		-e "s:@CXX@:$(tc-getCXX ${CTARGET}):" \
+		-e "s:@GOTOOL@:${GOROOT_FINAL}/bin/go:" \
+		-i "${D}/usr/bin/${CTARGET}-go" || die
 }
