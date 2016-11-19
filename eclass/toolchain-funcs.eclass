@@ -161,6 +161,10 @@ tc-getBUILD_OBJCOPY() { tc-getBUILD_PROG OBJCOPY objcopy "$@"; }
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the pkg-config tool for building binaries to run on the build machine
 tc-getBUILD_PKG_CONFIG() { tc-getBUILD_PROG PKG_CONFIG pkg-config "$@"; }
+# @FUNCTION: tc-getBUILD_GO
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the Go compiler for building binaries to run on the build machine
+tc-getBUILD_GO() { tc-getBUILD_PROG GO go "$@"; }
 
 # @FUNCTION: tc-export
 # @USAGE: <list of toolchain variables>

@@ -62,7 +62,7 @@ cros_go() {
 go_test() {
 	local workspace="${CROS_GO_WORKSPACE:-${S}}"
 	GOPATH="${workspace}:${SYSROOT}/usr/lib/gopath" \
-		go test "$@" || die
+		$(tc-getBUILD_GO) test "$@" || die
 }
 
 cros-go_src_compile() {
