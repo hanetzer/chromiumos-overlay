@@ -3,12 +3,13 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="7559dfe9ed16455e03f68d9aa0a5a65747e6a174"
-CROS_WORKON_TREE="61ddac46e1643be7aa0201359c8f6c4809922ffc"
+CROS_WORKON_COMMIT="e9740afce623e99ac1abdd01b90446adc423f7d2"
+CROS_WORKON_TREE="09712740b8e9670766bba33653ca2205614fc069"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
-CROS_WORKON_PROJECT="platform/external/minijail"
 CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="platform/external/minijail"
+
 CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-debug cros-workon eutils toolchain-funcs
