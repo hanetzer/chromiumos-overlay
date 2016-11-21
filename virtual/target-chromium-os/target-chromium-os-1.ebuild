@@ -14,8 +14,8 @@ IUSE="bluetooth bootchart bootimage buffet +cellular compupdates coreboot cr50_o
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	eclog feedback +fonts gobi mtd +network_time nfc pam peerd postscript
 	+power_management +profile cups +readahead scanner +shill
-	intel_lpe +syslog +system_locales touchview +tpm -tpm2 +trim_supported +vpn watchdog
-	wifi_bootstrapping wimax X"
+	intel_lpe +syslog +system_locales systemd touchview +tpm -tpm2 +trim_supported
+	+vpn watchdog wifi_bootstrapping wimax X"
 
 REQUIRED_USE="cellular? ( shill )"
 
@@ -242,7 +242,8 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/mosys
 	sys-apps/pv
 	sys-apps/rootdev
-	sys-apps/upstart
+	!systemd? ( sys-apps/upstart )
+	systemd? ( sys-apps/systemd )
 	sys-fs/e2fsprogs
 	virtual/udev
 	touchview? ( chromeos-base/chromeos-accelerometer-init )
