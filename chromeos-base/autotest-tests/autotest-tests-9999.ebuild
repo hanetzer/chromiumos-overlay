@@ -128,7 +128,6 @@ CLIENT_IUSE_TESTS="
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TrackpadFunction
 	+tests_hardware_TrimIntegrity
-	+tests_hardware_VideoDecodeCapable
 	+tests_infra_FirmwareAutoupdate
 	+tests_kernel_AsyncDriverProbe
 	+tests_kernel_FirmwareRequest
