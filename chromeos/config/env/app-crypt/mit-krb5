@@ -1,0 +1,17 @@
+# Copyright 2016 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Additional variables needed for cross compile on Chrome OS.
+export krb5_cv_attr_constructor_destructor=yes,yes
+export ac_cv_func_regcomp=yes
+export ac_cv_printf_positional=yes
+
+cros_post_src_prepare_license_hack() {
+	# These license files cause the license checker
+	# to fail on an invalid character. They are only
+	# for the windows installer.
+	# See crbug.com/654894
+	rm windows/installer/nsis/licenses.rtf
+	rm windows/installer/wix/lang/license.rtf
+}
