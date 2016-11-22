@@ -43,6 +43,7 @@ IUSE="
 	-lxc
 	-binder
 	-android_test
+	-selinux_develop
 	-transparent_hugepage
 	tpm2
 "
@@ -102,6 +103,7 @@ CONFIG_FRAGMENTS=(
 	realtekpstor
 	recovery_ramfs
 	samsung_serial
+	selinux_develop
 	socketmon
 	systemtap
 	tpm
@@ -167,7 +169,6 @@ CONFIG_AUDIT_WATCH=y
 CONFIG_SECURITY_SELINUX=y
 CONFIG_SECURITY_SELINUX_BOOTPARAM=y
 CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1
-CONFIG_SECURITY_SELINUX_DEVELOP=y
 CONFIG_SQUASHFS_XATTR=y
 CONFIG_IP6_NF_RAW=y
 CONFIG_IP_NF_RAW=y
@@ -455,6 +456,11 @@ samsung_serial_desc="Samsung serialport"
 samsung_serial_config="
 CONFIG_SERIAL_SAMSUNG=y
 CONFIG_SERIAL_SAMSUNG_CONSOLE=y
+"
+
+selinux_develop_desc="SELinux developer mode"
+selinux_develop_config="
+CONFIG_SECURITY_SELINUX_DEVELOP=y
 "
 
 socketmon_desc="INET socket monitoring interface (for iproute2 ss)"
