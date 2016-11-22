@@ -14,3 +14,9 @@ cros_post_src_install_zlib_fingerprint() {
 	insinto /etc
 	doins zlib_fingerprint
 }
+
+# chromeos-fonts does not build on elm (arm64) with latest llvm.
+# https://crbug.com/667506
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+}
