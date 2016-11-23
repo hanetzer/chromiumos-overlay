@@ -86,16 +86,9 @@ src_compile() {
 	local serial=( --coreboot "${coreboot_file}.serial" )
 	local silent=( --coreboot "${coreboot_file}" )
 
-	# cros_bundle_firmare was written with an assumption that
-	# u-boot is always a part of the image. So, unless -D is
-	# given, in case there is no explicit --uboot option in the
-	# command line, cros_bundle_firmware assumes implicit
-	# "--uboot /buils/<board>/fimrware/u-boot.bin"
-	# which messes up the multicbfs case.
-	#
-	# Do not bundle defaults, but state the "skeleton" from which to take
+	# State the "skeleton" from which to take
 	# IFD data and non-BIOS partitions on x86.
-	common+=( -D --skeleton=${froot}/coreboot.rom )
+	common+=( --skeleton=${froot}/coreboot.rom )
 
 	local legacy_file=""
 	prepare_legacy_image legacy_file
