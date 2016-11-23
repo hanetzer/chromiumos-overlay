@@ -43,7 +43,6 @@ src_install() {
 			cros_chrome_make
 			cros_sign_bootstub
 			cros_workon_make
-			cros_write_firmware
 			dump_i2c
 			dump_tpm
 			gdb_remote
