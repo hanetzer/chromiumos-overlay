@@ -149,6 +149,9 @@ EOF
 	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> .config
 	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> .config
 	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> .config
+	if use fastboot; then
+	    echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> .config
+	fi
 
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
