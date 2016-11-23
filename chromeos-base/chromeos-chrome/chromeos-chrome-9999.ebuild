@@ -32,6 +32,7 @@ IUSE="
 	+accessibility
 	app_shell
 	asan
+	-authpolicy
 	+build_tests
 	+chrome_debug
 	chrome_debug_tests
@@ -166,6 +167,7 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
+	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/atk
 	dev-libs/glib
