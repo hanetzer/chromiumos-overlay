@@ -86,10 +86,6 @@ src_compile() {
 	local serial=( --coreboot "${coreboot_file}.serial" )
 	local silent=( --coreboot "${coreboot_file}" )
 
-	# State the "skeleton" from which to take
-	# IFD data and non-BIOS partitions on x86.
-	common+=( --skeleton=${froot}/coreboot.rom )
-
 	local legacy_file=""
 	prepare_legacy_image legacy_file
 	if [ -n "${legacy_file}" ]; then
