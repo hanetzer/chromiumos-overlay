@@ -96,6 +96,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/arc-gcc
 	sys-devel/arc-libs
 	sys-devel/arc-llvm
+	sys-devel/arc-llvm-mesa
 	sys-devel/arc-toolchain-n
 	"
 
