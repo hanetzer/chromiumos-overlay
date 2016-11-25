@@ -329,8 +329,7 @@ multilib_src_install() {
 			rootbin_PROGRAMS=udevadm
 			lib_LTLIBRARIES="${lib_LTLIBRARIES}"
 			pkgconfiglib_DATA="${pkgconfiglib_DATA}"
-			INSTALL_DIRS='$(sysconfdir)/udev/rules.d \
-					$(sysconfdir)/udev/hwdb.d'
+			INSTALL_DIRS='$(sysconfdir)/udev/rules.d $(sysconfdir)/udev/hwdb.d'
 			dist_bashcompletion_DATA="shell-completion/bash/udevadm"
 		)
 		emake -j1 DESTDIR="${D}" "${targets[@]}"
