@@ -95,4 +95,5 @@ src_install() {
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/crash_reporter_test"
+	platform_test "run" "${OUT}/warn_collector_test.sh"
 }
