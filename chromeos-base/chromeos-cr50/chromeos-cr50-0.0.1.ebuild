@@ -11,14 +11,15 @@ KEYWORDS="*"
 
 RDEPEND="chromeos-base/ec-utils"
 
-CR50_NAME="cr50.r0.0.10.w0.0.9"
+CR50_NAME="cr50.r0.0.10.w0.0.12"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
 S="${WORKDIR}"
 
 src_install() {
 	insinto /opt/google/cr50/firmware
-	newins "${CR50_NAME}"/*.bin cr50.bin
+	newins "${CR50_NAME}"/*.bin.prod cr50.bin.prod
+	newins "${CR50_NAME}"/*.bin.dev cr50.bin.dev
 
 	insinto /etc/init
 	doins "${FILESDIR}"/*.conf
