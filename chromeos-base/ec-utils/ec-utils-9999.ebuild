@@ -50,6 +50,7 @@ src_compile() {
 	# Do not set BOARD yet, as usb_updater is built for cr50.
 	if use cr50_onboard; then
 		# Make sure to override environment setting for BOARD, if any.
+		emake -C extra/usb_updater clean
 		BOARD=cr50 emake -C extra/usb_updater
 	fi
 	set_board
