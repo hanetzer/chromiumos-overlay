@@ -35,7 +35,6 @@ CROS_BOARDS=(
 	gnawty
 	guado
 	kevin
-	kevin-tpm2
 	kip
 	lars
 	leon
