@@ -197,6 +197,7 @@ ALL_BOARDS=(
 	pedra
 	peppy
 	plaso
+	poppy
 	ppcbe-32-generic
 	ppcbe-64-generic
 	ppcle-32-generic
