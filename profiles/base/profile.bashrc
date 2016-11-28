@@ -182,7 +182,7 @@ cros_enable_cxx_exceptions() {
 # We still use gcc to build packages even the CC or CXX is set to
 # something else.
 cros_use_gcc() {
-	if [[ ${CC:-gcc} != *"gcc"* ]]; then
+	if [[ $(basename ${CC:-gcc}) != *"gcc"* ]]; then
 		export CC=${CHOST}-gcc
 		export CXX=${CHOST}-g++
 	fi
