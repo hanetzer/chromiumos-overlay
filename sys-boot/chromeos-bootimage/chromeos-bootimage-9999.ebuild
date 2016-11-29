@@ -22,7 +22,7 @@ BOARDS="${BOARDS} parrot peppy pyro rambi reef samus sklrvp slippy snappy squawk
 BOARDS="${BOARDS} stumpy sumo"
 IUSE="${BOARDS} +bmpblk cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec exynos fsp"
-IUSE="${IUSE} memtest pd_sync tegra fastboot"
+IUSE="${IUSE} pd_sync tegra fastboot"
 
 REQUIRED_USE="
 	^^ ( ${BOARDS} arm mips )
@@ -35,7 +35,6 @@ DEPEND="
 	pd_sync? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
 	bmpblk? ( sys-boot/chromeos-bmpblk )
-	memtest? ( sys-boot/chromeos-memtest )
 	cb_legacy_uboot? ( virtual/u-boot )
 	cb_legacy_seabios? ( sys-boot/chromeos-seabios )
 	sys-boot/coreboot
