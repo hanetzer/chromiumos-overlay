@@ -43,6 +43,7 @@ IUSE="
 	passive_event_listeners
 	pointer_events
 	rialto
+	rialto_enterprise_enrollment
 	stylus
 	test
 	touchview
