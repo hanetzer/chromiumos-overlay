@@ -17,7 +17,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="dalmore dev efs u_boot_netboot profiling smdk5420-u-boot"
+IUSE="dalmore dev u_boot_netboot profiling smdk5420-u-boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
@@ -166,16 +166,6 @@ src_configure() {
 		umake "${BUILD_NB_FLAGS[@]}" distclean
 		umake "${BUILD_NB_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
 	fi
-
-	if use efs; then
-		BUILD_RO_FLAGS=(
-			"O=${UB_BUILD_DIR_RO}"
-			CROS_RO=1
-			CROS_SMALL=1
-		)
-		umake "${BUILD_RO_FLAGS[@]}" distclean
-		umake "${BUILD_RO_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
-	fi
 }
 
 src_compile() {
@@ -183,9 +173,6 @@ src_compile() {
 
 	if use u_boot_netboot; then
 		umake "${BUILD_NB_FLAGS[@]}" all
-	fi
-	if use efs; then
-		umake "${BUILD_RO_FLAGS[@]}" all
 	fi
 }
 
@@ -210,15 +197,6 @@ src_install() {
 
 		newins "${UB_BUILD_DIR}/${spl_bin}" u-boot-spl.wrapped.bin
 		newins "${UB_BUILD_DIR}/${spl_map}" System.spl.map
-		if use efs; then
-			newins "${UB_BUILD_DIR_RO}/u-boot.bin" u-boot-ro.bin
-			# The read-only SPL to be used, once we start building
-			# it using its own conffiguration
-			newins "${UB_BUILD_DIR_RO}/${spl_bin}" \
-				u-boot-spl-ro.wrapped.bin
-			newins "${UB_BUILD_DIR_RO}/${spl_map}" \
-				System.spl-ro.map
-		fi
 	fi
 
 	for f in "${files_to_copy[@]}"; do
