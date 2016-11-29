@@ -43,6 +43,7 @@ IUSE="
 	passive_event_listeners
 	pointer_events
 	rialto
+	stylus
 	test
 	touchview
 	veyron_mickey
