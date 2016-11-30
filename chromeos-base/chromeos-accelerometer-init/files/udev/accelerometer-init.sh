@@ -6,6 +6,7 @@
 # Set up default trigger for cros-ec-accel devices
 
 DEVICE=$1
+TYPE=$2
 IIO_DEVICES="/sys/bus/iio/devices"
 CROS_EC_PATH="/sys/class/chromeos/cros_ec"
 IIO_DEVICE_PATH="${IIO_DEVICES}/${DEVICE}"
@@ -24,7 +25,7 @@ fi
 # Sets pre-determined calibration values for the accelerometers.
 # The calibration values are fetched from the VPD.
 dump_vpd_log --full --stdout | \
-  egrep "\"in_accel_[xyz]_(lid|base)_calib(bias|scale)\"=" | sed 's/\"//g' | \
+  egrep "\"in_${TYPE}_[xyz]_(lid|base)_calib(bias|scale)\"=" | sed 's/\"//g' | \
   while read key_value; do
     IFS='=' read CALIBRATION_NAME CALIBRATION_VALUE <<EOL
 ${key_value}
@@ -38,7 +39,7 @@ EOL
       case "${CALIBRATION_NAME}" in
         *${LOCATION}_calibbias)
           NEW_CALIBRATION_NAME=$(echo "${CALIBRATION_NAME}" |
-                                 sed 's/${LOCATION}_//;')
+                                 sed "s/${LOCATION}_//;")
           echo "${CALIBRATION_VALUE}" > "${IIO_DEVICE_PATH}/${NEW_CALIBRATION_NAME}"
           ;;
       esac
@@ -46,6 +47,11 @@ EOL
       echo "${CALIBRATION_VALUE}" > "${IIO_DEVICE_PATH}/${CALIBRATION_NAME}"
     fi
   done
+
+if [ "${TYPE}" = "anglvel" ]; then
+  # No need to set buffer for gyroscope, not used by chrome yet.
+  exit
+fi
 
 # Be sure the sysfs trigger module is present.
 modprobe -q iio_trig_sysfs
