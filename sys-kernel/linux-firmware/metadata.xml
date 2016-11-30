@@ -29,5 +29,8 @@
 	<flag name='linux_firmware_i915_skl'>
 		Install SKL firmware files for i915 driver
 	</flag>
+	<flag name='linux_firmware_ath10k'>
+                Install all firmware files for ath10k driver
+	</flag>
 </use>
 </pkgmetadata>
