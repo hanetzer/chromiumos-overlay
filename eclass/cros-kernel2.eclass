@@ -517,6 +517,7 @@ CONFIG_BRIDGE_NETFILTER=y
 
 transparent_hugepage_desc="Transparent Hugepage Support"
 transparent_hugepage_config="
+CONFIG_ARM_LPAE=y
 CONFIG_TRANSPARENT_HUGEPAGE=y
 CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
 "
