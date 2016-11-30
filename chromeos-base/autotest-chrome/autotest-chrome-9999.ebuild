@@ -60,6 +60,7 @@ IUSE_TESTS=(
 	tests_desktopui_ConnectivityDiagnostics
 	+tests_desktopui_ExitOnSupervisedUserCrash
 	+tests_desktopui_FlashSanityCheck
+	+tests_desktopui_MashLogin
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
 	+tests_desktopui_SimpleLogin
