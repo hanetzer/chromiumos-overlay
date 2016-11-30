@@ -92,7 +92,10 @@ src_configure() {
 
 	driver_enable pvr
 
-	append-cppflags -DANDROID -DANDROID_VERSION=0x0600
+	local android_version=$(printf "0x%04x" \
+		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
+
+	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
 	append-cxxflags "-I${ARC_SYSROOT}/usr/include/c++/4.9" -lc++
 
 	export PKG_CONFIG="false"
