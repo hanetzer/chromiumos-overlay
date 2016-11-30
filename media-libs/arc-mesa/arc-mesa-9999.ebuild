@@ -123,7 +123,10 @@ src_configure() {
 		# FIXME(tfiga): Could this and the append-*flags below go to arc-build?
 		arc-build-select-gcc
 
-		append-cppflags -DANDROID -DANDROID_VERSION=0x0600
+		local android_version=$(printf "0x%04x" \
+			$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
+
+		append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
 		append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
 		append-flags -m32
 		append-ldflags -m32
