@@ -44,8 +44,14 @@ _arc-build-select-common() {
 	# Setup internal variables
 	if use android-container-nyc; then
 		ARC_BASE="/opt/android-n"
+		ARC_VERSION_MAJOR="7"
+		ARC_VERSION_MINOR="1"
+		ARC_VERSION_PATCH="0"
 	else
 		ARC_BASE="/opt/android"
+		ARC_VERSION_MAJOR="6"
+		ARC_VERSION_MINOR="0"
+		ARC_VERSION_PATCH="1"
 	fi
 
 	case ${ARCH} in
@@ -64,6 +70,10 @@ _arc-build-select-common() {
 	# Set up flags for the android sysroot.
 	export ARC_SYSROOT="${ARC_BASE}/${ARCH}"
 	append-flags --sysroot="${ARC_SYSROOT}"
+
+	export ARC_VERSION_MAJOR
+	export ARC_VERSION_MINOR
+	export ARC_VERSION_PATCH
 
 	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
 
