@@ -52,6 +52,7 @@ IUSE_LINUX_FIRMWARE=(
 	adsp_apl
 	adsp_skl
 	ath9k_htc
+	ath10k
 	bcm4354-bt
 	cros-pd
 	fw_sst
@@ -76,6 +77,7 @@ LICENSE="
 	linux_firmware_ath3k-ar3011? ( LICENCE.atheros_firmware )
 	linux_firmware_ath3k-ar3012? ( LICENCE.atheros_firmware )
 	linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
+	linux_firmware_ath10k? ( LICENCE.atheros_firmware )
 	linux_firmware_bcm4354-bt? ( LICENCE.broadcom_bcm43xx )
 	linux_firmware_cros-pd? ( BSD-Google )
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
@@ -101,6 +103,7 @@ DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
 	linux_firmware_ath3k-ar3012? ( !net-wireless/ath3k )
 	linux_firmware_nvidia-xusb? ( !sys-kernel/xhci-firmware )
 	!net-wireless/ath6k
+	!net-wireless/ath10k
 	!net-wireless/iwl1000-ucode
 	!net-wireless/iwl2000-ucode
 	!net-wireless/iwl2030-ucode
@@ -139,6 +142,7 @@ src_install() {
 	use_fw adsp_apl && doins_subdir intel/dsp_fw_bxtn*
 	use_fw adsp_skl && doins_subdir intel/dsp_fw_*
 	use_fw ath9k_htc && doins htc_*.fw
+	use_fw ath10k && doins_subdir ath10k/QCA6174/hw{3.0,2.1}/*
 	use_fw bcm4354-bt && doins_subdir brcm/BCM4354_*.hcd
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
