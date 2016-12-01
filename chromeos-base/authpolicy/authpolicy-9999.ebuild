@@ -18,20 +18,14 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
 
 RDEPEND="
 	chromeos-base/libbrillo
 	dev-libs/protobuf
-	dev-libs/dbus-glib
-	sys-apps/dbus
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/protofiles-0.0.2
-	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
-	dev-cpp/gtest
+	chromeos-base/protofiles
 "
 
 pkg_preinst() {
