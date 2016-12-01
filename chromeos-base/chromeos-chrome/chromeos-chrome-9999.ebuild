@@ -331,6 +331,21 @@ set_build_args() {
 			target_cpu=arm
 			arm_float_abi=$(usex hardfp hard softfp)
 		)
+		local arm_arch=$(get-flag march)
+		local arm_cpu=$(get-flag mcpu)
+		# Chrome's build/config/arm.gni uses -march=armv7-a when
+		# arm_arch is empty. However, GCC complains when -march=armv7-a
+		# is used for armv7ve CPUs. OTOH clang rejects -march=armv7ve as
+		# an invalid option (crbug.com/671089).
+		if ! use clang && [[ -z "${arm_arch}" ]] &&
+			[[ "${arm_cpu}" == "cortex-a7" ||
+				"${arm_cpu}" == "cortex-a12" ||
+				"${arm_cpu}" == "cortex-a15" ]]; then
+			arm_arch="armv7ve"
+		fi
+		if [[ -n "${arm_arch}" ]]; then
+			BUILD_STRING_ARGS+=( arm_arch="${arm_arch}" )
+		fi
 		;;
 	amd64)
 		BUILD_STRING_ARGS+=( target_cpu=x64 )
