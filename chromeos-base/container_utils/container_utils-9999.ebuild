@@ -18,19 +18,12 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/permission_broker
-	dev-libs/dbus-c++
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
 	cd "${OUT}"
-	dobin broker_service
 	dobin run_oci
-	cd "${S}"
-	insinto /etc/init
-	doins broker-service.conf
-	doins broker-service-pre-upstart-socket-bridge.conf
-	doins broker-service-post-upstart-socket-bridge.conf
 }
 
 platform_pkg_test() {
