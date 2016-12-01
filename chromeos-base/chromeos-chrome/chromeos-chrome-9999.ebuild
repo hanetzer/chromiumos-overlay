@@ -42,7 +42,6 @@ IUSE="
 	clang
 	component_build
 	cups
-	envoy
 	evdev_gestures
 	+fonts
 	+gn
@@ -479,8 +478,6 @@ set_build_defines() {
 		fi
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
-
-	use envoy && BUILD_DEFINES+=( envoy=1 )
 
 	# This requires some extreme quoting in order to support multiple flags,
 	# e.g. "-gsplit-dwarf -g". This will be deprecated once we switch to gn.
@@ -960,11 +957,7 @@ src_compile() {
 		libosmesa.so
 		$(usex mojo "mojo_shell" "")
 	)
-	# Envoy builds set both the envoy and app_shell USE flags; only build the
-	# envoy_shell binary in this case.
-	if use envoy; then
-		chrome_targets+=( envoy_shell )
-	elif use app_shell; then
+	if use app_shell; then
 		chrome_targets+=( app_shell )
 	else
 		chrome_targets+=( chrome )

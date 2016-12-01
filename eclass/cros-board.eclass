@@ -101,7 +101,7 @@ ALL_BOARDS=(
 	elm-cheets
 	#emeraldlake2
 	enguarde
-	envoy-jerry
+	#envoy-jerry
 	eve
 	expresso
 	falco
@@ -155,7 +155,7 @@ ALL_BOARDS=(
 	lulu-cheets
 	lumpy
 	mappy
-	mappy-envoy
+	#mappy-envoy
 	mappy_flashstation
 	marble
 	mccloud
