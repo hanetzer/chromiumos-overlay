@@ -95,6 +95,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/gzip
 	app-arch/tar
 	app-benchmarks/lmbench
+	app-benchmarks/xfstests
 	app-misc/ckermit
 	opengles? ( app-misc/eglinfo )
 	app-misc/tmux

@@ -50,12 +50,14 @@ RDEPEND="${RDEPEND}
 	tests_security_SMMLocked? ( sys-apps/pciutils )
 	tests_camera_HAL3? ( chromeos-base/autotest-deps-camera-hal3 )
 	tests_camera_V4L2? ( media-libs/libyuv )
+	tests_xfsFilesystemTestSuite? ( app-benchmarks/xfstests )
 "
 
 DEPEND="${RDEPEND}"
 
 X86_IUSE_TESTS="
 	+tests_security_SMMLocked
+	+tests_xfsFilesystemTestSuite
 "
 
 CLIENT_IUSE_TESTS="
