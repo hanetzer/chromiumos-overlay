@@ -42,7 +42,6 @@ IUSE="
 	clang
 	component_build
 	cups
-	envoy
 	evdev_gestures
 	+fonts
 	+gn
@@ -130,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2939.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2939.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2939.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2939.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2939.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2939.0_rc-r2.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -479,8 +478,6 @@ set_build_defines() {
 		fi
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
-
-	use envoy && BUILD_DEFINES+=( envoy=1 )
 
 	# This requires some extreme quoting in order to support multiple flags,
 	# e.g. "-gsplit-dwarf -g". This will be deprecated once we switch to gn.
@@ -960,11 +957,7 @@ src_compile() {
 		libosmesa.so
 		$(usex mojo "mojo_shell" "")
 	)
-	# Envoy builds set both the envoy and app_shell USE flags; only build the
-	# envoy_shell binary in this case.
-	if use envoy; then
-		chrome_targets+=( envoy_shell )
-	elif use app_shell; then
+	if use app_shell; then
 		chrome_targets+=( app_shell )
 	else
 		chrome_targets+=( chrome )
