@@ -6,12 +6,12 @@ EAPI=5
 inherit eutils toolchain-funcs
 
 # Version used to bootstrap the build.
-BOOTSTRAP="1.4.3"
+BOOTSTRAP="go1.4-bootstrap-20161024"
 
 DESCRIPTION="An expressive, concurrent, garbage-collected programming language"
 HOMEPAGE="http://golang.org/"
 SRC_URI="https://storage.googleapis.com/golang/go${PV}.src.tar.gz
-	https://storage.googleapis.com/golang/go${BOOTSTRAP}.src.tar.gz"
+	https://storage.googleapis.com/golang/${BOOTSTRAP}.tar.gz"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -55,12 +55,12 @@ get_goarch() {
 src_unpack() {
 	unpack "go${PV}.src.tar.gz"
 	mv go "go-${PV}"
-	unpack "go${BOOTSTRAP}.src.tar.gz"
-	mv go "go-${BOOTSTRAP}"
+	unpack "${BOOTSTRAP}.tar.gz"
+	mv go "${BOOTSTRAP}"
 }
 
 src_configure() {
-	export GOROOT_BOOTSTRAP="${WORKDIR}/go-${BOOTSTRAP}"
+	export GOROOT_BOOTSTRAP="${WORKDIR}/${BOOTSTRAP}"
 	export GOROOT_FINAL="${EPREFIX}$(get_goroot)"
 }
 
