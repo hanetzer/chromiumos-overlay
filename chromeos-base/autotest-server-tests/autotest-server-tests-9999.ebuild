@@ -61,6 +61,7 @@ SERVER_IUSE_TESTS="
 		+tests_cheets_CTS
 		+tests_cheets_GTS
 	)
+	+tests_component_UpdateFlash
 	debugd? ( +tests_debugd_DevTools )
 	!chromeless_tty? (
 		!chromeless_tests? (
