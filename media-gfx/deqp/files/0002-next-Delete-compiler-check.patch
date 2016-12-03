@@ -1,0 +1,31 @@
+From f97085b063160fb9d192b136749581de85b88823 Mon Sep 17 00:00:00 2001
+From: "Ilja H. Friedel" <ihf@chromium.org>
+Date: Tue, 26 Jan 2016 00:50:21 -0800
+Subject: [PATCH 2/4] Delete compiler check.
+
+Change-Id: I05b364333bbbd8238bbe4e9ab929690d546a7f46
+---
+ framework/delibs/debase/deDefs.h | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/framework/delibs/debase/deDefs.h b/framework/delibs/debase/deDefs.h
+index 42826f7..fec18e3 100644
+--- a/framework/delibs/debase/deDefs.h
++++ b/framework/delibs/debase/deDefs.h
+@@ -47,13 +47,6 @@
+ 		/* conflict, print a nice error messages for the most common misconfigs,
+ 		 * GCC and Clang, and a generic for other conflicts.
+ 		 */
+-#		if (DE_DETAIL_DETECTED_COMPILER == DE_COMPILER_CLANG) && (DE_COMPILER == DE_COMPILER_GCC)
+-#			error Detected compiler is Clang, but got DE_COMPILER == DE_COMPILER_GCC
+-#		elif (DE_DETAIL_DETECTED_COMPILER == DE_COMPILER_GCC) && (DE_COMPILER == DE_COMPILER_CLANG)
+-#			error Detected compiler is GCC, but got DE_COMPILER == DE_COMPILER_CLANG
+-#		else
+-#			error Detected compiler does not match the supplied compiler.
+-#		endif
+ #	endif
+ 	/* Clear autodetect vars. */
+ #	if defined(DE_DETAIL_DETECTED_COMPILER)
+-- 
+2.8.0.rc3.226.g39d4020
+

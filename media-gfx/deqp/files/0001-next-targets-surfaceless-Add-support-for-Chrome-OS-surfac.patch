@@ -1,0 +1,504 @@
+From 45a0a86f31a0c1970a97db1859fdc1f2277b5281 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Mon, 29 Feb 2016 22:19:09 -0800
+Subject: [PATCH 1/4] targets/surfaceless: Add support for Chrome OS
+ surfaceless
+
+Implement a new dEQP target, "surfaceless", that supports offscreen
+rendering using Chrome OS's EGL null platform. This is based on
+intel's work to add support for "drm" target, but extends it to work
+on ARM as well.
+
+dEQP must be ran with --deqp-surface-type=fbo because the native EGL
+platform does not support EGLSurfaces.
+
+Unlike all of dEQP's other EGL-derived platforms (x11::egl::Platform,
+Android::Platform, rpi::Platform, etc), class surfaceless::Platform does
+not inherit from eglu::Platform and it reuses very little of dEQP's
+existing EGL code. I had to re-invent the wheel when implementing the DRM
+platform because dEQP's existing EGL code relies heavily on EGLSurfaces,
+which Chrome's EGL surfaceless does not support.
+
+BUG=chromium:543372
+TEST=run deqp on veyron_jaq
+---
+ framework/platform/CMakeLists.txt                  |   5 +
+ .../surfaceless/tcuSurfacelessPlatform.cpp         | 353 +++++++++++++++++++++
+ .../surfaceless/tcuSurfacelessPlatform.hpp         |  34 ++
+ targets/surfaceless/surfaceless.cmake              |  47 +++
+ 4 files changed, 439 insertions(+)
+ create mode 100644 framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
+ create mode 100644 framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
+ create mode 100644 targets/surfaceless/surfaceless.cmake
+
+diff --git a/framework/platform/CMakeLists.txt b/framework/platform/CMakeLists.txt
+index 5716c23..9627ade 100644
+--- a/framework/platform/CMakeLists.txt
++++ b/framework/platform/CMakeLists.txt
+@@ -43,6 +43,11 @@ if (NOT DEFINED TCUTIL_PLATFORM_SRCS)
+ 		if (NOT (DEQP_SUPPORT_EGL OR DEQP_SUPPORT_GLX))
+ 		  message(FATAL_ERROR "At least one of EGL and GLX must be enabled for X11")
+ 		endif ()
++	elseif (DE_OS_IS_UNIX AND DEQP_USE_SURFACELESS)
++		set(TCUTIL_PLATFORM_SRCS
++			surfaceless/tcuSurfacelessPlatform.hpp
++			surfaceless/tcuSurfacelessPlatform.cpp
++			)
+ 	elseif (DE_OS_IS_ANDROID)
+ 		set(TCUTIL_PLATFORM_SRCS
+ 			android/tcuAndroidExecService.cpp
+diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
+new file mode 100644
+index 0000000..1a11935
+--- /dev/null
++++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
+@@ -0,0 +1,353 @@
++/*-------------------------------------------------------------------------
++ * drawElements Quality Program Tester Core
++ * ----------------------------------------
++ *
++ * Copyright 2015 Intel Corporation
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ *
++ *//*!
++ * \file
++ * \brief surfaceless platform
++ *//*--------------------------------------------------------------------*/
++
++#include "tcuSurfacelessPlatform.hpp"
++
++#include <string>
++#include <vector>
++
++#include "deDynamicLibrary.hpp"
++#include "deSTLUtil.hpp"
++#include "egluUtil.hpp"
++#include "egluGLUtil.hpp"
++#include "eglwEnums.hpp"
++#include "eglwLibrary.hpp"
++#include "gluPlatform.hpp"
++#include "gluRenderConfig.hpp"
++#include "glwInitES20Direct.hpp"
++#include "glwInitES30Direct.hpp"
++#include "glwInitFunctions.hpp"
++#include "tcuPlatform.hpp"
++
++
++#include <EGL/egl.h>
++
++using std::string;
++using std::vector;
++
++#if !defined(EGL_KHR_create_context)
++	#define EGL_CONTEXT_FLAGS_KHR					0x30FC
++	#define EGL_CONTEXT_MAJOR_VERSION_KHR				0x3098
++	#define EGL_CONTEXT_MINOR_VERSION_KHR				0x30FB
++	#define EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR	0x00000002
++	#define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR			0x00000001
++	#define EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR			0x00000001
++	#define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR		0x00000002
++	#define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR			0x30FD
++	#define EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR	0x31BD
++	#define EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR		0x00000004
++	#define EGL_KHR_create_context					1
++	#define EGL_LOSE_CONTEXT_ON_RESET_KHR				0x31BF
++	#define EGL_NO_RESET_NOTIFICATION_KHR				0x31BE
++	#define EGL_OPENGL_ES3_BIT_KHR					0x00000040
++#endif // EGL_KHR_create_context
++
++// Default library names
++#if !defined(DEQP_GLES2_LIBRARY_PATH)
++#	define DEQP_GLES2_LIBRARY_PATH "libGLESv2.so"
++#endif
++
++#if !defined(DEQP_GLES3_LIBRARY_PATH)
++#	define DEQP_GLES3_LIBRARY_PATH DEQP_GLES2_LIBRARY_PATH
++#endif
++
++#if !defined(DEQP_OPENGL_LIBRARY_PATH)
++#	define DEQP_OPENGL_LIBRARY_PATH "libGL.so"
++#endif
++
++namespace tcu
++{
++namespace surfaceless
++{
++
++bool isEGLExtensionSupported(
++		const eglw::Library& egl,
++		eglw::EGLDisplay display,
++		const std::string& extName)
++{
++	const vector<string> exts = eglu::getClientExtensions(egl);
++	return de::contains(exts.begin(), exts.end(), extName);
++}
++
++class GetProcFuncLoader : public glw::FunctionLoader
++{
++public:
++	GetProcFuncLoader(const eglw::Library& egl): m_egl(egl)
++	{
++	}
++
++	glw::GenericFuncType get(const char* name) const
++	{
++		return (glw::GenericFuncType)m_egl.getProcAddress(name);
++	}
++protected:
++	const eglw::Library& m_egl;
++};
++
++class DynamicFuncLoader : public glw::FunctionLoader
++{
++public:
++	DynamicFuncLoader(de::DynamicLibrary* library): m_library(library)
++	{
++	}
++
++	glw::GenericFuncType get(const char* name) const
++	{
++		return (glw::GenericFuncType)m_library->getFunction(name);
++	}
++
++private:
++	de::DynamicLibrary*		m_library;
++};
++
++class Platform : public tcu::Platform, public glu::Platform
++{
++public:
++					Platform	(void);
++	const glu::Platform&		getGLPlatform	(void) const { return *this; }
++};
++
++class ContextFactory : public glu::ContextFactory
++{
++public:
++					ContextFactory	(void);
++	glu::RenderContext*		createContext	(const glu::RenderConfig& config, const tcu::CommandLine& cmdLine) const;
++};
++
++class EglRenderContext : public glu::RenderContext
++{
++public:
++					EglRenderContext(const glu::RenderConfig& config, const tcu::CommandLine& cmdLine);
++					~EglRenderContext(void);
++
++	glu::ContextType		getType		(void) const	{ return m_contextType; }
++	const glw::Functions&		getFunctions	(void) const	{ return m_glFunctions; }
++	const tcu::RenderTarget&	getRenderTarget	(void) const;
++	void				postIterate	(void);
++
++private:
++	const eglw::DefaultLibrary      m_egl;
++	const glu::ContextType		m_contextType;
++	eglw::EGLDisplay		m_eglDisplay;
++	eglw::EGLContext		m_eglContext;
++	de::DynamicLibrary*		m_glLibrary;
++	glw::Functions			m_glFunctions;
++};
++
++Platform::Platform(void)
++{
++	m_contextFactoryRegistry.registerFactory(new ContextFactory());
++}
++
++ContextFactory::ContextFactory()
++	: glu::ContextFactory("default", "EGL surfaceless context")
++{}
++
++glu::RenderContext* ContextFactory::createContext(const glu::RenderConfig& config, const tcu::CommandLine& cmdLine) const
++{
++	return new EglRenderContext(config, cmdLine);
++}
++
++EglRenderContext::EglRenderContext(const glu::RenderConfig& config, const tcu::CommandLine& cmdLine)
++	: m_egl("libEGL.so")
++	, m_contextType(config.type)
++	, m_eglDisplay(EGL_NO_DISPLAY)
++	, m_eglContext(EGL_NO_CONTEXT)
++{
++	vector<eglw::EGLint>	attribs;
++	vector<eglw::EGLint>	config_attribs;
++	const glu::ContextType&	contextType = config.type;
++	eglw::EGLint		eglMajorVersion;
++	eglw::EGLint		eglMinorVersion;
++	eglw::EGLint		flags = 0;
++	eglw::EGLint		num_configs;
++	eglw::EGLConfig		egl_config;
++
++	(void) cmdLine;
++
++	m_eglDisplay = m_egl.getDisplay(NULL);
++	EGLU_CHECK_MSG(m_egl, "eglGetDisplay()");
++	if (m_eglDisplay == EGL_NO_DISPLAY)
++		throw tcu::ResourceError("eglGetDisplay() failed");
++
++	EGLU_CHECK_CALL(m_egl, initialize(m_eglDisplay, &eglMajorVersion, &eglMinorVersion));
++
++	switch (config.surfaceType)
++	{
++		case glu::RenderConfig::SURFACETYPE_DONT_CARE:
++		case glu::RenderConfig::SURFACETYPE_OFFSCREEN_GENERIC:
++		case glu::RenderConfig::SURFACETYPE_OFFSCREEN_NATIVE:
++			break;
++		case glu::RenderConfig::SURFACETYPE_WINDOW:
++			throw tcu::NotSupportedError("surfaceless platform does not support --deqp-surface-type=window");
++		case glu::RenderConfig::SURFACETYPE_LAST:
++			TCU_CHECK_INTERNAL(false);
++	}
++
++	config_attribs.push_back(EGL_RED_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_GREEN_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_BLUE_SIZE);
++	config_attribs.push_back(1);
++	config_attribs.push_back(EGL_RENDERABLE_TYPE);
++	config_attribs.push_back(EGL_OPENGL_ES2_BIT);
++	config_attribs.push_back(EGL_SURFACE_TYPE);
++	config_attribs.push_back(EGL_DONT_CARE);
++	config_attribs.push_back(EGL_NONE);
++
++	if (!eglChooseConfig(m_eglDisplay, &config_attribs[0], NULL, 0, &num_configs))
++		throw tcu::ResourceError("surfaceless couldn't find any config");
++
++	if (!eglChooseConfig(m_eglDisplay, &config_attribs[0], &egl_config, 1, &num_configs))
++		throw tcu::ResourceError("surfaceless couldn't find any config");
++
++	attribs.push_back(EGL_CONTEXT_MAJOR_VERSION_KHR);
++	attribs.push_back(contextType.getMajorVersion());
++	attribs.push_back(EGL_CONTEXT_MINOR_VERSION_KHR);
++	attribs.push_back(contextType.getMinorVersion());
++
++	switch (contextType.getProfile())
++	{
++		case glu::PROFILE_ES:
++			EGLU_CHECK_CALL(m_egl, bindAPI(EGL_OPENGL_ES_API));
++			break;
++		case glu::PROFILE_CORE:
++			EGLU_CHECK_CALL(m_egl, bindAPI(EGL_OPENGL_API));
++			attribs.push_back(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR);
++			attribs.push_back(EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR);
++			break;
++		case glu::PROFILE_COMPATIBILITY:
++			EGLU_CHECK_CALL(m_egl, bindAPI(EGL_OPENGL_API));
++			attribs.push_back(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR);
++			attribs.push_back(EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR);
++			break;
++		case glu::PROFILE_LAST:
++			TCU_CHECK_INTERNAL(false);
++	}
++
++	if ((contextType.getFlags() & glu::CONTEXT_DEBUG) != 0)
++		flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
++
++	if ((contextType.getFlags() & glu::CONTEXT_ROBUST) != 0)
++		flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
++
++	if ((contextType.getFlags() & glu::CONTEXT_FORWARD_COMPATIBLE) != 0)
++		flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
++
++	attribs.push_back(EGL_CONTEXT_FLAGS_KHR);
++	attribs.push_back(flags);
++
++	attribs.push_back(EGL_NONE);
++
++	m_eglContext = m_egl.createContext(m_eglDisplay, egl_config, EGL_NO_CONTEXT, &attribs[0]);
++	EGLU_CHECK_MSG(m_egl, "eglCreateContext()");
++	if (!m_eglContext)
++		throw tcu::ResourceError("eglCreateContext failed");
++
++	EGLU_CHECK_CALL(m_egl, makeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, m_eglContext));
++
++	if ((eglMajorVersion == 1 && eglMinorVersion >= 5) ||
++		isEGLExtensionSupported(m_egl, m_eglDisplay, "EGL_KHR_get_all_proc_addresses") ||
++		isEGLExtensionSupported(m_egl, EGL_NO_DISPLAY, "EGL_KHR_client_get_all_proc_addresses"))
++	{
++		// Use eglGetProcAddress() for core functions
++		GetProcFuncLoader funcLoader(m_egl);
++		glu::initCoreFunctions(&m_glFunctions, &funcLoader, contextType.getAPI());
++	}
++#if !defined(DEQP_GLES2_RUNTIME_LOAD)
++	else if (contextType.getAPI() == glu::ApiType::es(2,0))
++	{
++		glw::initES20Direct(&m_glFunctions);
++	}
++#endif
++#if !defined(DEQP_GLES3_RUNTIME_LOAD)
++	else if (contextType.getAPI() == glu::ApiType::es(3,0))
++	{
++		glw::initES30Direct(&m_glFunctions);
++	}
++#endif
++	else
++	{
++		const char* libraryPath = NULL;
++
++		if (glu::isContextTypeES(contextType))
++		{
++			if (contextType.getMinorVersion() <= 2)
++				libraryPath = DEQP_GLES2_LIBRARY_PATH;
++			else
++				libraryPath = DEQP_GLES3_LIBRARY_PATH;
++		}
++		else
++		{
++			libraryPath = DEQP_OPENGL_LIBRARY_PATH;
++		}
++
++		m_glLibrary = new de::DynamicLibrary(libraryPath);
++
++		DynamicFuncLoader funcLoader(m_glLibrary);
++		glu::initCoreFunctions(&m_glFunctions, &funcLoader, contextType.getAPI());
++	}
++
++	{
++		GetProcFuncLoader extLoader(m_egl);
++		glu::initExtensionFunctions(&m_glFunctions, &extLoader, contextType.getAPI());
++	}
++}
++
++EglRenderContext::~EglRenderContext(void)
++{
++	try
++	{
++		if (m_eglDisplay != EGL_NO_DISPLAY)
++		{
++			EGLU_CHECK_CALL(m_egl, makeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT));
++
++			if (m_eglContext != EGL_NO_CONTEXT)
++				EGLU_CHECK_CALL(m_egl, destroyContext(m_eglDisplay, m_eglContext));
++		}
++
++		EGLU_CHECK_CALL(m_egl, terminate(m_eglDisplay));
++	}
++	catch (...)
++	{
++	}
++}
++
++const tcu::RenderTarget& EglRenderContext::getRenderTarget(void) const
++{
++	throw tcu::InternalError("surfaceless platform cannot create EGL surfaces");
++}
++
++void EglRenderContext::postIterate(void)
++{
++	this->getFunctions().finish();
++}
++
++} // namespace surfaceless
++} // namespace tcu
++
++tcu::Platform* createPlatform(void)
++{
++	return new tcu::surfaceless::Platform();
++}
+diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
+new file mode 100644
+index 0000000..b980e1b
+--- /dev/null
++++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
+@@ -0,0 +1,34 @@
++#ifndef _TCUDRMPLATFORM_HPP
++#define _TCUDRMPLATFORM_HPP
++
++/*-------------------------------------------------------------------------
++ * drawElements Quality Program Tester Core
++ * ----------------------------------------
++ *
++ * Copyright 2015 Intel Corporation
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ *
++ *//*!
++ * \file
++ * \brief DRM platform
++ *//*--------------------------------------------------------------------*/
++
++namespace tcu
++{
++	class Platform;
++}
++
++tcu::Platform* createPlatform (void);
++
++#endif
+diff --git a/targets/surfaceless/surfaceless.cmake b/targets/surfaceless/surfaceless.cmake
+new file mode 100644
+index 0000000..f506112
+--- /dev/null
++++ b/targets/surfaceless/surfaceless.cmake
+@@ -0,0 +1,47 @@
++message("*** Using Surfaceless target")
++
++set(DEQP_TARGET_NAME "Surfaceless")
++
++include(FindPkgConfig)
++
++set(DEQP_USE_SURFACELESS ON)
++
++set(DEQP_SUPPORT_GLES2   ON)
++set(DEQP_SUPPORT_GLES3   ON)
++set(DEQP_SUPPORT_EGL     ON)
++
++find_library(GLES2_LIBRARIES GLESv2)
++find_library(GLES3_LIBRARIES GLESv3)
++find_path(GLES2_INCLUDE_PATH GLES2/gl2.h)
++find_path(GLES3_INCLUDE_PATH GLES3/gl3.h)
++
++if (GLES2_INCLUDE_PATH AND GLES2_LIBRARIES)
++        set(DEQP_GLES2_LIBRARIES ${GLES2_LIBRARIES})
++else ()
++        message (SEND_ERROR "GLESv2 support not found")
++endif ()
++
++if (GLES3_INCLUDE_PATH AND GLES3_LIBRARIES)
++        set(DEQP_GLES3_LIBRARIES ${GLES3_LIBRARIES})
++elseif (GLES3_INCLUDE_PATH AND GLES2_LIBRARIES)
++        # Assume GLESv2 provides ES3 symbols if gl3.h was found
++        # and the GLESv3 library was not.
++        set(DEQP_GLES3_LIBRARIES ${GLES2_LIBRARIES})
++else ()
++        message (FATAL_ERROR "GLESv3 support not found")
++endif ()
++
++pkg_check_modules(EGL REQUIRED egl)
++set(DEQP_EGL_LIBRARIES ${EGL_LIBRARIES})
++
++pkg_check_modules(GBM REQUIRED gbm)
++pkg_check_modules(KMS REQUIRED libkms)
++pkg_check_modules(DRM REQUIRED libdrm)
++
++include_directories(${GLES2_INCLUDE_PATH} ${GLES3_INCLUDE_PATH}
++                    ${EGL_INCLUDE_DIRS} ${GBM_INCLUDE_DIRS}
++                    ${KMS_INCLUDE_DIRS} ${DRM_INCLUDE_DIRS})
++
++set(DEQP_PLATFORM_LIBRARIES ${DEQP_GLES2_LIBRARIES} ${DEQP_GLES3_LIBRARIES}
++                            ${DEQP_EGL_LIBRARIES} ${GBM_LIBRARIES}
++                            ${KMS_LIBRARIES} ${DRM_LIBRARIES})
+-- 
+2.8.0.rc3.226.g39d4020
+
