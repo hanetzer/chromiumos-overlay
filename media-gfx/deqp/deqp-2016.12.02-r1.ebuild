@@ -15,7 +15,7 @@ SRC_URI="gs://chromeos-localmirror/distfiles/deqp-544e0e3b1d6dafdd74a9a1fc986486
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
