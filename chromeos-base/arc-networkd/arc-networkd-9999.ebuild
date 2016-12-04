@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="arc-networkd"
 
-inherit cros-workon libchrome platform
+inherit cros-workon libchrome platform user
 
 DESCRIPTION="ARC connectivity management daemon"
 HOMEPAGE="http://www.chromium.org/"
@@ -20,6 +20,7 @@ KEYWORDS="~*"
 
 COMMON_DEPEND="
 	chromeos-base/libbrillo
+	dev-libs/protobuf
 	net-libs/libndp
 "
 
@@ -34,4 +35,10 @@ DEPEND="
 src_install() {
 	# Main binary.
 	dobin "${OUT}"/arc-networkd
+}
+
+pkg_preinst() {
+	# Service account used for privilege separation.
+	enewuser arc-networkd
+	enewgroup arc-networkd
 }
