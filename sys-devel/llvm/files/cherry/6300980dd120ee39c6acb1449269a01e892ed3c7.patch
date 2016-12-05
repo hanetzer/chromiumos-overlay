@@ -1,0 +1,435 @@
+commit 6300980dd120ee39c6acb1449269a01e892ed3c7
+Author: James Molloy <james.molloy@arm.com>
+Date:   Thu Nov 3 14:08:01 2016 +0000
+
+    Revert "[Thumb] Teach ISel how to lower compares of AND bitmasks efficiently"
+    
+    This reverts commit r285893. It caused (probably) http://lab.llvm.org:8011/builders/clang-cmake-thumbv7-a15-full-sh/builds/83 .
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@285912 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Target/ARM/ARMBaseInstrInfo.cpp b/lib/Target/ARM/ARMBaseInstrInfo.cpp
+index 70a3246..9c8229c 100644
+--- a/lib/Target/ARM/ARMBaseInstrInfo.cpp
++++ b/lib/Target/ARM/ARMBaseInstrInfo.cpp
+@@ -2544,11 +2544,7 @@ bool ARMBaseInstrInfo::optimizeCompareInstr(
+   case ARM::EORrr:
+   case ARM::EORri:
+   case ARM::t2EORrr:
+-  case ARM::t2EORri:
+-  case ARM::t2LSRri:
+-  case ARM::t2LSRrr:
+-  case ARM::t2LSLri:
+-  case ARM::t2LSLrr: {
++  case ARM::t2EORri: {
+     // Scan forward for the use of CPSR
+     // When checking against MI: if it's a conditional code that requires
+     // checking of the V bit or C bit, then this is not safe to do.
+diff --git a/lib/Target/ARM/ARMISelDAGToDAG.cpp b/lib/Target/ARM/ARMISelDAGToDAG.cpp
+index d7d0546..89dcffc 100644
+--- a/lib/Target/ARM/ARMISelDAGToDAG.cpp
++++ b/lib/Target/ARM/ARMISelDAGToDAG.cpp
+@@ -244,8 +244,7 @@ private:
+   bool tryInlineAsm(SDNode *N);
+ 
+   void SelectConcatVector(SDNode *N);
+-  void SelectCMPZ(SDNode *N, bool &SwitchEQNEToPLMI);
+-  
++
+   bool trySMLAWSMULW(SDNode *N);
+ 
+   void SelectCMP_SWAP(SDNode *N);
+@@ -2709,83 +2708,6 @@ void ARMDAGToDAGISel::SelectConcatVector(SDNode *N) {
+   ReplaceNode(N, createDRegPairNode(VT, N->getOperand(0), N->getOperand(1)));
+ }
+ 
+-static Optional<std::pair<unsigned, unsigned>>
+-getContiguousRangeOfSetBits(const APInt &A) {
+-  unsigned FirstOne = A.getBitWidth() - A.countLeadingZeros() - 1;
+-  unsigned LastOne = A.countTrailingZeros();
+-  if (A.countPopulation() != (FirstOne - LastOne + 1))
+-    return Optional<std::pair<unsigned,unsigned>>();
+-  return std::make_pair(FirstOne, LastOne);
+-}
+-
+-void ARMDAGToDAGISel::SelectCMPZ(SDNode *N, bool &SwitchEQNEToPLMI) {
+-  assert(N->getOpcode() == ARMISD::CMPZ);
+-  SwitchEQNEToPLMI = false;
+-  
+-  if (!Subtarget->isThumb())
+-    // FIXME: Work out whether it is profitable to do this in A32 mode - LSL and
+-    // LSR don't exist as standalone instructions - they need the barrel shifter.
+-    return;
+-  // select (cmpz (and X, C), #0) -> (LSLS X) or (LSRS X) or (LSRS (LSLS X))
+-  SDValue And = N->getOperand(0);
+-  SDValue Zero = N->getOperand(1);
+-  if (!isa<ConstantSDNode>(Zero) || !cast<ConstantSDNode>(Zero)->isNullValue() ||
+-      And->getOpcode() != ISD::AND)
+-    return;
+-  SDValue X = And.getOperand(0);
+-  auto C = dyn_cast<ConstantSDNode>(And.getOperand(1));
+-
+-  if (!C || !X->hasOneUse())
+-    return;
+-  auto Range = getContiguousRangeOfSetBits(C->getAPIntValue());
+-  if (!Range)
+-    return;
+-
+-  // There are several ways to lower this:
+-  SDNode *NewN;
+-  SDLoc dl(N);
+-
+-  auto EmitShift = [&](unsigned Opc, SDValue Src, unsigned Imm) -> SDNode* {
+-    if (Subtarget->isThumb2()) {
+-      Opc = (Opc == ARM::tLSLri) ? ARM::t2LSLri : ARM::t2LSRri;
+-      SDValue Ops[] = { Src, CurDAG->getTargetConstant(Imm, dl, MVT::i32),
+-                        getAL(CurDAG, dl), CurDAG->getRegister(0, MVT::i32),
+-                        CurDAG->getRegister(0, MVT::i32) };
+-      return CurDAG->getMachineNode(Opc, dl, MVT::i32, Ops);
+-    } else {
+-      SDValue Ops[] = {CurDAG->getRegister(ARM::CPSR, MVT::i32), Src,
+-                       CurDAG->getTargetConstant(Imm, dl, MVT::i32),
+-                       getAL(CurDAG, dl), CurDAG->getRegister(0, MVT::i32)};
+-      return CurDAG->getMachineNode(Opc, dl, MVT::i32, Ops);
+-    }
+-  };
+-  
+-  if (Range->second == 0) {
+-    //  1. Mask includes the LSB -> Simply shift the top N bits off
+-    NewN = EmitShift(ARM::tLSLri, X, 31 - Range->first);
+-    ReplaceNode(And.getNode(), NewN);
+-  } else if (Range->first == 31) {
+-    //  2. Mask includes the MSB -> Simply shift the bottom N bits off
+-    NewN = EmitShift(ARM::tLSRri, X, Range->second);
+-    ReplaceNode(And.getNode(), NewN);
+-  } else if (Range->first == Range->second) {
+-    //  3. Only one bit is set. We can shift this into the sign bit and use a
+-    //     PL/MI comparison.
+-    NewN = EmitShift(ARM::tLSLri, X, 31 - Range->first);
+-    ReplaceNode(And.getNode(), NewN);
+-
+-    SwitchEQNEToPLMI = true;
+-  } else if (!Subtarget->hasV6T2Ops()) {
+-    //  4. Do a double shift to clear bottom and top bits, but only in
+-    //     thumb-1 mode as in thumb-2 we can use UBFX.
+-    NewN = EmitShift(ARM::tLSLri, X, 31 - Range->first);
+-    NewN = EmitShift(ARM::tLSRri, SDValue(NewN, 0),
+-                     Range->second + (31 - Range->first));
+-    ReplaceNode(And.getNode(), NewN);
+-  }
+-
+-}
+-
+ void ARMDAGToDAGISel::Select(SDNode *N) {
+   SDLoc dl(N);
+ 
+@@ -3013,7 +2935,6 @@ void ARMDAGToDAGISel::Select(SDNode *N) {
+         return;
+       }
+     }
+-
+     break;
+   }
+   case ARMISD::VMOVRRD:
+@@ -3205,27 +3126,9 @@ void ARMDAGToDAGISel::Select(SDNode *N) {
+     assert(N2.getOpcode() == ISD::Constant);
+     assert(N3.getOpcode() == ISD::Register);
+ 
+-    unsigned CC = (unsigned) cast<ConstantSDNode>(N2)->getZExtValue();
+-    
+-    if (InFlag.getOpcode() == ARMISD::CMPZ) {
+-      bool SwitchEQNEToPLMI;
+-      SelectCMPZ(InFlag.getNode(), SwitchEQNEToPLMI);
+-      InFlag = N->getOperand(4);
+-
+-      if (SwitchEQNEToPLMI) {
+-        switch ((ARMCC::CondCodes)CC) {
+-        default: llvm_unreachable("CMPZ must be either NE or EQ!");
+-        case ARMCC::NE:
+-          CC = (unsigned)ARMCC::MI;
+-          break;
+-        case ARMCC::EQ:
+-          CC = (unsigned)ARMCC::PL;
+-          break;
+-        }
+-      }
+-    }
+-
+-    SDValue Tmp2 = CurDAG->getTargetConstant(CC, dl, MVT::i32);
++    SDValue Tmp2 = CurDAG->getTargetConstant(((unsigned)
++                               cast<ConstantSDNode>(N2)->getZExtValue()), dl,
++                               MVT::i32);
+     SDValue Ops[] = { N1, Tmp2, N3, Chain, InFlag };
+     SDNode *ResNode = CurDAG->getMachineNode(Opc, dl, MVT::Other,
+                                              MVT::Glue, Ops);
+@@ -3280,38 +3183,6 @@ void ARMDAGToDAGISel::Select(SDNode *N) {
+     // Other cases are autogenerated.
+     break;
+   }
+-
+-  case ARMISD::CMOV: {
+-    SDValue InFlag = N->getOperand(4);
+-
+-    if (InFlag.getOpcode() == ARMISD::CMPZ) {
+-      bool SwitchEQNEToPLMI;
+-      SelectCMPZ(InFlag.getNode(), SwitchEQNEToPLMI);
+-
+-      if (SwitchEQNEToPLMI) {
+-        SDValue ARMcc = N->getOperand(2);
+-        ARMCC::CondCodes CC =
+-          (ARMCC::CondCodes)cast<ConstantSDNode>(ARMcc)->getZExtValue();
+-
+-        switch (CC) {
+-        default: llvm_unreachable("CMPZ must be either NE or EQ!");
+-        case ARMCC::NE:
+-          CC = ARMCC::MI;
+-          break;
+-        case ARMCC::EQ:
+-          CC = ARMCC::PL;
+-          break;
+-        }
+-        SDValue NewARMcc = CurDAG->getConstant((unsigned)CC, dl, MVT::i32);
+-        SDValue Ops[] = {N->getOperand(0), N->getOperand(1), NewARMcc,
+-                         N->getOperand(3), N->getOperand(4)};
+-        CurDAG->MorphNodeTo(N, ARMISD::CMOV, N->getVTList(), Ops);
+-      }
+-
+-    }
+-    // Other cases are autogenerated.
+-    break;
+-  }
+     
+   case ARMISD::VZIP: {
+     unsigned Opc = 0;
+diff --git a/test/CodeGen/ARM/and-cmpz.ll b/test/CodeGen/ARM/and-cmpz.ll
+deleted file mode 100644
+index 809dc6c..0000000
+--- a/test/CodeGen/ARM/and-cmpz.ll
++++ /dev/null
+@@ -1,71 +0,0 @@
+-; RUN: llc -mtriple=thumbv7m-linux-gnu < %s | FileCheck %s --check-prefix=CHECK --check-prefix=T2
+-; RUN: llc -mtriple=thumbv6m-linux-gnu < %s | FileCheck %s --check-prefix=CHECK --check-prefix=T1
+-
+-; CHECK-LABEL: single_bit:
+-; CHECK: lsls r0, r0, #23
+-; T2-NEXT: mov
+-; T2-NEXT: it
+-; T1-NEXT: bmi
+-define i32 @single_bit(i32 %p) {
+-  %a = and i32 %p, 256
+-  %b = icmp eq i32 %a, 0
+-  br i1 %b, label %true, label %false
+-
+-true:
+-  ret i32 1
+-
+-false:
+-  ret i32 2
+-}
+-
+-; CHECK-LABEL: multi_bit_lsb_ubfx:
+-; CHECK: lsls r0, r0, #24
+-; T2-NEXT: mov
+-; T2-NEXT: it
+-; T1-NEXT: beq
+-define i32 @multi_bit_lsb_ubfx(i32 %p) {
+-  %a = and i32 %p, 255
+-  %b = icmp eq i32 %a, 0
+-  br i1 %b, label %true, label %false
+-
+-true:
+-  ret i32 1
+-
+-false:
+-  ret i32 2
+-}
+-
+-; CHECK-LABEL: multi_bit_msb:
+-; CHECK: lsrs r0, r0, #24
+-; T2-NEXT: mov
+-; T2-NEXT: it
+-; T1-NEXT: beq
+-define i32 @multi_bit_msb(i32 %p) {
+-  %a = and i32 %p, 4278190080  ; 0xff000000
+-  %b = icmp eq i32 %a, 0
+-  br i1 %b, label %true, label %false
+-
+-true:
+-  ret i32 1
+-
+-false:
+-  ret i32 2
+-}
+-
+-; CHECK-LABEL: multi_bit_nosb:
+-; T1: lsls r0, r0, #8
+-; T1-NEXT: lsrs r0, r0, #24
+-; T2: tst.w
+-; T2-NEXT: it
+-; T1-NEXT: beq
+-define i32 @multi_bit_nosb(i32 %p) {
+-  %a = and i32 %p, 16711680 ; 0x00ff0000
+-  %b = icmp eq i32 %a, 0
+-  br i1 %b, label %true, label %false
+-
+-true:
+-  ret i32 1
+-
+-false:
+-  ret i32 2
+-}
+diff --git a/test/CodeGen/ARM/arm-and-tst-peephole.ll b/test/CodeGen/ARM/arm-and-tst-peephole.ll
+index c766fe4..04eae8f 100644
+--- a/test/CodeGen/ARM/arm-and-tst-peephole.ll
++++ b/test/CodeGen/ARM/arm-and-tst-peephole.ll
+@@ -28,10 +28,12 @@ tailrecurse:                                      ; preds = %sw.bb, %entry
+ ; ARM:      ands {{r[0-9]+}}, {{r[0-9]+}}, #3
+ ; ARM-NEXT: beq
+ 
+-; THUMB:      lsls r[[R0:[0-9]+]], r{{.*}}, #30
++; THUMB:      movs r[[R0:[0-9]+]], #3
++; THUMB-NEXT: ands r[[R0]], r
++; THUMB-NEXT: cmp r[[R0]], #0
+ ; THUMB-NEXT: beq
+ 
+-; T2:      lsls r[[R0:[0-9]+]], r{{.*}}, #30
++; T2:      ands {{r[0-9]+}}, {{r[0-9]+}}, #3
+ ; T2-NEXT: beq
+ 
+   %and = and i32 %0, 3
+@@ -91,7 +93,7 @@ entry:
+   %1 = load i8, i8* %0, align 1
+   %2 = zext i8 %1 to i32
+ ; ARM: ands
+-; THUMB: lsls
++; THUMB: ands
+ ; T2: ands
+ ; V8: ands
+ ; V8-NEXT: beq
+@@ -148,9 +150,10 @@ define i32 @test_tst_assessment(i1 %lhs, i1 %rhs) {
+   %rhs32 = zext i1 %rhs to i32
+   %diff = sub nsw i32 %lhs32, %rhs32
+ ; ARM: tst r1, #1
+-; THUMB: lsls r1, r1, #31
+-; T2: lsls r1, r1, #31
+-; V8: lsls r1, r1, #31
++; THUMB: movs [[RTMP:r[0-9]+]], #1
++; THUMB: tst r1, [[RTMP]]
++; T2: tst.w r1, #1
++; V8: tst.w r1, #1
+   ret i32 %diff
+ }
+ 
+diff --git a/test/CodeGen/ARM/arm-shrink-wrapping.ll b/test/CodeGen/ARM/arm-shrink-wrapping.ll
+index 4866eeb..4ab090f 100644
+--- a/test/CodeGen/ARM/arm-shrink-wrapping.ll
++++ b/test/CodeGen/ARM/arm-shrink-wrapping.ll
+@@ -638,12 +638,12 @@ declare double @llvm.pow.f64(double, double)
+ ; during PEI with shrink-wrapping enable.
+ ; CHECK-LABEL: debug_info:
+ ;
+-; ENABLE: {{tst  r2, #1|lsls r1, r2, #31}}
++; ENABLE: tst{{(\.w)?}}  r2, #1
+ ; ENABLE-NEXT: beq      [[BB13:LBB[0-9_]+]]
+ ;
+ ; CHECK: push
+ ;
+-; DISABLE: {{tst  r2, #1|lsls r1, r2, #31}}
++; DISABLE: tst{{(\.w)?}}  r2, #1
+ ; DISABLE-NEXT: beq      [[BB13:LBB[0-9_]+]]
+ ;
+ ; CHECK: bl{{x?}} _pow
+diff --git a/test/CodeGen/ARM/call-tc.ll b/test/CodeGen/ARM/call-tc.ll
+index c5cfb9d..2277a58 100644
+--- a/test/CodeGen/ARM/call-tc.ll
++++ b/test/CodeGen/ARM/call-tc.ll
+@@ -120,7 +120,7 @@ if.end:                                           ; preds = %entry
+   br i1 %tobool2, label %if.end5, label %if.then3
+ 
+ if.then3:                                         ; preds = %if.end
+-; CHECKT2D: bmi.w _b
++; CHECKT2D: bne.w _b
+   %call4 = tail call i32 @b(i32 %x) nounwind
+   br label %return
+ 
+diff --git a/test/CodeGen/ARM/debug-info-branch-folding.ll b/test/CodeGen/ARM/debug-info-branch-folding.ll
+index d030f00..b4e48c4 100644
+--- a/test/CodeGen/ARM/debug-info-branch-folding.ll
++++ b/test/CodeGen/ARM/debug-info-branch-folding.ll
+@@ -3,7 +3,7 @@ target datalayout = "e-p:32:32:32-i1:8:32-i8:8:32-i16:16:32-i32:32:32-i64:32:32-
+ target triple = "thumbv7-apple-macosx10.6.7"
+ 
+ ;CHECK: 	vadd.f32	q4, q8, q8
+-;CHECK-NEXT: Ltmp
++;CHECK-NEXT: Ltmp1
+ ;CHECK-NEXT: LBB0_1
+ 
+ ;CHECK:@DEBUG_VALUE: x <- %Q4{{$}}
+diff --git a/test/CodeGen/Thumb/thumb-shrink-wrapping.ll b/test/CodeGen/Thumb/thumb-shrink-wrapping.ll
+index 6114b72..0fa790c 100644
+--- a/test/CodeGen/Thumb/thumb-shrink-wrapping.ll
++++ b/test/CodeGen/Thumb/thumb-shrink-wrapping.ll
+@@ -650,14 +650,11 @@ define i1 @beq_to_bx(i32* %y, i32 %head) {
+ 
+ ; CHECK: tst r3, r4
+ ; ENABLE-NEXT: pop {r4}
+-; ENABLE-NEXT: mov r12, r{{.*}}
+-; ENABLE-NEXT: pop {r0}
+-; ENABLE-NEXT: mov lr, r0
+-; ENABLE-NEXT: mov r0, r12
++; ENABLE-NEXT: pop {r3}
++; ENABLE-NEXT: mov lr, r3
+ ; CHECK-NEXT: beq [[EXIT_LABEL]]
+ 
+ ; CHECK: str r1, [r2]
+-; CHECK: str r3, [r2]
+ ; CHECK-NEXT: movs r0, #0
+ ; CHECK-NEXT: [[EXIT_LABEL]]: @ %cleanup
+ ; ENABLE-NEXT: bx lr
+@@ -678,7 +675,6 @@ if.end:
+ 
+ if.end4:
+   store i32 %head, i32* %y, align 4
+-  store volatile i32 %z, i32* %y, align 4
+   br label %cleanup
+ 
+ cleanup:
+diff --git a/test/CodeGen/Thumb2/float-ops.ll b/test/CodeGen/Thumb2/float-ops.ll
+index f4c0ef0..c9f93f2 100644
+--- a/test/CodeGen/Thumb2/float-ops.ll
++++ b/test/CodeGen/Thumb2/float-ops.ll
+@@ -259,9 +259,9 @@ define i64 @bitcast_d_to_i(double %a) {
+ 
+ define float @select_f(float %a, float %b, i1 %c) {
+ ; CHECK-LABEL: select_f:
+-; NONE: lsls    r2, r2, #31
++; NONE: tst.w   r2, #1
+ ; NONE: moveq   r0, r1
+-; HARD: lsls    r0, r0, #31
++; HARD: tst.w   r0, #1
+ ; VFP4-ALL: vmovne.f32      s1, s0
+ ; VFP4-ALL: vmov.f32        s0, s1
+ ; FP-ARMv8: vseleq.f32 s0, s1, s0
+@@ -271,18 +271,18 @@ define float @select_f(float %a, float %b, i1 %c) {
+ 
+ define double @select_d(double %a, double %b, i1 %c) {
+ ; CHECK-LABEL: select_d:
+-; NONE: ldr{{(.w)?}}     [[REG:r[0-9]+]], [sp]
+-; NONE: lsls{{(.w)?}}    [[REG]], [[REG]], #31
++; NONE: ldr.w   [[REG:r[0-9]+]], [sp]
++; NONE: ands    [[REG]], [[REG]], #1
+ ; NONE: moveq   r0, r2
+ ; NONE: moveq   r1, r3
+-; SP: lsls r0, r0, #31
++; SP: ands r0, r0, #1
+ ; SP-DAG: vmov [[ALO:r[0-9]+]], [[AHI:r[0-9]+]], d0
+ ; SP-DAG: vmov [[BLO:r[0-9]+]], [[BHI:r[0-9]+]], d1
+ ; SP: itt ne
+ ; SP-DAG: movne [[BLO]], [[ALO]]
+ ; SP-DAG: movne [[BHI]], [[AHI]]
+ ; SP: vmov d0, [[BLO]], [[BHI]]
+-; DP: lsls   r0, r0, #31
++; DP: tst.w   r0, #1
+ ; VFP4-DP: vmovne.f64      d1, d0
+ ; VFP4-DP: vmov.f64        d0, d1
+ ; FP-ARMV8: vseleq.f64      d0, d1, d0

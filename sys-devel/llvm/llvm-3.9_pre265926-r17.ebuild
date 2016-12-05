@@ -250,6 +250,17 @@ pick_next_cherries() {
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
 	done
 	popd >/dev/null || die
+
+	# llvm
+	CHERRIES=""
+	# Arm ChromeOS failed to boot without this.
+	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
+
+	pushd "${S}" >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
 }
 
 src_prepare() {
