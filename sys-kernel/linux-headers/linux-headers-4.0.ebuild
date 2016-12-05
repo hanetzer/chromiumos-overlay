@@ -36,6 +36,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0006-CHROMIUM-v4l-Add-V4L2_PIX_FMT_VP9-definition.patch"
 	epatch "${FILESDIR}/0007-CHROMIUM-v4l-Add-VP9-low-level-decoder-API-controls.patch"
 	epatch "${FILESDIR}/0008-CHROMIUM-v4l-Add-V4L2_CID_MPEG_VIDEO_H264_SPS_PPS_BE.patch"
+	epatch "${FILESDIR}/0009-BACKPORT-v4l-Add-YUV-4-2-2-and-YUV-4-4-4-tri-planar-.patch"
 }
 
 src_install() {

@@ -1,0 +1,40 @@
+From eef67ab94c42a8c6ca48797dcf6da0e7088641e5 Mon Sep 17 00:00:00 2001
+From: Minghsiu Tsai <minghsiu.tsai@mediatek.com>
+Date: Fri, 2 Dec 2016 21:34:38 +0800
+Subject: [PATCH] BACKPORT: v4l: Add YUV 4:2:2 and YUV 4:4:4 tri-planar
+ non-contiguous formats
+
+The formats use three planes through the multiplanar API, allowing for
+non-contiguous planes in memory.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Hans Verkuil <hans.verkuil@cisco.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+(am from https://patchwork.kernel.org/patch/7617111/)
+
+BUG=chrome-os-partner:43703
+TEST=Compiled and tested on Elm.
+
+Change-Id: I26a98ed6b973aa57019199c1ea8908342af6b651
+---
+ include/uapi/linux/videodev2.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index a6ea61a..c70853a 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -494,6 +494,10 @@ struct v4l2_pix_format {
+ /* three non contiguous planes - Y, Cb, Cr */
+ #define V4L2_PIX_FMT_YUV420M v4l2_fourcc('Y', 'M', '1', '2') /* 12  YUV420 planar */
+ #define V4L2_PIX_FMT_YVU420M v4l2_fourcc('Y', 'M', '2', '1') /* 12  YVU420 planar */
++#define V4L2_PIX_FMT_YUV422M v4l2_fourcc('Y', 'M', '1', '6') /* 16  YUV422 planar */
++#define V4L2_PIX_FMT_YVU422M v4l2_fourcc('Y', 'M', '6', '1') /* 16  YVU422 planar */
++#define V4L2_PIX_FMT_YUV444M v4l2_fourcc('Y', 'M', '2', '4') /* 24  YUV444 planar */
++#define V4L2_PIX_FMT_YVU444M v4l2_fourcc('Y', 'M', '4', '2') /* 24  YVU444 planar */
+ 
+ /* Bayer formats - see http://www.siliconimaging.com/RGB%20Bayer.htm */
+ #define V4L2_PIX_FMT_SBGGR8  v4l2_fourcc('B', 'A', '8', '1') /*  8  BGBG.. GRGR.. */
+-- 
+2.6.6
+
