@@ -46,6 +46,7 @@ SERVER_IUSE_TESTS="
 	+tests_audio_AudioNodeSwitch
 	+tests_audio_AudioQualityAfterSuspend
 	+tests_audio_AudioVolume
+	+tests_audio_AudioWebRTCLoopback
 	+tests_audio_InternalCardNodes
 	+tests_audio_MediaBasicVerification
 	+tests_audio_PowerConsumption
