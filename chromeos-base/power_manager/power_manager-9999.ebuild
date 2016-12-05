@@ -91,17 +91,16 @@ src_install() {
 
 	# Init scripts
 	if use systemd; then
-		systemd_dounit init/powerd.service
+		systemd_dounit init/systemd/*.service
 		systemd_enable_service boot-services.target powerd.service
-		systemd_dounit init/report-power-metrics.service
 		systemd_enable_service system-services.target report-power-metrics.service
-		systemd_dotmpfilesd init/powerd_directories.conf
+		systemd_dotmpfilesd init/systemd/powerd_directories.conf
 	else
 		insinto /etc/init
-		doins init/*.conf
+		doins init/upstart/*.conf
 	fi
 	insinto /usr/share/cros/init
-	doins init/powerd-pre-start.sh
+	doins init/shared/powerd-pre-start.sh
 
 	if use buffet; then
 		# Buffet command handler definition
