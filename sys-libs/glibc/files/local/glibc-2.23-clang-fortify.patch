@@ -1,19 +1,10 @@
-From: George Burgess <gbiv@chromium.org>
+Enable fortify for clang builds.
 
-This patch adds a clang-specific FORTIFY to our glibc implementation. No
-attempt has been made to upstream it yet, because we need two more
-attributes implemented in clang in order to have a "complete" FORTIFY
-implementation. However, this patch gets us ~99% of the way there. Once
-we update clang + this patch, we'll try to upstream this.
-
-For documentation on FORTIFY and some background on how a
-clang-specific FORTIFY works, please see this doc:
-https://docs.google.com/document/d/1DFfZDICTbL7RqS74wJVIJ-YnjQOj1SaoqfhbgddFYSM/edit?usp=sharing
-
-https://crbug.com/638456
---- include/stdio.h
-+++ include/stdio.h
-@@ -164,12 +164,36 @@ libc_hidden_proto (__obstack_vprintf_chk)
+diff --git a/include/stdio.h b/include/stdio.h
+index 1ffbc40..43d8f3a 100644
+--- a/include/stdio.h
++++ b/include/stdio.h
+@@ -182,12 +182,36 @@ libc_hidden_proto (__obstack_vprintf_chk)
  
  /* The <stdio.h> header does not include the declaration for gets
     anymore when compiling with _GNU_SOURCE.  Provide a copy here.  */
@@ -53,7 +44,7 @@ https://crbug.com/638456
  
  __fortify_function __wur char *
  gets (char *__str)
-@@ -178,6 +202,8 @@ gets (char *__str)
+@@ -196,6 +220,8 @@ gets (char *__str)
      return __gets_chk (__str, __bos (__str));
    return __gets_warn (__str);
  }
@@ -61,9 +52,11 @@ https://crbug.com/638456
 +#   undef __warn_gets_use_something_else
  #  endif
  
- __END_DECLS
---- io/bits/fcntl2.h
-+++ io/bits/fcntl2.h
+ extern FILE * __fmemopen (void *buf, size_t len, const char *mode);
+diff --git a/io/bits/fcntl2.h b/io/bits/fcntl2.h
+index c3f267e..40d0946 100644
+--- a/io/bits/fcntl2.h
++++ b/io/bits/fcntl2.h
 @@ -32,10 +32,32 @@ extern int __REDIRECT (__open_2, (const char *__path, int __oflag),
  extern int __REDIRECT (__open_alias, (const char *__path, int __oflag, ...),
  		       open64) __nonnull ((1));
@@ -71,7 +64,7 @@ https://crbug.com/638456
 -__errordecl (__open_too_many_args,
 -	     "open can be called either with 2 or 3 arguments, not more");
 -__errordecl (__open_missing_mode,
--	     "open with O_CREAT in second argument needs 3 arguments");
+-	     "open with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
 +
 +#define __warn_open_too_many_args \
 +  "open can be called either with 2 or 3 arguments, not more"
@@ -117,12 +110,12 @@ https://crbug.com/638456
 -__errordecl (__open64_too_many_args,
 -	     "open64 can be called either with 2 or 3 arguments, not more");
 -__errordecl (__open64_missing_mode,
--	     "open64 with O_CREAT in second argument needs 3 arguments");
+-	     "open64 with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
 +
-+# define __warn_open64_too_many_args "open64 can be called either with 2 or " \
-+  "3 arguments, not more"
-+# define __warn_open64_missing_mode "open64 with O_CREAT in second argument " \
-+  "needs 3 arguments"
++# define __warn_open64_too_many_args \
++  "open64 can be called either with 2 or 3 arguments, not more"
++# define __warn_open64_missing_mode \
++  "open64 with O_CREAT in second argument needs 3 arguments"
 +# ifdef __use_clang_fortify
 +__fortify_error_function __clang_error (__warn_open64_too_many_args) int
 +open64 (const char *__path, int __oflag, int __mode, ...);
@@ -167,7 +160,7 @@ https://crbug.com/638456
 -__errordecl (__openat_too_many_args,
 -	     "openat can be called either with 3 or 4 arguments, not more");
 -__errordecl (__openat_missing_mode,
--	     "openat with O_CREAT in third argument needs 4 arguments");
+-	     "openat with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
 +
 +# define __warn_openat_too_many_args "openat can be called either with 3 or " \
 +       "4 arguments, not more"
@@ -217,7 +210,7 @@ https://crbug.com/638456
 -__errordecl (__openat64_too_many_args,
 -	     "openat64 can be called either with 3 or 4 arguments, not more");
 -__errordecl (__openat64_missing_mode,
--	     "openat64 with O_CREAT in third argument needs 4 arguments");
+-	     "openat64 with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
  
 +#  define __warn_openat64_too_many_args "openat64 can be called either with " \
 +       "3 or 4 arguments, not more"
@@ -260,8 +253,10 @@ https://crbug.com/638456
 +#  undef __warn_openat64_missing_mode
  # endif
  #endif
---- io/bits/poll2.h
-+++ io/bits/poll2.h
+diff --git a/io/bits/poll2.h b/io/bits/poll2.h
+index 137bfaf..39b2ca9 100644
+--- a/io/bits/poll2.h
++++ b/io/bits/poll2.h
 @@ -27,10 +27,32 @@ extern int __REDIRECT (__poll_alias, (struct pollfd *__fds, nfds_t __nfds,
  				      int __timeout), poll);
  extern int __poll_chk (struct pollfd *__fds, nfds_t __nfds, int __timeout,
@@ -352,9 +347,11 @@ https://crbug.com/638456
  #endif
  
  __END_DECLS
---- io/fcntl.h
-+++ io/fcntl.h
-@@ -166,9 +166,12 @@ extern int fcntl (int __fd, int __cmd, ...);
+diff --git a/io/fcntl.h b/io/fcntl.h
+index 1a92a8d..c2865be 100644
+--- a/io/fcntl.h
++++ b/io/fcntl.h
+@@ -176,9 +176,12 @@ extern int fcntl (int __fd, int __cmd, ...);
     This function is a cancellation point and therefore not marked with
     __THROW.  */
  #ifndef __USE_FILE_OFFSET64
@@ -368,7 +365,7 @@ https://crbug.com/638456
  extern int __REDIRECT (open, (const char *__file, int __oflag, ...), open64)
       __nonnull ((1));
  # else
-@@ -176,7 +179,9 @@ extern int __REDIRECT (open, (const char *__file, int __oflag, ...), open64)
+@@ -186,7 +189,9 @@ extern int __REDIRECT (open, (const char *__file, int __oflag, ...), open64)
  # endif
  #endif
  #ifdef __USE_LARGEFILE64
@@ -379,7 +376,7 @@ https://crbug.com/638456
  #endif
  
  #ifdef __USE_ATFILE
-@@ -190,10 +195,12 @@ extern int open64 (const char *__file, int __oflag, ...) __nonnull ((1));
+@@ -200,10 +205,12 @@ extern int open64 (const char *__file, int __oflag, ...) __nonnull ((1));
     This function is a cancellation point and therefore not marked with
     __THROW.  */
  # ifndef __USE_FILE_OFFSET64
@@ -393,7 +390,7 @@ https://crbug.com/638456
  extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
  				...), openat64) __nonnull ((2));
  #  else
-@@ -201,8 +208,9 @@ extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
+@@ -211,8 +218,9 @@ extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
  #  endif
  # endif
  # ifdef __USE_LARGEFILE64
@@ -404,7 +401,7 @@ https://crbug.com/638456
  # endif
  #endif
  
-@@ -298,7 +306,7 @@ extern int posix_fallocate64 (int __fd, off64_t __offset, off64_t __len);
+@@ -308,7 +316,7 @@ extern int posix_fallocate64 (int __fd, off64_t __offset, off64_t __len);
  
  /* Define some inlines helping to catch common problems.  */
  #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function \
@@ -413,8 +410,10 @@ https://crbug.com/638456
  # include <bits/fcntl2.h>
  #endif
  
---- io/sys/poll.h
-+++ io/sys/poll.h
+diff --git a/io/sys/poll.h b/io/sys/poll.h
+index e751860..bc0656f 100644
+--- a/io/sys/poll.h
++++ b/io/sys/poll.h
 @@ -54,7 +54,9 @@ __BEGIN_DECLS
  
     This function is a cancellation point and therefore not marked with
@@ -439,8 +438,10 @@ https://crbug.com/638456
  #endif
  
  __END_DECLS
---- libio/bits/stdio2.h
-+++ libio/bits/stdio2.h
+diff --git a/libio/bits/stdio2.h b/libio/bits/stdio2.h
+index fa3be79..850b1cd 100644
+--- a/libio/bits/stdio2.h
++++ b/libio/bits/stdio2.h
 @@ -26,7 +26,21 @@ extern int __vsprintf_chk (char *__restrict __s, int __flag, size_t __slen,
  			   const char *__restrict __format,
  			   _G_va_list __ap) __THROW;
@@ -915,8 +916,10 @@ https://crbug.com/638456
 +# endif
 +# undef __warn_fread_unlocked_buflen
  #endif
---- libio/stdio.h
-+++ libio/stdio.h
+diff --git a/libio/stdio.h b/libio/stdio.h
+index d8d7fa0..37e2a1f 100644
+--- a/libio/stdio.h
++++ b/libio/stdio.h
 @@ -361,8 +361,10 @@ extern int fprintf (FILE *__restrict __stream,
     marked with __THROW.  */
  extern int printf (const char *__restrict __format, ...);
@@ -939,7 +942,7 @@ https://crbug.com/638456
 +		     _G_va_list __arg) __THROWNL __CLANG_NO_MANGLE (vsprintf);
  __END_NAMESPACE_STD
  
- #if defined __USE_BSD || defined __USE_ISOC99 || defined __USE_UNIX98
+ #if defined __USE_ISOC99 || defined __USE_UNIX98
  __BEGIN_NAMESPACE_C99
  /* Maximum chars of output to write in MAXLEN.  */
 +__fortify_overloadable
@@ -1025,13 +1028,15 @@ https://crbug.com/638456
  extern size_t fwrite_unlocked (const void *__restrict __ptr, size_t __size,
  			       size_t __n, FILE *__restrict __stream);
  #endif
---- misc/bits/syslog.h
-+++ misc/bits/syslog.h
+diff --git a/misc/bits/syslog.h b/misc/bits/syslog.h
+index 31dae38..ea37af2 100644
+--- a/misc/bits/syslog.h
++++ b/misc/bits/syslog.h
 @@ -20,11 +20,33 @@
  # error "Never include <bits/syslog.h> directly; use <sys/syslog.h> instead."
  #endif
  
-+#ifdef __USE_BSD
++#ifdef __USE_MISC
 +extern void __vsyslog_chk (int __pri, int __flag, const char *__fmt,
 +			   __gnuc_va_list __ap)
 +     __attribute__ ((__format__ (__printf__, 3, 0)));
@@ -1047,7 +1052,7 @@ https://crbug.com/638456
       __attribute__ ((__format__ (__printf__, 3, 4)));
  
 -#ifdef __va_arg_pack
-+#if defined __use_clang_fortify && __USE_BSD
++#if defined __use_clang_fortify && __USE_MISC
 +/* clang doesn't support __va_arg_pack, so this is only possible if we have
 +   vsyslog.  */
 +__fortify_function void
@@ -1062,12 +1067,13 @@ https://crbug.com/638456
  __fortify_function void
  syslog (int __pri, const char *__fmt, ...)
  {
-@@ -35,15 +57,3 @@ syslog (int __pri, const char *__fmt, ...)
+@@ -34,16 +56,3 @@ syslog (int __pri, const char *__fmt, ...)
+ # define syslog(pri, ...) \
    __syslog_chk (pri, __USE_FORTIFY_LEVEL - 1, __VA_ARGS__)
  #endif
- 
 -
--#ifdef __USE_BSD
+-
+-#ifdef __USE_MISC
 -extern void __vsyslog_chk (int __pri, int __flag, const char *__fmt,
 -			   __gnuc_va_list __ap)
 -     __attribute__ ((__format__ (__printf__, 3, 0)));
@@ -1078,9 +1084,11 @@ https://crbug.com/638456
 -  __vsyslog_chk (__pri,  __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 -}
 -#endif
---- misc/sys/cdefs.h
-+++ misc/sys/cdefs.h
-@@ -129,9 +129,51 @@
+diff --git a/misc/sys/cdefs.h b/misc/sys/cdefs.h
+index 7fd4154..55b773f 100644
+--- a/misc/sys/cdefs.h
++++ b/misc/sys/cdefs.h
+@@ -129,8 +129,51 @@
  
  
  /* Fortify support.  */
@@ -1088,7 +1096,7 @@ https://crbug.com/638456
 +#define __bos_level (__USE_FORTIFY_LEVEL > 1)
 +#define __bos(ptr) __builtin_object_size (ptr, __bos_level)
  #define __bos0(ptr) __builtin_object_size (ptr, 0)
- #define __fortify_function __extern_always_inline __attribute_artificial__
++#define __fortify_function __extern_always_inline __attribute_artificial__
 +#if defined __clang__ && __USE_FORTIFY_LEVEL > 0 \
 +    && !defined _CLANG_FORTIFY_DISABLE
 +# define __use_clang_fortify 1
@@ -1133,8 +1141,10 @@ https://crbug.com/638456
  
  #if __GNUC_PREREQ (4,3)
  # define __warndecl(name, msg) \
---- posix/bits/unistd.h
-+++ posix/bits/unistd.h
+diff --git a/posix/bits/unistd.h b/posix/bits/unistd.h
+index 0105f04..b3b1714 100644
+--- a/posix/bits/unistd.h
++++ b/posix/bits/unistd.h
 @@ -24,11 +24,31 @@ extern ssize_t __read_chk (int __fd, void *__buf, size_t __nbytes,
  			   size_t __buflen) __wur;
  extern ssize_t __REDIRECT (__read_alias, (int __fd, void *__buf,
@@ -1295,7 +1305,7 @@ https://crbug.com/638456
 +# undef __warn_pread64_bufsize
  #endif
  
- #if defined __USE_BSD || defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+ #if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
 @@ -128,12 +218,36 @@ extern ssize_t __REDIRECT_NTH (__readlink_alias,
  			       (const char *__restrict __path,
  				char *__restrict __buf, size_t __len), readlink)
@@ -1434,7 +1444,7 @@ https://crbug.com/638456
 +#endif
 +#undef __warn_getcwd_buf_size
  
- #if defined __USE_BSD || defined __USE_XOPEN_EXTENDED
+ #if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
 +# define __warn_getwd_use_something_else \
 +  "please use getcwd instead, as getwd doesn't specify buffer size"
 +
@@ -1745,9 +1755,11 @@ https://crbug.com/638456
 +# endif
 +# undef __warn_getdomainname_buflen
  #endif
---- posix/unistd.h
-+++ posix/unistd.h
-@@ -357,7 +357,9 @@ extern int close (int __fd);
+diff --git a/posix/unistd.h b/posix/unistd.h
+index 405638c..d0331fc 100644
+--- a/posix/unistd.h
++++ b/posix/unistd.h
+@@ -360,7 +360,9 @@ extern int close (int __fd);
  
     This function is a cancellation point and therefore not marked with
     __THROW.  */
@@ -1758,7 +1770,7 @@ https://crbug.com/638456
  
  /* Write N bytes of BUF to FD.  Return the number written, or -1.
  
-@@ -373,8 +375,9 @@ extern ssize_t write (int __fd, const void *__buf, size_t __n) __wur;
+@@ -376,8 +378,9 @@ extern ssize_t write (int __fd, const void *__buf, size_t __n) __wur;
  
     This function is a cancellation point and therefore not marked with
     __THROW.  */
@@ -1769,7 +1781,7 @@ https://crbug.com/638456
  
  /* Write N bytes of BUF to FD at the given position OFFSET without
     changing the file pointer.  Return the number written, or -1.
-@@ -385,6 +388,7 @@ extern ssize_t pwrite (int __fd, const void *__buf, size_t __n,
+@@ -388,6 +391,7 @@ extern ssize_t pwrite (int __fd, const void *__buf, size_t __n,
  		       __off_t __offset) __wur;
  # else
  #  ifdef __REDIRECT
@@ -1777,7 +1789,7 @@ https://crbug.com/638456
  extern ssize_t __REDIRECT (pread, (int __fd, void *__buf, size_t __nbytes,
  				   __off64_t __offset),
  			   pread64) __wur;
-@@ -401,8 +405,9 @@ extern ssize_t __REDIRECT (pwrite, (int __fd, const void *__buf,
+@@ -404,8 +408,9 @@ extern ssize_t __REDIRECT (pwrite, (int __fd, const void *__buf,
  /* Read NBYTES into BUF from FD at the given position OFFSET without
     changing the file pointer.  Return the number read, -1 for errors
     or 0 for EOF.  */
@@ -1788,7 +1800,7 @@ https://crbug.com/638456
  /* Write N bytes of BUF to FD at the given position OFFSET without
     changing the file pointer.  Return the number written, or -1.  */
  extern ssize_t pwrite64 (int __fd, const void *__buf, size_t __n,
-@@ -508,7 +513,9 @@ extern int fchdir (int __fd) __THROW __wur;
+@@ -511,7 +516,9 @@ extern int fchdir (int __fd) __THROW __wur;
     an array is allocated with `malloc'; the array is SIZE
     bytes long, unless SIZE == 0, in which case it is as
     big as necessary.  */
@@ -1799,7 +1811,7 @@ https://crbug.com/638456
  
  #ifdef	__USE_GNU
  /* Return a malloc'd string containing the current directory name.
-@@ -522,8 +529,10 @@ extern char *get_current_dir_name (void) __THROW;
+@@ -525,8 +532,10 @@ extern char *get_current_dir_name (void) __THROW;
  /* Put the absolute pathname of the current working directory in BUF.
     If successful, return BUF.  If not, put an error message in
     BUF and return NULL.  BUF should be at least PATH_MAX bytes long.  */
@@ -1811,7 +1823,7 @@ https://crbug.com/638456
  #endif
  
  
-@@ -620,7 +629,9 @@ extern long int sysconf (int __name) __THROW;
+@@ -623,7 +632,9 @@ extern long int sysconf (int __name) __THROW;
  
  #ifdef	__USE_POSIX2
  /* Get the value of the string-valued system variable NAME.  */
@@ -1822,7 +1834,7 @@ https://crbug.com/638456
  #endif
  
  
-@@ -686,7 +697,9 @@ extern __gid_t getegid (void) __THROW;
+@@ -689,7 +700,9 @@ extern __gid_t getegid (void) __THROW;
  /* If SIZE is zero, return the number of supplementary groups
     the calling process is in.  Otherwise, fill in the group IDs
     of its supplementary groups in LIST and return the number written.  */
@@ -1833,7 +1845,7 @@ https://crbug.com/638456
  
  #ifdef	__USE_GNU
  /* Return nonzero iff the calling process is in group GID.  */
-@@ -767,12 +780,14 @@ extern __pid_t vfork (void) __THROW;
+@@ -770,12 +783,14 @@ extern __pid_t vfork (void) __THROW;
  
  /* Return the pathname of the terminal FD is open on, or NULL on errors.
     The returned storage is good only until the next call to this function.  */
@@ -1850,7 +1862,7 @@ https://crbug.com/638456
  
  /* Return 1 if FD is a valid descriptor associated
     with a terminal, zero if not.  */
-@@ -806,9 +821,10 @@ extern int symlink (const char *__from, const char *__to)
+@@ -809,9 +824,10 @@ extern int symlink (const char *__from, const char *__to)
  /* Read the contents of the symbolic link PATH into no more than
     LEN bytes of BUF.  The contents are not null-terminated.
     Returns the number of characters read, or -1 for errors.  */
@@ -1859,10 +1871,10 @@ https://crbug.com/638456
  			 char *__restrict __buf, size_t __len)
 -     __THROW __nonnull ((1, 2)) __wur;
 +     __THROW __nonnull ((1, 2)) __wur __CLANG_NO_MANGLE (readlink);
- #endif /* Use BSD.  */
+ #endif /* Use POSIX.1-2001.  */
  
  #ifdef __USE_ATFILE
-@@ -817,9 +833,10 @@ extern int symlinkat (const char *__from, int __tofd,
+@@ -820,9 +836,10 @@ extern int symlinkat (const char *__from, int __tofd,
  		      const char *__to) __THROW __nonnull ((1, 3)) __wur;
  
  /* Like readlink but a relative PATH is interpreted relative to FD.  */
@@ -1874,7 +1886,7 @@ https://crbug.com/638456
  #endif
  
  /* Remove the link NAME.  */
-@@ -854,7 +871,9 @@ extern char *getlogin (void);
+@@ -857,7 +874,9 @@ extern char *getlogin (void);
  
     This function is a possible cancellation point and therefore not
     marked with __THROW.  */
@@ -1884,8 +1896,8 @@ https://crbug.com/638456
 +  __CLANG_NO_MANGLE (getlogin_r);
  #endif
  
- #ifdef	__USE_BSD
-@@ -876,7 +895,9 @@ extern int setlogin (const char *__name) __THROW __nonnull ((1));
+ #ifdef	__USE_MISC
+@@ -879,7 +898,9 @@ extern int setlogin (const char *__name) __THROW __nonnull ((1));
  /* Put the name of the current host in no more than LEN bytes of NAME.
     The result is null-terminated if LEN is large enough for the full
     name and the terminator.  */
@@ -1896,7 +1908,7 @@ https://crbug.com/638456
  #endif
  
  
-@@ -894,8 +915,9 @@ extern int sethostid (long int __id) __THROW __wur;
+@@ -897,8 +918,9 @@ extern int sethostid (long int __id) __THROW __wur;
  /* Get and set the NIS (aka YP) domain name, if any.
     Called just like `gethostname' and `sethostname'.
     The NIS domain name is usually the empty string when not using NIS.  */
@@ -1907,8 +1919,10 @@ https://crbug.com/638456
  extern int setdomainname (const char *__name, size_t __len)
       __THROW __nonnull ((1)) __wur;
  
---- rt/bits/mqueue2.h
-+++ rt/bits/mqueue2.h
+diff --git a/rt/bits/mqueue2.h b/rt/bits/mqueue2.h
+index 712c8e2..258cad1 100644
+--- a/rt/bits/mqueue2.h
++++ b/rt/bits/mqueue2.h
 @@ -22,17 +22,60 @@
  
  /* Check that calls to mq_open with O_CREAT set have an appropriate third and fourth
@@ -1980,8 +1994,10 @@ https://crbug.com/638456
 +#endif
 +#undef __warn_mq_open_wrong_number_of_args
 +#undef __warn_mq_open_missing_mode_and_attr
---- rt/mqueue.h
-+++ rt/mqueue.h
+diff --git a/rt/mqueue.h b/rt/mqueue.h
+index 9700cdc..892ac60 100644
+--- a/rt/mqueue.h
++++ b/rt/mqueue.h
 @@ -37,8 +37,9 @@ __BEGIN_DECLS
     argument is taken as `struct mq_attr *', pointer to message queue
     attributes.  If the fourth argument is NULL, default attributes are
@@ -2002,8 +2018,10 @@ https://crbug.com/638456
  # include <bits/mqueue2.h>
  #endif
  
---- socket/bits/socket2.h
-+++ socket/bits/socket2.h
+diff --git a/socket/bits/socket2.h b/socket/bits/socket2.h
+index f499518..be2cb3d 100644
+--- a/socket/bits/socket2.h
++++ b/socket/bits/socket2.h
 @@ -24,11 +24,32 @@ extern ssize_t __recv_chk (int __fd, void *__buf, size_t __n, size_t __buflen,
  			   int __flags);
  extern ssize_t __REDIRECT (__recv_alias, (int __fd, void *__buf, size_t __n,
@@ -2096,8 +2114,10 @@ https://crbug.com/638456
 +#endif
 +#undef __warn_recvfrom_buflen
 +
---- socket/sys/socket.h
-+++ socket/sys/socket.h
+diff --git a/socket/sys/socket.h b/socket/sys/socket.h
+index c9f0f50..f029588 100644
+--- a/socket/sys/socket.h
++++ b/socket/sys/socket.h
 @@ -153,7 +153,9 @@ extern ssize_t send (int __fd, const void *__buf, size_t __n, int __flags);
  
     This function is a cancellation point and therefore not marked with
@@ -2122,8 +2142,10 @@ https://crbug.com/638456
  
  
  /* Send a message described MESSAGE on socket FD.
---- stdlib/bits/stdlib.h
-+++ stdlib/bits/stdlib.h
+diff --git a/stdlib/bits/stdlib.h b/stdlib/bits/stdlib.h
+index 20fe986..5ed5e17 100644
+--- a/stdlib/bits/stdlib.h
++++ b/stdlib/bits/stdlib.h
 @@ -26,27 +26,55 @@ extern char *__realpath_chk (const char *__restrict __name,
  extern char *__REDIRECT_NTH (__realpath_alias,
  			     (const char *__restrict __name,
@@ -2329,9 +2351,11 @@ https://crbug.com/638456
  }
 +#endif
 +#undef __warn_wcstombs_dst_too_small
---- stdlib/stdlib.h
-+++ stdlib/stdlib.h
-@@ -731,8 +731,10 @@ extern char *canonicalize_file_name (const char *__name)
+diff --git a/stdlib/stdlib.h b/stdlib/stdlib.h
+index cc77708..bea34b8 100644
+--- a/stdlib/stdlib.h
++++ b/stdlib/stdlib.h
+@@ -730,8 +730,10 @@ extern char *canonicalize_file_name (const char *__name)
     PATH_MAX chars or more, returns null with `errno' set to
     ENAMETOOLONG; if the name fits in fewer than PATH_MAX chars,
     returns the name in RESOLVED.  */
@@ -2343,7 +2367,7 @@ https://crbug.com/638456
  #endif
  
  
-@@ -867,16 +869,21 @@ extern int mbtowc (wchar_t *__restrict __pwc,
+@@ -866,16 +868,21 @@ extern int mbtowc (wchar_t *__restrict __pwc,
  		   const char *__restrict __s, size_t __n) __THROW;
  /* Put the multibyte character represented
     by WCHAR in S, returning its length.  */
@@ -2368,7 +2392,7 @@ https://crbug.com/638456
  __END_NAMESPACE_STD
  
  
-@@ -937,8 +944,9 @@ extern char *ptsname (int __fd) __THROW __wur;
+@@ -936,8 +943,9 @@ extern char *ptsname (int __fd) __THROW __wur;
  /* Store at most BUFLEN characters of the pathname of the slave pseudo
     terminal associated with the master FD is open on in BUF.
     Return 0 on success, otherwise an error number.  */
@@ -2379,19 +2403,23 @@ https://crbug.com/638456
  
  /* Open a master pseudo terminal and return its file descriptor.  */
  extern int getpt (void);
---- string/bits/string3.h
-+++ string/bits/string3.h
-@@ -19,9 +19,6 @@
+diff --git a/string/bits/string3.h b/string/bits/string3.h
+index dd8db68..cef0b5a 100644
+--- a/string/bits/string3.h
++++ b/string/bits/string3.h
+@@ -19,11 +19,6 @@
  # error "Never use <bits/string3.h> directly; include <string.h> instead."
  #endif
  
+-#if !__GNUC_PREREQ (5,0)
 -__warndecl (__warn_memset_zero_len,
 -	    "memset used with constant zero length parameter; this could be due to transposed parameters");
+-#endif
 -
  #ifndef __cplusplus
  /* XXX This is temporarily.  We should not redefine any of the symbols
     and instead integrate the error checking into the original
-@@ -43,30 +40,130 @@ __warndecl (__warn_memset_zero_len,
+@@ -45,30 +40,132 @@ __warndecl (__warn_memset_zero_len,
  # endif
  #endif
  
@@ -2437,7 +2465,7 @@ https://crbug.com/638456
    return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
  }
 +#endif
- 
++
 +#ifdef __use_clang_fortify
 +__fortify_overload __clang_warning (__warn_len_too_large) void *
 +__NTH (memmove (void *const __clang_pass_object_size0 __dest,
@@ -2446,7 +2474,7 @@ https://crbug.com/638456
 +{
 +  return __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
 +}
-+
+ 
 +__fortify_overload void *
 +__NTH (memmove (void *const __clang_pass_object_size0 __dest,
 +		const void *__src, size_t __len))
@@ -2517,19 +2545,21 @@ https://crbug.com/638456
 +  return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
 +}
 +#else
++#if !__GNUC_PREREQ (5,0)
 +__warndecl (__warn_memset_zero_len, __warn_memset_zero_len_msg);
++#endif
 +
  /* The first two tests here help to catch a somewhat common problem
     where the second and third parameter are transposed.  This is
     especially problematic if the intended fill value is zero.  In this
-@@ -83,42 +180,129 @@ __NTH (memset (void *__dest, int __ch, size_t __len))
-     }
+@@ -89,42 +186,129 @@ __NTH (memset (void *__dest, int __ch, size_t __len))
+ #endif
    return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
  }
 +#endif
 +#undef __warn_memset_zero_len_msg
  
- #ifdef __USE_BSD
+ #ifdef __USE_MISC
 +# ifdef __use_clang_fortify
 +__fortify_overload __clang_warning (__warn_len_too_large) void
 +__NTH (bcopy (const void *__src, void *const __clang_pass_object_size0 __dest,
@@ -2652,7 +2682,7 @@ https://crbug.com/638456
  
  // XXX We have no corresponding builtin yet.
  extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
-@@ -126,6 +310,24 @@ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+@@ -132,6 +316,24 @@ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
  extern char *__REDIRECT_NTH (__stpncpy_alias, (char *__dest, const char *__src,
  					       size_t __n), stpncpy);
  
@@ -2677,7 +2707,7 @@ https://crbug.com/638456
  __fortify_function char *
  __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
  {
-@@ -134,18 +336,61 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+@@ -140,18 +342,61 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
      return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
    return __stpncpy_alias (__dest, __src, __n);
  }
@@ -2739,9 +2769,11 @@ https://crbug.com/638456
 +# undef __warn_input_str_too_large
 +# undef __enable_if_src_too_large
 +#endif
---- string/string.h
-+++ string/string.h
-@@ -43,12 +43,15 @@ __BEGIN_DECLS
+diff --git a/string/string.h b/string/string.h
+index 1f3e348..c66c577 100644
+--- a/string/string.h
++++ b/string/string.h
+@@ -39,12 +39,15 @@ __BEGIN_DECLS
  
  __BEGIN_NAMESPACE_STD
  /* Copy N bytes of SRC to DEST.  */
@@ -2759,7 +2791,7 @@ https://crbug.com/638456
  __END_NAMESPACE_STD
  
  /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
-@@ -63,11 +66,14 @@ extern void *memccpy (void *__restrict __dest, const void *__restrict __src,
+@@ -59,11 +62,14 @@ extern void *memccpy (void *__restrict __dest, const void *__restrict __src,
  
  __BEGIN_NAMESPACE_STD
  /* Set N bytes of S to C.  */
@@ -2776,7 +2808,7 @@ https://crbug.com/638456
  
  /* Search N bytes of S for C.  */
  #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-@@ -126,19 +132,24 @@ extern void *memrchr (const void *__s, int __c, size_t __n)
+@@ -122,19 +128,24 @@ extern void *memrchr (const void *__s, int __c, size_t __n)
  
  __BEGIN_NAMESPACE_STD
  /* Copy SRC to DEST.  */
@@ -2805,7 +2837,7 @@ https://crbug.com/638456
  
  /* Compare S1 and S2.  */
  extern int strcmp (const char *__s1, const char *__s2)
-@@ -388,9 +399,11 @@ extern void *memmem (const void *__haystack, size_t __haystacklen,
+@@ -383,9 +394,11 @@ extern void *memmem (const void *__haystack, size_t __haystacklen,
  extern void *__mempcpy (void *__restrict __dest,
  			const void *__restrict __src, size_t __n)
       __THROW __nonnull ((1, 2));
@@ -2818,9 +2850,9 @@ https://crbug.com/638456
  #endif
  
  
-@@ -452,11 +465,14 @@ extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+@@ -447,11 +460,14 @@ extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
  
- #ifdef __USE_BSD
+ #ifdef __USE_MISC
  /* Copy N bytes of SRC to DEST (like memmove, but args reversed).  */
 +__fortify_overloadable
  extern void bcopy (const void *__src, void *__dest, size_t __n)
@@ -2835,7 +2867,7 @@ https://crbug.com/638456
  
  /* Compare N bytes of S1 and S2 (same as memcmp).  */
  extern int bcmp (const void *__s1, const void *__s2, size_t __n)
-@@ -566,17 +582,20 @@ extern char *strsignal (int __sig) __THROW;
+@@ -561,17 +577,20 @@ extern char *strsignal (int __sig) __THROW;
  /* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
  extern char *__stpcpy (char *__restrict __dest, const char *__restrict __src)
       __THROW __nonnull ((1, 2));
@@ -2859,8 +2891,10 @@ https://crbug.com/638456
  #endif
  
  #ifdef	__USE_GNU
---- wcsmbs/bits/wchar2.h
-+++ wcsmbs/bits/wchar2.h
+diff --git a/wcsmbs/bits/wchar2.h b/wcsmbs/bits/wchar2.h
+index ccf8dc9..2e5f6d5 100644
+--- a/wcsmbs/bits/wchar2.h
++++ b/wcsmbs/bits/wchar2.h
 @@ -28,12 +28,34 @@ extern wchar_t *__REDIRECT_NTH (__wmemcpy_alias,
  				(wchar_t *__restrict __s1,
  				 const wchar_t *__restrict __s2, size_t __n),
@@ -3579,40 +3613,44 @@ https://crbug.com/638456
 +# endif
 +# undef __warn_wcsnrtombs_buflen
  #endif
---- wcsmbs/wchar.h
-+++ wcsmbs/wchar.h
-@@ -144,20 +144,26 @@ __USING_NAMESPACE_STD(tm)
+diff --git a/wcsmbs/wchar.h b/wcsmbs/wchar.h
+index e413416..f8c8a69 100644
+--- a/wcsmbs/wchar.h
++++ b/wcsmbs/wchar.h
+@@ -144,23 +144,28 @@ __USING_NAMESPACE_STD(tm)
  
  __BEGIN_NAMESPACE_STD
  /* Copy SRC to DEST.  */
 +__fortify_overloadable
  extern wchar_t *wcscpy (wchar_t *__restrict __dest,
--			const wchar_t *__restrict __src) __THROW;
-+			const wchar_t *__restrict __src)
-+     __THROW __CLANG_NO_MANGLE (wcscpy);
+ 			const wchar_t *__restrict __src)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (wcscpy);
+ 
  /* Copy no more than N wide-characters of SRC to DEST.  */
 +__fortify_overloadable
  extern wchar_t *wcsncpy (wchar_t *__restrict __dest,
  			 const wchar_t *__restrict __src, size_t __n)
--     __THROW;
-+     __THROW __CLANG_NO_MANGLE (wcsncpy);
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (wcsncpy);
  
  /* Append SRC onto DEST.  */
 +__fortify_overloadable
  extern wchar_t *wcscat (wchar_t *__restrict __dest,
--			const wchar_t *__restrict __src) __THROW;
-+			const wchar_t *__restrict __src) __THROW
-+			__CLANG_NO_MANGLE (wcscat);
+ 			const wchar_t *__restrict __src)
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (wcscat);
++
  /* Append no more than N wide-characters of SRC onto DEST.  */
 +__fortify_overloadable
  extern wchar_t *wcsncat (wchar_t *__restrict __dest,
  			 const wchar_t *__restrict __src, size_t __n)
--     __THROW;
-+     __THROW __CLANG_NO_MANGLE (wcsncat);
+-     __THROW __nonnull ((1, 2));
++     __THROW __nonnull ((1, 2)) __CLANG_NO_MANGLE (wcsncat);
  
  /* Compare S1 and S2.  */
  extern int wcscmp (const wchar_t *__s1, const wchar_t *__s2)
-@@ -326,24 +332,30 @@ extern int wmemcmp (const wchar_t *__s1, const wchar_t *__s2, size_t __n)
+@@ -329,24 +334,30 @@ extern int wmemcmp (const wchar_t *__s1, const wchar_t *__s2, size_t __n)
       __THROW __attribute_pure__;
  
  /* Copy N wide characters of SRC to DEST.  */
@@ -3647,7 +3685,7 @@ https://crbug.com/638456
  #endif
  
  
-@@ -367,8 +379,10 @@ extern size_t mbrtowc (wchar_t *__restrict __pwc,
+@@ -370,8 +381,10 @@ extern size_t mbrtowc (wchar_t *__restrict __pwc,
  		       mbstate_t *__restrict __p) __THROW;
  
  /* Write multibyte representation of wide character WC to S.  */
@@ -3659,7 +3697,7 @@ https://crbug.com/638456
  
  /* Return number of bytes in multibyte character pointed to by S.  */
  extern size_t __mbrlen (const char *__restrict __s, size_t __n,
-@@ -405,31 +419,39 @@ __NTH (mbrlen (const char *__restrict __s, size_t __n,
+@@ -408,31 +421,39 @@ __NTH (mbrlen (const char *__restrict __s, size_t __n,
  __BEGIN_NAMESPACE_STD
  /* Write wide character representation of multibyte character string
     SRC to DST.  */
@@ -3703,7 +3741,7 @@ https://crbug.com/638456
  #endif	/* use POSIX 2008 */
  
  
-@@ -563,14 +585,17 @@ extern long double wcstold_l (const wchar_t *__restrict __nptr,
+@@ -566,14 +587,17 @@ extern long double wcstold_l (const wchar_t *__restrict __nptr,
  #ifdef __USE_XOPEN2K8
  /* Copy SRC to DEST, returning the address of the terminating L'\0' in
     DEST.  */
@@ -3723,7 +3761,7 @@ https://crbug.com/638456
  
  
  /* Wide character I/O functions.  */
-@@ -601,9 +626,11 @@ extern int fwprintf (__FILE *__restrict __stream,
+@@ -604,9 +628,11 @@ extern int fwprintf (__FILE *__restrict __stream,
  extern int wprintf (const wchar_t *__restrict __format, ...)
       /* __attribute__ ((__format__ (__wprintf__, 1, 2))) */;
  /* Write formatted output of at most N characters to S.  */
@@ -3736,7 +3774,7 @@ https://crbug.com/638456
  
  /* Write formatted output to S from argument list ARG.
  
-@@ -622,10 +649,12 @@ extern int vwprintf (const wchar_t *__restrict __format,
+@@ -625,10 +651,12 @@ extern int vwprintf (const wchar_t *__restrict __format,
       /* __attribute__ ((__format__ (__wprintf__, 1, 0))) */;
  /* Write formatted output of at most N character to S from argument
     list ARG.  */
@@ -3750,7 +3788,7 @@ https://crbug.com/638456
  
  
  /* Read formatted input from STREAM.
-@@ -771,8 +800,10 @@ extern wint_t putwchar (wchar_t __wc);
+@@ -774,8 +802,10 @@ extern wint_t putwchar (wchar_t __wc);
  
     This function is a possible cancellation point and therefore not
     marked with __THROW.  */
@@ -3762,7 +3800,7 @@ https://crbug.com/638456
  
  /* Write a string to STREAM.
  
-@@ -834,8 +865,10 @@ extern wint_t putwchar_unlocked (wchar_t __wc);
+@@ -837,8 +867,10 @@ extern wint_t putwchar_unlocked (wchar_t __wc);
     cancellation point.  But due to similarity with an POSIX interface
     or due to the implementation it is a cancellation point and
     therefore not marked with __THROW.  */
