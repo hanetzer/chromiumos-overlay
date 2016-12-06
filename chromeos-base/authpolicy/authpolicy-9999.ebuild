@@ -22,6 +22,7 @@ IUSE="test"
 
 RDEPEND="
 	chromeos-base/libbrillo
+	chromeos-base/chromeos-minijail
 	dev-libs/protobuf
 	dev-libs/dbus-glib
 	sys-apps/dbus
