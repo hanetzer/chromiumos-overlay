@@ -18,7 +18,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone systemd test"
+IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd test"
 
 RDEPEND="
 	chromeos-base/metrics
@@ -79,9 +79,7 @@ src_install() {
 	use display_backlight || doins optional_prefs/external_display_only
 	use has_keyboard_backlight && doins optional_prefs/has_keyboard_backlight
 	use legacy_power_button && doins optional_prefs/legacy_power_button
-	use lockvt && doins optional_prefs/lock_vt_before_suspend
 	use mosys_eventlog && doins optional_prefs/mosys_eventlog
-	use ozone || doins optional_prefs/check_active_vt
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
