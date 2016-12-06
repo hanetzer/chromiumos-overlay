@@ -25,29 +25,6 @@ inherit flag-o-matic
 
 IUSE="-android-container-nyc"
 
-# These are internal variables the user should not need to mess with.
-
-if use android-container-nyc; then
-	ARC_BASE="/opt/android-n"
-else
-	ARC_BASE="/opt/android"
-fi
-
-ARC_CLANG_BASE="${ARC_BASE}/arc-llvm/3.8/bin"
-
-ARC_GCC_BASE="${ARC_BASE}/arc-gcc"
-ARC_GCC_ARM_BASE="${ARC_GCC_BASE}/arm/arm-linux-androideabi-4.9"
-ARC_GCC_ARM_BINDIR="${ARC_GCC_ARM_BASE}/bin"
-ARC_GCC_ARM_LIBDIR="${ARC_GCC_ARM_BASE}/lib/gcc/arm-linux-androideabi/4.9"
-ARC_GCC_ARM_PREFIX="${ARC_GCC_ARM_BINDIR}/arm-linux-androideabi-"
-
-ARC_GCC_X86_64_BASE="${ARC_GCC_BASE}/x86_64/x86_64-linux-android-4.9"
-ARC_GCC_X86_64_BINDIR="${ARC_GCC_X86_64_BASE}/bin"
-ARC_GCC_X86_64_LIBDIR="${ARC_GCC_X86_64_BASE}/lib/gcc/x86_64-linux-android/4.9"
-ARC_GCC_X86_64_PREFIX="${ARC_GCC_X86_64_BINDIR}/x86_64-linux-android-"
-
-ARC_SYSROOT_BASE="${ARC_BASE}"
-
 # Make sure we know how to handle the active system.
 arc-build-check-arch() {
 	case ${ARCH} in
@@ -64,8 +41,28 @@ _arc-build-select-common() {
 
 	arc-build-check-arch
 
+	# Setup internal variables
+	if use android-container-nyc; then
+		ARC_BASE="/opt/android-n"
+	else
+		ARC_BASE="/opt/android"
+	fi
+
+	case ${ARCH} in
+	arm)
+		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/arm/arm-linux-androideabi-4.9"
+		ARC_GCC_PREFIX="arm-linux-androideabi-"
+		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/arm-linux-androideabi/4.9"
+		;;
+	amd64)
+		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/x86_64/x86_64-linux-android-4.9"
+		ARC_GCC_PREFIX="x86_64-linux-android-"
+		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/x86_64-linux-android/4.9"
+		;;
+	esac
+
 	# Set up flags for the android sysroot.
-	export ARC_SYSROOT="${ARC_SYSROOT_BASE}/${ARCH}"
+	export ARC_SYSROOT="${ARC_BASE}/${ARCH}"
 	append-flags --sysroot="${ARC_SYSROOT}"
 
 	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
@@ -79,22 +76,18 @@ _arc-build-select-common() {
 
 # Set up the compiler settings for GCC.
 arc-build-select-gcc() {
-	case ${ARCH} in
-	arm)
-		export CC="${ARC_GCC_ARM_PREFIX}gcc"
-		export CXX="${ARC_GCC_ARM_PREFIX}g++"
-		;;
-	amd64)
-		export CC="${ARC_GCC_X86_64_PREFIX}gcc"
-		export CXX="${ARC_GCC_X86_64_PREFIX}g++"
-		;;
-	esac
-
 	_arc-build-select-common
+
+	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_PREFIX}gcc"
+	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_PREFIX}g++"
 }
 
 # Set up the compiler settings for clang.
 arc-build-select-clang() {
+	_arc-build-select-common
+
+	ARC_CLANG_BASE="${ARC_BASE}/arc-llvm/3.8/bin"
+
 	export CC="${ARC_CLANG_BASE}/clang"
 	export CXX="${ARC_CLANG_BASE}/clang++"
 
@@ -102,12 +95,10 @@ arc-build-select-clang() {
 	case ${ARCH} in
 	arm) target="arm-linux-androideabi" ;;
 	esac
-	CC+=" -target ${target} -B${ARC_GCC_ARM_BINDIR}"
-	CXX+=" -target ${target} -B${ARC_GCC_ARM_BINDIR}"
+	CC+=" -target ${target} -B${ARC_GCC_BASE}/bin"
+	CXX+=" -target ${target} -B${ARC_GCC_BASE}/bin"
 
-	append-ldflags -L"${ARC_GCC_ARM_LIBDIR}"
-
-	_arc-build-select-common
+	append-ldflags -L"${ARC_GCC_LIBDIR}"
 }
 
 # If your ebuild declares src_prepare, you'll need to call this directly.
