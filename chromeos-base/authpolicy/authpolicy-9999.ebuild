@@ -21,6 +21,7 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
+	app-crypt/mit-krb5
 	chromeos-base/libbrillo
 	chromeos-base/chromeos-minijail
 	dev-libs/protobuf

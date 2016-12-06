@@ -7,6 +7,25 @@ export krb5_cv_attr_constructor_destructor=yes,yes
 export ac_cv_func_regcomp=yes
 export ac_cv_printf_positional=yes
 
+# Remove unwanted binaries from the image. In particular ksu
+# can't be part of the image due to suid capabilities.
+krb5_mask="
+  /usr/sbin
+  /usr/bin/k5srvutil
+  /usr/bin/kadmin
+  /usr/bin/kpasswd
+  /usr/bin/ksu
+  /usr/bin/kswitch
+  /usr/bin/ktutil
+  /usr/bin/kvno
+  /usr/bin/sclient
+  /usr/bin/sim_client
+  /usr/bin/uuclient
+"
+PKG_INSTALL_MASK+=" ${krb5_mask}"
+INSTALL_MASK+=" ${krb5_mask}"
+unset krb5_mask
+
 cros_post_src_prepare_license_hack() {
 	# These license files cause the license checker
 	# to fail on an invalid character. They are only
