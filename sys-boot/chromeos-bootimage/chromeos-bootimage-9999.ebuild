@@ -99,7 +99,6 @@ src_compile() {
 
 	# bitmaps will be installed through --rocbfs-files
 	common+=( --rocbfs-files "${froot}/rocbfs" )
-	serial+=( --gbb-flags "+enable-serial" )
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
 		--outdir "out.ro" --output "image.bin" \
