@@ -63,13 +63,69 @@ prepare_legacy_image() {
 	fi
 }
 
+sign_region() {
+	local fw_image=$1
+	local keydir=$2
+	local slot=$3
+
+	local tmpfile=`mktemp`
+	local cbfs=FW_MAIN_${slot}
+	local vblock=VBLOCK_${slot}
+
+	cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile} 2>/dev/null
+	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} | \
+		tail -1 | \
+		sed "/(empty).*null/ s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$,\1,")
+	size=$(printf "%d" ${size})
+
+	if [ -n "${size}" ] && [ ${size} -gt 0 ]; then
+		einfo "truncate ${cbfs} to ${size}"
+		head -c ${size} ${tmpfile} > ${tmpfile}.2
+		mv ${tmpfile}.2 ${tmpfile}
+		cbfstool ${fw_image} write --force -u -i 0 \
+			-r ${cbfs} -f ${tmpfile} 2>/dev/null
+	fi
+
+	futility vbutil_firmware \
+		--vblock ${tmpfile}.out \
+		--keyblock ${keydir}/firmware.keyblock \
+		--signprivate ${keydir}/firmware_data_key.vbprivk \
+		--version 1 \
+		--fv ${tmpfile} \
+		--kernelkey ${keydir}/kernel_subkey.vbpubk \
+		--flags 0
+
+	cbfstool ${fw_image} write -u -i 0 -r ${vblock} -f ${tmpfile}.out 2>/dev/null
+
+	rm -f ${tmpfile} ${tmpfile}.out
+}
+
+sign_image() {
+	local fw_image=$1
+	local keydir=$2
+
+	sign_region "${fw_image}" "${keydir}" A
+	sign_region "${fw_image}" "${keydir}" B
+}
+
+add_payloads() {
+	local fw_image=$1
+	local ro_payload=$2
+	local rw_payload=$3
+
+	cbfstool ${fw_image} add-payload \
+		-f ${ro_payload} -n fallback/payload -c lzma
+
+	cbfstool ${fw_image} add-payload \
+		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B
+}
+
 src_compile() {
 	local froot="${CROS_FIRMWARE_ROOT}"
 	# Location of various files
 
 	local ec_file="${froot}/ec.RW.bin"
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
-	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
 
 	local depthcharge_binaries=( --coreboot-elf
@@ -116,21 +172,22 @@ src_compile() {
 	local silent=( --coreboot "assembly_coreboot.rom" )
 
 	einfo "Building production image."
-	cros_bundle_firmware ${common[@]} ${silent[@]} \
-		--outdir "out.ro" --output "image.bin" \
-		${depthcharge_binaries[@]} || \
-	  die "failed to build production image."
+	cp assembly_coreboot.rom image.bin
+	add_payloads image.bin ${froot}/depthcharge/depthcharge.elf \
+		${froot}/depthcharge/depthcharge.elf
+	sign_image image.bin "${devkeys_file}"
+
 	einfo "Building serial image."
-	COREBOOT_VARIANT=.serial \
-	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--outdir "out.serial" --output "image.serial.bin" \
-		${depthcharge_binaries[@]} || \
-	  die "failed to build serial image."
+	cp assembly_coreboot.rom.serial image.serial.bin
+	add_payloads image.serial.bin ${froot}/depthcharge/depthcharge.elf \
+		${froot}/depthcharge/depthcharge.elf
+	sign_image image.serial.bin "${devkeys_file}"
+
 	einfo "Building developer image."
-	COREBOOT_VARIANT=.serial \
-	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--outdir "out.dev" --output "image.dev.bin" \
-		${dev_binaries[@]} || die "failed to build developer image."
+	cp assembly_coreboot.rom.serial image.dev.bin
+	add_payloads image.dev.bin ${froot}/depthcharge/dev.elf \
+		${froot}/depthcharge/dev.elf
+	sign_image image.dev.bin "${devkeys_file}"
 
 	# Build a netboot image.
 	#
@@ -138,16 +195,10 @@ src_compile() {
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
 	einfo "Building netboot image."
-	local netboot_rw
-	netboot_rw="${froot}/depthcharge/netboot.elf"
-	local netboot_ro
-	netboot_ro="${froot}/depthcharge/depthcharge.elf"
-	COREBOOT_VARIANT=.serial \
-	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
-		--coreboot-elf="${netboot_ro}" \
-		--outdir "out.net" --output "image.net.bin" \
-		--uboot "${netboot_rw}" ||
-		die "failed to build netboot image."
+	cp assembly_coreboot.rom.serial image.net.bin
+	add_payloads image.net.bin ${froot}/depthcharge/netboot.elf \
+		${froot}/depthcharge/depthcharge.elf
+	sign_image image.net.bin "${devkeys_file}"
 
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
@@ -172,19 +223,16 @@ src_compile() {
 		fastboot_ro="${froot}/depthcharge/fastboot.elf"
 
 		einfo "Building fastboot image."
-		COREBOOT_VARIANT=.serial \
-		cros_bundle_firmware "${common[@]}" "${serial[@]}" \
-			--coreboot-elf="${fastboot_ro}" \
-			--outdir "out.fastboot" --output "image.fastboot.bin" \
-			--uboot "${fastboot_rw}" \
-			|| die "failed to build fastboot image."
+		cp assembly_coreboot.rom.serial image.fastboot.bin
+		add_payloads image.fastboot.bin ${froot}/depthcharge/fastboot.elf \
+			${froot}/depthcharge/depthcharge.elf
+		sign_image image.fastboot.bin "${devkeys_file}"
 
 		einfo "Building fastboot production image."
-		cros_bundle_firmware "${common[@]}" "${silent[@]}" \
-			--coreboot-elf "${fastboot_ro}" \
-			--outdir "out.ro.fastboot" --output "image.fastboot-prod.bin" \
-			--uboot "${fastboot_rw}" \
-			|| die "failed to build fastboot production image."
+		cp assembly_coreboot.rom image.fastboot-prod.bin
+		add_payloads image.fastboot-prod.bin ${froot}/depthcharge/fastboot.elf \
+			${froot}/depthcharge/depthcharge.elf
+		sign_image image.fastboot-prod.bin "${devkeys_file}"
 
 	fi
 }
