@@ -16,10 +16,9 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="X cups"
+IUSE="cups"
 
 RDEPEND="app-admin/sudo
-	X? ( chromeos-base/salsa )
 	chromeos-base/vboot_reference
 	chromeos-base/workarounds
 	net-misc/iputils
