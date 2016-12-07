@@ -82,23 +82,39 @@ src_compile() {
 		--key "${devkeys_file}"
 	)
 
-	local serial=( --coreboot "${coreboot_file}.serial" )
-	local silent=( --coreboot "${coreboot_file}" )
+	cp ${coreboot_file}.serial assembly_coreboot.rom.serial
+	cp ${coreboot_file} assembly_coreboot.rom
+
+	# files from rocbfs/ are installed in all images' RO CBFS
+	for file in ${froot}/rocbfs/*; do
+		for rom in assembly_coreboot.rom{,.serial}; do
+			cbfstool ${rom} add \
+				-r COREBOOT \
+				-f $file -n $(basename $file) -t raw \
+				-c lzma 2>/dev/null
+		done
+	done
 
 	local legacy_file=""
 	prepare_legacy_image legacy_file
 	if [ -n "${legacy_file}" ]; then
 		einfo "Using legacy boot payload: ${legacy_file}"
 		if [ -f "${legacy_file}.serial" ]; then
-			serial+=( --seabios "${legacy_file}.serial" )
-			silent+=( --seabios "${legacy_file}" )
+			cbfstool assembly_coreboot.rom.serial write \
+				-f ${legacy_file}.serial --force -r RW_LEGACY 2>/dev/null
+			cbfstool assembly_coreboot.rom write \
+				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
 		else
-			common+=( --seabios "${legacy_file}" )
+			cbfstool assembly_coreboot.rom.serial write \
+				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
+			cbfstool assembly_coreboot.rom write \
+				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
 		fi
 	fi
 
-	# bitmaps will be installed through --rocbfs-files
-	common+=( --rocbfs-files "${froot}/rocbfs" )
+	local serial=( --coreboot "assembly_coreboot.rom.serial" )
+	local silent=( --coreboot "assembly_coreboot.rom" )
+
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
 		--outdir "out.ro" --output "image.bin" \
