@@ -1,4 +1,4 @@
-From ad652429d631482ed078db8cf92f8568a7cbb533 Mon Sep 17 00:00:00 2001
+From 43229819d0f8619d81742ee792ca660026e78773 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Wed, 30 Nov 2016 12:05:14 +0000
 Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
@@ -20,14 +20,14 @@ Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
  src/mesa/drivers/dri/pvr/pvrdri.c                  | 1535 ++++++++++++++++++++
  src/mesa/drivers/dri/pvr/pvrdri.h                  |  268 ++++
  src/mesa/drivers/dri/pvr/pvrext.c                  |  336 +++++
- src/mesa/drivers/dri/pvr/pvrimage.c                | 1087 ++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.c                | 1092 ++++++++++++++
  src/mesa/drivers/dri/pvr/pvrimage.h                |   96 ++
  src/mesa/drivers/dri/pvr/pvrmesa.h                 |   43 +
  src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
  src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  206 +++
  src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
- src/mesa/drivers/dri/pvr/pvrutil.c                 |  469 ++++++
- 22 files changed, 8006 insertions(+)
+ src/mesa/drivers/dri/pvr/pvrutil.c                 |  563 +++++++
+ 22 files changed, 8105 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
@@ -6155,10 +6155,10 @@ index 0000000..44db51f
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..82e419c
+index 0000000..d4b612b
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
-@@ -0,0 +1,1087 @@
+@@ -0,0 +1,1092 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -6780,10 +6780,15 @@ index 0000000..82e419c
 +			return GL_FALSE;
 +		}
 +
-+		if (shared->psFormat->iDRIComponents != __DRI_IMAGE_COMPONENTS_RGBA &&
-+		    shared->psFormat->iDRIComponents != __DRI_IMAGE_COMPONENTS_RGB)
++		switch (shared->psFormat->iDRIComponents)
 +		{
-+			return GL_FALSE;
++			case __DRI_IMAGE_COMPONENTS_R:
++			case __DRI_IMAGE_COMPONENTS_RG:
++			case __DRI_IMAGE_COMPONENTS_RGB:
++			case __DRI_IMAGE_COMPONENTS_RGBA:
++				break;
++			default:
++				return GL_FALSE;
 +		}
 +	}
 +
@@ -6825,7 +6830,7 @@ index 0000000..82e419c
 +			*value_ptr = sAttribs.uiHeight;
 +			break;
 +		case __DRI_IMAGE_ATTRIB_COMPONENTS:
-+			if (!shared->psFormat)
++			if (!shared->psFormat || !shared->psFormat->iDRIComponents)
 +			{
 +				return GL_FALSE;
 +			}
@@ -7745,10 +7750,10 @@ index 0000000..e79e2d1
 +#endif /* !defined(__PVRSYNCOBJ_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
 new file mode 100644
-index 0000000..bb977df
+index 0000000..da8d153
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,469 @@
+@@ -0,0 +1,563 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -7866,6 +7871,90 @@ index 0000000..bb977df
 +		{
 +				.eIMGPixelFormat = IMG_PIXFMT_B5G6R5_UNORM,
 +				.iDRIFormat = __DRI_IMAGE_FORMAT_RGB565,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_GR88,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_RG,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_R8,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_R,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++		{
++		.eIMGPixelFormat = IMG_PIXFMT_L8A8_UNORM,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_GR88,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_RG,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_L8A8_UNORM,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_L8_UNORM,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_R8,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_R,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_D32_FLOAT,
++		.iDRIFourCC = 0,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
++		.iDRIComponents = 0,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_D32_FLOAT,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++	},
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_S8_UINT,
++		.iDRIFourCC = 0,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
++		.iDRIComponents = 0,
++		.uiNumPlanes = 1,
++		.sPlanes[0] =
++		{
++				.eIMGPixelFormat = IMG_PIXFMT_S8_UINT,
++				.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -8077,6 +8166,8 @@ index 0000000..bb977df
 +{
 +	unsigned i;
 +
++	assert(iDRIFormat != __DRI_IMAGE_FORMAT_NONE);
++
 +	for (i = 0; i < ARRAY_SIZE(g_asFormats); i++)
 +	{
 +		if (g_asFormats[i].iDRIFormat == iDRIFormat)
@@ -8092,6 +8183,8 @@ index 0000000..bb977df
 +{
 +	unsigned i;
 +
++	assert(iDRIFourCC);
++
 +	for (i = 0; i < ARRAY_SIZE(g_asFormats); i++)
 +	{
 +		if (g_asFormats[i].iDRIFourCC == iDRIFourCC)
@@ -8106,6 +8199,8 @@ index 0000000..bb977df
 +const PVRDRIImageFormat *PVRDRIIMGPixelFormatToImageFormat(IMG_PIXFMT eIMGPixelFormat)
 +{
 +	unsigned i;
++
++	assert(eIMGPixelFormat != IMG_PIXFMT_UNKNOWN);
 +
 +	for (i = 0; i < ARRAY_SIZE(g_asFormats); i++)
 +	{
@@ -8131,6 +8226,8 @@ index 0000000..bb977df
 +{
 +	switch (psFormat->iDRIComponents)
 +	{
++		case __DRI_IMAGE_COMPONENTS_R:
++		case __DRI_IMAGE_COMPONENTS_RG:
 +		case __DRI_IMAGE_COMPONENTS_RGB:
 +		case __DRI_IMAGE_COMPONENTS_RGBA:
 +			return IMG_COLORSPACE_UNDEFINED;
@@ -8190,6 +8287,8 @@ index 0000000..bb977df
 +{
 +	switch (psFormat->iDRIComponents)
 +	{
++		case __DRI_IMAGE_COMPONENTS_R:
++		case __DRI_IMAGE_COMPONENTS_RG:
 +		case __DRI_IMAGE_COMPONENTS_RGB:
 +		case __DRI_IMAGE_COMPONENTS_RGBA:
 +			return IMG_CHROMA_INTERP_UNDEFINED;
