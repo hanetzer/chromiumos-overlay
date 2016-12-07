@@ -1,0 +1,53 @@
+From 7a3f33aafffae76f4a9448eaf8dabc77f449bdd2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tapani=20P=C3=A4lli?= <tapani.palli@intel.com>
+Date: Wed, 26 Oct 2016 13:54:51 +0300
+Subject: [PATCH 530/530] UPSTREAM: egl: set preserved behavior for surface
+ only if config supports it
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Otherwise we can end up with mismatching behavior between config and
+surface when client queries surface attributes. As example, configs
+for DRI3 do not support preserved behavior but here we were setting
+preserved behavior for pixmap and pbuffer.
+
+Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=98326
+Cc: "12.0 13.0" <mesa-stable@lists.freedesktop.org>
+Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+Tested-by: Mark Janes <mark.a.janes@intel.com>
+(cherry picked from commit 2035930966b05a7c4dd1f6559d66b5a3b41e01a5)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+BUG=chrome-os-partner:60413
+TEST=dEQP-EGL.functional.query_surface.simple.pbuffer#rgb565_depth_stencil
+
+Change-Id: I52290a13c3d406898dd366e752e3d3a32e096dfc
+---
+ src/egl/main/eglsurface.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglsurface.c b/src/egl/main/eglsurface.c
+index 231a5f0..3af337f 100644
+--- a/src/egl/main/eglsurface.c
++++ b/src/egl/main/eglsurface.c
+@@ -262,9 +262,13 @@ _eglInitSurface(_EGLSurface *surf, _EGLDisplay *dpy, EGLint type,
+ {
+    const char *func;
+    EGLint renderBuffer = EGL_BACK_BUFFER;
+-   EGLint swapBehavior = EGL_BUFFER_PRESERVED;
++   EGLint swapBehavior = EGL_BUFFER_DESTROYED;
+    EGLint err;
+ 
++   /* Swap behavior can be preserved only if config supports this. */
++   if (conf->SurfaceType & EGL_SWAP_BEHAVIOR_PRESERVED_BIT)
++      swapBehavior = EGL_BUFFER_PRESERVED;
++
+    switch (type) {
+    case EGL_WINDOW_BIT:
+       func = "eglCreateWindowSurface";
+-- 
+2.8.0.rc3.226.g39d4020
+

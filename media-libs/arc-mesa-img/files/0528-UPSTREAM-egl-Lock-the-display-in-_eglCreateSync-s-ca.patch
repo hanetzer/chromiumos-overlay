@@ -1,0 +1,75 @@
+From 537694d6e8fc9d41aa75d156bbfd79037db1f58c Mon Sep 17 00:00:00 2001
+From: Kyle Brenneman <kbrenneman@nvidia.com>
+Date: Mon, 12 Sep 2016 17:40:29 -0400
+Subject: [PATCH 528/530] UPSTREAM: egl: Lock the display in _eglCreateSync's
+ callers
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit 9a992038e722b6ea8362db1dfcf2dd5a78888391)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: I2d10dd112258a8f36aa3030780f4699d3ba6542f
+---
+ src/egl/main/eglapi.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 1b87e82..3421bc3 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1370,11 +1370,10 @@ eglDestroyImage(EGLDisplay dpy, EGLImage image)
+ 
+ 
+ static EGLSync
+-_eglCreateSync(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list,
++_eglCreateSync(_EGLDisplay *disp, EGLenum type, const EGLint *attrib_list,
+                const EGLAttrib *attrib_list64, EGLBoolean is64,
+                EGLenum invalid_type_error)
+ {
+-   _EGLDisplay *disp = _eglLockDisplay(dpy);
+    _EGLContext *ctx = _eglGetCurrentContext();
+    _EGLDriver *drv;
+    _EGLSync *sync;
+@@ -1386,7 +1385,7 @@ _eglCreateSync(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list,
+       RETURN_EGL_EVAL(disp, EGL_NO_SYNC_KHR);
+ 
+    /* return an error if the client API doesn't support GL_OES_EGL_sync */
+-   if (!ctx || ctx->Resource.Display != dpy ||
++   if (!ctx || ctx->Resource.Display != disp ||
+        ctx->ClientAPI != EGL_OPENGL_ES_API)
+       RETURN_EGL_ERROR(disp, EGL_BAD_MATCH, EGL_NO_SYNC_KHR);
+ 
+@@ -1417,7 +1416,8 @@ _eglCreateSync(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list,
+ static EGLSync EGLAPIENTRY
+ eglCreateSyncKHR(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list)
+ {
+-   return _eglCreateSync(dpy, type, attrib_list, NULL, EGL_FALSE,
++   _EGLDisplay *disp = _eglLockDisplay(dpy);
++   return _eglCreateSync(disp, type, attrib_list, NULL, EGL_FALSE,
+                          EGL_BAD_ATTRIBUTE);
+ }
+ 
+@@ -1425,7 +1425,8 @@ eglCreateSyncKHR(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list)
+ static EGLSync EGLAPIENTRY
+ eglCreateSync64KHR(EGLDisplay dpy, EGLenum type, const EGLAttrib *attrib_list)
+ {
+-   return _eglCreateSync(dpy, type, NULL, attrib_list, EGL_TRUE,
++   _EGLDisplay *disp = _eglLockDisplay(dpy);
++   return _eglCreateSync(disp, type, NULL, attrib_list, EGL_TRUE,
+                          EGL_BAD_ATTRIBUTE);
+ }
+ 
+@@ -1433,7 +1434,8 @@ eglCreateSync64KHR(EGLDisplay dpy, EGLenum type, const EGLAttrib *attrib_list)
+ EGLSync EGLAPIENTRY
+ eglCreateSync(EGLDisplay dpy, EGLenum type, const EGLAttrib *attrib_list)
+ {
+-   return _eglCreateSync(dpy, type, NULL, attrib_list, EGL_TRUE,
++   _EGLDisplay *disp = _eglLockDisplay(dpy);
++   return _eglCreateSync(disp, type, NULL, attrib_list, EGL_TRUE,
+                          EGL_BAD_PARAMETER);
+ }
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

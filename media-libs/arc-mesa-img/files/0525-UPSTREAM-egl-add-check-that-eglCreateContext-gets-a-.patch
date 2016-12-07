@@ -1,0 +1,45 @@
+From e65464a79d9b2cffd3543fd477aea2a4712168a5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tapani=20P=C3=A4lli?= <tapani.palli@intel.com>
+Date: Thu, 20 Oct 2016 14:11:16 +0300
+Subject: [PATCH 525/530] UPSTREAM: egl: add check that eglCreateContext gets a
+ valid config
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes following dEQP test:
+
+   dEQP-EGL.functional.negative_api.create_context
+
+v2: don't break EGL_KHR_no_config_context (Eric Engestrom)
+
+Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Cc: "12.0 13.0" <mesa-stable@lists.freedesktop.org>
+(cherry picked from commit 5876f3c85a61d73bb4863331bd641152a40a7b0c)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: I5e316c9982a93df8415289909c995b5eed391efe
+---
+ src/egl/main/eglapi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index f1ee8b0..1b87e82 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -630,7 +630,9 @@ eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_list,
+ 
+    _EGL_CHECK_DISPLAY(disp, EGL_NO_CONTEXT, drv);
+ 
+-   if (!config && !disp->Extensions.KHR_no_config_context)
++   if (config != EGL_NO_CONFIG_KHR)
++      _EGL_CHECK_CONFIG(disp, conf, EGL_NO_CONTEXT, drv);
++   else if (!disp->Extensions.KHR_no_config_context)
+       RETURN_EGL_ERROR(disp, EGL_BAD_CONFIG, EGL_NO_CONTEXT);
+ 
+    if (!share && share_list != EGL_NO_CONTEXT)
+-- 
+2.8.0.rc3.226.g39d4020
+

@@ -1,0 +1,55 @@
+From 76b453ff67173323ac34b19e39f38af6c698e63e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tapani=20P=C3=A4lli?= <tapani.palli@intel.com>
+Date: Thu, 20 Oct 2016 10:33:33 +0300
+Subject: [PATCH 526/530] UPSTREAM: egl/dri2: set max values for pbuffer width
+ and height
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+While these max values were previously fixed for pbuffer creation, this
+change makes also eglGetConfigAttrib() return correct values.
+
+Fixes following dEQP tests:
+
+   dEQP-EGL.functional.create_surface.pbuffer.rgb888_no_depth_no_stencil
+   dEQP-EGL.functional.create_surface.pbuffer.rgb888_depth_stencil
+   dEQP-EGL.functional.create_surface.pbuffer.rgba8888_no_depth_no_stencil
+   dEQP-EGL.functional.create_surface.pbuffer.rgba8888_depth_stencil
+
+Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=98326
+Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Cc: "12.0 13.0" <mesa-stable@lists.freedesktop.org>
+(cherry picked from commit b91e1e38e87b372d409469dfe00ace76c8febd34)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: Ie3dc4f11f48366ce603afba2c5a9a5e6609626dd
+---
+ src/egl/drivers/dri2/egl_dri2.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 11c454e..f9512df 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -242,6 +242,15 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+             return NULL;
+          break;
+ 
++      case __DRI_ATTRIB_MAX_PBUFFER_WIDTH:
++         _eglSetConfigKey(&base, EGL_MAX_PBUFFER_WIDTH,
++                          _EGL_MAX_PBUFFER_WIDTH);
++         break;
++      case __DRI_ATTRIB_MAX_PBUFFER_HEIGHT:
++         _eglSetConfigKey(&base, EGL_MAX_PBUFFER_HEIGHT,
++                          _EGL_MAX_PBUFFER_HEIGHT);
++         break;
++
+       default:
+ 	 key = dri2_to_egl_attribute_map[attrib];
+ 	 if (key != 0)
+-- 
+2.8.0.rc3.226.g39d4020
+

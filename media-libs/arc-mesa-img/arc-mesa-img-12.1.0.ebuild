@@ -160,6 +160,14 @@ src_prepare() {
 	epatch "${FILESDIR}"/0520-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_IMPLEMENTAT.patch
 	epatch "${FILESDIR}"/0521-HACK-egl-android-Handle-HAL_PIXEL_FORMAT_YCbCr_420_8.patch
 	epatch "${FILESDIR}"/0522-UPSTREAM-egl-android-query-native-window-default-wid.patch
+	epatch "${FILESDIR}"/0523-UPSTREAM-egl-Update-eglext.h-v2.patch
+	epatch "${FILESDIR}"/0524-UPSTREAM-egl-Rename-MESA_configless_context-bit-to-K.patch
+	epatch "${FILESDIR}"/0525-UPSTREAM-egl-add-check-that-eglCreateContext-gets-a-.patch
+	epatch "${FILESDIR}"/0526-UPSTREAM-egl-dri2-set-max-values-for-pbuffer-width-a.patch
+	epatch "${FILESDIR}"/0527-UPSTREAM-mesa-add-missing-formats-to-driGLFormatToIm.patch
+	epatch "${FILESDIR}"/0528-UPSTREAM-egl-Lock-the-display-in-_eglCreateSync-s-ca.patch
+	epatch "${FILESDIR}"/0529-UPSTREAM-egl-fix-error-handling-in-_eglCreateSync.patch
+	epatch "${FILESDIR}"/0530-UPSTREAM-egl-set-preserved-behavior-for-surface-only.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch

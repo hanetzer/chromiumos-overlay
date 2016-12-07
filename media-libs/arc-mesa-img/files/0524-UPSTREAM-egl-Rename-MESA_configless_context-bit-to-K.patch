@@ -1,0 +1,104 @@
+From 9d291b1c7fb31dc004ca1e58a927d45b0bbcd531 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Fri, 9 Sep 2016 12:25:34 -0400
+Subject: [PATCH 524/530] UPSTREAM: egl: Rename MESA_configless_context bit to
+ KHR_no_config_context
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Keep the old name in the extension string, but refer to the KHR
+extension internally.
+
+Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+(cherry picked from commit d9f5b1915b397d4baaf4c9c23a93fda49f3db4ca)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: If138b92c110b5f8bcced58a636d8bfa56f8abc36
+---
+ src/egl/drivers/dri2/egl_dri2.c | 2 +-
+ src/egl/main/eglapi.c           | 6 ++++--
+ src/egl/main/eglcontext.c       | 4 ++--
+ src/egl/main/egldisplay.h       | 2 +-
+ 4 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 98432fe..11c454e 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -603,8 +603,8 @@ dri2_setup_screen(_EGLDisplay *disp)
+       disp->ClientAPIs |= EGL_OPENGL_ES3_BIT_KHR;
+ 
+    assert(dri2_dpy->image_driver || dri2_dpy->dri2 || dri2_dpy->swrast);
++   disp->Extensions.KHR_no_config_context = EGL_TRUE;
+    disp->Extensions.KHR_surfaceless_context = EGL_TRUE;
+-   disp->Extensions.MESA_configless_context = EGL_TRUE;
+ 
+    if (dri2_renderer_query_integer(dri2_dpy,
+                                    __DRI2_RENDERER_HAS_FRAMEBUFFER_SRGB))
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 3d4c4a9..f1ee8b0 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -406,11 +406,13 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
+       _eglAppendExtension(&exts, "EGL_KHR_image");
+    _EGL_CHECK_EXTENSION(KHR_image_base);
+    _EGL_CHECK_EXTENSION(KHR_image_pixmap);
++   _EGL_CHECK_EXTENSION(KHR_no_config_context);
+    _EGL_CHECK_EXTENSION(KHR_reusable_sync);
+    _EGL_CHECK_EXTENSION(KHR_surfaceless_context);
+    _EGL_CHECK_EXTENSION(KHR_wait_sync);
+ 
+-   _EGL_CHECK_EXTENSION(MESA_configless_context);
++   if (dpy->Extensions.KHR_no_config_context)
++      _eglAppendExtension(&exts, "EGL_MESA_configless_context");
+    _EGL_CHECK_EXTENSION(MESA_drm_image);
+    _EGL_CHECK_EXTENSION(MESA_image_dma_buf_export);
+ 
+@@ -628,7 +630,7 @@ eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_list,
+ 
+    _EGL_CHECK_DISPLAY(disp, EGL_NO_CONTEXT, drv);
+ 
+-   if (!config && !disp->Extensions.MESA_configless_context)
++   if (!config && !disp->Extensions.KHR_no_config_context)
+       RETURN_EGL_ERROR(disp, EGL_BAD_CONFIG, EGL_NO_CONTEXT);
+ 
+    if (!share && share_list != EGL_NO_CONTEXT)
+diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
+index 400828b..bb92cde 100644
+--- a/src/egl/main/eglcontext.c
++++ b/src/egl/main/eglcontext.c
+@@ -652,9 +652,9 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+           (read && read->Config != ctx->Config))
+          return _eglError(EGL_BAD_MATCH, "eglMakeCurrent");
+    } else {
+-      /* Otherwise we must be using the EGL_MESA_configless_context
++      /* Otherwise we must be using the EGL_KHR_no_config_context
+        * extension */
+-      assert(dpy->Extensions.MESA_configless_context);
++      assert(dpy->Extensions.KHR_no_config_context);
+ 
+       /* The extension doesn't permit binding draw and read buffers with
+        * differing contexts */
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index c8df3c7..c524aab 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -112,11 +112,11 @@ struct _egl_extensions
+    EGLBoolean KHR_gl_texture_cubemap_image;
+    EGLBoolean KHR_image_base;
+    EGLBoolean KHR_image_pixmap;
++   EGLBoolean KHR_no_config_context;
+    EGLBoolean KHR_reusable_sync;
+    EGLBoolean KHR_surfaceless_context;
+    EGLBoolean KHR_wait_sync;
+ 
+-   EGLBoolean MESA_configless_context;
+    EGLBoolean MESA_drm_image;
+    EGLBoolean MESA_image_dma_buf_export;
+ 
+-- 
+2.8.0.rc3.226.g39d4020
+

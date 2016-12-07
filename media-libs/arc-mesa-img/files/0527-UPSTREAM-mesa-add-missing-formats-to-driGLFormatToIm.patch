@@ -1,0 +1,43 @@
+From 149276e5b6151d4b65c846e824eda2a13026b859 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tapani=20P=C3=A4lli?= <tapani.palli@intel.com>
+Date: Thu, 20 Oct 2016 11:03:26 +0300
+Subject: [PATCH 527/530] UPSTREAM: mesa: add missing formats to
+ driGLFormatToImageFormat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes following dEQP tests:
+
+   dEQP-EGL.functional.image.api.create_image_gles2_tex2d_luminance
+   dEQP-EGL.functional.image.api.create_image_gles2_tex2d_luminance_alpha
+
+Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=98328
+(cherry picked from commit 58b4fef8bb7b959ac0918d08a76c92c4c86cb262)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: I588d85477732d694ba816e37dba9eef1dddf3639
+---
+ src/mesa/drivers/dri/common/dri_util.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
+index 86ed42f..6571a70 100644
+--- a/src/mesa/drivers/dri/common/dri_util.c
++++ b/src/mesa/drivers/dri/common/dri_util.c
+@@ -847,8 +847,10 @@ driGLFormatToImageFormat(mesa_format format)
+       return __DRI_IMAGE_FORMAT_ABGR8888;
+    case MESA_FORMAT_R8G8B8X8_UNORM:
+       return __DRI_IMAGE_FORMAT_XBGR8888;
++   case MESA_FORMAT_L_UNORM8:
+    case MESA_FORMAT_R_UNORM8:
+       return __DRI_IMAGE_FORMAT_R8;
++   case MESA_FORMAT_L8A8_UNORM:
+    case MESA_FORMAT_R8G8_UNORM:
+       return __DRI_IMAGE_FORMAT_GR88;
+    case MESA_FORMAT_NONE:
+-- 
+2.8.0.rc3.226.g39d4020
+
