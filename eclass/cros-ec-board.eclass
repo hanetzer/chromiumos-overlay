@@ -54,6 +54,7 @@ EC_BOARD_NAMES=(
 	oak_pd
 	pit
 	plankton
+	poppy
 	pyro
 	rambi
 	reef

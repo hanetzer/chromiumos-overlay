@@ -54,6 +54,7 @@ CROS_BOARDS=(
 	peach_pit
 	peach_pit-freon
 	peppy
+	poppy
 	quawks
 	reks
 	rikku

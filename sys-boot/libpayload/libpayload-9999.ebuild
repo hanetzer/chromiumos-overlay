@@ -1,6 +1,10 @@
 # Copyright 2012 The Chromium OS Authors.
 # Distributed under the terms of the GNU General Public License v2
 
+# Change this version number when any change is made to configs/files under
+# libpayload and an auto-revbump is required.
+# VERSION=REVBUMP-0.0.1
+
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 
