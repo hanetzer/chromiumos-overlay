@@ -33,6 +33,9 @@ IUSE="${IUSE_VIDEO_CARDS}
 	shared-glapi kernel_FreeBSD xlib-glx X cheets"
 
 DEPEND=""
+# llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
+# (b/33072485, b/28802929).
+RDEPEND="cheets? ( llvm? ( chromeos-base/android-container[-cheets_user] ) )"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
