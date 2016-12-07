@@ -15,6 +15,7 @@ KEYWORDS="*"
 # This list is lengthy since it determines the USE flags that will be written to
 # the /etc/ui_use_flags.txt file that's used to generate Chrome's command line.
 IUSE="
+	allow_consumer_kiosk
 	arc
 	asan
 	cheets
