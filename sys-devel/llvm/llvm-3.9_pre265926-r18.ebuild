@@ -256,6 +256,7 @@ pick_next_cherries() {
 	# Arm ChromeOS failed to boot without this.
 	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
 
+	CHERRIES+=" c31c930cdf7d34987fb1d08e92a4532343241dd3 " # r288433
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
