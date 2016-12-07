@@ -73,13 +73,12 @@ sign_region() {
 	local vblock=VBLOCK_${slot}
 
 	cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile} 2>/dev/null
-	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} | \
+	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} 2>/dev/null | \
 		tail -1 | \
 		sed "/(empty).*null/ s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$,\1,")
 	size=$(printf "%d" ${size})
 
 	if [ -n "${size}" ] && [ ${size} -gt 0 ]; then
-		einfo "truncate ${cbfs} to ${size}"
 		head -c ${size} ${tmpfile} > ${tmpfile}.2
 		mv ${tmpfile}.2 ${tmpfile}
 		cbfstool ${fw_image} write --force -u -i 0 \
@@ -114,10 +113,24 @@ add_payloads() {
 	local rw_payload=$3
 
 	cbfstool ${fw_image} add-payload \
-		-f ${ro_payload} -n fallback/payload -c lzma
+		-f ${ro_payload} -n fallback/payload -c lzma 2>/dev/null
 
 	cbfstool ${fw_image} add-payload \
-		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B
+		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B 2>/dev/null
+}
+
+build_image() {
+	local public_name=$1
+	local src_image=$2
+	local dst_image=$3
+	local ro_payload=$4
+	local rw_payload=$5
+	local devkeys_dir=$6
+
+	einfo "Building ${public_name} image."
+	cp ${src_image} ${dst_image}
+	add_payloads ${dst_image} ${ro_payload} ${rw_payload}
+	sign_image ${dst_image} "${devkeys_dir}"
 }
 
 src_compile() {
@@ -125,25 +138,17 @@ src_compile() {
 	# Location of various files
 
 	local ec_file="${froot}/ec.RW.bin"
-	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
+	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
 
-	local depthcharge_binaries=( --coreboot-elf
-		"${froot}/depthcharge/depthcharge.elf" )
-	local dev_binaries=( --coreboot-elf
-		"${froot}/depthcharge/dev.elf" )
+	cp ${coreboot_file} coreboot.rom
+	cp ${coreboot_file}.serial coreboot.rom.serial
+	coreboot_file=coreboot.rom
 
-	local common=(
-		--board "${BOARD_USE}"
-		--key "${devkeys_file}"
-	)
-
-	cp ${coreboot_file}.serial assembly_coreboot.rom.serial
-	cp ${coreboot_file} assembly_coreboot.rom
-
+	einfo "Add static assets to images"
 	# files from rocbfs/ are installed in all images' RO CBFS
 	for file in ${froot}/rocbfs/*; do
-		for rom in assembly_coreboot.rom{,.serial}; do
+		for rom in ${coreboot_file}{,.serial}; do
 			cbfstool ${rom} add \
 				-r COREBOOT \
 				-f $file -n $(basename $file) -t raw \
@@ -156,49 +161,40 @@ src_compile() {
 	if [ -n "${legacy_file}" ]; then
 		einfo "Using legacy boot payload: ${legacy_file}"
 		if [ -f "${legacy_file}.serial" ]; then
-			cbfstool assembly_coreboot.rom.serial write \
+			cbfstool ${coreboot_file}.serial write \
 				-f ${legacy_file}.serial --force -r RW_LEGACY 2>/dev/null
-			cbfstool assembly_coreboot.rom write \
+			cbfstool ${coreboot_file} write \
 				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
 		else
-			cbfstool assembly_coreboot.rom.serial write \
+			cbfstool ${coreboot_file}.serial write \
 				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
-			cbfstool assembly_coreboot.rom write \
+			cbfstool ${coreboot_file} write \
 				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
 		fi
 	fi
 
-	local serial=( --coreboot "assembly_coreboot.rom.serial" )
-	local silent=( --coreboot "assembly_coreboot.rom" )
+	local depthcharge="${froot}/depthcharge/depthcharge.elf"
+	local depthcharge_dev="${froot}/depthcharge/dev.elf"
+	local netboot="${froot}/depthcharge/netboot.elf"
+	local fastboot="${froot}/depthcharge/fastboot.elf"
 
-	einfo "Building production image."
-	cp assembly_coreboot.rom image.bin
-	add_payloads image.bin ${froot}/depthcharge/depthcharge.elf \
-		${froot}/depthcharge/depthcharge.elf
-	sign_image image.bin "${devkeys_file}"
 
-	einfo "Building serial image."
-	cp assembly_coreboot.rom.serial image.serial.bin
-	add_payloads image.serial.bin ${froot}/depthcharge/depthcharge.elf \
-		${froot}/depthcharge/depthcharge.elf
-	sign_image image.serial.bin "${devkeys_file}"
+	build_image "production" "${coreboot_file}" "image.bin" \
+		"${depthcharge}" "${depthcharge}" "${devkeys}"
 
-	einfo "Building developer image."
-	cp assembly_coreboot.rom.serial image.dev.bin
-	add_payloads image.dev.bin ${froot}/depthcharge/dev.elf \
-		${froot}/depthcharge/dev.elf
-	sign_image image.dev.bin "${devkeys_file}"
+	build_image "serial" "${coreboot_file}.serial" "image.serial.bin" \
+		"${depthcharge}" "${depthcharge}" "${devkeys}"
+
+	build_image "developer" "${coreboot_file}.serial" "image.dev.bin" \
+		"${depthcharge_dev}" "${depthcharge_dev}" "${devkeys}"
 
 	# Build a netboot image.
 	#
 	# The readonly payload is usually depthcharge and the read/write
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
-	einfo "Building netboot image."
-	cp assembly_coreboot.rom.serial image.net.bin
-	add_payloads image.net.bin ${froot}/depthcharge/netboot.elf \
-		${froot}/depthcharge/depthcharge.elf
-	sign_image image.net.bin "${devkeys_file}"
+	build_image "netboot" "${coreboot_file}.serial" "image.net.bin" \
+		"${netboot}" "${depthcharge}" "${devkeys}"
 
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
@@ -211,29 +207,12 @@ src_compile() {
 	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
 		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
 
-	# Build fastboot image
 	if use fastboot ; then
+		build_image "fastboot" "${coreboot_file}.serial" "image.fastboot.bin" \
+			"${fastboot}" "${depthcharge}" "${devkeys}"
 
-		local fastboot_rw
-		# Currently, rw image does not need to have any fastboot functionality.
-		# Thus, use the normal depthcharge image compiled without fastboot mode.
-		fastboot_rw="${froot}/depthcharge/depthcharge.elf"
-
-		local fastboot_ro
-		fastboot_ro="${froot}/depthcharge/fastboot.elf"
-
-		einfo "Building fastboot image."
-		cp assembly_coreboot.rom.serial image.fastboot.bin
-		add_payloads image.fastboot.bin ${froot}/depthcharge/fastboot.elf \
-			${froot}/depthcharge/depthcharge.elf
-		sign_image image.fastboot.bin "${devkeys_file}"
-
-		einfo "Building fastboot production image."
-		cp assembly_coreboot.rom image.fastboot-prod.bin
-		add_payloads image.fastboot-prod.bin ${froot}/depthcharge/fastboot.elf \
-			${froot}/depthcharge/depthcharge.elf
-		sign_image image.fastboot-prod.bin "${devkeys_file}"
-
+		build_image "fastboot production" "${coreboot_file}" "image.fastboot-prod.bin" \
+			"${fastboot}" "${depthcharge}" "${devkeys}"
 	fi
 }
 
