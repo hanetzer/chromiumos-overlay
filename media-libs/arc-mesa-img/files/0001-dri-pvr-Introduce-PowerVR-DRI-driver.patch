@@ -1,4 +1,4 @@
-From 43229819d0f8619d81742ee792ca660026e78773 Mon Sep 17 00:00:00 2001
+From 51d780a0b709cc834d09c676a683abf75c62e8a0 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Wed, 30 Nov 2016 12:05:14 +0000
 Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
@@ -24,10 +24,10 @@ Change-Id: Ifa08abd6e1df1881be36806e7dd6db354b534c8b
  src/mesa/drivers/dri/pvr/pvrimage.h                |   96 ++
  src/mesa/drivers/dri/pvr/pvrmesa.h                 |   43 +
  src/mesa/drivers/dri/pvr/pvrqueue.h                |   74 +
- src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  206 +++
+ src/mesa/drivers/dri/pvr/pvrsyncobj.c              |  210 +++
  src/mesa/drivers/dri/pvr/pvrsyncobj.h              |   48 +
  src/mesa/drivers/dri/pvr/pvrutil.c                 |  563 +++++++
- 22 files changed, 8105 insertions(+)
+ 22 files changed, 8109 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
@@ -7484,10 +7484,10 @@ index 0000000..3fdc0a8
 +#endif /* defined(__PVRQUEUE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
 new file mode 100644
-index 0000000..bb8e26b
+index 0000000..c317812
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,210 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -7653,18 +7653,22 @@ index 0000000..bb8e26b
 +PVRDRIServerWaitSync(__DRIcontext *psDRIContext, void *psDRIFence,
 +		     unsigned uFlags)
 +{
-+	PVRDRIContext *psPVRContext = psDRIContext->driverPrivate;
-+	__DRI2fence *psFence = psDRIFence;
-+
 +	(void)uFlags;
 +	assert(uFlags == 0);
 +
-+	if (!PVRDRIInsertServerFence(psPVRContext->eAPI,
-+				     psPVRContext->psImpl,
-+				     psFence->psScreenImpl,
-+				     psFence->psSyncCommand))
++	if (psDRIFence)
 +	{
-+		__driUtilMessage("%s: Failed to insert server fence", __func__);
++		PVRDRIContext *psPVRContext = psDRIContext->driverPrivate;
++		__DRI2fence *psFence = psDRIFence;
++
++		if (!PVRDRIInsertServerFence(psPVRContext->eAPI,
++					     psPVRContext->psImpl,
++					     psFence->psScreenImpl,
++					     psFence->psSyncCommand))
++		{
++			__driUtilMessage("%s: Failed to insert server fence",
++					 __func__);
++		}
 +	}
 +}
 +
