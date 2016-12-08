@@ -8,5 +8,9 @@ USE="${USE} -compupdates"
 # Printing is not yet evaluated for embedded.
 USE="${USE} -cups"
 
+# Authpolicy is not required for embedded.
+# TODO(ljusten): 12/13/16 Temporary, remove once Chrome ebuild pulls it in.
+USE="${USE} -authpolicy"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""
