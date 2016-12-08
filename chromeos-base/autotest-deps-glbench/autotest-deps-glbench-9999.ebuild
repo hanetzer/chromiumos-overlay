@@ -27,7 +27,8 @@ RDEPEND="${RDEPEND}
 	media-libs/waffle
 "
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	x11-drivers/opengles-headers"
 
 AUTOTEST_DEPS_LIST="glbench"
 
