@@ -3,11 +3,11 @@
 
 # Change this version number when any change is made to configs/files under
 # coreboot and an auto-revbump is required.
-# VERSION=REVBUMP-0.0.1
+# VERSION=REVBUMP-0.0.2
 
 EAPI=4
-CROS_WORKON_COMMIT=("15797fb67c726549a46ebded0618868c4d3beafd" "a8de89c97461b7cc13a596db8771c30843b06405" "1e9245dfff914107ec06aac84f3b70c2df1f4a41" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("6dc1e98cc0ba054fc51d4a5045bdaac631047ec4" "1e6760497bb823412be803361d69bc8ea212cd5e" "3766ce65407bd95916bd4e61763ccaa04880eff7" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("6bb709e552adf1a4549404d6eeccc89d22e06993" "a8de89c97461b7cc13a596db8771c30843b06405" "1e9245dfff914107ec06aac84f3b70c2df1f4a41" "9ba07035ed0acb28902cce826ea833cf531d57c1" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("4d4064bcd4d2dd47a04998e94a08c896d7011368" "1e6760497bb823412be803361d69bc8ea212cd5e" "3766ce65407bd95916bd4e61763ccaa04880eff7" "f78a5cfb57197350a309e2d2a93b09fe308f9c5f" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
