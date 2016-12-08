@@ -9,7 +9,6 @@
 JOB="activate_date"
 FIELD_NAME="ActivateDate"
 OOBE_COMPLETED_FILE="/home/chronos/.oobe_completed"
-PARTITION="RW_VPD"
 
 # Never run from a factory image.
 if [ -f /root/.factory_test -o -f /root/.factory_installer ]; then
@@ -21,11 +20,11 @@ while [ ! -f "${OOBE_COMPLETED_FILE}" ]; do
   sleep 1
 done
 
-# Don't run if we have set the date already, we use dump_vpd_log so that
+# Don't run if we have set the date already, we use vpd_get_value so that
 # we can leverage the cached VPD file.
 # This is a soft check, the activate_date script will also check the vpd
 # directly to see if a date has been set.
-ACTIVATE_DATE=$(dump_vpd_log --stdout | grep ${FIELD_NAME} | cut -d '"' -f 4)
+ACTIVATE_DATE="$(vpd_get_value "${FIELD_NAME}")"
 if [ -n "${ACTIVATE_DATE}" ]; then
   exit 0
 fi
