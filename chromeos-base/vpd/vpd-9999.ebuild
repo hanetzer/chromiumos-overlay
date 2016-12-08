@@ -40,6 +40,7 @@ src_install() {
 	# (no ACPI stuff on ARM for instance)
 	dosbin vpd vpd_s
 	dosbin util/check_rw_vpd util/dump_vpd_log util/set_binary_flag_vpd
+	dosbin util/vpd_get_value
 
 	# install the init script
 	if use systemd; then
