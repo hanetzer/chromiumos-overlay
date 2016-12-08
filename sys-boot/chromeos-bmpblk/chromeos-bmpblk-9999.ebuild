@@ -29,6 +29,7 @@ CROS_BOARDS=(
 	daisy_freon
 	enguarde
 	expresso
+	eve
 	falco
 	glados
 	glimmer
