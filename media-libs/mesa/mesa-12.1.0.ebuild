@@ -151,6 +151,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.1-radeonsi-gbm-configure.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
 	epatch "${FILESDIR}"/12.0-intel-Fix-pixel-shader-scratch-space.patch
+	epatch "${FILESDIR}"/12.1-compiler-glsl-fix-precision-problem-of-tanh.patch
 	base_src_prepare
 
 	eautoreconf

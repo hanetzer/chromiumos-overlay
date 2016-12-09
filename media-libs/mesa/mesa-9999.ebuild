@@ -147,6 +147,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.1-i915g-fix-incorrect-gl_FragCoord-value.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-gbm-configure.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
+	epatch "${FILESDIR}"/12.0-intel-Fix-pixel-shader-scratch-space.patch
+	epatch "${FILESDIR}"/12.1-compiler-glsl-fix-precision-problem-of-tanh.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
