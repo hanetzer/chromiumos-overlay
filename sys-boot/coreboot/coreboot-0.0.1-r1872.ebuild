@@ -155,6 +155,8 @@ EOF
 	if use fastboot; then
 	    echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> .config
 	fi
+	local version=$(${CHROOT_SOURCE_ROOT}/src/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh |grep "^[[:space:]]*CHROMEOS_VERSION_STRING=" |cut -d= -f2)
+	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> .config
 
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
