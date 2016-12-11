@@ -64,7 +64,6 @@ src_compile() {
 
 	emake distclean
 	emake defconfig BOARD="${board}"
-	emake dts BOARD="${board}"
 
 	emake depthcharge VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 			  PD_SYNC=$(usev pd_sync) \
@@ -95,9 +94,6 @@ src_install() {
 	newins .config depthcharge.config
 
 	pushd "build" >/dev/null || die "couldn't access build/ directory"
-
-	insinto "${dstdir}/dts"
-	doins "fmap.dts"
 
 	local files_to_copy=({netboot,depthcharge,dev}.elf{,.map})
 

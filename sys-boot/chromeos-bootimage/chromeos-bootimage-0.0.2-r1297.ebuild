@@ -82,7 +82,6 @@ src_compile() {
 	local common=(
 		--board "${BOARD_USE}"
 		--key "${devkeys_file}"
-		--dt "${fdt_file}"
 	)
 
 	local serial=( --coreboot "${coreboot_file}.serial" )
