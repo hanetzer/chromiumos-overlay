@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="a11f21a113daf27c3a9d47ce6f1bec7ef6fba824"
-CROS_WORKON_TREE="ed73f7d9c9eb16857e63c094c321df70328efc27"
+CROS_WORKON_COMMIT="d556c498ee2b1d91a6d5811fb70edbc9bef4d87f"
+CROS_WORKON_TREE="88ba1d3c61cd2db0f29dc8c3f0409aa7f2e1139e"
 CROS_WORKON_PROJECT="chromiumos/graphyte"
 CROS_WORKON_LOCALNAME="graphyte"
 PYTHON_COMPAT=( python2_7 )
