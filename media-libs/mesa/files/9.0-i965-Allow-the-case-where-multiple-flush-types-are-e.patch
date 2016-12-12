@@ -1,7 +1,7 @@
-From 2982610dbcc703dbcfff4c69fa53d053b1306269 Mon Sep 17 00:00:00 2001
+From 2adf26f53a03c4e1cb18689b7848129448e1d5a1 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Tue, 17 Apr 2012 18:16:18 -0700
-Subject: [PATCH 06/24] CHROMIUM: i965: Allow the case where multiple flush
+Subject: [PATCH 04/19] CHROMIUM: i965: Allow the case where multiple flush
  types are enqueued.
 
 This happens when the miptree is allocated with intel_miptree_alloc_hiz
@@ -23,11 +23,11 @@ Signed-off-by: Tomasz Figa <tfiga@chromium.org>
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/src/mesa/drivers/dri/i965/intel_resolve_map.c b/src/mesa/drivers/dri/i965/intel_resolve_map.c
-index bf6bcf257a9c..5368fe3c2025 100644
+index 5b132ca..2993fa0 100644
 --- a/src/mesa/drivers/dri/i965/intel_resolve_map.c
 +++ b/src/mesa/drivers/dri/i965/intel_resolve_map.c
-@@ -39,8 +39,7 @@ intel_resolve_map_set(struct exec_list *resolve_map,
- 		      enum gen6_hiz_op need)
+@@ -38,8 +38,7 @@ intel_resolve_map_set(struct exec_list *resolve_map,
+                       unsigned need)
  {
     foreach_list_typed(struct intel_resolve_map, map, link, resolve_map) {
 -      if (map->level == level && map->layer == layer) {
@@ -37,5 +37,5 @@ index bf6bcf257a9c..5368fe3c2025 100644
        }
     }
 -- 
-2.5.1
+2.8.0.rc3.226.g39d4020
 

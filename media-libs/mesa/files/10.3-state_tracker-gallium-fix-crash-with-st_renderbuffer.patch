@@ -1,7 +1,7 @@
-From 1376f9218c227c1dc33bdc8e973adf4aad438df0 Mon Sep 17 00:00:00 2001
+From 2293c6f09fcab5e7e6063e336717bf1850664802 Mon Sep 17 00:00:00 2001
 From: James Ausmus <james.ausmus@intel.com>
 Date: Mon, 4 May 2015 15:00:12 -0700
-Subject: [PATCH 03/24] CHROMIUM: gallium: Fix renderbuffer destruction crash
+Subject: [PATCH 02/19] CHROMIUM: gallium: Fix renderbuffer destruction crash
 
 Avoid crash on surface/sampler_view destruction when the context is gone
 
@@ -36,7 +36,7 @@ Signed-off-by: Tomasz Figa <tfiga@chromium.org>
  14 files changed, 34 insertions(+), 4 deletions(-)
 
 diff --git a/src/gallium/auxiliary/util/u_inlines.h b/src/gallium/auxiliary/util/u_inlines.h
-index bb99a02ce49a..3bdf5b0635e4 100644
+index b7b8313..411d7bd 100644
 --- a/src/gallium/auxiliary/util/u_inlines.h
 +++ b/src/gallium/auxiliary/util/u_inlines.h
 @@ -110,7 +110,7 @@ pipe_surface_reference(struct pipe_surface **ptr, struct pipe_surface *surf)
@@ -48,7 +48,7 @@ index bb99a02ce49a..3bdf5b0635e4 100644
     *ptr = surf;
  }
  
-@@ -148,7 +148,7 @@ pipe_sampler_view_reference(struct pipe_sampler_view **ptr, struct pipe_sampler_
+@@ -150,7 +150,7 @@ pipe_sampler_view_reference(struct pipe_sampler_view **ptr, struct pipe_sampler_
  
     if (pipe_reference_described(&(*ptr)->reference, &view->reference,
                                  (debug_reference_descriptor)debug_describe_sampler_view))
@@ -58,7 +58,7 @@ index bb99a02ce49a..3bdf5b0635e4 100644
  }
  
 diff --git a/src/gallium/drivers/i915/i915_state.c b/src/gallium/drivers/i915/i915_state.c
-index 6ba9646f7ab6..00e5c6c4656b 100644
+index 9506044..bea0550 100644
 --- a/src/gallium/drivers/i915/i915_state.c
 +++ b/src/gallium/drivers/i915/i915_state.c
 @@ -44,6 +44,10 @@
@@ -72,7 +72,7 @@ index 6ba9646f7ab6..00e5c6c4656b 100644
  /* The i915 (and related graphics cores) do not support GL_CLAMP.  The
   * Intel drivers for "other operating systems" implement GL_CLAMP as
   * GL_CLAMP_TO_EDGE, so the same is done here.
-@@ -826,6 +830,7 @@ i915_create_sampler_view_custom(struct pipe_context *pipe,
+@@ -827,6 +831,7 @@ i915_create_sampler_view_custom(struct pipe_context *pipe,
        view->texture = NULL;
        pipe_resource_reference(&view->texture, texture);
        view->context = pipe;
@@ -80,7 +80,7 @@ index 6ba9646f7ab6..00e5c6c4656b 100644
     }
  
     return view;
-@@ -844,6 +849,7 @@ i915_create_sampler_view(struct pipe_context *pipe,
+@@ -845,6 +850,7 @@ i915_create_sampler_view(struct pipe_context *pipe,
        view->texture = NULL;
        pipe_resource_reference(&view->texture, texture);
        view->context = pipe;
@@ -89,10 +89,10 @@ index 6ba9646f7ab6..00e5c6c4656b 100644
  
     return view;
 diff --git a/src/gallium/drivers/i915/i915_surface.c b/src/gallium/drivers/i915/i915_surface.c
-index b2a639cb0f18..ebc9f2f2743a 100644
+index 27b0d9e..7d6169d 100644
 --- a/src/gallium/drivers/i915/i915_surface.c
 +++ b/src/gallium/drivers/i915/i915_surface.c
-@@ -372,6 +372,7 @@ i915_create_surface_custom(struct pipe_context *ctx,
+@@ -376,6 +376,7 @@ i915_create_surface_custom(struct pipe_context *ctx,
        ps->u.tex.first_layer = surf_tmpl->u.tex.first_layer;
        ps->u.tex.last_layer = surf_tmpl->u.tex.last_layer;
        ps->context = ctx;
@@ -101,7 +101,7 @@ index b2a639cb0f18..ebc9f2f2743a 100644
     return ps;
  }
 diff --git a/src/gallium/drivers/llvmpipe/lp_state_sampler.c b/src/gallium/drivers/llvmpipe/lp_state_sampler.c
-index b205f02fdba6..f1c7f4d61180 100644
+index 01af052..d10e6e2 100644
 --- a/src/gallium/drivers/llvmpipe/lp_state_sampler.c
 +++ b/src/gallium/drivers/llvmpipe/lp_state_sampler.c
 @@ -40,6 +40,9 @@
@@ -114,7 +114,7 @@ index b205f02fdba6..f1c7f4d61180 100644
  
  static void *
  llvmpipe_create_sampler_state(struct pipe_context *pipe,
-@@ -170,6 +173,7 @@ llvmpipe_create_sampler_view(struct pipe_context *pipe,
+@@ -183,6 +186,7 @@ llvmpipe_create_sampler_view(struct pipe_context *pipe,
        view->texture = NULL;
        pipe_resource_reference(&view->texture, texture);
        view->context = pipe;
@@ -123,10 +123,10 @@ index b205f02fdba6..f1c7f4d61180 100644
  #ifdef DEBUG
       /*
 diff --git a/src/gallium/drivers/llvmpipe/lp_surface.c b/src/gallium/drivers/llvmpipe/lp_surface.c
-index 96f8ed82cd86..c6e44b7d340a 100644
+index 784db7f..e11383e 100644
 --- a/src/gallium/drivers/llvmpipe/lp_surface.c
 +++ b/src/gallium/drivers/llvmpipe/lp_surface.c
-@@ -140,6 +140,7 @@ llvmpipe_create_surface(struct pipe_context *pipe,
+@@ -147,6 +147,7 @@ llvmpipe_create_surface(struct pipe_context *pipe,
        pipe_resource_reference(&ps->texture, pt);
        ps->context = pipe;
        ps->format = surf_tmpl->format;
@@ -135,7 +135,7 @@ index 96f8ed82cd86..c6e44b7d340a 100644
           assert(surf_tmpl->u.tex.level <= pt->last_level);
           assert(surf_tmpl->u.tex.first_layer <= surf_tmpl->u.tex.last_layer);
 diff --git a/src/gallium/drivers/r300/r300_state.c b/src/gallium/drivers/r300/r300_state.c
-index d99d5ae0152b..463ee922efde 100644
+index 196c0df..80f2f25 100644
 --- a/src/gallium/drivers/r300/r300_state.c
 +++ b/src/gallium/drivers/r300/r300_state.c
 @@ -47,6 +47,10 @@
@@ -149,7 +149,7 @@ index d99d5ae0152b..463ee922efde 100644
  /* r300_state: Functions used to intialize state context by translating
   * Gallium state objects into semi-native r300 state objects. */
  
-@@ -1655,6 +1659,7 @@ r300_create_sampler_view_custom(struct pipe_context *pipe,
+@@ -1610,6 +1614,7 @@ r300_create_sampler_view_custom(struct pipe_context *pipe,
          view->base.reference.count = 1;
          view->base.context = pipe;
          view->base.texture = NULL;
@@ -158,10 +158,10 @@ index d99d5ae0152b..463ee922efde 100644
  
  	view->width0_override = width0_override;
 diff --git a/src/gallium/drivers/r300/r300_texture.c b/src/gallium/drivers/r300/r300_texture.c
-index 5e4d50df27d3..ba1289921c2e 100644
+index fbac07a..ebe0264 100644
 --- a/src/gallium/drivers/r300/r300_texture.c
 +++ b/src/gallium/drivers/r300/r300_texture.c
-@@ -1161,6 +1161,7 @@ struct pipe_surface* r300_create_surface_custom(struct pipe_context * ctx,
+@@ -1227,6 +1227,7 @@ struct pipe_surface* r300_create_surface_custom(struct pipe_context * ctx,
          pipe_reference_init(&surface->base.reference, 1);
          pipe_resource_reference(&surface->base.texture, texture);
          surface->base.context = ctx;
@@ -170,10 +170,10 @@ index 5e4d50df27d3..ba1289921c2e 100644
          surface->base.width = u_minify(width0_override, level);
          surface->base.height = u_minify(height0_override, level);
 diff --git a/src/gallium/drivers/r600/r600_pipe.h b/src/gallium/drivers/r600/r600_pipe.h
-index bb91f830828f..b0b2ae97ae23 100644
+index cf8eba3..2be8a88 100644
 --- a/src/gallium/drivers/r600/r600_pipe.h
 +++ b/src/gallium/drivers/r600/r600_pipe.h
-@@ -720,6 +720,8 @@ void r600_sampler_views_dirty(struct r600_context *rctx,
+@@ -728,6 +728,8 @@ void r600_sampler_views_dirty(struct r600_context *rctx,
  			      struct r600_samplerview_state *state);
  void r600_sampler_states_dirty(struct r600_context *rctx,
  			       struct r600_sampler_states *state);
@@ -183,10 +183,10 @@ index bb91f830828f..b0b2ae97ae23 100644
  void r600_set_sample_locations_constant_buffer(struct r600_context *rctx);
  uint32_t r600_translate_stencil_op(int s_op);
 diff --git a/src/gallium/drivers/r600/r600_state.c b/src/gallium/drivers/r600/r600_state.c
-index 2c727815d2d8..f4cab0b2a5d4 100644
+index ba97490..b92ca46 100644
 --- a/src/gallium/drivers/r600/r600_state.c
 +++ b/src/gallium/drivers/r600/r600_state.c
-@@ -652,6 +652,7 @@ r600_create_sampler_view_custom(struct pipe_context *ctx,
+@@ -681,6 +681,7 @@ r600_create_sampler_view_custom(struct pipe_context *ctx,
  	view->base.texture = texture;
  	view->base.reference.count = 1;
  	view->base.context = ctx;
@@ -195,10 +195,10 @@ index 2c727815d2d8..f4cab0b2a5d4 100644
  	if (texture->target == PIPE_BUFFER)
  		return texture_buffer_sampler_view(view, texture->width0, 1);
 diff --git a/src/gallium/drivers/r600/r600_state_common.c b/src/gallium/drivers/r600/r600_state_common.c
-index bdd9337ecc04..dd49cbf35239 100644
+index 60490b0..6ab2193 100644
 --- a/src/gallium/drivers/r600/r600_state_common.c
 +++ b/src/gallium/drivers/r600/r600_state_common.c
-@@ -388,8 +388,8 @@ static void r600_delete_rs_state(struct pipe_context *ctx, void *state)
+@@ -380,8 +380,8 @@ static void r600_delete_rs_state(struct pipe_context *ctx, void *state)
  	FREE(rs);
  }
  
@@ -210,10 +210,10 @@ index bdd9337ecc04..dd49cbf35239 100644
  	struct r600_pipe_sampler_view *view = (struct r600_pipe_sampler_view *)state;
  
 diff --git a/src/gallium/drivers/radeon/r600_texture.c b/src/gallium/drivers/radeon/r600_texture.c
-index 54696910e43b..7e9c0614b0d3 100644
+index 259ff36..f4c3b9a 100644
 --- a/src/gallium/drivers/radeon/r600_texture.c
 +++ b/src/gallium/drivers/radeon/r600_texture.c
-@@ -1113,6 +1113,7 @@ struct pipe_surface *r600_create_surface_custom(struct pipe_context *pipe,
+@@ -1769,6 +1769,7 @@ struct pipe_surface *r600_create_surface_custom(struct pipe_context *pipe,
  	pipe_reference_init(&surface->base.reference, 1);
  	pipe_resource_reference(&surface->base.texture, texture);
  	surface->base.context = pipe;
@@ -222,10 +222,10 @@ index 54696910e43b..7e9c0614b0d3 100644
  	surface->base.width = width;
  	surface->base.height = height;
 diff --git a/src/gallium/drivers/softpipe/sp_tex_sample.c b/src/gallium/drivers/softpipe/sp_tex_sample.c
-index 565fca6..07eb5ff 100644
+index c457f89..8dc4486 100644
 --- a/src/gallium/drivers/softpipe/sp_tex_sample.c
 +++ b/src/gallium/drivers/softpipe/sp_tex_sample.c
-@@ -3306,6 +3306,7 @@ softpipe_create_sampler_view(struct pipe_context *pipe,
+@@ -3483,6 +3483,7 @@ softpipe_create_sampler_view(struct pipe_context *pipe,
        view->texture = NULL;
        pipe_resource_reference(&view->texture, resource);
        view->context = pipe;
@@ -234,10 +234,10 @@ index 565fca6..07eb5ff 100644
  #ifdef DEBUG
       /*
 diff --git a/src/gallium/drivers/softpipe/sp_texture.c b/src/gallium/drivers/softpipe/sp_texture.c
-index e1ea5df..d192344 100644
+index 8dca158..15bb55f 100644
 --- a/src/gallium/drivers/softpipe/sp_texture.c
 +++ b/src/gallium/drivers/softpipe/sp_texture.c
-@@ -287,6 +287,7 @@ softpipe_create_surface(struct pipe_context *pipe,
+@@ -299,6 +299,7 @@ softpipe_create_surface(struct pipe_context *pipe,
        pipe_resource_reference(&ps->texture, pt);
        ps->context = pipe;
        ps->format = surf_tmpl->format;
@@ -246,20 +246,20 @@ index e1ea5df..d192344 100644
           assert(surf_tmpl->u.tex.level <= pt->last_level);
           ps->width = u_minify(pt->width0, surf_tmpl->u.tex.level);
 diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
-index 266ebbafe36b..6294fcaf24f0 100644
+index d501a93..9cc4475 100644
 --- a/src/gallium/include/pipe/p_state.h
 +++ b/src/gallium/include/pipe/p_state.h
-@@ -359,6 +359,9 @@ struct pipe_surface
-          unsigned last_element;
-       } buf;
-    } u;
+@@ -407,6 +407,9 @@ struct pipe_surface
+    unsigned writable:1;          /**< writable shader resource */
+ 
+    union pipe_surface_desc u;
 +
 +   void (*surface_destroy)(struct pipe_context *ctx,
 +                           struct pipe_surface *);
  };
  
  
-@@ -388,6 +391,9 @@ struct pipe_sampler_view
+@@ -436,6 +439,9 @@ struct pipe_sampler_view
     unsigned swizzle_g:3;         /**< PIPE_SWIZZLE_x for green component */
     unsigned swizzle_b:3;         /**< PIPE_SWIZZLE_x for blue component */
     unsigned swizzle_a:3;         /**< PIPE_SWIZZLE_x for alpha component */
@@ -270,5 +270,5 @@ index 266ebbafe36b..6294fcaf24f0 100644
  
  
 -- 
-2.5.1
+2.8.0.rc3.226.g39d4020
 

@@ -123,9 +123,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
-	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
-	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
-	epatch "${FILESDIR}"/10.3-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
@@ -137,18 +134,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
 	epatch "${FILESDIR}"/12.1-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
-	epatch "${FILESDIR}"/11.7-double-buffered.patch
-	epatch "${FILESDIR}"/12.0-mesa-Fix-glFramebufferTexture-error-codes-v2.patch
-	epatch "${FILESDIR}"/12.0-anv-install-the-intel_icd.json-to-datarootdir-by-def.patch
-	epatch "${FILESDIR}"/12.1-configure.ac-Use-datarootdir-for-with-vulkan-icddir-.patch
-	epatch "${FILESDIR}"/12.1-configure.ac-extract-HAVE_LLVM-macro-properly.patch
-	epatch "${FILESDIR}"/12.1-i915g-fix-incorrect-gl_FragCoord-value.patch
-	epatch "${FILESDIR}"/12.1-radeonsi-gbm-configure.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
-	epatch "${FILESDIR}"/12.0-intel-Fix-pixel-shader-scratch-space.patch
-	epatch "${FILESDIR}"/12.1-compiler-glsl-fix-precision-problem-of-tanh.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory

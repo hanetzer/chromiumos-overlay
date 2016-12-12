@@ -1,21 +1,21 @@
-From 7b88427c343b6b312db3939123b915338f256a91 Mon Sep 17 00:00:00 2001
+From e7947aa012e07fc2003f1329d9bebf11840e108c Mon Sep 17 00:00:00 2001
 From: Deepak Sharma <Deepak.Sharma@amd.com>
 Date: Thu, 11 Aug 2016 15:40:36 +0530
-Subject: [PATCH 2/2] Fix crash on sampler_view_destroy in radeonsi
+Subject: [PATCH 19/19] Fix crash on sampler_view_destroy in radeonsi
 
 set sampler_view_destroy method for radeonsi,
 when upper layer tries to destroy an object.
 
 Change-Id: Ia069a648617019f4df2eb3e9d8fa41b9d9b71ff7
 ---
- src/gallium/drivers/radeonsi/si_state.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ src/gallium/drivers/radeonsi/si_state.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
 diff --git a/src/gallium/drivers/radeonsi/si_state.c b/src/gallium/drivers/radeonsi/si_state.c
-index 0c52eee..064ef31 100644
+index 04c1a9f..ef550b9 100644
 --- a/src/gallium/drivers/radeonsi/si_state.c
 +++ b/src/gallium/drivers/radeonsi/si_state.c
-@@ -2844,6 +2844,18 @@ si_make_texture_descriptor(struct si_screen *screen,
+@@ -2990,6 +2990,15 @@ si_make_texture_descriptor(struct si_screen *screen,
  	}
  }
  
@@ -24,9 +24,6 @@ index 0c52eee..064ef31 100644
 +{
 +        struct si_sampler_view *view = (struct si_sampler_view *)state;
 +
-+        if (state->texture && state->texture->target == PIPE_BUFFER)
-+                LIST_DELINIT(&view->list);
-+
 +        pipe_resource_reference(&state->texture, NULL);
 +        FREE(view);
 +}
@@ -34,15 +31,15 @@ index 0c52eee..064ef31 100644
  /**
   * Create a sampler view.
   *
-@@ -2879,6 +2891,7 @@ si_create_sampler_view_custom(struct pipe_context *ctx,
+@@ -3025,6 +3034,7 @@ si_create_sampler_view_custom(struct pipe_context *ctx,
  	view->base.texture = NULL;
  	view->base.reference.count = 1;
  	view->base.context = ctx;
 +	view->base.sampler_view_destroy = si_sampler_view_destroy;
  
- 	/* NULL resource, obey swizzle (only ZERO and ONE make sense). */
- 	if (!texture) {
-@@ -2988,18 +3001,6 @@ si_create_sampler_view(struct pipe_context *ctx,
+ 	assert(texture);
+ 	pipe_resource_reference(&view->base.texture, texture);
+@@ -3153,15 +3163,6 @@ si_create_sampler_view(struct pipe_context *ctx,
  					     texture ? texture->height0 : 0, 0);
  }
  
@@ -50,9 +47,6 @@ index 0c52eee..064ef31 100644
 -				    struct pipe_sampler_view *state)
 -{
 -	struct si_sampler_view *view = (struct si_sampler_view *)state;
--
--	if (state->texture && state->texture->target == PIPE_BUFFER)
--		LIST_DELINIT(&view->list);
 -
 -	pipe_resource_reference(&state->texture, NULL);
 -	FREE(view);
@@ -62,5 +56,5 @@ index 0c52eee..064ef31 100644
  {
  	return wrap == PIPE_TEX_WRAP_CLAMP_TO_BORDER ||
 -- 
-1.9.1
+2.8.0.rc3.226.g39d4020
 
