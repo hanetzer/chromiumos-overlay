@@ -63,6 +63,15 @@ prepare_legacy_image() {
 	fi
 }
 
+do_cbfstool() {
+	local output
+	output=$(cbfstool "$@" 2>&1)
+	if [ $? != 0 ]; then
+		die "Failed cbfstool invocation: cbfstool $@\n${output}"
+	fi
+	echo "${output}"
+}
+
 sign_region() {
 	local fw_image=$1
 	local keydir=$2
@@ -72,16 +81,19 @@ sign_region() {
 	local cbfs=FW_MAIN_${slot}
 	local vblock=VBLOCK_${slot}
 
-	cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile}
-	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} | \
+	do_cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile}
+	local size=$(do_cbfstool ${fw_image} print -k -r ${cbfs} | \
 		tail -1 | \
 		sed "/(empty).*null/ s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$,\1,")
 	size=$(printf "%d" ${size})
 
+	# If the last entry is called "(empty)" and of type "null", remove it from
+	# the section so it isn't part of the signed data, to improve boot speed
+	# if (as often happens) there's a large unused suffix.
 	if [ -n "${size}" ] && [ ${size} -gt 0 ]; then
 		head -c ${size} ${tmpfile} > ${tmpfile}.2
 		mv ${tmpfile}.2 ${tmpfile}
-		cbfstool ${fw_image} write --force -u -i 0 \
+		do_cbfstool ${fw_image} write --force -u -i 0 \
 			-r ${cbfs} -f ${tmpfile}
 	fi
 
@@ -94,7 +106,7 @@ sign_region() {
 		--kernelkey ${keydir}/kernel_subkey.vbpubk \
 		--flags 0
 
-	cbfstool ${fw_image} write -u -i 0 -r ${vblock} -f ${tmpfile}.out
+	do_cbfstool ${fw_image} write -u -i 0 -r ${vblock} -f ${tmpfile}.out
 
 	rm -f ${tmpfile} ${tmpfile}.out
 }
@@ -112,10 +124,10 @@ add_payloads() {
 	local ro_payload=$2
 	local rw_payload=$3
 
-	cbfstool ${fw_image} add-payload \
+	do_cbfstool ${fw_image} add-payload \
 		-f ${ro_payload} -n fallback/payload -c lzma
 
-	cbfstool ${fw_image} add-payload \
+	do_cbfstool ${fw_image} add-payload \
 		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B
 }
 
@@ -146,9 +158,9 @@ src_compile() {
 
 	einfo "Add static assets to images"
 	# files from rocbfs/ are installed in all images' RO CBFS
-	for file in ${froot}/rocbfs/*; do
+	for file in $(ls -1d ${froot}/rocbfs/* 2>/dev/null); do
 		for rom in ${coreboot_file}{,.serial}; do
-			cbfstool ${rom} add \
+			do_cbfstool ${rom} add \
 				-r COREBOOT \
 				-f $file -n $(basename $file) -t raw \
 				-c lzma
@@ -160,14 +172,14 @@ src_compile() {
 	if [ -n "${legacy_file}" ]; then
 		einfo "Using legacy boot payload: ${legacy_file}"
 		if [ -f "${legacy_file}.serial" ]; then
-			cbfstool ${coreboot_file}.serial write \
+			do_cbfstool ${coreboot_file}.serial write \
 				-f ${legacy_file}.serial --force -r RW_LEGACY
-			cbfstool ${coreboot_file} write \
+			do_cbfstool ${coreboot_file} write \
 				-f ${legacy_file} --force -r RW_LEGACY
 		else
-			cbfstool ${coreboot_file}.serial write \
+			do_cbfstool ${coreboot_file}.serial write \
 				-f ${legacy_file} --force -r RW_LEGACY
-			cbfstool ${coreboot_file} write \
+			do_cbfstool ${coreboot_file} write \
 				-f ${legacy_file} --force -r RW_LEGACY
 		fi
 	fi
