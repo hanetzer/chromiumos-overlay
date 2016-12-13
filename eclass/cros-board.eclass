@@ -151,6 +151,7 @@ ALL_BOARDS=(
 	#lemmings_external
 	leon
 	link
+	loonix
 	lulu
 	lulu-cheets
 	lumpy
