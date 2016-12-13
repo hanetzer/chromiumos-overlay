@@ -19,12 +19,16 @@ IUSE=""
 RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libcontainer
+	virtual/udev
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
 	cd "${OUT}"
 	dobin run_oci
+
+	into /usr/local
+	dobin device_jail_utility
 }
 
 platform_pkg_test() {
