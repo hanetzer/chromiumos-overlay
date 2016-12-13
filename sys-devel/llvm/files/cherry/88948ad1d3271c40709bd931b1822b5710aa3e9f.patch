@@ -1,0 +1,127 @@
+commit 88948ad1d3271c40709bd931b1822b5710aa3e9f
+Author: Silviu Baranga <silviu.baranga@arm.com>
+Date:   Wed Nov 30 17:04:22 2016 +0000
+
+    [AArch64] Fix useful bits detection for BFM instructions
+    
+    Summary:
+    When computing useful bits for a BFM instruction, we need
+    to take into consideration the case where both operands
+    of the BFM are equal and provide data that we need to track.
+    
+    Not doing this can cause us to miss useful bits.
+    
+    Fixes PR31138 (https://llvm.org/bugs/show_bug.cgi?id=31138)
+    
+    Reviewers: t.p.northover, jmolloy
+    
+    Subscribers: evandro, gberry, srhines, pirama, mcrosier, aemerson, llvm-commits, rengolin
+    
+    Differential Revision: https://reviews.llvm.org/D27130
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@288253 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Target/AArch64/AArch64ISelDAGToDAG.cpp b/lib/Target/AArch64/AArch64ISelDAGToDAG.cpp
+index b075b76..3099383 100644
+--- a/lib/Target/AArch64/AArch64ISelDAGToDAG.cpp
++++ b/lib/Target/AArch64/AArch64ISelDAGToDAG.cpp
+@@ -1875,23 +1875,52 @@ static void getUsefulBitsFromBFM(SDValue Op, SDValue Orig, APInt &UsefulBits,
+   uint64_t MSB =
+       cast<const ConstantSDNode>(Op.getOperand(3).getNode())->getZExtValue();
+ 
+-  if (Op.getOperand(1) == Orig)
+-    return getUsefulBitsFromBitfieldMoveOpd(Op, UsefulBits, Imm, MSB, Depth);
+-
+   APInt OpUsefulBits(UsefulBits);
+   OpUsefulBits = 1;
+ 
++  APInt ResultUsefulBits(UsefulBits.getBitWidth(), 0);
++  ResultUsefulBits.flipAllBits();
++  APInt Mask(UsefulBits.getBitWidth(), 0);
++
++  getUsefulBits(Op, ResultUsefulBits, Depth + 1);
++
+   if (MSB >= Imm) {
+-    OpUsefulBits = OpUsefulBits.shl(MSB - Imm + 1);
++    // The instruction is a BFXIL.
++    uint64_t Width = MSB - Imm + 1;
++    uint64_t LSB = Imm;
++
++    OpUsefulBits = OpUsefulBits.shl(Width);
+     --OpUsefulBits;
+-    UsefulBits &= ~OpUsefulBits;
+-    getUsefulBits(Op, UsefulBits, Depth + 1);
++
++    if (Op.getOperand(1) == Orig) {
++      // Copy the low bits from the result to bits starting from LSB.
++      Mask = ResultUsefulBits & OpUsefulBits;
++      Mask = Mask.shl(LSB);
++    }
++
++    if (Op.getOperand(0) == Orig)
++      // Bits starting from LSB in the input contribute to the result.
++      Mask |= (ResultUsefulBits & ~OpUsefulBits);
+   } else {
+-    OpUsefulBits = OpUsefulBits.shl(MSB + 1);
++    // The instruction is a BFI.
++    uint64_t Width = MSB + 1;
++    uint64_t LSB = UsefulBits.getBitWidth() - Imm;
++
++    OpUsefulBits = OpUsefulBits.shl(Width);
+     --OpUsefulBits;
+-    UsefulBits = ~(OpUsefulBits.shl(OpUsefulBits.getBitWidth() - Imm));
+-    getUsefulBits(Op, UsefulBits, Depth + 1);
++    OpUsefulBits = OpUsefulBits.shl(LSB);
++
++    if (Op.getOperand(1) == Orig) {
++      // Copy the bits from the result to the zero bits.
++      Mask = ResultUsefulBits & OpUsefulBits;
++      Mask = Mask.lshr(LSB);
++    }
++
++    if (Op.getOperand(0) == Orig)
++      Mask |= (ResultUsefulBits & ~OpUsefulBits);
+   }
++
++  UsefulBits &= Mask;
+ }
+ 
+ static void getUsefulBitsForUse(SDNode *UserNode, APInt &UsefulBits,
+diff --git a/test/CodeGen/AArch64/arm64-bitfield-extract.ll b/test/CodeGen/AArch64/arm64-bitfield-extract.ll
+index 12ddf95..339dbbe 100644
+--- a/test/CodeGen/AArch64/arm64-bitfield-extract.ll
++++ b/test/CodeGen/AArch64/arm64-bitfield-extract.ll
+@@ -530,3 +530,33 @@ define i16 @test_ignored_rightbits(i32 %dst, i32 %in) {
+ 
+   ret i16 %conv19
+ }
++
++; The following test excercises the case where we have a BFI
++; instruction with the same input in both operands. We need to
++; track the useful bits through both operands.
++; CHECK-LABEL: sameOperandBFI
++; CHECK: lsr
++; CHECK: and
++; CHECK: bfi
++; CHECK: bfi
++define void @sameOperandBFI(i64 %src, i64 %src2, i16 *%ptr) {
++entry:
++  %shr47 = lshr i64 %src, 47
++  %src2.trunc = trunc i64 %src2 to i32
++  br i1 undef, label %end, label %if.else
++
++if.else:
++  %and3 = and i32 %src2.trunc, 3
++  %shl2 = shl nuw nsw i64 %shr47, 2
++  %shl2.trunc = trunc i64 %shl2 to i32
++  %and12 = and i32 %shl2.trunc, 12
++  %BFISource = or i32 %and3, %and12         ; ...00000ABCD
++  %BFIRHS = shl nuw nsw i32 %BFISource, 4   ; ...0ABCD0000
++  %BFI = or i32 %BFIRHS, %BFISource         ; ...0ABCDABCD
++  %BFItrunc = trunc i32 %BFI to i16
++  store i16 %BFItrunc, i16* %ptr, align 4
++  br label %end
++
++end:
++  ret void
++}

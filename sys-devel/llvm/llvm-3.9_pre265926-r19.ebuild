@@ -243,8 +243,10 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" d6168b6ed57fe78bf42f57509d73bde2680105b5" # r286798
-
+	CHERRIES+=" d6168b6ed57fe78bf42f57509d73bde2680105b5 " # r286798
+	CHERRIES+=" 32dc773aa73602b5d5ee6881df5d76decd776018 " # r286613
+	CHERRIES+=" 4c434043b9a5140cf6ab9231c82e6000bb6f31f6 " # r289094
+	CHERRIES+=" 671d92a8e764a3266ecab219d791a27fb257be78 " # r289103
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -255,12 +257,25 @@ pick_next_cherries() {
 	CHERRIES=""
 	# Arm ChromeOS failed to boot without this.
 	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
-
+	CHERRIES+=" 81323af362fc053dbea0758ca1e02d9af82c0da6 " # r286611
+	CHERRIES+=" 06f9b86145451df76f74540867ea0d1671e41d20 " # r286636
+	CHERRIES+=" 8ac75a18fca87788bd3c69cf0d2b511f438e3262 " # r287874
+	CHERRIES+=" 242e37443552dd128bb35e9f500e05d7d6f4afed " # r287875
+	CHERRIES+=" 88948ad1d3271c40709bd931b1822b5710aa3e9f " # r288253
+	CHERRIES+=" bc7dc480be4b503b81d4e63f97fb499b6873a1fa " # r288420
 	CHERRIES+=" c31c930cdf7d34987fb1d08e92a4532343241dd3 " # r288433
+	CHERRIES+=" d7bfb58bc10fa2b57d986b3ca7e6b6d8b9a89974 " # r289008
+
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
 	done
+	popd >/dev/null || die
+
+	# compiler-rt
+	CHERRIES="9eaa3ef462b338fa2426930e2d3072b43291abcf" # r288091
+	pushd "${S}"/projects/compiler-rt >/dev/null || die
+	epatch "${FILESDIR}/cherry/${CHERRIES}.patch"
 	popd >/dev/null || die
 }
 
