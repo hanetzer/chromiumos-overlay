@@ -72,8 +72,8 @@ sign_region() {
 	local cbfs=FW_MAIN_${slot}
 	local vblock=VBLOCK_${slot}
 
-	cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile} 2>/dev/null
-	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} 2>/dev/null | \
+	cbfstool ${fw_image} read -r ${cbfs} -f ${tmpfile}
+	local size=$(cbfstool ${fw_image} print -k -r ${cbfs} | \
 		tail -1 | \
 		sed "/(empty).*null/ s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$,\1,")
 	size=$(printf "%d" ${size})
@@ -82,7 +82,7 @@ sign_region() {
 		head -c ${size} ${tmpfile} > ${tmpfile}.2
 		mv ${tmpfile}.2 ${tmpfile}
 		cbfstool ${fw_image} write --force -u -i 0 \
-			-r ${cbfs} -f ${tmpfile} 2>/dev/null
+			-r ${cbfs} -f ${tmpfile}
 	fi
 
 	futility vbutil_firmware \
@@ -94,7 +94,7 @@ sign_region() {
 		--kernelkey ${keydir}/kernel_subkey.vbpubk \
 		--flags 0
 
-	cbfstool ${fw_image} write -u -i 0 -r ${vblock} -f ${tmpfile}.out 2>/dev/null
+	cbfstool ${fw_image} write -u -i 0 -r ${vblock} -f ${tmpfile}.out
 
 	rm -f ${tmpfile} ${tmpfile}.out
 }
@@ -113,10 +113,10 @@ add_payloads() {
 	local rw_payload=$3
 
 	cbfstool ${fw_image} add-payload \
-		-f ${ro_payload} -n fallback/payload -c lzma 2>/dev/null
+		-f ${ro_payload} -n fallback/payload -c lzma
 
 	cbfstool ${fw_image} add-payload \
-		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B 2>/dev/null
+		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B
 }
 
 build_image() {
@@ -151,7 +151,7 @@ src_compile() {
 			cbfstool ${rom} add \
 				-r COREBOOT \
 				-f $file -n $(basename $file) -t raw \
-				-c lzma 2>/dev/null
+				-c lzma
 		done
 	done
 
@@ -161,14 +161,14 @@ src_compile() {
 		einfo "Using legacy boot payload: ${legacy_file}"
 		if [ -f "${legacy_file}.serial" ]; then
 			cbfstool ${coreboot_file}.serial write \
-				-f ${legacy_file}.serial --force -r RW_LEGACY 2>/dev/null
+				-f ${legacy_file}.serial --force -r RW_LEGACY
 			cbfstool ${coreboot_file} write \
-				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
+				-f ${legacy_file} --force -r RW_LEGACY
 		else
 			cbfstool ${coreboot_file}.serial write \
-				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
+				-f ${legacy_file} --force -r RW_LEGACY
 			cbfstool ${coreboot_file} write \
-				-f ${legacy_file} --force -r RW_LEGACY 2>/dev/null
+				-f ${legacy_file} --force -r RW_LEGACY
 		fi
 	fi
 
