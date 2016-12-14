@@ -186,7 +186,7 @@ ALL_BOARDS=(
 	nyan_kitty
 	oak
 	oak-cheets
-	optimus
+	#optimus
 	orco
 	panda
 	panther
