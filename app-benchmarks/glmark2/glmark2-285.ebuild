@@ -40,6 +40,7 @@ PATCHES=(
 	"${FILESDIR}/0004-SceneDesktop-don-t-modify-framebuffer-zero.patch"
 	"${FILESDIR}/0005-GLState-change-native-config-type-to-intptr_t.patch"
 	"${FILESDIR}/0006-Add-waffle-backend.patch"
+	"${FILESDIR}/0007-data-Remove-unused-uniforms-from-shaders.patch"
 	"${FILESDIR}/clang-syntax.patch"
 	"${FILESDIR}/libpng-1.6.patch"
 )
