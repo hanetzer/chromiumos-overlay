@@ -370,9 +370,6 @@ set_build_args() {
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
-
-		# For internal builds, don't remove webcore debug symbols by default.
-		REMOVE_WEBCORE_DEBUG_SYMBOLS=${REMOVE_WEBCORE_DEBUG_SYMBOLS:-0}
 	elif use chrome_media; then
 		echo "Building Chromium with additional media codecs and containers."
 		BUILD_ARGS+=( proprietary_codecs=true )
@@ -403,7 +400,6 @@ set_build_args() {
 		BUILD_ARGS+=( symbol_level=2 )
 	fi
 
-	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
 }
@@ -609,7 +605,6 @@ src_prepare() {
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
 		ln -sfT "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
 			die "Could not create symlink for output directory"
-		export builddir_name="${BUILD_OUT_SYM}"
 	fi
 
 
@@ -753,10 +748,6 @@ src_configure() {
 
 	setup_compile_flags
 
-	local build_tool_flags=(
-		"config=${BUILDTYPE}"
-		"output_dir=${builddir_name}"
-	)
 	export BOTO_CONFIG=/home/$(whoami)/.boto
 	export PATH=${PATH}:/home/$(whoami)/depot_tools
 
@@ -1067,10 +1058,9 @@ src_install() {
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
 	fi
-	# TODO(ihf): Remove this once 595763 is fixed.
-	eerror "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
+	einfo "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
 	LS=$(ls -alhS ${FROM})
-	eerror "CHROME_DIR after build\n${LS}"
+	einfo "CHROME_DIR after build\n${LS}"
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
@@ -1173,11 +1163,10 @@ src_install() {
 		--strip-flags="${PORTAGE_STRIP_FLAGS}"
 		--verbose
 	)
-	# TODO(ihf): Make this einfo again once 595763 is fixed.
-	eerror "${cmd[*]}"
+	einfo "${cmd[*]}"
 	"${cmd[@]}" || die
 	LS=$(ls -alhS ${D}/${CHROME_DIR})
-	eerror "CHROME_DIR after deploy_chrome\n${LS}"
+	einfo "CHROME_DIR after deploy_chrome\n${LS}"
 
 	# Keep the .dwp file.
 	if use chrome_debug && ( use x86 || use arm ); then
@@ -1219,9 +1208,9 @@ pkg_preinst() {
 pkg_postinst() {
 	autotest_pkg_postinst
 	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
-	eerror "CHROME_DIR after installation\n${LS}"
+	einfo "CHROME_DIR after installation\n${LS}"
 	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
-	eerror "CHROME_SIZE = ${CHROME_SIZE}"
+	einfo "CHROME_SIZE = ${CHROME_SIZE}"
 	if [[ ${CHROME_SIZE} -ge 200000000 && -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
