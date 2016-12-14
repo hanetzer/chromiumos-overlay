@@ -32,7 +32,7 @@ IUSE="
 	+accessibility
 	app_shell
 	asan
-	-authpolicy
+	+authpolicy
 	+build_tests
 	+chrome_debug
 	chrome_debug_tests
