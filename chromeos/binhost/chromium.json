@@ -1,15 +1,14 @@
 [
   {
     "compat_id": {
-      "arch": "arm", 
+      "arch": "amd64", 
       "cflags": [
         "-O2", 
+        "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=armv7-a", 
-        "-mtune=cortex-a15", 
-        "-mfpu=neon", 
-        "-mfloat-abi=hard", 
+        "-march=x86-64", 
+        "-msse3", 
         "-g", 
         "-fno-exceptions", 
         "-fno-unwind-tables", 
@@ -25,27 +24,22 @@
         "cups", 
         "evdev_gestures", 
         "fonts", 
-        "gn", 
         "gold", 
-        "hardfp", 
         "highdpi", 
         "nacl", 
-        "neon", 
         "opengles", 
         "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
         "v4l2_codec", 
-        "v4lplugin", 
+        "vaapi", 
         "xkbcommon"
       ]
     }, 
     "key": {
-      "board": "veyron_jerry", 
-      "useflags": [
-        "-chrome_internal"
-      ]
+      "board": "amd64-generic", 
+      "useflags": []
     }
   }, 
   {
@@ -74,7 +68,6 @@
         "cups", 
         "evdev_gestures", 
         "fonts", 
-        "gn", 
         "gold", 
         "hardfp", 
         "highdpi", 
@@ -122,7 +115,6 @@
         "cups", 
         "evdev_gestures", 
         "fonts", 
-        "gn", 
         "gold", 
         "hardfp", 
         "highdpi", 
@@ -146,14 +138,15 @@
   }, 
   {
     "compat_id": {
-      "arch": "amd64", 
+      "arch": "arm", 
       "cflags": [
         "-O2", 
-        "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=x86-64", 
-        "-msse3", 
+        "-march=armv7-a", 
+        "-mtune=cortex-a15", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
         "-g", 
         "-fno-exceptions", 
         "-fno-unwind-tables", 
@@ -169,23 +162,26 @@
         "cups", 
         "evdev_gestures", 
         "fonts", 
-        "gn", 
         "gold", 
+        "hardfp", 
         "highdpi", 
         "nacl", 
+        "neon", 
         "opengles", 
         "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
         "v4l2_codec", 
-        "vaapi", 
+        "v4lplugin", 
         "xkbcommon"
       ]
     }, 
     "key": {
-      "board": "amd64-generic", 
-      "useflags": []
+      "board": "veyron_jerry", 
+      "useflags": [
+        "-chrome_internal"
+      ]
     }
   }, 
   {
@@ -218,7 +214,6 @@
         "cups", 
         "evdev_gestures", 
         "fonts", 
-        "gn", 
         "gold", 
         "highdpi", 
         "nacl", 
