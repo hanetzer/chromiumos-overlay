@@ -632,6 +632,7 @@ src_prepare() {
 
 setup_test_lists() {
 	TEST_FILES=(
+		jpeg_decode_accelerator_unittest
 		media_unittests
 		sandbox_linux_unittests
 		video_decode_accelerator_unittest
