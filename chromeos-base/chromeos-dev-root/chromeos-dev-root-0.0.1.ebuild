@@ -8,10 +8,9 @@ HOMEPAGE="http://www.chromium.org/"
 KEYWORDS="*"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="brillo-debug"
+IUSE=""
 
 RDEPEND="
-	brillo-debug? ( brillo-base/brdebug-init )
 	chromeos-base/openssh-server-init
 	virtual/chromeos-bsp-dev-root
 "
