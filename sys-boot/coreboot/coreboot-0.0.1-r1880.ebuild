@@ -37,7 +37,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
+IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma fsp2_0"
 IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework"
 
 PER_BOARD_BOARDS=(
@@ -99,6 +99,13 @@ src_prepare() {
 		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
 			elog "   - using fsp config"
 			board=${board}.fsp
+		fi
+	fi
+
+	if use fsp2_0; then
+		if [[ -s "${FILESDIR}/configs/config.${board}.fsp20" ]]; then
+			elog "   - using fsp2_0 config"
+			board=${board}.fsp20
 		fi
 	fi
 
@@ -255,6 +262,12 @@ src_install() {
 		fi
 	fi
 
+	if use fsp2_0; then
+		if [[ -s "${FILESDIR}/configs/config.${board}.fsp20" ]]; then
+			elog "   - using fsp2_0 config"
+			board=${board}.fsp20
+		fi
+	fi
 	insinto /firmware
 
 	newins "build/coreboot.rom" coreboot.rom
@@ -264,10 +277,25 @@ src_install() {
 		${FILESDIR}/configs/config.${board} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
 		${FILESDIR}/configs/config.${board} ).rom
-	FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
-		${FILESDIR}/configs/config.${board} )
-	if [[ -n "${FSP}" ]]; then
-		newins ${FSP} fsp.bin
+
+	if use fsp2_0; then
+		FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_S_FILE=/ { print $2 }' \
+			${FILESDIR}/configs/config.${board} )
+		if [[ -n "${FSP}" ]]; then
+			newins ${FSP} fsps.bin
+		fi
+		FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_M_FILE=/ { print $2 }' \
+			${FILESDIR}/configs/config.${board} )
+		if [[ -n "${FSP}" ]]; then
+			newins ${FSP} fspm.bin
+		fi
+
+	else
+		FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
+			${FILESDIR}/configs/config.${board} )
+		if [[ -n "${FSP}" ]]; then
+			newins ${FSP} fsp.bin
+		fi
 	fi
 	if [[ -n "${OPROM}" ]]; then
 		newins ${OPROM} ${CBFSOPROM}
