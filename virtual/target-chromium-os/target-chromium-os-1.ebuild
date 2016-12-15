@@ -10,12 +10,12 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
-IUSE="+authpolicy bluetooth bootchart bootimage buffet +cellular compupdates
-	coreboot cr50_onboard +cras +crash_reporting +cros_disks cros_ec cros_embedded
-	+debugd dptf eclog feedback +fonts gobi mtd +network_time nfc pam peerd
-	postscript +power_management +profile cups +readahead scanner +shill intel_lpe
-	+syslog +system_locales systemd touchview +tpm -tpm2 +trim_supported +vpn
-	watchdog wifi_bootstrapping wimax X"
+IUSE="bluetooth bootchart bootimage buffet +cellular compupdates coreboot cr50_onboard
+	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
+	eclog feedback +fonts gobi mtd +network_time nfc pam peerd postscript
+	+power_management +profile cups +readahead scanner +shill
+	intel_lpe +syslog +system_locales systemd touchview +tpm -tpm2 +trim_supported
+	+vpn watchdog wifi_bootstrapping wimax X"
 
 REQUIRED_USE="cellular? ( shill )"
 
@@ -145,10 +145,6 @@ CROS_COMMON_RDEPEND+="
 	virtual/service-manager
 	cr50_onboard? ( chromeos-base/chromeos-cr50 )
 "
-
-# TODO(ljusten): 12/13/16 Temporary, remove once Chrome ebuild pulls it in.
-CROS_COMMON_RDEPEND+="	authpolicy? ( chromeos-base/authpolicy )"
-
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
 	cros_ec? ( chromeos-base/chromeos-ec )
