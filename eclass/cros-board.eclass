@@ -195,7 +195,7 @@ ALL_BOARDS=(
 	peach_kirby
 	peach_pi
 	peach_pit
-	pedra
+	#pedra
 	peppy
 	plaso
 	poppy
