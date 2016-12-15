@@ -8,7 +8,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="brillo-debug wifi_bootstrapping zeroconf"
+IUSE="wifi_bootstrapping zeroconf"
 
 RDEPEND="
 	net-dns/avahi
@@ -18,7 +18,7 @@ S=${WORKDIR}
 
 src_install() {
 	insinto /etc/init
-	if use brillo-debug || use wifi_bootstrapping || use zeroconf ; then
+	if use wifi_bootstrapping || use zeroconf ; then
 		newins "${FILESDIR}"/init/auto.conf avahi.conf
 	else
 		newins "${FILESDIR}"/init/manual.conf avahi.conf
