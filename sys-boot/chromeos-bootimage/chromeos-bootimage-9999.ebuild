@@ -194,7 +194,7 @@ src_compile() {
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
 	build_image "netboot" "${coreboot_file}.serial" "image.net.bin" \
-		"${netboot}" "${depthcharge}" "${devkeys}"
+		"${depthcharge}" "${netboot}" "${devkeys}"
 
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
