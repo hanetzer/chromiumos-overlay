@@ -28,7 +28,7 @@ IUSE=""
 # The locale files change across glibc versions, so make sure we stay in sync
 # with them.  Pinning the version here forces us to revbump it when we update
 # the glibc version.
-DEPEND="~sys-libs/glibc-${PV}"
+DEPEND=">=sys-libs/glibc-${PV}"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}"
