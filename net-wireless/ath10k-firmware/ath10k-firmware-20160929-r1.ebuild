@@ -1,1 +1,0 @@
-ath10k-firmware-20160929.ebuild
