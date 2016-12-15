@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="brillo-debug cras pam opengl +power_management +profile
+IUSE="cras pam opengl +power_management +profile
 	+shill tpm usb video_cards_intel"
 
 # The dependencies here are meant to capture "all the packages
@@ -68,9 +68,6 @@ RDEPEND="${RDEPEND}
 	app-misc/screen
 	app-portage/portage-utils
 	app-shells/bash
-	brillo-debug? (
-		brillo-base/brdebug
-	)
 	cras? (
 		chromeos-base/audiotest
 		media-sound/sox

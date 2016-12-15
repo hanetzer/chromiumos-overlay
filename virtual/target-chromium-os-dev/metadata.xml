@@ -7,7 +7,4 @@
   <description>Maintained by The Chromium OS Authors.</description>
 </maintainer>
 <longdescription>The Chromium OS dev package pulls in dependencies to build a Chromium OS developer system.</longdescription>
-<use>
-  <flag name='brillo-debug'>Enables debug link support.</flag>
-</use>
 </pkgmetadata>
