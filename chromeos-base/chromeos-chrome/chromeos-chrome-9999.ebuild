@@ -333,6 +333,8 @@ set_build_args() {
 		)
 		local arm_arch=$(get-flag march)
 		local arm_cpu=$(get-flag mcpu)
+		local arm_fpu=$(get-flag mfpu)
+		local arm_tune=$(get-flag mtune)
 		# Chrome's build/config/arm.gni uses -march=armv7-a when
 		# arm_arch is empty. However, GCC complains when -march=armv7-a
 		# is used for armv7ve CPUs. OTOH clang rejects -march=armv7ve as
@@ -345,6 +347,12 @@ set_build_args() {
 		fi
 		if [[ -n "${arm_arch}" ]]; then
 			BUILD_STRING_ARGS+=( arm_arch="${arm_arch}" )
+		fi
+		if [[ -n "${arm_fpu}" ]]; then
+			BUILD_STRING_ARGS+=( arm_fpu="${arm_fpu}" )
+		fi
+		if [[ -n "${arm_tune}" ]]; then
+			BUILD_STRING_ARGS+=( arm_tune="${arm_tune}" )
 		fi
 		;;
 	amd64)
