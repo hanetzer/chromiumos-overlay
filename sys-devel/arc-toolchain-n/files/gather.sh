@@ -12,6 +12,68 @@
 #   - TO_DIR_BASE
 # Then just run it from anywhere with no arguments.
 # The constructed tarball will contain the sysroots under amd64 and arm (currently for 32-bit x86).
+#
+# *** PREREQUISITES ***
+# Before running the script, follow these steps:
+#
+# 1. Download prebuilts for ARM and x86
+#
+# Go to go/a-b, select branch git_nyc-mr1-arc. Pick a -userdebug build for ARM
+# and one for x86, then download cheets_${arch}-target_files-${build_id}.zip.
+# Extract those 2 files and point ARTIFACTS_DIR_ARM and ARTIFACTS_DIR_X86 to the
+# respective directories.
+# The prebuilts will provide most of the binaries.
+#
+# 2. Make sure you have the right version of the prebuilts
+#
+# $ grep "ro.build.version.release" ${ARTIFACTS_DIR_X86}/SYSTEM/build.prop
+# $ grep "ro.build.version.release" ${ARTIFACTS_DIR_ARM}/SYSTEM/build.prop
+#
+# 3. Build the LLVM runtime and binaries
+#
+# This is similar to the usual ARC++ build, with a few differences in the
+# environments and a couple of extra steps. This step only builds an x86 image,
+# no ARM image.
+# This stage will among other things build the LLVM shared object and .gen/.inc
+# files required so that arc-mesa can build the llvmpipe backend.
+# $ cd ${ANDROID_TREE}
+# $ rm out/ -rf
+# $ . build/envsetup.sh
+# $ lunch cheets_x86-userdebug
+# $ FORCE_BUILD_LLVM_COMPONENTS=true m -j32 # builds some LLVM artifacts as part
+# of the whole image build.
+# $ mmm external/llvm/tools/llvm-config/    # builds llvm-config.
+#
+# The build artifacts will be created in subdirectories of out/ where the script
+# will find them. Do not delete out/ or rebuild before running the script!
+#
+# 4. Move libdrm to the chromeos-2.4.70 branch
+# FIXME: This won't be required once b/26864637 is fixed.
+#
+# The script needs to pick up the header files of the branch chromeos-2.4.70 of
+# https://chromium.googlesource.com/chromiumos/third_party/libdrm
+# $ cd ${ANDROID_TREE}/external
+# $ rm -rf libdrm
+# $ git clone https://chromium.googlesource.com/chromiumos/third_party/libdrm
+# $ cd libdrm
+# $ git checkout chromeos-2.4.70
+#
+# At that point ${ANDROID_TREE}/external/libdrm should have a checkout of
+# chromeos-2.4.70.
+#
+# 5. Run the script!
+#
+# $ ./gather.sh
+#
+# 6. Restore libdrm
+#
+# Only do this ***AFTER*** running the script or the wrong header files will be
+# picked.
+# $ cd ${ANDROID_TREE}/external
+# $ rm -rf libdrm
+# $ repo sync -c libdrm
+#
+
 
 set -e
 
@@ -246,7 +308,49 @@ runcmd mkdir -p ${TO_DIR_BASE}/arc-llvm/3.8
 runcmd cp -pPr ${ANDROID_TREE}/prebuilts/clang/host/linux-x86/clang-2690385/* \
 	${TO_DIR_BASE}/arc-llvm/3.8
 
-### 5.2 gcc.
+### 5.2 llvm
+# Add the headers and tools needed by Mesa for llvmpipe. ***x86-only***.
+llvm_config="${ANDROID_TREE}/out/host/linux-x86/bin/llvm-config"
+llvm_version="$(${llvm_config} --version)"
+llvm_dir_base="${TO_DIR_BASE}/arc-llvm/3.8"
+
+# 5.2.1 Copy llvm-config. This is the host's version, ARC doesn't build the
+# target version yet. Mesa's build only needs the compilation/link flags which
+# are identical between the two.
+runcmd cp -pP "${llvm_config}" "${llvm_dir_base}/bin"
+
+# 5.2.2 Copy the header files
+runcmd mkdir -p "${llvm_dir_base}/include"
+runcmd cp -pP -r "${ANDROID_TREE}/external/llvm/include/llvm" \
+	"${llvm_dir_base}/include/"
+runcmd cp -pP -r "${ANDROID_TREE}/external/llvm/include/llvm-c" \
+	"${llvm_dir_base}/include/"
+# Replace the configuration header files with the checked-in version
+runcmd rm -rf "${llvm_dir_base}/include/llvm/Config"
+runcmd cp -pP -r  "${ANDROID_TREE}/external/llvm/device/include/llvm/Config/" \
+	"${llvm_dir_base}/include/llvm"
+runcmd cp -pP "${ANDROID_TREE}/external/llvm/include/llvm/Config/llvm-platform-config.h" \
+	"${llvm_dir_base}/include/llvm/Config"
+
+# 5.2.3 Copy generated include files
+gen_inc_files=("Intrinsics.gen" "Attributes.inc")
+for f in "${gen_inc_files[@]}"
+do
+	runcmd cp -pP "${ANDROID_TREE}/out/target/product/cheets_x86/obj/STATIC_LIBRARIES/libLLVMCore_intermediates/llvm/IR/${f}" \
+		"${llvm_dir_base}/include/llvm/IR"
+done
+
+# 5.2.4 Copy the x86 libLLVM shared object
+runcmd mkdir -p "${llvm_dir_base}/lib"
+runcmd cp -pP "${ARTIFACTS_DIR_X86}/SYSTEM/lib/libLLVM.so" \
+	"${llvm_dir_base}/lib"
+
+# 5.2.5 Symlink with the version number so arc-mesa finds the shared object
+runcmd ln -sr "${llvm_dir_base}/lib/libLLVM.so" \
+	"${llvm_dir_base}/lib/libLLVM-${llvm_version}.so"
+
+
+### 5.3 gcc.
 runcmd mkdir -p ${TO_DIR_BASE}/arc-gcc
 for arch in "${ARC_ARCH_ANDROID[@]}"
 do
