@@ -60,6 +60,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0031-interactive-goverener-parameters-for-hmp-cpus.patch" \
           "0032-lm-1.59-refactor-slow-listed-by-id.patch" \
           "0033-Add-udev-rule-for-WiFi-devices.patch" \
+          "0034-wireless-power-disable-module.patch" \
         )
 
 src_prepare() {

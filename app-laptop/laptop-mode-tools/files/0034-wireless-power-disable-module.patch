@@ -1,0 +1,20 @@
+wireless-power: Disable module
+
+Chrome OS uses the 'wifi-nl80211-powermgmt' module to enable/disable
+WiFi powersave mode. The original laptop-mode module 'wireless-power'
+is still enabled and exits with an error since it can't find iwconfig.
+This causes "laptop-mode force" to end prematurely. Disable the module.
+
+BUG=chromium:675286
+
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wireless-power.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wireless-power.conf
+@@ -20,7 +20,7 @@
+ DEBUG=0
+ 
+ # Control generic wireless interface power saving mode?
+-CONTROL_WIRELESS_POWER_SAVING="auto"
++CONTROL_WIRELESS_POWER_SAVING="0"
+ 
+ WIRELESS_AC_POWER_SAVING=0
+ WIRELESS_BATT_POWER_SAVING=1
