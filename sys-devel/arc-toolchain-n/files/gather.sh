@@ -19,7 +19,7 @@ set -e
 # FIXME: Important: please make sure external/libdrm is checked out to
 # https://chromium.googlesource.com/chromiumos/third_party/libdrm
 # branch chromeos-2.4.70 (won't be needed when b/26864637 is fixed).
-ANDROID_TREE=${HOME}/android
+ANDROID_TREE="${ANDROID_TREE:-"${HOME}/android"}"
 
 # ARCH names used in sysroot.
 ARC_ARCH=('amd64' 'arm')
@@ -33,13 +33,13 @@ ARC_ARCH_LIBM=('i387' 'arm')
 # 2. The dir to which the artifacts tarball (downloaded from go/a-b) was
 # extracted. Pick a -userdebug build.
 # Now we support two platforms: 32-bit arm and 32-bit x86.
-ARTIFACTS_DIR_ARM=${HOME}/android/arm_target_files/
-ARTIFACTS_DIR_X86=${HOME}/android/x86_target_files/
+ARTIFACTS_DIR_ARM="${ARTIFACTS_DIR_ARM:-"${HOME}/android/arm_target_files/"}"
+ARTIFACTS_DIR_X86="${ARTIFACTS_DIR_X86:-"${HOME}/android/x86_target_files/"}"
 
 ARTIFACTS_DIR_ARRAY=(${ARTIFACTS_DIR_X86} ${ARTIFACTS_DIR_ARM})
 
 # 3. Destination directory.
-TO_DIR_BASE=${HOME}/android/arc-toolchain-n-dir
+TO_DIR_BASE="${TO_DIR_BASE:-"${HOME}/android/arc-toolchain-n-dir"}"
 
 
 ### Do not change the following.
