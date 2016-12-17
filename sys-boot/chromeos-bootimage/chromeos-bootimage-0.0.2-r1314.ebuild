@@ -139,7 +139,6 @@ src_compile() {
 	local froot="${CROS_FIRMWARE_ROOT}"
 	# Location of various files
 
-	local ec_file="${froot}/ec.RW.bin"
 	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
 
@@ -219,8 +218,6 @@ src_compile() {
 }
 
 src_install() {
-	local updated_fdt d
-
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	doins *image*.bin
 }
