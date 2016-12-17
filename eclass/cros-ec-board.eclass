@@ -48,8 +48,6 @@ EC_BOARD_NAMES=(
 	host
 	jerry
 	kevin
-	kunimitsu
-	kunimitsu_pd
 	llama
 	minimuffin
 	oak
