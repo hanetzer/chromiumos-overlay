@@ -135,8 +135,7 @@ src_configure() {
 		append-ldflags -m32
 
 		# Use llvm-config coming from ARC++ build.
-		unset LLVM_CONFIG
-		ARC_LLVM_MESA="${ARC_BASE}/arc-llvm-mesa/"
+		export LLVM_CONFIG="${ARC_BASE}/arc-llvm-mesa/bin/llvm-config"
 
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
@@ -147,7 +146,6 @@ src_configure() {
 			--sysconfdir=/system/vendor/etc
 			--enable-cross_compiling
 			--target=i686
-			--with-llvm-prefix=${ARC_LLVM_MESA}
 		"
 		# FIXME(tfiga): Possibly use flag?
 		EGL_PLATFORM="android"
@@ -155,6 +153,10 @@ src_configure() {
 		#
 		# end of arc-mesa specific overrides
 		#
+	fi
+
+	if ! use llvm; then
+		export LLVM_CONFIG="no"
 	fi
 
 	# FIXME(tfiga): We should figure out if we can use econf as the original ebuild.
@@ -171,6 +173,7 @@ src_configure() {
 		--without-demos \
 		--enable-texture-float \
 		--disable-dri3 \
+		$(use_enable llvm llvm-shared-libs) \
 		$(use_enable X glx) \
 		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
