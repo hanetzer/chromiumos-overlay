@@ -117,5 +117,13 @@ generate_font_cache() {
 }
 
 pkg_preinst() {
-	generate_font_cache
+	# We don't bother updating the cache in the sysroot since it's only needed
+	# by the runtime.  This does mean any tools that are run in the sysroot will
+	# also be slow, but we don't know of any like that today.
+	# https://crbug.com/205424
+	if [[ "$(cros_target)" == "target_image" ]]; then
+		generate_font_cache
+	else
+		einfo "Skipping build-time-only font cache generation. https://crbug.com/205424"
+	fi
 }
