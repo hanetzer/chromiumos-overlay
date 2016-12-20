@@ -300,6 +300,7 @@ set_build_args() {
 	done
 	if use "ozone_platform_gbm"; then
 		BUILD_ARGS+=(use_system_minigbm=true)
+		BUILD_ARGS+=(use_system_libdrm=true)
 	fi
 
 	# Set proper build args for the arch
