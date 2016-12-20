@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
 IUSE="-chromeless_tests chromeless_tty cros_ec cros_embedded opengl opengles ozone p2p
-	peerd +shill +tpm X"
+	peerd +shill +tpm"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -77,7 +77,7 @@ CROS_COMMON_RDEPEND+="
 
 ################################################################################
 #
-# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, etc.)
 #
 ################################################################################
 CROS_X86_RDEPEND="
@@ -85,19 +85,9 @@ CROS_X86_RDEPEND="
 	x11-misc/read-edid
 "
 
-CROS_X_RDEPEND="
-	x11-apps/setxkbmap
-	x11-apps/xinput
-	x11-apps/xset
-	x11-misc/x11vnc
-	x11-misc/xdotool
-	x11-terms/rxvt-unicode
-"
-
 CROS_RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
-	X? ( ${CROS_X_RDEPEND} )
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}
@@ -173,18 +163,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/time
 	x11-libs/libdrm
 	"
-
-################################################################################
-# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
-#
-################################################################################
-
-#CROS_E_RDEPEND="${CROS_E_RDEPEND}
-#"
-
-# Build time dependencies
-#CROS_E_DEPEND="${CROS_E_RDEPEND}
-#"
 
 ################################################################################
 # Assemble the final RDEPEND and DEPEND variables for portage

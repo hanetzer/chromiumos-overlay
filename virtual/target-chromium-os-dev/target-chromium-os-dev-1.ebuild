@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
 IUSE="brillo-debug cras pam opengl +power_management +profile
-	+shill tpm usb video_cards_intel X"
+	+shill tpm usb video_cards_intel"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -30,7 +30,7 @@ IUSE="brillo-debug cras pam opengl +power_management +profile
 
 ################################################################################
 #
-# CROS_* : Dependencies for CrOS devices (coreutils, X etc)
+# CROS_* : Dependencies for CrOS devices (coreutils, etc.)
 #
 ################################################################################
 CROS_X86_RDEPEND="
@@ -42,31 +42,9 @@ CROS_X86_RDEPEND="
 	video_cards_intel? ( x11-apps/intel-gpu-tools )
 "
 
-CROS_X_RDEPEND="
-	opengl? ( x11-apps/mesa-progs )
-	x11-apps/mtplot
-	x11-apps/xdpyinfo
-	opengl? ( x11-apps/xdriinfo )
-	x11-apps/xev
-	x11-apps/xhost
-	x11-apps/xinput
-	x11-apps/xinput_calibrator
-	x11-apps/xlsatoms
-	x11-apps/xlsclients
-	x11-apps/xmodmap
-	x11-apps/xprop
-	x11-apps/xset
-	!x11-apps/xtrace
-	x11-apps/xwd
-	x11-apps/xwininfo
-	x11-misc/xdotool
-	x11-misc/xtrace
-"
-
 RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
-	X? ( ${CROS_X_RDEPEND} )
 "
 
 RDEPEND="${RDEPEND}

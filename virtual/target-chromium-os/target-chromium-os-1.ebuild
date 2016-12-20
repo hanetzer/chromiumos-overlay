@@ -15,7 +15,7 @@ IUSE="bluetooth bootchart bootimage buffet +cellular compupdates coreboot cr50_o
 	eclog feedback +fonts gobi mtd +network_time nfc pam peerd postscript
 	+power_management +profile cups +readahead scanner +shill
 	intel_lpe +syslog +system_locales systemd touchview +tpm -tpm2 +trim_supported
-	+vpn watchdog wifi_bootstrapping wimax X"
+	+vpn watchdog wifi_bootstrapping wimax"
 
 REQUIRED_USE="cellular? ( shill )"
 
@@ -69,8 +69,8 @@ REQUIRED_USE="cellular? ( shill )"
 # Variable Naming Convention:
 # ---------------------------
 # CROS_COMMON_* : Dependencies common to all CrOS flavors
-# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
-# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, etc.)
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, etc.)
 ################################################################################
 
 ################################################################################
@@ -195,17 +195,10 @@ CROS_ARM_RDEPEND="
 	chromeos-base/u-boot-scripts
 "
 
-CROS_X_RDEPEND="
-	chromeos-base/xorg-conf
-	x11-apps/xrandr
-	x11-base/xorg-server
-"
-
 CROS_RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
 	arm? ( ${CROS_ARM_RDEPEND} )
-	X? ( ${CROS_X_RDEPEND} )
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}
@@ -261,7 +254,7 @@ CROS_DEPEND="${CROS_RDEPEND}
 "
 
 ################################################################################
-# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, etc.)
 #
 ################################################################################
 
