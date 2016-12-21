@@ -185,12 +185,12 @@ do
 	do
 		basename="$(basename $f)"
 		todir="${arch_to_dir}/usr/include/$basename"
-		mkdir -p $todir
+		runcmd mkdir -p $todir
 		runcmd cp -pP ${ANDROID_TREE}/$f/*.h $todir
 	done
 
 	# Fixup: do not ship private drm_gralloc include
-	rm ${arch_to_dir}/usr/include/drm_gralloc/gralloc_drm_priv.h
+	runcmd rm ${arch_to_dir}/usr/include/drm_gralloc/gralloc_drm_priv.h
 
 	### 4.4 More libdrm includes
 
@@ -225,7 +225,7 @@ do
 	for f in EGL KHR
 	do
 		todir="${arch_to_dir}/usr/include/opengl/include/$f"
-		mkdir -p ${todir}
+		runcmd mkdir -p ${todir}
 		runcmd cp -pP \
 			${ANDROID_TREE}/frameworks/native/opengl/include/$f/*.h \
 			${todir}
