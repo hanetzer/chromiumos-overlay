@@ -53,7 +53,6 @@ IUSE="
 	neon
 	opengl
 	opengles
-	ozone
 	+runhooks
 	+v4l2_codec
 	v4lplugin
@@ -61,7 +60,6 @@ IUSE="
 	verbose
 	vtable_verify
 	xkbcommon
-	X
 	"
 REQUIRED_USE="asan? ( clang )"
 
@@ -72,7 +70,7 @@ IUSE+=" ${IUSE_OZONE_PLATFORMS}"
 OZONE_PLATFORM_DEFAULT_PREFIX=ozone_platform_default_
 IUSE_OZONE_PLATFORM_DEFAULTS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_DEFAULT_PREFIX}}"
 IUSE+=" ${IUSE_OZONE_PLATFORM_DEFAULTS}"
-REQUIRED_USE+=" ozone? ( ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} ) )"
+REQUIRED_USE+=" ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} )"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -127,9 +125,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2957.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2957.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2957.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2958.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2958.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2958.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -177,7 +175,7 @@ RDEPEND="${RDEPEND}
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
 	media-libs/freetype
-	ozone? ( x11-libs/libdrm )
+	x11-libs/libdrm
 	ozone_platform_gbm? ( media-libs/minigbm )
 	media-libs/libpng
 	v4lplugin? ( media-libs/libv4lplugins )
@@ -192,19 +190,6 @@ RDEPEND="${RDEPEND}
 	chrome_remoting? ( sys-libs/pam )
 	sys-libs/zlib
 	vaapi? ( x11-libs/libva )
-	X? (
-		x11-apps/setxkbmap
-		x11-libs/libX11
-		x11-libs/libXcomposite
-		x11-libs/libXcursor
-		x11-libs/libXdamage
-		x11-libs/libXext
-		x11-libs/libXfixes
-		x11-libs/libXi
-		x11-libs/libXrandr
-		x11-libs/libXrender
-		chrome_remoting? ( x11-libs/libXtst )
-	)
 	xkbcommon? (
 		x11-libs/libxkbcommon
 		x11-misc/xkeyboard-config
@@ -261,7 +246,7 @@ set_build_args() {
 		"${EXTRA_GN_ARGS}"
 		use_v4l2_codec=$(usetf v4l2_codec)
 		use_v4lplugin=$(usetf v4lplugin)
-		use_ozone=$(usetf ozone)
+		use_ozone=true
 		use_evdev_gestures=$(usetf evdev_gestures)
 		use_xkbcommon=$(usetf xkbcommon)
 		# Use the ChromeOS toolchain and not the one bundled with Chromium.
@@ -271,7 +256,7 @@ set_build_args() {
 		enable_nacl=$(use_nacl; echotf)
 		icu_use_data_file=true
 		use_cras=true
-		# use_system_minigbm is set under 'if use ozone' below.
+		# use_system_minigbm is set below.
 		use_system_harfbuzz=true
 		use_cups=$(usetf cups)
 
@@ -297,25 +282,24 @@ set_build_args() {
 		BUILD_STRING_ARGS+=( use_allocator=none )
 	fi
 
-	if use ozone; then
-		local platform
-		for platform in ${OZONE_PLATFORMS[@]}; do
-			local flag="${OZONE_PLATFORM_DEFAULT_PREFIX}${platform}"
-			if use "${flag}"; then
-				BUILD_STRING_ARGS+=(ozone_platform="${platform}")
-			fi
-		done
-		BUILD_ARGS+=(
-			ozone_auto_platforms=false
-		)
-		for platform in ${IUSE_OZONE_PLATFORMS}; do
-			if use "${platform}"; then
-				BUILD_ARGS+=("${platform}"=true)
-			fi
-		done
-		if use "ozone_platform_gbm"; then
-			BUILD_ARGS+=(use_system_minigbm=true)
+	# Ozone platforms.
+	local platform
+	for platform in ${OZONE_PLATFORMS[@]}; do
+		local flag="${OZONE_PLATFORM_DEFAULT_PREFIX}${platform}"
+		if use "${flag}"; then
+			BUILD_STRING_ARGS+=(ozone_platform="${platform}")
 		fi
+	done
+	BUILD_ARGS+=(
+		ozone_auto_platforms=false
+	)
+	for platform in ${IUSE_OZONE_PLATFORMS}; do
+		if use "${platform}"; then
+			BUILD_ARGS+=("${platform}"=true)
+		fi
+	done
+	if use "ozone_platform_gbm"; then
+		BUILD_ARGS+=(use_system_minigbm=true)
 	fi
 
 	# Set proper build args for the arch
@@ -333,8 +317,6 @@ set_build_args() {
 		)
 		local arm_arch=$(get-flag march)
 		local arm_cpu=$(get-flag mcpu)
-		local arm_fpu=$(get-flag mfpu)
-		local arm_tune=$(get-flag mtune)
 		# Chrome's build/config/arm.gni uses -march=armv7-a when
 		# arm_arch is empty. However, GCC complains when -march=armv7-a
 		# is used for armv7ve CPUs. OTOH clang rejects -march=armv7ve as
@@ -347,12 +329,6 @@ set_build_args() {
 		fi
 		if [[ -n "${arm_arch}" ]]; then
 			BUILD_STRING_ARGS+=( arm_arch="${arm_arch}" )
-		fi
-		if [[ -n "${arm_fpu}" ]]; then
-			BUILD_STRING_ARGS+=( arm_fpu="${arm_fpu}" )
-		fi
-		if [[ -n "${arm_tune}" ]]; then
-			BUILD_STRING_ARGS+=( arm_tune="${arm_tune}" )
 		fi
 		;;
 	amd64)

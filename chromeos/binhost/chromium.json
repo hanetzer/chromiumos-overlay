@@ -1,18 +1,13 @@
 [
   {
     "compat_id": {
-      "arch": "x86", 
+      "arch": "amd64", 
       "cflags": [
         "-O2", 
-        "-march=i686", 
         "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=i686", 
-        "-mfpmath=sse", 
-        "-mmmx", 
-        "-msse", 
-        "-msse2", 
+        "-march=x86-64", 
         "-msse3", 
         "-g", 
         "-fno-exceptions", 
@@ -34,7 +29,6 @@
         "highdpi", 
         "nacl", 
         "opengles", 
-        "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
@@ -44,7 +38,52 @@
       ]
     }, 
     "key": {
-      "board": "x86-generic", 
+      "board": "amd64-generic", 
+      "useflags": []
+    }
+  }, 
+  {
+    "compat_id": {
+      "arch": "arm", 
+      "cflags": [
+        "-O2", 
+        "-O2", 
+        "-pipe", 
+        "-mcpu=cortex-a12", 
+        "-mtune=cortex-a12", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "cups", 
+        "evdev_gestures", 
+        "fonts", 
+        "gold", 
+        "hardfp", 
+        "highdpi", 
+        "nacl", 
+        "neon", 
+        "opengles", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "v4lplugin", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "veyron_jerry", 
       "useflags": [
         "-chrome_internal"
       ]
@@ -82,7 +121,6 @@
         "nacl", 
         "neon", 
         "opengles", 
-        "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
@@ -129,7 +167,6 @@
         "nacl", 
         "neon", 
         "opengles", 
-        "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
@@ -146,61 +183,18 @@
   }, 
   {
     "compat_id": {
-      "arch": "arm", 
+      "arch": "x86", 
       "cflags": [
         "-O2", 
-        "-O2", 
-        "-pipe", 
-        "-mcpu=cortex-a12", 
-        "-mtune=cortex-a12", 
-        "-mfpu=neon", 
-        "-mfloat-abi=hard", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "cups", 
-        "evdev_gestures", 
-        "fonts", 
-        "gold", 
-        "hardfp", 
-        "highdpi", 
-        "nacl", 
-        "neon", 
-        "opengles", 
-        "ozone", 
-        "ozone_platform_default_gbm", 
-        "ozone_platform_gbm", 
-        "runhooks", 
-        "v4l2_codec", 
-        "v4lplugin", 
-        "xkbcommon"
-      ]
-    }, 
-    "key": {
-      "board": "veyron_jerry", 
-      "useflags": [
-        "-chrome_internal"
-      ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "amd64", 
-      "cflags": [
-        "-O2", 
+        "-march=i686", 
         "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=x86-64", 
+        "-march=i686", 
+        "-mfpmath=sse", 
+        "-mmmx", 
+        "-msse", 
+        "-msse2", 
         "-msse3", 
         "-g", 
         "-fno-exceptions", 
@@ -222,7 +216,6 @@
         "highdpi", 
         "nacl", 
         "opengles", 
-        "ozone", 
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
@@ -232,8 +225,10 @@
       ]
     }, 
     "key": {
-      "board": "amd64-generic", 
-      "useflags": []
+      "board": "x86-generic", 
+      "useflags": [
+        "-chrome_internal"
+      ]
     }
   }
 ]
