@@ -26,7 +26,6 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="chromeos-base/libbrillo
-	dev-libs/dbus-c++
 	dev-libs/openssl"
 
 DEPEND="${RDEPEND}
@@ -44,15 +43,15 @@ src_unpack() {
 src_install() {
 	# Install seccomp policy file.
 	insinto /opt/google/imageloader
-	newins "imageloader-seccomp-${ARCH}.policy" imageloader-seccomp.policy
+	newins "seccomp/imageloader-seccomp-${ARCH}.policy" imageloader-seccomp.policy
 	cd "${OUT}"
 	dosbin imageloader
 	cd "${S}"
 	dosbin imageloader_wrapper
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.ImageLoader.conf
+	doins dbus_permissions/org.chromium.ImageLoader.conf
 	insinto /usr/share/dbus-1/system-services
-	doins org.chromium.ImageLoader.service
+	doins dbus_service/org.chromium.ImageLoader.service
 	insinto /etc/init
 	doins imageloader.conf
 }
