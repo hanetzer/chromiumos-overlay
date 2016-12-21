@@ -23,7 +23,11 @@ esac
 
 inherit flag-o-matic
 
-IUSE="-android-container-nyc"
+IUSE="-android-container -android-container-nyc"
+DEPEND="
+	android-container-nyc? ( chromeos-base/arc-build-nyc )
+	android-container? ( chromeos-base/arc-build )
+"
 
 # Make sure we know how to handle the active system.
 arc-build-check-arch() {
@@ -78,8 +82,8 @@ _arc-build-select-common() {
 	esac
 
 	export ARC_PREFIX="/opt/google/containers/android"
-	export ARC_SYSROOT="${ARC_BASE}/${ARCH}"
-	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
+	export ARC_SYSROOT="${SYSROOT}${ARC_PREFIX}"
+	export PKG_CONFIG="${ARC_SYSROOT}/build/bin/pkg-config"
 
 	# Strip out flags that are specific to our compiler wrapper.
 	filter-flags -clang-syntax
