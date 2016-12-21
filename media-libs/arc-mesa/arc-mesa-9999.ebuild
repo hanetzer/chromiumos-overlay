@@ -32,7 +32,10 @@ IUSE="${IUSE_VIDEO_CARDS}
 	android-container-nyc cheets +classic debug dri egl +gallium -gbm gles1
 	gles2 +llvm +nptl pic selinux shared-glapi X xlib-glx"
 
-DEPEND=""
+DEPEND="cheets? (
+		x11-libs/arc-libdrm
+	)"
+
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
 # (b/33072485, b/28802929).
 RDEPEND="cheets? (
@@ -44,7 +47,8 @@ RDEPEND="cheets? (
 				chromeos-base/android-container-nyc[-cheets_user]
 			)
 		)
-	)"
+	)
+	${DEPEND}"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot

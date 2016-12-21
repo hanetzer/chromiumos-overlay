@@ -42,8 +42,6 @@ src_install() {
 	doins "${FILESDIR}"/cutils.pc
 	doins "${FILESDIR}"/expat.pc
 	doins "${FILESDIR}"/hardware.pc
-	doins "${FILESDIR}"/libdrm_intel.pc
-	doins "${FILESDIR}"/libdrm.pc
 	doins "${FILESDIR}"/pthread-stubs.pc
 	doins "${FILESDIR}"/sync.pc
 
