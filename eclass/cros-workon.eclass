@@ -78,12 +78,12 @@ ARRAY_VARIABLES=(
 # to only uprev if there are changes within the specified subdirectories.
 : ${CROS_WORKON_SUBDIRS_TO_REV:=/}
 
-# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_BLACKLIST
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIR_BLACKLIST
 # @DESCRIPTION:
 # Array of directories in the source tree to explicitly ignore and not even copy
 # them over. This is intended, for example, for blocking infamous bloated and
 # generated content that is unwanted during the build.
-: ${CROS_WORKON_SUBDIRS_BLACKLIST:=}
+: ${CROS_WORKON_SUBDIR_BLACKLIST:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
