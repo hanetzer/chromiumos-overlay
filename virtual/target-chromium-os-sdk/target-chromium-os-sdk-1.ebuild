@@ -386,11 +386,6 @@ RDEPEND="${RDEPEND}
 	dev-util/ninja
 	"
 
-# Host dependencies for building the Brillo Services Framework.
-RDEPEND="${RDEPEND}
-	brillo-base/bidl
-	"
-
 # Host dependencies for converting sparse into raw images (simg2img).
 RDEPEND="${RDEPEND}
 	brillo-base/libsparse
