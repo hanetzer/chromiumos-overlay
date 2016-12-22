@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT=("d16272bee708daf7de4c2d00ee9ef35372936eab" "2a3fc00ba2f301a242e3830c244688f665b74d1a")
-CROS_WORKON_TREE=("35d8f8f4267c4a552eef52a3b8e6c5d530d6a4f8" "c8efec411eea321d4701424eb4546ac00983377f")
+CROS_WORKON_COMMIT=("d16272bee708daf7de4c2d00ee9ef35372936eab" "466101c5a52696b50a075cfe767bb22c4df9b181")
+CROS_WORKON_TREE=("35d8f8f4267c4a552eef52a3b8e6c5d530d6a4f8" "9f8cc0985ccadd0b0080baf173d7ad70635441d8")
 CROS_WORKON_LOCALNAME=(
 	"platform2"
 	"platform/imageloader"
