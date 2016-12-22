@@ -16,11 +16,13 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="input_devices_synaptics
 	input_devices_wacom
+	input_devices_st
 "
 
 RDEPEND="
 	input_devices_synaptics? ( chromeos-base/rmi4utils )
 	input_devices_wacom? ( chromeos-base/wacom_fw_flash )
+	input_devices_st? ( chromeos-base/st_flash )
 "
 src_install() {
 	insinto "/etc/init"
