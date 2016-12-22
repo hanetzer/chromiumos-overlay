@@ -280,6 +280,20 @@ get_paths() {
 	done
 }
 
+delete_blacklisted_subdirs() {
+	local dst="${1}"
+
+	if [[ -z "${CROS_WORKON_SUBDIR_BLACKLIST[@]}" ]]; then
+		return
+	fi
+
+	einfo "Deleting CROS_WORKON_SUBDIR_BLACKLIST directories from ${dst}"
+	local subdir
+	for subdir in "${CROS_WORKON_SUBDIR_BLACKLIST[@]}"; do
+		rm -rf "${dst}/${subdir}"
+	done
+}
+
 local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
@@ -470,7 +484,8 @@ cros-workon_src_unpack() {
 					# code path to fail and explain the problem.
 					git clone -s "${path[i]}" "${destdir[i]}" || \
 						die "Can't clone ${path[i]}."
-						: $(( ++fetched ))
+					delete_blacklisted_subdirs "${destdir[i]}"
+					: $(( ++fetched ))
 				else
 					git clone -sn "${path[i]}" "${destdir[i]}" || \
 						die "Can't clone ${path[i]}."
@@ -479,6 +494,7 @@ cros-workon_src_unpack() {
 						ewarn "Is ${path[i]} up to date? Try running repo sync."
 						rm -rf "${destdir[i]}/.git"
 					else
+						delete_blacklisted_subdirs "${destdir[i]}"
 						: $(( ++fetched ))
 					fi
 				fi
@@ -507,6 +523,7 @@ cros-workon_src_unpack() {
 			# The normal cros-workon flow above doesn't do it, so don't
 			# let git-2 do it either.  http://crosbug.com/38342
 			EGIT_NOUNPACK=true git-2_src_unpack
+			delete_blacklisted_subdirs "${destdir[i]}"
 			# TODO(zbehan): Support multiple projects for vcsid?
 		done
 		set_vcsid "${CROS_WORKON_COMMIT[0]}"
