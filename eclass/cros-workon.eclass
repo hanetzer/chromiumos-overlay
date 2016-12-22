@@ -186,6 +186,17 @@ fi
 # provides a global project_count variable which contains the number of
 # projects.
 array_vars_autocomplete() {
+	# If we never copy sources off of the user's checkout, we have no way of
+	# enforcing the subdir blacklist.
+	if [[ ${CROS_WORKON_SUBDIR_BLACKLIST} == "1" ]]; then
+		if [[ ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]]; then
+			die "CROS_WORKON_SUBDIR_BLACKLIST not compatible with CROS_WORKON_OUTOFTREE_BUILD"
+		fi
+		if [[ ${CROS_WORKON_INPLACE} == "1" ]]; then
+			die "CROS_WORKON_SUBDIR_BLACKLIST not compatible with CROS_WORKON_INPLACE"
+		fi
+	fi
+
 	# CROS_WORKON_{PROJECT,SRCPATH} must have all values explicitly filled in.
 	# They have to be of the same length, or one may be undefined (length <= 1
 	# and empty).
