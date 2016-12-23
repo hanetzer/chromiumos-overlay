@@ -38,9 +38,11 @@ DEPEND="
 "
 
 pkg_preinst() {
-	# Create user and group for authpolicyd.
+	# Create user and group for authpolicyd and authpolicyd-exec.
 	enewuser "authpolicyd"
 	enewgroup "authpolicyd"
+	enewuser "authpolicyd-exec"
+	enewgroup "authpolicyd-exec"
 }
 
 src_install() {
@@ -50,6 +52,8 @@ src_install() {
 	doins etc/dbus-1/org.chromium.AuthPolicy.conf
 	insinto /etc/init
 	doins etc/init/authpolicyd.conf
+	insinto /usr/share/policy
+	doins seccomp_filters/*.policy
 }
 
 platform_pkg_test() {
