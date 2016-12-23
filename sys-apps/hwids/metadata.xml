@@ -9,6 +9,7 @@
   <email>gregkh@gentoo.org</email>
 </maintainer>
 <use>
+ <flag name='hwdb-lite'>Exclude some larger items from hwdb</flag>
  <flag name='net'>Install the oui.txt and iab.txt databases</flag>
  <flag name='pci'>Install the pci.ids database</flag>
  <flag name='usb'>Install the usb.ids database</flag>

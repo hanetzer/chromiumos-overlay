@@ -17,7 +17,7 @@ fi
 
 LICENSE="|| ( GPL-2 BSD ) public-domain"
 SLOT="0"
-IUSE="+net +pci +udev +usb"
+IUSE="+net +pci +udev +usb +hwids-lite"
 
 DEPEND="udev? (
 	dev-lang/perl
@@ -62,6 +62,11 @@ src_install() {
 		MISCDIR="${EPREFIX}/usr/share/misc" \
 		HWDBDIR="${EPREFIX}$(get_udevdir)/hwdb.d" \
 		DESTDIR="${D}"
+
+	if use hwids-lite; then
+		cd "${D}/$(get_udevdir)/hwdb.d" || die
+		rm 20-OUI.hwdb 20-pci-vendor-model.hwdb 20-usb-vendor-model.hwdb || die
+	fi
 }
 
 pkg_postinst() {
