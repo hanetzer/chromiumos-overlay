@@ -22,6 +22,7 @@ KEYWORDS="~*"
 IUSE="test cheets systemd"
 
 RDEPEND="chromeos-base/bootstat
+	chromeos-base/chromeos-config-tools
 	chromeos-base/chromeos-minijail
 	chromeos-base/cryptohome
 	chromeos-base/libbrillo
