@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="2f645f42c1a270496374564ffe59966ddb07ac6e"
-CROS_WORKON_TREE="46438a7ac8a65a41d4b845d0b5fb29546ac6d70f"
+CROS_WORKON_COMMIT="b3929d7c5ce040a0fa09e8ecebc141b6d4fe4b17"
+CROS_WORKON_TREE="bbc19e227dc0bcdc21550eb90060b2c72e6ecfce"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_updater"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -18,11 +18,13 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="input_devices_synaptics
 	input_devices_wacom
+	input_devices_st
 "
 
 RDEPEND="
 	input_devices_synaptics? ( chromeos-base/rmi4utils )
 	input_devices_wacom? ( chromeos-base/wacom_fw_flash )
+	input_devices_st? ( chromeos-base/st_flash )
 "
 src_install() {
 	insinto "/etc/init"
