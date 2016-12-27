@@ -274,9 +274,8 @@ __hardened_gentoo_fail(void)
 		__sigfillset(&default_abort_act.sa_mask);
 		default_abort_act.sa_flags = 0;
 		if (DO_SIGACTION(SIGABRT, &default_abort_act, NULL) == 0)
-			INLINE_SYSCALL(kill, 2, pid, SIGABRT);
 #endif
-		/* Use abort() directly. http://crbug.com/406598 */
+		/* Use abort() directly. https://crbug.com/406598 */
 		abort();
 	}
 
