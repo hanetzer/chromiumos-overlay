@@ -18,35 +18,43 @@ trigger=""
 
 test -f "${LOCATION_PATH}" && IIO_SINGLE_SENSOR_DIR=true
 
-if "${IIO_SINGLE_SENSOR_DIR}"; then
-  LOCATION=$(cat "${LOCATION_PATH}")
-fi
-
 # Sets pre-determined calibration values for the accelerometers.
 # The calibration values are fetched from the VPD.
-dump_vpd_log --full --stdout | \
-  egrep "\"in_${TYPE}_[xyz]_(lid|base)_calib(bias|scale)\"=" | sed 's/\"//g' | \
-  while read key_value; do
-    IFS='=' read CALIBRATION_NAME CALIBRATION_VALUE <<EOL
-${key_value}
-EOL
+set_calibration_values() {
+  local axis location value_type name value
+  local locations="lid base"
+  local value_types="bias scale"
 
-    if "${IIO_SINGLE_SENSOR_DIR}"; then
-      # After kernel 3.18, it has separated iio:device for each accelerometer.
-      # It needs to read values from in_accel_[xyz]_(lid|base)_calibbias in
-      # VPD and writes it into in_accel_[xyz]_calibbias in sysfs.
-      # _caliscale is not required now.
-      case "${CALIBRATION_NAME}" in
-        *${LOCATION}_calibbias)
-          NEW_CALIBRATION_NAME=$(echo "${CALIBRATION_NAME}" |
-                                 sed "s/${LOCATION}_//;")
-          echo "${CALIBRATION_VALUE}" > "${IIO_DEVICE_PATH}/${NEW_CALIBRATION_NAME}"
-          ;;
-      esac
-    else
-      echo "${CALIBRATION_VALUE}" > "${IIO_DEVICE_PATH}/${CALIBRATION_NAME}"
-    fi
+  # After kernel 3.18, it has separated iio:device for each accelerometer.
+  # It needs to read values from in_accel_[xyz]_(lid|base)_calibbias in VPD and
+  # writes it into in_${TYPE}_[xyz]_calibbias in sysfs.  _caliscale is not
+  # required now.
+  if "${IIO_SINGLE_SENSOR_DIR}"; then
+    locations="$(cat "${LOCATION_PATH}")"
+    value_types="bias"
+  fi
+
+  for location in ${locations}; do
+    for value_type in ${value_types}; do
+      for axis in x y z; do
+        name="in_${TYPE}_${axis}_${location}_calib${value_type}"
+        value="$(vpd_get_value "${name}")"
+        if [ -z "${value}" ]; then
+          continue
+        fi
+
+        if "${IIO_SINGLE_SENSOR_DIR}"; then
+          # Use a new name without location.
+          name="in_${TYPE}_${axis}_calib${value_type}"
+        fi
+
+        echo "${value}" >"${IIO_DEVICE_PATH}/${name}"
+      done
+    done
   done
+}
+
+set_calibration_values
 
 if [ "${TYPE}" = "anglvel" ]; then
   # No need to set buffer for gyroscope, not used by chrome yet.
