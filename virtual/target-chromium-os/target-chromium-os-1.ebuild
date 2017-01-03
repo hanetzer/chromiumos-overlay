@@ -9,13 +9,54 @@ HOMEPAGE="http://dev.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-# Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
-IUSE="biod bluetooth bootchart bootimage buffet +cellular compupdates coreboot
-	cr50_onboard +cras +crash_reporting +cros_disks cros_ec cros_embedded
-	+debugd dptf eclog feedback +fonts gobi mtd +network_time nfc pam peerd
-	postscript +power_management +profile cups +readahead scanner +shill
-	intel_lpe +syslog +system_locales systemd touchview +tpm -tpm2 +trim_supported
-	+vpn watchdog wifi_bootstrapping wimax"
+# Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os instead.
+IUSE="
+	biod
+	bluetooth
+	bootchart
+	bootimage
+	buffet
+	+cellular
+	compupdates
+	containers
+	coreboot
+	cr50_onboard
+	+cras
+	+crash_reporting
+	+cros_disks
+	cros_ec
+	cros_embedded
+	cups
+	+debugd
+	dptf
+	eclog
+	feedback
+	+fonts
+	gobi
+	intel_lpe
+	mtd
+	+network_time
+	nfc
+	pam
+	peerd
+	postscript
+	+power_management
+	+profile
+	+readahead
+	scanner
+	+shill
+	+syslog
+	+system_locales
+	systemd
+	touchview
+	+tpm
+	-tpm2
+	+trim_supported
+	+vpn
+	watchdog
+	wifi_bootstrapping
+	wimax
+"
 
 REQUIRED_USE="cellular? ( shill )"
 
@@ -107,6 +148,7 @@ CROS_COMMON_RDEPEND+="
 		chromeos-base/mist
 	)
 	buffet? ( chromeos-base/buffet )
+	containers? ( chromeos-base/container_utils )
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
 	scanner? ( chromeos-base/lorgnette )
