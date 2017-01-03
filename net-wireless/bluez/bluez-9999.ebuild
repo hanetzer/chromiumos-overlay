@@ -71,7 +71,8 @@ src_configure() {
 		--enable-library \
 		--disable-systemd \
 		--disable-obex \
-		--enable-sixaxis
+		--enable-sixaxis \
+		--disable-network
 }
 
 src_test() {
