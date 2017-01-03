@@ -33,9 +33,12 @@ src_compile() {
 	append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm -D_LARGEFILE_SOURCE
 	append-cppflags -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
+	# TODO(gsingh): use pkgconfig
 	if use video_cards_intel; then
 		export DRV_I915=1
 		append-cppflags -DDRV_I915
+		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/intel
+		append-libs drm_intel
 	fi
 
 	if use video_cards_rockchip; then
