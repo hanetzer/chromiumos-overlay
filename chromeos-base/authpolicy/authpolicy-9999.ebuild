@@ -27,6 +27,7 @@ RDEPEND="
 	dev-libs/protobuf
 	dev-libs/dbus-glib
 	sys-apps/dbus
+	sys-libs/libcap
 "
 DEPEND="
 	${RDEPEND}
