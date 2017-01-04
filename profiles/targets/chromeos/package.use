@@ -108,6 +108,7 @@ sys-fs/udev		-devfs-compat -rule_generator hwdb acl
 sys-libs/gdbm		-berkdb
 sys-libs/ncurses	-cxx -unicode minimal
 sys-libs/pam		-berkdb
+sys-libs/talloc		-python
 sys-libs/zlib		static-libs
 sys-power/powertop	-unicode
 sys-process/procps	-unicode
