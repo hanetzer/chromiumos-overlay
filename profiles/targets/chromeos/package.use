@@ -106,6 +106,7 @@ sys-fs/mtools		-X
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
 sys-fs/udev		-devfs-compat -rule_generator hwdb acl
 sys-libs/gdbm		-berkdb
+sys-libs/ldb		-python
 sys-libs/ncurses	-cxx -unicode minimal
 sys-libs/pam		-berkdb
 sys-libs/talloc		-python
