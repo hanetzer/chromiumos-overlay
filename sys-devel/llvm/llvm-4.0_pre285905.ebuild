@@ -21,6 +21,21 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+		"8b122d04969f64b785f9bb17b4859cbf4febaf31" # EGIT_COMMIT r292065
+	"compiler-rt"
+		"projects/compiler-rt"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"191ecf3d0ba86203d5585f3361a7daa226b20c2d" # EGIT_COMMIT r292083
+	"clang"
+		"tools/clang"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
+		"16ba0232fbfb3a278c56d37531196ef2967950be"  # EGIT_COMMIT r292052
+)
+else
+EGIT_REPO_URIS=(
+	"llvm"
+		""
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 		"77e7778b3e097ad88c71c7dac789e245c8f3e33a" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
@@ -30,21 +45,6 @@ EGIT_REPO_URIS=(
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
 		"47592b1815f5423fa708fca47741886043e6bb32"  # EGIT_COMMIT
-)
-else
-EGIT_REPO_URIS=(
-	"llvm"
-		""
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"26a9873b72c6dbb425ae075fcf51caa9fc5e892b" # EGIT_COMMIT
-	"compiler-rt"
-		"projects/compiler-rt"
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"12d2fe2a170a5be91dddef5555b7f21a36e3a704" # EGIT_COMMIT
-	"clang"
-		"tools/clang"
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"af6a0b98569cf7981fe27327ac4bf19bd0d6b162"  # EGIT_COMMIT
 )
 fi
 
@@ -186,63 +186,6 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" b3419a9ef1857ae36a09cf845f8eec4abefdd159 " # r266113
-	CHERRIES+=" 47bc7ec72ef69769b6fa693d574e1f9159b0d6e6 " # r266116
-	CHERRIES+=" ddc91cf1727ad03fcd091578a23c2bcde55b0761 " # r269154
-	CHERRIES+=" 90ce5cd716419c04a9402de118534ecb5f279ede " # r270781
-	CHERRIES+=" 5d36cf313ae9c9e6d475891ec2c0cb3a25ee62b1 " # r270784
-	CHERRIES+=" 35470639d335074ed5f7de4644627496a4d03f32 " # r272080
-	CHERRIES+=" 567da71b9bac96d6e87854f330139710fa2653a7 " # r280553
-	CHERRIES+=" 2cef254afa0c2c82d87d37e7e5d57788061d44a2 " # r280847
-
-	pushd "${S}"/tools/clang >/dev/null || die
-	for cherry in ${CHERRIES}; do
-		epatch "${FILESDIR}/cherry/${cherry}.patch"
-	done
-	popd >/dev/null || die
-
-	# "Cherry-pick" of r272971 (bf13b30ff28e64528806076cc88cc46aa2634e62); it
-	# can't be picked directly due to a conflict.
-	epatch "${FILESDIR}"/clang-3.8-fortify-fix.patch
-
-	# "Cherry-pick" of r278471 (d6290c5e5b763ba2aef19f621b95a41c5dee761f); it
-	# can't be picked directly because Function->param_size() changed type
-	# since we pulled down a clang version. As a result, std::min fails to
-	# deduce its template argument.
-	epatch "${FILESDIR}"/clang-3.8-fortify-fix-varargs.patch
-
-	# compiler-rt
-	# Bug 27673 - [ASan] False alarm to recv/recvfrom
-	# https://llvm.org/bugs/show_bug.cgi?id=27673
-	CHERRIES="f0ccaf3554182da4c7a038ae96a869e0e202bd2c" # r269749
-
-	pushd "${S}"/projects/compiler-rt >/dev/null || die
-	epatch "${FILESDIR}/cherry/${CHERRIES}.patch"
-	popd >/dev/null || die
-
-	# llvm
-	CHERRIES=""
-	# Bug 27703 - InstCombine hangs (loops forever) at -O1 or higher...
-	# https://llvm.org/bugs/show_bug.cgi?id=27703
-	CHERRIES+=" 4f4b87e93849eddd82a11c0d41c760aa6a5e8c31 " # r270135
-
-	# Bug 11740 - can't use clang -g to assemble .s file with .file directive
-	# https://llvm.org/bugs/show_bug.cgi?id=11740
-	CHERRIES+=" 2474f04f67a34476c16316ba0299237c3e6df6b0 " # r270806
-
-	# BUG https://crbug.com/651262
-	CHERRIES+=" 7c4f7f326e3913a48168269198196efc9058b4b1 " # r268662
-
-	pushd "${S}" >/dev/null || die
-	for cherry in ${CHERRIES}; do
-		epatch "${FILESDIR}/cherry/${cherry}.patch"
-	done
-	popd >/dev/null || die
-}
-
-pick_next_cherries() {
-	# clang
-	local CHERRIES=""
 	CHERRIES+=" d6168b6ed57fe78bf42f57509d73bde2680105b5 " # r286798
 	CHERRIES+=" 32dc773aa73602b5d5ee6881df5d76decd776018 " # r286613
 	CHERRIES+=" 4c434043b9a5140cf6ab9231c82e6000bb6f31f6 " # r289094
@@ -255,6 +198,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
+	# Arm ChromeOS failed to boot without this.
 	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
 	CHERRIES+=" 81323af362fc053dbea0758ca1e02d9af82c0da6 " # r286611
 	CHERRIES+=" 06f9b86145451df76f74540867ea0d1671e41d20 " # r286636
@@ -287,21 +231,12 @@ pick_next_cherries() {
 
 src_prepare() {
 	use llvm-next || pick_cherries
-	use llvm-next && pick_next_cherries
-	use llvm-next || epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
-	use llvm-next || epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
-	use llvm-next || epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
-	use llvm-next && epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
-	use llvm-next && epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
-	use llvm-next && epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
+	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
+	epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
+	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
-	# Fix libdir for ocaml bindings install, bug #559134
-	use llvm-next || epatch "${FILESDIR}"/cmake/${PN}-3.7.0-ocaml-multilib.patch
 
-	# Make it possible to override Sphinx HTML install dirs
-	# https://llvm.org/bugs/show_bug.cgi?id=23780
-	use llvm-next || epatch "${FILESDIR}"/cmake/0002-cmake-Support-overriding-Sphinx-HTML-doc-install-dir.patch
 
 	# Prevent race conditions with parallel Sphinx runs
 	# https://llvm.org/bugs/show_bug.cgi?id=23781
@@ -320,8 +255,7 @@ src_prepare() {
 	# crbug/606391
 	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
 
-	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-build-id.patch
-	use llvm-next || epatch "${FILESDIR}"/llvm-3.9-dwarf-version.patch
+	epatch "${FILESDIR}"/llvm-3.9-dwarf-version.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
