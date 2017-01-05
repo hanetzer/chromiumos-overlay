@@ -197,6 +197,8 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_Firewall
 	+tests_platform_FullyChargedPowerStatus
 	+tests_platform_HighResTimers
+	+tests_platform_ImageLoader
+	+tests_platform_ImageLoaderServer
 	+tests_platform_KernelVersion
 	+tests_platform_KernelVersionByBoard
 	+tests_platform_LibCBench
