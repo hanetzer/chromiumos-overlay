@@ -222,6 +222,7 @@ ALL_BOARDS=(
 	sama5d3
 	samus
 	samus-cheets
+	scarlet
 	sentry
 	setzer
 	shogun
