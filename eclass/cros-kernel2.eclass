@@ -1005,7 +1005,8 @@ cros-kernel2_src_configure() {
 
 get_dtb_name() {
 	local dtb_dir=${1}
-	find ${dtb_dir} -name "*.dtb"
+	# Add sort to stabilize the dtb ordering.
+	find ${dtb_dir} -name "*.dtb" | LC_COLLATE=C sort
 }
 
 cros-kernel2_src_compile() {
