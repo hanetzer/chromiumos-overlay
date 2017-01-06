@@ -35,7 +35,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
+IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework"
 
 PER_BOARD_BOARDS=(
