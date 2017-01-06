@@ -119,10 +119,6 @@ src_unpack() {
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
 
-	if use next_gcc ; then
-		epatch "${FILESDIR}"/gcc-4.9-gcc_next-fixincludes.patch
-	fi
-
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
 	if [[ -d ${S}/.git ]]; then
 		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
