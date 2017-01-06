@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit autotools
+inherit autotools eutils
 
 DESCRIPTION="Utilies for generating, examining AFDO profiles"
 HOMEPAGE="http://gcc.gnu.org/wiki/AutoFDO"
@@ -19,6 +19,8 @@ DEPEND="dev-libs/openssl
 RDEPEND="${DEPEND}"
 
 src_prepare() {
+	# Fix a build problem with gcc.
+	epatch "${FILESDIR}/autofdo-0.15-rpath.patch"
 	eautoreconf
 }
 

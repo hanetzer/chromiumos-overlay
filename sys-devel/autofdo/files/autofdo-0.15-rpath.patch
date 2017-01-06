@@ -1,0 +1,39 @@
+Picked from upstream to fix a build problem with gcc.
+
+commit 38e3093b413daeded730b133a21ea3b23c1f81a2
+Author: Sebastian Pop <s.pop@samsung.com>
+Date:   Mon Nov 21 11:11:26 2016 -0600
+
+    Fix use of -rpath
+    
+    Instruct the compiler to send the -rpath flag to the linker, otherwise the
+    compiler fails like this:
+    
+    g++: error: unrecognized command line option ‘-rpath’
+
+diff --git a/configure b/configure
+index f38717f..421411f 100755
+--- a/configure
++++ b/configure
+@@ -4804,7 +4804,7 @@ fi
+                       -ldl -lpthread -ltinfo"
+       elif test "x$shared_mode" = "xshared"; then
+         rpath="$($ac_llvm_config_path --libdir)"
+-        LLVM_LDFLAGS="-rpath $rpath \
++        LLVM_LDFLAGS="-Wl,-rpath $rpath \
+                       $($ac_llvm_config_path --ldflags) \
+                       $($ac_llvm_config_path --libs ProfileData)"
+       fi
+diff --git a/m4/ax_llvm.m4 b/m4/ax_llvm.m4
+index 6df84a5..194a7a2 100644
+--- a/m4/ax_llvm.m4
++++ b/m4/ax_llvm.m4
+@@ -67,7 +67,7 @@ AC_DEFUN([AX_LLVM],
+                       -ldl -lpthread -ltinfo"
+       elif test "x$shared_mode" = "xshared"; then
+         rpath="$($ac_llvm_config_path --libdir)"
+-        LLVM_LDFLAGS="-rpath $rpath \
++        LLVM_LDFLAGS="-Wl,-rpath $rpath \
+                       $($ac_llvm_config_path --ldflags) \
+                       $($ac_llvm_config_path --libs $1)"
+       fi
