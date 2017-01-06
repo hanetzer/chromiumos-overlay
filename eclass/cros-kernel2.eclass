@@ -422,7 +422,7 @@ CONFIG_SERIAL_SAMSUNG_CONSOLE=y
 
 selinux_develop_desc="SELinux developer mode"
 selinux_develop_config="
-CONFIG_SECURITY_SELINUX_DEVELOP=y
+CONFIG_SECURITY_SELINUX_PERMISSIVE_DONTAUDIT=n
 "
 
 socketmon_desc="INET socket monitoring interface (for iproute2 ss)"
