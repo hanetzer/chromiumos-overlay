@@ -217,6 +217,7 @@ ALL_BOARDS=(
 	rikku
 	rizer
 	rotor
+	rowan
 	rush
 	rush_ryu
 	sama5d3
