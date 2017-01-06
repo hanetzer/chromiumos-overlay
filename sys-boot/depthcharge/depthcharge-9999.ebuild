@@ -60,7 +60,7 @@ src_compile() {
 		  "board/${board}/defconfig"
 	fi
 
-	emake distclean
+	[[ ${PV} == "9999" ]] && emake distclean
 	emake defconfig BOARD="${board}"
 
 	emake depthcharge VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \

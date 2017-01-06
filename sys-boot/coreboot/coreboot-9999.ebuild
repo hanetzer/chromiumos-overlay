@@ -102,8 +102,9 @@ src_prepare() {
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
-		emake clean  # in case someone tried a local make, ensure
-			     # there is no leftovers
+		# In case someone tried a local make, ensure there are no
+		# leftovers.
+		[[ ${PV} == "9999" ]] && emake clean
 
 		cp -v "${FILESDIR}/configs/config.${board}" .config
 
