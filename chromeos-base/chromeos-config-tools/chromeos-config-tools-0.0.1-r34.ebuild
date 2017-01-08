@@ -25,6 +25,7 @@ IUSE="test"
 
 RDEPEND="
 	chromeos-base/libbrillo
+	sys-apps/dtc
 "
 
 DEPEND="
