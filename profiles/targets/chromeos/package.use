@@ -24,6 +24,9 @@ dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils
 dev-libs/expat		-unicode
 dev-libs/glib		-doc
+# Readline is used by pcretest which we don't use.
+# zlib/bzip2 are only used by pcregrep which we don't use.
+dev-libs/libpcre	-bzip2 -readline -zlib
 dev-libs/leveldb	-tcmalloc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
