@@ -53,6 +53,7 @@ lstat64: 1
 madvise: 1
 mmap2: 1
 mprotect: 1
+mremap: 1
 munmap: 1
 nanosleep: 1
 open: 1
@@ -87,6 +88,7 @@ socket: 1
 socketpair: 1
 stat64: 1
 statfs64: 1
+sysinfo: 1
 timerfd_create: 1
 timerfd_settime: 1
 timerfd_gettime: 1
