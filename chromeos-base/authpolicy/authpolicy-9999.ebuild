@@ -23,7 +23,7 @@ IUSE="test"
 RDEPEND="
 	app-crypt/mit-krb5
 	chromeos-base/libbrillo
-	chromeos-base/chromeos-minijail
+	>=chromeos-base/chromeos-minijail-0.0.1-r1445
 	dev-libs/protobuf
 	dev-libs/dbus-glib
 	sys-apps/dbus
