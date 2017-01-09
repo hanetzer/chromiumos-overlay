@@ -29,13 +29,21 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X cheets"
+	android-container-nyc +classic debug dri egl +gallium -gbm gles1 gles2
+	+llvm +nptl pic selinux shared-glapi kernel_FreeBSD xlib-glx X cheets"
 
 DEPEND=""
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
 # (b/33072485, b/28802929).
-RDEPEND="cheets? ( llvm? ( chromeos-base/android-container[-cheets_user] ) )"
+# TODO(norvez): Enforce RDEPEND on android-container-nyc[-cheets_user] once
+# it's supported by the ebuild (needs more builds available and manual uprev).
+RDEPEND="cheets? (
+		llvm? (
+			!android-container-nyc? (
+				chromeos-base/android-container[-cheets_user]
+			)
+		)
+	)"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
@@ -135,7 +143,12 @@ src_configure() {
 		append-ldflags -m32
 
 		# Use llvm-config coming from ARC++ build.
-		export LLVM_CONFIG="${ARC_BASE}/arc-llvm-mesa/bin/llvm-config"
+		if use android-container-nyc; then
+			export LLVM_CONFIG="${ARC_BASE}/arc-llvm/3.8/bin/llvm-config"
+		else
+			# Path for MNC.
+			export LLVM_CONFIG="${ARC_BASE}/arc-llvm-mesa/bin/llvm-config"
+		fi
 
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
