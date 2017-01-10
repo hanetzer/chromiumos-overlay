@@ -39,7 +39,7 @@ EOF
 		if [[ ${line} == *'usb_vid_pid'* ]]; then
 			# ${line} format: camera0.module0.usb_vid_pid=0a1b:2c3d
 			local vid_pid="${line#*=}"
-			vid_pid_table[${index}]="${vid_pid}"
+			vid_pid_table[${index}]="${vid_pid,,}"
 			symlink_table[${index}]="${symlink}"
 		elif [[ ${line} == *'usb_path'* ]]; then
 			# ${line} format: camera0.module0.usb_path=1-1
