@@ -52,6 +52,7 @@ net-analyzer/tcpdump	-chroot ipv6
 net-dns/avahi-daemon	zeroconf
 net-dns/dnsmasq		script
 net-firewall/iptables	ipv6
+net-fs/samba		-python ads acl gnutls ldap
 # C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
 # Clients don't need the C++ library anyway, so disabling it...
 net-libs/gnutls	-cxx
