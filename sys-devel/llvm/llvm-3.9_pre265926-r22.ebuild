@@ -255,7 +255,6 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	# Arm ChromeOS failed to boot without this.
 	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
 	CHERRIES+=" 81323af362fc053dbea0758ca1e02d9af82c0da6 " # r286611
 	CHERRIES+=" 06f9b86145451df76f74540867ea0d1671e41d20 " # r286636
@@ -265,7 +264,14 @@ pick_next_cherries() {
 	CHERRIES+=" bc7dc480be4b503b81d4e63f97fb499b6873a1fa " # r288420
 	CHERRIES+=" c31c930cdf7d34987fb1d08e92a4532343241dd3 " # r288433
 	CHERRIES+=" d7bfb58bc10fa2b57d986b3ca7e6b6d8b9a89974 " # r289008
-
+	CHERRIES+=" 38ab2af2b57bc9390bb9b695001cba63b9262f2b " # r289661
+	CHERRIES+=" 80ea0f28fb5be3e632b0ae712823c28715f3bbe7 " # r289679
+	CHERRIES+=" e209ab4879923a83e9c223aa8318ad9644124189 " # r289681
+	CHERRIES+=" 15e919d001037b85218dbf135ccc9522f91a86e1 " # r289684
+	CHERRIES+=" 5bf7eb503fb9d70121904ea8872f639b9497c1e6 " # r289688
+	CHERRIES+=" 1f177f4a3f2a90b90f5721a4962607d71d551223 " # r289693
+	CHERRIES+=" caba5d3de2f61c68651afdff72a223248a660384 " # r289699
+	CHERRIES+=" 133b0bceea54f061d2a4739a4cf93dcc0ece2879 " # r289704
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
