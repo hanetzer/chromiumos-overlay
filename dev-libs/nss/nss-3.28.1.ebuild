@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=6
+EAPI=5
 
 inherit eutils flag-o-matic multilib toolchain-funcs multilib-minimal
 
@@ -20,7 +20,7 @@ SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/${RTM_NAME}/src/$
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="*"
 IUSE="cacert +nss-pem utils"
 CDEPEND=">=dev-db/sqlite-3.8.2[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]"
@@ -32,7 +32,8 @@ RDEPEND=">=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
 	abi_x86_32? (
 		!<=app-emulation/emul-linux-x86-baselibs-20140508-r12
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-	)"
+	)
+	!<app-crypt/nss-${PV}[${MULTILIB_USEDEP}]"
 
 RESTRICT="test"
 
@@ -68,7 +69,13 @@ src_prepare() {
 		)
 	fi
 
-	default
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	PATCHES+=(
+		"${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+	)
+
+	epatch "${PATCHES[@]}"
 
 	pushd coreconf >/dev/null || die
 	# hack nspr paths
@@ -303,7 +310,9 @@ multilib_src_install() {
 		fi
 		pushd dist/*/bin >/dev/null || die
 		for f in ${nssutils}; do
+			#TODO(cmasone): switch to normal nss tool names
 			dobin ${f}
+			dosym ${f} /usr/bin/nss${f}
 		done
 		popd >/dev/null || die
 	fi
