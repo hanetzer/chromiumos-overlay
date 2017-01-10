@@ -5,7 +5,7 @@ most of this private library but does not export the symbols.
 This CL exports the private symbols in the shared library and link dynamically
 dbus-daemon and dbus-daemon-launch-helper.
 diff --git a/bus/Makefile.am b/bus/Makefile.am
-index 6cbc09a..6924d06 100644
+index 6cbc09a6..6924d069 100644
 --- a/bus/Makefile.am
 +++ b/bus/Makefile.am
 @@ -106,7 +106,7 @@ dbus_daemon_SOURCES=				\
@@ -61,10 +61,10 @@ index 6cbc09a..6924d06 100644
  ## mop up the gcov files
  clean-local:
 diff --git a/configure.ac b/configure.ac
-index 24fcc9e..20e8370 100644
+index 39aadd28..e9cf9101 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1700,6 +1700,7 @@ fi
+@@ -1705,6 +1705,7 @@ fi
  
  AC_CONFIG_FILES([
  Doxyfile
@@ -73,7 +73,7 @@ index 24fcc9e..20e8370 100644
  dbus/dbus-arch-deps.h
  bus/system.conf
 diff --git a/dbus/Makefile.am b/dbus/Makefile.am
-index bb5ccca..4a0ca18 100644
+index bb5cccaf..04bd0b0f 100644
 --- a/dbus/Makefile.am
 +++ b/dbus/Makefile.am
 @@ -33,7 +33,6 @@ SUFFIXES = rc
@@ -146,7 +146,7 @@ index bb5ccca..4a0ca18 100644
  clean-local:
 diff --git a/dbus/Version.in b/dbus/Version.in
 new file mode 100644
-index 0000000..577a895
+index 00000000..577a895c
 --- /dev/null
 +++ b/dbus/Version.in
 @@ -0,0 +1,10 @@
@@ -161,7 +161,7 @@ index 0000000..577a895
 +    _dbus_*;
 +};
 diff --git a/test/Makefile.am b/test/Makefile.am
-index e944899..07a9ad2 100644
+index 6f0e6e10..9be95704 100644
 --- a/test/Makefile.am
 +++ b/test/Makefile.am
 @@ -7,7 +7,6 @@ DIST_SUBDIRS=name-test
@@ -194,7 +194,7 @@ index e944899..07a9ad2 100644
  	$(NULL)
  
  noinst_LTLIBRARIES = libdbus-testutils.la
-@@ -68,25 +59,17 @@ endif !DBUS_BUILD_TESTS
+@@ -68,29 +59,20 @@ endif !DBUS_BUILD_TESTS
  
  noinst_PROGRAMS= $(TEST_BINARIES)
  
@@ -203,14 +203,20 @@ index e944899..07a9ad2 100644
 -test_names_CPPFLAGS = $(static_cppflags)
  test_names_LDADD = libdbus-testutils.la
 -## break_loader_CPPFLAGS = $(static_cppflags)
- ## break_loader_LDADD = $(top_builddir)/dbus/libdbus-internal.la
+-## break_loader_LDADD = $(top_builddir)/dbus/libdbus-internal.la
 -test_shell_service_CPPFLAGS = $(static_cppflags)
++## break_loader_LDADD = $(top_builddir)/dbus/libdbus-1.la
  test_shell_service_LDADD = libdbus-testutils.la
 -shell_test_CPPFLAGS = $(static_cppflags)
  shell_test_LDADD = libdbus-testutils.la
 -spawn_test_CPPFLAGS = $(static_cppflags)
 -spawn_test_LDADD = $(top_builddir)/dbus/libdbus-internal.la
 +spawn_test_LDADD = $(top_builddir)/dbus/libdbus-1.la
+ 
+ test_printf_SOURCES = internals/printf.c
+-test_printf_CPPFLAGS = $(static_cppflags)
+-test_printf_LDADD = $(top_builddir)/dbus/libdbus-internal.la
++test_printf_LDADD = $(top_builddir)/dbus/libdbus-1.la
  
  test_refs_SOURCES = internals/refs.c
 -test_refs_CPPFLAGS = $(static_cppflags)
@@ -222,7 +228,7 @@ index e944899..07a9ad2 100644
  
  EXTRA_DIST = dbus-test-runner
 diff --git a/test/name-test/Makefile.am b/test/name-test/Makefile.am
-index 6aaf178..ba23f69 100644
+index 6aaf1783..ba23f69b 100644
 --- a/test/name-test/Makefile.am
 +++ b/test/name-test/Makefile.am
 @@ -1,8 +1,6 @@

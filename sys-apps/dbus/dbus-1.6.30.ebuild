@@ -62,9 +62,7 @@ src_prepare() {
 		-e '/"dispatch"/d' \
 		bus/test-main.c || die
 
-	epatch "${FILESDIR}"/${P}-_dbus_babysitter_unref-avoid-infinite-loop-if-waitpi.patch
-	epatch "${FILESDIR}"/${P}-_dbus_printf_string_upper_bound-copy-t.patch
-	epatch "${FILESDIR}"/${P}-send-print-fixed.patch
+	epatch "${FILESDIR}"/${PN}-1.6.8-send-print-fixed.patch
 	epatch "${FILESDIR}"/${PN}-1.4.12-send-unix-fd.patch
 	epatch "${FILESDIR}"/${PN}-1.4.12-send-variant-dict.patch
 
@@ -73,13 +71,13 @@ src_prepare() {
 
 	# Add ability for dbus-send to escape commas in string elements in an
 	# array. (chromium:240540)
-	epatch "${FILESDIR}"/${P}-send-allow-escaped-commas-in-argument-strings.patch
+	epatch "${FILESDIR}"/${PN}-1.6.8-send-allow-escaped-commas-in-argument-strings.patch
 
 	# Dynamically link the binaries to save some space.
 	epatch "${FILESDIR}"/${P}-dynamically-link-libdbus.patch
 
 	# In libdbus, raise SIGTERM when the connection is dropped.
-	epatch "${FILESDIR}"/${P}-raise-SIGTERM-on-connection-lost.patch
+	epatch "${FILESDIR}"/${PN}-1.6.8-raise-SIGTERM-on-connection-lost.patch
 
 	# required for asneeded and dynamically-link-libdbus patches but also for
 	# bug 263909, cross-compile so don't remove eautoreconf
