@@ -33,7 +33,7 @@ CONFIG_ADD_FSP_BINARIES=y
 CONFIG_FSP_M_FILE="3rdparty/blobs/mainboard/google/pyro/fsp/FSP-M.Fv"
 CONFIG_FSP_S_FILE="3rdparty/blobs/mainboard/google/pyro/fsp/FSP-S.Fv"
 CONFIG_ADD_VBT_DATA_FILE=y
-CONFIG_VBT_FILE="3rdparty/blobs/baseboard-reef/vbt.bin"
+CONFIG_VBT_FILE="3rdparty/blobs/mainboard/google/pyro/vbt.bin"
 
 # SPI Descriptor
 CONFIG_HAVE_IFD_BIN=y
