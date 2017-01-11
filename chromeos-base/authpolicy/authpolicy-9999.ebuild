@@ -29,6 +29,12 @@ RDEPEND="
 	sys-apps/dbus
 	sys-libs/libcap
 "
+# TODO(ljusten): Remove once Samba lands.
+RDEPEND="
+	${RDEPEND}
+	sys-libs/talloc
+	sys-libs/tevent
+"
 DEPEND="
 	${RDEPEND}
 	>=chromeos-base/protofiles-0.0.2
