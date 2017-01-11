@@ -1,0 +1,25 @@
+Allow the path to the pkg-config executable to be overriden using the PKG_CONFIG
+environment variable.
+
+Also added additional fallback case based on the WAF code in [1]. Packages embed WAF
+and it looks like the Samba version is a few versions behind.
+
+[1] - https://github.com/waf-project/waf/blame/master/waflib/Tools/c_config.py#L236
+
+--- third_party/waf/wafadmin/Tools/config_c.py
++++ third_party/waf/wafadmin/Tools/config_c.py
+@@ -106,7 +106,13 @@
+ @conf
+ def validate_cfg(self, kw):
+ 	if not 'path' in kw:
+-		kw['path'] = 'pkg-config --errors-to-stdout --print-errors'
++		if not self.env.PKGCONFIG:
++			if os.environ.get('PKG_CONFIG'):
++				self.env.PKGCONFIG = os.environ.get('PKG_CONFIG')
++			else:
++				self.find_program('pkg-config', var='PKGCONFIG')
++
++		kw['path'] = '"%s" --errors-to-stdout --print-errors' % self.env.PKGCONFIG
+ 
+ 	# pkg-config version
+ 	if 'atleast_pkgconfig_version' in kw:
