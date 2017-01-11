@@ -8,7 +8,7 @@
 EAPI="4"
 
 CROS_WORKON_PROJECT="aosp/platform/external/libchrome"
-CROS_WORKON_COMMIT="b86156c4a5e2cb10b69a2bccbade9b8d359f3662"
+CROS_WORKON_COMMIT="6430a2797e1dfb3af1b83a17640150d216037698"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
@@ -84,6 +84,8 @@ src_install() {
 		base/trace_event/common
 		build
 		components/timers
+		components/policy
+		components/policy/core/common
 		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
