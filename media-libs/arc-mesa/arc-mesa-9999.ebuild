@@ -29,8 +29,8 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	android-container-nyc +classic debug dri egl +gallium -gbm gles1 gles2
-	+llvm +nptl pic selinux shared-glapi kernel_FreeBSD xlib-glx X cheets"
+	android-container-nyc cheets +classic debug dri egl +gallium -gbm gles1
+	gles2 +llvm +nptl pic selinux shared-glapi X xlib-glx"
 
 DEPEND=""
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
