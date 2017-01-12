@@ -44,9 +44,9 @@ src_test() {
 
 	if use x86 || use amd64 ; then
 		./libminijail_unittest || \
-		    die "libminijail unit tests failed!"
+			die "libminijail unit tests failed!"
 		./syscall_filter_unittest || \
-		    die "syscall filter unit tests failed!"
+			die "syscall filter unit tests failed!"
 	fi
 }
 

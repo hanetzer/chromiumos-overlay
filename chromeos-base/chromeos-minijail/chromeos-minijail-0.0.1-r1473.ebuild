@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="13807cb12a9afce34c2ecf664036df6be83f656e"
-CROS_WORKON_TREE="3619acdc266173e3cd38d156f8ed4620ff0a31e9"
+CROS_WORKON_COMMIT="0dce7573d8038618505b718308c359c4ed6fabcf"
+CROS_WORKON_TREE="c52d9a301b64ea1acb8830c9238eee8b34279b67"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
@@ -46,9 +46,9 @@ src_test() {
 
 	if use x86 || use amd64 ; then
 		./libminijail_unittest || \
-		    die "libminijail unit tests failed!"
+			die "libminijail unit tests failed!"
 		./syscall_filter_unittest || \
-		    die "syscall filter unit tests failed!"
+			die "syscall filter unit tests failed!"
 	fi
 }
 
