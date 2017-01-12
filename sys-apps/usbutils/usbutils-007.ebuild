@@ -28,6 +28,7 @@ RDEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${PN}-006-stdint.patch
 	"${FILESDIR}"/${PN}-007-ignore-invalid-string-descriptors.patch
+	"${FILESDIR}"/${P}-decode-CDC-MBIM-extended-functional-descriptor.patch
 )
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"

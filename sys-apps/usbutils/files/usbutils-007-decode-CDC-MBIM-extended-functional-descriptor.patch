@@ -1,0 +1,38 @@
+From 12cbc3ea03992942ce6ea8f89c53b1a92504840d Mon Sep 17 00:00:00 2001
+From: Ben Chan <benchan@chromium.org>
+Date: Fri, 14 Feb 2014 23:47:03 -0800
+Subject: [PATCH] lsusb: decode CDC MBIM extended functional descriptor
+
+Signed-off-by: Ben Chan <benchan@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ lsusb.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/lsusb.c b/lsusb.c
+index fd49240..25d25dc 100644
+--- a/lsusb.c
++++ b/lsusb.c
+@@ -3219,6 +3219,19 @@ dump_comm_descriptor(libusb_device_handle *dev, const unsigned char *buf, char *
+ 		if (buf[11] & 0x08)
+ 			printf("%s    max datagram size\n", indent);
+ 		break;
++	case 0x1c:		/* MBIM extended functional desc */
++		type = "MBIM Extended";
++		if (buf[0] != 8)
++			goto bad;
++		printf("%sCDC MBIM Extended:\n"
++		       "%s  bcdMBIMExtendedVersion          %2x.%02x\n"
++		       "%s  bMaxOutstandingCommandMessages    %3d\n"
++		       "%s  wMTU                            %5d\n",
++		       indent,
++		       indent, buf[4], buf[3],
++		       indent, buf[5],
++		       indent, buf[6] | (buf[7] << 8));
++		break;
+ 	default:
+ 		/* FIXME there are about a dozen more descriptor types */
+ 		printf("%sUNRECOGNIZED CDC: ", indent);
+-- 
+2.11.0.390.gc69c2f50cf-goog
+
