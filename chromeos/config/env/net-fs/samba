@@ -1,0 +1,40 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Remove unwanted binaries from the image. Only keep net and smbclient.
+samba_mask="
+  /usr/sbin
+  /usr/bin/cifsdd
+  /usr/bin/dbwrap_tool
+  /usr/bin/eventlogadm
+  /usr/bin/findsmb
+  /usr/bin/ndrdump
+  /usr/bin/nmblookup
+  /usr/bin/ntlm_auth
+  /usr/bin/oLschema2ldif
+  /usr/bin/pdbedit
+  /usr/bin/pidl
+  /usr/bin/profiles
+  /usr/bin/regdiff
+  /usr/bin/regpatch
+  /usr/bin/regshell
+  /usr/bin/regtree
+  /usr/bin/rpcclient
+  /usr/bin/samba-regedit
+  /usr/bin/sharesec
+  /usr/bin/smbcacls
+  /usr/bin/smbcontrol
+  /usr/bin/smbcquotas
+  /usr/bin/smbget
+  /usr/bin/smbpasswd
+  /usr/bin/smbspool
+  /usr/bin/smbstatus
+  /usr/bin/smbtar
+  /usr/bin/smbtree
+  /usr/bin/testparm
+  /usr/bin/wbinfo
+"
+PKG_INSTALL_MASK+=" ${samba_mask}"
+INSTALL_MASK+=" ${samba_mask}"
+unset samba_mask

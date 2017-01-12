@@ -1,0 +1,23 @@
+Add an explicit dependency on samba-debug so that the build writes
+an RPATH to the library.
+
+In Samba's build when libraries depend on libraries the information
+of whether any given library depends on *any* private libraries
+propagates.
+
+When a SAMBA_LIBRARY only depends on a private library indirectly
+through a SAMBA_SUBSYSTEM an explicit dependency needs to be added.
+
+Patch sent to samba-technical mailing list.
+https://lists.samba.org/archive/samba-technical/2017-January/118078.html
+
+--- lib/socket/wscript_build
++++ lib/socket/wscript_build
+@@ -2,6 +2,6 @@
+ 
+ bld.SAMBA_LIBRARY('interfaces',
+     source='interfaces.c',
+-    deps='samba-util',
++    deps='samba-util samba-debug',
+     private_library=True
+     )
