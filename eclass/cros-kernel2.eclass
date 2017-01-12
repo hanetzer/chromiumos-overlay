@@ -88,6 +88,7 @@ CONFIG_FRAGMENTS=(
 	kcov
 	kgdb
 	kvm
+	kvm_host
 	loader_kernel_ramfs
 	lockdebug
 	lxc
@@ -331,6 +332,23 @@ CONFIG_VIRTIO_NET=m
 CONFIG_VIRTIO_CONSOLE=m
 CONFIG_VIRTIO_RING=m
 CONFIG_VIRTIO_PCI=m
+"
+
+kvm_host_desc="Support running virtual machines with KVM"
+kvm_host_config="
+CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT=y
+CONFIG_HAVE_KVM_EVENTFD=y
+CONFIG_HAVE_KVM_IRQCHIP=y
+CONFIG_HAVE_KVM_IRQFD=y
+CONFIG_HAVE_KVM_IRQ_ROUTING=y
+CONFIG_HAVE_KVM_MSI=y
+CONFIG_KVM=y
+# CONFIG_KVM_AMD is not set
+# CONFIG_KVM_MMU_AUDIT is not set
+# CONFIG_KVM_APIC_ARCHITECTURE is not set
+# CONFIG_KVM_ASYNC_PF is not set
+CONFIG_KVM_INTEL=y
+CONFIG_KVM_MMIO=y
 "
 
 # TODO(benchan): Remove the 'mbim' use flag and unconditionally enable the
