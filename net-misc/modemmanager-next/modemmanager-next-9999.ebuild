@@ -44,6 +44,35 @@ DEPEND="${RDEPEND}
 DOCS="AUTHORS ChangeLog NEWS README"
 
 src_prepare() {
+	# According to "Introspection Data Format" of the DBus specification,
+	# revision 0.30 [1], "Only the root <node> element can omit the node
+	# name, as it's known to be the object that was introspected. If the
+	# root <node> does have a name attribute, it must be an absolute object
+	# path. If child <node> have object paths, they must be relative."
+	#
+	# The introspection XMLs of ModemManager object interfaces specify
+	# name="/" at their root <node>, which should be omitted instead as the
+	# object paths aren't fixed.
+	#
+	# CL:294115 [2] removed the name="/" attribute from those root <node>s
+	# in several ModemManager introspection XMLs in order to allow
+	# chromeos-dbus-bindings to properly generate the DBus proxies for
+	# ModemManager interfaces. Instead of modifying those introspection
+	# XMLs directly in the modemmanager-next git repository, we patch them
+	# (all org.freedesktop.ModemManager1.*.xml, but not
+	# org.freedesktop.ModemManager1.xml) here instead, which helps minimize
+	# the difference between the local modemmanager-next repository and the
+	# upstream repository.
+	#
+	# TODO(benchan): Discuss with upstream ModemManager maintainers to see
+	# if it makes sense to apply the changes to the upstream code instead.
+	#
+	# References:
+	# [1] https://dbus.freedesktop.org/doc/dbus-specification.html#introspection-format
+	# [2] http://crosreview.com/294115
+	find introspection -type f -name 'org.freedesktop.ModemManager1.*.xml' \
+		-exec sed -i 's/^<node name="\/"/<node/' {} +
+
 	gtkdocize
 	eautopoint
 	eautoreconf
