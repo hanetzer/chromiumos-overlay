@@ -72,7 +72,7 @@ EC_BOARD_NAMES=(
 
 IUSE_FIRMWARES="${EC_BOARD_NAMES[@]/#/${EC_BOARD_USE_PREFIX}}"
 IUSE_EXTRA_FIRMWARES="${EC_BOARD_NAMES[@]/#/${EC_EXTRA_BOARD_USE_PREFIX}}"
-IUSE="${IUSE_FIRMWARES} ${IUSE_EXTRA_FIRMWARES} cros_host"
+IUSE="${IUSE_FIRMWARES} ${IUSE_EXTRA_FIRMWARES} cros_host unibuild"
 
 
 # Echo the current boards
@@ -88,12 +88,27 @@ get_ec_boards()
 
 	# Add board names requested by ec_firmware_* USE flags
 	local ec_board
-	for ec_board in ${IUSE_FIRMWARES}; do
-		use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
-	done
-	for ec_board in ${IUSE_EXTRA_FIRMWARES}; do
-		use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_EXTRA_BOARD_USE_PREFIX}})
-	done
+	if use unibuild; then
+		# At present USE=unibuild is optional for all boards.
+		# TODO(sjg): Should we be trying to enable multiple 'use'
+		# flags here? If so, we would end up enabling use flags for
+		# several models (e.g. reef, pyro, snappy when building reef
+		# with USE=unibuild. But then where would we set these 'use'
+		# flags? It should presumably be done in make.conf, but then
+		# we need to set USE=unibuild there, meaning it is no-longer
+		# optional.
+		# On the other hand, doing it this way means that (I think)
+		# we cannot detect a change like adding a new model to reef,
+		# since there is no change in the defined USE flags.
+		EC_BOARDS+=(${EC_FIRMWARE_UNIBUILD} ${EC_FIRMWARE_EXTRA_UNIBUILD})
+	else
+		for ec_board in ${IUSE_FIRMWARES}; do
+			use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
+		done
+		for ec_board in ${IUSE_EXTRA_FIRMWARES}; do
+			use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_EXTRA_BOARD_USE_PREFIX}})
+		done
+	fi
 
 	# Allow building for boards that don't have an EC
 	# (so we can compile test on bots for testing).
