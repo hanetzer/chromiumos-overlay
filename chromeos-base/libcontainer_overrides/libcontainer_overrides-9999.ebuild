@@ -16,6 +16,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
+RDEPEND="chromeos-base/libbrillo"
+DEPEND="${RDEPEND}"
+
 src_install() {
 	dolib.so "${OUT}/lib/libcontainer_overrides.so"
 }
