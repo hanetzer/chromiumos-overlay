@@ -19,6 +19,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
+	chromeos-base/libcontainer
 	chromeos-base/permission_broker
 "
 DEPEND="${RDEPEND}"
