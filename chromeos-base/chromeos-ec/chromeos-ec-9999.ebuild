@@ -31,6 +31,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="quiet verbose"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -51,6 +52,10 @@ set_build_env() {
 	export BUILDCC=${BUILD_CC}
 
 	get_ec_boards
+
+	EC_OPTS=()
+	use quiet && EC_OPTS+=( -s V=0 )
+	use verbose && EC_OPTS+=( V=1 )
 }
 
 src_compile() {
@@ -58,9 +63,9 @@ src_compile() {
 
 	local board
 	for board in "${EC_BOARDS[@]}"; do
-		BOARD=${board} emake clean
-		BOARD=${board} emake all
-		BOARD=${board} emake tests
+		BOARD=${board} emake "${EC_OPTS[@]}" clean
+		BOARD=${board} emake "${EC_OPTS[@]}" all
+		BOARD=${board} emake "${EC_OPTS[@]}" tests
 	done
 }
 
@@ -125,6 +130,8 @@ src_install() {
 }
 
 src_test() {
+	set_build_env
+
 	# Verify compilation of all boards
-	emake buildall
+	emake "${EC_OPTS[@]}" buildall
 }
