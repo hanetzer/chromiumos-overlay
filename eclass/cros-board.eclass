@@ -252,6 +252,8 @@ ALL_BOARDS=(
 	sumo
 	swanky
 	tails
+	tatl
+	tael
 	#tegra2
 	#tegra2_aebl
 	#tegra2_arthur
