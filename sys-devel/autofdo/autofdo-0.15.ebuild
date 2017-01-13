@@ -15,6 +15,8 @@ KEYWORDS="*"
 IUSE=""
 
 DEPEND="dev-libs/openssl
+	dev-libs/libffi
+	sys-devel/llvm
 	sys-libs/zlib"
 RDEPEND="${DEPEND}"
 
