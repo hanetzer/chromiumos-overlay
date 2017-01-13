@@ -35,12 +35,13 @@ IUSE="${IUSE_VIDEO_CARDS}
 DEPEND=""
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
 # (b/33072485, b/28802929).
-# TODO(norvez): Enforce RDEPEND on android-container-nyc[-cheets_user] once
-# it's supported by the ebuild (needs more builds available and manual uprev).
 RDEPEND="cheets? (
 		llvm? (
 			!android-container-nyc? (
 				chromeos-base/android-container[-cheets_user]
+			)
+			android-container-nyc? (
+				chromeos-base/android-container-nyc[-cheets_user]
 			)
 		)
 	)"
