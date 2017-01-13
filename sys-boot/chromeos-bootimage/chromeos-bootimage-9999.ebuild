@@ -69,7 +69,7 @@ do_cbfstool() {
 	if [ $? != 0 ]; then
 		die "Failed cbfstool invocation: cbfstool $@\n${output}"
 	fi
-	echo "${output}"
+	printf "${output}"
 }
 
 sign_region() {
