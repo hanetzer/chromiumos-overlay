@@ -118,20 +118,29 @@ BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
 BUILD_OUT_SYM="c"
 
 AFDO_BZ_SUFFIX=".bz2"
+AFDO_GCOV_SUFFIX=".gcov"
+AFDO_PROF_SUFFIX=".prof"
 AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"}
+AFDO_LOCATION_LLVM=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/llvm/"}
 
-# This dictionary contains one entry per architecture. The value for each
+# These dictionaries contain one entry per architecture. The value for each
 # entry is the appropriate AFDO profile for the current version of Chrome.
 declare -A AFDO_FILE
-# The following entries into the AFDO_FILE dictionary are set automatically
+declare -A AFDO_FILE_LLVM
+
+# The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2978.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2978.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2978.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-57.0.2980.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-57.0.2980.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-57.0.2980.0_rc-r1.afdo"
+
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-57.0.2970.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-57.0.2970.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-57.0.2970.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
-# over the values in the AFDO_FILE dictionary.
+# over the values in the AFDO_FILE* dictionaries.
 # Normally one would not set any value for the elements in the dictionary.
 # This is only used when there is some kind of problem with the AFDO profile
 # generation process and one needs to force the use of an older profile.
@@ -145,13 +154,20 @@ add_afdo_files() {
 	for a in "${!AFDO_FILE[@]}" ; do
 		f=${AFDO_FILE[${a}]}
 		if [[ -n ${f} ]]; then
-			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} ) )"
+			SRC_URI+=" afdo_use? ( ${a}? ( !clang? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_GCOV_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
+		fi
+	done
+	for a in "${!AFDO_FILE_LLVM[@]}" ; do
+		f=${AFDO_FILE_LLVM[${a}]}
+		if [[ -n ${f} ]]; then
+			SRC_URI+=" afdo_use? ( ${a}? ( clang? ( ${AFDO_LOCATION_LLVM}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_PROF_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
 		fi
 	done
 	for a in "${!AFDO_FROZEN_FILE[@]}" ; do
 		f=${AFDO_FROZEN_FILE[${a}]}
 		if [[ -n ${f} ]]; then
-			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} ) )"
+			SRC_URI+=" afdo_use? ( ${a}? ( !clang? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_GCOV_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
+			SRC_URI+=" afdo_use? ( ${a}? ( clang? ( ${AFDO_LOCATION_LLVM}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_PROF_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
 		fi
 	done
 }
@@ -554,19 +570,30 @@ src_unpack() {
 		fi
 	fi
 
-	if use afdo_use && ! use clang; then
+	if use afdo_use; then
 		local PROFILE_DIR="${WORKDIR}/afdo"
 		mkdir "${PROFILE_DIR}"
 		pushd "${PROFILE_DIR}" > /dev/null
 
 		# First check if there is a specified "frozen" AFDO profile.
 		# Otherwise use the current one.
-		local PROFILE_FILE="${AFDO_FROZEN_FILE[${ARCH}]}"
-		local PROFILE_STATE="FROZEN"
-		if [[ -z ${PROFILE_FILE} ]]; then
-			PROFILE_FILE="${AFDO_FILE[${ARCH}]}"
-			PROFILE_STATE="CURRENT"
+
+		local PROFILE_STATE="CURRENT"
+		local PROFILE_FILE=${AFDO_FILE[${ARCH}]}
+		local PROFILE_SUFFIX=${AFDO_GCOV_SUFFIX}
+
+		if use clang; then
+			PROFILE_FILE=${AFDO_FILE_LLVM[${ARCH}]}
+			PROFILE_SUFFIX=${AFDO_PROF_SUFFIX}
 		fi
+
+		if [[ -n ${AFDO_FROZEN_FILE[${ARCH}]} ]]; then
+			PROFILE_STATE="FROZEN"
+			PROFILE_FILE=${AFDO_FROZEN_FILE[${ARCH}]}
+		fi
+
+		PROFILE_FILE=${PROFILE_FILE}${PROFILE_SUFFIX}
+
 		[[ -n ${PROFILE_FILE} ]] || die "Missing AFDO profile for ${ARCH}"
 		unpack "${PROFILE_FILE}${AFDO_BZ_SUFFIX}"
 		popd > /dev/null
@@ -676,15 +703,17 @@ setup_compile_flags() {
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
 	EBUILD_CXXFLAGS=()
-	if use afdo_use && ! use clang; then
-		local afdo_flags=(
-			-fauto-profile="${AFDO_PROFILE_LOC}"
-
-			# This is required because gcc emits different warnings
-			# for AFDO vs. non-AFDO. AFDO may inline different
-			# functions from non-AFDO, leading to different warnings.
-			-Wno-error
-		)
+	if use afdo_use; then
+		local afdo_flags=()
+		if use clang; then
+			afdo_flags+=( -fprofile-sample-use="${AFDO_PROFILE_LOC}" )
+		else
+			afdo_flags+=( -fauto-profile="${AFDO_PROFILE_LOC}" )
+		fi
+		# This is required because compiler emits different warnings
+		# for AFDO vs. non-AFDO. AFDO may inline different
+		# functions from non-AFDO, leading to different warnings.
+		afdo_flags+=( -Wno-error )
 		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
 	fi
