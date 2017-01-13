@@ -8,6 +8,9 @@
 	<longdescription>
 		Samba is an Open Source/Free Software suite that provides seamless file and print services to SMB/CIFS clients. Integration with various accounting and antivirus backends. License: GNU General Public License.
 	</longdescription>
+	<upstream>
+		<remote-id type="cpe">cpe:/a:samba:samba</remote-id>
+	</upstream>
 	<use>
 		<flag name="addc">Enable Active Directory Domain Controller support</flag>
 		<flag name="addns">Enable AD DNS integration</flag>
