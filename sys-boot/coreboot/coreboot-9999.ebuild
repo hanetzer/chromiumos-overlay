@@ -77,8 +77,7 @@ src_prepare() {
 
 	if [[ -d "${privdir}" ]]; then
 		while read -d $'\0' -r file; do
-			rsync --recursive --links --executability --ignore-existing \
-			      "${file}" ./ || die
+			rsync --recursive --links --executability "${file}" ./ || die
 		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
 	fi
 
