@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="test +samba"
 
 RDEPEND="
 	app-crypt/mit-krb5
@@ -26,14 +26,9 @@ RDEPEND="
 	>=chromeos-base/chromeos-minijail-0.0.1-r1445
 	dev-libs/protobuf
 	dev-libs/dbus-glib
+	samba? ( net-fs/samba )
 	sys-apps/dbus
 	sys-libs/libcap
-"
-# TODO(ljusten): Remove once Samba lands.
-RDEPEND="
-	${RDEPEND}
-	sys-libs/talloc
-	sys-libs/tevent
 "
 DEPEND="
 	${RDEPEND}

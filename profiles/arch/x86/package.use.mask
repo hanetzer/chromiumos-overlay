@@ -4,6 +4,10 @@
 
 # This file requires >=portage-2.1.1
 
+# Lutz Justen <ljusten@chromium.org> (14 Jan 2017)
+# samba currently does not compile for x86
+chromeos-base/authpolicy samba
+
 # Mike Frysinger <vapier@gentoo.org> (04 Aug 2014)
 # Unmask flashrom drivers that only work on x86 due to in/out asm insns #454024
 sys-apps/flashrom -atahpt -nic3com -nicnatsemi -nicrealtek -rayer_spi -satamv
@@ -32,7 +36,7 @@ app-text/enchant -zemberek
 
 >=dev-java/sun-jdk-1.5 -nsplugin
 >=dev-java/sun-jre-bin-1.5 -nsplugin
->=dev-java/ibm-jdk-bin-1.5 -nsplugin 
+>=dev-java/ibm-jdk-bin-1.5 -nsplugin
 >=dev-java/ibm-jre-bin-1.5 -nsplugin
 x11-terms/eterm sse2
 
