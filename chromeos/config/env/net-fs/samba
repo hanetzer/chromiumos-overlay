@@ -34,6 +34,9 @@ samba_mask="
   /usr/bin/smbtree
   /usr/bin/testparm
   /usr/bin/wbinfo
+  /usr/lib*/samba/idmap
+  /usr/lib*/samba/libidmap-samba4.so
+  /usr/lib*/samba/nss_info
 "
 PKG_INSTALL_MASK+=" ${samba_mask}"
 INSTALL_MASK+=" ${samba_mask}"
