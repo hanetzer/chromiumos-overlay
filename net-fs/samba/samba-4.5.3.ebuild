@@ -26,7 +26,7 @@ LICENSE="GPL-3"
 SLOT="0"
 
 IUSE="acl addc addns ads client cluster cups dmapi fam gnutls iprint
-ldap pam python quota selinux syslog +system-mitkrb5 systemd test winbind zeroconf"
+ldap pam perl python quota selinux syslog +system-mitkrb5 systemd test winbind zeroconf"
 
 MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/samba-4.0/policy.h
@@ -43,7 +43,7 @@ MULTILIB_WRAPPED_HEADERS=(
 CDEPEND="
 	python? ( ${PYTHON_DEPS} )
 	>=app-arch/libarchive-3.1.2[${MULTILIB_USEDEP}]
-	dev-lang/perl:=
+	perl? ( dev-lang/perl:= )
 	dev-libs/libaio[${MULTILIB_USEDEP}]
 	dev-libs/libbsd[${MULTILIB_USEDEP}]
 	dev-libs/iniparser:0
