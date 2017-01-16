@@ -47,4 +47,7 @@ fstat64: 1
 stat64: 1
 fcntl64: 1
 _newselect: 1
-arch_prctl: 1
+prctl: 1
+gettimeofday: 1
+_llseek: 1
+send: 1
