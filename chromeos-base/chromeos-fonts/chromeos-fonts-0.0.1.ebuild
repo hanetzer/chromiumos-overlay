@@ -46,7 +46,7 @@ JA_FONTS="
 #
 # The gcc-libs requirement is a similar situation.  Ultimately this comes down
 # to fixing http://crbug.com/205424.
-DEPEND="
+RDEPEND="
 	${JA_FONTS}
 	internal? ( chromeos-base/ascender_to_license )
 	media-fonts/croscorefonts
@@ -66,9 +66,6 @@ DEPEND="
 	!cros_host? ( sys-libs/gcc-libs )
 	cros_host? ( sys-libs/glibc )
 	"
-RDEPEND="${DEPEND}"
-
-S=${WORKDIR}
 
 qemu_run() {
 	# Run the emulator to execute command. It needs to be copied
@@ -95,66 +92,38 @@ qemu_run() {
 			die "Unable to determine QEMU from ARCH."
 	esac
 
-	# The following code uses sudo to generate the font-cache.  It is almost
-	# always not a good idea to use sudo in your ebuild.  This ebuild is an
-	# exception for the following reasons:
-	#
-	# - fc-cache was designed with the generic linux distribution use case
-	#   in mind where package maintainers have no idea what fonts are actually
-	#   installed on the system.  As a result fc-cache operates directly on
-	#   the target file system and needs permission to modify its cache
-	#   directory (/usr/share/cache/fontconfig), which is owned by root.
-	# - When cross-compiling, the generated font caches need to be compatible
-	#   with the architecture on which they will be used.  To properly do
-	#   this, we need to run the architecture appropriate copy of fc-cache,
-	#   which may link against other arch-specific libraries, which means
-	#   we need to chroot it in the board sysroot and chrooting requires
-	#   root permissions.
-	#
-	# By themselves the above two reasons are not sufficient to justify
-	# using sudo in the ebuild.  What makes this OK is that fc-cache takes
-	# a really long time when run under qemu for ARM (4 - 7 minutes), which
-	# is a very large percentage of the overall time spent in build_image.
-	# It doesn't make sense to force each developer to spend a bunch of time
-	# generating the exact same font cache on their machine every time they
-	# want to build an image.  And even then, we can only do this because
-	# chromeos-fonts is a specialized ebuild for chrome os only.
-	#
-	# All of which is to say: don't use sudo in your ebuild.  You have been
-	# warned.  -- chirantan
-
 	# If we're running directly on the target (e.g. gmerge), we don't need to
 	# chroot or use qemu.
 	if [ "${ROOT:-/}" = "/" ]; then
-		sudo "$@" || die
+		"$@" || die
 	else
 		# Try to run it natively first as it should be fast.
 		if [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
-			if sudo chroot "${ROOT}" "$@" ; then
+			if chroot "${ROOT}" "$@" ; then
 				return
 			fi
 			ewarn "Native crashed; falling back to qemu"
 		fi
 		cp "/usr/bin/${qemu[0]}" "${ROOT}/tmp" || die
-		sudo chroot "${ROOT}" "/tmp/${qemu[0]}" "${qemu[@]:1}" "$@" || die
+		chroot "${ROOT}" "/tmp/${qemu[0]}" "${qemu[@]:1}" "$@" || die
 		rm "${ROOT}/tmp/${qemu[0]}" || die
 	fi
 }
 
 generate_font_cache() {
-	# Bind mount over the cache directory so that we don't scribble over the
-	# $SYSROOT.  Same warning as above applies: don't use sudo in your ebuild.
-	mkdir -p "${WORKDIR}/out"
-	sudo mount --bind "${WORKDIR}/out" "${ROOT}/usr/share/cache/fontconfig"
+	mkdir -p "${ROOT}/usr/share/fontconfig" || die
+	# fc-cache needs the font files to be located in their final resting place.
 	qemu_run /usr/bin/fc-cache -f -v
-	sudo umount "${ROOT}/usr/share/cache/fontconfig"
 }
 
-src_compile() {
-	generate_font_cache
-}
-
-src_install() {
-	insinto /usr/share/cache/fontconfig
-	doins "${WORKDIR}"/out/*
+pkg_preinst() {
+	# We don't bother updating the cache in the sysroot since it's only needed
+	# by the runtime.  This does mean any tools that are run in the sysroot will
+	# also be slow, but we don't know of any like that today.
+	# https://crbug.com/205424
+	if [[ "$(cros_target)" == "target_image" ]]; then
+		generate_font_cache
+	else
+		einfo "Skipping build-time-only font cache generation. https://crbug.com/205424"
+	fi
 }
