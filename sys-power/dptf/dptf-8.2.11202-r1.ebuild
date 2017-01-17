@@ -19,7 +19,7 @@ CMAKE_USE_DIR="${S}/DPTF/Linux"
 ESIF_BUILD_DIR="ESIF/Products/ESIF_UF/Linux"
 
 DEPEND="sys-apps/dbus
-        sys-libs/ncurses sys-libs/readline"
+	sys-libs/ncurses sys-libs/readline"
 RDEPEND="${DEPEND}"
 
 src_configure() {
