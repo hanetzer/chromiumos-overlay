@@ -60,8 +60,8 @@ PROVIDED_DEPEND="
 # in that package.
 COMMON_DEPEND="
 	chromeos-base/chromeos-init
-	!chromeos-base/chromeos-factoryinstall"
-	!chromeos-base/chromeos-factory
+	!chromeos-base/chromeos-factoryinstall
+	!chromeos-base/chromeos-factory"
 
 DEPEND="$COMMON_DEPEND
 	chromeos-base/factory
