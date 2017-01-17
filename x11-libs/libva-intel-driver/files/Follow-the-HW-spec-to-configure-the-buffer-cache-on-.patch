@@ -1,0 +1,867 @@
+From 0d5d5e24044fd347a418d061358eb6bf4a517965 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Tue, 17 Jan 2017 08:40:18 +0800
+Subject: [PATCH 3/5] Follow the HW spec to configure the buffer cache on Gen9+
+
+The MOCS field is used to define the cache type for the given buffer. From the
+SKL+, the MOCS field is interpreted as the index that is used to find the corresponding
+cache type in kernel driver. The current MOCS setting causes that buffer uses
+the wrong cache type.
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+Reviewed-by: Sean V Kelley <sean.v.kelley@intel.com>
+---
+ src/gen75_vpp_vebox.c  |  3 ++-
+ src/gen8_mfc.c         | 33 +++++++++++++++++++--------------
+ src/gen8_mfd.c         | 50 ++++++++++++++++++++++++++++++--------------------
+ src/gen9_mfc_hevc.c    |  5 +++--
+ src/gen9_mfd.c         |  5 ++++-
+ src/gen9_vdenc.c       |  9 ++++++++-
+ src/gen9_vp9_encoder.c | 46 ++++++++++++++++++++++++----------------------
+ src/i965_gpe_utils.c   | 10 ++++++----
+ src/intel_driver.c     |  7 +++++++
+ src/intel_driver.h     |  1 +
+ 10 files changed, 104 insertions(+), 65 deletions(-)
+
+diff --git a/src/gen75_vpp_vebox.c b/src/gen75_vpp_vebox.c
+index 0c527657..eee8e76a 100644
+--- a/src/gen75_vpp_vebox.c
++++ b/src/gen75_vpp_vebox.c
+@@ -2292,12 +2292,13 @@ void skl_veb_state_table_setup(VADriverContextP ctx, struct intel_vebox_context
+ void
+ skl_veb_state_command(VADriverContextP ctx, struct intel_vebox_context *proc_ctx)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = proc_ctx->batch;
+ 
+     BEGIN_VEB_BATCH(batch, 0x10);
+     OUT_VEB_BATCH(batch, VEB_STATE | (0x10 - 2));
+     OUT_VEB_BATCH(batch,
+-                  0 << 25 |       // state surface control bits
++                  ((i965->intel.mocs_state) << 25) |       // state surface control bits
+                   0 << 23 |       // reserved.
+                   0 << 22 |       // gamut expansion position
+                   0 << 15 |       // reserved.
+diff --git a/src/gen8_mfc.c b/src/gen8_mfc.c
+index 9ea74233..9b50f9a4 100644
+--- a/src/gen8_mfc.c
++++ b/src/gen8_mfc.c
+@@ -232,6 +232,7 @@ static void
+ gen8_mfc_ind_obj_base_addr_state(VADriverContextP ctx,
+                                  struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+     struct gen6_vme_context *vme_context = encoder_context->vme_context;
+@@ -263,7 +264,7 @@ gen8_mfc_ind_obj_base_addr_state(VADriverContextP ctx,
+         /* the DW6-10 is for MFX Indirect MV Object Base Address */
+         OUT_BCS_RELOC(batch, vme_context->vme_output.bo, I915_GEM_DOMAIN_INSTRUCTION, 0, 0);
+         OUT_BCS_BATCH(batch, 0);
+-        OUT_BCS_BATCH(batch, 0);
++        OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+         OUT_BCS_RELOC(batch, vme_context->vme_output.bo, I915_GEM_DOMAIN_INSTRUCTION, 0, vme_size);
+         OUT_BCS_BATCH(batch, 0);
+     } else {
+@@ -296,7 +297,7 @@ gen8_mfc_ind_obj_base_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   bse_offset);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 	
+     OUT_BCS_RELOC(batch,
+                   mfc_context->mfc_indirect_pak_bse_object.bo,
+@@ -642,6 +643,7 @@ static void
+ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                              struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+     int i;
+@@ -659,7 +661,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);											/* pre output addr   */
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     /* the DW4-6 is for the post_deblocking */
+ 
+     if (mfc_context->post_deblocking_output.bo)
+@@ -670,7 +672,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+     
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW7-9 is for the uncompressed_picture */
+     OUT_BCS_RELOC(batch, mfc_context->uncompressed_picture_source.bo,
+@@ -678,7 +680,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                   0); /* uncompressed data */
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW10-12 is for the mb status */
+     OUT_BCS_RELOC(batch, mfc_context->macroblock_status_buffer.bo,
+@@ -686,7 +688,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                   0); /* StreamOut data*/
+     
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW13-15 is for the intra_row_store_scratch */
+     OUT_BCS_RELOC(batch, mfc_context->intra_row_store_scratch_buffer.bo,
+@@ -694,7 +696,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                   0);	
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW16-18 is for the deblocking filter */
+     OUT_BCS_RELOC(batch, mfc_context->deblocking_filter_row_store_scratch_buffer.bo,
+@@ -702,7 +704,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                   0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW 19-50 is for Reference pictures*/
+     for (i = 0; i < ARRAY_ELEMS(mfc_context->reference_surfaces); i++) {
+@@ -717,7 +719,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+ 	OUT_BCS_BATCH(batch, 0);
+     }
+ 
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* The DW 52-54 is for the MB status buffer */
+     OUT_BCS_RELOC(batch, mfc_context->macroblock_status_buffer.bo,
+@@ -725,7 +727,7 @@ gen8_mfc_pipe_buf_addr_state(VADriverContextP ctx,
+                   0);											/* Macroblock status buffer*/
+ 	
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW 55-57 is the ILDB buffer */
+     OUT_BCS_BATCH(batch, 0);
+@@ -744,6 +746,7 @@ static void
+ gen8_mfc_avc_directmode_state(VADriverContextP ctx,
+                               struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+ 
+@@ -767,7 +770,7 @@ gen8_mfc_avc_directmode_state(VADriverContextP ctx,
+         }
+     }
+     
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the DW34-36 is the MV for the current reference */
+     OUT_BCS_RELOC(batch, mfc_context->direct_mv_buffers[NUM_MFC_DMV_BUFFERS - 2].bo,
+@@ -775,7 +778,7 @@ gen8_mfc_avc_directmode_state(VADriverContextP ctx,
+                   0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* POL list */
+     for(i = 0; i < 32; i++) {
+@@ -792,6 +795,7 @@ static void
+ gen8_mfc_bsp_buf_base_addr_state(VADriverContextP ctx,
+                                  struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+ 
+@@ -802,7 +806,7 @@ gen8_mfc_bsp_buf_base_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   0);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 	
+     /* the DW4-6 is for MPR Row Store Scratch Buffer Base Address */
+     OUT_BCS_BATCH(batch, 0);
+@@ -4063,13 +4067,14 @@ gen8_mfc_vp8_pic_state(VADriverContextP ctx,
+     else                                                                \
+         OUT_BCS_BATCH(batch, 0);                                        \
+     OUT_BCS_BATCH(batch, 0);                                            \
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+ static void 
+ gen8_mfc_vp8_bsp_buf_base_addr_state(VADriverContextP ctx, 
+                                      struct encode_state *encode_state,
+                                      struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+ 
+diff --git a/src/gen8_mfd.c b/src/gen8_mfd.c
+index 98526644..61999b30 100644
+--- a/src/gen8_mfd.c
++++ b/src/gen8_mfd.c
+@@ -179,6 +179,7 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+                              int standard_select,
+                              struct gen7_mfd_context *gen7_mfd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
+     int i;
+ 
+@@ -193,7 +194,8 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+ 
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
++
+ 	/* Post-debloing 4-6 */
+     if (gen7_mfd_context->post_deblocking_output.valid)
+         OUT_BCS_RELOC(batch, gen7_mfd_context->post_deblocking_output.bo,
+@@ -203,7 +205,7 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+ 
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+ 	/* uncompressed-video & stream out 7-12 */
+     OUT_BCS_BATCH(batch, 0); /* ignore for decoding */
+@@ -222,7 +224,8 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+ 
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
++
+ 	/* deblocking-filter-row-store 16-18 */
+     if (gen7_mfd_context->deblocking_filter_row_store_scratch_buffer.valid)
+         OUT_BCS_RELOC(batch, gen7_mfd_context->deblocking_filter_row_store_scratch_buffer.bo,
+@@ -231,7 +234,8 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+     else
+         OUT_BCS_BATCH(batch, 0);
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 19..50 */
+     for (i = 0; i < ARRAY_ELEMS(gen7_mfd_context->reference_surface); i++) {
+@@ -253,7 +257,7 @@ gen8_mfd_pipe_buf_addr_state(VADriverContextP ctx,
+     }
+     
+     /* reference property 51 */
+-    OUT_BCS_BATCH(batch, 0);  
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 	
+     /* Macroblock status & ILDB 52-57 */
+     OUT_BCS_BATCH(batch, 0);
+@@ -278,13 +282,14 @@ gen8_mfd_ind_obj_base_addr_state(VADriverContextP ctx,
+                                  struct gen7_mfd_context *gen7_mfd_context)
+ {
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+ 
+     BEGIN_BCS_BATCH(batch, 26);
+     OUT_BCS_BATCH(batch, MFX_IND_OBJ_BASE_ADDR_STATE | (26 - 2));
+ 	/* MFX In BS 1-5 */
+     OUT_BCS_RELOC(batch, slice_data_bo, I915_GEM_DOMAIN_INSTRUCTION, 0, 0); /* MFX Indirect Bitstream Object Base Address */
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 	/* Upper bound 4-5 */	
+     OUT_BCS_BATCH(batch, 0);
+     OUT_BCS_BATCH(batch, 0);
+@@ -327,6 +332,7 @@ gen8_mfd_bsp_buf_base_addr_state(VADriverContextP ctx,
+                                  struct gen7_mfd_context *gen7_mfd_context)
+ {
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+ 
+     BEGIN_BCS_BATCH(batch, 10);
+     OUT_BCS_BATCH(batch, MFX_BSP_BUF_BASE_ADDR_STATE | (10 - 2));
+@@ -339,7 +345,7 @@ gen8_mfd_bsp_buf_base_addr_state(VADriverContextP ctx,
+     		OUT_BCS_BATCH(batch, 0);
+ 		
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 	/* MPR Row Store Scratch buffer 4-6 */
+     if (gen7_mfd_context->mpr_row_store_scratch_buffer.valid)
+         OUT_BCS_RELOC(batch, gen7_mfd_context->mpr_row_store_scratch_buffer.bo,
+@@ -349,7 +355,7 @@ gen8_mfd_bsp_buf_base_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+ 	/* Bitplane 7-9 */ 
+     if (gen7_mfd_context->bitplane_read_buffer.valid)
+@@ -359,7 +365,7 @@ gen8_mfd_bsp_buf_base_addr_state(VADriverContextP ctx,
+     else
+     	OUT_BCS_BATCH(batch, 0);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     ADVANCE_BCS_BATCH(batch);
+ }
+ 
+@@ -510,6 +516,7 @@ gen8_mfd_avc_directmode_state(VADriverContextP ctx,
+                               VASliceParameterBufferH264 *slice_param,
+                               struct gen7_mfd_context *gen7_mfd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
+     struct object_surface *obj_surface;
+     GenAvcSurface *gen7_avc_surface;
+@@ -538,7 +545,7 @@ gen8_mfd_avc_directmode_state(VADriverContextP ctx,
+         }
+     }
+     
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* the current decoding frame/field */
+     va_pic = &pic_param->CurrPic;
+@@ -551,7 +558,7 @@ gen8_mfd_avc_directmode_state(VADriverContextP ctx,
+                   0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* POC List */
+     for (i = 0; i < ARRAY_ELEMS(gen7_mfd_context->reference_surface); i++) {
+@@ -1712,6 +1719,7 @@ gen8_mfd_vc1_directmode_state(VADriverContextP ctx,
+                               struct decode_state *decode_state,
+                               struct gen7_mfd_context *gen7_mfd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
+     struct object_surface *obj_surface;
+     dri_bo *dmv_read_buffer = NULL, *dmv_write_buffer = NULL;
+@@ -1739,7 +1747,7 @@ gen8_mfd_vc1_directmode_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     if (dmv_read_buffer)
+         OUT_BCS_RELOC(batch, dmv_read_buffer,
+@@ -1749,7 +1757,7 @@ gen8_mfd_vc1_directmode_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+     
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+                   
+     ADVANCE_BCS_BATCH(batch);
+ }
+@@ -2308,7 +2316,7 @@ gen8_jpeg_wa_pipe_buf_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   0);
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     
+ 
+     OUT_BCS_BATCH(batch, 0); /* post deblocking */
+@@ -2329,7 +2337,8 @@ gen8_jpeg_wa_pipe_buf_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   0);
+ 	OUT_BCS_BATCH(batch, 0);
+-	OUT_BCS_BATCH(batch, 0);
++
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+ 	/* the DW 16-18 is for deblocking filter */ 
+     OUT_BCS_BATCH(batch, 0);
+@@ -2387,14 +2396,14 @@ gen8_jpeg_wa_bsp_buf_base_addr_state(VADriverContextP ctx,
+                   0);
+ 
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     OUT_BCS_RELOC(batch,
+                   mpr_bo,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   0);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     OUT_BCS_BATCH(batch, 0);
+     OUT_BCS_BATCH(batch, 0);
+@@ -2509,7 +2518,7 @@ gen8_jpeg_wa_ind_obj_base_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, 0,
+                   0);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0); /* ignore for VLD mode */
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     OUT_BCS_BATCH(batch, 0);
+     OUT_BCS_BATCH(batch, 0); /* ignore for VLD mode */
+     OUT_BCS_BATCH(batch, 0);
+@@ -2816,6 +2825,7 @@ gen8_mfd_vp8_pic_state(VADriverContextP ctx,
+                        struct decode_state *decode_state,
+                        struct gen7_mfd_context *gen7_mfd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen7_mfd_context->base.batch;
+     VAPictureParameterBufferVP8 *pic_param = (VAPictureParameterBufferVP8 *)decode_state->pic_param->buffer;
+     VAIQMatrixBufferVP8 *iq_matrix = (VAIQMatrixBufferVP8 *)decode_state->iq_matrix->buffer;
+@@ -2893,7 +2903,7 @@ gen8_mfd_vp8_pic_state(VADriverContextP ctx,
+                       0, I915_GEM_DOMAIN_INSTRUCTION,
+                       0);
+         OUT_BCS_BATCH(batch, 0);
+-        OUT_BCS_BATCH(batch, 0);
++        OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     } else {
+         OUT_BCS_BATCH(batch, 0);
+         OUT_BCS_BATCH(batch, 0);
+@@ -2951,7 +2961,7 @@ gen8_mfd_vp8_pic_state(VADriverContextP ctx,
+                       0, I915_GEM_DOMAIN_INSTRUCTION,
+                       0);
+         OUT_BCS_BATCH(batch, 0);
+-        OUT_BCS_BATCH(batch, 0);
++        OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     }
+     else {
+         OUT_BCS_BATCH(batch, 0);
+diff --git a/src/gen9_mfc_hevc.c b/src/gen9_mfc_hevc.c
+index 8a84c1c2..4234cf72 100644
+--- a/src/gen9_mfc_hevc.c
++++ b/src/gen9_mfc_hevc.c
+@@ -93,7 +93,7 @@ typedef enum _gen6_brc_status {
+         }                                                               \
+         OUT_BCS_BATCH(batch, 0);                                        \
+         if (ma)                                                         \
+-            OUT_BCS_BATCH(batch, 0);                                    \
++            OUT_BCS_BATCH(batch, i965->intel.mocs_state);                                    \
+     } while (0)
+ 
+ #define OUT_BUFFER_MA_TARGET(buf_bo)       OUT_BUFFER_X(buf_bo, 1, 1)
+@@ -318,6 +318,7 @@ static void
+ gen9_hcpe_ind_obj_base_addr_state(VADriverContextP ctx,
+                                   struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen9_hcpe_context *mfc_context = encoder_context->mfc_context;
+ 
+@@ -334,7 +335,7 @@ gen9_hcpe_ind_obj_base_addr_state(VADriverContextP ctx,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   mfc_context->hcp_indirect_pak_bse_object.offset);
+     OUT_BCS_BATCH(batch, 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+     OUT_BCS_RELOC(batch,
+                   mfc_context->hcp_indirect_pak_bse_object.bo,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+diff --git a/src/gen9_mfd.c b/src/gen9_mfd.c
+index 5f425149..6c4435dc 100644
+--- a/src/gen9_mfd.c
++++ b/src/gen9_mfd.c
+@@ -53,7 +53,7 @@
+         }                                                               \
+         OUT_BCS_BATCH(batch, 0);                                        \
+         if (ma)                                                         \
+-            OUT_BCS_BATCH(batch, 0);                                    \
++            OUT_BCS_BATCH(batch, i965->intel.mocs_state);                                    \
+     } while (0)
+ 
+ #define OUT_BUFFER_MA_TARGET(buf_bo)       OUT_BUFFER(buf_bo, 1, 1)
+@@ -269,6 +269,7 @@ gen9_hcpd_pipe_buf_addr_state(VADriverContextP ctx,
+                               struct decode_state *decode_state,
+                               struct gen9_hcpd_context *gen9_hcpd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen9_hcpd_context->base.batch;
+     struct object_surface *obj_surface;
+     GenHevcSurface *gen9_hevc_surface;
+@@ -338,6 +339,7 @@ gen9_hcpd_ind_obj_base_addr_state(VADriverContextP ctx,
+                                   dri_bo *slice_data_bo,
+                                   struct gen9_hcpd_context *gen9_hcpd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen9_hcpd_context->base.batch;
+ 
+     BEGIN_BCS_BATCH(batch, 14);
+@@ -1396,6 +1398,7 @@ gen9_hcpd_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+                               struct decode_state *decode_state,
+                               struct gen9_hcpd_context *gen9_hcpd_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = gen9_hcpd_context->base.batch;
+     struct object_surface *obj_surface;
+     int i=0;
+diff --git a/src/gen9_vdenc.c b/src/gen9_vdenc.c
+index 1913a67f..caaa4333 100644
+--- a/src/gen9_vdenc.c
++++ b/src/gen9_vdenc.c
+@@ -778,7 +778,7 @@ const int vdenc_hme_cost[8][52] = {
+ 
+ #define OUT_BUFFER_3DW(batch, bo, is_target, delta, attr)  do { \
+         OUT_BUFFER_2DW(batch, bo, is_target, delta);            \
+-        OUT_BCS_BATCH(batch, attr);                             \
++        OUT_BCS_BATCH(batch, i965->intel.mocs_state);                             \
+     } while (0)
+ 
+ #define ALLOC_VDENC_BUFFER_RESOURCE(buffer, bfsize, des) do {   \
+@@ -1312,6 +1312,7 @@ gen9_vdenc_huc_dmem_state(VADriverContextP ctx,
+                           struct intel_encoder_context *encoder_context,
+                           struct huc_dmem_state_parameter *params)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+ 
+     BEGIN_BCS_BATCH(batch, 6);
+@@ -1345,6 +1346,7 @@ gen9_vdenc_huc_virtual_addr_state(VADriverContextP ctx,
+                                   struct intel_encoder_context *encoder_context,
+                                   struct huc_virtual_addr_parameter *params)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     int i;
+ 
+@@ -1369,6 +1371,7 @@ gen9_vdenc_huc_ind_obj_base_addr_state(VADriverContextP ctx,
+                                        struct intel_encoder_context *encoder_context,
+                                        struct huc_ind_obj_base_addr_parameter *params)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+ 
+     BEGIN_BCS_BATCH(batch, 11);
+@@ -2344,6 +2347,7 @@ gen9_vdenc_mfx_surface_state(VADriverContextP ctx,
+ static void
+ gen9_vdenc_mfx_pipe_buf_addr_state(VADriverContextP ctx, struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct gen9_vdenc_context *vdenc_context = encoder_context->mfc_context;
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     int i;
+@@ -2399,6 +2403,7 @@ gen9_vdenc_mfx_pipe_buf_addr_state(VADriverContextP ctx, struct intel_encoder_co
+ static void
+ gen9_vdenc_mfx_ind_obj_base_addr_state(VADriverContextP ctx, struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct gen9_vdenc_context *vdenc_context = encoder_context->mfc_context;
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+ 
+@@ -2440,6 +2445,7 @@ gen9_vdenc_mfx_ind_obj_base_addr_state(VADriverContextP ctx, struct intel_encode
+ static void
+ gen9_vdenc_mfx_bsp_buf_base_addr_state(VADriverContextP ctx, struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct gen9_vdenc_context *vdenc_context = encoder_context->mfc_context;
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+ 
+@@ -2636,6 +2642,7 @@ gen9_vdenc_vdenc_pipe_buf_addr_state(VADriverContextP ctx,
+                                      struct encode_state *encode_state,
+                                      struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct gen9_vdenc_context *vdenc_context = encoder_context->mfc_context;
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+ 
+diff --git a/src/gen9_vp9_encoder.c b/src/gen9_vp9_encoder.c
+index 05d86dae..0de2cd78 100644
+--- a/src/gen9_vp9_encoder.c
++++ b/src/gen9_vp9_encoder.c
+@@ -4944,6 +4944,7 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+                                  struct encode_state *encode_state,
+                                  struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen9_encoder_context_vp9 *pak_context = encoder_context->mfc_context;
+     struct gen9_vp9_state *vp9_state;
+@@ -4968,49 +4969,49 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+                 obj_surface->bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 4..6 deblocking line */
+     OUT_RELOC64(batch,
+                 pak_context->res_deblocking_filter_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 7..9 deblocking tile line */
+     OUT_RELOC64(batch,
+                 pak_context->res_deblocking_filter_tile_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 10..12 deblocking tile col */
+     OUT_RELOC64(batch,
+                 pak_context->res_deblocking_filter_tile_col_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 13..15 metadata line */
+     OUT_RELOC64(batch,
+                 pak_context->res_metadata_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 16..18 metadata tile line */
+     OUT_RELOC64(batch,
+                 pak_context->res_metadata_tile_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 19..21 metadata tile col */
+     OUT_RELOC64(batch,
+                 pak_context->res_metadata_tile_col_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 22..30 SAO is not used for VP9 */
+     OUT_BCS_BATCH(batch, 0);
+@@ -5028,7 +5029,7 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+                 pak_context->res_mv_temporal_buffer[vp9_state->curr_mv_temporal_index].bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 34..36 Not used */
+     OUT_BCS_BATCH(batch, 0);
+@@ -5058,14 +5059,14 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+     }
+ 
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 54..56 for source input */
+     OUT_RELOC64(batch,
+                 pak_context->uncompressed_picture_source.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, 0,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 57..59 StreamOut is not used */
+     OUT_BCS_BATCH(batch, 0);
+@@ -5098,7 +5099,7 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+         OUT_BCS_BATCH(batch, 0);
+     }
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 83..85 VP9 prob buffer */
+     OUT_RELOC64(batch,
+@@ -5106,7 +5107,7 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+ 
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 86..88 Segment id buffer */
+     if (pak_context->res_segmentid_buffer.bo) {
+@@ -5118,21 +5119,21 @@ gen9_pak_vp9_pipe_buf_addr_state(VADriverContextP ctx,
+         OUT_BCS_BATCH(batch, 0);
+         OUT_BCS_BATCH(batch, 0);
+     }
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 89..91 HVD line rowstore buffer */
+     OUT_RELOC64(batch,
+                 pak_context->res_hvd_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 92..94 HVD tile line rowstore buffer */
+     OUT_RELOC64(batch,
+                 pak_context->res_hvd_tile_line_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 95..97 SAO streamout. Not used for VP9 */
+     OUT_BCS_BATCH(batch, 0);
+@@ -5157,6 +5158,7 @@ gen9_pak_vp9_ind_obj_base_addr_state(VADriverContextP ctx,
+                                      struct encode_state *encode_state,
+                                      struct intel_encoder_context *encoder_context)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch = encoder_context->base.batch;
+     struct gen9_encoder_context_vp9 *pak_context = encoder_context->mfc_context;
+     struct gen9_vp9_state *vp9_state;
+@@ -5182,14 +5184,14 @@ gen9_pak_vp9_ind_obj_base_addr_state(VADriverContextP ctx,
+                 I915_GEM_DOMAIN_INSTRUCTION, 0,   /* No write domain */
+                 vp9_state->mb_data_offset);
+     /* default attribute */
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 9..11, PAK-BSE */
+     OUT_RELOC64(batch,
+                   pak_context->indirect_pak_bse_object.bo,
+                   I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                   pak_context->indirect_pak_bse_object.offset);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 12..13 upper bound */
+     OUT_RELOC64(batch,
+@@ -5202,35 +5204,35 @@ gen9_pak_vp9_ind_obj_base_addr_state(VADriverContextP ctx,
+                 pak_context->res_compressed_input_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, 0,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 17..19 prob counter streamout */
+     OUT_RELOC64(batch,
+                 pak_context->res_prob_counter_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 20..22 prob delta streamin */
+     OUT_RELOC64(batch,
+                 pak_context->res_prob_delta_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 23..25 Tile record streamout */
+     OUT_RELOC64(batch,
+                 pak_context->res_tile_record_streamout_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     /* DW 26..28 CU record streamout */
+     OUT_RELOC64(batch,
+                 pak_context->res_cu_stat_streamout_buffer.bo,
+                 I915_GEM_DOMAIN_INSTRUCTION, I915_GEM_DOMAIN_INSTRUCTION,
+                 0);
+-    OUT_BCS_BATCH(batch, 0);
++    OUT_BCS_BATCH(batch, i965->intel.mocs_state);
+ 
+     ADVANCE_BCS_BATCH(batch);
+ }
+diff --git a/src/i965_gpe_utils.c b/src/i965_gpe_utils.c
+index 548cbf4f..31976a2a 100644
+--- a/src/i965_gpe_utils.c
++++ b/src/i965_gpe_utils.c
+@@ -1264,6 +1264,7 @@ gen9_gpe_state_base_address(VADriverContextP ctx,
+                             struct i965_gpe_context *gpe_context,
+                             struct intel_batchbuffer *batch)
+ {
++    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     BEGIN_BATCH(batch, 19);
+ 
+     OUT_BATCH(batch, CMD_STATE_BASE_ADDRESS | (19 - 2));
+@@ -1273,13 +1274,14 @@ gen9_gpe_state_base_address(VADriverContextP ctx,
+     OUT_BATCH(batch, 0);
+ 
+ 	/*DW4 Surface state base address */
+-    OUT_RELOC64(batch, gpe_context->surface_state_binding_table.bo, I915_GEM_DOMAIN_INSTRUCTION, 0, BASE_ADDRESS_MODIFY); /* Surface state base address */
++    OUT_RELOC64(batch, gpe_context->surface_state_binding_table.bo, I915_GEM_DOMAIN_INSTRUCTION, 0, BASE_ADDRESS_MODIFY | (i965->intel.mocs_state << 4)); /* Surface state base address */
+ 
+ 	/*DW6. Dynamic state base address */
+     if (gpe_context->dynamic_state.bo)
+         OUT_RELOC64(batch, gpe_context->dynamic_state.bo,
+                   I915_GEM_DOMAIN_RENDER | I915_GEM_DOMAIN_SAMPLER,
+-                  I915_GEM_DOMAIN_RENDER, BASE_ADDRESS_MODIFY);
++                  I915_GEM_DOMAIN_RENDER,
++                  BASE_ADDRESS_MODIFY | (i965->intel.mocs_state << 4));
+     else {
+         OUT_BATCH(batch, 0 | BASE_ADDRESS_MODIFY);
+         OUT_BATCH(batch, 0);
+@@ -1290,7 +1292,7 @@ gen9_gpe_state_base_address(VADriverContextP ctx,
+     if (gpe_context->indirect_state.bo)
+         OUT_RELOC64(batch, gpe_context->indirect_state.bo,
+                   I915_GEM_DOMAIN_SAMPLER,
+-                  0, BASE_ADDRESS_MODIFY);
++                  0, BASE_ADDRESS_MODIFY | (i965->intel.mocs_state << 4));
+     else {
+         OUT_BATCH(batch, 0 | BASE_ADDRESS_MODIFY);
+         OUT_BATCH(batch, 0);
+@@ -1301,7 +1303,7 @@ gen9_gpe_state_base_address(VADriverContextP ctx,
+     if (gpe_context->instruction_state.bo)
+         OUT_RELOC64(batch, gpe_context->instruction_state.bo,
+                   I915_GEM_DOMAIN_INSTRUCTION,
+-                  0, BASE_ADDRESS_MODIFY);
++                  0, BASE_ADDRESS_MODIFY | (i965->intel.mocs_state << 4));
+     else {
+         OUT_BATCH(batch, 0 | BASE_ADDRESS_MODIFY);
+         OUT_BATCH(batch, 0);
+diff --git a/src/intel_driver.c b/src/intel_driver.c
+index 67d7de13..bcc635bf 100644
+--- a/src/intel_driver.c
++++ b/src/intel_driver.c
+@@ -153,6 +153,13 @@ intel_driver_init(VADriverContextP ctx)
+         intel->eu_total = ret_value;
+     }
+ 
++    intel->mocs_state = 0;
++
++#define GEN9_PTE_CACHE    2
++
++    if (IS_GEN9(intel->device_info))
++        intel->mocs_state = GEN9_PTE_CACHE;
++
+     intel_driver_get_revid(intel, &intel->revision);
+     return true;
+ }
+diff --git a/src/intel_driver.h b/src/intel_driver.h
+index 036e1502..ad3c04b0 100644
+--- a/src/intel_driver.h
++++ b/src/intel_driver.h
+@@ -192,6 +192,7 @@ struct intel_driver_data
+     int eu_total;
+ 
+     const struct intel_device_info *device_info;
++    unsigned int mocs_state;
+ };
+ 
+ bool intel_driver_init(VADriverContextP ctx);
+-- 
+2.11.0
+

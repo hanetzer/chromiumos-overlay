@@ -55,6 +55,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/Make-sure-a-right-VEBOX_IECP_STATE-is-used-on-BDW.patch
 	epatch "${FILESDIR}"/Update-PCI-IDs-for-Kabylake.patch
 	epatch "${FILESDIR}"/i965_encoder_shift32.patch
+	epatch "${FILESDIR}"/Follow-the-HW-spec-to-configure-the-buffer-cache-on-.patch
+	epatch "${FILESDIR}"/Fix-the-incorrect-configuration-of-media_pipeline-po.patch
+	epatch "${FILESDIR}"/H264-Encoding-Free-aux_batchbuffer-to-configure-acce.patch
 	eautoreconf
 }
 

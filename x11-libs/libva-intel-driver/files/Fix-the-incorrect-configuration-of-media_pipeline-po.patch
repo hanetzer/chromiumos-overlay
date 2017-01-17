@@ -1,0 +1,35 @@
+From 7a7238d94bee93cfa75201eb50b9b6278e04f377 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Thu, 12 Jan 2017 17:28:13 +0800
+Subject: [PATCH 4/4] Fix the incorrect configuration of media_pipeline power
+ domain
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+Reviewed-by: Sean V Kelley <seanvk@posteo.de>
+---
+ src/gen8_mfc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/gen8_mfc.c b/src/gen8_mfc.c
+index a9cc890..26dec31 100644
+--- a/src/gen8_mfc.c
++++ b/src/gen8_mfc.c
+@@ -1561,11 +1561,12 @@ gen8_mfc_avc_batchbuffer_pipeline(VADriverContextP ctx,
+         mfc_context->aux_batchbuffer = NULL;
+     }
+ 
++    if (IS_GEN9(i965->intel.device_info))
++        gen9_gpe_pipeline_end(ctx, &mfc_context->gpe_context, batch);
++
+     intel_batchbuffer_end_atomic(batch);
+     intel_batchbuffer_flush(batch);
+ 
+-    if (IS_GEN9(i965->intel.device_info))
+-        gen9_gpe_pipeline_end(ctx, &mfc_context->gpe_context, batch);
+ }
+ 
+ static void
+-- 
+1.9.1
+
+

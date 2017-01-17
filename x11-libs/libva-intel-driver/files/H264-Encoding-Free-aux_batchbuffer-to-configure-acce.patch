@@ -1,0 +1,53 @@
+From 2d3c621a7fe942b385d69c478cd887d406658661 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Thu, 12 Jan 2017 00:25:25 +0800
+Subject: [PATCH 3/3] H264 Encoding:Free aux_batchbuffer to configure access
+ domain correctly for PAK_OBJ command buffer
+
+The access domain is not configured correctly for PAK_OBJ command buffer.
+And it causes that the buffer content is not synchronized correctly.
+
+At the same time the 64-byte is aligned for the boundary between
+CPU and GPU access instead of 16-byte.
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+Reviewed-by: Sean V Kelley <seanvk@posteo.de>
+---
+ src/gen8_mfc.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/gen8_mfc.c b/src/gen8_mfc.c
+index 37e163b..a9cc890 100644
+--- a/src/gen8_mfc.c
++++ b/src/gen8_mfc.c
+@@ -1481,7 +1481,7 @@ gen8_mfc_avc_batchbuffer_slice(VADriverContextP ctx,
+ 
+     intel_avc_slice_insert_packed_data(ctx, encode_state, encoder_context, slice_index, slice_batch);
+ 
+-    intel_batchbuffer_align(slice_batch, 16); /* aligned by an Oword */
++    intel_batchbuffer_align(slice_batch, 64); /* aligned by an Cache-line */
+     head_offset = intel_batchbuffer_used_size(slice_batch);
+ 
+     slice_batch->ptr += pSliceParameter->num_macroblocks * AVC_PAK_LEN_IN_BYTE;
+@@ -1495,7 +1495,7 @@ gen8_mfc_avc_batchbuffer_slice(VADriverContextP ctx,
+ 
+ 
+     /* Aligned for tail */
+-    intel_batchbuffer_align(slice_batch, 16); /* aligned by an Oword */
++    intel_batchbuffer_align(slice_batch, 64); /* aligned by Cache-line */
+     if (last_slice) {    
+         mfc_context->insert_object(ctx,
+                                    encoder_context,
+@@ -1556,6 +1556,9 @@ gen8_mfc_avc_batchbuffer_pipeline(VADriverContextP ctx,
+         OUT_BATCH(batch, CMD_MEDIA_STATE_FLUSH);
+         OUT_BATCH(batch, 0);
+         ADVANCE_BATCH(batch);
++
++        intel_batchbuffer_free(slice_batch);
++        mfc_context->aux_batchbuffer = NULL;
+     }
+ 
+     intel_batchbuffer_end_atomic(batch);
+-- 
+1.9.1
+
