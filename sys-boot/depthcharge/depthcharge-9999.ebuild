@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="fastboot fwconsole mocktpm pd_sync"
+IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -58,6 +58,9 @@ src_compile() {
 		echo "CONFIG_CLI=y" >> "board/${board}/defconfig"
 		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
 		  "board/${board}/defconfig"
+	fi
+	if use detachable_ui ; then
+		echo "CONFIG_DETACHABLE_UI=y" >> "board/${board}/defconfig"
 	fi
 
 	[[ ${PV} == "9999" ]] && emake distclean
