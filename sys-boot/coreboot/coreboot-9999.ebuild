@@ -36,7 +36,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework"
+IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework quiet verbose"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco fox gizmo glados
@@ -181,8 +181,13 @@ make_coreboot() {
 
 	rm -rf "${builddir}" .xcompile
 
-	yes "" | emake oldconfig obj="${builddir}" objutil=objutil
-	emake obj="${builddir}" objutil=objutil
+	local CB_OPTS=( "objutil=objutil" )
+	use quiet && CB_OPTS+=( "V=0" )
+	use verbose && CB_OPTS+=( "V=1" )
+	use quiet && REDIR="/dev/null" || REDIR="/dev/stdout"
+
+	yes "" | emake oldconfig "${CB_OPTS[@]}" obj="${builddir}" >${REDIR}
+	emake "${CB_OPTS[@]}" obj="${builddir}"
 
 	# Modify firmware descriptor if building for the EM100 emulator.
 	if use em100-mode; then
@@ -233,7 +238,7 @@ src_compile() {
 	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
 	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
 
-	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
+	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
 	make_coreboot "build"
 
