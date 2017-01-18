@@ -55,6 +55,7 @@ EC_BOARD_NAMES=(
 	plankton
 	poppy
 	reef
+	rowan
 	ryu
 	ryu_p4p5
 	ryu_sh
