@@ -91,6 +91,8 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-allow_pkg_config_override.patch"
 	"${FILESDIR}/${PN}-4.5.3-lib_interfaces_missing_rpath.patch"
 	"${FILESDIR}/${PN}-4.5.3-lib_server_role_missing_rpath.patch"
+	"${FILESDIR}/${PN}-4.5.3-add_kerberos_enc_types.patch"
+	"${FILESDIR}/${PN}-4.5.3-use_kerberos_enc_types.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"

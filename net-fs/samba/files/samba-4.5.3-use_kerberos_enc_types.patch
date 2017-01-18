@@ -1,0 +1,165 @@
+Uses a new field to smb.conf to support restricting which encryption
+types can be used for Kerberos.
+
+This is 2/2 patches[1] backported from latest (4.6) version of Samba.
+
+[1] - https://git.samba.org/?p=samba.git;a=commit;h=3fff2667ec3f12fe1263735095c1a39182b0d351
+
+BUG=chromium:662390
+
+Original patch below...
+
+From 3fff2667ec3f12fe1263735095c1a39182b0d351 Mon Sep 17 00:00:00 2001
+From: Uri Simchoni <uri@samba.org>
+Date: Mon, 30 May 2016 21:21:41 +0300
+Subject: [PATCH] libads: use "kerberos encryption types" parameter
+
+When creating the custom krb.conf file, list etypes
+according to kerberos encryption types
+
+Also use proper directives for heimdal (heimdal recognizes
+the MIT etype directives, but does not act upon them)
+
+Signed-off-by: Uri Simchoni <uri@samba.org>
+Reviewed-by: Jeremy Allison <jra@samba.org>
+---
+ source3/libads/kerberos.c | 106 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 80 insertions(+), 26 deletions(-)
+
+diff --git a/source3/libads/kerberos.c b/source3/libads/kerberos.c
+index 53407fa..a47ab6c 100644
+--- a/source3/libads/kerberos.c
++++ b/source3/libads/kerberos.c
+@@ -813,6 +813,76 @@ out:
+  run as root or will fail (which is a good thing :-).
+ ************************************************************************/
+ 
++#if !defined(SAMBA4_USES_HEIMDAL) /* MIT version */
++static char *get_enctypes(TALLOC_CTX *mem_ctx)
++{
++	char *aes_enctypes = NULL;
++	const char *legacy_enctypes = "";
++	char *enctypes = NULL;
++
++	aes_enctypes = talloc_strdup(mem_ctx, "");
++	if (aes_enctypes == NULL) {
++		goto done;
++	}
++
++	if (lp_kerberos_encryption_types() == KERBEROS_ETYPES_ALL ||
++	    lp_kerberos_encryption_types() == KERBEROS_ETYPES_STRONG) {
++#ifdef HAVE_ENCTYPE_AES256_CTS_HMAC_SHA1_96
++		aes_enctypes = talloc_asprintf_append(
++		    aes_enctypes, "%s", "aes256-cts-hmac-sha1-96 ");
++		if (aes_enctypes == NULL) {
++			goto done;
++		}
++#endif
++#ifdef HAVE_ENCTYPE_AES128_CTS_HMAC_SHA1_96
++		aes_enctypes = talloc_asprintf_append(
++		    aes_enctypes, "%s", "aes128-cts-hmac-sha1-96");
++		if (aes_enctypes == NULL) {
++			goto done;
++		}
++#endif
++	}
++
++	if (lp_kerberos_encryption_types() == KERBEROS_ETYPES_ALL ||
++	    lp_kerberos_encryption_types() == KERBEROS_ETYPES_LEGACY) {
++		legacy_enctypes = "RC4-HMAC DES-CBC-CRC DES-CBC-MD5";
++	}
++
++	enctypes =
++	    talloc_asprintf(mem_ctx, "\tdefault_tgs_enctypes = %s %s\n"
++				     "\tdefault_tkt_enctypes = %s %s\n"
++				     "\tpreferred_enctypes = %s %s\n",
++			    aes_enctypes, legacy_enctypes, aes_enctypes,
++			    legacy_enctypes, aes_enctypes, legacy_enctypes);
++done:
++	TALLOC_FREE(aes_enctypes);
++	return enctypes;
++}
++#else /* Heimdal version */
++static char *get_enctypes(TALLOC_CTX *mem_ctx)
++{
++	const char *aes_enctypes = "";
++	const char *legacy_enctypes = "";
++	char *enctypes = NULL;
++
++	if (lp_kerberos_encryption_types() == KERBEROS_ETYPES_ALL ||
++	    lp_kerberos_encryption_types() == KERBEROS_ETYPES_STRONG) {
++		aes_enctypes =
++		    "aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96";
++	}
++
++	if (lp_kerberos_encryption_types() == KERBEROS_ETYPES_ALL ||
++	    lp_kerberos_encryption_types() == KERBEROS_ETYPES_LEGACY) {
++		legacy_enctypes = "arcfour-hmac-md5 des-cbc-crc des-cbc-md5";
++	}
++
++	enctypes = talloc_asprintf(mem_ctx, "\tdefault_etypes = %s %s\n",
++				   aes_enctypes, legacy_enctypes);
++
++	return enctypes;
++}
++#endif
++
+ bool create_local_private_krb5_conf_for_domain(const char *realm,
+ 						const char *domain,
+ 						const char *sitename,
+@@ -828,7 +898,7 @@ bool create_local_private_krb5_conf_for_domain(const char *realm,
+ 	int fd;
+ 	char *realm_upper = NULL;
+ 	bool result = false;
+-	char *aes_enctypes = NULL;
++	char *enctypes = NULL;
+ 	mode_t mask;
+ 
+ 	if (!lp_create_krb5_conf()) {
+@@ -879,34 +949,18 @@ bool create_local_private_krb5_conf_for_domain(const char *realm,
+ 		goto done;
+ 	}
+ 
+-	aes_enctypes = talloc_strdup(fname, "");
+-	if (aes_enctypes == NULL) {
++	enctypes = get_enctypes(fname);
++	if (enctypes == NULL) {
+ 		goto done;
+ 	}
+ 
+-#ifdef HAVE_ENCTYPE_AES256_CTS_HMAC_SHA1_96
+-	aes_enctypes = talloc_asprintf_append(aes_enctypes, "%s", "aes256-cts-hmac-sha1-96 ");
+-	if (aes_enctypes == NULL) {
+-		goto done;
+-	}
+-#endif
+-#ifdef HAVE_ENCTYPE_AES128_CTS_HMAC_SHA1_96
+-	aes_enctypes = talloc_asprintf_append(aes_enctypes, "%s", "aes128-cts-hmac-sha1-96");
+-	if (aes_enctypes == NULL) {
+-		goto done;
+-	}
+-#endif
+-
+-	file_contents = talloc_asprintf(fname,
+-					"[libdefaults]\n\tdefault_realm = %s\n"
+-					"\tdefault_tgs_enctypes = %s RC4-HMAC DES-CBC-CRC DES-CBC-MD5\n"
+-					"\tdefault_tkt_enctypes = %s RC4-HMAC DES-CBC-CRC DES-CBC-MD5\n"
+-					"\tpreferred_enctypes = %s RC4-HMAC DES-CBC-CRC DES-CBC-MD5\n"
+-					"\tdns_lookup_realm = false\n\n"
+-					"[realms]\n\t%s = {\n"
+-					"%s\t}\n",
+-					realm_upper, aes_enctypes, aes_enctypes, aes_enctypes,
+-					realm_upper, kdc_ip_string);
++	file_contents =
++	    talloc_asprintf(fname, "[libdefaults]\n\tdefault_realm = %s\n"
++				   "%s"
++				   "\tdns_lookup_realm = false\n\n"
++				   "[realms]\n\t%s = {\n"
++				   "%s\t}\n",
++			    realm_upper, enctypes, realm_upper, kdc_ip_string);
+ 
+ 	if (!file_contents) {
+ 		goto done;
+-- 
+1.9.1
+
