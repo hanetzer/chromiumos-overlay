@@ -18,9 +18,10 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd test"
+IUSE="-als buffet cellular +cras +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd test"
 
 RDEPEND="
+	cellular? ( chromeos-base/ec-utils )
 	chromeos-base/metrics
 	dev-libs/libnl
 	dev-libs/protobuf
