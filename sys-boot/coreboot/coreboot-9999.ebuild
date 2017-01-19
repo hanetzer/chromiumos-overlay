@@ -89,26 +89,14 @@ get_board() {
 	echo "${board}"
 }
 
-src_prepare() {
-	local froot="${SYSROOT}/firmware"
-	local privdir="${SYSROOT}/firmware/coreboot-private"
+# Create the coreboot configuration files for a particular board. This
+# creates a standard config and a serial config.
+# Args:
+#    $1: Name of board to create a configure file for (e.g. "reef")
+create_config() {
+	local board="$1"
 	local config=".config"
 	local config_serial=".config-serial"
-	local file
-
-	if [[ -d "${privdir}" ]]; then
-		while read -d $'\0' -r file; do
-			rsync --recursive --links --executability "${file}" ./ || die
-		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
-	fi
-
-	for blob in mrc.bin mrc.elf efi.elf; do
-		if [[ -r "${SYSROOT}/firmware/${blob}" ]]; then
-			cp "${SYSROOT}/firmware/${blob}" 3rdparty/blobs/
-		fi
-	done
-
-	local board=$(get_board)
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
@@ -173,6 +161,27 @@ EOF
 	fi
 	cat "${file}" >> "${config_serial}" || die
 	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${config_serial}"
+}
+
+src_prepare() {
+	local froot="${SYSROOT}/firmware"
+	local privdir="${SYSROOT}/firmware/coreboot-private"
+	local file
+
+	if [[ -d "${privdir}" ]]; then
+		while read -d $'\0' -r file; do
+			rsync --recursive --links --executability \
+				"${file}" ./ || die
+		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
+	fi
+
+	for blob in mrc.bin mrc.elf efi.elf; do
+		if [[ -r "${SYSROOT}/firmware/${blob}" ]]; then
+			cp "${SYSROOT}/firmware/${blob}" 3rdparty/blobs/
+		fi
+	done
+
+	create_config "$(get_board)"
 }
 
 add_ec() {
