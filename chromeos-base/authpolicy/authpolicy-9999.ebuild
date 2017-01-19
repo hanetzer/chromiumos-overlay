@@ -26,7 +26,7 @@ RDEPEND="
 	>=chromeos-base/chromeos-minijail-0.0.1-r1445
 	dev-libs/protobuf
 	dev-libs/dbus-glib
-	samba? ( net-fs/samba )
+	samba? ( >=net-fs/samba-4.5.3-r4 )
 	sys-apps/dbus
 	sys-libs/libcap
 "
