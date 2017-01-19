@@ -89,78 +89,83 @@ get_board() {
 	echo "${board}"
 }
 
+set_build_env() {
+	BOARD="$1"
+
+	CONFIG=".config"
+	CONFIG_SERIAL=".config_serial"
+}
+
 # Create the coreboot configuration files for a particular board. This
 # creates a standard config and a serial config.
 # Args:
 #    $1: Name of board to create a configure file for (e.g. "reef")
 create_config() {
-	local board="$1"
-	local config=".config"
-	local config_serial=".config_serial"
+	set_build_env "$1"
 
-	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
+	if [[ -s "${FILESDIR}/configs/config.${BOARD}" ]]; then
 
-		cp -v "${FILESDIR}/configs/config.${board}" "${config}"
+		cp -v "${FILESDIR}/configs/config.${BOARD}" "${CONFIG}"
 
 		# Override mainboard vendor if needed.
 		if [[ -n "${SYSTEM_OEM}" ]]; then
-			echo "CONFIG_MAINBOARD_VENDOR=\"${SYSTEM_OEM}\"" >> "${config}"
+			echo "CONFIG_MAINBOARD_VENDOR=\"${SYSTEM_OEM}\"" >> "${CONFIG}"
 		fi
 
 		# In case config comes from a symlink we are likely building
 		# for an overlay not matching this config name. Enable adding
 		# a CBFS based board ID for coreboot.
-		if [[ -L "${FILESDIR}/configs/config.${board}" ]]; then
-			echo "CONFIG_BOARD_ID_MANUAL=y" >> "${config}"
-			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> "${config}"
+		if [[ -L "${FILESDIR}/configs/config.${BOARD}" ]]; then
+			echo "CONFIG_BOARD_ID_MANUAL=y" >> "${CONFIG}"
+			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> "${CONFIG}"
 		fi
 	fi
 
 	if use rmt; then
-		echo "CONFIG_MRC_RMT=y" >> "${config}"
+		echo "CONFIG_MRC_RMT=y" >> "${CONFIG}"
 	fi
 	if use vmx; then
 		elog "   - enabling VMX"
-		echo "CONFIG_ENABLE_VMX=y" >> "${config}"
+		echo "CONFIG_ENABLE_VMX=y" >> "${CONFIG}"
 	fi
 	if use quiet-cb; then
 		# Suppress console spew if requested.
-		cat >> "${config}" <<EOF
+		cat >> "${CONFIG}" <<EOF
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
 # CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
 	if use mocktpm; then
-		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> "${config}"
+		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> "${CONFIG}"
 	fi
 	if use mma; then
-		echo "CONFIG_MMA=y" >> "${config}"
+		echo "CONFIG_MMA=y" >> "${CONFIG}"
 	fi
 
 	# disable coreboot's own EC firmware building mechanism
-	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> "${config}"
-	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> "${config}"
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> "${CONFIG}"
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> "${CONFIG}"
 	# enable common GBB flags for development
-	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> "${config}"
-	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> "${config}"
-	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> "${config}"
-	echo "CONFIG_GBB_FLAG_FORCE_DEV_SWITCH_ON=y" >> "${config}"
+	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> "${CONFIG}"
+	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> "${CONFIG}"
+	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> "${CONFIG}"
+	echo "CONFIG_GBB_FLAG_FORCE_DEV_SWITCH_ON=y" >> "${CONFIG}"
 	if use fastboot; then
-		echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> "${config}"
+		echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> "${CONFIG}"
 	fi
 	local version=$(${CHROOT_SOURCE_ROOT}/src/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh |grep "^[[:space:]]*CHROMEOS_VERSION_STRING=" |cut -d= -f2)
-	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> "${config}"
+	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> "${CONFIG}"
 
-	cp "${config}" "${config_serial}"
-	# handle the case when "${config}" does not have a newline in the end.
-	echo >> "${config_serial}"
-	file="${FILESDIR}/configs/fwserial.${board}"
+	cp "${CONFIG}" "${CONFIG_SERIAL}"
+	# handle the case when "${CONFIG}" does not have a newline in the end.
+	echo >> "${CONFIG_SERIAL}"
+	file="${FILESDIR}/configs/fwserial.${BOARD}"
 	if [ ! -f "${file}" ]; then
 		file="${FILESDIR}/configs/fwserial.default"
 	fi
-	cat "${file}" >> "${config_serial}" || die
-	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${config_serial}"
+	cat "${file}" >> "${CONFIG_SERIAL}" || die
+	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${CONFIG_SERIAL}"
 }
 
 src_prepare() {
@@ -260,28 +265,29 @@ src_compile() {
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
+	set_build_env "$(get_board)"
 	make_coreboot "build"
 
 	# Build a second ROM with serial support for developers
-	mv .config_serial .config
+	mv "${CONFIG_SERIAL}" "${CONFIG}"
 	make_coreboot "build_serial"
 }
 
 src_install() {
 	local mapfile
-	local board=$(get_board)
 
+	set_build_env "$(get_board)"
 	insinto /firmware
 
 	newins "build/coreboot.rom" coreboot.rom
 	newins "build_serial/coreboot.rom" coreboot.rom.serial
 
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
-		${FILESDIR}/configs/config.${board} )
+		${FILESDIR}/configs/config.${BOARD} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
-		${FILESDIR}/configs/config.${board} ).rom
+		${FILESDIR}/configs/config.${BOARD} ).rom
 	FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
-		${FILESDIR}/configs/config.${board} )
+		${FILESDIR}/configs/config.${BOARD} )
 	if [[ -n "${FSP}" ]]; then
 		newins ${FSP} fsp.bin
 	fi
@@ -294,7 +300,7 @@ src_install() {
 			doins $mapfile
 		done
 	fi
-	newins .config coreboot.config
+	newins "${CONFIG}" coreboot.config
 
 	# Keep binaries with debug symbols around for crash dump analysis
 	if [[ -s build/bl31.elf ]]; then
