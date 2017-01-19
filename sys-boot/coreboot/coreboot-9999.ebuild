@@ -101,10 +101,6 @@ src_prepare() {
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
-		# In case someone tried a local make, ensure there are no
-		# leftovers.
-		[[ ${PV} == "9999" ]] && emake clean
-
 		cp -v "${FILESDIR}/configs/config.${board}" .config
 
 		# Override mainboard vendor if needed.
@@ -182,8 +178,10 @@ make_coreboot() {
 	local builddir="$1"
 	local froot="${SYSROOT}/firmware"
 
-	yes "" | emake oldconfig obj="${builddir}"
-	emake obj="${builddir}"
+	rm -rf "${builddir}" .xcompile
+
+	yes "" | emake oldconfig obj="${builddir}" objutil=objutil
+	emake obj="${builddir}" objutil=objutil
 
 	# Modify firmware descriptor if building for the EM100 emulator.
 	if use em100-mode; then

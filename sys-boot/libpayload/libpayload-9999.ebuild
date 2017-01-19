@@ -60,17 +60,19 @@ src_compile() {
 	pushd "${src_root}"
 
 	# nuke build artifacts potentially present in the source directory
-	emake distclean
+	rm -rf build build_gdb .xcompile
 
 	# Configure and build
 	cp "${board_config}" .config
-	yes "" | emake obj="build" oldconfig
-	emake obj="build"
+	yes "" | \
+	emake obj="build" objutil="objutil" oldconfig
+	emake obj="build" objutil="objutil"
 
 	# Build a second set of libraries with GDB support for developers
 	( cat .config; echo "CONFIG_LP_REMOTEGDB=y" ) > .config.gdb
-	yes "" | emake obj="build_gdb" DOTCONFIG=.config.gdb oldconfig
-	emake obj="build_gdb" DOTCONFIG=.config.gdb
+	yes "" | \
+	emake obj="build_gdb" objutil="objutil" DOTCONFIG=.config.gdb oldconfig
+	emake obj="build_gdb" objutil="objutil" DOTCONFIG=.config.gdb
 
 	popd
 }
