@@ -6,11 +6,12 @@ CROS_WORKON_USE_VCSID="1"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_BOARDS=(kip)
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="power_manager"
 
-inherit cros-workon platform systemd udev user
+inherit cros-board cros-workon platform systemd udev user
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
@@ -21,7 +22,9 @@ KEYWORDS="~*"
 IUSE="-als buffet cellular +cras +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd test"
 
 RDEPEND="
-	cellular? ( chromeos-base/ec-utils )
+	cellular? (
+		board_use_kip? ( chromeos-base/ec-utils )
+	)
 	chromeos-base/metrics
 	dev-libs/libnl
 	dev-libs/protobuf
