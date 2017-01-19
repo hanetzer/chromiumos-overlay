@@ -94,6 +94,8 @@ set_build_env() {
 
 	CONFIG=".config"
 	CONFIG_SERIAL=".config_serial"
+	BUILD_DIR="build"
+	BUILD_DIR_SERIAL="build_serial"
 }
 
 # Create the coreboot configuration files for a particular board. This
@@ -166,6 +168,8 @@ EOF
 	fi
 	cat "${file}" >> "${CONFIG_SERIAL}" || die
 	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${CONFIG_SERIAL}"
+
+	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
 }
 
 src_prepare() {
@@ -266,11 +270,11 @@ src_compile() {
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
 	set_build_env "$(get_board)"
-	make_coreboot "build"
+	make_coreboot "${BUILD_DIR}"
 
 	# Build a second ROM with serial support for developers
 	mv "${CONFIG_SERIAL}" "${CONFIG}"
-	make_coreboot "build_serial"
+	make_coreboot "${BUILD_DIR_SERIAL}"
 }
 
 src_install() {
@@ -279,8 +283,8 @@ src_install() {
 	set_build_env "$(get_board)"
 	insinto /firmware
 
-	newins "build/coreboot.rom" coreboot.rom
-	newins "build_serial/coreboot.rom" coreboot.rom.serial
+	newins "${BUILD_DIR}/coreboot.rom" coreboot.rom
+	newins "${BUILD_DIR_SERIAL}/coreboot.rom" coreboot.rom.serial
 
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		${FILESDIR}/configs/config.${BOARD} )
@@ -295,7 +299,7 @@ src_install() {
 		newins ${OPROM} ${CBFSOPROM}
 	fi
 	if use memmaps; then
-		for mapfile in build/cbfs/fallback/*.map
+		for mapfile in "${BUILD_DIR}"/cbfs/fallback/*.map
 		do
 			doins $mapfile
 		done
@@ -308,7 +312,7 @@ src_install() {
 		newins build_serial/bl31.elf bl31.serial.elf
 	fi
 	insinto /firmware/coreboot
-	doins build/cbfs/fallback/*.debug
+	doins "${BUILD_DIR}"/cbfs/fallback/*.debug
 	insinto /firmware/coreboot_serial
-	doins build_serial/cbfs/fallback/*.debug
+	doins "${BUILD_DIR_SERIAL}"/cbfs/fallback/*.debug
 }
