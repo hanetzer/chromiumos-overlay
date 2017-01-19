@@ -92,6 +92,8 @@ get_board() {
 src_prepare() {
 	local froot="${SYSROOT}/firmware"
 	local privdir="${SYSROOT}/firmware/coreboot-private"
+	local config=".config"
+	local config_serial=".config-serial"
 	local file
 
 	if [[ -d "${privdir}" ]]; then
@@ -110,67 +112,67 @@ src_prepare() {
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
-		cp -v "${FILESDIR}/configs/config.${board}" .config
+		cp -v "${FILESDIR}/configs/config.${board}" "${config}"
 
 		# Override mainboard vendor if needed.
 		if [[ -n "${SYSTEM_OEM}" ]]; then
-			echo "CONFIG_MAINBOARD_VENDOR=\"${SYSTEM_OEM}\"" >> .config
+			echo "CONFIG_MAINBOARD_VENDOR=\"${SYSTEM_OEM}\"" >> "${config}"
 		fi
 
 		# In case config comes from a symlink we are likely building
 		# for an overlay not matching this config name. Enable adding
 		# a CBFS based board ID for coreboot.
 		if [[ -L "${FILESDIR}/configs/config.${board}" ]]; then
-			echo "CONFIG_BOARD_ID_MANUAL=y" >> .config
-			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> .config
+			echo "CONFIG_BOARD_ID_MANUAL=y" >> "${config}"
+			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> "${config}"
 		fi
 	fi
 
 	if use rmt; then
-		echo "CONFIG_MRC_RMT=y" >> .config
+		echo "CONFIG_MRC_RMT=y" >> "${config}"
 	fi
 	if use vmx; then
 		elog "   - enabling VMX"
-		echo "CONFIG_ENABLE_VMX=y" >> .config
+		echo "CONFIG_ENABLE_VMX=y" >> "${config}"
 	fi
 	if use quiet-cb; then
 		# Suppress console spew if requested.
-		cat >> .config <<EOF
+		cat >> "${config}" <<EOF
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
 # CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
 	if use mocktpm; then
-		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> .config
+		echo "CONFIG_VBOOT_MOCK_SECDATA=y" >> "${config}"
 	fi
 	if use mma; then
-		echo "CONFIG_MMA=y" >> .config
+		echo "CONFIG_MMA=y" >> "${config}"
 	fi
 
 	# disable coreboot's own EC firmware building mechanism
-	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> .config
-	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> .config
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> "${config}"
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> "${config}"
 	# enable common GBB flags for development
-	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> .config
-	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> .config
-	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> .config
-	echo "CONFIG_GBB_FLAG_FORCE_DEV_SWITCH_ON=y" >> .config
+	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> "${config}"
+	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> "${config}"
+	echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB=y" >> "${config}"
+	echo "CONFIG_GBB_FLAG_FORCE_DEV_SWITCH_ON=y" >> "${config}"
 	if use fastboot; then
-	    echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> .config
+		echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> "${config}"
 	fi
 	local version=$(${CHROOT_SOURCE_ROOT}/src/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh |grep "^[[:space:]]*CHROMEOS_VERSION_STRING=" |cut -d= -f2)
-	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> .config
+	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> "${config}"
 
-	cp .config .config_serial
-	# handle the case when .config does not have a newline in the end.
-	echo >> .config_serial
+	cp "${config}" "${config_serial}"
+	# handle the case when "${config}" does not have a newline in the end.
+	echo >> "${config_serial}"
 	file="${FILESDIR}/configs/fwserial.${board}"
 	if [ ! -f "${file}" ]; then
 		file="${FILESDIR}/configs/fwserial.default"
 	fi
-	cat "${file}" >> .config_serial || die
-	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> .config_serial
+	cat "${file}" >> "${config_serial}" || die
+	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${config_serial}"
 }
 
 add_ec() {
