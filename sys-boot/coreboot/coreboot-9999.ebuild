@@ -286,12 +286,13 @@ src_install() {
 	newins "${BUILD_DIR}/coreboot.rom" coreboot.rom
 	newins "${BUILD_DIR_SERIAL}/coreboot.rom" coreboot.rom.serial
 
+	local config_file="${FILESDIR}/configs/config.$(get_board)"
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
-		${FILESDIR}/configs/config.${BOARD} )
+		"${config_file}" )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
-		${FILESDIR}/configs/config.${BOARD} ).rom
+		"${config_file}" ).rom
 	FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
-		${FILESDIR}/configs/config.${BOARD} )
+		"${config_file}" )
 	if [[ -n "${FSP}" ]]; then
 		newins ${FSP} fsp.bin
 	fi
