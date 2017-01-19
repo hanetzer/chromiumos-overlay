@@ -13,7 +13,7 @@ SRC_URI="http://upstart.ubuntu.com/download/${PV}/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug examples nls selinux"
+IUSE="debug examples nls selinux udev_bridge"
 
 RDEPEND=">=sys-apps/dbus-1.2.16
 	>=sys-libs/libnih-1.0.2
@@ -98,4 +98,6 @@ src_install() {
 	insinto /etc/init
 	# Always use our own upstart-socket-bridge.conf.
 	doins "${FILESDIR}"/init/upstart-socket-bridge.conf
+	# Restore udev bridge if requested.
+	use udev_bridge && doins extra/conf/upstart-udev-bridge.conf
 }
