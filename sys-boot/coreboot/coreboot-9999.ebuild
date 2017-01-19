@@ -277,10 +277,9 @@ src_compile() {
 	make_coreboot "${BUILD_DIR_SERIAL}"
 }
 
-src_install() {
+do_install() {
 	local mapfile
 
-	set_build_env "$(get_board)"
 	insinto /firmware
 
 	newins "${BUILD_DIR}/coreboot.rom" coreboot.rom
@@ -316,4 +315,9 @@ src_install() {
 	doins "${BUILD_DIR}"/cbfs/fallback/*.debug
 	insinto /firmware/coreboot_serial
 	doins "${BUILD_DIR_SERIAL}"/cbfs/fallback/*.debug
+}
+
+src_install() {
+	set_build_env "$(get_board)"
+	do_install
 }
