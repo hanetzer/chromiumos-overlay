@@ -70,6 +70,25 @@ DEPEND="
 	qca-framework? ( sys-boot/qca-framework )
 	"
 
+# Get the coreboot board config to build for.
+# Checks the current board with/without variant, and also whether an FSP
+# is in use. Echoes the board config file that should be used to build
+# coreboot.
+get_board() {
+	local board=$(get_current_board_with_variant)
+
+	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+	if use fsp; then
+		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
+			elog "   - using fsp config"
+			board=${board}.fsp
+		fi
+	fi
+	echo "${board}"
+}
+
 src_prepare() {
 	local froot="${SYSROOT}/firmware"
 	local privdir="${SYSROOT}/firmware/coreboot-private"
@@ -87,17 +106,7 @@ src_prepare() {
 		fi
 	done
 
-	local board=$(get_current_board_with_variant)
-	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
-		board=$(get_current_board_no_variant)
-	fi
-
-	if use fsp; then
-		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
-			elog "   - using fsp config"
-			board=${board}.fsp
-		fi
-	fi
+	local board=$(get_board)
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
@@ -249,17 +258,7 @@ src_compile() {
 
 src_install() {
 	local mapfile
-	local board=$(get_current_board_with_variant)
-	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
-		board=$(get_current_board_no_variant)
-	fi
-
-	if use fsp; then
-		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
-			elog "   - using fsp config"
-			board=${board}.fsp
-		fi
-	fi
+	local board=$(get_board)
 
 	insinto /firmware
 
