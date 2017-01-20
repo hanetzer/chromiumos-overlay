@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="e66a31e54e12906e86dc59f95b458889f025c505"
-CROS_WORKON_TREE="e440d35878b33b557469a4d09d27989a06fdf1ae"
+CROS_WORKON_COMMIT="264120496730522ef3e5cc60b80a3953af1ac2cc"
+CROS_WORKON_TREE="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 CROS_WORKON_PROJECT="chromium/src/third_party/hwcplus"
 CROS_WORKON_LOCALNAME="../../chromium/src/third_party/hwcplus"
 CROS_WORKON_OUTOFTREE_BUILD=1
