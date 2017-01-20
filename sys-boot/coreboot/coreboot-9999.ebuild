@@ -204,19 +204,27 @@ add_ec() {
 		 -f "${ecroot}/ec.RW.hash" -n "${name}.hash" || die
 }
 
+# Build coreboot with a supplied configuration and output directory.
+#   $1: Build directory to use (e.g. "build_serial")
+#   $2: Config file to use (e.g. ".config_serial")
 make_coreboot() {
 	local builddir="$1"
+	local config_fname="$2"
 	local froot="${SYSROOT}/firmware"
 
 	rm -rf "${builddir}" .xcompile
 
-	local CB_OPTS=( "objutil=objutil" )
+	local CB_OPTS=( "objutil=objutil" "DOTCONFIG=${config_fname}" )
 	use quiet && CB_OPTS+=( "V=0" )
 	use verbose && CB_OPTS+=( "V=1" )
 	use quiet && REDIR="/dev/null" || REDIR="/dev/stdout"
 
+	# Configure and build coreboot.
 	yes "" | emake oldconfig "${CB_OPTS[@]}" obj="${builddir}" >${REDIR}
 	emake "${CB_OPTS[@]}" obj="${builddir}"
+
+	# Record the config that we used.
+	cp "${config_fname}" "${builddir}/${config_fname}"
 
 	# Modify firmware descriptor if building for the EM100 emulator.
 	if use em100-mode; then
@@ -270,11 +278,10 @@ src_compile() {
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
 	set_build_env "$(get_board)"
-	make_coreboot "${BUILD_DIR}"
+	make_coreboot "${BUILD_DIR}" "${CONFIG}"
 
 	# Build a second ROM with serial support for developers
-	mv "${CONFIG_SERIAL}" "${CONFIG}"
-	make_coreboot "${BUILD_DIR_SERIAL}"
+	make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
 }
 
 do_install() {
@@ -304,7 +311,8 @@ do_install() {
 			doins $mapfile
 		done
 	fi
-	newins "${CONFIG}" coreboot.config
+	newins "${BUILD_DIR}/${CONFIG}" coreboot.config
+	newins "${BUILD_DIR_SERIAL}/${CONFIG_SERIAL}" coreboot_serial.config
 
 	# Keep binaries with debug symbols around for crash dump analysis
 	if [[ -s build/bl31.elf ]]; then
