@@ -19,9 +19,10 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test cheets systemd"
+IUSE="test cheets systemd unibuild"
 
 RDEPEND="chromeos-base/bootstat
+	unibuild? ( chromeos-base/chromeos-config )
 	chromeos-base/chromeos-config-tools
 	chromeos-base/chromeos-minijail
 	chromeos-base/cryptohome
