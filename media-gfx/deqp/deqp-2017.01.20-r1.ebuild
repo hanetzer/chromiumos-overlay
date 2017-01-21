@@ -9,9 +9,9 @@ inherit cmake-utils
 
 DESCRIPTION="drawElements Quality Program - an OpenGL ES testsuite"
 HOMEPAGE="https://android.googlesource.com/platform/external/deqp"
-# deqp-544e0... corresponds to android cts-7.0_r3 deqp directory.
-# https://android.googlesource.com/platform/external/deqp/+/android-cts-7.0_r3
-SRC_URI="gs://chromeos-localmirror/distfiles/deqp-544e0e3b1d6dafdd74a9a1fc986486089cdfcafc.tar.gz"
+# deqp-94128... corresponds to android cts-7.1_r1 deqp directory.
+# https://android.googlesource.com/platform/external/deqp/+/android-cts-7.1_r1
+SRC_URI="gs://chromeos-localmirror/distfiles/deqp-941281076803eac935a510d7f45917900df39978.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
