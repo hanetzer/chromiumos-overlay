@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="659fde206fcc0eff47c88df9eae0f85bbd3ad8fe"
-CROS_WORKON_TREE="2c23a9626151036f555dde3805119c1bcd229571"
+CROS_WORKON_COMMIT="2f1ee8448a886ce1abad9c0e8741582244f8ab40"
+CROS_WORKON_TREE="16366a5e4a7570c95661aa8d310ffcd64da13cd1"
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-assets"
 CROS_WORKON_LOCALNAME="chromiumos-assets"
 
