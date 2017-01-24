@@ -28,7 +28,6 @@ RDEPEND="
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/dbus-c++
-	dev-libs/glib
 	dev-libs/libpcre
 	dev-libs/protobuf
 	net-libs/libpcap
