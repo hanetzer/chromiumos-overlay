@@ -108,6 +108,7 @@ ALL_BOARDS=(
 	falco_gles
 	falco_li
 	fb1
+	fizz
 	foster
 	#fox
 	#fox_baskingridge
