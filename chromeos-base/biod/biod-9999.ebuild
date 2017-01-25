@@ -9,7 +9,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="biod"
 
-inherit cros-workon platform user
+inherit cros-workon platform udev user
 
 DESCRIPTION="Biometrics Daemon for Chromium OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/packages/biod"
@@ -38,6 +38,8 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.BiometricsDaemon.conf
+
+	udev_dorules udev/99-biod.rules
 }
 
 pkg_preinst() {
