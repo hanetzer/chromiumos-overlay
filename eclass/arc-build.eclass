@@ -44,37 +44,30 @@ _arc-build-select-common() {
 	# Setup internal variables
 	if use android-container-nyc; then
 		ARC_BASE="/opt/android-n"
-		ARC_VERSION_MAJOR="7"
-		ARC_VERSION_MINOR="1"
-		ARC_VERSION_PATCH="0"
+		export ARC_VERSION_MAJOR="7"
+		export ARC_VERSION_MINOR="1"
+		export ARC_VERSION_PATCH="0"
 	else
 		ARC_BASE="/opt/android"
-		ARC_VERSION_MAJOR="6"
-		ARC_VERSION_MINOR="0"
-		ARC_VERSION_PATCH="1"
+		export ARC_VERSION_MAJOR="6"
+		export ARC_VERSION_MINOR="0"
+		export ARC_VERSION_PATCH="1"
 	fi
 
 	case ${ARCH} in
 	arm)
-		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/arm/arm-linux-androideabi-4.9"
-		ARC_GCC_PREFIX="arm-linux-androideabi-"
-		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/arm-linux-androideabi/4.9"
+		ARC_GCC_TUPLE=arm-linux-androideabi
+		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/arm/${ARC_GCC_TUPLE}-4.9"
+		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
 		;;
 	amd64)
-		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/x86_64/x86_64-linux-android-4.9"
-		ARC_GCC_PREFIX="x86_64-linux-android-"
-		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/x86_64-linux-android/4.9"
+		ARC_GCC_TUPLE=x86_64-linux-android
+		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/x86_64/${ARC_GCC_TUPLE}-4.9"
+		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
 		;;
 	esac
 
-	# Set up flags for the android sysroot.
 	export ARC_SYSROOT="${ARC_BASE}/${ARCH}"
-	append-flags --sysroot="${ARC_SYSROOT}"
-
-	export ARC_VERSION_MAJOR
-	export ARC_VERSION_MINOR
-	export ARC_VERSION_PATCH
-
 	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
 
 	# Strip out flags that are specific to our compiler wrapper.
@@ -82,14 +75,17 @@ _arc-build-select-common() {
 
 	# Android uses soft floating point still.
 	filter-flags -mfpu=neon -mfloat-abi=hard
+
+	# Set up flags for the android sysroot.
+	append-flags --sysroot="${ARC_SYSROOT}"
 }
 
 # Set up the compiler settings for GCC.
 arc-build-select-gcc() {
 	_arc-build-select-common
 
-	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_PREFIX}gcc"
-	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_PREFIX}g++"
+	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-gcc"
+	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
 }
 
 # Set up the compiler settings for clang.
