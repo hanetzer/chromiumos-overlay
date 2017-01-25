@@ -3,7 +3,6 @@
 
 EAPI="4"
 
-CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "weave/libweave")
@@ -28,13 +27,6 @@ DEPEND="
 	dev-cpp/gmock
 	dev-cpp/gtest
 "
-
-src_prepare() {
-	# Temporary patch until we can uprev the ToT version of libweave into
-	# CrOS source tree
-	epatch ${FILESDIR}/patches/libweave-int64.patch
-	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
-}
 
 src_unpack() {
 	local s="${S}"
