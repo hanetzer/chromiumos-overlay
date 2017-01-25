@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cheets cros_embedded -cros_host systemd test"
+IUSE="cheets cros_embedded -cros_host -direncryption systemd test"
 REQUIRED_USE="!cros_host"
 
 RDEPEND="
@@ -31,6 +31,7 @@ RDEPEND="
 	chromeos-base/metrics
 	dev-libs/libpcre
 	net-misc/curl
+	direncryption? ( sys-apps/keyutils )
 "
 DEPEND="
 	${RDEPEND}
