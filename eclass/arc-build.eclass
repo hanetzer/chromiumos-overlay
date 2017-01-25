@@ -59,14 +59,25 @@ _arc-build-select-common() {
 		ARC_GCC_TUPLE=arm-linux-androideabi
 		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/arm/${ARC_GCC_TUPLE}-4.9"
 		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
+
+		export CHOST="${ARC_GCC_TUPLE}"
 		;;
 	amd64)
 		ARC_GCC_TUPLE=x86_64-linux-android
 		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/x86_64/${ARC_GCC_TUPLE}-4.9"
 		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
+
+		# Our host is in fact i686. Toolchain binaries are specified
+		# with CC and CXX.
+		export CHOST=i686-linux-android
+
+		# Use 32-bit ABI on amd64 builds
+		append-flags -m32
+		append-ldflags -m32
 		;;
 	esac
 
+	export ARC_PREFIX="/opt/google/containers/android"
 	export ARC_SYSROOT="${ARC_BASE}/${ARCH}"
 	export PKG_CONFIG="${ARC_BASE}/pkg-config-arc ${ARCH}"
 
@@ -78,6 +89,10 @@ _arc-build-select-common() {
 
 	# Set up flags for the android sysroot.
 	append-flags --sysroot="${ARC_SYSROOT}"
+	local android_version=$(printf "0x%04x" \
+		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
+	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
+	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
 }
 
 # Set up the compiler settings for GCC.

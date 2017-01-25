@@ -95,12 +95,6 @@ src_configure() {
 
 	driver_enable pvr
 
-	local android_version=$(printf "0x%04x" \
-		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
-
-	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
-	append-cxxflags "-I${ARC_SYSROOT}/usr/include/c++/4.9" -lc++
-
 	export PKG_CONFIG="false"
 
 	export EXPAT_LIBS="-lexpat"
@@ -115,8 +109,8 @@ src_configure() {
 	export LIBDRM_CFLAGS="-I${ARC_SYSROOT}/usr/include/libdrm"
 	export LIBDRM_LIBS="-ldrm"
 
-	export PVR_CFLAGS="-I${SYSROOT}/opt/google/containers/android/vendor/include"
-	export PVR_LIBS="-L${SYSROOT}/opt/google/containers/android/vendor/lib -lpvr_dri_support "
+	export PVR_CFLAGS="-I${SYSROOT}${ARC_PREFIX}/vendor/include"
+	export PVR_LIBS="-L${SYSROOT}${ARC_PREFIX}/vendor/lib -lpvr_dri_support "
 	export LLVM_CONFIG=""
 
 	./configure \
@@ -151,13 +145,13 @@ src_configure() {
 }
 
 src_install() {
-	exeinto /opt/google/containers/android/vendor/lib
+	exeinto "${ARC_PREFIX}/vendor/lib"
 	newexe lib/libglapi.so libglapi.so
 
-	exeinto /opt/google/containers/android/vendor/lib/egl
+	exeinto "${ARC_PREFIX}/vendor/lib/egl"
 	newexe lib/libEGL.so libEGL_mesa.so
 
-	exeinto /opt/google/containers/android/vendor/lib/dri
+	exeinto "${ARC_PREFIX}/vendor/lib/dri"
 	newexe lib/pvr_dri.so pvr_dri.so
 }
 

@@ -59,6 +59,6 @@ src_compile() {
 }
 
 src_install() {
-	exeinto /opt/google/containers/android/vendor/lib/hw/
+	exeinto "${ARC_PREFIX}/vendor/lib/hw/"
 	doexe "${TARGET_DIR}"gralloc.cros.so
 }

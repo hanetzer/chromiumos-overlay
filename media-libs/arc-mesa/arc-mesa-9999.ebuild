@@ -132,16 +132,8 @@ src_configure() {
 		# cheets-specific overrides
 		#
 
-		# FIXME(tfiga): Could this and the append-*flags below go to arc-build?
+		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
 		arc-build-select-gcc
-
-		local android_version=$(printf "0x%04x" \
-			$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
-
-		append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
-		append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
-		append-flags -m32
-		append-ldflags -m32
 
 		# Use llvm-config coming from ARC++ build.
 		if use android-container-nyc; then
@@ -153,13 +145,12 @@ src_configure() {
 
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
-			--host=x86_64-linux-android
-			--with-sysroot=${ARC_SYSROOT}
 			--enable-sysfs
 			--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
 			--sysconfdir=/system/vendor/etc
 			--enable-cross_compiling
-			--target=i686
+			--prefix=${ARC_PREFIX}/vendor
+			--libdir=\$(prefix)/lib
 		"
 		# FIXME(tfiga): Possibly use flag?
 		EGL_PLATFORM="android"
@@ -173,8 +164,7 @@ src_configure() {
 		export LLVM_CONFIG="no"
 	fi
 
-	# FIXME(tfiga): We should figure out if we can use econf as the original ebuild.
-	./configure \
+	econf \
 		${EXTRA_ARGS} \
 		--disable-option-checking \
 		--with-driver=dri \
@@ -184,6 +174,7 @@ src_configure() {
 		--disable-va \
 		--disable-vdpau \
 		--disable-xvmc \
+		--disable-asm \
 		--without-demos \
 		--enable-texture-float \
 		--disable-dri3 \
@@ -198,7 +189,6 @@ src_configure() {
 		$(use_enable gallium) \
 		$(use_enable debug) \
 		$(use_enable nptl glx-tls) \
-		$(use_enable !pic asm) \
 		$(use_enable xlib-glx) \
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
@@ -208,15 +198,15 @@ src_configure() {
 
 
 src_install_arc() {
-	exeinto /opt/google/containers/android/vendor/lib
+	exeinto "${ARC_PREFIX}/vendor/lib"
 	newexe lib/libglapi.so libglapi.so
 
-	exeinto /opt/google/containers/android/vendor/lib/egl
+	exeinto "${ARC_PREFIX}/vendor/lib/egl"
 	newexe lib/libEGL.so libEGL_mesa.so
 	newexe lib/libGLESv1_CM.so libGLESv1_CM_mesa.so
 	newexe lib/libGLESv2.so libGLESv2_mesa.so
 
-	exeinto /opt/google/containers/android/vendor/lib/dri
+	exeinto "${ARC_PREFIX}/vendor/lib/dri"
 	if use classic && use video_cards_intel; then
 		newexe lib/i965_dri.so i965_dri.so
 	fi
@@ -225,7 +215,7 @@ src_install_arc() {
 	fi
 
 	# Set driconf option to enable S3TC hardware decompression
-	insinto "/opt/google/containers/android/vendor/etc/"
+	insinto "${ARC_PREFIX}/vendor/etc/"
 	doins "${FILESDIR}"/drirc
 }
 
