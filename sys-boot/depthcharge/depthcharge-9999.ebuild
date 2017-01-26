@@ -46,6 +46,16 @@ get_board() {
 	echo "${board}"
 }
 
+# Build depthcharge with common options.
+# Usage example: dc_make dev LIBPAYLOAD_DIR="libpayload"
+# Args:
+#   $1: Build target and any other Makefile arguments.
+dc_make() {
+	emake VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		PD_SYNC=$(usev pd_sync) \
+		"$@"
+}
+
 src_compile() {
 	local board="$(get_board)"
 
@@ -72,24 +82,16 @@ src_compile() {
 		echo "CONFIG_DETACHABLE_UI=y" >> "board/${board}/defconfig"
 	fi
 
-	[[ ${PV} == "9999" ]] && emake distclean
-	emake defconfig BOARD="${board}"
+	[[ ${PV} == "9999" ]] && dc_make distclean
+	dc_make defconfig BOARD="${board}"
 
-	emake depthcharge VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-			  PD_SYNC=$(usev pd_sync) \
-		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
-	emake dev VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-			  PD_SYNC=$(usev pd_sync) \
-		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
-
-	emake netboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-	          PD_SYNC=$(usev pd_sync) \
-		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
+	dc_make depthcharge LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+	dc_make dev LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
+	dc_make netboot LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 
 	if use fastboot; then
-		emake fastboot VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-			  PD_SYNC=$(usev pd_sync) \
-			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+		dc_make fastboot \
+			LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
 	fi
 }
 
