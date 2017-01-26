@@ -48,7 +48,6 @@ RDEPEND="${RDEPEND}
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
 	tests_security_SMMLocked? ( sys-apps/pciutils )
-	tests_camera_HAL3? ( chromeos-base/autotest-deps-camera-hal3 )
 "
 
 DEPEND="${RDEPEND}"
@@ -78,7 +77,6 @@ CLIENT_IUSE_TESTS="
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_build_RootFilesystemSize
 	+tests_camera_V4L2
-	+tests_camera_HAL3
 	!chromeless_tty? (
 		!chromeless_tests? (
 			+tests_desktopui_CrashyReboot
