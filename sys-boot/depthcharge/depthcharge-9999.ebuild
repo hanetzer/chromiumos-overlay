@@ -34,11 +34,20 @@ src_configure() {
 	cros-workon_src_configure
 }
 
-src_compile() {
+# Get the depthcharge board config to build for.
+# Checks the current board with/without variant. Echoes the board config file
+# that should be used to build depthcharge.
+get_board() {
 	local board=$(get_current_board_with_variant)
 	if [[ ! -d "board/${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
+
+	echo "${board}"
+}
+
+src_compile() {
+	local board="$(get_board)"
 
 	tc-getCC
 
@@ -86,10 +95,7 @@ src_compile() {
 
 src_install() {
 	local dstdir="/firmware"
-	local board=$(get_current_board_with_variant)
-	if [[ ! -d "board/${board}" ]]; then
-		board=$(get_current_board_no_variant)
-	fi
+	local board="$(get_board)"
 
 	insinto "${dstdir}"
 	newins .config depthcharge.config
