@@ -145,9 +145,26 @@ build_image() {
 	sign_image ${dst_image} "${devkeys_dir}"
 }
 
-src_compile() {
-	local froot="${CROS_FIRMWARE_ROOT}"
-	# Location of various files
+# Build firmware images for a given board
+# Creates image*.bin for the following images:
+#    image.bin          - production image (no serial console)
+#    image.serial.bin   - production image with serial console enabled
+#    image.dev.bin      - developer image with serial console enabled
+#    image.net.bin      - netboot image with serial console enabled
+#    image.fastboot.bin - fastboot image with serial console enabled
+#    image.fastboot-prod.bin - fastboot image (no serial console)
+#
+# Args:
+#   $1: Directory containing the input files:
+#       coreboot.rom             - coreboot ROM image containing various pieces
+#       coreboot.rom.serial      - same, but with serial console enabled
+#       depthcharge/depthcharge.elf - depthcharge ELF payload
+#       depthcharge/dev.elf      - developer version of depthcharge
+#       depthcharge/netboot.elf  - netboot version of depthcharge
+#       depthcharge/fastboot.elf - fastboot version of depthcharge
+#       rocbfs/*                 - fonts, images and screens for recovery mode
+build_images() {
+	local froot="$1"
 
 	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
@@ -194,7 +211,6 @@ src_compile() {
 	local netboot="${froot}/depthcharge/netboot.elf"
 	local fastboot="${froot}/depthcharge/fastboot.elf"
 
-
 	build_image "production" "${coreboot_file}" "image.bin" \
 		"${depthcharge}" "${depthcharge}" "${devkeys}"
 
@@ -230,6 +246,12 @@ src_compile() {
 		build_image "fastboot production" "${coreboot_file}" "image.fastboot-prod.bin" \
 			"${fastboot}" "${depthcharge}" "${devkeys}"
 	fi
+}
+
+src_compile() {
+	local froot="${CROS_FIRMWARE_ROOT}"
+
+	build_images "${froot}"
 }
 
 src_install() {
