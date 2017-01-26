@@ -97,6 +97,7 @@ make_depthcharge() {
 
 	[[ ${PV} == "9999" ]] && dc_make distclean "${builddir}" ""
 	dc_make defconfig "${builddir}" "" BOARD="${board}"
+	cp .config "${builddir}/depthcharge.config"
 
 	dc_make depthcharge "${builddir}" libpayload
 	dc_make dev "${builddir}" libpayload_gdb
@@ -125,11 +126,13 @@ src_install() {
 	local board="$(get_board)"
 
 	insinto "${dstdir}"
-	newins .config depthcharge.config
 
 	pushd "build" >/dev/null || die "couldn't access build/ directory"
 
-	local files_to_copy=({netboot,depthcharge,dev}.elf{,.map})
+	local files_to_copy=(
+		depthcharge.config
+		{netboot,depthcharge,dev}.elf{,.map}
+	)
 
 	if use fastboot ; then
 		files_to_copy+=(fastboot.elf{,.map})
