@@ -121,9 +121,9 @@ src_compile() {
 	make_depthcharge "$(get_board)"
 }
 
-src_install() {
+do_install() {
+	local board="$1"
 	local dstdir="/firmware"
-	local board="$(get_board)"
 
 	insinto "${dstdir}"
 
@@ -142,4 +142,8 @@ src_install() {
 	doins "${files_to_copy[@]}"
 
 	popd >/dev/null
+}
+
+src_install() {
+	do_install "$(get_board)"
 }
