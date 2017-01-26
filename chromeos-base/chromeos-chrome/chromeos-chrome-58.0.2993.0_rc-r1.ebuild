@@ -130,13 +130,13 @@ declare -A AFDO_FILE_LLVM
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.2989.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.2993.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -181,16 +181,13 @@ RDEPEND="${RDEPEND}
 	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/atk
-	dev-libs/glib
 	dev-libs/nspr
 	>=dev-libs/nss-3.12.2
 	dev-libs/libxml2
-	dev-libs/dbus-glib
-	x11-libs/cairo
-	x11-libs/pango
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
 	media-libs/freetype
+	media-libs/harfbuzz
 	x11-libs/libdrm
 	ozone_platform_gbm? ( media-libs/minigbm )
 	media-libs/libpng
@@ -265,7 +262,7 @@ set_build_args() {
 		use_ozone=true
 		use_evdev_gestures=$(usetf evdev_gestures)
 		use_xkbcommon=$(usetf xkbcommon)
-		# Use the ChromeOS toolchain and not the one bundled with Chromium.
+		# Use the Chrome OS toolchain and not the one bundled with Chromium.
 		linux_use_bundled_binutils=false
 		use_debug_fission=false
 		enable_remoting=$(usetf chrome_remoting)
@@ -644,7 +641,7 @@ src_prepare() {
 	# Get the credentials to fake home directory so that the version of chromium
 	# we build can access Google services. First, check for Chrome credentials.
 	if [[ ! -d google_apis/internal ]]; then
-		# Then look for ChromeOS supplied credentials.
+		# Then look for Chrome OS supplied credentials.
 		local PRIVATE_OVERLAYS_DIR=/home/${WHOAMI}/trunk/src/private-overlays
 		local GAPI_CONFIG_FILE=${PRIVATE_OVERLAYS_DIR}/chromeos-overlay/googleapikeys
 		if [[ ! -f "${GAPI_CONFIG_FILE}" ]]; then
@@ -695,7 +692,7 @@ setup_compile_flags() {
 
 	# -clang-syntax is a flag that enable us to do clang syntax checking on
 	# top of building Chrome with gcc. Since Chrome itself is clang clean,
-	# there is no need to check it again in ChromeOS land. And this flag has
+	# there is no need to check it again in Chrome OS land. And this flag has
 	# nothing to do with USE=clang.
 	filter-flags -clang-syntax
 
@@ -729,10 +726,10 @@ setup_compile_flags() {
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
 
-	# Chrome and ChromeOS versions of the compiler may not be in
+	# Chrome and Chrome OS versions of the compiler may not be in
 	# sync. So, don't complain if Chrome uses a diagnostic
 	# option that is not yet implemented in the compiler version used
-	# by ChromeOS.
+	# by Chrome OS.
 	# Turns out this is only really supported by Clang. See crosbug.com/615466
 	if use clang; then
 		append-flags -Wno-unknown-warning-option
