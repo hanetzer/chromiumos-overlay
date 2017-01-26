@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test systemd tpm tpm2"
+IUSE="-direncryption systemd test tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -82,6 +82,11 @@ src_install() {
 			sed -i 's/started tcsd/started attestationd/' \
 				"${D}/etc/init/cryptohomed.conf" ||
 				die "Can't replace tcsd with attestationd in cryptohomed.conf"
+		fi
+		if use direncryption; then
+			sed -i '/env DIRENCRYPTION_FLAG=/s:=.*:="--direncryption":' \
+				"${D}/etc/init/cryptohomed.conf" ||
+				die "Can't replace direncryption flag in cryptohomed.conf"
 		fi
 	fi
 	insinto /usr/share/cros/init
