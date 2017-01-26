@@ -69,27 +69,26 @@ dc_make() {
 		"$@"
 }
 
-src_compile() {
-	local board="$(get_board)"
+# Build depthcharge for the current board.
+# Builds the various output files for depthcharge:
+#   depthcharge.elf   - normal image
+#   dev.elf           - developer image
+#   netboot.elf       - network image
+#   fastboot.elf      - fastboot image (ise 'fastboot' USE flag is set)
+# In addition, .map files are produced for each, and a .config file which
+# holds the configuration that was used.
+# Args
+#   $1: board to build for.
+make_depthcharge() {
+	local board="$1"
 	local builddir="build"
-
-	tc-getCC
-
-	# Firmware related binaries are compiled with a 32-bit toolchain
-	# on 64-bit platforms
-	if use amd64 ; then
-		export CROSS_COMPILE="i686-pc-linux-gnu-"
-		export CC="${CROSS_COMPILE}gcc"
-	else
-		export CROSS_COMPILE=${CHOST}-
-	fi
 
 	if use mocktpm ; then
 		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
 	fi
 	if use fwconsole ; then
 		echo "CONFIG_CLI=y" >> "board/${board}/defconfig"
-		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
+		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >> \
 		  "board/${board}/defconfig"
 	fi
 	if use detachable_ui ; then
@@ -106,6 +105,19 @@ src_compile() {
 	if use fastboot; then
 		dc_make fastboot "${builddir}" libpayload
 	fi
+}
+
+src_compile() {
+	# Firmware related binaries are compiled with a 32-bit toolchain
+	# on 64-bit platforms
+	if use amd64 ; then
+		export CROSS_COMPILE="i686-pc-linux-gnu-"
+		export CC="${CROSS_COMPILE}gcc"
+	else
+		export CROSS_COMPILE=${CHOST}-
+	fi
+
+	make_depthcharge "$(get_board)"
 }
 
 src_install() {
