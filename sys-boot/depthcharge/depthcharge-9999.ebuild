@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync"
+IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync unibuild"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -81,7 +81,7 @@ dc_make() {
 #   $1: board to build for.
 make_depthcharge() {
 	local board="$1"
-	local builddir="build"
+	local builddir="$2"
 
 	if use mocktpm ; then
 		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
@@ -118,16 +118,30 @@ src_compile() {
 		export CROSS_COMPILE=${CHOST}-
 	fi
 
-	make_depthcharge "$(get_board)"
+	if use unibuild; then
+		local model
+
+		for model in ${FIRMWARE_UNIBUILD}; do
+			make_depthcharge "${model}" "${model}"
+		done
+	else
+		make_depthcharge "$(get_board)" build
+	fi
 }
 
 do_install() {
 	local board="$1"
+	local builddir="$2"
 	local dstdir="/firmware"
 
+	if [[ -n "${model}" ]]; then
+		dstdir+="/${model}"
+		einfo "Installing depthcharge ${model} into ${dest_dir}"
+	fi
 	insinto "${dstdir}"
 
-	pushd "build" >/dev/null || die "couldn't access build/ directory"
+	pushd "${builddir}" >/dev/null || \
+		die "couldn't access ${builddir}/ directory"
 
 	local files_to_copy=(
 		depthcharge.config
@@ -145,5 +159,13 @@ do_install() {
 }
 
 src_install() {
-	do_install "$(get_board)"
+	local model
+
+	if use unibuild; then
+		for model in ${FIRMWARE_UNIBUILD}; do
+			do_install "${model}" "${model}"
+		done
+	else
+		do_install "$(get_board)" build
+	fi
 }
