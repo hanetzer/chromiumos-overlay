@@ -1,0 +1,51 @@
+From c99ad89f53afc00808686bd475a5befc13cbd925 Mon Sep 17 00:00:00 2001
+From: Dave Mielke <dave@mielke.cc>
+Date: Wed, 18 Jan 2017 20:34:11 -0500
+Subject: [PATCH 6/6] Create an initial key table for the Orbit. (dm)
+
+Start out by copying the one for the Refreshabraille.
+---
+ Tables/Input/bm/orbit.ktb | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 Tables/Input/bm/orbit.ktb
+
+diff --git a/Tables/Input/bm/orbit.ktb b/Tables/Input/bm/orbit.ktb
+new file mode 100644
+index 000000000..cd38bb58a
+--- /dev/null
++++ b/Tables/Input/bm/orbit.ktb
+@@ -0,0 +1,31 @@
++###############################################################################
++# BRLTTY - A background process providing access to the console screen (when in
++#          text mode) for a blind person using a refreshable braille display.
++#
++# Copyright (C) 1995-2017 by The BRLTTY Developers.
++#
++# BRLTTY comes with ABSOLUTELY NO WARRANTY.
++#
++# This is free software, placed under the terms of the
++# GNU Lesser General Public License, as published by the Free Software
++# Foundation; either version 2.1 of the License, or (at your option) any
++# later version. Please see the file LICENSE-LGPL for details.
++#
++# Web Page: http://brltty.com/
++#
++# This software is maintained by Dave Mielke <dave@mielke.cc>.
++###############################################################################
++
++title Orbit Reader
++
++note B9 is the long key in the middle, just in front of the joystick.
++note Dot7 and Dot8 are the keys immediately to the left and right of B9.
++note B10 is the narrow key between and just behind the six-dot keyboard.
++note The six display keys are emulated by the corresponding six dot keys
++note * while the joystick is pressed (the joystick must be pressed first).
++
++include d6.kti
++include routing6.kti
++
++assign space B9
++include keyboard.kti
+-- 
+2.11.0.483.g087da7b7c-goog
+

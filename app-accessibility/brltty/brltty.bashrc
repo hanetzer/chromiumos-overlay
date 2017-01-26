@@ -13,6 +13,12 @@ cros_pre_src_prepare_brltty_config() {
 	epatch "${FILESDIR}"/${P}-r1-0005-Retain-the-chord-key-when-converting-from-a-brltty-t.patch
 	epatch "${FILESDIR}"/${P}-r1-0006-A-bit-of-retain-chords-code-cleanup.-dm.patch
 	epatch "${FILESDIR}"/${P}-r1-0007-Customize-retain-dots-for-Chrome-OS-and-ChromeVox.patch
+	epatch "${FILESDIR}"/orbit-0001-Support-the-Orbit-20.patch
+	epatch "${FILESDIR}"/orbit-0002-A-couple-of-small-fixes.-dm.patch
+	epatch "${FILESDIR}"/orbit-0003-The-Orbit-uses-a-different-USB-output-endpoint-than-.patch
+	epatch "${FILESDIR}"/orbit-0004-Create-d-Baum-device-entry-for-the-Orbit.-dm.patch
+	epatch "${FILESDIR}"/orbit-0005-Add-an-entry-for-the-Orbit-s-Bluetooth-name.-dm.patch
+	epatch "${FILESDIR}"/orbit-0006-Create-an-initial-key-table-for-the-Orbit.-dm.patch
 }
 
 cros_post_src_prepare_brltty_config() {
