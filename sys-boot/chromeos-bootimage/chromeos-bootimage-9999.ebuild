@@ -22,7 +22,7 @@ BOARDS="${BOARDS} parrot peppy poppy pyro rambi reef samus sklrvp slippy snappy"
 BOARDS="${BOARDS} squawks stout strago stumpy sumo"
 IUSE="${BOARDS} +bmpblk cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec exynos fsp"
-IUSE="${IUSE} pd_sync tegra fastboot"
+IUSE="${IUSE} pd_sync tegra fastboot unibuild"
 
 REQUIRED_USE="
 	^^ ( ${BOARDS} arm mips )
@@ -169,6 +169,10 @@ build_image() {
 #    image.fastboot.bin - fastboot image with serial console enabled
 #    image.fastboot-prod.bin - fastboot image (no serial console)
 #
+# If $2 is set, then it uses "image-$2" instead of "image" and puts images in
+# the $2 subdirectory.
+#
+# If outdir
 # Args:
 #   $1: Directory containing the input files:
 #       coreboot.rom             - coreboot ROM image containing various pieces
@@ -178,13 +182,22 @@ build_image() {
 #       depthcharge/netboot.elf  - netboot version of depthcharge
 #       depthcharge/fastboot.elf - fastboot version of depthcharge
 #       rocbfs/*                 - fonts, images and screens for recovery mode
+#   $2: Name of model to build, used for output files (empty if no model)
 build_images() {
 	local froot="$1"
+	local model="$2"
 	local outdir
 	local suffix
 
 	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
+
+	if [ -n "${model}" ]; then
+		einfo "Building firmware images for ${model}"
+		outdir="${model}/"
+		mkdir "${outdir}"
+		suffix="-${model}"
+	fi
 
 	cp ${coreboot_file} coreboot.rom
 	cp ${coreboot_file}.serial coreboot.rom.serial
@@ -272,10 +285,26 @@ src_compile() {
 		cbfs-compression-tool compress ${froot}/rocbfs/'{}' \
 			compressed-assets/'{}' LZMA
 
-	build_images "${froot}"
+	if use unibuild; then
+		local model
+
+		for model in ${FIRMWARE_UNIBUILD}; do
+			build_images "${froot}/${model}" "${model}"
+		done
+	else
+		build_images "${froot}" ""
+	fi
 }
 
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
-	doins image*.bin
+	if use unibuild; then
+		local model
+
+		for model in ${FIRMWARE_UNIBUILD}; do
+			doins "${model}"/image-${model}*.bin
+		done
+	else
+		doins image*.bin
+	fi
 }
