@@ -271,5 +271,5 @@ src_compile() {
 
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
-	doins *image*.bin
+	doins image*.bin
 }
