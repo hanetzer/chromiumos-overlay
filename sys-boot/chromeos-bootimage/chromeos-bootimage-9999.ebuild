@@ -142,14 +142,13 @@ add_payloads() {
 #   $3: Image type (e,g. "" for standard image, "dev" for dev image)
 #   $4: Payload to add to read-only image portion
 #   $5: Payload to add to read-write image portion
-#   $6: Directory containing developer keys (used for signing)
 build_image() {
 	local public_name=$1
 	local src_image=$2
 	local image_type=$3
 	local ro_payload=$4
 	local rw_payload=$5
-	local devkeys_dir=$6
+	local devkeys_dir="${ROOT%/}/usr/share/vboot/devkeys"
 
 	[ -n "${image_type}" ] && image_type=".${image_type}"
 	local dst_image="${outdir}image${suffix}${image_type}.bin"
@@ -189,7 +188,6 @@ build_images() {
 	local outdir
 	local suffix
 
-	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
 
 	if [ -n "${model}" ]; then
@@ -235,13 +233,13 @@ build_images() {
 	local fastboot="${froot}/depthcharge/fastboot.elf"
 
 	build_image "production" "${coreboot_file}" "" \
-		"${depthcharge}" "${depthcharge}" "${devkeys}"
+		"${depthcharge}" "${depthcharge}"
 
 	build_image "serial" "${coreboot_file}.serial" serial \
-		"${depthcharge}" "${depthcharge}" "${devkeys}"
+		"${depthcharge}" "${depthcharge}"
 
 	build_image "developer" "${coreboot_file}.serial" dev \
-		"${depthcharge_dev}" "${depthcharge_dev}" "${devkeys}"
+		"${depthcharge_dev}" "${depthcharge_dev}"
 
 	# Build a netboot image.
 	#
@@ -249,7 +247,7 @@ build_images() {
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
 	build_image "netboot" "${coreboot_file}.serial" net \
-		"${depthcharge}" "${netboot}" "${devkeys}"
+		"${depthcharge}" "${netboot}"
 
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
@@ -266,11 +264,11 @@ build_images() {
 
 	if use fastboot ; then
 		build_image "fastboot" "${coreboot_file}.serial" fastboot \
-			"${fastboot}" "${depthcharge}" "${devkeys}"
+			"${fastboot}" "${depthcharge}"
 
 		build_image "fastboot production" "${coreboot_file}" \
 			fastboot-prod \
-			"${fastboot}" "${depthcharge}" "${devkeys}"
+			"${fastboot}" "${depthcharge}"
 	fi
 }
 
