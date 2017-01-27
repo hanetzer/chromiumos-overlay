@@ -137,23 +137,21 @@ add_payloads() {
 # The image is placed in directory ${outdir} ("" for current directory).
 # An image suffix is added is ${suffix} is non-empty (e.g. "dev", "net").
 # Args:
-#   $1: Public name to use in info message.
+#   $1: Image type (e,g. "" for standard image, "dev" for dev image)
 #   $2: Source image to start from.
-#   $3: Image type (e,g. "" for standard image, "dev" for dev image)
-#   $4: Payload to add to read-only image portion
-#   $5: Payload to add to read-write image portion
+#   $3: Payload to add to read-only image portion
+#   $4: Payload to add to read-write image portion
 build_image() {
-	local public_name=$1
+	local image_type=$1
 	local src_image=$2
-	local image_type=$3
-	local ro_payload=$4
-	local rw_payload=$5
+	local ro_payload=$3
+	local rw_payload=$4
 	local devkeys_dir="${ROOT%/}/usr/share/vboot/devkeys"
 
 	[ -n "${image_type}" ] && image_type=".${image_type}"
 	local dst_image="${outdir}image${suffix}${image_type}.bin"
 
-	einfo "Building ${public_name} image ${dst_image}"
+	einfo "Building image ${dst_image}"
 	cp ${src_image} ${dst_image}
 	add_payloads ${dst_image} ${ro_payload} ${rw_payload}
 	sign_image ${dst_image} "${devkeys_dir}"
@@ -232,13 +230,12 @@ build_images() {
 	local netboot="${froot}/depthcharge/netboot.elf"
 	local fastboot="${froot}/depthcharge/fastboot.elf"
 
-	build_image "production" "${coreboot_file}" "" \
+	build_image "" "${coreboot_file}" "${depthcharge}" "${depthcharge}"
+
+	build_image serial "${coreboot_file}.serial" \
 		"${depthcharge}" "${depthcharge}"
 
-	build_image "serial" "${coreboot_file}.serial" serial \
-		"${depthcharge}" "${depthcharge}"
-
-	build_image "developer" "${coreboot_file}.serial" dev \
+	build_image dev "${coreboot_file}.serial" \
 		"${depthcharge_dev}" "${depthcharge_dev}"
 
 	# Build a netboot image.
@@ -246,8 +243,7 @@ build_images() {
 	# The readonly payload is usually depthcharge and the read/write
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
-	build_image "netboot" "${coreboot_file}.serial" net \
-		"${depthcharge}" "${netboot}"
+	build_image net "${coreboot_file}.serial" "${depthcharge}" "${netboot}"
 
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
@@ -263,11 +259,10 @@ build_images() {
 		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
 
 	if use fastboot ; then
-		build_image "fastboot" "${coreboot_file}.serial" fastboot \
+		build_image fastboot "${coreboot_file}.serial" \
 			"${fastboot}" "${depthcharge}"
 
-		build_image "fastboot production" "${coreboot_file}" \
-			fastboot-prod \
+		build_image fastboot-prod "${coreboot_file}" \
 			"${fastboot}" "${depthcharge}"
 	fi
 }
