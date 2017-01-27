@@ -131,15 +131,28 @@ add_payloads() {
 		-f ${rw_payload} -n fallback/payload -c lzma -r FW_MAIN_A,FW_MAIN_B
 }
 
+# Add payloads and sign the image.
+# This takes the base image and creates a new signed one with the given
+# payloads added to it.
+# Args:
+#   $1: Public name to use in info message.
+#   $2: Source image to start from.
+#   $3: Image type (e,g. "" for standard image, "dev" for dev image)
+#   $4: Payload to add to read-only image portion
+#   $5: Payload to add to read-write image portion
+#   $6: Directory containing developer keys (used for signing)
 build_image() {
 	local public_name=$1
 	local src_image=$2
-	local dst_image=$3
+	local image_type=$3
 	local ro_payload=$4
 	local rw_payload=$5
 	local devkeys_dir=$6
 
-	einfo "Building ${public_name} image."
+	[ -n "${image_type}" ] && image_type=".${image_type}"
+	local dst_image="image${image_type}.bin"
+
+	einfo "Building ${public_name} image ${dst_image}"
 	cp ${src_image} ${dst_image}
 	add_payloads ${dst_image} ${ro_payload} ${rw_payload}
 	sign_image ${dst_image} "${devkeys_dir}"
@@ -211,13 +224,13 @@ build_images() {
 	local netboot="${froot}/depthcharge/netboot.elf"
 	local fastboot="${froot}/depthcharge/fastboot.elf"
 
-	build_image "production" "${coreboot_file}" "image.bin" \
+	build_image "production" "${coreboot_file}" "" \
 		"${depthcharge}" "${depthcharge}" "${devkeys}"
 
-	build_image "serial" "${coreboot_file}.serial" "image.serial.bin" \
+	build_image "serial" "${coreboot_file}.serial" serial \
 		"${depthcharge}" "${depthcharge}" "${devkeys}"
 
-	build_image "developer" "${coreboot_file}.serial" "image.dev.bin" \
+	build_image "developer" "${coreboot_file}.serial" dev \
 		"${depthcharge_dev}" "${depthcharge_dev}" "${devkeys}"
 
 	# Build a netboot image.
@@ -225,7 +238,7 @@ build_images() {
 	# The readonly payload is usually depthcharge and the read/write
 	# payload is usually netboot. This way the netboot image can be used
 	# to boot from USB through recovery mode if necessary.
-	build_image "netboot" "${coreboot_file}.serial" "image.net.bin" \
+	build_image "netboot" "${coreboot_file}.serial" net \
 		"${depthcharge}" "${netboot}" "${devkeys}"
 
 	# Set convenient netboot parameter defaults for developers.
@@ -240,10 +253,11 @@ build_images() {
 		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
 
 	if use fastboot ; then
-		build_image "fastboot" "${coreboot_file}.serial" "image.fastboot.bin" \
+		build_image "fastboot" "${coreboot_file}.serial" fastboot \
 			"${fastboot}" "${depthcharge}" "${devkeys}"
 
-		build_image "fastboot production" "${coreboot_file}" "image.fastboot-prod.bin" \
+		build_image "fastboot production" "${coreboot_file}" \
+			fastboot-prod \
 			"${fastboot}" "${depthcharge}" "${devkeys}"
 	fi
 }
