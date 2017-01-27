@@ -61,6 +61,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0032-lm-1.59-refactor-slow-listed-by-id.patch" \
           "0033-Add-udev-rule-for-WiFi-devices.patch" \
           "0034-wireless-power-disable-module.patch" \
+          "0035-disable-usb-autosuspend-and-runtime-pm.patch" \
         )
 
 src_prepare() {
@@ -93,7 +94,6 @@ src_install() {
 	rm "${D}"/etc/udev/rules.d/99-laptop-mode.rules || die
 
 	insinto /etc/laptop-mode/conf.d/board-specific
-	doins "${FILESDIR}/usb-autosuspend-cros.conf"
 	if use wifi_force_powersave ; then
 		doins "${FILESDIR}/wifi-force-powersave.conf"
 	fi
