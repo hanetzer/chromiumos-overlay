@@ -134,6 +134,8 @@ add_payloads() {
 # Add payloads and sign the image.
 # This takes the base image and creates a new signed one with the given
 # payloads added to it.
+# The image is placed in directory ${outdir} ("" for current directory).
+# An image suffix is added is ${suffix} is non-empty (e.g. "dev", "net").
 # Args:
 #   $1: Public name to use in info message.
 #   $2: Source image to start from.
@@ -150,7 +152,7 @@ build_image() {
 	local devkeys_dir=$6
 
 	[ -n "${image_type}" ] && image_type=".${image_type}"
-	local dst_image="image${image_type}.bin"
+	local dst_image="${outdir}image${suffix}${image_type}.bin"
 
 	einfo "Building ${public_name} image ${dst_image}"
 	cp ${src_image} ${dst_image}
@@ -178,6 +180,8 @@ build_image() {
 #       rocbfs/*                 - fonts, images and screens for recovery mode
 build_images() {
 	local froot="$1"
+	local outdir
+	local suffix
 
 	local devkeys="${ROOT%/}/usr/share/vboot/devkeys"
 	local coreboot_file="${froot}/coreboot.rom"
@@ -237,9 +241,11 @@ build_images() {
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
 	local argsfile="${PORTAGE_USERNAME}/${BOARD_USE}/cmdline"
-	"${S}"/setup/update_firmware_settings.py -i "image.net.bin" \
+	"${S}"/setup/update_firmware_settings.py \
+		-i "${outdir}image${suffix}.net.bin" \
 		--bootfile="${bootfile}" --argsfile="${argsfile}" &&
-		"${S}"/setup/update_firmware_settings.py -i "image.dev.bin" \
+		"${S}"/setup/update_firmware_settings.py \
+			-i "${outdir}image${suffix}.dev.bin" \
 			--bootfile="${bootfile}" --argsfile="${argsfile}" ||
 		die "failed to preset netboot parameter defaults."
 	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
