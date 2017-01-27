@@ -54,7 +54,6 @@ EC_BOARD_NAMES=(
 	pit
 	plankton
 	poppy
-	pyro
 	reef
 	ryu
 	ryu_p4p5
@@ -62,7 +61,6 @@ EC_BOARD_NAMES=(
 	ryu_sh_loader
 	samus
 	samus_pd
-	snappy
 	strago
 	twinkie
 	zinger
@@ -90,7 +88,7 @@ get_ec_boards()
 		# At present USE=unibuild is optional for all boards.
 		# TODO(sjg): Should we be trying to enable multiple 'use'
 		# flags here? If so, we would end up enabling use flags for
-		# several models (e.g. reef, pyro, snappy when building reef
+		# several models (e.g. reef when building reef
 		# with USE=unibuild. But then where would we set these 'use'
 		# flags? It should presumably be done in make.conf, but then
 		# we need to set USE=unibuild there, meaning it is no-longer
