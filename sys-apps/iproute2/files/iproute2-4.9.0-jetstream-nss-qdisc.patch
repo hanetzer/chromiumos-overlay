@@ -1,11 +1,22 @@
-Support for NSS Qdiscs
+From a26273e23adce748d21f0543aa1efee35794c597 Mon Sep 17 00:00:00 2001
+From: Kevin Cernekee <cernekee@chromium.org>
+Date: Fri, 27 Jan 2017 14:59:13 -0800
+Subject: [PATCH 4/4] Jetstream: Support for NSS Qdiscs
 
 This patch is to support Qdiscs that shall
 be implemened in the NSS QoS Engine.
-These changes have not yet been pushed upstream.
+These changes have not yet been pushed upstream (and probably won't be).
+---
+ include/linux/pkt_sched.h |  221 +++++++
+ tc/Makefile               |    1 +
+ tc/q_nss.c                | 1411 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1633 insertions(+)
+ create mode 100644 tc/q_nss.c
 
---- iproute2-4.2.0/include/linux/pkt_sched.h
-+++ iproute2-4.2.0/include/linux/pkt_sched.h
+diff --git a/include/linux/pkt_sched.h b/include/linux/pkt_sched.h
+index df7451d35131..2cf434a4a895 100644
+--- a/include/linux/pkt_sched.h
++++ b/include/linux/pkt_sched.h
 @@ -1,3 +1,19 @@
 +/*
 + **************************************************************************
@@ -25,11 +36,11 @@ These changes have not yet been pushed upstream.
 +
  #ifndef __LINUX_PKT_SCHED_H
  #define __LINUX_PKT_SCHED_H
-
-@@ -112,6 +128,211 @@ enum {
-
+ 
+@@ -116,6 +132,211 @@ enum {
+ 
  #define TCA_STAB_MAX (__TCA_STAB_MAX - 1)
-
+ 
 +/* NSSFIFO section */
 +
 +enum {
@@ -236,20 +247,25 @@ These changes have not yet been pushed upstream.
 +};
 +
  /* FIFO section */
-
+ 
  struct tc_fifo_qopt {
---- iproute2-4.2.0/tc/Makefile
-+++ iproute2-4.2.0/tc/Makefile
-@@ -64,6 +64,7 @@ TCMODULES += q_fq_codel.o
+diff --git a/tc/Makefile b/tc/Makefile
+index dfa875b5edaf..1a38c02eb3d0 100644
+--- a/tc/Makefile
++++ b/tc/Makefile
+@@ -65,6 +65,7 @@ TCMODULES += q_fq_codel.o
  TCMODULES += q_fq.o
  TCMODULES += q_pie.o
  TCMODULES += q_hhf.o
 +TCMODULES += q_nss.o
+ TCMODULES += q_clsact.o
  TCMODULES += e_bpf.o
-
- ifeq ($(TC_CONFIG_IPSET), y)
+ TCMODULES += f_matchall.o
+diff --git a/tc/q_nss.c b/tc/q_nss.c
+new file mode 100644
+index 000000000000..e84166d6c781
 --- /dev/null
-+++ iproute2-4.2.0/tc/q_nss.c
++++ b/tc/q_nss.c
 @@ -0,0 +1,1411 @@
 +/*
 + **************************************************************************
@@ -1662,3 +1678,6 @@ These changes have not yet been pushed upstream.
 +	.parse_qopt	= nssblackhole_parse_opt,
 +	.print_qopt	= nssblackhole_print_opt,
 +};
+-- 
+2.11.0.483.g087da7b7c-goog
+

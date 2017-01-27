@@ -1,0 +1,73 @@
+From e8a611302fdc0eec5cd4f7e7be3262b4a88ecf30 Mon Sep 17 00:00:00 2001
+From: Stephen Hemminger <stephen@networkplumber.org>
+Date: Wed, 26 Oct 2016 11:20:29 -0700
+Subject: [PATCH 1/4] update kernel headers to 4.9-net-next
+
+---
+ include/linux/bpf.h       |  6 ++++++
+ include/linux/if_ether.h  |  3 +++
+ include/linux/inet_diag.h | 17 +++++++++++++++++
+ 3 files changed, 26 insertions(+)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d4a6e1f91728..5c8191aeb885 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -426,6 +426,12 @@ enum bpf_func_id {
+ 	 */
+ 	BPF_FUNC_set_hash_invalid,
+ 
++	/**
++	 * bpf_get_numa_node_id()
++	 * Returns the id of the current NUMA node.
++	 */
++	BPF_FUNC_get_numa_node_id,
++
+ 	__BPF_FUNC_MAX_ID,
+ };
+ 
+diff --git a/include/linux/if_ether.h b/include/linux/if_ether.h
+index 51898e048691..6ff4a72163d6 100644
+--- a/include/linux/if_ether.h
++++ b/include/linux/if_ether.h
+@@ -35,6 +35,9 @@
+ #define ETH_FRAME_LEN	1514		/* Max. octets in frame sans FCS */
+ #define ETH_FCS_LEN	4		/* Octets in the FCS		 */
+ 
++#define ETH_MIN_MTU	68		/* Min IPv4 MTU per RFC791	*/
++#define ETH_MAX_MTU	0xFFFFU		/* 65535, same as IP_MAX_MTU	*/
++
+ /*
+  *	These are the defined Ethernet Protocol ID's.
+  */
+diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
+index f5f5c1b8e727..f7bf7819e924 100644
+--- a/include/linux/inet_diag.h
++++ b/include/linux/inet_diag.h
+@@ -43,6 +43,23 @@ struct inet_diag_req_v2 {
+ 	struct inet_diag_sockid id;
+ };
+ 
++/*
++ * SOCK_RAW sockets require the underlied protocol to be
++ * additionally specified so we can use @pad member for
++ * this, but we can't rename it because userspace programs
++ * still may depend on this name. Instead lets use another
++ * structure definition as an alias for struct
++ * @inet_diag_req_v2.
++ */
++struct inet_diag_req_raw {
++	__u8	sdiag_family;
++	__u8	sdiag_protocol;
++	__u8	idiag_ext;
++	__u8	sdiag_raw_protocol;
++	__u32	idiag_states;
++	struct inet_diag_sockid id;
++};
++
+ enum {
+ 	INET_DIAG_REQ_NONE,
+ 	INET_DIAG_REQ_BYTECODE,
+-- 
+2.11.0.483.g087da7b7c-goog
+
