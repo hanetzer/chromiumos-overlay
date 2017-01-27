@@ -1,0 +1,42 @@
+commit 3cd5f5be43861486db2205e85416d74403f063d2
+Author: Malcolm Parsons <malcolm.parsons@gmail.com>
+Date:   Thu Nov 24 08:54:05 2016 +0000
+
+    [CommandLine] Remove redundant initializers for StringRef members
+    
+    Summary: The default constructor for a StringRef stores an empty string.
+    
+    Reviewers: beanz, zturner
+    
+    Subscribers: llvm-commits
+    
+    Differential Revision: https://reviews.llvm.org/D27067
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@287857 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/include/llvm/Support/CommandLine.h b/include/llvm/Support/CommandLine.h
+index fc675930760..2d5eb4f72f4 100644
+--- a/include/llvm/Support/CommandLine.h
++++ b/include/llvm/Support/CommandLine.h
+@@ -179,8 +179,8 @@ extern OptionCategory GeneralCategory;
+ //
+ class SubCommand {
+ private:
+-  StringRef Name = "";
+-  StringRef Description = "";
++  StringRef Name;
++  StringRef Description;
+ 
+ protected:
+   void registerSubCommand();
+@@ -304,8 +304,8 @@ protected:
+                   enum OptionHidden Hidden)
+       : NumOccurrences(0), Occurrences(OccurrencesFlag), Value(0),
+         HiddenFlag(Hidden), Formatting(NormalFormatting), Misc(0), Position(0),
+-        AdditionalVals(0), ArgStr(""), HelpStr(""), ValueStr(""),
+-        Category(&GeneralCategory), FullyInitialized(false) {}
++        AdditionalVals(0), Category(&GeneralCategory), FullyInitialized(false) {
++  }
+ 
+   inline void setNumAdditionalVals(unsigned n) { AdditionalVals = n; }
+ 
