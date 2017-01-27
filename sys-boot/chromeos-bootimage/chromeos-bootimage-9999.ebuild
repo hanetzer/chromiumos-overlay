@@ -186,13 +186,6 @@ build_images() {
 	cp ${coreboot_file}.serial coreboot.rom.serial
 	coreboot_file=coreboot.rom
 
-	einfo "Add static assets to images"
-	# files from rocbfs/ are installed in all images' RO CBFS
-	mkdir compressed-assets
-	find ${froot}/rocbfs -mindepth 1 -maxdepth 1 -printf "%P\0" 2>/dev/null | \
-		xargs -0 -n 1 -P $(nproc) -I '{}' \
-		cbfs-compression-tool compress ${froot}/rocbfs/'{}' \
-			compressed-assets/'{}' LZMA
 	for file in $(find compressed-assets -type f 2>/dev/null); do
 		for rom in ${coreboot_file}{,.serial}; do
 			do_cbfstool ${rom} add \
@@ -264,6 +257,14 @@ build_images() {
 
 src_compile() {
 	local froot="${CROS_FIRMWARE_ROOT}"
+
+	einfo "Compressing static assets"
+	# files from rocbfs/ are installed in all images' RO CBFS
+	mkdir compressed-assets
+	find ${froot}/rocbfs -mindepth 1 -maxdepth 1 -printf "%P\0" 2>/dev/null | \
+		xargs -0 -n 1 -P $(nproc) -I '{}' \
+		cbfs-compression-tool compress ${froot}/rocbfs/'{}' \
+			compressed-assets/'{}' LZMA
 
 	build_images "${froot}"
 }
