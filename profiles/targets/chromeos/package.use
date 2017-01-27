@@ -45,6 +45,8 @@ chromeos-base/vboot_reference minimal
 media-gfx/imagemagick	png
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
 media-libs/freeimage	png
+# Drop unneeded dependencies.
+media-libs/harfbuzz	-cairo -glib -introspection
 media-libs/libdvdread	-css
 media-libs/libsndfile	minimal
 # disabled in profiles/default/linux/package.use
@@ -86,6 +88,8 @@ net-proxy/tsocks	tordns
 net-wireless/bluez	-cups
 net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd	-python -ntp -X dbus garmin minimal ocean tntc usb -sockets
+# Prevent gnuplot from indirectly requiring harfbuzz to be bilt with glib.
+sci-visualization/gnuplot	-cairo
 sys-apps/busybox	-pam -selinux
 sys-apps/baselayout	-auto_seed_etc_files
 sys-apps/coreutils	multicall
