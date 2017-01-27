@@ -14,12 +14,15 @@ inherit cros-workon platform user
 
 DESCRIPTION="Library to run jailed containers on Chrome OS"
 HOMEPAGE="http://www.chromium.org/"
+
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE=""
 KEYWORDS="~*"
+IUSE="+device-mapper"
 
-RDEPEND="chromeos-base/chromeos-minijail"
+# Need lvm2 for devmapper.
+RDEPEND="chromeos-base/chromeos-minijail
+	device-mapper? ( sys-fs/lvm2 )"
 DEPEND="${RDEPEND}"
 
 src_install() {
