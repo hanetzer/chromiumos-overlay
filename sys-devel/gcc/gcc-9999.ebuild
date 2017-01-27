@@ -96,7 +96,7 @@ src_unpack() {
 		else
 			gcc_repository="${aosp_git}"
 		fi
-		git clone "${gcc_repository}" "${S}"
+		git clone --depth 1 --no-single-branch "${gcc_repository}" "${S}"
 		if use next_gcc ; then
 		    GCC_GITHASH="${NEXT_GCC}"
 		fi
