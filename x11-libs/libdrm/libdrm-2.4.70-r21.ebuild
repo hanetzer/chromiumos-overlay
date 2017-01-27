@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="0ce18bedd3e62d4784fa755403801934ba171084"
-CROS_WORKON_TREE="aee2be3e199a878e04c46a01072c5bd101cf6c57"
+CROS_WORKON_COMMIT="0c7748b56694e9b00537f27bbe9edb11c78ce08f"
+CROS_WORKON_TREE="76f71a119c52112e8cb28c72b3643d5a01ce4339"
 CROS_WORKON_PROJECT="chromiumos/third_party/libdrm"
 
 inherit xorg-2 cros-workon
