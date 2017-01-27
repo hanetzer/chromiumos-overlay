@@ -180,7 +180,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
-	dev-libs/atk
 	dev-libs/nspr
 	>=dev-libs/nss-3.12.2
 	dev-libs/libxml2
