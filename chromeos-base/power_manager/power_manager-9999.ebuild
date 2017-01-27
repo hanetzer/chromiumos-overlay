@@ -91,7 +91,10 @@ src_install() {
 	exeinto "$(udev_get_udevdir)"
 	doexe udev/*.sh
 
+	udev/gen_autosuspend_rules.py > "${T}"/99-autosuspend.rules || die
+
 	udev_dorules udev/*.rules
+	udev_dorules "${T}"/99-autosuspend.rules
 
 	# Init scripts
 	if use systemd; then
