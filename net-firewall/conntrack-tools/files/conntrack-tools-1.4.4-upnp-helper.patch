@@ -1,4 +1,4 @@
-From 73123d6399c5fedcd60290db601eaf76b021eaa4 Mon Sep 17 00:00:00 2001
+From 0a9cfa953309f8e65e7f341625624be5fae49eae Mon Sep 17 00:00:00 2001
 From: Kevin Cernekee <cernekee@chromium.org>
 Date: Wed, 31 Aug 2016 21:01:06 -0700
 Subject: [PATCH] conntrackd: cthelper: ssdp: Track UPnP eventing
@@ -31,11 +31,11 @@ and rewrite the IP in the CALLBACK URL.  Tested with and without NAT.
 Signed-off-by: Kevin Cernekee <cernekee@chromium.org>
 ---
  doc/helper/conntrackd.conf |  10 +-
- src/helpers/ssdp.c         | 478 ++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 481 insertions(+), 7 deletions(-)
+ src/helpers/ssdp.c         | 481 ++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 484 insertions(+), 7 deletions(-)
 
 diff --git a/doc/helper/conntrackd.conf b/doc/helper/conntrackd.conf
-index a827b93..7eae8bc 100644
+index a827b93461a6..7eae8bc8a17a 100644
 --- a/doc/helper/conntrackd.conf
 +++ b/doc/helper/conntrackd.conf
 @@ -84,7 +84,15 @@ Helper {
@@ -56,7 +56,7 @@ index a827b93..7eae8bc 100644
  		}
  	}
 diff --git a/src/helpers/ssdp.c b/src/helpers/ssdp.c
-index bc41087..6e16d42 100644
+index bc410875c2b8..0354e9f71b1a 100644
 --- a/src/helpers/ssdp.c
 +++ b/src/helpers/ssdp.c
 @@ -1,5 +1,5 @@
@@ -104,7 +104,7 @@ index bc41087..6e16d42 100644
  #include <netinet/udp.h>
  #include <libmnl/libmnl.h>
  #include <libnetfilter_conntrack/libnetfilter_conntrack.h>
-@@ -36,8 +58,96 @@
+@@ -36,8 +58,99 @@
  #define SSDP_M_SEARCH		"M-SEARCH"
  #define SSDP_M_SEARCH_SIZE	(sizeof SSDP_M_SEARCH - 1)
  
@@ -135,7 +135,7 @@ index bc41087..6e16d42 100644
 +
 +	nat_tuple = nfct_new();
 +	if (nat_tuple == NULL)
-+		return NF_ACCEPT;
++		goto bad_destroy;
 +
 +	initial_port = nfct_get_attr_u16(expected, ATTR_PORT_DST);
 +
@@ -172,29 +172,32 @@ index bc41087..6e16d42 100644
 +	nfct_destroy(nat_tuple);
 +
 +	if (port == 0)
-+		return NF_DROP;
++		goto bad_destroy;
 +
 +	/* Only the SUBSCRIBE request contains an IP string that needs to be
 +	   mangled. */
-+	if (!matchoff)
-+		return NF_ACCEPT;
++	if (matchoff) {
++		buflen = snprintf(buffer, sizeof(buffer),
++					"%u.%u.%u.%u:%u",
++					((unsigned char *)&newip.ip)[0],
++					((unsigned char *)&newip.ip)[1],
++					((unsigned char *)&newip.ip)[2],
++					((unsigned char *)&newip.ip)[3], port);
++		if (!buflen)
++			goto bad_del_destroy;
 +
-+	buflen = snprintf(buffer, sizeof(buffer),
-+				"%u.%u.%u.%u:%u",
-+                                ((unsigned char *)&newip.ip)[0],
-+                                ((unsigned char *)&newip.ip)[1],
-+                                ((unsigned char *)&newip.ip)[2],
-+                                ((unsigned char *)&newip.ip)[3], port);
-+	if (!buflen)
-+		goto out;
++		if (!nfq_tcp_mangle_ipv4(pkt, matchoff, matchlen, buffer,
++					 buflen))
++			goto bad_del_destroy;
++	}
 +
-+	if (!nfq_tcp_mangle_ipv4(pkt, matchoff, matchlen, buffer, buflen))
-+		goto out;
-+
++	nfexp_destroy(exp);
 +	return NF_ACCEPT;
 +
-+out:
++bad_del_destroy:
 +	cthelper_del_expect(exp);
++bad_destroy:
++	nfexp_destroy(exp);
 +	return NF_DROP;
 +}
 +
@@ -203,7 +206,7 @@ index bc41087..6e16d42 100644
  {
  	int ret = NF_ACCEPT;
  	union nfct_attr_grp_addr daddr, saddr, taddr;
-@@ -109,12 +219,353 @@ static int ssdp_helper_cb(struct pkt_buff *pkt, uint32_t protoff,
+@@ -109,12 +222,353 @@ static int ssdp_helper_cb(struct pkt_buff *pkt, uint32_t protoff,
  		nfexp_destroy(exp);
  		return NF_DROP;
  	}
@@ -558,7 +561,7 @@ index bc41087..6e16d42 100644
  	.name		= "ssdp",
  	.l4proto	= IPPROTO_UDP,
  	.priv_data_len	= 0,
-@@ -122,7 +573,21 @@ static struct ctd_helper ssdp_helper = {
+@@ -122,7 +576,21 @@ static struct ctd_helper ssdp_helper = {
  	.policy		= {
  		[0] = {
  			.name		= "ssdp",
@@ -581,7 +584,7 @@ index bc41087..6e16d42 100644
  			.expect_timeout	= 5 * 60,
  		},
  	},
-@@ -130,5 +595,6 @@ static struct ctd_helper ssdp_helper = {
+@@ -130,5 +598,6 @@ static struct ctd_helper ssdp_helper = {
  
  static void __attribute__ ((constructor)) ssdp_init(void)
  {
@@ -590,5 +593,5 @@ index bc41087..6e16d42 100644
 +	helper_register(&ssdp_helper_tcp);
  }
 -- 
-2.7.4
+2.11.0.483.g087da7b7c-goog
 
