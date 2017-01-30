@@ -140,7 +140,8 @@ EOF
 	fi
 
 	# disable coreboot's own EC firmware building mechanism
-	echo "CONFIG_EC_EXTERNAL_FIRMWARE=y" >> .config
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> .config
+	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> .config
 	# enable common GBB flags for development
 	echo "CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY=y" >> .config
 	echo "CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK=y" >> .config
