@@ -147,7 +147,7 @@ src_install() {
 	use_fw adsp_kbl && doins_subdir intel/dsp_fw_kbl*
 	use_fw adsp_skl && doins_subdir intel/dsp_fw_*
 	use_fw ath9k_htc && doins htc_*.fw
-	use_fw ath10k && doins_subdir ath10k/QCA6174/hw{3.0,2.1}/*
+	use_fw ath10k && doins_subdir ath10k/QCA6174/hw3.0/*
 	use_fw bcm4354-bt && doins_subdir brcm/BCM4354_*.hcd
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
