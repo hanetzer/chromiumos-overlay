@@ -44,6 +44,7 @@ src_install() {
 	# Install seccomp policy file.
 	insinto /opt/google/imageloader
 	newins "seccomp/imageloader-seccomp-${ARCH}.policy" imageloader-seccomp.policy
+	newins "seccomp/imageloader-helper-seccomp-${ARCH}.policy" imageloader-helper-seccomp.policy
 	cd "${OUT}"
 	dosbin imageloader
 	cd "${S}"
