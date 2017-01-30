@@ -17,7 +17,7 @@ S="${WORKDIR}/${PN}"
 RDEPEND="sys-apps/debianutils"
 
 src_prepare() {
-	epatch "${FILESDIR}"/*.patch
+	epatch "${FILESDIR}"/${PN}_${PV}_assume_linux.patch
 }
 
 src_install() {
