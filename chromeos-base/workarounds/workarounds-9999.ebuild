@@ -17,6 +17,5 @@ IUSE=""
 RDEPEND=""
 
 src_install() {
-	dobin crosh-workarounds
 	dobin generate_logs
 }
