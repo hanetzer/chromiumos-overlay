@@ -30,7 +30,6 @@ EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
 
 # EC firmware board names for overlay with special configuration
 EC_BOARD_NAMES=(
-	auron
 	bds
 	big
 	chell
@@ -56,7 +55,6 @@ EC_BOARD_NAMES=(
 	plankton
 	poppy
 	pyro
-	rambi
 	reef
 	ryu
 	ryu_p4p5
