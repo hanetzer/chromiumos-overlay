@@ -15,8 +15,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-RDEPEND=""
-DEPEND="x11-libs/libX11"
+# libX11 needs to be in RDEPEND because we depend on the header being present
+RDEPEND="x11-libs/libX11"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	# headers
