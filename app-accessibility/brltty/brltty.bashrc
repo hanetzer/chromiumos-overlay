@@ -14,6 +14,8 @@ cros_pre_src_prepare_brltty_config() {
 	epatch "${FILESDIR}"/${P}-r1-0006-A-bit-of-retain-chords-code-cleanup.-dm.patch
 	epatch "${FILESDIR}"/${P}-r1-0007-Customize-retain-dots-for-Chrome-OS-and-ChromeVox.patch
 	epatch "${FILESDIR}"/${P}-orbit.patch
+	epatch "${FILESDIR}"/${P}-dot.patch
+	epatch "${FILESDIR}"/${P}-canute.patch
 }
 
 cros_post_src_prepare_brltty_config() {

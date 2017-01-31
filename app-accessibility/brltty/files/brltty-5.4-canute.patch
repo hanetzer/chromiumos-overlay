@@ -1,0 +1,402 @@
+From 02ce808d3919992237ca6689fef138e05b581055 Mon Sep 17 00:00:00 2001
+From: Dominic Mazzoni <dmazzoni@chromium.org>
+Date: Wed, 28 Dec 2016 11:40:09 -0800
+Subject: [PATCH 2/2] Bristol Canute
+
+---
+ Drivers/Braille/Bristol/Makefile.in  |  28 +++++
+ Drivers/Braille/Bristol/braille.c    | 221 +++++++++++++++++++++++++++++++++++
+ Drivers/Braille/Bristol/brldefs-br.h |  23 ++++
+ Drivers/Braille/Bristol/reldeps.mk   |  26 +++++
+ Drivers/Braille/DOT/reldeps.mk       |   2 +-
+ Programs/config.c                    |   2 +-
+ Programs/usb_adapters.c              |   6 +
+ configure.ac                         |   1 +
+ 8 files changed, 307 insertions(+), 2 deletions(-)
+ create mode 100644 Drivers/Braille/Bristol/Makefile.in
+ create mode 100644 Drivers/Braille/Bristol/braille.c
+ create mode 100644 Drivers/Braille/Bristol/brldefs-br.h
+ create mode 100644 Drivers/Braille/Bristol/reldeps.mk
+
+diff --git a/Drivers/Braille/Bristol/Makefile.in b/Drivers/Braille/Bristol/Makefile.in
+new file mode 100644
+index 000000000..238f62cb0
+--- /dev/null
++++ b/Drivers/Braille/Bristol/Makefile.in
+@@ -0,0 +1,28 @@
++###############################################################################
++# BRLTTY - A background process providing access to the console screen (when in
++#          text mode) for a blind person using a refreshable braille display.
++#
++# Copyright (C) 1995-2016 by The BRLTTY Developers.
++#
++# BRLTTY comes with ABSOLUTELY NO WARRANTY.
++#
++# This is free software, placed under the terms of the
++# GNU General Public License, as published by the Free Software
++# Foundation; either version 2 of the License, or (at your option) any
++# later version. Please see the file LICENSE-GPL for details.
++#
++# Web Page: http://brltty.com/
++#
++# This software is maintained by Dave Mielke <dave@mielke.cc>.
++###############################################################################
++
++DRIVER_CODE = br
++DRIVER_NAME = Bristol
++DRIVER_COMMENT = Canute
++DRIVER_VERSION = 
++DRIVER_DEVELOPERS = Dominic Mazzoni <dmazzoni@google.com>
++include $(SRC_TOP)braille.mk
++
++braille.$O:
++	$(CC) $(BRL_CFLAGS) -c $(SRC_DIR)/braille.c
++
+diff --git a/Drivers/Braille/Bristol/braille.c b/Drivers/Braille/Bristol/braille.c
+new file mode 100644
+index 000000000..d3cd5e49d
+--- /dev/null
++++ b/Drivers/Braille/Bristol/braille.c
+@@ -0,0 +1,221 @@
++/*
++ * BRLTTY - A background process providing access to the console screen (when in
++ *          text mode) for a blind person using a refreshable braille display.
++ *
++ * Copyright (C) 1995-2017 by The BRLTTY Developers.
++ *
++ * BRLTTY comes with ABSOLUTELY NO WARRANTY.
++ *
++ * This is free software, placed under the terms of the
++ * GNU General Public License, as published by the Free Software
++ * Foundation; either version 2 of the License, or (at your option) any
++ * later version. Please see the file LICENSE-GPL for details.
++ *
++ * Web Page: http://brltty.com/
++ *
++ * This software is maintained by Dave Mielke <dave@mielke.cc>.
++ */
++
++#include "prologue.h"
++
++#include <string.h>
++#include <errno.h>
++
++#include "log.h"
++
++#include "brl_driver.h"
++#include "brldefs-br.h"
++
++#define PROBE_RETRY_LIMIT 2
++#define PROBE_INPUT_TIMEOUT 250
++#define MAXIMUM_RESPONSE_SIZE (0XFF + 4)
++#define MAXIMUM_TEXT_CELLS 360
++
++struct BrailleDataStruct {
++  struct {
++    unsigned char rewrite;
++    unsigned char cells[MAXIMUM_TEXT_CELLS];
++    unsigned char previousCells[MAXIMUM_TEXT_CELLS];
++  } braille;
++
++  struct {
++    unsigned char rewrite;
++    wchar_t characters[MAXIMUM_TEXT_CELLS];
++  } text;
++
++  struct {
++    unsigned char rewrite;
++    int position;
++  } cursor;
++};
++
++static int
++writeBytes (BrailleDisplay *brl, const unsigned char *bytes, size_t count) {
++  return writeBraillePacket(brl, NULL, bytes, count);
++}
++
++static int
++writePacket (BrailleDisplay *brl, const unsigned char *packet, size_t size) {
++  unsigned char bytes[size];
++  unsigned char *byte = bytes;
++
++  byte = mempcpy(byte, packet, size);
++
++  return writeBytes(brl, bytes, byte-bytes);
++}
++
++static size_t
++readPacket (BrailleDisplay *brl, void *packet, size_t size) {
++  unsigned char* buffer = packet;
++  GioEndpoint *endpoint = brl->gioEndpoint;
++  size_t result = 0;
++  while (gioReadByte(endpoint, &buffer[result], 0) && result < size)
++    result++;
++  return result;
++}
++
++static int
++connectResource (BrailleDisplay *brl, const char *identifier) {
++  static const SerialParameters serialParameters = {
++    SERIAL_DEFAULT_PARAMETERS,
++    .baud = 115200
++  };
++
++  BEGIN_USB_CHANNEL_DEFINITIONS
++    { /* Canute (360 cells) */
++      .vendor=0X2341, .product=0X8036,
++      .configuration=1, .interface=1, .alternative=0,
++      .inputEndpoint=0x83, .outputEndpoint=0x02,
++      .serial = &serialParameters
++    },
++  END_USB_CHANNEL_DEFINITIONS
++
++  GioDescriptor descriptor;
++  gioInitializeDescriptor(&descriptor);
++
++  descriptor.serial.parameters = &serialParameters;
++  descriptor.usb.channelDefinitions = usbChannelDefinitions;
++  if (connectBrailleResource(brl, identifier, &descriptor, NULL)) return 1;
++
++  return 0;
++}
++
++static int
++brl_construct (BrailleDisplay *brl, char **parameters, const char *device) {
++  if ((brl->data = malloc(sizeof(*brl->data)))) {
++    memset(brl->data, 0, sizeof(*brl->data));
++
++    if (connectResource(brl, device)) {
++      // Get n characters per row
++      {
++        unsigned char packet[1];
++        packet[0] = 0x00;  // COMMAND_N_CHARACTERS
++        if (!writePacket(brl, packet, sizeof(packet))) return 0;
++
++        if (gioAwaitInput(brl->gioEndpoint, PROBE_INPUT_TIMEOUT)) {
++          unsigned char response[MAXIMUM_RESPONSE_SIZE];
++          size_t result = readPacket(brl, response, sizeof(response));
++          if (!result) return 0;
++          brl->textColumns = response[1];
++        } else {
++          disconnectBrailleResource(brl, NULL);
++          return 0;
++        }
++      }
++
++      // Get n rows
++      {
++        unsigned char packet[1];
++        packet[0] = 0x01;  // COMMAND_N_ROWS
++        int result = writePacket(brl, packet, sizeof(packet));
++        if (!result) return 0;
++        if (gioAwaitInput(brl->gioEndpoint, PROBE_INPUT_TIMEOUT)) {
++          unsigned char response[MAXIMUM_RESPONSE_SIZE];
++          size_t result = readPacket(brl, response, sizeof(response));
++          brl->textRows = response[1];
++        } else {
++          disconnectBrailleResource(brl, NULL);
++          return 0;
++        }
++      }
++
++      brl->statusRows = 0;
++      brl->statusColumns = 0;
++
++      brl->data->braille.rewrite = 1;
++      brl->data->text.rewrite = 1;
++      brl->data->cursor.rewrite = 1;
++
++      return 1;
++    }
++
++    free(brl->data);
++  } else {
++    logMallocError();
++  }
++
++  return 0;
++}
++
++static void
++brl_destruct (BrailleDisplay *brl) {
++  disconnectBrailleResource(brl, NULL);
++
++  if (brl->data) {
++    free(brl->data);
++    brl->data = NULL;
++  }
++}
++
++static int
++brl_writeWindow (BrailleDisplay *brl, const wchar_t *text) {
++  size_t cellCount = brl->textColumns * brl->textRows;
++
++  int newBraille =
++      cellsHaveChanged(brl->data->braille.cells, brl->buffer, cellCount,
++                       NULL, NULL, &brl->data->braille.rewrite);
++
++  int newText =
++      textHasChanged(brl->data->text.characters, text, cellCount,
++                     NULL, NULL, &brl->data->text.rewrite);
++
++  int newCursor =
++      cursorHasChanged(&brl->data->cursor.position, brl->cursor,
++                       &brl->data->cursor.rewrite);
++
++  if (!newBraille && !newText && !newCursor)
++    return 1;
++
++  unsigned char cells[cellCount];
++  translateOutputCells(cells, brl->data->braille.cells, cellCount);
++  for (size_t row = 0; row < brl->textRows; row++) {
++    // Send 1 packet per row, only if that row has changed.
++    size_t index = row * brl->textColumns;
++    if (!cellsHaveChanged(&brl->data->braille.previousCells[index], &cells[index], brl->textColumns, NULL, NULL, NULL))
++      continue;
++
++    memcpy(&brl->data->braille.previousCells[index], &cells[index], brl->textColumns);
++
++    unsigned char packet[brl->textColumns + 2];
++    packet[0] = 0x06;  // COMMAND_SEND_LINE
++    packet[1] = row;
++    for (size_t j = 0; j < brl->textColumns; j++)
++      packet[2 + j] = cells[index + j];
++    int result = writePacket(brl, packet, sizeof(packet));
++
++    if (gioAwaitInput(brl->gioEndpoint, PROBE_INPUT_TIMEOUT)) {
++      unsigned char ack[2];
++      size_t ack_result = readPacket(brl, ack, sizeof(ack));
++      if (ack_result != 2)
++        return 0;
++    }
++  }
++
++  return 1;
++}
++
++static int
++brl_readCommand (BrailleDisplay *brl, KeyTableCommandContext context) {
++  // TODO: handle input
++  return EOF;
++}
+diff --git a/Drivers/Braille/Bristol/brldefs-br.h b/Drivers/Braille/Bristol/brldefs-br.h
+new file mode 100644
+index 000000000..f0842116b
+--- /dev/null
++++ b/Drivers/Braille/Bristol/brldefs-br.h
+@@ -0,0 +1,23 @@
++
++/*
++ * BRLTTY - A background process providing access to the console screen (when in
++ *          text mode) for a blind person using a refreshable braille display.
++ *
++ * Copyright (C) 1995-2016 by The BRLTTY Developers.
++ *
++ * BRLTTY comes with ABSOLUTELY NO WARRANTY.
++ *
++ * This is free software, placed under the terms of the
++ * GNU Lesser General Public License, as published by the Free Software
++ * Foundation; either version 2.1 of the License, or (at your option) any
++ * later version. Please see the file LICENSE-LGPL for details.
++ *
++ * Web Page: http://brltty.com/
++ *
++ * This software is maintained by Dave Mielke <dave@mielke.cc>.
++ */
++
++#ifndef BRLTTY_INCLUDED_DO_BRLDEFS
++#define BRLTTY_INCLUDED_DO_BRLDEFS
++
++#endif /* BRLTTY_INCLUDED_DO_BRLDEFS */
+diff --git a/Drivers/Braille/Bristol/reldeps.mk b/Drivers/Braille/Bristol/reldeps.mk
+new file mode 100644
+index 000000000..286229925
+--- /dev/null
++++ b/Drivers/Braille/Bristol/reldeps.mk
+@@ -0,0 +1,26 @@
++# Dependencies for braille.$O:
++braille.$O: $(SRC_DIR)/braille.c
++braille.$O: $(SRC_TOP)Headers/prologue.h
++braille.$O: $(BLD_TOP)config.h
++braille.$O: $(BLD_TOP)forbuild.h
++braille.$O: $(SRC_TOP)Headers/log.h
++braille.$O: $(SRC_TOP)Headers/api_types.h
++braille.$O: $(SRC_TOP)Headers/async.h
++braille.$O: $(SRC_TOP)Headers/async_io.h
++braille.$O: $(SRC_TOP)Headers/brl_base.h
++braille.$O: $(SRC_TOP)Headers/brl_cmds.h
++braille.$O: $(SRC_TOP)Headers/brl_dots.h
++braille.$O: $(SRC_TOP)Headers/brl_driver.h
++braille.$O: $(SRC_TOP)Headers/brl_types.h
++braille.$O: $(SRC_TOP)Headers/brl_utils.h
++braille.$O: $(SRC_TOP)Headers/cmd_enqueue.h
++braille.$O: $(SRC_TOP)Headers/driver.h
++braille.$O: $(SRC_TOP)Headers/gio_types.h
++braille.$O: $(SRC_TOP)Headers/io_generic.h
++braille.$O: $(SRC_TOP)Headers/ktb_types.h
++braille.$O: $(SRC_TOP)Headers/queue.h
++braille.$O: $(SRC_TOP)Headers/serial_types.h
++braille.$O: $(SRC_TOP)Headers/status_types.h
++braille.$O: $(SRC_TOP)Headers/usb_types.h
++braille.$O: $(SRC_DIR)/brldefs-br.h
++
+diff --git a/Drivers/Braille/DOT/reldeps.mk b/Drivers/Braille/DOT/reldeps.mk
+index 9227472d9..304eb59e6 100644
+--- a/Drivers/Braille/DOT/reldeps.mk
++++ b/Drivers/Braille/DOT/reldeps.mk
+@@ -1,9 +1,9 @@
+ # Dependencies for braille.$O:
+ braille.$O: $(SRC_DIR)/braille.c
++braille.$O: $(SRC_TOP)Headers/log.h
+ braille.$O: $(SRC_TOP)Headers/prologue.h
+ braille.$O: $(BLD_TOP)config.h
+ braille.$O: $(BLD_TOP)forbuild.h
+-braille.$O: $(SRC_TOP)Headers/log.h
+ braille.$O: $(SRC_TOP)Headers/api_types.h
+ braille.$O: $(SRC_TOP)Headers/async.h
+ braille.$O: $(SRC_TOP)Headers/async_io.h
+diff --git a/Programs/config.c b/Programs/config.c
+index e62f78527..1d4d320ab 100644
+--- a/Programs/config.c
++++ b/Programs/config.c
+@@ -1446,7 +1446,7 @@ activateBrailleDriver (int verify) {
+         autodetectableDrivers = serialDrivers;
+       } else if (isUsbDevice(&dev)) {
+         static const char *const usbDrivers[] = {
+-          "al", "bm", "do", "eu", "fs", "hd", "hm", "ht", "hw", "mt", "pg", "pm", "sk", "vo",
++          "al", "bm", "br", "do", "eu", "fs", "hd", "hm", "ht", "hw", "mt", "pg", "pm", "sk", "vo",
+           NULL
+         };
+         autodetectableDrivers = usbDrivers;
+diff --git a/Programs/usb_adapters.c b/Programs/usb_adapters.c
+index b3d881e23..1ce350b88 100644
+--- a/Programs/usb_adapters.c
++++ b/Programs/usb_adapters.c
+@@ -157,6 +157,12 @@ const UsbSerialAdapter usbSerialAdapterTable[] = {
+     .vendor=0X10C4, .product=0XEA80,
+     .generic = 1,
+     .operations = &usbSerialOperations_CP2110
++  },
++
++  { /* Bristol Canute */
++    .vendor=0X2341, .product=0X8036,
++    .generic = 1,
++    .operations = &usbSerialOperations_CDC_ACM
+   }
+ };
+ 
+diff --git a/configure.ac b/configure.ac
+index 812373a4f..ac8f74205 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1463,6 +1463,7 @@ BRLTTY_BRAILLE_DRIVER([bd], [Braudi])
+ BRLTTY_BRAILLE_DRIVER([bl], [BrailleLite])
+ BRLTTY_BRAILLE_DRIVER([bm], [Baum])
+ BRLTTY_BRAILLE_DRIVER([bn], [BrailleNote])
++BRLTTY_BRAILLE_DRIVER([br], [Bristol])
+ BRLTTY_BRAILLE_DRIVER([cb], [CombiBraille])
+ BRLTTY_BRAILLE_DRIVER([ce], [Cebra])
+ BRLTTY_BRAILLE_DRIVER([do], [DOT])
+-- 
+2.11.0.483.g087da7b7c-goog
+
