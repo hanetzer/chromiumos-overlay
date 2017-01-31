@@ -139,6 +139,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
+	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	base_src_prepare
 
 	eautoreconf
