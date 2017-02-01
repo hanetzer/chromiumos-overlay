@@ -25,12 +25,3 @@ krb5_mask="
 PKG_INSTALL_MASK+=" ${krb5_mask}"
 INSTALL_MASK+=" ${krb5_mask}"
 unset krb5_mask
-
-cros_post_src_prepare_license_hack() {
-	# These license files cause the license checker
-	# to fail on an invalid character. They are only
-	# for the windows installer.
-	# See crbug.com/654894
-	rm windows/installer/nsis/licenses.rtf
-	rm windows/installer/wix/lang/license.rtf
-}
