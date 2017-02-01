@@ -9,19 +9,32 @@ inherit cmake-utils
 
 DESCRIPTION="drawElements Quality Program - an OpenGL ES testsuite"
 HOMEPAGE="https://android.googlesource.com/platform/external/deqp"
+
 # deqp-6aef2... corresponds to android cts-7.1_r2 deqp directory.
 # https://android.googlesource.com/platform/external/deqp/+/android-cts-7.1_r2
-SRC_URI="gs://chromeos-localmirror/distfiles/deqp-6aef236dd0407d8eab330c1eade4375455c00f53.tar.gz"
+MY_DEQP_COMMIT='6aef236dd0407d8eab330c1eade4375455c00f53'
+
+# When building the Vulkan CTS, dEQP requires that certain external
+# dependencies be unpacked into the source tree. See ${S}/external/fetch_sources.py
+# for the required dependencies.
+MY_GLSLANG_COMMIT='d02dc5d05ad1f63db8d37fda9928a4d59e3c132d'
+MY_SPIRV_TOOLS_COMMIT='f7e63786a919040cb2e0e572d960a0650f2c2881'
+
+SRC_URI="gs://chromeos-localmirror/distfiles/deqp-${MY_DEQP_COMMIT}.tar.gz
+	https://github.com/KhronosGroup/glslang/archive/${MY_GLSLANG_COMMIT}.tar.gz -> glslang-${MY_GLSLANG_COMMIT}.tar.gz
+	https://github.com/KhronosGroup/SPIRV-Tools/archive/${MY_SPIRV_TOOLS_COMMIT}.tar.gz -> SPIRV-Tools-${MY_SPIRV_TOOLS_COMMIT}.tar.gz
+"
 
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="-vulkan"
 
 RDEPEND="
 	virtual/opengles
 	media-libs/minigbm
 	media-libs/libpng
+	vulkan? ( virtual/vulkan-icd )
 "
 
 DEPEND="${RDEPEND}
@@ -36,7 +49,17 @@ PATCHES=(
 	"${FILESDIR}"/0002-next-Delete-compiler-check.patch
 	"${FILESDIR}"/0003-next-Added-support-for-creating-pBuffer-target.patch
 	"${FILESDIR}"/0004-next-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
+	"${FILESDIR}"/0005-next-Add-Vulkan-support-to-tcu-surfaceless-Platform.patch
 )
+
+src_unpack() {
+	default_src_unpack || die
+
+	if use vulkan; then
+		mv "glslang-${MY_GLSLANG_COMMIT}" external/glslang/src || die
+		mv "SPIRV-Tools-${MY_SPIRV_TOOLS_COMMIT}" external/spirv-tools/src || die
+	fi
+}
 
 src_configure() {
 	# See crbug.com/585712.
@@ -86,6 +109,10 @@ src_install() {
 	doexe "${BUILD_DIR}/modules/gles3/deqp-gles3"
 	exeinto "${deqp_dir}/modules/gles31"
 	doexe "${BUILD_DIR}/modules/gles31/deqp-gles31"
+	if use vulkan; then
+		exeinto "${deqp_dir}/external/vulkancts/modules/vulkan"
+		doexe "${BUILD_DIR}/external/vulkancts/modules/vulkan/deqp-vk"
+	fi
 
 	# Install executors
 	exeinto "${deqp_dir}/execserver"
@@ -102,6 +129,10 @@ src_install() {
 	doins -r "${BUILD_DIR}/modules/gles3/gles3"
 	insinto "${deqp_dir}/modules/gles31"
 	doins -r "${BUILD_DIR}/modules/gles31/gles31"
+	if use vulkan; then
+		insinto "${deqp_dir}/external/vulkancts/modules/vulkan"
+		doins -r "${BUILD_DIR}/external/vulkancts/modules/vulkan/vulkan"
+	fi
 
 	# Install master control files
 	insinto "${deqp_dir}/master"
@@ -109,4 +140,7 @@ src_install() {
 	doins "android/cts/master/gles2-master.txt"
 	doins "android/cts/master/gles3-master.txt"
 	doins "android/cts/master/gles31-master.txt"
+	if use vulkan; then
+		doins "android/cts/master/vk-master.txt"
+	fi
 }
