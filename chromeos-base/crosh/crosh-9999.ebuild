@@ -20,7 +20,6 @@ IUSE="cups"
 
 RDEPEND="app-admin/sudo
 	chromeos-base/vboot_reference
-	chromeos-base/workarounds
 	net-misc/iputils
 	net-misc/openssh
 	net-wireless/iw

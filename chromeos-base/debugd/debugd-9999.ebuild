@@ -27,6 +27,7 @@ RDEPEND="
 	chromeos-base/shill-client
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
+	!chromeos-base/workarounds
 	dev-libs/dbus-c++
 	dev-libs/libpcre
 	dev-libs/protobuf
@@ -55,6 +56,8 @@ pkg_preinst() {
 }
 
 src_install() {
+	dobin "${OUT}"/generate_logs
+
 	into /
 	dosbin "${OUT}"/debugd
 	dodir /debugd
