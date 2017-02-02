@@ -79,6 +79,7 @@ setrlimit: 1
 set_robust_list: 1
 setsockopt: 1
 set_tid_address: 1
+shutdown: 1
 socket: 1
 socketpair: 1
 stat: 1
