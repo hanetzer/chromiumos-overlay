@@ -150,6 +150,7 @@ ALL_BOARDS=(
 	lakitu_next
 	lars
 	laser
+	lasilla-ground
 	#lemmings
 	#lemmings_external
 	leon
