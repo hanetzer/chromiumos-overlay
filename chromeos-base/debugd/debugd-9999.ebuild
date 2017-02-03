@@ -31,6 +31,8 @@ RDEPEND="
 	dev-libs/libpcre
 	dev-libs/protobuf
 	net-libs/libpcap
+	net-wireless/iw
+	sys-apps/iproute2
 	sys-apps/memtester
 	sys-apps/rootdev
 	sys-apps/smartmontools
