@@ -126,9 +126,6 @@ src_install() {
 	doins -r "${S}"/text/boot_messages
 	dosbin "${S}"/text/display_boot_message
 
-	insinto /usr/share/chromeos-assets/gaia_auth
-	doins -r "${S}"/gaia_auth/*
-
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
 
