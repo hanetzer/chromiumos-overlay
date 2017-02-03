@@ -145,11 +145,6 @@ src_prepare() {
 	# do not allow libgobject to unload; bug #405173, https://bugzilla.gnome.org/show_bug.cgi?id=707298
 	epatch "${FILESDIR}/${PN}-2.36.4-znodelete.patch"
 
-	# Temporarily un-deprecate g_type_init to help migrate all call sites in CrOS code.
-	# TODO(benchan): Remove this patch once we finish migrate all call
-	# sites of g_type_init() in CrOS code.
-	epatch "${FILESDIR}/${PN}-2.36.4-g_type_init.patch"
-
 	# leave python shebang alone
 	sed -e '/${PYTHON}/d' \
 		-i glib/Makefile.{am,in} || die
