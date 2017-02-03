@@ -1,1 +1,1 @@
-../../../sys-kernel/chromeos-kernel/files/chromeos-version.sh
+../../../sys-kernel/chromeos-kernel-4_4/files/chromeos-version.sh
