@@ -24,9 +24,7 @@ IUSE=""
 RDEPEND="
 	chromeos-base/firewalld
 	chromeos-base/libbrillo
-	dev-libs/glib
 	sys-apps/dbus
-	dev-libs/dbus-glib
 	virtual/udev"
 
 DEPEND="${RDEPEND}
