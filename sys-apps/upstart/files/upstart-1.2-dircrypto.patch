@@ -62,7 +62,7 @@ index 91410b1..7069ffa 100644
  
  
 diff --git a/init/main.c b/init/main.c
-index 10d6c27..8409064 100644
+index 10d6c27..821ed53 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -43,6 +43,11 @@
@@ -89,7 +89,7 @@ index 10d6c27..8409064 100644
  
  	argv0 = argv[0];
  	nih_main_init (argv0);
-@@ -294,6 +304,44 @@ main (int   argc,
+@@ -294,6 +304,49 @@ main (int   argc,
  		(int)getpid (), (int)getppid ());
  #endif /* DEBUG */
  
@@ -120,15 +120,20 @@ index 10d6c27..8409064 100644
 +	if (ret != EINVAL && ret != EOPNOTSUPP && ret != ENOTTY) {
 +		keyring_id = add_key ("keyring", "dircrypt", 0, 0,
 +				KEY_SPEC_SESSION_KEYRING);
-+		if (keyring_id == -1)
++		if (keyring_id == -1) {
 +			nih_warn ("%s: %s",
 +				  _("Unable to create dircrypt keyring: %s"),
 +				  strerror (errno));
-+		else
++		} else {
 +			keyctl_setperm(keyring_id,
 +				       KEY_POS_VIEW | KEY_POS_SEARCH |
 +				       KEY_POS_LINK | KEY_POS_READ |
 +				       KEY_USR_ALL);
++			keyctl_setperm(KEY_SPEC_SESSION_KEYRING,
++				       KEY_POS_VIEW | KEY_POS_SEARCH |
++				       KEY_POS_LINK | KEY_POS_READ |
++				       KEY_USR_ALL);
++		}
 +	}
 +#endif
  
