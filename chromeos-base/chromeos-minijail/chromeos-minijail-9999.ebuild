@@ -30,7 +30,7 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	# Only build the tools
+	# Only build the tools.
 	emake LIBDIR=$(get_libdir) USE_seccomp=$(usex seccomp)
 }
 
@@ -39,8 +39,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	# TODO(wad) switch to common.mk to get qemu and valgrind coverage
-	emake tests
+	emake USE_SYSTEM_GTEST=yes tests
 
 	if use x86 || use amd64 ; then
 		./libminijail_unittest || \
