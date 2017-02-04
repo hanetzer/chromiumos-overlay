@@ -52,7 +52,6 @@ IUSE_TESTS="
 	+tests_power_Status
 	shill? ( +tests_power_SuspendStress )
 	+tests_power_WakeupRTC
-	+tests_power_x86Settings
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
