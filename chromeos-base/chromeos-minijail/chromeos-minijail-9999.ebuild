@@ -39,13 +39,9 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	emake USE_SYSTEM_GTEST=yes tests
-
+	# TODO(crbug.com/689060): Re-enable on ARM.
 	if use x86 || use amd64 ; then
-		./libminijail_unittest || \
-			die "libminijail unit tests failed!"
-		./syscall_filter_unittest || \
-			die "syscall filter unit tests failed!"
+		emake USE_SYSTEM_GTEST=yes tests
 	fi
 }
 

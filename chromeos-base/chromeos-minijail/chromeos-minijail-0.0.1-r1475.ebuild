@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="0dce7573d8038618505b718308c359c4ed6fabcf"
-CROS_WORKON_TREE="c52d9a301b64ea1acb8830c9238eee8b34279b67"
+CROS_WORKON_COMMIT="e0c5a7699091c0ff201deffa89d506d0d4e6ec2c"
+CROS_WORKON_TREE="3b18563cc7106f4df4054a24e36de5c9c861b399"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
@@ -41,13 +41,9 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	emake USE_SYSTEM_GTEST=yes tests
-
+	# TODO(crbug.com/689060): Re-enable on ARM.
 	if use x86 || use amd64 ; then
-		./libminijail_unittest || \
-			die "libminijail unit tests failed!"
-		./syscall_filter_unittest || \
-			die "syscall filter unit tests failed!"
+		emake USE_SYSTEM_GTEST=yes tests
 	fi
 }
 
