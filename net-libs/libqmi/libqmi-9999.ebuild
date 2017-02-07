@@ -12,10 +12,11 @@ HOMEPAGE="http://cgit.freedesktop.org/libqmi/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang doc static-libs"
+IUSE="-asan -clang doc mbim static-libs"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=">=dev-libs/glib-2.32"
+RDEPEND=">=dev-libs/glib-2.32
+	mbim? ( >=net-libs/libmbim-1.14.0 )"
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )
 	virtual/pkgconfig"
@@ -33,6 +34,7 @@ src_configure() {
 	append-flags -Xclang-only=-Wno-unused-function
 	econf \
 		--enable-qmi-username='modem' \
+		$(use_enable mbim mbim-qmux) \
 		$(use_enable static{-libs,}) \
 		$(use_enable {,gtk-}doc)
 }
