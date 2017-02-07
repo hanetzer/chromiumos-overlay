@@ -33,10 +33,6 @@ FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
 #   src/scripts/hooks/install/gen-package-licenses.sh.
 ENABLE_LICENSING="Y"
 
-# TODO(vapier): Delete these once we've upgraded to >=crossdev-20150601.
-ac_cv_func_wait3_rusage=yes
-ac_cv_func_mmap_fixed_mapped=yes
-
 # C++ exception support disabled by default. This can be re-enabled by reseting
 # the CXXEXCEPTIONS_FLAGS for a whole board or, package by package, by calling
 # cros_enable_cxx_exceptions().
