@@ -17,6 +17,7 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="
+	chromeos-base/libbrillo
 	chromeos-base/libcontainer
 "
 DEPEND="${RDEPEND}"
