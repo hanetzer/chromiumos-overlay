@@ -228,7 +228,7 @@ AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
 AUTOTEST_DEPS_LIST="chrome_test page_cycler_dep perf_data_dep telemetry_dep"
 
-IUSE="${IUSE} +autotest"
+IUSE="${IUSE} +autotest goma"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
@@ -401,6 +401,16 @@ set_build_args() {
 
 	if use component_build; then
 		BUILD_ARGS+=( is_component_build=true )
+	fi
+	if use goma; then
+		BUILD_ARGS+=( use_goma=true )
+		BUILD_STRING_ARGS+=( goma_dir="${GOMA_DIR:-/home/${WHOAMI}/trunk/goma}" )
+
+		# GOMA uses $TMPDIR/goma.ipc for communication between gomacc
+		# and compiler proxy. When goma is started, TMPDIR is /tmp,
+		# but here, it is set to different dir. Thus, here the path
+		# to IPC needs to be explicitly specified.
+		export GOMA_COMPILER_PROXY_SOCKET_NAME=/tmp/goma.ipc
 	fi
 
 	if use chrome_debug; then
@@ -833,6 +843,9 @@ src_configure() {
 }
 
 chrome_make() {
+	# If Goma is enabled, increase the number of parallel run to 500,
+	# heuristically. Prepend -j 500 to $@, then.
+	use goma && set -- -j 500 "$@"
 	PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
 		${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
 }
