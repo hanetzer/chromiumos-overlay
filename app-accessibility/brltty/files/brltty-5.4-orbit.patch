@@ -1,0 +1,415 @@
+From f27713ddc39bd0395ca52c2ed6fdfbfed67c1bf1 Mon Sep 17 00:00:00 2001
+From: Dominic Mazzoni <dmazzoni@gmail.com>
+Date: Mon, 6 Feb 2017 23:39:11 -0800
+Subject: [PATCH] Orbit branch from brltty, through commit fa915d3d442
+
+---
+ Drivers/Braille/Baum/braille.c | 104 +++++++++++++++++++++++++++++++++--------
+ Programs/bluetooth_names.c     |   5 ++
+ Tables/Input/bm/keyboard.kti   |  35 ++++++++------
+ Tables/Input/bm/orbit.ktb      |  28 +++++++++++
+ 4 files changed, 139 insertions(+), 33 deletions(-)
+ create mode 100644 Tables/Input/bm/orbit.ktb
+
+diff --git a/Drivers/Braille/Baum/braille.c b/Drivers/Braille/Baum/braille.c
+index 16386a97f..c322c1063 100644
+--- a/Drivers/Braille/Baum/braille.c
++++ b/Drivers/Braille/Baum/braille.c
+@@ -94,7 +94,9 @@ BEGIN_KEY_NAME_TABLE(entry)
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+5, "F2"),
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+6, "F3"),
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+7, "F4"),
++END_KEY_NAME_TABLE
+ 
++BEGIN_KEY_NAME_TABLE(dots)
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+8, "Dot1"),
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+9, "Dot2"),
+   KEY_NAME_ENTRY(BM_KEY_ENTRY+10, "Dot3"),
+@@ -113,6 +115,12 @@ BEGIN_KEY_NAME_TABLE(joystick)
+   KEY_NAME_ENTRY(BM_KEY_JOYSTICK+4, "Press"),
+ END_KEY_NAME_TABLE
+ 
++BEGIN_KEY_NAME_TABLE(orbit)
++  KEY_NAME_ENTRY(BM_KEY_DISPLAY+1, "PanLeft"),
++  KEY_NAME_ENTRY(BM_KEY_DISPLAY+4, "PanRight"),
++  KEY_NAME_ENTRY(BM_KEY_ENTRY+0, "Space"),
++END_KEY_NAME_TABLE
++
+ BEGIN_KEY_NAME_TABLE(wheels)
+   KEY_NAME_ENTRY(BM_KEY_WHEEL_UP+0, "FirstWheelUp"),
+   KEY_NAME_ENTRY(BM_KEY_WHEEL_DOWN+0, "FirstWheelDown"),
+@@ -161,6 +169,7 @@ END_KEY_NAME_TABLE
+ BEGIN_KEY_NAME_TABLES(default)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -168,6 +177,7 @@ END_KEY_NAME_TABLES
+ BEGIN_KEY_NAME_TABLES(connect)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -175,13 +185,21 @@ END_KEY_NAME_TABLES
+ BEGIN_KEY_NAME_TABLES(conny)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+ 
++BEGIN_KEY_NAME_TABLES(orbit)
++  KEY_NAME_TABLE(orbit),
++  KEY_NAME_TABLE(dots),
++  KEY_NAME_TABLE(joystick),
++END_KEY_NAME_TABLES
++
+ BEGIN_KEY_NAME_TABLES(pronto)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -189,6 +207,7 @@ END_KEY_NAME_TABLES
+ BEGIN_KEY_NAME_TABLES(pv)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -196,6 +215,7 @@ END_KEY_NAME_TABLES
+ BEGIN_KEY_NAME_TABLES(rb)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -208,6 +228,7 @@ END_KEY_NAME_TABLES
+ BEGIN_KEY_NAME_TABLES(ultra)
+   KEY_NAME_SUBTABLE(display,6),
+   KEY_NAME_TABLE(entry),
++  KEY_NAME_TABLE(dots),
+   KEY_NAME_TABLE(joystick),
+   KEY_NAME_TABLE(routing),
+ END_KEY_NAME_TABLES
+@@ -251,6 +272,7 @@ END_KEY_NAME_TABLES
+ DEFINE_KEY_TABLE(default)
+ DEFINE_KEY_TABLE(connect)
+ DEFINE_KEY_TABLE(conny)
++DEFINE_KEY_TABLE(orbit)
+ DEFINE_KEY_TABLE(pronto)
+ DEFINE_KEY_TABLE(pv)
+ DEFINE_KEY_TABLE(rb)
+@@ -267,6 +289,7 @@ BEGIN_KEY_TABLE_LIST
+   &KEY_TABLE_DEFINITION(default),
+   &KEY_TABLE_DEFINITION(connect),
+   &KEY_TABLE_DEFINITION(conny),
++  &KEY_TABLE_DEFINITION(orbit),
+   &KEY_TABLE_DEFINITION(pronto),
+   &KEY_TABLE_DEFINITION(pv),
+   &KEY_TABLE_DEFINITION(rb),
+@@ -803,6 +826,7 @@ typedef union {
+ typedef enum {
+   BAUM_DEVICE_Default,
+   BAUM_DEVICE_Conny,
++  BAUM_DEVICE_Orbit,
+   BAUM_DEVICE_PocketVario,
+   BAUM_DEVICE_Pronto,
+   BAUM_DEVICE_Refreshabraille,
+@@ -835,6 +859,10 @@ static const BaumDeviceIdentityEntry baumDeviceIdentityTable[] = {
+     .type = BAUM_DEVICE_Conny
+   },
+ 
++  { .string = "Orbit",
++    .type = BAUM_DEVICE_Orbit
++  },
++
+   { .string = "PocketVario",
+     .type = BAUM_DEVICE_PocketVario
+   },
+@@ -1384,6 +1412,11 @@ static const BaumDeviceOperations baumDeviceOperations[] = {
+     .writeAllCells = writeBaumCells_all
+   },
+ 
++  [BAUM_DEVICE_Orbit] = {
++    .keyTableDefinition = &KEY_TABLE_DEFINITION(orbit),
++    .writeAllCells = writeBaumCells_all
++  },
++
+   [BAUM_DEVICE_PocketVario] = {
+     .keyTableDefinition = &KEY_TABLE_DEFINITION(pv),
+     .writeAllCells = writeBaumCells_all
+@@ -1609,6 +1642,22 @@ handleBaumDataRegistersEvent (BrailleDisplay *brl, const BaumResponsePacket *pac
+ }
+ 
+ static int
++getIdentityCellCount (char* deviceIdentity, const int length) {
++  char buffer[length+1];
++  memcpy(buffer, deviceIdentity, length);
++  buffer[length] = 0;
++
++  char *digits = strpbrk(buffer, "123456789");
++
++  if (digits) {
++    int count = atoi(digits);
++    if (isAcceptableCellCount(count)) return count;
++  }
++
++  return 0;
++}
++
++static int
+ probeBaumDevice (BrailleDisplay *brl) {
+   int probes = 0;
+ 
+@@ -1683,26 +1732,14 @@ probeBaumDevice (BrailleDisplay *brl) {
+             cellCount = getBaumModuleCellCount();
+             return 1;
+ 
+-          case BAUM_RSP_DeviceIdentity: /* should contain fallback cell count */
++          case BAUM_RSP_DeviceIdentity: {
++            /* should contain fallback cell count */
++            int count = getIdentityCellCount(response.data.values.deviceIdentity,
++                                             sizeof(response.data.values.deviceIdentity));
++            if (count) identityCellCount = count;
+             handleBaumDeviceIdentity(&response, 1);
+-
+-            {
+-              const int length = sizeof(response.data.values.deviceIdentity);
+-              char buffer[length+1];
+-
+-              memcpy(buffer, response.data.values.deviceIdentity, length);
+-              buffer[length] = 0;
+-
+-              {
+-                char *digits = strpbrk(buffer, "123456789");
+-
+-                if (digits) {
+-                  int count = atoi(digits);
+-                  if (isAcceptableCellCount(count)) identityCellCount = count;
+-                }
+-              }
+-            }
+             continue;
++          }
+ 
+           case BAUM_RSP_SerialNumber:
+             logBaumSerialNumber(&response);
+@@ -2095,6 +2132,7 @@ probeHidDevice (BrailleDisplay *brl) {
+   if (writeBraillePacket(brl, NULL, packet, sizeof(packet))) {
+     int haveCellCount = 0;
+     int haveDeviceIdentity = 0;
++    int identityCellCount = 0;
+ 
+     baumDeviceType = BAUM_DEVICE_Default;
+     cellCount = 0;
+@@ -2118,10 +2156,14 @@ probeHidDevice (BrailleDisplay *brl) {
+           break;
+         }
+ 
+-        case BAUM_RSP_DeviceIdentity:
++        case BAUM_RSP_DeviceIdentity: {
++          int count = getIdentityCellCount(packet.fields.data.deviceIdentity,
++                                           sizeof(packet.fields.data.deviceIdentity));
++          if (count) identityCellCount = count;
+           handleHidDeviceIdentity(&packet, 1);
+           haveDeviceIdentity = 1;
+           break;
++        }
+ 
+         case BAUM_RSP_SerialNumber:
+           logHidSerialNumber(&packet);
+@@ -2134,6 +2176,14 @@ probeHidDevice (BrailleDisplay *brl) {
+ 
+       if (haveCellCount && haveDeviceIdentity) return 1;
+     }
++
++    if (!cellCount && identityCellCount) {
++      /* Older models don't provide the actual cell count
++       * so it must be derived from the identity string.
++       */
++      cellCount = identityCellCount;
++      return 1;
++    }
+   }
+ 
+   return 0;
+@@ -2853,6 +2903,13 @@ connectResource (BrailleDisplay *brl, const char *identifier) {
+       .data=&baumEscapeOperations
+     },
+ 
++    { /* Orbit 20 (20 cells) */
++      .vendor=0X0483, .product=0XA1D3,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&baumHid1Operations,
++    },
++
+     { /* VarioPro 40 (40 cells) */
+       .vendor=0X0904, .product=0X2000,
+       .configuration=1, .interface=0, .alternative=0,
+@@ -2949,10 +3006,19 @@ connectResource (BrailleDisplay *brl, const char *identifier) {
+       .data=&baumEscapeOperations
+     },
+ 
++    { /* Orbit in Refreshabraille Emulation Mode (18 cells) */
++      .vendor=0X0904, .product=0X3001,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .verifyInterface=1,
++      .data=&baumHid1Operations
++    },
++
+     { /* Refreshabraille 18 (18 cells) */
+       .vendor=0X0904, .product=0X3001,
+       .configuration=1, .interface=0, .alternative=0,
+       .inputEndpoint=1, .outputEndpoint=2,
++      .verifyInterface=1,
+       .data=&baumHid1Operations
+     },
+ 
+diff --git a/Programs/bluetooth_names.c b/Programs/bluetooth_names.c
+index d644d558f..30ae803b4 100644
+--- a/Programs/bluetooth_names.c
++++ b/Programs/bluetooth_names.c
+@@ -44,6 +44,7 @@ BLUETOOTH_NAME_DRIVERS(EL12, "al", "vo");
+ BLUETOOTH_NAME_DRIVERS(Focus, "fs");
+ BLUETOOTH_NAME_DRIVERS(HWGBrailliant, "bm");
+ BLUETOOTH_NAME_DRIVERS(MB248, "md");
++BLUETOOTH_NAME_DRIVERS(OrbitReader, "bm");
+ BLUETOOTH_NAME_DRIVERS(Pronto, "bm");
+ BLUETOOTH_NAME_DRIVERS(Refreshabraille, "bm");
+ BLUETOOTH_NAME_DRIVERS(SuperVario, "bm");
+@@ -144,6 +145,10 @@ const BluetoothNameEntry bluetoothNameTable[] = {
+     .driverCodes = bluetoothNameDrivers_MB248
+   },
+ 
++  { .namePrefix = "Orbit Reader",
++    .driverCodes = bluetoothNameDrivers_OrbitReader
++  },
++
+   { .namePrefix = "Pronto!",
+     .driverCodes = bluetoothNameDrivers_Pronto
+   },
+diff --git a/Tables/Input/bm/keyboard.kti b/Tables/Input/bm/keyboard.kti
+index 2a1861cbb..1f173167d 100644
+--- a/Tables/Input/bm/keyboard.kti
++++ b/Tables/Input/bm/keyboard.kti
+@@ -30,8 +30,6 @@ map Dot8 DOT8
+ map \{space} SPACE
+ assign chord \{space}+
+ include ../chords.kti
+-bind \{space}+RoutingKey KEY_FUNCTION
+-bind \{space}+RoutingKey+!RoutingKey CLIP_APPEND
+ 
+ bind Press RETURN
+ bind Up LNUP
+@@ -81,12 +79,6 @@ Bind Dot5+Dot6+Down SLIDEWIN
+ Bind Dot5+Dot6+Left SKPIDLNS
+ Bind Dot5+Dot6+Right SKPBLNKWINS
+ 
+-bind RoutingKey+Press DESCCHAR
+-bind RoutingKey+Left CLIP_NEW
+-bind RoutingKey+Up CLIP_ADD
+-bind RoutingKey+Right COPY_LINE
+-bind RoutingKey+Down COPY_RECT
+-
+ bind Dot1+Press KEY_TAB
+ bind Dot1+Up KEY_CURSOR_UP
+ bind Dot1+Down KEY_CURSOR_DOWN
+@@ -105,17 +97,32 @@ bind Dot3+Down KEY_PAGE_DOWN
+ bind Dot3+Left KEY_HOME
+ bind Dot3+Right KEY_END
+ 
++ifKey B9
+ bind B9+Press AUTOSPEAK
+ bind B9+Up SAY_LOUDER
+ bind B9+Down SAY_SOFTER
+ bind B9+Left SAY_SLOWER
+ bind B9+Right SAY_FASTER
++endIf
+ 
++ifKey B10
+ bind B10+Press SPKHOME
+ bind B10+Up SAY_ABOVE
+ bind B10+Down SAY_BELOW
+ bind B10+Left MUTE
+ bind B10+Right SAY_LINE
++endIf
++
++ifKey RoutingKey
++bind \{space}+RoutingKey KEY_FUNCTION
++bind \{space}+RoutingKey+!RoutingKey CLIP_APPEND
++
++bind RoutingKey+Press DESCCHAR
++bind RoutingKey+Left CLIP_NEW
++bind RoutingKey+Up CLIP_ADD
++bind RoutingKey+Right COPY_LINE
++bind RoutingKey+Down COPY_RECT
++endIf
+ 
+ 
+ #################
+@@ -130,11 +137,11 @@ bind Down MENU_NEXT_ITEM
+ bind Left MENU_PREV_SETTING
+ bind Right MENU_NEXT_SETTING
+ 
+-bind B9 MENU_PREV_LEVEL
+-bind B9+Press PREFSAVE
+-bind B9+Up MENU_FIRST_ITEM
+-bind B9+Down MENU_LAST_ITEM
+-bind B9+Left FWINLT
+-bind B9+Right FWINRT
++bind \{space} MENU_PREV_LEVEL
++bind \{space}+Press PREFSAVE
++bind \{space}+Up MENU_FIRST_ITEM
++bind \{space}+Down MENU_LAST_ITEM
++bind \{space}+Left FWINLT
++bind \{space}+Right FWINRT
+ 
+ context default
+diff --git a/Tables/Input/bm/orbit.ktb b/Tables/Input/bm/orbit.ktb
+new file mode 100644
+index 000000000..f177c6783
+--- /dev/null
++++ b/Tables/Input/bm/orbit.ktb
+@@ -0,0 +1,28 @@
++###############################################################################
++# BRLTTY - A background process providing access to the console screen (when in
++#          text mode) for a blind person using a refreshable braille display.
++#
++# Copyright (C) 1995-2017 by The BRLTTY Developers.
++#
++# BRLTTY comes with ABSOLUTELY NO WARRANTY.
++#
++# This is free software, placed under the terms of the
++# GNU Lesser General Public License, as published by the Free Software
++# Foundation; either version 2.1 of the License, or (at your option) any
++# later version. Please see the file LICENSE-LGPL for details.
++#
++# Web Page: http://brltty.com/
++#
++# This software is maintained by Dave Mielke <dave@mielke.cc>.
++###############################################################################
++
++title Orbit Reader
++
++note Space is the long key in the middle, just in front of the joystick.
++note Dot7 and Dot8 are the keys immediately to the left and right of Space.
++
++bind PanLeft FWINLT
++bind PanRight FWINRT
++
++assign space Space
++include keyboard.kti
+-- 
+2.11.0.483.g087da7b7c-goog
+
