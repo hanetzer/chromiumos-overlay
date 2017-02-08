@@ -15,10 +15,11 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=""
+RDEPEND="
+	dev-cpp/gtest
+	media-libs/minigbm"
 
 DEPEND="${RDEPEND}
-	dev-cpp/gtest
 	virtual/pkgconfig"
 
 src_compile() {
