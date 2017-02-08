@@ -130,13 +130,13 @@ declare -A AFDO_FILE_LLVM
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.3001.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.3001.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.3001.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.3005.6_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.3005.6_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.3005.6_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.2998.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.2998.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.2998.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.3004.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.3004.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.3004.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
