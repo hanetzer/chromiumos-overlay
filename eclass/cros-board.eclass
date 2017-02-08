@@ -70,6 +70,7 @@ ALL_BOARDS=(
 	#bxt-rvp
 	candy
 	caroline
+	caroline-userdebug
 	cardhu
 	cave
 	celes
