@@ -1,0 +1,21 @@
+Disable WiFi power management module
+
+WiFi powersave mode is now enabled through a udev rule
+
+BUG=chromium:214886, chromium:689648
+
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wifi-powermgmt.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wifi-powermgmt.conf
+@@ -19,5 +19,4 @@
+ DEBUG=0
+ 
+ # Control WiFi power management?
+-CONTROL_WIFI_POWER=1
+-
++CONTROL_WIFI_POWER=0
+--- laptop-mode-tools-1.59/etc/rules/99-laptop-mode.rules
++++ laptop-mode-tools-1.59/etc/rules/99-laptop-mode.rules
+@@ -1,3 +1,2 @@
+ ACTION=="change", SUBSYSTEM=="power_supply", RUN+="/lib/udev/lmt-udev auto"
+ ACTION=="add|remove", SUBSYSTEM=="machinecheck", RUN+="/lib/udev/lmt-udev auto"
+-ACTION=="add", SUBSYSTEM=="net", RUN+="/lib/udev/lmt-udev force modules=wifi-nl80211-powermgmt"

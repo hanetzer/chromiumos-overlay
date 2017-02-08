@@ -31,38 +31,40 @@ RDEPEND="sys-apps/ethtool
 		scsi? ( sys-apps/sdparm )
 		sys-apps/hdparm"
 
-PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
-          "0002-Add-config-knob-to-control-syslog-facility.patch" \
-          "0003-Add-WiFi-power-management-support.patch" \
-          "0005-switch-wifi-support-to-nl80211.patch" \
-          "0006-Lower-hard-drive-idle-timeout-to-5-seconds.patch" \
-          "0008-Export-PATH-to-which.patch" \
-          "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
-          "0012-Skip-failed-globs-when-finding-module-scripts.patch" \
-          "0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
-          "0014-Disable-ethernet-control.patch" \
-          "0015-Disable-file-system-remount.patch" \
-          "0016-Wait-for-laptop_mode-using-shell-commands.patch" \
-          "0017-usb-autosuspend-black-whitelist-in-quotes.patch" \
-          "0018-hdparm-check-for-valid-drive.patch" \
-          "0019-board-specific-configurations.patch" \
-          "0020-hdparm-skips-SSDs-for-power-management.patch" \
-          "0021-alternate-config-dir.patch" \
-          "0022-interactive-governor-parameters.patch" \
-          "0023-disable-cpufreq-frequency-control.patch" \
-          "0024-check-for-existence-of-alarm-file.patch" \
-          "0025-add-blacklists-for-runtime-pm.patch" \
-          "0026-wait-lock-for-30-seconds.patch" \
-          "0027-ac-supply-not-battery.patch" \
-          "0028-usb-autosuspend-on-ac.patch" \
-          "0029-Enable-SATA-min_power-on-AC-mode.patch" \
-          "0030-Allow-WiFi-PowerSave-Override.patch" \
-          "0031-interactive-goverener-parameters-for-hmp-cpus.patch" \
-          "0032-lm-1.59-refactor-slow-listed-by-id.patch" \
-          "0033-Add-udev-rule-for-WiFi-devices.patch" \
-          "0034-wireless-power-disable-module.patch" \
-          "0035-disable-usb-autosuspend-and-runtime-pm.patch" \
-        )
+PATCHES=(
+	"0001-Enabled-laptop-mode-power-management-control-of.patch" \
+	"0002-Add-config-knob-to-control-syslog-facility.patch" \
+	"0003-Add-WiFi-power-management-support.patch" \
+	"0005-switch-wifi-support-to-nl80211.patch" \
+	"0006-Lower-hard-drive-idle-timeout-to-5-seconds.patch" \
+	"0008-Export-PATH-to-which.patch" \
+	"0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
+	"0012-Skip-failed-globs-when-finding-module-scripts.patch" \
+	"0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
+	"0014-Disable-ethernet-control.patch" \
+	"0015-Disable-file-system-remount.patch" \
+	"0016-Wait-for-laptop_mode-using-shell-commands.patch" \
+	"0017-usb-autosuspend-black-whitelist-in-quotes.patch" \
+	"0018-hdparm-check-for-valid-drive.patch" \
+	"0019-board-specific-configurations.patch" \
+	"0020-hdparm-skips-SSDs-for-power-management.patch" \
+	"0021-alternate-config-dir.patch" \
+	"0022-interactive-governor-parameters.patch" \
+	"0023-disable-cpufreq-frequency-control.patch" \
+	"0024-check-for-existence-of-alarm-file.patch" \
+	"0025-add-blacklists-for-runtime-pm.patch" \
+	"0026-wait-lock-for-30-seconds.patch" \
+	"0027-ac-supply-not-battery.patch" \
+	"0028-usb-autosuspend-on-ac.patch" \
+	"0029-Enable-SATA-min_power-on-AC-mode.patch" \
+	"0030-Allow-WiFi-PowerSave-Override.patch" \
+	"0031-interactive-goverener-parameters-for-hmp-cpus.patch" \
+	"0032-lm-1.59-refactor-slow-listed-by-id.patch" \
+	"0033-Add-udev-rule-for-WiFi-devices.patch" \
+	"0034-wireless-power-disable-module.patch" \
+	"0035-disable-usb-autosuspend-and-runtime-pm.patch" \
+	"0036-disable-wireless-power-management.patch" \
+)
 
 src_prepare() {
 	cd "${WORKDIR}"
