@@ -65,6 +65,7 @@ PATCHES=(
 	"0035-disable-usb-autosuspend-and-runtime-pm.patch" \
 	"0036-disable-wireless-power-management.patch" \
 	"0037-disable-intel-hda-power-management.patch" \
+	"0038-disable-intel-sata-powermanagement.patch" \
 )
 
 src_prepare() {

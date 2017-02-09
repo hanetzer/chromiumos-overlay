@@ -1,0 +1,11 @@
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
+@@ -20,7 +20,7 @@
+ 
+ # Control Intel SATA chipset power management?
+ # Set to 0 to disable
+-CONTROL_INTEL_SATA_POWER=1
++CONTROL_INTEL_SATA_POWER=0
+ 
+ # Handle power management of the Intel SATA deivce under specific circumstances
+ BATT_ACTIVATE_SATA_POWER=1
