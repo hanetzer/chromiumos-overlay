@@ -16,7 +16,7 @@ IUSE="
 	bootchart
 	bootimage
 	buffet
-	+cellular
+	cellular
 	compupdates
 	containers
 	coreboot
