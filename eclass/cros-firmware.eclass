@@ -43,10 +43,6 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Location of PD firmware image
 : ${CROS_FIRMWARE_PD_IMAGE:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_PD_VERSION
-# @DESCRIPTION: (Optional) Version name of PD firmware
-: ${CROS_FIRMWARE_PD_VERSION:=}
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_PD_VERSION
 # @DESCRIPTION: (Optional) Version name of stabled PD firmware
 : ${CROS_FIRMWARE_STABLE_PD_VERSION:=}
