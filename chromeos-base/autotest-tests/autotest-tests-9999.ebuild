@@ -112,7 +112,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Memtester
 	+tests_hardware_MultiReader
 	+tests_hardware_PerfCallgraphVerification
-	+tests_hardware_PerfCounterVerification
 	+tests_hardware_ProbeComponents
 	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
@@ -123,7 +122,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_StorageFio
 	+tests_hardware_StorageTrim
 	+tests_hardware_StorageWearoutDetect
-	+tests_hardware_TLBMissCost
 	+tests_hardware_TouchScreenPowerCycles
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TrackpadFunction
