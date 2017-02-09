@@ -96,7 +96,7 @@ get_board() {
 create_config() {
 	local board="$1"
 	local config=".config"
-	local config_serial=".config-serial"
+	local config_serial=".config_serial"
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 
