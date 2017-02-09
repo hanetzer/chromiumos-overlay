@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host -mtd pam systemd test"
+IUSE="32bit_au cros_host direncryption -mtd pam systemd test"
 
 DEPEND="
 	chromeos-base/verity[32bit_au=]
@@ -115,4 +115,9 @@ src_install() {
 
 	insinto /usr/share/misc
 	doins share/chromeos-common.sh
+	if use direncryption; then
+		sed -i '/local direncryption_enabled=/s/false/true/' \
+			"${D}/usr/share/misc/chromeos-common.sh" ||
+			die "Can not set directory encryption in common library"
+	fi
 }
