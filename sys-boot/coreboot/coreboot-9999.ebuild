@@ -297,6 +297,10 @@ src_install() {
 	newins .config coreboot.config
 
 	# Keep binaries with debug symbols around for crash dump analysis
+	if [[ -s build/bl31.elf ]]; then
+		newins build/bl31.elf bl31.elf
+		newins build_serial/bl31.elf bl31.serial.elf
+	fi
 	insinto /firmware/coreboot
 	doins build/cbfs/fallback/*.debug
 	insinto /firmware/coreboot_serial
