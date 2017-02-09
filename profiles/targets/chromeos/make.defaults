@@ -4,7 +4,7 @@
 # Dummy setting so we can use the same append form below.
 USE=""
 
-USE="${USE} acpi bluetooth cairo cros_p2p -fbconsole mbim opengl pam usb vlan -vtconsole X"
+USE="${USE} acpi bluetooth cairo cros_p2p -fbconsole opengl pam usb vlan -vtconsole X"
 USE="${USE} zlib bindist cros-debug -introspection"
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -poppler-data -nls -openrc"
@@ -14,6 +14,7 @@ USE="${USE} -eclog"
 USE="${USE} cups crosfonts -postscript"
 USE="${USE} tpm"
 USE="${USE} compupdates"
+USE="${USE} cellular mbim"
 
 # Enable general security hardening by default.
 USE="${USE} hardened"
