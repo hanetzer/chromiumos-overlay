@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI="4"
-CROS_WORKON_COMMIT="32c89c19b042a12b5a1bf0153299154ea5435c03"
-CROS_WORKON_TREE="63f7c3583b755ddfe5fd77bfa5f448db385fa4e5"
+CROS_WORKON_COMMIT="41f3e25635616c067b9ee272304e6f86ac8ee9db"
+CROS_WORKON_TREE="d42972bc9035aaf65cee252b5a7495f2990e93c4"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/gcc"
 CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
