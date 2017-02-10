@@ -448,3 +448,7 @@ RDEPEND="${RDEPEND}
 # Host dependency for managing SELinux labels
 RDEPEND="${RDEPEND}
 	sys-apps/restorecon"
+
+# Host dependencies that are needed for chromite/bin/cros_generate_android_breakpad_symbols
+RDEPEND="${RDEPEND}
+	chromeos-base/android-relocation-packer"
