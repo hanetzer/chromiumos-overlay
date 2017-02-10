@@ -4,8 +4,8 @@
 EAPI=4
 
 # need to check out factory source for update_firmware_settings.py for now
-CROS_WORKON_COMMIT="7523cc3a582b28dfc7b540d86f37a7933c620e81"
-CROS_WORKON_TREE="045ed3be7248ef2e1ca1e39e7f90a88fb34177f4"
+CROS_WORKON_COMMIT="336b1b11dfb5f65ffe558496788706e8861ee5cf"
+CROS_WORKON_TREE="cbafa7f71e4b953feba46293c6db66f2c5de47d8"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="../platform/factory"
 
