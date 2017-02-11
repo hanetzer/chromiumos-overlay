@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("d16b14fd41c8070b58f95f85c2f3ef4bfbff9f85" "4bbb8ff94abf5db26396db9fac5c1df2c998a54a")
-CROS_WORKON_TREE=("2ce7af79d008200663b8ad433a9bfcb52bd1e1a9" "f9e10ea4218ad59cfa7ba41fc35e23289ff0a115")
+CROS_WORKON_COMMIT=("f2940f738a66cefe7e475f965981961c0ef45573" "8ac8f8e557fd55b68516d6bb969f607f9a6c40bb")
+CROS_WORKON_TREE=("d6dbfc384bc1322c21572be01e1f9e4833c82422" "709a15b02dfb0af8c4f1ca81184cda199c683452")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "weave/libweave")
@@ -29,16 +29,6 @@ DEPEND="
 	dev-cpp/gmock
 	dev-cpp/gtest
 "
-
-src_prepare() {
-	# Temporary patch until we can uprev the ToT version of libweave into
-	# CrOS source tree
-	epatch ${FILESDIR}/patches/libweave-int64.patch
-	epatch ${FILESDIR}/patches/libweave-include-algorithm.patch
-	epatch ${FILESDIR}/patches/libweave-fix-395517.patch
-	epatch ${FILESDIR}/patches/libweave-device-manager-dependencies.patch
-	epatch ${FILESDIR}/patches/libweave-dont-update-when-offline.patch
-}
 
 src_unpack() {
 	local s="${S}"
@@ -66,7 +56,4 @@ src_install() {
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/libweave_testrunner"
-	platform_test "run" "${OUT}/libweave_base_testrunner"
-	platform_test "run" "${OUT}/libweave_exports_testrunner"
-	platform_test "run" "${OUT}/libweave_base_exports_testrunner"
 }
