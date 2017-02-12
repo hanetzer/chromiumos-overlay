@@ -38,7 +38,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework quiet verbose"
+IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework quiet unibuild verbose"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco fox gizmo glados
@@ -94,17 +94,27 @@ get_board() {
 set_build_env() {
 	BOARD="$1"
 
-	CONFIG=".config"
-	CONFIG_SERIAL=".config_serial"
-	BUILD_DIR="build"
-	BUILD_DIR_SERIAL="build_serial"
+	if use unibuild; then
+		CONFIG=".config-${BOARD}"
+		CONFIG_SERIAL=".config_serial-${BOARD}"
+		BUILD_DIR="build-${model}"
+		BUILD_DIR_SERIAL="build_serial-${model}"
+	else
+		CONFIG=".config"
+		CONFIG_SERIAL=".config_serial"
+		BUILD_DIR="build"
+		BUILD_DIR_SERIAL="build_serial"
+	fi
 }
 
 # Create the coreboot configuration files for a particular board. This
 # creates a standard config and a serial config.
 # Args:
-#    $1: Name of board to create a configure file for (e.g. "reef")
+#   $1: Name of board to create a configure file for (e.g. "reef")
+#   $2: Base board name, if any (used for unified builds)
 create_config() {
+	local base_board="$2"
+
 	set_build_env "$1"
 
 	if [[ -s "${FILESDIR}/configs/config.${BOARD}" ]]; then
@@ -165,6 +175,9 @@ EOF
 	# handle the case when "${CONFIG}" does not have a newline in the end.
 	echo >> "${CONFIG_SERIAL}"
 	file="${FILESDIR}/configs/fwserial.${BOARD}"
+	if [ ! -f "${file}" ] && [ -n "${base_board}" ]; then
+		file="${FILESDIR}/configs/fwserial.${base_board}"
+	fi
 	if [ ! -f "${file}" ]; then
 		file="${FILESDIR}/configs/fwserial.default"
 	fi
@@ -192,7 +205,15 @@ src_prepare() {
 		fi
 	done
 
-	create_config "$(get_board)"
+	if use unibuild; then
+		local model
+
+		for model in ${FIRMWARE_UNIBUILD}; do
+			create_config "${model}" "$(get_board)"
+		done
+	else
+		create_config "$(get_board)"
+	fi
 }
 
 add_ec() {
@@ -279,17 +300,31 @@ src_compile() {
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
-	set_build_env "$(get_board)"
-	make_coreboot "${BUILD_DIR}" "${CONFIG}"
+	# Build a second ROM with serial support for developers.
+	if use unibuild; then
+		local model
 
-	# Build a second ROM with serial support for developers
-	make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
+		for model in ${FIRMWARE_UNIBUILD}; do
+			set_build_env "${model}"
+			make_coreboot "${BUILD_DIR}" "${CONFIG}"
+			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
+		done
+	else
+		set_build_env "$(get_board)"
+		make_coreboot "${BUILD_DIR}" "${CONFIG}"
+		make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
+	fi
 }
 
 do_install() {
+	local model="$1"
 	local dest_dir="/firmware"
 	local mapfile
 
+	if [[ -n "${model}" ]]; then
+		dest_dir+="/${model}"
+		einfo "Installing coreboot ${model} into ${dest_dir}"
+	fi
 	insinto "${dest_dir}"
 
 	newins "${BUILD_DIR}/coreboot.rom" coreboot.rom
@@ -329,6 +364,15 @@ do_install() {
 }
 
 src_install() {
-	set_build_env "$(get_board)"
-	do_install
+	local model
+
+	if use unibuild; then
+		for model in ${FIRMWARE_UNIBUILD}; do
+			set_build_env "${model}" "$(get_board)"
+			do_install ${model}
+		done
+	else
+		set_build_env "$(get_board)"
+		do_install
+	fi
 }
