@@ -2425,7 +2425,7 @@ index dd8db68..cef0b5a 100644
  #ifndef __cplusplus
  /* XXX This is temporarily.  We should not redefine any of the symbols
     and instead integrate the error checking into the original
-@@ -45,30 +40,132 @@ __warndecl (__warn_memset_zero_len,
+@@ -45,30 +40,133 @@ __warndecl (__warn_memset_zero_len,
  # endif
  #endif
  
@@ -2528,10 +2528,11 @@ index dd8db68..cef0b5a 100644
 +
 +#ifdef __use_clang_fortify
 +__fortify_overload __clang_warning (__warn_len_too_large) void *
-+__NTH (memset (void *__dest, int __ch, size_t __len))
++__NTH (memset (void *const __clang_pass_object_size0 __dest, int __ch,
++	       size_t __len))
 +     __enable_if_dest_too_small0 (__dest, __len)
 +{
-+  return __dest;
++  return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
 +}
 +
 +/* If the second and third parameter look like they're transposed, be sure to
@@ -2558,7 +2559,7 @@ index dd8db68..cef0b5a 100644
  /* The first two tests here help to catch a somewhat common problem
     where the second and third parameter are transposed.  This is
     especially problematic if the intended fill value is zero.  In this
-@@ -89,42 +186,129 @@ __NTH (memset (void *__dest, int __ch, size_t __len))
+@@ -89,42 +187,129 @@ __NTH (memset (void *__dest, int __ch, size_t __len))
  #endif
    return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
  }
@@ -2688,7 +2689,7 @@ index dd8db68..cef0b5a 100644
  
  // XXX We have no corresponding builtin yet.
  extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
-@@ -132,6 +316,24 @@ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+@@ -132,6 +317,24 @@ extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
  extern char *__REDIRECT_NTH (__stpncpy_alias, (char *__dest, const char *__src,
  					       size_t __n), stpncpy);
  
@@ -2713,7 +2714,7 @@ index dd8db68..cef0b5a 100644
  __fortify_function char *
  __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
  {
-@@ -140,18 +342,61 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+@@ -140,18 +343,61 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
      return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
    return __stpncpy_alias (__dest, __src, __n);
  }
