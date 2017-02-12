@@ -287,9 +287,10 @@ src_compile() {
 }
 
 do_install() {
+	local dest_dir="/firmware"
 	local mapfile
 
-	insinto /firmware
+	insinto "${dest_dir}"
 
 	newins "${BUILD_DIR}/coreboot.rom" coreboot.rom
 	newins "${BUILD_DIR_SERIAL}/coreboot.rom" coreboot.rom.serial
@@ -317,13 +318,13 @@ do_install() {
 	newins "${BUILD_DIR_SERIAL}/${CONFIG_SERIAL}" coreboot_serial.config
 
 	# Keep binaries with debug symbols around for crash dump analysis
-	if [[ -s build/bl31.elf ]]; then
-		newins build/bl31.elf bl31.elf
-		newins build_serial/bl31.elf bl31.serial.elf
+	if [[ -s "${BUILD_DIR}/bl31.elf" ]]; then
+		newins "${BUILD_DIR}/bl31.elf" bl31.elf
+		newins "${BUILD_DIR}/bl31.elf" bl31.serial.elf
 	fi
-	insinto /firmware/coreboot
+	insinto "${dest_dir}"/coreboot
 	doins "${BUILD_DIR}"/cbfs/fallback/*.debug
-	insinto /firmware/coreboot_serial
+	insinto "${dest_dir}"/coreboot_serial
 	doins "${BUILD_DIR_SERIAL}"/cbfs/fallback/*.debug
 }
 
