@@ -14,7 +14,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.bz2"
 LICENSE="MIT"
 SLOT="1.0"
 KEYWORDS="*"
-IUSE="cros_host doc static-libs -highdpi +subpixel_rendering"
+IUSE="cros_host doc static-libs +subpixel_rendering touchview"
 
 # Purposefully dropped the xml USE flag and libxml2 support.  Expat is the
 # default and used by every distro.  See bug #283191.
@@ -123,10 +123,13 @@ multilib_src_install_all() {
 
 	# There's a lot of variability across different displays with subpixel
 	# rendering. Until we have a better solution, turn it off and use grayscale
-	# instead on boards that don't have internal displays. Additionally, disable it
-        # when installing to the host sysroot so the images in the initramfs package
-        # won't use subpixel rendering (http://crosbug.com/27872).
-	if ! use subpixel_rendering || use cros_host; then
+	# instead on boards that don't have internal displays.
+	#
+	# Additionally, disable it for convertible devices with rotatable displays
+	# (http://crbug.com/222208) and when installing to the host sysroot so the
+	# images in the initramfs package won't use subpixel rendering
+	# (http://crosbug.com/27872).
+	if ! use subpixel_rendering || use touchview || use cros_host; then
 		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
 		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/
 		check_fontconfig_default 10-no-sub-pixel.conf
