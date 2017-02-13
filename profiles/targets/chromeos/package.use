@@ -45,8 +45,9 @@ chromeos-base/vboot_reference minimal
 media-gfx/imagemagick	png
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
 media-libs/freeimage	png
-# Drop unneeded dependencies.
-media-libs/harfbuzz	-cairo -glib -introspection
+# TODO(derat): Unset glib for harfbuzz if/when pango is no longer needed:
+# http://crbug.com/691477
+media-libs/harfbuzz	-cairo -introspection
 media-libs/libdvdread	-css
 media-libs/libsndfile	minimal
 # disabled in profiles/default/linux/package.use
