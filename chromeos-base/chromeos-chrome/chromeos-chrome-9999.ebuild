@@ -45,6 +45,7 @@ IUSE="
 	evdev_gestures
 	+fonts
 	+gold
+	goma
 	hardfp
 	+highdpi
 	internal_gles_conform
@@ -228,7 +229,7 @@ AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
 AUTOTEST_DEPS_LIST="chrome_test page_cycler_dep perf_data_dep telemetry_dep"
 
-IUSE="${IUSE} +autotest goma"
+IUSE="${IUSE} +autotest"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
