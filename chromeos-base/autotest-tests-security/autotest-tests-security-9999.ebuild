@@ -20,6 +20,7 @@ IUSE="+autotest -chromeless_tests -chromeless_tty containers +seccomp"
 
 RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
+	tests_security_Minijail0? ( sys-apps/keyutils )
 "
 DEPEND="${RDEPEND}"
 
