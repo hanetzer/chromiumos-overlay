@@ -26,7 +26,6 @@ IUSE="cros_host"
 COMMON_DEPEND="
 	chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
-	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/openssl
 	dev-libs/protobuf
