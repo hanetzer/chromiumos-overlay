@@ -219,7 +219,6 @@ cros-firmware_src_compile() {
 	image_cmd+="$(_add_param -p "${PD_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
-	image_cmd+="$(_add_param --pd_version "${CROS_FIRMWARE_PD_VERSION}")"
 	image_cmd+="$(_add_bool_param --create_bios_rw_image \
 		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
