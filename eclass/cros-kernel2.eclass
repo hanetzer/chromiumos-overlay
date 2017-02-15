@@ -30,6 +30,8 @@ WIRELESS_VERSIONS=( 3.4 3.8 3.18 4.2 )
 WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 
 IUSE="
+	-asan
+	clang
 	-device_tree
 	+firmware_install
 	-kernel_sources
@@ -909,7 +911,11 @@ kmake() {
 		unset CC CXX LD STRIP OBJCOPY
 	fi
 
-	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
+	if use clang; then
+		CHOST=${cross} clang-setup-env
+	else
+		CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
+	fi
 	local binutils_path=$(LD=${cross}-ld get_binutils_path_ld)
 
 	set -- \
