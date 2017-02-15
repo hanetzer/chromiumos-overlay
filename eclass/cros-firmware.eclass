@@ -259,7 +259,13 @@ cros-firmware_src_compile() {
 		# create a new script
 		einfo "Build ${BOARD_USE} firmware updater: ${image_cmd[*]} ${ext_cmd[*]}"
 		./pack_firmware.sh "${image_cmd[@]}" "${ext_cmd[@]}" -o $UPDATE_SCRIPT ||
-		die "Cannot pack firmware."
+			die "Cannot pack firmware."
+		# TODO(sjg@chromium.org): Remove the above when validated.
+		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
+			-o "${UPDATE_SCRIPT}.PY" ||
+			die "Cannot pack firmware using Python script."
+		diff "${UPDATE_SCRIPT}" "${UPDATE_SCRIPT}.PY" ||
+			die "Python script produced a different result"
 	fi
 
 	# Create local updaters
@@ -276,6 +282,12 @@ cros-firmware_src_compile() {
 		./pack_firmware.sh -b $root/firmware/image.bin \
 			-o $output_file "${image_cmd[@]}" "${ext_cmd[@]}" ||
 			die "Cannot pack local firmware."
+		# TODO(sjg@chromium.org): Remove the above when validated.
+		./pack_firmware.py -b "${root}/firmware/image.bin" \
+			-o "${output_file}.PY" "${image_cmd[@]}" "${ext_cmd[@]}" ||
+			die "Cannot pack local firmware using Python script."
+		diff "${output_file}" "${output_file}.PY" ||
+			die "Python script produced a different result"
 		if [[ ${#image_cmd[@]} -eq 0 ]]; then
 			# When no pre-built binaries are available,
 			# dupe local updater to system updater.
