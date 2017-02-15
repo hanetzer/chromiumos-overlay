@@ -5,7 +5,7 @@
 # chromium tree that we're extracting from rather than the svn rev of
 # the last change actually made to the base subdir.
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_PROJECT="aosp/platform/external/libchrome"
 CROS_WORKON_COMMIT="6430a2797e1dfb3af1b83a17640150d216037698"
@@ -25,13 +25,13 @@ IUSE="cros_host"
 
 # TODO(avakulenko): Put dev-libs/nss behind a USE flag to make sure NSS is
 # pulled only into the configurations that require it.
-RDEPEND="dev-libs/glib
-	dev-libs/libevent
-	dev-libs/modp_b64
-	dev-libs/nss
-	dev-libs/openssl
-	dev-libs/protobuf
-	sys-apps/dbus"
+RDEPEND="dev-libs/glib:2=
+	dev-libs/libevent:=
+	dev-libs/modp_b64:=
+	dev-libs/nss:=
+	dev-libs/openssl:=
+	dev-libs/protobuf:=
+	sys-apps/dbus:="
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	dev-cpp/gmock
