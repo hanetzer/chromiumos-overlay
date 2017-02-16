@@ -12,7 +12,7 @@ IUSE="h1_over_spi"
 
 RDEPEND="chromeos-base/ec-utils"
 
-CR50_NAME="cr50.r0.0.10.w0.0.14"
+CR50_NAME="cr50.r0.0.10.w0.0.15"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
 S="${WORKDIR}"
