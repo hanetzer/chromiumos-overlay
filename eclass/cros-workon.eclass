@@ -266,7 +266,7 @@ get_paths() {
 	local pathelement i
 	for (( i = 0; i < project_count; ++i )); do
 		if [[ -n "${CROS_WORKON_SRCPATH[i]}" ]]; then
-			pathelement="${srcbase}/${CROS_WORKON_SRCPATH[i]}"
+			pathelement="${CROS_WORKON_SRCROOT}/${CROS_WORKON_SRCPATH[i]}"
 		else
 			pathelement="${pathbase}/${CROS_WORKON_LOCALNAME[i]}"
 			if [[ ! -d "${pathelement}" ]]; then
