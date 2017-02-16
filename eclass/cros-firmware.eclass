@@ -273,7 +273,35 @@ cros-firmware_src_compile() {
 	# Prepare extra commands
 	_add_param ext_cmd --tool_base \
 		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
-	if ! use unibuild; then
+	if use unibuild; then
+		local model
+
+		image_cmd+=(
+			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
+			-i "${DISTDIR}"
+		)
+		for model in ${FIRMWARE_UNIBUILD}; do
+			image_cmd+=( -m "${model}" )
+		done
+		einfo "Build ${BOARD_USE} firmware updater:" \
+			"${image_cmd[*]} ${ext_cmd[*]}"
+		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
+			-o "${UPDATE_SCRIPT}" ||
+			die "Cannot pack firmware."
+		if use bootimage; then
+			einfo "Updater for local fw"
+			# Tell pack_firmware.py where to find the files.
+			# 'MODEL' will be replaced with the model.
+			image_cmd+=(
+				-b "${root}/firmware/image-MODEL.bin"
+				-e "${root}/firmware/MODEL/ec.bin"
+				-p "${root}/firmware/MODEL/pd.bin"
+			)
+			./pack_firmware.py -l "${image_cmd[@]}" \
+				"${ext_cmd[@]}" -o "${output_file}" ||
+				die "Cannot pack local firmware."
+		fi
+	else
 		# Prepare images
 		_add_param image_cmd -b "${FW_IMAGE_LOCATION}"
 		_add_param image_cmd -e "${EC_IMAGE_LOCATION}"
