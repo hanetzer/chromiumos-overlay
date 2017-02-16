@@ -179,7 +179,6 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
-	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/nspr
 	>=dev-libs/nss-3.12.2
@@ -214,6 +213,13 @@ RDEPEND="${RDEPEND}
 	accessibility? ( app-accessibility/brltty )
 	"
 
+# TODO(ljusten): Move !x86 logic to package.use.mask as soon as this 9999.ebuild
+# is marked stable. It cannot be done directly in package.use.mask since this
+# causes a build error:
+#   "Cannot find prebuilts for chromeos-base/chromeos-chrome on x86-alex".
+RDEPEND="${RDEPEND}
+	authpolicy? ( !x86? ( chromeos-base/authpolicy ) )
+	"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
