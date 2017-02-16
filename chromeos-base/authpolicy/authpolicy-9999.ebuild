@@ -23,6 +23,7 @@ IUSE="test +samba"
 RDEPEND="
 	app-crypt/mit-krb5
 	chromeos-base/libbrillo
+	chromeos-base/metrics
 	>=chromeos-base/chromeos-minijail-0.0.1-r1445
 	dev-libs/protobuf
 	dev-libs/dbus-glib
