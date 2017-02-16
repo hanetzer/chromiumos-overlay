@@ -294,6 +294,7 @@ ALL_BOARDS=(
 	winky
 	wizpig
 	wolf
+	wooten
 	wsb
 	x32-generic
 	x86-agz
