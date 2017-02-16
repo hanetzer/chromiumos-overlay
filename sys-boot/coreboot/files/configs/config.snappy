@@ -30,8 +30,8 @@ CONFIG_ELOG_BOOT_COUNT_CMOS_OFFSET=144
 
 # Firmware Support Package
 CONFIG_ADD_FSP_BINARIES=y
-CONFIG_FSP_M_FILE="3rdparty/blobs/mainboard/google/snappy/fsp/FSP-M.Fv"
-CONFIG_FSP_S_FILE="3rdparty/blobs/mainboard/google/snappy/fsp/FSP-S.Fv"
+CONFIG_FSP_M_FILE="3rdparty/blobs/baseboard-reef/fsp/FSP-M.Fv"
+CONFIG_FSP_S_FILE="3rdparty/blobs/baseboard-reef/fsp/FSP-S.Fv"
 CONFIG_ADD_VBT_DATA_FILE=y
 CONFIG_VBT_FILE="3rdparty/blobs/baseboard-reef/vbt.bin"
 
