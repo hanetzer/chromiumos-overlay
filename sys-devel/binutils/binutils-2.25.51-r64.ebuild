@@ -5,7 +5,7 @@ EAPI="4"
 
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/binutils"
-CROS_WORKON_LOCALNAME="aosp/toolchain/binutils"
+CROS_WORKON_LOCALNAME="../aosp/toolchain/binutils"
 CROS_WORKON_COMMIT="082ed0f10cf59b53381cefda2f90247e2a81015b"
 CROS_WORKON_TREE="0ec9cd10d3b529c84a90baf3589842f6ad519426"
 CROS_WORKON_BLACKLIST="1"
@@ -35,7 +35,7 @@ DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="http://sources.redhat.com/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
 IUSE="hardened mounted_binutils multislot multitarget nls test vanilla
-      next_binutils prev_binutils"
+	next_binutils prev_binutils"
 REQUIRED_USE="next_binutils? ( !prev_binutils )"
 
 if use multislot ; then
@@ -111,7 +111,12 @@ src_unpack() {
 		# has sources inside a subdirectory named binutils-${PV}. The repo at
 		# https://chromium.googlesource.com/chromiumos/third_party/binutils
 		# has sources at top level. This ebuild needs to handle both cases.
-		local subdir="${PN}-$(get_version_component_range 1-2)"
+		local subdir
+		if [[ ${PV} == 9999 ]]; then
+			subdir="binutils-2.25"
+		else
+			subdir="${PN}-$(get_version_component_range 1-2)"
+		fi
 		if [[ -d "${S}/${subdir}" ]] ; then
 			S="${S}/${subdir}"
 		fi
