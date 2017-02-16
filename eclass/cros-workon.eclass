@@ -501,7 +501,11 @@ cros-workon_src_unpack() {
 			done
 			if [[ ${fetched} -eq ${project_count} ]]; then
 				# TODO: Id of all repos?
-				set_vcsid "$(get_rev "${path[0]}/.git")"
+				# We should run get_rev in destdir[0] because CROS_WORKON_COMMIT
+				# is only checked out there. Also, we can't use
+				# CROS_WORKON_COMMIT directly because it could be a named or
+				# abbreviated ref.
+				set_vcsid "$(get_rev "${destdir[0]}/.git")"
 				return
 			else
 				ewarn "Falling back to git.eclass..."
