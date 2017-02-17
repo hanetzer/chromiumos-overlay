@@ -45,6 +45,7 @@ IUSE="
 	evdev_gestures
 	+fonts
 	+gold
+	goma
 	hardfp
 	+highdpi
 	internal_gles_conform
@@ -130,13 +131,13 @@ declare -A AFDO_FILE_LLVM
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.3011.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-58.0.3015.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -228,7 +229,7 @@ AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
 AUTOTEST_DEPS_LIST="chrome_test page_cycler_dep perf_data_dep telemetry_dep"
 
-IUSE="${IUSE} +autotest goma"
+IUSE="${IUSE} +autotest"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
