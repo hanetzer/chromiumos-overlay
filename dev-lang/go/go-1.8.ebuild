@@ -15,7 +15,7 @@ SRC_URI="https://storage.googleapis.com/golang/go${PV}.src.tar.gz
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="-* amd64 x86 arm"
+KEYWORDS="-* amd64 arm arm64 x86"
 IUSE=""
 RESTRICT="binchecks strip"
 
@@ -49,6 +49,7 @@ get_goarch() {
 		amd64) echo "amd64" ;;
 		x86) echo "386" ;;
 		arm) echo "arm" ;;
+		arm64) echo "arm64" ;;
 	esac
 }
 
@@ -105,7 +106,7 @@ src_install() {
 
 	exeinto "${goroot}/${tooldir}"
 	doexe "${tooldir}/"{asm,cgo,compile,link,pack}
-	doexe "${tooldir}/"{doc,fix,vet,yacc}
+	doexe "${tooldir}/"{doc,fix,vet}
 	doexe "${tooldir}/"{cover,pprof,trace}
 	doexe "${tooldir}/"{addr2line,nm,objdump}
 
