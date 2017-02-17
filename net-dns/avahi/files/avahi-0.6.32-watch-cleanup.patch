@@ -1,0 +1,43 @@
+From a9dd363e7fc5ea44a482b0f306d7b997e4261519 Mon Sep 17 00:00:00 2001
+From: Ben Chan <benchan@chromium.org>
+Date: Wed, 15 Feb 2017 17:57:34 -0800
+Subject: [PATCH] Fix watch cleanup issue in watch_free.
+
+When an AvahiWatch instance `w' is freed by watch_free(), watch_free()
+is supposed to set `w->glib_poll->watch_req_cleanup = TRUE' to trigger
+cleanup_watches() during prepare_func(), but instead it incorrectly sets
+`w->glib_poll->timeout_req_cleanup = TRUE'. Without invoking
+cleanup_watches(), the AvahiWatch instance isn't properly destroyed and
+its associated GSource instance isn't removed. The watch callback could
+potentially be invoked inappropriately on the supposedly dead watch.
+
+Upstream pull request: https://github.com/lathiat/avahi/pull/101
+---
+ avahi-glib/glib-watch.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/avahi-glib/glib-watch.c b/avahi-glib/glib-watch.c
+index 5b60bbc..38eba3b 100644
+--- a/avahi-glib/glib-watch.c
++++ b/avahi-glib/glib-watch.c
+@@ -87,7 +87,7 @@ static void cleanup_watches(AvahiGLibPoll *g, int all) {
+             destroy_watch(w);
+     }
+ 
+-    g->watch_req_cleanup = 0;
++    g->watch_req_cleanup = FALSE;
+ }
+ 
+ static gushort map_events_to_glib(AvahiWatchEvent events) {
+@@ -160,7 +160,7 @@ static void watch_free(AvahiWatch *w) {
+     }
+ 
+     w->dead = TRUE;
+-    w->glib_poll->timeout_req_cleanup = TRUE;
++    w->glib_poll->watch_req_cleanup = TRUE;
+ }
+ 
+ static AvahiTimeout* timeout_new(const AvahiPoll *api, const struct timeval *tv, AvahiTimeoutCallback callback, void *userdata) {
+-- 
+2.11.0.483.g087da7b7c-goog
+
