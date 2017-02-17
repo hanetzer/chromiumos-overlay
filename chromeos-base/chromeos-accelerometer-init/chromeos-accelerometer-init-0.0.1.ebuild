@@ -20,6 +20,14 @@ RDEPEND="
 
 S=${WORKDIR}
 
+src_test() {
+	local cmd=(
+		"${FILESDIR}"/tests/accelerometer-init-test.sh
+	)
+	echo "${cmd[@]}"
+	"${cmd[@]}" || die
+}
+
 src_install() {
 	udev_dorules "${FILESDIR}"/udev/99-cros-ec-accel.rules
 	exeinto $(udev_get_udevdir)

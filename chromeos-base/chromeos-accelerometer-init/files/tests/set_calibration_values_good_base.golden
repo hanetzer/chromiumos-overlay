@@ -1,0 +1,3 @@
+/sys/bus/iio/devices/dummy0/in_accel_x_calibbias=0
+/sys/bus/iio/devices/dummy0/in_accel_y_calibbias=0
+/sys/bus/iio/devices/dummy0/in_accel_z_calibbias=10
