@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="ac5e55604a363d224fd7b283989f5910e6ef8a3f"
-CROS_WORKON_TREE="1fe095275785ac2149aff0821430810d7eec4bc0"
+CROS_WORKON_COMMIT="ad05f78d590a799226866741032936d784ab3aac"
+CROS_WORKON_TREE="110fffebf2f094f119d138b75c28852c27914bc9"
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 
 DESCRIPTION="lp0 resume blob for Tegra"
