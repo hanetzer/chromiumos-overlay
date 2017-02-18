@@ -24,6 +24,7 @@ fchmod: 1
 fchown: 1
 fcntl: 1
 fstat: 1
+fstatfs: 1
 ftruncate: 1
 futex: 1
 getcwd: 1
