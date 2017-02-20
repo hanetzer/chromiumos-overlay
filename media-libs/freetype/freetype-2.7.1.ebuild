@@ -20,7 +20,7 @@ SRC_URI="mirror://sourceforge/freetype/${P/_/}.tar.bz2
 LICENSE="|| ( FTL GPL-2+ )"
 SLOT="2"
 KEYWORDS="*"
-IUSE="X +adobe-cff bindist bzip2 debug doc fontforge harfbuzz
+IUSE="X +adobe-cff bindist bzip2 +cleartype_hinting debug doc fontforge harfbuzz
 	infinality png static-libs utils"
 RESTRICT="!bindist? ( bindist )" # bug 541408
 
@@ -43,39 +43,37 @@ PDEPEND="infinality? ( media-libs/fontconfig-infinality )"
 
 src_prepare() {
 	enable_option() {
-		sed -i -e "/#define $1/a #define $1" \
+		sed -i -e "/#define $1/ { s:/\* ::; s: \*/:: }" \
 			include/${PN}/config/ftoption.h \
 			|| die "unable to enable option $1"
 	}
 
 	disable_option() {
-		sed -i -e "/#define $1/ { s:^:/*:; s:$:*/: }" \
+		sed -i -e "/#define $1/ { s:^:/* :; s:$: */: }" \
 			include/${PN}/config/ftoption.h \
 			|| die "unable to disable option $1"
 	}
-
-	# This is the same as the 01 patch from infinality
-	# TODO(jshin): Consider dropping this patch.
-	epatch "${FILESDIR}"/${PN}-2.7-enable-valid.patch
 
 	# Enable stem-darkening for CFF font
 	# TODO(jshin): Evaluate the impact of disabling stem-darkening.
 	epatch "${FILESDIR}"/${PN}-2.6.2-enable-cff-stem-darkening.patch
 
-	# Disable subpixel hinting for now.
-	# TODO(jshin): Evaluate the impact of turning it on.
-	# The following does not work.
-	#   disable_option TT_CONFIG_OPTION_SUBPIXEL_HINTING
-	epatch "${FILESDIR}"/${PN}-2.7-disable-subpixel-hinting.patch
+	# Apply additional changes beyond 2.7.1 up to e432ebf in the upstream.
+	epatch "${FILESDIR}"/${PN}-2.7.1-e432ebf.patch
 
-	# Apply additional changes beyond 2.7 up to c38be52bf8 in the upstream.
-	epatch "${FILESDIR}"/${PN}-2.7-c38be52bf8.patch
+	# Fix a couple of constants so that fontconfig is happy.
+	# To be removed, when updating to 2.7.2.
+	epatch "${FILESDIR}"/${PN}-2.7.1-ttnames.patch
 
-	if use infinality; then
-		epatch "${WORKDIR}/${INFINALITY_PATCH}"
+	# Will be the new default for >=freetype-2.7.0
+	disable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  2"
 
-		# FT_CONFIG_OPTION_SUBPIXEL_RENDERING is already enabled in freetype-2.4.11
-		enable_option TT_CONFIG_OPTION_SUBPIXEL_HINTING
+	if use infinality && use cleartype_hinting; then
+		enable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  ( 1 | 2 )"
+	elif use infinality; then
+		enable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  1"
+	elif use cleartype_hinting; then
+		enable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  2"
 	fi
 
 	if ! use bindist; then
@@ -162,7 +160,7 @@ multilib_src_install_all() {
 		# Probably fontforge needs less but this way makes things simplier...
 		einfo "Installing internal headers required for fontforge"
 		local header
-		find src/truetype include/internal -name '*.h' | \
+		find src/truetype include/freetype/internal -name '*.h' | \
 		while read header; do
 			mkdir -p "${ED}/usr/include/freetype2/internal4fontforge/$(dirname ${header})" || die
 			cp ${header} "${ED}/usr/include/freetype2/internal4fontforge/$(dirname ${header})" || die
