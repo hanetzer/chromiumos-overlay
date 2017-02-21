@@ -106,6 +106,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.1.2-PrinterRoot.patch"
 	"${FILESDIR}/${PN}-2.0.3-upstart-on-demand.patch"
 	"${FILESDIR}/${PN}-2.1.4-strict-filters.patch"
+	"${FILESDIR}/${PN}-2.1.4-usb-device-uris.patch"
 )
 
 MULTILIB_CHOST_TOOLS=(

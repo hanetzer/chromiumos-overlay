@@ -1,0 +1,109 @@
+diff --git a/backend/usb-libusb.c b/backend/usb-libusb.c
+index ffb2fe9..2f3136d 100644
+--- a/backend/usb-libusb.c
++++ b/backend/usb-libusb.c
+@@ -37,6 +37,7 @@
+ #define WAIT_SIDE_DELAY			3
+ #define DEFAULT_TIMEOUT			5000L
+ 
++#define CHROMEOS
+ 
+ /*
+  * Local types...
+@@ -953,7 +954,7 @@ find_device(usb_cb_t   cb,		/* I - Callback function */
+ 		      "Device URI: %s\n",
+ 		      device_id, device_uri);
+ 
+-	      if ((*cb)(&printer, device_uri, device_id, data))
++	      if (device_uri[0] && (*cb)(&printer, device_uri, device_id, data))
+ 	      {
+ 		fprintf(stderr, "DEBUG: Device protocol: %d\n",
+ 			printer.protocol);
+@@ -1245,6 +1246,74 @@ load_quirks(void)
+ }
+ 
+ 
++#ifdef CHROMEOS
++/*
++ * 'make_device_uri()' - Create a device URI for a USB printer.  THis
++ * version is specific to chromeos, and uses the scheme
++ * usb://vendor_id/device_id with the optional argument ?serial=%s if
++ * a serial number can be read.  The entire URL is cups-escaped, which
++ * means http_copy_encode()-style escaping is applied to everything.
++ * Practically speaking, this means the serial number is escaped,
++ * because none of the other URI components can contain anything that
++ * would need to be escaped.
++ *
++ * Note this version pulls *all* information from the usb device
++ * descriptor, ignoring any ieee1284 compatibility information exposed
++ * by the printer.  This lets us reliably duplicate the URI-construction
++ * process in chrome without trying to guess at other fixups CUPS applies
++ * to ieee1284-derived data.
++ *
++ * Returns a zero-length string if the printer can't be queried.
++ */
++static char *				/* O - Device URI */
++make_device_uri(
++    usb_printer_t *printer,		/* I - Printer */
++    const char    *device_id,		/* I - IEEE-1284 device ID */
++    char          *uri,			/* I - Device URI buffer */
++    size_t        uri_size)		/* I - Size of device URI buffer */
++{
++  char		sern[256];		/* Queried serial number string, if any. */
++  char		vendor_id_string[5];	/* Stringified vendor id. */
++
++  struct libusb_device_descriptor devdesc;
++  if (libusb_get_device_descriptor(printer->device, &devdesc) != LIBUSB_SUCCESS)
++  {
++    fprintf(stderr, "DEBUG: Failed to get usb device descriptor\n");
++    uri[0] = '\0';
++    return uri;
++  }
++  int length = libusb_get_string_descriptor_ascii(
++      printer->handle, devdesc.iSerialNumber, (unsigned char *)sern,
++      sizeof(sern) - 1);
++  if (length > 0)
++  {
++    sern[length] = '\0';
++  }
++  else
++  {
++    sern[0] = '\0';
++  }
++
++  // Guaranteed to fit in 5 bytes because idVendor is a 2-byte field.
++  snprintf(vendor_id_string, sizeof(vendor_id_string), "%04x",
++	   devdesc.idVendor);
++
++  if (httpAssembleURIf(HTTP_URI_CODING_ALL, uri, uri_size,
++		       "usb",		  // scheme
++		       NULL,		  // username
++		       vendor_id_string,  // host
++		       0,		  // port
++		       "/%04x%s%s",	   // printf-style resource
++		       devdesc.idProduct,
++		       sern[0] ? "?serial=" : "", sern) != HTTP_URI_STATUS_OK)
++  {
++    uri[0] = '\0';
++  }
++  return uri;
++}
++
++#else // !CHROMEOS
++
+ /*
+  * 'make_device_uri()' - Create a device URI for a USB printer.
+  */
+@@ -1386,6 +1455,7 @@ make_device_uri(
+   return (uri);
+ }
+ 
++#endif // CHROMEOS
+ 
+ /*
+  * 'open_device()' - Open a connection to the USB printer.
+@@ -2023,4 +2093,3 @@ soft_reset_printer(
+ /*
+  * End of "$Id: usb-libusb.c 12881 2015-09-15 21:20:02Z msweet $".
+  */
+-
