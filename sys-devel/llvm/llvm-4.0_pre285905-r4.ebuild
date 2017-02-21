@@ -190,6 +190,7 @@ pick_cherries() {
 	CHERRIES+=" 32dc773aa73602b5d5ee6881df5d76decd776018 " # r286613
 	CHERRIES+=" 4c434043b9a5140cf6ab9231c82e6000bb6f31f6 " # r289094
 	CHERRIES+=" 671d92a8e764a3266ecab219d791a27fb257be78 " # r289103
+	CHERRIES+=" cefec9cba5ec1629aac083bad2ad7e10e91dcf05 " # r295805
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -231,8 +232,20 @@ pick_cherries() {
 	popd >/dev/null || die
 }
 
+pick_next_cherries() {
+	# clang
+	local CHERRIES=""
+	CHERRIES+=" cefec9cba5ec1629aac083bad2ad7e10e91dcf05 " # r295805
+	pushd "${S}"/tools/clang >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+}
+
 src_prepare() {
 	use llvm-next || pick_cherries
+	use llvm-next && pick_next_cherries
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
