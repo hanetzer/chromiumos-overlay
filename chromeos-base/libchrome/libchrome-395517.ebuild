@@ -41,7 +41,6 @@ src_prepare() {
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.
 	append-lfs-flags
-	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-add-scoped-ptr.patch
 }
 
 src_configure() {
