@@ -10,14 +10,14 @@ inherit cmake-utils
 DESCRIPTION="drawElements Quality Program - an OpenGL ES testsuite"
 HOMEPAGE="https://android.googlesource.com/platform/external/deqp"
 
-# deqp-6aef2... corresponds to android cts-7.1_r2 deqp directory.
-# https://android.googlesource.com/platform/external/deqp/+/android-cts-7.1_r2
-MY_DEQP_COMMIT='6aef236dd0407d8eab330c1eade4375455c00f53'
+# deqp-09b02... corresponds to android master deqp directory.
+# https://android.googlesource.com/platform/external/deqp/+/09b0225a8a77b3d385b7dc779d2ae06f5980bba7
+MY_DEQP_COMMIT='09b0225a8a77b3d385b7dc779d2ae06f5980bba7'
 
 # When building the Vulkan CTS, dEQP requires that certain external
 # dependencies be unpacked into the source tree. See ${S}/external/fetch_sources.py
 # for the required dependencies.
-MY_GLSLANG_COMMIT='d02dc5d05ad1f63db8d37fda9928a4d59e3c132d'
+MY_GLSLANG_COMMIT='e3aa654c4b0c761b28d7864192ca8ceea6faf70a'
 MY_SPIRV_TOOLS_COMMIT='f7e63786a919040cb2e0e572d960a0650f2c2881'
 
 SRC_URI="gs://chromeos-localmirror/distfiles/deqp-${MY_DEQP_COMMIT}.tar.gz

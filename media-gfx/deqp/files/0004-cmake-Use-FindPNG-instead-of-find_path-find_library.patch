@@ -1,4 +1,4 @@
-From 2afd0ef9d9f10f58929ccf9f35b96c32cad16fb3 Mon Sep 17 00:00:00 2001
+From f0bd79a976fbaea602e707ca54349c1e8ae577d5 Mon Sep 17 00:00:00 2001
 From: Chad Versace <chad.versace@intel.com>
 Date: Fri, 2 Dec 2016 15:43:08 -0800
 Subject: [PATCH 4/5] cmake: Use FindPNG instead of find_path/find_library
