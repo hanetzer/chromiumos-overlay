@@ -24,6 +24,7 @@ IUSE="
 	disable_login_animations
 	disable_low_latency_audio
 	disable_webaudio
+	edge_touch_filtering
 	fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
 	gpu_sandbox_start_after_initialization
