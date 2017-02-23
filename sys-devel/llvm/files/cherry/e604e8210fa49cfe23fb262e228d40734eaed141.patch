@@ -1,0 +1,230 @@
+commit e604e8210fa49cfe23fb262e228d40734eaed141
+Author: George Burgess IV <george.burgess.iv@gmail.com>
+Date:   Thu Feb 23 05:59:56 2017 +0000
+
+    [CodeGen] Don't reemit expressions for pass_object_size params.
+    
+    This fixes an assertion failure in cases where we had expression
+    statements that declared variables nested inside of pass_object_size
+    args. Since we were emitting the same ExprStmt twice (once for the arg,
+    once for the @llvm.objectsize call), we were getting issues with
+    redefining locals.
+    
+    This also means that we can be more lax about when we emit
+    @llvm.objectsize for pass_object_size args: since we're reusing the
+    arg's value itself, we don't have to care so much about side-effects.
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@295935 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/CodeGen/CGBuiltin.cpp b/lib/CodeGen/CGBuiltin.cpp
+index 446f2a039f..19b9c9b1d5 100644
+--- a/lib/CodeGen/CGBuiltin.cpp
++++ b/lib/CodeGen/CGBuiltin.cpp
+@@ -420,10 +420,11 @@ getDefaultBuiltinObjectSizeResult(unsigned Type, llvm::IntegerType *ResType) {
+ 
+ llvm::Value *
+ CodeGenFunction::evaluateOrEmitBuiltinObjectSize(const Expr *E, unsigned Type,
+-                                                 llvm::IntegerType *ResType) {
++                                                 llvm::IntegerType *ResType,
++                                                 llvm::Value *EmittedE) {
+   uint64_t ObjectSize;
+   if (!E->tryEvaluateObjectSize(ObjectSize, getContext(), Type))
+-    return emitBuiltinObjectSize(E, Type, ResType);
++    return emitBuiltinObjectSize(E, Type, ResType, EmittedE);
+   return ConstantInt::get(ResType, ObjectSize, /*isSigned=*/true);
+ }
+ 
+@@ -432,9 +433,14 @@ CodeGenFunction::evaluateOrEmitBuiltinObjectSize(const Expr *E, unsigned Type,
+ ///   - A llvm::Argument (if E is a param with the pass_object_size attribute on
+ ///     it)
+ ///   - A call to the @llvm.objectsize intrinsic
++///
++/// EmittedE is the result of emitting `E` as a scalar expr. If it's non-null
++/// and we wouldn't otherwise try to reference a pass_object_size parameter,
++/// we'll call @llvm.objectsize on EmittedE, rather than emitting E.
+ llvm::Value *
+ CodeGenFunction::emitBuiltinObjectSize(const Expr *E, unsigned Type,
+-                                       llvm::IntegerType *ResType) {
++                                       llvm::IntegerType *ResType,
++                                       llvm::Value *EmittedE) {
+   // We need to reference an argument if the pointer is a parameter with the
+   // pass_object_size attribute.
+   if (auto *D = dyn_cast<DeclRefExpr>(E->IgnoreParenImpCasts())) {
+@@ -457,10 +463,10 @@ CodeGenFunction::emitBuiltinObjectSize(const Expr *E, unsigned Type,
+   // LLVM can't handle Type=3 appropriately, and __builtin_object_size shouldn't
+   // evaluate E for side-effects. In either case, we shouldn't lower to
+   // @llvm.objectsize.
+-  if (Type == 3 || E->HasSideEffects(getContext()))
++  if (Type == 3 || (!EmittedE && E->HasSideEffects(getContext())))
+     return getDefaultBuiltinObjectSizeResult(Type, ResType);
+ 
+-  Value *Ptr = EmitScalarExpr(E);
++  Value *Ptr = EmittedE ? EmittedE : EmitScalarExpr(E);
+   assert(Ptr->getType()->isPointerTy() &&
+          "Non-pointer passed to __builtin_object_size?");
+ 
+@@ -965,7 +971,8 @@ RValue CodeGenFunction::EmitBuiltinExpr(const FunctionDecl *FD,
+ 
+     // We pass this builtin onto the optimizer so that it can figure out the
+     // object size in more complex cases.
+-    return RValue::get(emitBuiltinObjectSize(E->getArg(0), Type, ResType));
++    return RValue::get(emitBuiltinObjectSize(E->getArg(0), Type, ResType,
++                                             /*EmittedE=*/nullptr));
+   }
+   case Builtin::BI__builtin_prefetch: {
+     Value *Locality, *RW, *Address = EmitScalarExpr(E->getArg(0));
+diff --git a/lib/CodeGen/CGCall.cpp b/lib/CodeGen/CGCall.cpp
+index 85b2e258f6..b65b659fcc 100644
+--- a/lib/CodeGen/CGCall.cpp
++++ b/lib/CodeGen/CGCall.cpp
+@@ -3243,7 +3243,18 @@ void CodeGenFunction::EmitCallArgs(
+     EvaluationOrder Order) {
+   assert((int)ArgTypes.size() == (ArgRange.end() - ArgRange.begin()));
+ 
+-  auto MaybeEmitImplicitObjectSize = [&](unsigned I, const Expr *Arg) {
++  // We *have* to evaluate arguments from right to left in the MS C++ ABI,
++  // because arguments are destroyed left to right in the callee. As a special
++  // case, there are certain language constructs that require left-to-right
++  // evaluation, and in those cases we consider the evaluation order requirement
++  // to trump the "destruction order is reverse construction order" guarantee.
++  bool LeftToRight =
++      CGM.getTarget().getCXXABI().areArgsDestroyedLeftToRightInCallee()
++          ? Order == EvaluationOrder::ForceLeftToRight
++          : Order != EvaluationOrder::ForceRightToLeft;
++
++  auto MaybeEmitImplicitObjectSize = [&](unsigned I, const Expr *Arg,
++                                         RValue EmittedArg) {
+     if (CalleeDecl == nullptr || I >= CalleeDecl->getNumParams())
+       return;
+     auto *PS = CalleeDecl->getParamDecl(I)->getAttr<PassObjectSizeAttr>();
+@@ -3253,20 +3264,16 @@ void CodeGenFunction::EmitCallArgs(
+     const auto &Context = getContext();
+     auto SizeTy = Context.getSizeType();
+     auto T = Builder.getIntNTy(Context.getTypeSize(SizeTy));
+-    llvm::Value *V = evaluateOrEmitBuiltinObjectSize(Arg, PS->getType(), T);
++    assert(EmittedArg.getScalarVal() && "We emitted nothing for the arg?");
++    llvm::Value *V = evaluateOrEmitBuiltinObjectSize(Arg, PS->getType(), T,
++                                                     EmittedArg.getScalarVal());
+     Args.add(RValue::get(V), SizeTy);
++    // If we're emitting args in reverse, be sure to do so with
++    // pass_object_size, as well.
++    if (!LeftToRight)
++      std::swap(Args.back(), *(&Args.back() - 1));
+   };
+ 
+-  // We *have* to evaluate arguments from right to left in the MS C++ ABI,
+-  // because arguments are destroyed left to right in the callee. As a special
+-  // case, there are certain language constructs that require left-to-right
+-  // evaluation, and in those cases we consider the evaluation order requirement
+-  // to trump the "destruction order is reverse construction order" guarantee.
+-  bool LeftToRight =
+-      CGM.getTarget().getCXXABI().areArgsDestroyedLeftToRightInCallee()
+-          ? Order == EvaluationOrder::ForceLeftToRight
+-          : Order != EvaluationOrder::ForceRightToLeft;
+-
+   // Insert a stack save if we're going to need any inalloca args.
+   bool HasInAllocaArgs = false;
+   if (CGM.getTarget().getCXXABI().isMicrosoft()) {
+@@ -3284,11 +3291,20 @@ void CodeGenFunction::EmitCallArgs(
+   for (unsigned I = 0, E = ArgTypes.size(); I != E; ++I) {
+     unsigned Idx = LeftToRight ? I : E - I - 1;
+     CallExpr::const_arg_iterator Arg = ArgRange.begin() + Idx;
+-    if (!LeftToRight) MaybeEmitImplicitObjectSize(Idx, *Arg);
++    unsigned InitialArgSize = Args.size();
+     EmitCallArg(Args, *Arg, ArgTypes[Idx]);
+-    EmitNonNullArgCheck(Args.back().RV, ArgTypes[Idx], (*Arg)->getExprLoc(),
+-                        CalleeDecl, ParamsToSkip + Idx);
+-    if (LeftToRight) MaybeEmitImplicitObjectSize(Idx, *Arg);
++    // In particular, we depend on it being the last arg in Args, and the
++    // objectsize bits depend on there only being one arg if !LeftToRight.
++    assert(InitialArgSize + 1 == Args.size() &&
++           "The code below depends on only adding one arg per EmitCallArg");
++    (void)InitialArgSize;
++    RValue RVArg = Args.back().RV;
++    EmitNonNullArgCheck(RVArg, ArgTypes[Idx], (*Arg)->getExprLoc(), CalleeDecl,
++                        ParamsToSkip + Idx);
++    // @llvm.objectsize should never have side-effects and shouldn't need
++    // destruction/cleanups, so we can safely "emit" it after its arg,
++    // regardless of right-to-leftness
++    MaybeEmitImplicitObjectSize(Idx, *Arg, RVArg);
+   }
+ 
+   if (!LeftToRight) {
+diff --git a/lib/CodeGen/CodeGenFunction.h b/lib/CodeGen/CodeGenFunction.h
+index 99ab1a1936..252561f488 100644
+--- a/lib/CodeGen/CodeGenFunction.h
++++ b/lib/CodeGen/CodeGenFunction.h
+@@ -3510,14 +3510,18 @@ private:
+   /// \brief Attempts to statically evaluate the object size of E. If that
+   /// fails, emits code to figure the size of E out for us. This is
+   /// pass_object_size aware.
++  ///
++  /// If EmittedExpr is non-null, this will use that instead of re-emitting E.
+   llvm::Value *evaluateOrEmitBuiltinObjectSize(const Expr *E, unsigned Type,
+-                                               llvm::IntegerType *ResType);
++                                               llvm::IntegerType *ResType,
++                                               llvm::Value *EmittedE);
+ 
+   /// \brief Emits the size of E, as required by __builtin_object_size. This
+   /// function is aware of pass_object_size parameters, and will act accordingly
+   /// if E is a parameter with the pass_object_size attribute.
+   llvm::Value *emitBuiltinObjectSize(const Expr *E, unsigned Type,
+-                                     llvm::IntegerType *ResType);
++                                     llvm::IntegerType *ResType,
++                                     llvm::Value *EmittedE);
+ 
+ public:
+ #ifndef NDEBUG
+diff --git a/test/CodeGen/pass-object-size.c b/test/CodeGen/pass-object-size.c
+index 4842c09c3b..f5c12317ec 100644
+--- a/test/CodeGen/pass-object-size.c
++++ b/test/CodeGen/pass-object-size.c
+@@ -343,16 +343,26 @@ void test12(void *const p __attribute__((pass_object_size(3)))) {
+ 
+ // CHECK-LABEL: define void @test13
+ void test13() {
+-  // Ensuring that we don't lower objectsize if the expression has side-effects
+   char c[10];
++  unsigned i = 0;
+   char *p = c;
+ 
+   // CHECK: @llvm.objectsize
+   ObjectSize0(p);
+ 
+-  // CHECK-NOT: @llvm.objectsize
+-  ObjectSize0(++p);
+-  ObjectSize0(p++);
++  // Allow side-effects, since they always need to happen anyway. Just make sure
++  // we don't perform them twice.
++  // CHECK: = add
++  // CHECK-NOT: = add
++  // CHECK: @llvm.objectsize
++  // CHECK: call i32 @ObjectSize0
++  ObjectSize0(p + ++i);
++
++  // CHECK: = add
++  // CHECK: @llvm.objectsize
++  // CHECK-NOT: = add
++  // CHECK: call i32 @ObjectSize0
++  ObjectSize0(p + i++);
+ }
+ 
+ // There was a bug where variadic functions with pass_object_size would cause
+@@ -395,3 +405,16 @@ void test16(__attribute__((address_space(1))) unsigned *I) {
+   // CHECK: call void @pass_size_unsigned_as1
+   pass_size_unsigned_as1(I);
+ }
++
++// This used to cause assertion failures, since we'd try to emit the statement
++// expression (and definitions for `a`) twice.
++// CHECK-LABEL: define void @test17
++void test17(char *C) {
++  // Check for 65535 to see if we're emitting this pointer twice.
++  // CHECK: 65535
++  // CHECK-NOT: 65535
++  // CHECK: @llvm.objectsize.i64.p0i8(i8* [[PTR:%[^,]+]],
++  // CHECK-NOT: 65535
++  // CHECK: call i32 @ObjectSize0(i8* [[PTR]]
++  ObjectSize0(C + ({ int a = 65535; a; }));
++}
