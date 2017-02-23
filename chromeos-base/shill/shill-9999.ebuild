@@ -169,6 +169,7 @@ src_install() {
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.dbus-xml
+	doins dbus_bindings/dbus-service-config.json
 
 	# Replace template parameters inside init scripts
 	local shill_name="shill.$(usex systemd service conf)"
