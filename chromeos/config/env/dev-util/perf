@@ -13,3 +13,11 @@ if [[ $(cros_target) != "cros_host" ]]; then
 	INSTALL_MASK+=" ${perf_mask}"
 	unset perf_mask
 fi
+
+# perf 4.4 uses -Wp,-MD,./.libbpf.o.d,-MT,libbpf.o options.
+# llvm/clang currently does not support these options.
+# build perf with gcc until this support is added.
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+	filter_clang_syntax
+}
