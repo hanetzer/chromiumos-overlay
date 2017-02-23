@@ -1,7 +1,7 @@
-From 6f46d3ac9854c1a99a58a385ef014bbda5be5edc Mon Sep 17 00:00:00 2001
+From 8b153e062b19133f76cb007a664667a84442c387 Mon Sep 17 00:00:00 2001
 From: Chad Versace <chadversary@google.com>
 Date: Thu, 2 Feb 2017 12:35:56 -0800
-Subject: [PATCH] platform/surfaceless: Add Vulkan support
+Subject: [PATCH 5/5] platform/surfaceless: Add Vulkan support
 
 Tested on the following systems:
   - Chromium OS, board=reef, mesa-17.1.0-r3
@@ -9,11 +9,11 @@ Tested on the following systems:
 
 Change-Id: Iaaf0f4617f8e099ec076fb083055214dd8f6e243
 ---
- .../surfaceless/tcuSurfacelessPlatform.cpp         | 60 ++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ .../surfaceless/tcuSurfacelessPlatform.cpp         | 64 ++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
 diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
-index 4ededd9c..0c23bfec 100644
+index 4ededd9c..f1fb2d51 100644
 --- a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 +++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 @@ -25,8 +25,10 @@
@@ -114,5 +114,5 @@ index 4ededd9c..0c23bfec 100644
  
  class ContextFactory : public glu::ContextFactory
 -- 
-2.11.0
+2.11.0.483.g087da7b7c-goog
 

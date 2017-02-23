@@ -45,11 +45,11 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}"
 
 PATCHES=(
-	"${FILESDIR}"/0001-next-targets-surfaceless-Add-support-for-Chrome-OS-surfac.patch
-	"${FILESDIR}"/0002-next-Delete-compiler-check.patch
-	"${FILESDIR}"/0003-next-Added-support-for-creating-pBuffer-target.patch
-	"${FILESDIR}"/0004-next-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
-	"${FILESDIR}"/0005-next-Add-Vulkan-support-to-tcu-surfaceless-Platform.patch
+	"${FILESDIR}"/0001-targets-surfaceless-Add-support-for-Chrome-OS-surfac.patch
+	"${FILESDIR}"/0002-Delete-compiler-check.patch
+	"${FILESDIR}"/0003-Added-support-for-creating-pBuffer-target.patch
+	"${FILESDIR}"/0004-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
+	"${FILESDIR}"/0005-platform-surfaceless-Add-Vulkan-support.patch
 )
 
 src_unpack() {

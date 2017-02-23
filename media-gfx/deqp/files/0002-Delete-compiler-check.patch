@@ -1,7 +1,7 @@
-From 5ecf3520495ffb25b290fb652e68c2e965579d50 Mon Sep 17 00:00:00 2001
+From f97085b063160fb9d192b136749581de85b88823 Mon Sep 17 00:00:00 2001
 From: "Ilja H. Friedel" <ihf@chromium.org>
 Date: Tue, 26 Jan 2016 00:50:21 -0800
-Subject: [PATCH 3/3] Delete compiler check.
+Subject: [PATCH 2/4] Delete compiler check.
 
 Change-Id: I05b364333bbbd8238bbe4e9ab929690d546a7f46
 ---
@@ -9,7 +9,7 @@ Change-Id: I05b364333bbbd8238bbe4e9ab929690d546a7f46
  1 file changed, 7 deletions(-)
 
 diff --git a/framework/delibs/debase/deDefs.h b/framework/delibs/debase/deDefs.h
-index 3c3abbf..4c97e7e 100644
+index 42826f7..fec18e3 100644
 --- a/framework/delibs/debase/deDefs.h
 +++ b/framework/delibs/debase/deDefs.h
 @@ -47,13 +47,6 @@
@@ -27,5 +27,5 @@ index 3c3abbf..4c97e7e 100644
  	/* Clear autodetect vars. */
  #	if defined(DE_DETAIL_DETECTED_COMPILER)
 -- 
-2.7.0.rc3.207.g0ac5344
+2.8.0.rc3.226.g39d4020
 

@@ -1,7 +1,8 @@
-From 718fbd0004b64d35d752d1276bccabeccbe8d6a8 Mon Sep 17 00:00:00 2001
+From 45a0a86f31a0c1970a97db1859fdc1f2277b5281 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Mon, 29 Feb 2016 22:19:09 -0800
-Subject: [PATCH] targets/surfaceless: Add support for Chrome OS surfaceless
+Subject: [PATCH 1/4] targets/surfaceless: Add support for Chrome OS
+ surfaceless
 
 Implement a new dEQP target, "surfaceless", that supports offscreen
 rendering using Chrome OS's EGL null platform. This is based on
@@ -31,10 +32,10 @@ TEST=run deqp on veyron_jaq
  create mode 100644 targets/surfaceless/surfaceless.cmake
 
 diff --git a/framework/platform/CMakeLists.txt b/framework/platform/CMakeLists.txt
-index f1ff95b..82b4587 100644
+index 5716c23..9627ade 100644
 --- a/framework/platform/CMakeLists.txt
 +++ b/framework/platform/CMakeLists.txt
-@@ -46,6 +46,11 @@ if (NOT DEFINED TCUTIL_PLATFORM_SRCS)
+@@ -43,6 +43,11 @@ if (NOT DEFINED TCUTIL_PLATFORM_SRCS)
  		if (NOT (DEQP_SUPPORT_EGL OR DEQP_SUPPORT_GLX))
  		  message(FATAL_ERROR "At least one of EGL and GLX must be enabled for X11")
  		endif ()
@@ -48,7 +49,7 @@ index f1ff95b..82b4587 100644
  			android/tcuAndroidExecService.cpp
 diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 new file mode 100644
-index 0000000..73d1d81
+index 0000000..1a11935
 --- /dev/null
 +++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 @@ -0,0 +1,353 @@
@@ -139,7 +140,7 @@ index 0000000..73d1d81
 +		eglw::EGLDisplay display,
 +		const std::string& extName)
 +{
-+	const vector<string> exts = eglu::getClientExtensions(egl, display);
++	const vector<string> exts = eglu::getClientExtensions(egl);
 +	return de::contains(exts.begin(), exts.end(), extName);
 +}
 +
@@ -499,5 +500,5 @@ index 0000000..f506112
 +                            ${DEQP_EGL_LIBRARIES} ${GBM_LIBRARIES}
 +                            ${KMS_LIBRARIES} ${DRM_LIBRARIES})
 -- 
-2.7.0.rc3.207.g0ac5344
+2.8.0.rc3.226.g39d4020
 

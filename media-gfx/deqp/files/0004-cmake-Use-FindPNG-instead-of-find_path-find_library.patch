@@ -1,7 +1,7 @@
-From 532550ca6a3948d0a21de27434d2099013888c17 Mon Sep 17 00:00:00 2001
+From 2afd0ef9d9f10f58929ccf9f35b96c32cad16fb3 Mon Sep 17 00:00:00 2001
 From: Chad Versace <chad.versace@intel.com>
 Date: Fri, 2 Dec 2016 15:43:08 -0800
-Subject: [PATCH 4/4] cmake: Use FindPNG instead of find_path/find_library
+Subject: [PATCH 4/5] cmake: Use FindPNG instead of find_path/find_library
 
 dEQP's use of find_path() and find_library() failed to find the png
 paths if the paths contained a version suffix. For example, they failed
@@ -18,10 +18,10 @@ Signed-off-by: Chad Versace <chad.versace@intel.com>
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index da4b5bf..d3ebc5c 100644
+index 1ecdd52a..445cf7cc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -66,8 +66,14 @@ endif ()
+@@ -57,8 +57,14 @@ endif ()
  include_directories(${ZLIB_INCLUDE_PATH})
  
  # libpng
@@ -39,5 +39,5 @@ index da4b5bf..d3ebc5c 100644
  if (NOT PNG_INCLUDE_PATH OR NOT PNG_LIBRARY)
  	message(STATUS "System version of libpng not found, using external/libpng")
 -- 
-2.8.0.rc3.226.g39d4020
+2.11.0.483.g087da7b7c-goog
 

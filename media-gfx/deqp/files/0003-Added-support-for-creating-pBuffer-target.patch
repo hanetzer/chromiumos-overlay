@@ -1,7 +1,7 @@
-From 30ba0c53d74d457994db9f5745f524bd41829582 Mon Sep 17 00:00:00 2001
+From 253bed8105b6748f30897dfbc8917adf94165bc7 Mon Sep 17 00:00:00 2001
 From: Gurchetan Singh <gurchetansingh@chromium.org>
 Date: Thu, 21 Apr 2016 11:53:33 -0700
-Subject: [PATCH 3/4] Added support for creating pBuffer target
+Subject: [PATCH 3/5] Added support for creating pBuffer target
 
 ---
  .../surfaceless/tcuSurfacelessPlatform.cpp         | 123 +++++++++++++++------
@@ -9,7 +9,7 @@ Subject: [PATCH 3/4] Added support for creating pBuffer target
  2 files changed, 93 insertions(+), 34 deletions(-)
 
 diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
-index 1a11935..4ededd9 100644
+index 1a11935d..4ededd9c 100644
 --- a/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 +++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.cpp
 @@ -37,8 +37,9 @@
@@ -217,7 +217,7 @@ index 1a11935..4ededd9 100644
  
  void EglRenderContext::postIterate(void)
 diff --git a/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
-index b980e1b..01d703f 100644
+index b980e1b7..01d703fc 100644
 --- a/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
 +++ b/framework/platform/surfaceless/tcuSurfacelessPlatform.hpp
 @@ -1,5 +1,5 @@
@@ -229,5 +229,5 @@ index b980e1b..01d703f 100644
  /*-------------------------------------------------------------------------
   * drawElements Quality Program Tester Core
 -- 
-2.8.0.rc3.226.g39d4020
+2.11.0.483.g087da7b7c-goog
 
