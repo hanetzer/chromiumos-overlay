@@ -31,6 +31,7 @@ CROS_BOARDS=(
 	expresso
 	eve
 	falco
+	fizz
 	glados
 	glimmer
 	gnawty
