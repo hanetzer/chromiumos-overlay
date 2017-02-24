@@ -36,6 +36,7 @@ RDEPEND="
 RDEPEND="
 	${RDEPEND}
 	chromeos-base/chromite
+	dev-embedded/openocd
 	dev-python/btsocket
 	dev-python/django
 	dev-python/dnspython
