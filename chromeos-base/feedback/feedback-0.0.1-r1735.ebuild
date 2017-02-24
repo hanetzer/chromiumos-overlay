@@ -38,7 +38,7 @@ src_unpack() {
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/components/feedback.git" \
 	EGIT_SOURCEDIR="${S}/components/feedback" \
 	EGIT_PROJECT="feedback" \
-	EGIT_COMMIT="d77b3c602e6552c781cc7326456053139c600031" \
+	EGIT_COMMIT="fe1dc2b6d694d240e0417cd9673220ca6989edc1" \
 	git-2_src_unpack
 }
 
