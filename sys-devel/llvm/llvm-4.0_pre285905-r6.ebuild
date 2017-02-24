@@ -320,6 +320,15 @@ src_prepare() {
 	NATIVE_LIBDIR=$(get_libdir)
 }
 
+enable_asserts() {
+	# Enable assertions for llvm-next build
+	if use llvm-next; then
+		echo yes
+	else
+		usex debug
+	fi
+}
+
 multilib_src_configure() {
 	local targets
 	if use multitarget; then
@@ -348,7 +357,7 @@ multilib_src_configure() {
 
 		-DLLVM_ENABLE_FFI=$(usex libffi)
 		-DLLVM_ENABLE_TERMINFO=$(usex ncurses)
-		-DLLVM_ENABLE_ASSERTIONS=$(usex debug)
+		-DLLVM_ENABLE_ASSERTIONS=$(enable_asserts)
 		-DLLVM_ENABLE_EH=ON
 		-DLLVM_ENABLE_RTTI=ON
 
