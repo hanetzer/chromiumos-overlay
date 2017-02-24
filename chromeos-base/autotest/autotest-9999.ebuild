@@ -102,5 +102,5 @@ pkg_postinst() {
 	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
 	flock "${root_autotest_dir}/packages" \
 			-c "python -B ${root_autotest_dir}/utils/packager.py \
-				-r ${root_autotest_dir}/packages --client upload"
+				-r ${root_autotest_dir}/packages --client -a upload"
 }

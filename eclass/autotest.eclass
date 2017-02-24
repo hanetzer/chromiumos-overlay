@@ -433,7 +433,7 @@ autotest_pkg_postinst() {
 		flock "${root_autotest_dir}/packages" \
 			-c "python -B ${root_autotest_dir}/utils/packager.py \
 				-r ${root_autotest_dir}/packages \
-				${test_opt} ${dep_opt} ${prof_opt} upload && \
+				${test_opt} ${dep_opt} ${prof_opt} -a upload && \
 				echo ${CATEGORY}/${PN} > ${logfile} && \
 				echo ${test_opt} ${dep_opt} ${prof_opt} >> ${logfile}"
 	else
