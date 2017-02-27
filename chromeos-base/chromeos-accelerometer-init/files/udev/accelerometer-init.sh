@@ -17,7 +17,7 @@ LOCATION_PATH="${IIO_DEVICE_PATH}/location"
 IIO_SINGLE_SENSOR_DIR=false
 SYSFSTRIG_NAME="sysfstrig0"
 
-VPD_DATA_VALID_FILE="/var/lib/vpd_data_valid"
+VPD_DATA_VALID_FILE="/var/lib/calibdata_valid"
 SENSOR_LOCATIONS="lid base"
 SENSOR_TYPES="accel anglvel"
 SENSOR_CALIB_TYPES="bias scale"
@@ -75,10 +75,25 @@ set_sysfs_entry() {
   echo "${value}" > "${name}"
 }
 
+# Function to access calibration data. If VPD sensor data is valid,
+# use it, otherwise returns 0.
+get_calibration_from_vpd() {
+  local name="$1"
+  vpd_get_value "${name}"
+}
+
+get_calibration_null() {
+  local value_type="$2"
+  if [ "${value_type}" = "bias" ]; then
+    echo 0
+  fi
+}
+
 # Sets pre-determined calibration values for the accelerometers.
 # The calibration values are fetched from the VPD.
 set_calibration_values() {
   local axis location value_type name value
+  local get_fct="$1"
   local locations="${SENSOR_LOCATIONS}"
   local value_types="${SENSOR_CALIB_TYPES}"
   local name
@@ -97,7 +112,7 @@ set_calibration_values() {
     for value_type in ${value_types}; do
       for axis in x y z; do
         name="in_${TYPE}_${axis}_${location}_calib${value_type}"
-        value="$(vpd_get_value "${name}")"
+        value="$("${get_fct}" "${name}" "${value_type}")"
         if [ -z "${value}" ]; then
           continue
         fi
@@ -130,7 +145,9 @@ main() {
     fi
   fi
   if grep -qe "^valid$" "${VPD_DATA_VALID_FILE}"; then
-    set_calibration_values
+    set_calibration_values get_calibration_from_vpd
+  else
+    set_calibration_values get_calibration_null
   fi
 
   if [ "${TYPE}" = "anglvel" ]; then

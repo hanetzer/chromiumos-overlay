@@ -122,7 +122,18 @@ TYPE="accel"
 for location in ${SENSOR_LOCATIONS}; do
   LOCATION_PATH="${TEST_DIR}/test_location_${location}.txt"
   test_name="set_calibration_values_good_${location}"
-  set_calibration_values
+  set_calibration_values get_calibration_from_vpd
+  diff "${ACCEL_TEMP_DIR}/${test_name}.out" "${TEST_DIR}/${test_name}.golden"
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+done
+
+# Test setting calibration data to 0 works.
+for location in ${SENSOR_LOCATIONS}; do
+  LOCATION_PATH="${TEST_DIR}/test_location_${location}.txt"
+  test_name="set_calibration_values_null_${location}"
+  set_calibration_values get_calibration_null
   diff "${ACCEL_TEMP_DIR}/${test_name}.out" "${TEST_DIR}/${test_name}.golden"
   if [ $? -ne 0 ]; then
     exit 1

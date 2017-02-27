@@ -32,4 +32,7 @@ src_install() {
 	udev_dorules "${FILESDIR}"/udev/99-cros-ec-accel.rules
 	exeinto $(udev_get_udevdir)
 	doexe "${FILESDIR}"/udev/accelerometer-init.sh
+
+	insinto /etc/init
+	doins "${FILESDIR}"/init/cros-ec-accel.conf
 }
