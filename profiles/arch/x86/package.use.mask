@@ -4,9 +4,10 @@
 
 # This file requires >=portage-2.1.1
 
-# Lutz Justen <ljusten@chromium.org> (14 Jan 2017)
-# samba currently does not compile for x86
-chromeos-base/authpolicy samba
+# Lutz Justen <ljusten@chromium.org> (27 Feb 2017)
+# authpolicy lacks x86-specific seccomp filters and depends on Samba, which
+# doesn't compile for x86 yet.
+>=chromeos-base/chromeos-chrome-58.0.3028.0_rc-r1 authpolicy
 
 # Mike Frysinger <vapier@gentoo.org> (04 Aug 2014)
 # Unmask flashrom drivers that only work on x86 due to in/out asm insns #454024
