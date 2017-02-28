@@ -1,0 +1,35 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+CROS_WORKON_COMMIT="11ecbe62bcf3a0febd1d7a3bf6b8caef5eb97e74"
+CROS_WORKON_TREE="c78352d2ff7490d1099ac8191c629c7a847a46d4"
+CROS_WORKON_PROJECT="chromiumos/platform/drm-tests"
+
+inherit cros-workon toolchain-funcs
+
+DESCRIPTION="Chrome OS DRM Tests"
+
+HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
+
+LICENSE="BSD"
+SLOT="0"
+KEYWORDS="*"
+IUSE=""
+
+RDEPEND="virtual/opengles
+	|| ( media-libs/mesa[gbm] media-libs/minigbm )"
+DEPEND="${RDEPEND}
+	x11-drivers/opengles-headers"
+
+src_compile() {
+	tc-export CC
+	emake
+}
+
+src_install() {
+	cd build-opt-local
+	dobin atomictest drm_cursor_test gamma_test linear_bo_test null_platform_test plane_test
+	dobin swrast_test tiled_bo_test vgem_test vgem_fb_test
+}
