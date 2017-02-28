@@ -221,24 +221,29 @@ def log_parent_process_tree(log, ppid):
 
 
 def get_linker_path(cmd):
-  """Return the a directory which contains an 'ld' that gcc is using.
+  """Return the a directory which contains an 'ld' that gcc is using."""
 
-  We need to provide a directory that contains the right ld for clang.
-  If we use realpath for this function, it will return the dirctory that
-  the 'ld' inside it is a symbolic link to ld.bfd. By default, clang will
-  use the 'ld' inside the directory after '-B', So clang will use bfd
-  linker even gcc uses gold linker. To make clang use the same linker as gcc,
-  We use readlink so that we provide a directory that contains 'ld' which is
-  a symbolick link pointing to the real linker that gcc is using.
-  """
-
+  # We did not pass the tuple i686-pc-linux-gnu to x86-32 clang. Instead,
+  # we passed '-m32' to clang. As a result, clang does not want to use the
+  # i686-pc-linux-gnu-ld, so we need to add this to help clang find the right
+  # linker.
   for path in os.environ['PATH'].split(':'):
     cmd_path = os.path.join(path, cmd)
     if os.path.exists(cmd_path):
       if os.path.islink(cmd_path):
         cmd_path = os.readlink(cmd_path)
       return os.path.dirname(cmd_path)
-  return None
+
+  # When using the sdk outside chroot, we need to provide the cross linker path
+  # to the compiler via -B ${linker_path}. This is because for gcc, it can
+  # find the right linker via searching its internal paths. Clang does not have
+  # such feature, and it falls back to $PATH search only. However, the path of
+  # ${SDK_LOCATION}/bin is not necessarily in the ${PATH}. To fix this, we
+  # provide the directory that contains the cross linker wrapper to clang.
+  # Outside chroot, it is the top bin directory form the sdk tarball.
+  sdk_bin_dir = os.path.join(os.path.dirname(os.path.normpath(__file__)),
+          '../../../../../bin')
+  return os.path.abspath(sdk_bin_dir)
 
 
 def get_gomacc_command():
