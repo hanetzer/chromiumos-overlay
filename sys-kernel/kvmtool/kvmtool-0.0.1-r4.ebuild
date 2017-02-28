@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="bd4b5f3b1a308a1fab69ede5579d20353ea17b06"
-CROS_WORKON_TREE="dfcf7a6c89d6bc6c1dc94c12c29217c0bc6d10e4"
+CROS_WORKON_COMMIT="daab936c1d9ef38dd3ddefc63cb500554deb9369"
+CROS_WORKON_TREE="5ae509276fe2459eab65eec0fa9f1be9cd720553"
 CROS_WORKON_PROJECT="chromiumos/third_party/kvmtool"
 CROS_WORKON_LOCALNAME="kvmtool"
 

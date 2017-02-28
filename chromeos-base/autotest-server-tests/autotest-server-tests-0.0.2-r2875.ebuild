@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="*"
 
 # Enable autotest by default.
-IUSE="android-container android-container-nyc +autotest +cellular -chromeless_tests -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
+IUSE="-chromeless_tests +cheets +autotest +cellular -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -62,12 +62,8 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_AdapterStandalone
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
-	android-container? (
+	cheets? (
 		+tests_cheets_CTS
-		+tests_cheets_GTS
-	)
-	android-container-nyc? (
-		+tests_cheets_CTS_N
 		+tests_cheets_GTS
 	)
 	+tests_component_UpdateFlash
