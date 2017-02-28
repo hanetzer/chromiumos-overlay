@@ -39,7 +39,7 @@ IUSE="
 	chrome_internal
 	chrome_media
 	+chrome_remoting
-	clang
+	+clang
 	component_build
 	cups
 	evdev_gestures
