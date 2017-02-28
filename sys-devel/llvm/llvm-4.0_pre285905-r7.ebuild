@@ -190,7 +190,9 @@ pick_cherries() {
 	CHERRIES+=" 32dc773aa73602b5d5ee6881df5d76decd776018 " # r286613
 	CHERRIES+=" 4c434043b9a5140cf6ab9231c82e6000bb6f31f6 " # r289094
 	CHERRIES+=" 671d92a8e764a3266ecab219d791a27fb257be78 " # r289103
+	CHERRIES+=" objectsize-evalmodes " # r294800 (modified)
 	CHERRIES+=" cefec9cba5ec1629aac083bad2ad7e10e91dcf05 " # r295805
+	CHERRIES+=" e604e8210fa49cfe23fb262e228d40734eaed141 " # r295935
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"

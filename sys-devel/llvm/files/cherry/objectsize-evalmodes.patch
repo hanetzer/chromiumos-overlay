@@ -1,0 +1,303 @@
+Slightly modified cherrypick of r294800
+(fbe18a269deb1a11c16eb2d2419b3c9ef9be8d3b). r294800 had bits that fixed
+alloc_size-related code, but alloc_size was added in r290297, which we don't
+have (and presumably don't want to cherrypick).
+
+Original commit message:
+
+commit fbe18a269deb1a11c16eb2d2419b3c9ef9be8d3b
+Author: George Burgess IV <george.burgess.iv@gmail.com>
+Date:   Fri Feb 10 22:52:29 2017 +0000
+
+    Don't let EvaluationModes dictate whether an invalid base is OK
+    
+    What we want to actually control this behavior is something more local
+    than an EvalutationMode. Please see the linked revision for more
+    discussion on why/etc.
+    
+    This fixes PR31843.
+    
+    Differential Revision: https://reviews.llvm.org/D29469
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@294800 91177308-0d34-0410-b5e6-96231b3b80d8
+
+--- lib/AST/ExprConstant.cpp
++++ lib/AST/ExprConstant.cpp
+@@ -799,10 +799,6 @@ namespace {
+       EvalStatus.HasSideEffects |= KeepGoing;
+       return KeepGoing;
+     }
+-
+-    bool allowInvalidBaseExpr() const {
+-      return EvalMode == EM_DesignatorFold;
+-    }
+   };
+ 
+   /// Object used to treat all foldable expressions as constant expressions.
+@@ -1250,8 +1246,10 @@ static bool Evaluate(APValue &Result, EvalInfo &Info, const Expr *E);
+ static bool EvaluateInPlace(APValue &Result, EvalInfo &Info,
+                             const LValue &This, const Expr *E,
+                             bool AllowNonLiteralTypes = false);
+-static bool EvaluateLValue(const Expr *E, LValue &Result, EvalInfo &Info);
+-static bool EvaluatePointer(const Expr *E, LValue &Result, EvalInfo &Info);
++static bool EvaluateLValue(const Expr *E, LValue &Result, EvalInfo &Info,
++                           bool InvalidBaseOK = false);
++static bool EvaluatePointer(const Expr *E, LValue &Result, EvalInfo &Info,
++                            bool InvalidBaseOK = false);
+ static bool EvaluateMemberPointer(const Expr *E, MemberPtr &Result,
+                                   EvalInfo &Info);
+ static bool EvaluateTemporary(const Expr *E, LValue &Result, EvalInfo &Info);
+@@ -4606,6 +4604,7 @@ class LValueExprEvaluatorBase
+   : public ExprEvaluatorBase<Derived> {
+ protected:
+   LValue &Result;
++  bool InvalidBaseOK;
+   typedef LValueExprEvaluatorBase LValueExprEvaluatorBaseTy;
+   typedef ExprEvaluatorBase<Derived> ExprEvaluatorBaseTy;
+ 
+@@ -4614,9 +4613,14 @@ protected:
+     return true;
+   }
+ 
++  bool evaluatePointer(const Expr *E, LValue &Result) {
++    return EvaluatePointer(E, Result, this->Info, InvalidBaseOK);
++  }
++
+ public:
+-  LValueExprEvaluatorBase(EvalInfo &Info, LValue &Result) :
+-    ExprEvaluatorBaseTy(Info), Result(Result) {}
++  LValueExprEvaluatorBase(EvalInfo &Info, LValue &Result, bool InvalidBaseOK)
++      : ExprEvaluatorBaseTy(Info), Result(Result),
++        InvalidBaseOK(InvalidBaseOK) {}
+ 
+   bool Success(const APValue &V, const Expr *E) {
+     Result.setFrom(this->Info.Ctx, V);
+@@ -4628,7 +4632,7 @@ public:
+     QualType BaseTy;
+     bool EvalOK;
+     if (E->isArrow()) {
+-      EvalOK = EvaluatePointer(E->getBase(), Result, this->Info);
++      EvalOK = evaluatePointer(E->getBase(), Result);
+       BaseTy = E->getBase()->getType()->castAs<PointerType>()->getPointeeType();
+     } else if (E->getBase()->isRValue()) {
+       assert(E->getBase()->getType()->isRecordType());
+@@ -4639,7 +4643,7 @@ public:
+       BaseTy = E->getBase()->getType();
+     }
+     if (!EvalOK) {
+-      if (!this->Info.allowInvalidBaseExpr())
++      if (!InvalidBaseOK)
+         return false;
+       Result.setInvalid(E);
+       return true;
+@@ -4733,8 +4737,8 @@ namespace {
+ class LValueExprEvaluator
+   : public LValueExprEvaluatorBase<LValueExprEvaluator> {
+ public:
+-  LValueExprEvaluator(EvalInfo &Info, LValue &Result) :
+-    LValueExprEvaluatorBaseTy(Info, Result) {}
++  LValueExprEvaluator(EvalInfo &Info, LValue &Result, bool InvalidBaseOK) :
++    LValueExprEvaluatorBaseTy(Info, Result, InvalidBaseOK) {}
+ 
+   bool VisitVarDecl(const Expr *E, const VarDecl *VD);
+   bool VisitUnaryPreIncDec(const UnaryOperator *UO);
+@@ -4787,10 +4791,11 @@ public:
+ ///  * function designators in C, and
+ ///  * "extern void" objects
+ ///  * @selector() expressions in Objective-C
+-static bool EvaluateLValue(const Expr *E, LValue &Result, EvalInfo &Info) {
++static bool EvaluateLValue(const Expr *E, LValue &Result, EvalInfo &Info,
++                           bool InvalidBaseOK) {
+   assert(E->isGLValue() || E->getType()->isFunctionType() ||
+          E->getType()->isVoidType() || isa<ObjCSelectorExpr>(E));
+-  return LValueExprEvaluator(Info, Result).Visit(E);
++  return LValueExprEvaluator(Info, Result, InvalidBaseOK).Visit(E);
+ }
+ 
+ bool LValueExprEvaluator::VisitDeclRefExpr(const DeclRefExpr *E) {
+@@ -4939,7 +4944,7 @@ bool LValueExprEvaluator::VisitArraySubscriptExpr(const ArraySubscriptExpr *E) {
+   if (E->getBase()->getType()->isVectorType())
+     return Error(E);
+ 
+-  if (!EvaluatePointer(E->getBase(), Result, Info))
++  if (!evaluatePointer(E->getBase(), Result))
+     return false;
+ 
+   APSInt Index;
+@@ -4951,7 +4956,7 @@ bool LValueExprEvaluator::VisitArraySubscriptExpr(const ArraySubscriptExpr *E) {
+ }
+ 
+ bool LValueExprEvaluator::VisitUnaryDeref(const UnaryOperator *E) {
+-  return EvaluatePointer(E->getSubExpr(), Result, Info);
++  return evaluatePointer(E->getSubExpr(), Result);
+ }
+ 
+ bool LValueExprEvaluator::VisitUnaryReal(const UnaryOperator *E) {
+@@ -5034,15 +5039,26 @@ namespace {
+ class PointerExprEvaluator
+   : public ExprEvaluatorBase<PointerExprEvaluator> {
+   LValue &Result;
++  bool InvalidBaseOK;
+ 
+   bool Success(const Expr *E) {
+     Result.set(E);
+     return true;
+   }
++
++  bool evaluateLValue(const Expr *E, LValue &Result) {
++    return EvaluateLValue(E, Result, Info, InvalidBaseOK);
++  }
++
++  bool evaluatePointer(const Expr *E, LValue &Result) {
++    return EvaluatePointer(E, Result, Info, InvalidBaseOK);
++  }
++
+ public:
+ 
+-  PointerExprEvaluator(EvalInfo &info, LValue &Result)
+-    : ExprEvaluatorBaseTy(info), Result(Result) {}
++  PointerExprEvaluator(EvalInfo &info, LValue &Result, bool InvalidBaseOK)
++    : ExprEvaluatorBaseTy(info), Result(Result),
++      InvalidBaseOK(InvalidBaseOK) {}
+ 
+   bool Success(const APValue &V, const Expr *E) {
+     Result.setFrom(Info.Ctx, V);
+@@ -5086,9 +5102,10 @@ public:
+ };
+ } // end anonymous namespace
+ 
+-static bool EvaluatePointer(const Expr* E, LValue& Result, EvalInfo &Info) {
++static bool EvaluatePointer(const Expr* E, LValue& Result, EvalInfo &Info,
++                            bool InvalidBaseOK) {
+   assert(E->isRValue() && E->getType()->hasPointerRepresentation());
+-  return PointerExprEvaluator(Info, Result).Visit(E);
++  return PointerExprEvaluator(Info, Result, InvalidBaseOK).Visit(E);
+ }
+ 
+ bool PointerExprEvaluator::VisitBinaryOperator(const BinaryOperator *E) {
+@@ -5101,7 +5118,7 @@ bool PointerExprEvaluator::VisitBinaryOperator(const BinaryOperator *E) {
+   if (IExp->getType()->isPointerType())
+     std::swap(PExp, IExp);
+ 
+-  bool EvalPtrOK = EvaluatePointer(PExp, Result, Info);
++  bool EvalPtrOK = evaluatePointer(PExp, Result);
+   if (!EvalPtrOK && !Info.noteFailure())
+     return false;
+ 
+@@ -5119,7 +5136,7 @@ bool PointerExprEvaluator::VisitBinaryOperator(const BinaryOperator *E) {
+ }
+ 
+ bool PointerExprEvaluator::VisitUnaryAddrOf(const UnaryOperator *E) {
+-  return EvaluateLValue(E->getSubExpr(), Result, Info);
++  return evaluateLValue(E->getSubExpr(), Result);
+ }
+ 
+ bool PointerExprEvaluator::VisitCastExpr(const CastExpr* E) {
+@@ -5151,7 +5168,7 @@ bool PointerExprEvaluator::VisitCastExpr(const CastExpr* E) {
+ 
+   case CK_DerivedToBase:
+   case CK_UncheckedDerivedToBase:
+-    if (!EvaluatePointer(E->getSubExpr(), Result, Info))
++    if (!evaluatePointer(E->getSubExpr(), Result))
+       return false;
+     if (!Result.Base && Result.Offset.isZero())
+       return true;
+@@ -5197,7 +5214,7 @@ bool PointerExprEvaluator::VisitCastExpr(const CastExpr* E) {
+   }
+   case CK_ArrayToPointerDecay:
+     if (SubExpr->isGLValue()) {
+-      if (!EvaluateLValue(SubExpr, Result, Info))
++      if (!evaluateLValue(SubExpr, Result))
+         return false;
+     } else {
+       Result.set(SubExpr, Info.CurrentCall->Index);
+@@ -5214,7 +5231,7 @@ bool PointerExprEvaluator::VisitCastExpr(const CastExpr* E) {
+     return true;
+ 
+   case CK_FunctionToPointerDecay:
+-    return EvaluateLValue(SubExpr, Result, Info);
++    return evaluateLValue(SubExpr, Result);
+   }
+ 
+   return ExprEvaluatorBaseTy::VisitCastExpr(E);
+@@ -5258,12 +5275,12 @@ bool PointerExprEvaluator::VisitCallExpr(const CallExpr *E) {
+ 
+   switch (E->getBuiltinCallee()) {
+   case Builtin::BI__builtin_addressof:
+-    return EvaluateLValue(E->getArg(0), Result, Info);
++    return evaluateLValue(E->getArg(0), Result);
+   case Builtin::BI__builtin_assume_aligned: {
+     // We need to be very careful here because: if the pointer does not have the
+     // asserted alignment, then the behavior is undefined, and undefined
+     // behavior is non-constant.
+-    if (!EvaluatePointer(E->getArg(0), Result, Info))
++    if (!evaluatePointer(E->getArg(0), Result))
+       return false;
+ 
+     LValue OffsetResult(Result);
+@@ -5798,7 +5815,7 @@ class TemporaryExprEvaluator
+   : public LValueExprEvaluatorBase<TemporaryExprEvaluator> {
+ public:
+   TemporaryExprEvaluator(EvalInfo &Info, LValue &Result) :
+-    LValueExprEvaluatorBaseTy(Info, Result) {}
++    LValueExprEvaluatorBaseTy(Info, Result, false) {}
+ 
+   /// Visit an expression which constructs the value of this temporary.
+   bool VisitConstructExpr(const Expr *E) {
+@@ -6744,7 +6761,8 @@ static bool tryEvaluateBuiltinObjectSize(const Expr *E, unsigned Type,
+       if (!EvaluateAsRValue(Info, E, RVal))
+         return false;
+       Base.setFrom(Info.Ctx, RVal);
+-    } else if (!EvaluatePointer(ignorePointerCastsAndParens(E), Base, Info))
++    } else if (!EvaluatePointer(ignorePointerCastsAndParens(E), Base, Info,
++                                /*InvalidBaseOK=*/true))
+       return false;
+   }
+ 
+--- test/CodeGen/object-size.c
++++ test/CodeGen/object-size.c
+@@ -536,3 +536,22 @@ void PR30346() {
+   // CHECK: store i32 14
+   gi = __builtin_object_size(sa->sa_data, 3);
+ }
++
++// Flips between the pointer and lvalue evaluator a lot.
++void deeply_nested() {
++  struct {
++    struct {
++      struct {
++        struct {
++          int e[2];
++          char f; // Inhibit our writing-off-the-end check
++        } d[2];
++      } c[2];
++    } b[2];
++  } *a;
++
++  // CHECK: store i32 4
++  gi = __builtin_object_size(&a->b[1].c[1].d[1].e[1], 1);
++  // CHECK: store i32 4
++  gi = __builtin_object_size(&a->b[1].c[1].d[1].e[1], 3);
++}
+--- test/Sema/builtin-object-size.c
++++ test/Sema/builtin-object-size.c
+@@ -76,3 +76,18 @@ int pr28314(void) {
+   a += __builtin_object_size(p3->b, 0);
+   return a;
+ }
++
++int pr31843() {
++  int n = 0;
++
++  struct { int f; } a;
++  int b;
++  n += __builtin_object_size(({&(b ? &a : &a)->f; pr31843;}), 0); // expected-warning{{expression result unused}}
++
++  struct statfs { char f_mntonname[1024];};
++  struct statfs *outStatFSBuf;
++  n += __builtin_object_size(outStatFSBuf->f_mntonname ? "" : "", 1); // expected-warning{{address of array}}
++  n += __builtin_object_size(outStatFSBuf->f_mntonname ?: "", 1);
++
++  return n;
++}
