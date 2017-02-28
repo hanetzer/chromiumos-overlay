@@ -192,7 +192,7 @@ _old_add_param() {
 	local value="$2"
 
 	if [[ -n "$value" ]]; then
-		echo "$prefix '$value' "
+		echo "${prefix} ${value} "
 	fi
 }
 
