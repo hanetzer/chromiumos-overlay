@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="android-container android-container-nyc +autotest +cellular -chromeless_tests -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
+IUSE="android-container android-container-nyc +autotest +cellular -chromeless_tests -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm tpm2"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -156,6 +156,9 @@ SERVER_IUSE_TESTS="
 	tpm? ( +tests_firmware_TPMExtend )
 	tpm? ( +tests_firmware_TPMVersionCheck )
 	tpm? ( +tests_firmware_TPMKernelVersion )
+	tpm2? ( +tests_firmware_TPMExtend )
+	tpm2? ( +tests_firmware_TPMVersionCheck )
+	tpm2? ( +tests_firmware_TPMKernelVersion )
 	+tests_firmware_TryFwB
 	+tests_firmware_TypeCCharging
 	+tests_firmware_TypeCProbeUSB3

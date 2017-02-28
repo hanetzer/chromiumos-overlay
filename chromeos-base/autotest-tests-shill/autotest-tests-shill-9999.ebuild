@@ -16,7 +16,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # Enable autotest by default.
-IUSE="+autotest +tpm"
+IUSE="+autotest +tpm tpm2"
 
 RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
@@ -47,6 +47,7 @@ IUSE_TESTS="
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
 	tpm? ( +tests_network_VPNConnect )
+	tpm2? ( +tests_network_VPNConnect )
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"

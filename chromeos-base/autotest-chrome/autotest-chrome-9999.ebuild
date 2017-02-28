@@ -20,6 +20,7 @@ IUSE="
 	+cellular
 	+shill
 	+tpm
+	tpm2
 	vaapi
 "
 
@@ -198,6 +199,7 @@ IUSE_TESTS_SHILL="
 # work and duplication to add telemetry dependencies there.
 IUSE_TESTS_TPM="
 	tpm? ( +tests_platform_Pkcs11InitOnLogin )
+	tpm2? ( +tests_platform_Pkcs11InitOnLogin )
 "
 
 IUSE_TESTS="
