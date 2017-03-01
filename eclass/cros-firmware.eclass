@@ -187,7 +187,7 @@ cros-firmware_src_unpack() {
 	done
 }
 
-_add_param() {
+_old_add_param() {
 	local prefix="$1"
 	local value="$2"
 
@@ -196,7 +196,7 @@ _add_param() {
 	fi
 }
 
-_add_bool_param() {
+_old_add_bool_param() {
 	local prefix="$1"
 	local value="$2"
 
@@ -206,59 +206,59 @@ _add_bool_param() {
 }
 
 cros-firmware_src_compile() {
-	local image_cmd="" ext_cmd="" local_image_cmd=""
+	local old_image_cmd="" old_ext_cmd="" local_old_image_cmd=""
 	local root="${ROOT%/}"
 
 	# Prepare images
-	image_cmd+="$(_add_param -b "${FW_IMAGE_LOCATION}")"
-	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
-	image_cmd+="$(_add_param -p "${PD_IMAGE_LOCATION}")"
-	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
-	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
-	image_cmd+="$(_add_bool_param --create_bios_rw_image \
+	old_image_cmd+="$(_old_add_param -b "${FW_IMAGE_LOCATION}")"
+	old_image_cmd+="$(_old_add_param -e "${EC_IMAGE_LOCATION}")"
+	old_image_cmd+="$(_old_add_param -p "${PD_IMAGE_LOCATION}")"
+	old_image_cmd+="$(_old_add_param -w "${FW_RW_IMAGE_LOCATION}")"
+	old_image_cmd+="$(_old_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
+	old_image_cmd+="$(_old_add_bool_param --create_bios_rw_image \
 		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
 	# Prepare extra commands
-	ext_cmd+="$(_add_param --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")")"
-	ext_cmd+="$(_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
-	ext_cmd+="$(_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
-	ext_cmd+="$(_add_param --tool_base \
+	old_ext_cmd+="$(_old_add_param --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")")"
+	old_ext_cmd+="$(_old_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
+	old_ext_cmd+="$(_old_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
+	old_ext_cmd+="$(_old_add_param --tool_base \
 	            "$root/firmware/utils:$root/usr/sbin:$root/usr/bin")"
-	ext_cmd+="$(_add_param --stable_main_version \
+	old_ext_cmd+="$(_old_add_param --stable_main_version \
 			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}")"
-	ext_cmd+="$(_add_param --stable_ec_version \
+	old_ext_cmd+="$(_old_add_param --stable_ec_version \
 			"${CROS_FIRMWARE_STABLE_EC_VERSION}")"
-	ext_cmd+="$(_add_param --stable_pd_version \
+	old_ext_cmd+="$(_old_add_param --stable_pd_version \
 			"${CROS_FIRMWARE_STABLE_PD_VERSION}")"
 
 	# Pack firmware update script!
-	if [ -z "$image_cmd" ]; then
+	if [ -z "$old_image_cmd" ]; then
 		# Create an empty update script for the generic case
 		# (no need to update)
 		einfo "Building empty firmware update script"
 		echo -n > ${UPDATE_SCRIPT}
 	else
 		# create a new script
-		einfo "Build ${BOARD_USE} firmware updater: $image_cmd $ext_cmd"
-		./pack_firmware.sh $image_cmd $ext_cmd -o $UPDATE_SCRIPT ||
+		einfo "Build ${BOARD_USE} firmware updater: $old_image_cmd $old_ext_cmd"
+		./pack_firmware.sh $old_image_cmd $old_ext_cmd -o $UPDATE_SCRIPT ||
 		die "Cannot pack firmware."
 	fi
 
 	# Create local updaters
-	local local_image_cmd="" output_bom output_file
+	local local_old_image_cmd="" output_bom output_file
 	if use cros_ec; then
-		local_image_cmd+="-e $root/firmware/ec.bin "
+		local_old_image_cmd+="-e $root/firmware/ec.bin "
 		if [ -e "$root/firmware/pd.bin" ]; then
-			local_image_cmd+="-p $root/firmware/pd.bin "
+			local_old_image_cmd+="-p $root/firmware/pd.bin "
 		fi
 	fi
 	if use bootimage; then
 		einfo "Updater for local fw"
 		output_file="updater.sh"
 		./pack_firmware.sh -b $root/firmware/image.bin \
-			-o $output_file $local_image_cmd $ext_cmd ||
+			-o $output_file $local_old_image_cmd $old_ext_cmd ||
 			die "Cannot pack local firmware."
-		if [[ -z "$image_cmd" ]]; then
+		if [[ -z "$old_image_cmd" ]]; then
 			# When no pre-built binaries are available,
 			# dupe local updater to system updater.
 			cp -f "$output_file" "$UPDATE_SCRIPT"
