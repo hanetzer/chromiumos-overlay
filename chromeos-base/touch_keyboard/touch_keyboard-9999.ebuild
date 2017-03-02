@@ -18,7 +18,9 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="~*"
 
-DEPEND="test? ( dev-cpp/gmock dev-cpp/gtest )"
+RDEPEND="chromeos-base/libbrillo"
+DEPEND="test? ( dev-cpp/gmock dev-cpp/gtest )
+	${RDEPEND}"
 
 pkg_preinst() {
 	# Set up the touch_keyboard user and group, which will be used to run
@@ -30,6 +32,9 @@ pkg_preinst() {
 src_install() {
 	# Install the actual binary that handles the touch keyboard.
 	dobin "${OUT}/touch_keyboard_handler"
+
+	# Install a tool for testing the haptic feedback in the factory.
+	dobin "${OUT}/touchkb_haptic_test"
 
 	# Install an upstart script to start the handler at boot time.
 	insinto "/etc/init"
