@@ -120,11 +120,14 @@ board_install() {
 src_install() {
 	set_build_env
 
-	# The first board should be the main EC
-	local ec="${EC_BOARDS[0]}"
+	# The first board should be the main EC. With unified builds we have
+	# no such thing.
+	if ! use unibuild; then
+		local ec="${EC_BOARDS[0]}"
 
-	# EC firmware binaries
-	board_install ${ec} /firmware
+		# EC firmware binaries
+		board_install ${ec} /firmware
+	fi
 
 	# Install additional firmwares
 	local board
