@@ -76,8 +76,12 @@ src_compile() {
 # param $2 - the output directory to install artifacts.
 #
 board_install() {
-	insinto $2
-	pushd build/$1 >/dev/null || die
+	local board="$1"
+	local destdir="$2"
+
+	einfo "Installing EC for ${board} into ${destdir}"
+	insinto "${destdir}"
+	pushd "build/${board}" >/dev/null || die
 
 	openssl dgst -sha256 -binary RO/ec.RO.flat > RO/ec.RO.hash
 	openssl dgst -sha256 -binary RW/ec.RW.flat > RW/ec.RW.hash
