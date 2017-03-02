@@ -228,11 +228,16 @@ add_ec() {
 # Build coreboot with a supplied configuration and output directory.
 #   $1: Build directory to use (e.g. "build_serial")
 #   $2: Config file to use (e.g. ".config_serial")
+#   $3: Model name to build (e.g. "pyro"), for USE=unibuild only.
 make_coreboot() {
 	local builddir="$1"
 	local config_fname="$2"
+	local model="$3"
 	local froot="${SYSROOT}/firmware"
 
+	if use unibuild; then
+		froot+="/${model}"
+	fi
 	rm -rf "${builddir}" .xcompile
 
 	local CB_OPTS=( "objutil=objutil" "DOTCONFIG=${config_fname}" )
@@ -304,8 +309,9 @@ src_compile() {
 
 		for model in ${FIRMWARE_UNIBUILD}; do
 			set_build_env "${model}"
-			make_coreboot "${BUILD_DIR}" "${CONFIG}"
-			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
+			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${model}"
+			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}" \
+				"${model}"
 		done
 	else
 		set_build_env "$(get_board)"
