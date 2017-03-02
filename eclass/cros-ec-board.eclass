@@ -43,6 +43,7 @@ EC_BOARD_NAMES=(
 	glados_pd
 	gru
 	hadoken
+	hammer
 	hoho
 	host
 	jerry
