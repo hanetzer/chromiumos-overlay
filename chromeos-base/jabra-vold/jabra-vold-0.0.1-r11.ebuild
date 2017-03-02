@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI="4"
-CROS_WORKON_COMMIT="a8c3932d01fabc008b139dea8628e36ece910d19"
-CROS_WORKON_TREE="a07868342f037418782f0fa0316c3a2ea0721bb6"
+EAPI="5"
+CROS_WORKON_COMMIT="9e21dc27a8cdc1409251fcd5e90e23f313100b59"
+CROS_WORKON_TREE="5632409f2b09d823252fafaf1fedc364ea4f48f8"
 CROS_WORKON_PROJECT="chromiumos/platform/jabra_vold"
 CROS_WORKON_LOCALNAME="jabra_vold"
 
@@ -32,7 +32,7 @@ src_install() {
 	udev_dorules 99-jabra{,-usbmon}.rules
 }
 
-pkg_postinst() {
+pkg_preinst() {
 	enewuser "volume"
 	enewgroup "volume"
 }
