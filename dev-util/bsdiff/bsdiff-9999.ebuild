@@ -19,21 +19,21 @@ SRC_URI=""
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host"
+IUSE="cros_host test"
 
 RDEPEND="app-arch/bzip2
-	cros_host? ( dev-libs/libdivsufsort )"
-DEPEND="${RDEPEND}
 	dev-libs/libdivsufsort"
+DEPEND="${RDEPEND}"
 
 src_configure() {
 	append-lfs-flags
 	tc-export CXX
+	export GENTOO_LIBDIR=$(get_libdir)
 	makeargs=( USE_BSDIFF=y )
 }
 
 src_compile() {
-	emake "${makeargs[@]}"
+	emake "${makeargs[@]}" all $(usev test)
 }
 
 src_install() {
@@ -44,6 +44,6 @@ pkg_preinst() {
 	# We want bsdiff in the sdk and in the sysroot (for testing), but
 	# we don't want it in the target image as it isn't used.
 	if [[ $(cros_target) == "target_image" ]]; then
-		rm "${D}"/usr/bin/bsdiff || die
+		rm "${D}"/usr/bin/bsdiff "${D}"/usr/$(get_libdir)/bsdiff.so
 	fi
 }

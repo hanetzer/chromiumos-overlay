@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r2.ebuild,v 1.1 2010/12/13 00:35:03 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_COMMIT="2c1607d13402172c129d73d76a6a351e78a44328"
-CROS_WORKON_TREE="8ac7172a77e17c3335aa7f5c6627177979a2b463"
+CROS_WORKON_COMMIT="47db46b45d266d4cb15040c3b6389a2c18f2ab59"
+CROS_WORKON_TREE="07a1e5f4ca7d47b4412bac6c443ea756276caf7d"
 CROS_WORKON_BLACKLIST=1
 # cros-workon expects the repo to be in src/third_party, but is in src/aosp.
 CROS_WORKON_LOCALNAME="../aosp/external/bsdiff"
@@ -21,21 +21,21 @@ SRC_URI=""
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_host"
+IUSE="cros_host test"
 
 RDEPEND="app-arch/bzip2
-	cros_host? ( dev-libs/libdivsufsort )"
-DEPEND="${RDEPEND}
 	dev-libs/libdivsufsort"
+DEPEND="${RDEPEND}"
 
 src_configure() {
 	append-lfs-flags
 	tc-export CXX
+	export GENTOO_LIBDIR=$(get_libdir)
 	makeargs=( USE_BSDIFF=y )
 }
 
 src_compile() {
-	emake "${makeargs[@]}"
+	emake "${makeargs[@]}" all $(usev test)
 }
 
 src_install() {
@@ -46,6 +46,6 @@ pkg_preinst() {
 	# We want bsdiff in the sdk and in the sysroot (for testing), but
 	# we don't want it in the target image as it isn't used.
 	if [[ $(cros_target) == "target_image" ]]; then
-		rm "${D}"/usr/bin/bsdiff || die
+		rm "${D}"/usr/bin/bsdiff "${D}"/usr/$(get_libdir)/bsdiff.so
 	fi
 }
