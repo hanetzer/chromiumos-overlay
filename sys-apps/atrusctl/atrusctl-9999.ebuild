@@ -20,6 +20,8 @@ RDEPEND="${DEPEND}"
 src_install() {
 	dosbin "${BUILD_DIR}/src/atrusctl"
 	udev_newrules conf/udev-atrus.rules 99-atrus.rules
+	insinto /etc/rsyslog.d
+	newins conf/rsyslog-atrus.conf atrus.conf
 }
 
 pkg_preinst() {
