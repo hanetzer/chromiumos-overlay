@@ -134,6 +134,7 @@ ALL_BOARDS=(
 	jadeite
 	#jaguar
 	jecht
+	kahlee
 	kayle
 	kblrvp
 	kefka
