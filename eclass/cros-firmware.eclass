@@ -325,6 +325,20 @@ cros-firmware_src_install() {
 	fi
 }
 
+# Trigger tests on each firmware build. While there is a chromeos-firmware-1
+# ebuild which could be used to run these tests on the host, it doesn't do
+# anything at present, and the usual workflow is to build firmware for a
+# particular board. This way it is more likely that people will see any
+# failures in their normal workflow.
+cros-firmware_src_test() {
+	local fname
+
+	for fname in *test.py; do
+		einfo "Running tests in ${fname}"
+		python "${fname}" || die "Tests failed at ${fname}"
+	done
+}
+
 # @FUNCTION: _expand_list
 # @USAGE <var> <ifs> <string>
 # @DESCRIPTION:
@@ -362,4 +376,4 @@ cros-firmware_setup_source() {
 # "cros-firmware_setup_source" at end of ebuild file.
 [[ -n "${CROS_FIRMWARE_MAIN_IMAGE}" ]] && cros-firmware_setup_source
 
-EXPORT_FUNCTIONS src_unpack src_compile src_install
+EXPORT_FUNCTIONS src_unpack src_compile src_install src_test
