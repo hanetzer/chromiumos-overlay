@@ -8,7 +8,9 @@ DESCRIPTION="Ebuild to support the Chrome OS CR50 device."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="h1_over_spi"
+IUSE="cr50_onboard h1_over_spi"
+
+REQUIRED_USE="cr50_onboard"
 
 RDEPEND="chromeos-base/ec-utils"
 
