@@ -5,6 +5,14 @@
 WSGIDaemonProcess whining user=moblab group=moblab processes=1 threads=5
 WSGIScriptAlias /wmatrix /whining/run.wsgi
 
+# Protect moblab from securtiy scans as it crashes the device.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_USER_AGENT} ^$                           [OR]
+  RewriteCond %{HTTP_USER_AGENT} ^.*(GoogleSecurityScanner).* [NC]
+  RewriteRule ^(.*)$ - [F,L]
+</IfModule>
+
 <Directory /whining>
     WSGIProcessGroup whining
     WSGIApplicationGroup %{GLOBAL}
