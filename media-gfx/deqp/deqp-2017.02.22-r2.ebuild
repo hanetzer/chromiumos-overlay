@@ -18,11 +18,13 @@ MY_DEQP_COMMIT='09b0225a8a77b3d385b7dc779d2ae06f5980bba7'
 # dependencies be unpacked into the source tree. See ${S}/external/fetch_sources.py
 # for the required dependencies.
 MY_GLSLANG_COMMIT='e3aa654c4b0c761b28d7864192ca8ceea6faf70a'
-MY_SPIRV_TOOLS_COMMIT='f7e63786a919040cb2e0e572d960a0650f2c2881'
+MY_SPIRV_TOOLS_COMMIT='5c19de25107d496a15c7869b3e1dab0a0f85913d'
+MY_SPIRV_HEADERS_COMMIT='bd47a9abaefac00be692eae677daed1b977e625c'
 
 SRC_URI="gs://chromeos-localmirror/distfiles/deqp-${MY_DEQP_COMMIT}.tar.gz
 	https://github.com/KhronosGroup/glslang/archive/${MY_GLSLANG_COMMIT}.tar.gz -> glslang-${MY_GLSLANG_COMMIT}.tar.gz
 	https://github.com/KhronosGroup/SPIRV-Tools/archive/${MY_SPIRV_TOOLS_COMMIT}.tar.gz -> SPIRV-Tools-${MY_SPIRV_TOOLS_COMMIT}.tar.gz
+	https://github.com/KhronosGroup/SPIRV-Headers/archive/${MY_SPIRV_HEADERS_COMMIT}.tar.gz -> SPIRV-Headers-${MY_SPIRV_HEADERS_COMMIT}.tar.gz
 "
 
 LICENSE="Apache-2.0"
@@ -56,8 +58,10 @@ src_unpack() {
 	default_src_unpack || die
 
 	if use vulkan; then
+		mkdir -p external/glslang external/spirv-tools external/spirv-headers
 		mv "glslang-${MY_GLSLANG_COMMIT}" external/glslang/src || die
 		mv "SPIRV-Tools-${MY_SPIRV_TOOLS_COMMIT}" external/spirv-tools/src || die
+		mv "SPIRV-Headers-${MY_SPIRV_HEADERS_COMMIT}" external/spirv-headers/src || die
 	fi
 }
 
