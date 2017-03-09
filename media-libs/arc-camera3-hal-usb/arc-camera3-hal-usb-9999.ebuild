@@ -31,6 +31,5 @@ src_compile() {
 }
 
 src_install() {
-	insinto /usr/lib
-	doins usb/camera_hal.so
+	dolib.so hal/usb/camera_hal.so
 }
