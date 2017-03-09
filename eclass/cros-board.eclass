@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	beaglebone_servo
 	beaglebone_vv1
 	beltino
+	betty
 	blackwall
 	bob
 	bobcat
@@ -175,6 +176,7 @@ ALL_BOARDS=(
 	mipsel-o32-generic
 	monroe
 	moose
+	newbie
 	ninja
 	nyan
 	nyan_big
