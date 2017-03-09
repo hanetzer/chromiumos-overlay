@@ -19,6 +19,7 @@ SLOT="0"
 RDEPEND="
 	app-mobilephone/dfu-util
 	chromeos-base/chromeos-test-init
+	chromeos-base/pywalt
 	dev-embedded/dfu-programmer
 	virtual/chromeos-test-testauthkeys
 	virtual/chromeos-bsp-test-root
