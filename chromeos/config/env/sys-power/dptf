@@ -6,8 +6,3 @@ cros_pre_src_prepare_enable_cxx_exceptions() {
 	cros_enable_cxx_exceptions
 }
 
-# dptf cannot be built from clang. See https://crbug.com/575718
-cros_pre_src_prepare_use_gcc() {
-	cros_use_gcc
-	filter_clang_syntax
-}
