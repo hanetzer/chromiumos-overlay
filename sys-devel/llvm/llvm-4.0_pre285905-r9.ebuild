@@ -52,7 +52,7 @@ LICENSE="UoI-NCSA"
 SLOT="0/${PV}"
 KEYWORDS="-* amd64"
 IUSE="clang debug doc gold libedit +libffi lldb multitarget ncurses ocaml
-	python +static-analyzer llvm-next test xml video_cards_radeon kernel_Darwin"
+	python +static-analyzer llvm-next llvm-tot test xml video_cards_radeon kernel_Darwin"
 
 COMMON_DEPEND="
 	sys-libs/zlib:0=
@@ -172,6 +172,10 @@ trunk_src_unpack() {
 
 
 src_unpack() {
+	if use llvm-tot ; then
+		trunk_src_unpack
+		return
+	fi
 	set -- "${EGIT_REPO_URIS[@]}"
 		while [[ $# -gt 0 ]]; do
 			ESVN_PROJECT=$1 \
@@ -254,8 +258,10 @@ pick_next_cherries() {
 }
 
 src_prepare() {
-	use llvm-next || pick_cherries
-	use llvm-next && pick_next_cherries
+	if ! use llvm-tot ; then
+		use llvm-next || pick_cherries
+		use llvm-next && pick_next_cherries
+	fi
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
@@ -320,7 +326,7 @@ src_prepare() {
 
 enable_asserts() {
 	# Enable assertions for llvm-next build
-	if use llvm-next; then
+	if use llvm-next || use llvm-tot; then
 		echo yes
 	else
 		usex debug
