@@ -67,6 +67,7 @@ src_install() {
 
 	# Scripts for production
 	dobin powerd/powerd_suspend
+	dobin tools/print_sysfs_power_supply_data  # feedback
 	dobin tools/send_metrics_on_resume
 
 	# Scripts for testing and debugging
