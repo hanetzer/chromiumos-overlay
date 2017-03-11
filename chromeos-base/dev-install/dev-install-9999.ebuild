@@ -143,6 +143,9 @@ src_install() {
 	insinto /usr/share/${PN}/portage/make.profile/package.provided
 	doins "${build_dir}"/chromeos-base.packages
 
+	insinto /etc/bash/bashrc.d/
+	newins bashrc ${PN}.sh
+
 	insinto /etc/env.d
 	doins 99devinstall
 	sed -i "s:@LIBDIR@:$(get_libdir):g" "${ED}"/etc/env.d/99devinstall
