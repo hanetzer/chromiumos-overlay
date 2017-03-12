@@ -94,9 +94,8 @@ src_install() {
 		      USE_MTD=$(usev mtd) \
 		      install
 
-		insinto /usr/share/vboot/bin
-		doins scripts/image_signing/convert_recovery_to_ssd.sh
-		doins scripts/image_signing/common_minimal.sh
+		exeinto /usr/share/vboot/bin
+		doexe scripts/image_signing/*.sh
 	fi
 
 	if use tpmtests; then
