@@ -68,6 +68,52 @@ src_test() {
 	fi
 }
 
+src_install_upstart() {
+	insinto /etc/init
+
+	if use cros_embedded; then
+		doins upstart/startup.conf
+		doins upstart/embedded-init/boot-services.conf
+
+		doins upstart/report-boot-complete.conf
+		doins upstart/failsafe-delay.conf upstart/failsafe.conf
+		doins upstart/pre-shutdown.conf upstart/pre-startup.conf
+		doins upstart/pstore.conf upstart/reboot.conf
+		doins upstart/system-services.conf
+		doins upstart/uinput.conf
+		doins upstart/static-nodes.conf
+
+		if use syslog; then
+			doins upstart/log-rotate.conf upstart/syslog.conf
+		fi
+		if use !systemd; then
+			doins upstart/cgroups.conf
+			doins upstart/dbus.conf
+			if use udev; then
+				doins upstart/udev.conf upstart/udev-trigger.conf
+				doins upstart/udev-trigger-early.conf
+			fi
+		fi
+	else
+		doins upstart/*.conf
+
+		dosbin display_low_battery_alert
+	fi
+	if use midi; then
+		if use kernel-3_8 || use kernel-3_10 || use kernel-3_14 || use kernel-3_18; then
+			doins upstart/workaround-init/midi-workaround.conf
+		fi
+	fi
+
+	if use s3halt; then
+		newins upstart/halt/s3halt.conf halt.conf
+	else
+		doins upstart/halt/halt.conf
+	fi
+
+	use vtconsole && doins upstart/vtconsole/*.conf
+}
+
 src_install() {
 	# Install helper to run periodic tasks.
 	dobin periodic_scheduler
@@ -98,45 +144,8 @@ src_install() {
 	dosbin clobber-log
 	dosbin chromeos-boot-alert
 
-	insinto /etc/init
-
-	if use cros_embedded; then
-		doins startup.conf
-		doins embedded-init/boot-services.conf
-
-		doins report-boot-complete.conf
-		doins failsafe-delay.conf failsafe.conf
-		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
-		doins system-services.conf
-		doins uinput.conf
-		doins static-nodes.conf
-
-		if use syslog; then
-			doins log-rotate.conf syslog.conf
-		fi
-		if use !systemd; then
-			doins cgroups.conf
-			doins dbus.conf
-			use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
-		fi
-	else
-		doins *.conf
-
-		dosbin display_low_battery_alert
-	fi
-	if use midi; then
-		if use kernel-3_8 || use kernel-3_10 || use kernel-3_14 || use kernel-3_18; then
-			doins workaround-init/midi-workaround.conf
-		fi
-	fi
-
-	if use s3halt; then
-		newins halt/s3halt.conf halt.conf
-	else
-		doins halt/halt.conf
-	fi
-
-	use vtconsole && doins vtconsole/*.conf
+	# Install Upstart scripts.
+	src_install_upstart
 
 	insinto /usr/share/cros
 	doins $(usex encrypted_stateful encrypted_stateful \
