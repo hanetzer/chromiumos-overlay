@@ -378,7 +378,6 @@ src_install() {
 		doins ${FILESDIR}/dbus_bindings/fi.w1.wpa_supplicant1.xml || die
 		insinto /etc/dbus-1/system.d
 		doins ${FILESDIR}/dbus_permissions/fi.w1.wpa_supplicant1.conf || die
-		keepdir /var/run/wpa_supplicant
 
 		popd > /dev/null
 	fi
