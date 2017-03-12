@@ -4,8 +4,8 @@
  # as well, so don't change the format!
  LMTVERSION=1.59
  
-+if [ -f /var/run/laptop-mode-tools/laptop-mode.conf ]; then
-+    LAPTOP_MODE_CONFIG_DIR=/var/run/laptop-mode-tools
++if [ -f /run/laptop-mode-tools/laptop-mode.conf ]; then
++    LAPTOP_MODE_CONFIG_DIR=/run/laptop-mode-tools
 +else
 +    LAPTOP_MODE_CONFIG_DIR=/etc/laptop-mode
 +fi

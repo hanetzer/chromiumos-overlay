@@ -71,6 +71,13 @@ src_prepare() {
 	for p in "${PATCHES[@]}"; do
 		epatch "${FILESDIR}/${p}"
 	done
+
+	cd "${S}"
+	sed -i \
+		-e 's:/var/run:/run:g' \
+		etc/init.d/* \
+		usr/sbin/* \
+		usr/share/laptop-mode-tools/modules/* || die
 }
 
 src_install() {
