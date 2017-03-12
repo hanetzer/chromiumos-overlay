@@ -13,11 +13,11 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host dev_debug_force minimal -mtd pd_sync tpmtests tpm tpm2"
+IUSE="32bit_au cros_host dev_debug_force -mtd pd_sync tpmtests tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
-RDEPEND="!minimal? ( dev-libs/libyaml )
+RDEPEND="cros_host? ( dev-libs/libyaml )
 	mtd? ( sys-apps/flashrom )
 	dev-libs/openssl
 	sys-apps/util-linux"
@@ -39,7 +39,7 @@ _src_compile_main() {
 	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
 	      USE_MTD=$(usev mtd) \
-	      MINIMAL=$(usev minimal) all
+	      MINIMAL=$(usev !cros_host) all
 	unset CC AR CXX PKG_CONFIG
 }
 
@@ -53,7 +53,7 @@ _src_compile_au() {
 	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
 	      USE_MTD=$(usev mtd) \
-	      MINIMAL=$(usev minimal) tinyhostlib
+	      MINIMAL=$(usev !cros_host) tinyhostlib
 	unset CC AR CXX PKG_CONFIG
 	board_teardown_32bit_au_env
 }
@@ -70,12 +70,12 @@ src_test() {
 	      ARCH=$(tc-arch) \
 	      TPM2_MODE=$(usev tpm2) \
 	      PD_SYNC=$(usev pd_sync) \
-	      MINIMAL=$(usev minimal) runtests
+	      MINIMAL=$(usev !cros_host) runtests
 }
 
 src_install() {
 	einfo "Installing programs"
-	if use minimal ; then
+	if use !cros_host; then
 		# Installing on the target
 		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}" \
 		      LIBDIR="$(get_libdir)" \
