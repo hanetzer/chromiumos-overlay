@@ -1,19 +1,19 @@
-From 083537027e22593346263d62c1300548ce519dda Mon Sep 17 00:00:00 2001
-From: Pawel Osciak <posciak@chromium.org>
-Date: Sat, 13 Sep 2014 15:04:47 +0900
-Subject: [PATCH] CHROMIUM: v4l: Add H264 low-level decoder API compound controls.
+From 80c9a8000da26c98df5f491c2720812ffe71a5e5 Mon Sep 17 00:00:00 2001
+From: Daniel Wang <wonderfly@google.com>
+Date: Mon, 13 Mar 2017 15:21:58 -0700
+Subject: [PATCH] CHROMIUM: v4l: Add H264 low-level decoder API compound
+ controls.
 
-Change-Id: Iee08205ff3b9a54c6561e385acae8182acc73393
-Signed-off-by: Pawel Osciak <posciak@chromium.org>
-Reviewed-on: https://chromium-review.googlesource.com/237616
-Reviewed-by: Wu-cheng Li <wuchengli@chromium.org>
-Commit-Queue: Tomasz Figa <tfiga@chromium.org>
-Tested-by: Tomasz Figa <tfiga@chromium.org>
 ---
+ include/uapi/linux/v4l2-controls.h | 153 +++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/videodev2.h     |  22 +++++-
+ 2 files changed, 173 insertions(+), 2 deletions(-)
 
---- include/uapi/linux/v4l2-controls.h	2015-01-22 16:07:35.394305276 +0800
-+++ include/uapi/linux/v4l2-controls.h	2015-01-22 16:07:43.942217077 +0800
-@@ -510,6 +510,12 @@
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index 1bdce50..35aa1db 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -518,6 +518,12 @@ enum v4l2_mpeg_video_h264_hierarchical_coding_type {
  };
  #define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER	(V4L2_CID_MPEG_BASE+381)
  #define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER_QP	(V4L2_CID_MPEG_BASE+382)
@@ -26,7 +26,7 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  #define V4L2_CID_MPEG_VIDEO_MPEG4_I_FRAME_QP	(V4L2_CID_MPEG_BASE+400)
  #define V4L2_CID_MPEG_VIDEO_MPEG4_P_FRAME_QP	(V4L2_CID_MPEG_BASE+401)
  #define V4L2_CID_MPEG_VIDEO_MPEG4_B_FRAME_QP	(V4L2_CID_MPEG_BASE+402)
-@@ -930,6 +936,153 @@
+@@ -945,6 +951,153 @@ enum v4l2_deemphasis {
  #define V4L2_CID_RF_TUNER_IF_GAIN		(V4L2_CID_RF_TUNER_CLASS_BASE + 62)
  #define V4L2_CID_RF_TUNER_PLL_LOCK			(V4L2_CID_RF_TUNER_CLASS_BASE + 91)
  
@@ -180,9 +180,11 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  
  /*  Detection-class control IDs defined by V4L2 */
  #define V4L2_CID_DETECT_CLASS_BASE		(V4L2_CTRL_CLASS_DETECT | 0x900)
---- include/uapi/linux/videodev2.h	2015-01-22 16:07:26.326398842 +0800
-+++ include/uapi/linux/videodev2.h	2015-01-22 16:09:01.769414100 +0800
-@@ -413,6 +413,7 @@
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index a0e87d1..5606acb 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -585,6 +585,7 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_H264     v4l2_fourcc('H', '2', '6', '4') /* H264 with start codes */
  #define V4L2_PIX_FMT_H264_NO_SC v4l2_fourcc('A', 'V', 'C', '1') /* H264 without start codes */
  #define V4L2_PIX_FMT_H264_MVC v4l2_fourcc('M', '2', '6', '4') /* H264 MVC */
@@ -190,7 +192,7 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  #define V4L2_PIX_FMT_H263     v4l2_fourcc('H', '2', '6', '3') /* H263          */
  #define V4L2_PIX_FMT_MPEG1    v4l2_fourcc('M', 'P', 'G', '1') /* MPEG-1 ES     */
  #define V4L2_PIX_FMT_MPEG2    v4l2_fourcc('M', 'P', 'G', '2') /* MPEG-2 ES     */
-@@ -672,6 +673,7 @@
+@@ -844,6 +845,7 @@ struct v4l2_plane {
   * @length:	size in bytes of the buffer (NOT its payload) for single-plane
   *		buffers (when type != *_MPLANE); number of elements in the
   *		planes array for multi-plane buffers
@@ -198,7 +200,7 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
   *
   * Contains data exchanged by application and driver using one of the Streaming
   * I/O methods.
-@@ -695,7 +697,7 @@
+@@ -867,7 +869,7 @@ struct v4l2_buffer {
  		__s32		fd;
  	} m;
  	__u32			length;
@@ -207,7 +209,7 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  	__u32			reserved;
  };
  
-@@ -1289,12 +1291,20 @@
+@@ -1471,12 +1473,20 @@ struct v4l2_ext_control {
  		__u8 __user *p_u8;
  		__u16 __user *p_u16;
  		__u32 __user *p_u32;
@@ -229,7 +231,7 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  	__u32 count;
  	__u32 error_idx;
  	__u32 reserved[2];
-@@ -1322,6 +1332,13 @@
+@@ -1504,6 +1514,13 @@ enum v4l2_ctrl_type {
  	V4L2_CTRL_TYPE_U8	     = 0x0100,
  	V4L2_CTRL_TYPE_U16	     = 0x0101,
  	V4L2_CTRL_TYPE_U32	     = 0x0102,
@@ -243,11 +245,14 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  };
  
  /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
-@@ -1375,6 +1392,7 @@
- #define V4L2_CTRL_FLAG_WRITE_ONLY 	0x0040
+@@ -1558,6 +1575,7 @@ struct v4l2_querymenu {
  #define V4L2_CTRL_FLAG_VOLATILE		0x0080
  #define V4L2_CTRL_FLAG_HAS_PAYLOAD	0x0100
+ #define V4L2_CTRL_FLAG_EXECUTE_ON_WRITE	0x0200
 +#define V4L2_CTRL_FLAG_CAN_STORE	0x0400
  
  /*  Query flags, to be ORed with the control ID */
  #define V4L2_CTRL_FLAG_NEXT_CTRL	0x80000000
+-- 
+2.6.6
+

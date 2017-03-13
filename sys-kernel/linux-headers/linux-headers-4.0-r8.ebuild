@@ -1,1 +1,0 @@
-linux-headers-4.0.ebuild
