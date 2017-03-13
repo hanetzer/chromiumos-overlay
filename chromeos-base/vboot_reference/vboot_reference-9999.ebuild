@@ -28,18 +28,26 @@ src_configure() {
 	cros-workon_src_configure
 }
 
+vemake() {
+	emake \
+		SRCDIR="${S}" \
+		LIBDIR="$(get_libdir)" \
+		ARCH=$(tc-arch) \
+		TPM2_MODE=$(usev tpm2) \
+		PD_SYNC=$(usev pd_sync) \
+		USE_MTD=$(usev mtd) \
+		MINIMAL=$(usev !cros_host) \
+		DEV_DEBUG_FORCE=$(usev dev_debug_force) \
+		"$@"
+}
+
 _src_compile_main() {
 	mkdir "${WORKDIR}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	# Vboot reference knows the flags to use
 	unset CFLAGS
-	emake BUILD="${WORKDIR}"/build-main \
-	      ARCH=$(tc-arch) \
-	      TPM2_MODE=$(usev tpm2) \
-	      PD_SYNC=$(usev pd_sync) \
-	      USE_MTD=$(usev mtd) \
-	      MINIMAL=$(usev !cros_host) all
+	vemake BUILD="${WORKDIR}"/build-main all
 	unset CC AR CXX PKG_CONFIG
 }
 
@@ -48,12 +56,7 @@ _src_compile_au() {
 	mkdir "${WORKDIR}"/build-au
 	einfo "Building 32-bit library for installer to use"
 	tc-export CC AR CXX PKG_CONFIG
-	emake BUILD="${WORKDIR}"/build-au/ \
-	      ARCH=$(tc-arch) \
-	      TPM2_MODE=$(usev tpm2) \
-	      PD_SYNC=$(usev pd_sync) \
-	      USE_MTD=$(usev mtd) \
-	      MINIMAL=$(usev !cros_host) tinyhostlib
+	vemake BUILD="${WORKDIR}"/build-au/ tinyhostlib
 	unset CC AR CXX PKG_CONFIG
 	board_teardown_32bit_au_env
 }
@@ -65,35 +68,18 @@ src_compile() {
 
 src_test() {
 	! use amd64 && ! use x86 && ewarn "Skipping unittests for non-x86" && return 0
-	emake BUILD="${WORKDIR}"/build-main \
-	      SRCDIR="${S}" \
-	      ARCH=$(tc-arch) \
-	      TPM2_MODE=$(usev tpm2) \
-	      PD_SYNC=$(usev pd_sync) \
-	      MINIMAL=$(usev !cros_host) runtests
+	vemake BUILD="${WORKDIR}"/build-main runtests
 }
 
 src_install() {
 	einfo "Installing programs"
-	if use !cros_host; then
-		# Installing on the target
-		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}" \
-		      LIBDIR="$(get_libdir)" \
-		      TPM2_MODE=$(usev tpm2) \
-		      PD_SYNC=$(usev pd_sync) \
-		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
-		      USE_MTD=$(usev mtd) \
-		      MINIMAL=1 install$(usex mtd "_mtd" "")
-	else
-		# Installing on the host
-		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}/usr" \
-		      LIBDIR="$(get_libdir)" \
-		      TPM2_MODE=$(usev tpm2) \
-		      PD_SYNC=$(usev pd_sync) \
-		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
-		      USE_MTD=$(usev mtd) \
-		      install
+	vemake \
+		BUILD="${WORKDIR}"/build-main \
+		DESTDIR="${D}$(usex cros_host /usr '')" \
+		install$(usex mtd '_mtd' '')
 
+	if use cros_host; then
+		# Installing on the host
 		exeinto /usr/share/vboot/bin
 		doexe scripts/image_signing/*.sh
 	fi
