@@ -8,7 +8,7 @@
 EAPI="5"
 
 CROS_WORKON_PROJECT="aosp/platform/external/libchrome"
-CROS_WORKON_COMMIT="6430a2797e1dfb3af1b83a17640150d216037698"
+CROS_WORKON_COMMIT="7b88bc885b9d8dc551beab840b853a79fa06494d"
 CROS_WORKON_LOCALNAME="aosp/external/libchrome"
 CROS_WORKON_BLACKLIST="1"
 
@@ -21,17 +21,21 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="${PV}"
 KEYWORDS="*"
-IUSE="cros_host"
+IUSE="cros_host +crypto +dbus +timers"
 
 # TODO(avakulenko): Put dev-libs/nss behind a USE flag to make sure NSS is
 # pulled only into the configurations that require it.
 RDEPEND="dev-libs/glib:2=
 	dev-libs/libevent:=
 	dev-libs/modp_b64:=
-	dev-libs/nss:=
-	dev-libs/openssl:=
-	dev-libs/protobuf:=
-	sys-apps/dbus:="
+	crypto? (
+		dev-libs/nss:=
+		dev-libs/openssl:=
+	)
+	dbus? (
+		sys-apps/dbus:=
+		dev-libs/protobuf:=
+	)"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	dev-cpp/gmock
@@ -49,7 +53,12 @@ src_configure() {
 }
 
 src_compile() {
-	BASE_VER=${SLOT} CHROME_INCLUDE_PATH="${S}" escons -k
+	BASE_VER=${SLOT} \
+	CHROME_INCLUDE_PATH="${S}" \
+	USE_DBUS="$(usex dbus 1 0)" \
+	USE_CRYPTO="$(usex crypto 1 0)" \
+	USE_TIMERS="$(usex timers 1 0)" \
+	escons -k
 }
 
 src_install() {
@@ -82,13 +91,14 @@ src_install() {
 		base/trace_event
 		base/trace_event/common
 		build
-		components/timers
 		components/policy
 		components/policy/core/common
-		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
 	)
+	use dbus && header_dirs+=( dbus )
+	use timers && header_dirs+=( components/timers )
+
 	for d in "${header_dirs[@]}" ; do
 		insinto /usr/include/base-${SLOT}/${d}
 		doins ${d}/*.h
@@ -99,26 +109,28 @@ src_install() {
 		base/test/simple_test_clock.h \
 		base/test/simple_test_tick_clock.h \
 
-	insinto /usr/include/base-${SLOT}/crypto
-	doins \
-		crypto/crypto_export.h \
-		crypto/hmac.h \
-		crypto/nss_key_util.h \
-		crypto/nss_util.h \
-		crypto/nss_util_internal.h \
-		crypto/openssl_util.h \
-		crypto/p224.h \
-		crypto/p224_spake.h \
-		crypto/random.h \
-		crypto/rsa_private_key.h \
-		crypto/scoped_nss_types.h \
-		crypto/scoped_openssl_types.h \
-		crypto/scoped_test_nss_db.h \
-		crypto/secure_hash.h \
-		crypto/secure_util.h \
-		crypto/sha2.h \
-		crypto/signature_creator.h \
-		crypto/signature_verifier.h
+	if use crypto; then
+		insinto /usr/include/base-${SLOT}/crypto
+		doins \
+			crypto/crypto_export.h \
+			crypto/hmac.h \
+			crypto/nss_key_util.h \
+			crypto/nss_util.h \
+			crypto/nss_util_internal.h \
+			crypto/openssl_util.h \
+			crypto/p224.h \
+			crypto/p224_spake.h \
+			crypto/random.h \
+			crypto/rsa_private_key.h \
+			crypto/scoped_nss_types.h \
+			crypto/scoped_openssl_types.h \
+			crypto/scoped_test_nss_db.h \
+			crypto/secure_hash.h \
+			crypto/secure_util.h \
+			crypto/sha2.h \
+			crypto/signature_creator.h \
+			crypto/signature_verifier.h
+	fi
 
 	insinto /usr/$(get_libdir)/pkgconfig
 	doins libchrome*-${SLOT}.pc
