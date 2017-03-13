@@ -410,14 +410,16 @@ set_build_args() {
 		# Practically, because TMPDIR is set in portage, it is
 		# different from the directory used when the compiler proxy
 		# started.
-		# If GOMA_TMP_DIR is not set, the compiler proxy uses TMPDIR
-		# for its tmpdir as fallback, which causes unexpected behavior.
+		# If GOMA_TMP_DIR is not set, the compiler proxy uses
+		# TMPDIR/goma_${WHOAMI} for its tmpdir as fallback, which
+		# causes unexpected behavior.
 		# Specifically, named socket used to communicate with compiler
-		# proxy is ${goma's tmpdir}/goma.ipc by default, so the
-		# compiler proxy cannot be reached.
-		# Thus, here GOMA_TMP_DIR is set to /tmp if it is not yet set.
+		# proxy is ${GOMA_TMP_DIR}/goma.ipc by default, so the compiler
+		# proxy cannot be reached.
+		# Thus, here set GOMA_TMP_DIR to /tmp/goma_${WHOAMI} if it is
+		# not yet set.
 		if [[ -z "${GOMA_TMP_DIR}" ]]; then
-			export GOMA_TMP_DIR=/tmp
+			export GOMA_TMP_DIR="/tmp/goma_${WHOAMI}"
 		fi
 	fi
 
