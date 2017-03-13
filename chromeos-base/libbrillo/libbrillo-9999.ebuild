@@ -21,12 +21,12 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host"
+IUSE="cros_host +dbus"
 
 COMMON_DEPEND="
 	chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
-	dev-libs/dbus-glib
+	dbus? ( dev-libs/dbus-glib )
 	dev-libs/openssl
 	dev-libs/protobuf
 	net-misc/curl
