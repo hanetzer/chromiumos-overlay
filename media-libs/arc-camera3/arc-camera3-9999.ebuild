@@ -13,7 +13,7 @@ camera device. It uses unix domain socket to build a synchronous channel."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
+IUSE="-asan -clang cheets"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
@@ -48,6 +48,14 @@ src_install() {
 		common/libcbm.pc.template > common/libcbm.pc
 	insinto "${LIB_DIR}/pkgconfig"
 	doins common/libcbm.pc
+
+	insinto /etc/init
+	doins hal_adapter/init/camera-halv3-adapter.conf
+
+	if use cheets; then
+		insinto /opt/google/containers/android/vendor/etc/init
+		doins hal_adapter/init/init.camera.rc
+	fi
 }
 
 src_test() {
