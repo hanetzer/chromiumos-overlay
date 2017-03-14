@@ -46,7 +46,10 @@ IUSE="
 	-transparent_hugepage
 	tpm2
 "
-STRIP_MASK="/usr/lib/debug/boot/vmlinux"
+STRIP_MASK="
+	/usr/lib/debug/boot/vmlinux
+	/usr/src/*
+"
 
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
 MULTILIB_STRICT_EXEMPT+="|modules"
