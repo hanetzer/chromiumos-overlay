@@ -131,13 +131,13 @@ declare -A AFDO_FILE_LLVM
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-59.0.3040.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-59.0.3041.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -410,14 +410,16 @@ set_build_args() {
 		# Practically, because TMPDIR is set in portage, it is
 		# different from the directory used when the compiler proxy
 		# started.
-		# If GOMA_TMP_DIR is not set, the compiler proxy uses TMPDIR
-		# for its tmpdir as fallback, which causes unexpected behavior.
+		# If GOMA_TMP_DIR is not set, the compiler proxy uses
+		# TMPDIR/goma_${WHOAMI} for its tmpdir as fallback, which
+		# causes unexpected behavior.
 		# Specifically, named socket used to communicate with compiler
-		# proxy is ${goma's tmpdir}/goma.ipc by default, so the
-		# compiler proxy cannot be reached.
-		# Thus, here GOMA_TMP_DIR is set to /tmp if it is not yet set.
+		# proxy is ${GOMA_TMP_DIR}/goma.ipc by default, so the compiler
+		# proxy cannot be reached.
+		# Thus, here set GOMA_TMP_DIR to /tmp/goma_${WHOAMI} if it is
+		# not yet set.
 		if [[ -z "${GOMA_TMP_DIR}" ]]; then
-			export GOMA_TMP_DIR=/tmp
+			export GOMA_TMP_DIR="/tmp/goma_${WHOAMI}"
 		fi
 	fi
 
