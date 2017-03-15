@@ -59,4 +59,5 @@ src_install() {
 
 	insinto "${include_dir}"
 	doins libminijail.h
+	doins scoped_minijail.h
 }
