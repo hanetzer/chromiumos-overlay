@@ -24,6 +24,8 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	"
+RDEPEND+="
+	net-nds/rpcbind"
 
 CMAKE_USE_DIR="${S}/src"
 # COMPILING_HOWTO says Maintainer is the mode to use for releases.
