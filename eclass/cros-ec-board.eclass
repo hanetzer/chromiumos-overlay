@@ -39,6 +39,7 @@ EC_BOARD_NAMES=(
 	dingdong
 	elm
 	eve
+	eve_fp
 	glados
 	glados_pd
 	gru
