@@ -34,6 +34,7 @@ IUSE="
 	+fonts
 	gobi
 	intel_lpe
+	kvm_host
 	mtd
 	+network_time
 	nfc
@@ -257,6 +258,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-shells/bash
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
+	kvm_host? (
+		net-fs/nfs-ganesha
+		sys-kernel/kvmtool
+	)
 	chromeos-base/crosh
 	chromeos-base/crosh-extension
 	chromeos-base/dev-install
