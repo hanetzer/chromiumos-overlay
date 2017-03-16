@@ -199,8 +199,10 @@ main() {
 
   # Allow powerd to set the keyboard wake angle.
   if "${IIO_SINGLE_SENSOR_DIR}"; then
-    chgrp power "${CROS_EC_PATH}/kb_wake_angle"
-    chmod g+w "${CROS_EC_PATH}/kb_wake_angle"
+    if [ -e "${CROS_EC_PATH}/kb_wake_angle" ]; then
+      chgrp power "${CROS_EC_PATH}/kb_wake_angle"
+      chmod g+w "${CROS_EC_PATH}/kb_wake_angle"
+    fi
   else
     chgrp power "${IIO_DEVICE_PATH}/in_angl_offset"
     chmod g+w "${IIO_DEVICE_PATH}/in_angl_offset"
