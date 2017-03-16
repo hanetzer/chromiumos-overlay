@@ -30,7 +30,6 @@ RDEPEND="
 	media-sound/sox
 	vaapi? ( x11-libs/libva )
 	virtual/autotest-tests
-	x11-libs/libX11
 "
 
 RDEPEND="${RDEPEND}
