@@ -313,6 +313,18 @@ autotest_src_compile() {
 		find . -name "${mask}" -delete
 	done
 
+	local root_autotest_dir="${SYSROOT}${AUTOTEST_BASE}"
+	if [[ -n "${TESTS}" && "${TESTS}" != "myfaketest" ]]; then
+		einfo "Running packager(tar_only) for: ${TESTS}"
+		flock "${root_autotest_dir}/packages"
+				python -B "${root_autotest_dir}/utils/packager.py" \
+				-r "${root_autotest_dir}/packages" \
+				--test="$(pythonify_test_list ${TESTS})" \
+				-a "tar_only" -o "${AUTOTEST_WORKDIR}"
+	else
+		einfo "Packager(tar_only) not run as nothing was found to package."
+	fi
+
 	popd 1> /dev/null
 }
 
