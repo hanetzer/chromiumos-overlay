@@ -176,6 +176,7 @@ ALL_BOARDS=(
 	mipsel-o32-generic
 	monroe
 	moose
+	nasher
 	newbie
 	ninja
 	nyan
