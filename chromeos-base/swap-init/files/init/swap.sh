@@ -12,6 +12,8 @@
 # "[systemctl] start swap" or reboot.  To stop swap, remove the file and reboot.
 
 SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
+SWAP_MARGIN_OVERRIDE_FILE=/home/chronos/.swap_margin
+SWAP_MARGIN_SYSFS_ENTRY=/sys/kernel/mm/chromeos-low_mem/margin
 HIST_MIN=100
 HIST_MAX=10000
 HIST_BUCKETS=50
@@ -44,16 +46,20 @@ start() {
   fi
 
   local margin
-  # compute fraction of total RAM used for low-mem margin.  The fraction is
-  # given in bips.  A "bip" or "basis point" is 1/100 of 1%.
-  MARGIN_BIPS=520
-  margin=$(( mem_total / 1000 * MARGIN_BIPS / 10000 ))  # MB
+  if [ -e "${SWAP_MARGIN_OVERRIDE_FILE}" ]; then
+    margin=$(cat "${SWAP_MARGIN_OVERRIDE_FILE}")  # MB
+  else
+    # compute fraction of total RAM used for low-mem margin.  The fraction is
+    # given in bips.  A "bip" or "basis point" is 1/100 of 1%.
+    MARGIN_BIPS=520
+    margin=$(( mem_total / 1000 * MARGIN_BIPS / 10000 ))  # MB
+  fi
   if [ -n "${MIN_LOW_MEMORY_MARGIN}" ] && \
      [ "${margin}" -lt "${MIN_LOW_MEMORY_MARGIN}" ]; then
     margin=${MIN_LOW_MEMORY_MARGIN}
   fi
   # set the margin
-  echo "${margin}" > /sys/kernel/mm/chromeos-low_mem/margin
+  echo "${margin}" > "${SWAP_MARGIN_SYSFS_ENTRY}"
   logger -t "${JOB}" "setting low-mem margin to ${margin} MB"
 
   # Allocate zram (compressed ram disk) for swap.
@@ -163,6 +169,21 @@ disable() {
   echo "0" > "${SWAP_ENABLE_FILE}"
 }
 
+show_margin() {
+  cat "${SWAP_MARGIN_SYSFS_ENTRY}"
+}
+
+set_margin() {
+  local margin="$1"
+  if [ "${margin}" = "0" ]; then
+    rm "${SWAP_MARGIN_OVERRIDE_FILE}"
+    echo "margin unchanged until reboot, due to technical difficulties :)"
+  else
+    echo ${margin} > "${SWAP_MARGIN_SYSFS_ENTRY}"
+    echo ${margin} > "${SWAP_MARGIN_OVERRIDE_FILE}"
+  fi
+}
+
 usage() {
   cat <<EOF
 Usage: $0 <start|stop|status|enable <size>|disable>
@@ -189,12 +210,12 @@ main() {
   local cmd="$1"
   shift
   case "${cmd}" in
-  start|stop|status|disable)
+  start|stop|status|disable|show_margin)
     if [ $# -ne 0 ]; then
       usage 1
     fi
     ;;
-  enable)
+  enable|set_margin)
     if [ $# -ne 1 ]; then
       usage 1
     fi
