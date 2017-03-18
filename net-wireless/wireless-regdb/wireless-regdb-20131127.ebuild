@@ -22,6 +22,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/regdb-80mhz-5ghz.patch
 	epatch "${FILESDIR}"/regdb-us-unii2e.patch
 	epatch "${FILESDIR}"/regdb-world-5ghz.patch
+	epatch "${FILESDIR}"/regdb-world-correct-bw.patch
 }
 
 src_compile() {
