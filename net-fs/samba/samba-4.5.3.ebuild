@@ -93,6 +93,8 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-lib_server_role_missing_rpath.patch"
 	"${FILESDIR}/${PN}-4.5.3-add_kerberos_enc_types.patch"
 	"${FILESDIR}/${PN}-4.5.3-use_kerberos_enc_types.patch"
+	"${FILESDIR}/${PN}-4.5.3-skip_missing_ldap_attributes.patch"
+	"${FILESDIR}/${PN}-4.5.3-reuse_existing_computer_account.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"

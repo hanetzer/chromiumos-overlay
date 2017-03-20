@@ -1,0 +1,51 @@
+This patch is for a Samba bug [1] which results in creating a new
+computer account in the default location instead of correctly
+using a pre-created computer account if it already exists in
+a non-default location (ie. different OU).
+
+[1] - https://bugzilla.samba.org/show_bug.cgi?id=12696
+
+From 2af921f7bf3703095f1785ed8632fb2a337cc197 Mon Sep 17 00:00:00 2001
+From: Jeremy Allison <jra@samba.org>
+Date: Wed, 15 Mar 2017 12:14:16 -0700
+Subject: [PATCH] s3: libnet: When joining and the machine account already
+ exists, only move if the admin specified an explicit OU.
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=12696
+
+Signed-off-by: Jeremy Allison <jra@samba.org>
+---
+ source3/libnet/libnet_join.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/source3/libnet/libnet_join.c b/source3/libnet/libnet_join.c
+index 4d00ef65413..755268d6844 100644
+--- a/source3/libnet/libnet_join.c
++++ b/source3/libnet/libnet_join.c
+@@ -305,6 +305,7 @@ static ADS_STATUS libnet_join_precreate_machine_acct(TALLOC_CTX *mem_ctx,
+ 	LDAPMessage *res = NULL;
+ 	const char *attrs[] = { "dn", NULL };
+ 	bool moved = false;
++	const char *initial_account_ou = r->in.account_ou;
+ 
+ 	status = ads_check_ou_dn(mem_ctx, r->in.ads, &r->in.account_ou);
+ 	if (!ADS_ERR_OK(status)) {
+@@ -337,6 +338,16 @@ static ADS_STATUS libnet_join_precreate_machine_acct(TALLOC_CTX *mem_ctx,
+ 	} else  if ((status.error_type == ENUM_ADS_ERROR_LDAP) &&
+ 		    (status.err.rc == LDAP_ALREADY_EXISTS)) {
+ 		status = ADS_SUCCESS;
++
++		if (initial_account_ou == NULL) {
++			/*
++			 * Account already existed and
++			 * admin didn't explicitly specify
++			 * a different OU. Don't move the
++			 * account, just return.
++			 */
++			return status;
++		}
+ 	}
+ 
+ 	if (!ADS_ERR_OK(status)) {
+-- 
+2.12.0.367.g23dc2f6d3c-goog
