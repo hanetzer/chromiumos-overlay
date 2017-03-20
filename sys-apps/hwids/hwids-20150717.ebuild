@@ -34,6 +34,12 @@ src_prepare() {
 
 	sed -i -e '/udevadm hwdb/d' Makefile || die
 
+	# Filter out key mapping entries for AT keyboards in order to avoid
+	# potential conflicts with the key mappings expected by Chrome OS for
+	# the internal keyboard of a Chromebook.
+	sed -i -e '/^evdev:atkbd:/,/^\s*$/ { /^\s*$/!s/^/#/ }' \
+		udev/60-keyboard.hwdb || die
+
 	# Create a rules file compatible with older udev.
 	sed -e 's/evdev:name/keyboard:name/' \
 		-e 's/evdev:atkbd:dmi/keyboard:dmi/' \
