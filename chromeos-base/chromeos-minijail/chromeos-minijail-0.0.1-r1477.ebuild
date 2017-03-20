@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="8c13d104c2a8f0c0db2ebf872fc1f5fa790bfcc5"
-CROS_WORKON_TREE="eb5fa4d14c38cf241a5c810ca95d425be6f44439"
+CROS_WORKON_COMMIT="8d35c2ec75c854b746489e583bef716eb278b422"
+CROS_WORKON_TREE="ecd7e5417c0adcaf6d20cf481bf816a869605eff"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
@@ -61,4 +61,5 @@ src_install() {
 
 	insinto "${include_dir}"
 	doins libminijail.h
+	doins scoped_minijail.h
 }
