@@ -12,49 +12,53 @@
 # "[systemctl] start swap" or reboot.  To stop swap, remove the file and reboot.
 
 SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
+LOWMEM_MARGIN_OVERRIDE_FILE=/home/chronos/.lowmem_margin
+LOWMEM_MARGIN_SYSFS_ENTRY=/sys/kernel/mm/chromeos-low_mem/margin
 HIST_MIN=100
 HIST_MAX=10000
 HIST_BUCKETS=50
 HIST_ARGS="${HIST_MIN} ${HIST_MAX} ${HIST_BUCKETS}"
+# Upstart sets JOB, but we're not always called by upstart,
+# so set it here too.
 JOB="swap"
 
-valid_size() {
-  local size="$1"
-
-  case "${size}" in
-  500|1000|2000|3000|4000|4500|6000)
-    return 0
-    ;;
-  *)
-    # Reject all other values.
-    return 1
-    ;;
-  esac
-}
-
-start() {
-  local mem_total
+get_mem_total() {
   # Extract second field of MemTotal entry in /proc/meminfo.
   # NOTE: this could be done with "read", "case", and a function
   # that sets ram=$2, for a savings of about 3ms on an Alex.
+  local mem_total
   mem_total=$(awk '/MemTotal/ { print $2; }' /proc/meminfo)
   if [ -z "${mem_total}" ]; then
     logger -t "${JOB}" "could not get MemTotal"
     exit 1
   fi
+  echo "${mem_total}"
+}
 
-  local margin
+default_low_memory_margin() {
   # compute fraction of total RAM used for low-mem margin.  The fraction is
   # given in bips.  A "bip" or "basis point" is 1/100 of 1%.
+  local margin
   MARGIN_BIPS=520
-  margin=$(( mem_total / 1000 * MARGIN_BIPS / 10000 ))  # MB
+  margin=$(( $1 / 1024 * MARGIN_BIPS / 10000 ))  # MiB
+  echo "${margin}"
+}
+
+start() {
+  local margin mem_total
+  mem_total=$(get_mem_total)
+  if [ -e "${LOWMEM_MARGIN_OVERRIDE_FILE}" ]; then
+    margin=$(cat "${LOWMEM_MARGIN_OVERRIDE_FILE}")  # MiB
+  else
+    margin=$(default_low_memory_margin "${mem_total}")
+  fi
   if [ -n "${MIN_LOW_MEMORY_MARGIN}" ] && \
      [ "${margin}" -lt "${MIN_LOW_MEMORY_MARGIN}" ]; then
     margin=${MIN_LOW_MEMORY_MARGIN}
   fi
   # set the margin
-  echo "${margin}" > /sys/kernel/mm/chromeos-low_mem/margin
-  logger -t "${JOB}" "setting low-mem margin to ${margin} MB"
+  echo "${margin}" > "${LOWMEM_MARGIN_SYSFS_ENTRY}"
+  logger -t "${JOB}" "setting low-mem margin to ${margin} MiB"
 
   # Allocate zram (compressed ram disk) for swap.
   # SWAP_ENABLE_FILE contains the zram size in MB.
@@ -64,7 +68,7 @@ start() {
 
   local requested_size_mb size_kb
   # For security, only read first few bytes of SWAP_ENABLE_FILE.
-  requested_size_mb="$(head -c 4 "${SWAP_ENABLE_FILE}")" || :
+  requested_size_mb="$(head -c 5 "${SWAP_ENABLE_FILE}")" || :
   if [ -z "${requested_size_mb}" ]; then
     # Default multiplier for zram size. (Shell math is integer only.)
     local multiplier="3 / 2"
@@ -78,10 +82,6 @@ start() {
   elif [ "${requested_size_mb}" = "0" ]; then
     metrics_client Platform.CompressedSwapSize 0 ${HIST_ARGS}
     exit 0
-  elif ! valid_size "${requested_size_mb}"; then
-    logger -t "${JOB}" "invalid value ${requested_size_mb} for swap"
-    metrics_client Platform.CompressedSwapSize 0 ${HIST_ARGS}
-    exit 1
   else
     size_kb=$(( requested_size_mb * 1024 ))
   fi
@@ -126,6 +126,10 @@ status() {
   # Show general swap info first.
   cat /proc/swaps
 
+  # Show low-memory notification threshold.
+  printf "low-memory margin in MiB: "
+  cat "${LOWMEM_MARGIN_SYSFS_ENTRY}"
+
   # Then spam various zram settings.
   local dir="/sys/block/zram0"
   printf '\n%s:\n' "${dir}"
@@ -140,14 +144,11 @@ enable() {
   # Don't confuse this with setting 0 in the file in the disable code path.
   if [ "${size}" = "0" ]; then
     size=""
-
     logger -t "${JOB}" "enabling swap via config with automatic size"
+  elif [ "${size}" -lt 100 -o "${size}" -gt 20000 ]; then
+    echo "${JOB}: error: size ${size} is not between 100 and 20000" >&2
+    exit 1
   else
-    if ! valid_size "${size}"; then
-      echo "${JOB}: error: invalid size: ${size}" >&2
-      exit 1
-    fi
-
     logger -t "${JOB}" "enabling swap via config with size ${size}"
   fi
 
@@ -161,6 +162,22 @@ disable() {
   # Delete it first in case the permissions have gotten ... weird.
   rm -f "${SWAP_ENABLE_FILE}"
   echo "0" > "${SWAP_ENABLE_FILE}"
+}
+
+set_margin() {
+  local margin="$1"
+  if [ "${margin}" -gt 20000 ]; then
+    echo "${JOB}: error: margin=${margin}, must be <= 20000" >&2
+    exit 1
+  fi
+  if [ "${margin}" = "0" ]; then
+    rm -f "${LOWMEM_MARGIN_OVERRIDE_FILE}"
+    margin=$(default_low_memory_margin "$(get_mem_total)")
+  else
+    echo "${margin}" > "${LOWMEM_MARGIN_OVERRIDE_FILE}"
+  fi
+  echo "${margin}" > "${LOWMEM_MARGIN_SYSFS_ENTRY}"
+  logger "changed low-mem margin to ${margin} MiB"
 }
 
 usage() {
@@ -194,7 +211,7 @@ main() {
       usage 1
     fi
     ;;
-  enable)
+  enable|set_margin)
     if [ $# -ne 1 ]; then
       usage 1
     fi
