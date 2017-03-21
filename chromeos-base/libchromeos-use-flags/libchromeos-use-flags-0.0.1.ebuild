@@ -51,6 +51,7 @@ IUSE="
 	touchview
 	veyron_mickey
 	veyron_minnie
+	voice_interaction
 	+X
 "
 
