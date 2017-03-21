@@ -2,7 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-inherit multilib toolchain-funcs eutils
+
+PYTHON_COMPAT=( python2_7 )
+DISTUTILS_OPTIONAL="1"
+inherit multilib toolchain-funcs eutils distutils-r1
 
 if [[ ${PV} == "9999" ]] ; then
 	EGIT_REPO_URI="git://git.kernel.org/pub/scm/utils/dtc/dtc.git"
@@ -17,16 +20,21 @@ HOMEPAGE="https://devicetree.org/ https://git.kernel.org/cgit/utils/dtc/dtc.git/
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="static-libs"
+IUSE="python static-libs"
 
-DEPEND="
+RDEPEND="python? ( ${PYTHON_DEPS} )"
+DEPEND="${RDEPEND}
+	python? (
+		dev-lang/swig
+	)
 	sys-devel/bison
 	sys-devel/flex
 "
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 DOCS="
-	Documentation/dt-object-internal.txt
-	Documentation/dts-format.txt
-	Documentation/manual.txt
+	${S}/Documentation/dt-object-internal.txt
+	${S}/Documentation/dts-format.txt
+	${S}/Documentation/manual.txt
 "
 
 src_prepare() {
@@ -44,10 +52,36 @@ src_prepare() {
 
 	tc-export AR CC
 	export V=1
+
+	if use python ; then
+		cd pylibfdt
+		distutils-r1_src_prepare
+	fi
+}
+
+src_configure() {
+	if use python ; then
+		cd pylibfdt
+		distutils-r1_src_configure
+	fi
+}
+
+src_compile() {
+	emake NO_PYTHON=1
+
+	if use python ; then
+		cd pylibfdt
+		distutils-r1_src_compile
+	fi
 }
 
 src_install() {
-	default
+	NO_PYTHON=1 default
 
 	use static-libs || find "${ED}" -name '*.a' -delete
+
+	if use python ; then
+		cd pylibfdt
+		distutils-r1_src_install
+	fi
 }
