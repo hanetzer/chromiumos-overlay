@@ -60,6 +60,7 @@ src_compile() {
 
 src_install() {
 	dobin util/cbfstool/cbfstool
+	dobin util/cbfstool/fmaptool
 	dobin util/cbfstool/cbfs-compression-tool
 	if use cros_host; then
 		dobin util/archive/archive
