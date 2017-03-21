@@ -1,0 +1,133 @@
+From 756ffc4f52f6863ba8bf3a67129271566ba2000c Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Fri, 17 Mar 2017 16:14:34 -0600
+Subject: [PATCH 5/6] Build pylibfdt as part of the normal build process
+
+If swig and the Python are available, build pylibfdt automatically.
+Adjust the tests to run Python tests too in this case.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+[dwg: Make error message clearer that missing swig or python-dev isn't
+ fatal to the whole build]
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+ Makefile           | 34 ++++++++++++++++++++++++++++++++--
+ tests/run_tests.sh | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 60 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 1b69f53..ed95384 100644
+--- a/Makefile
++++ b/Makefile
+@@ -116,7 +116,21 @@ BIN += fdtput
+ 
+ SCRIPTS = dtdiff
+ 
+-all: $(BIN) libfdt
++# We need both Python and swig to build pylibfdt.
++.PHONY: maybe_pylibfdt
++maybe_pylibfdt: FORCE
++	if pkg-config --cflags python >/dev/null 2>&1; then \
++		if which swig >/dev/null 2>&1; then \
++			can_build=yes; \
++		fi; \
++	fi; \
++	if [ "$$can_build" = "yes" ]; then \
++		$(MAKE) pylibfdt; \
++	else \
++		echo "## Skipping pylibgfdt (install python dev and swig to build)"; \
++	fi
++
++all: $(BIN) libfdt maybe_pylibfdt
+ 
+ 
+ ifneq ($(DEPTARGETS),)
+@@ -203,6 +217,22 @@ dist:
+ 	cat ../dtc-$(dtc_version).tar | \
+ 		gzip -9 > ../dtc-$(dtc_version).tar.gz
+ 
++
++#
++# Rules for pylibfdt
++#
++PYLIBFDT_srcdir = pylibfdt
++PYLIBFDT_objdir = pylibfdt
++
++include $(PYLIBFDT_srcdir)/Makefile.pylibfdt
++
++.PHONY: pylibfdt
++pylibfdt: $(PYLIBFDT_objdir)/_libfdt.so
++
++pylibfdt_clean:
++	@$(VECHO) CLEAN "(pylibfdt)"
++	rm -f $(addprefix $(PYLIBFDT_objdir)/,$(PYLIBFDT_cleanfiles))
++
+ #
+ # Release signing and uploading
+ # This is for maintainer convenience, don't try this at home.
+@@ -244,7 +274,7 @@ include tests/Makefile.tests
+ STD_CLEANFILES = *~ *.o *.$(SHAREDLIB_EXT) *.d *.a *.i *.s core a.out vgcore.* \
+ 	*.tab.[ch] *.lex.c *.output
+ 
+-clean: libfdt_clean tests_clean
++clean: libfdt_clean pylibfdt_clean tests_clean
+ 	@$(VECHO) CLEAN
+ 	rm -f $(STD_CLEANFILES)
+ 	rm -f $(VERSION_FILE)
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index 0f5c3db..2a1ba44 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -771,6 +771,26 @@ fdtdump_tests () {
+     run_fdtdump_test fdtdump.dts
+ }
+ 
++pylibfdt_tests () {
++    TMP=/tmp/tests.stderr.$$
++    python pylibfdt_tests.py -v 2> $TMP
++
++    # Use the 'ok' message meaning the test passed, 'ERROR' meaning it failed
++    # and the summary line for total tests (e.g. 'Ran 17 tests in 0.002s').
++    # We could add pass + fail to get total tests, but this provides a useful
++    # sanity check.
++    pass_count=$(grep "\.\.\. ok$" $TMP | wc -l)
++    fail_count=$(grep "^ERROR: " $TMP | wc -l)
++    total_tests=$(sed -n 's/^Ran \([0-9]*\) tests.*$/\1/p' $TMP)
++    cat $TMP
++    rm $TMP
++
++    # Extract the test results and add them to our totals
++    tot_fail=$((tot_fail + $fail_count))
++    tot_pass=$((tot_pass + $pass_count))
++    tot_tests=$((tot_tests + $total_tests))
++}
++
+ while getopts "vt:me" ARG ; do
+     case $ARG in
+ 	"v")
+@@ -790,6 +810,11 @@ done
+ 
+ if [ -z "$TESTSETS" ]; then
+     TESTSETS="libfdt utilfdt dtc dtbs_equal fdtget fdtput fdtdump"
++
++    # Test pylibfdt if the libfdt Python module is available.
++    if [ -f ../pylibfdt/_libfdt.so ]; then
++        TESTSETS="$TESTSETS pylibfdt"
++    fi
+ fi
+ 
+ # Make sure we don't have stale blobs lying around
+@@ -818,6 +843,9 @@ for set in $TESTSETS; do
+ 	"fdtdump")
+ 	    fdtdump_tests
+ 	    ;;
++	"pylibfdt")
++	    pylibfdt_tests
++	    ;;
+     esac
+ done
+ 
+-- 
+2.12.1.500.gab5fba24ee-goog
+

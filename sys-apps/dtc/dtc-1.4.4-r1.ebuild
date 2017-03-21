@@ -31,6 +31,9 @@ DOCS="
 "
 
 src_prepare() {
+        for fname in "${FILESDIR}"/*.patch; do
+                epatch "${fname}"
+        done
 	default
 
 	sed -i \
