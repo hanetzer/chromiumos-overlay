@@ -79,4 +79,4 @@ media-fonts/encodings-1.0.3
 app-misc/editor-wrapper-4
 
 # A build tool only; not needed on the target board.
-dev-util/boost-build-1.55.0
+dev-util/boost-build-1.62.0

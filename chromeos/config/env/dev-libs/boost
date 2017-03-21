@@ -2,12 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Boost versions earlier than 1.60 don't support Clang (see bug https://svn.boost.org/trac/boost/ticket/9610)
-cros_pre_src_prepare_use_gcc() {
-	cros_use_gcc
-	filter_clang_syntax
-}
-
 cros_pre_src_prepare_enable_cxx_exceptions() {
 	cros_enable_cxx_exceptions
 }
