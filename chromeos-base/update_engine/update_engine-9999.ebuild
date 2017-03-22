@@ -20,7 +20,7 @@ SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management systemd"
+IUSE="cros_p2p +dbus -delta_generator -hwid_override mtd +power_management systemd"
 
 COMMON_DEPEND="
 	app-arch/bzip2
