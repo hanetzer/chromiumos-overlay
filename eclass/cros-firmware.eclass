@@ -247,67 +247,72 @@ cros-firmware_src_compile() {
 	local image_cmd=() ext_cmd=() local_image_cmd=()
 	local root="${ROOT%/}"
 
-	# Prepare images
-	_add_param image_cmd -b "${FW_IMAGE_LOCATION}"
-	_add_param image_cmd -e "${EC_IMAGE_LOCATION}"
-	_add_param image_cmd -p "${PD_IMAGE_LOCATION}"
-	_add_param image_cmd -w "${FW_RW_IMAGE_LOCATION}"
-	_add_param image_cmd --ec_version "${CROS_FIRMWARE_EC_VERSION}"
-	_add_bool_param image_cmd --create_bios_rw_image \
-		"${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}"
+	if ! use unibuild; then
+		# Prepare images
+		_add_param image_cmd -b "${FW_IMAGE_LOCATION}"
+		_add_param image_cmd -e "${EC_IMAGE_LOCATION}"
+		_add_param image_cmd -p "${PD_IMAGE_LOCATION}"
+		_add_param image_cmd -w "${FW_RW_IMAGE_LOCATION}"
+		_add_param image_cmd --ec_version "${CROS_FIRMWARE_EC_VERSION}"
+		_add_bool_param image_cmd --create_bios_rw_image \
+			"${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}"
 
-	# Prepare extra commands
-	_add_param ext_cmd --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")"
-	_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
-	_add_param ext_cmd --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}"
-	_add_param ext_cmd --tool_base \
-		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
-	_add_param ext_cmd --stable_main_version \
-		"${CROS_FIRMWARE_STABLE_MAIN_VERSION}"
-	_add_param ext_cmd --stable_ec_version \
-		"${CROS_FIRMWARE_STABLE_EC_VERSION}"
-	_add_param ext_cmd --stable_pd_version \
-		"${CROS_FIRMWARE_STABLE_PD_VERSION}"
+		# Prepare extra commands
+		_add_param ext_cmd --extra \
+			"$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")"
+		_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
+		_add_param ext_cmd --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}"
+		_add_param ext_cmd --tool_base \
+			"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
+		_add_param ext_cmd --stable_main_version \
+			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}"
+		_add_param ext_cmd --stable_ec_version \
+			"${CROS_FIRMWARE_STABLE_EC_VERSION}"
+		_add_param ext_cmd --stable_pd_version \
+			"${CROS_FIRMWARE_STABLE_PD_VERSION}"
 
-	# Pack firmware update script!
-	if [ ${#image_cmd[@]} -ne 0 ]; then
-		# create a new script
-		einfo "Build ${BOARD_USE} firmware updater: ${image_cmd[*]} ${ext_cmd[*]}"
-		./pack_firmware.sh "${image_cmd[@]}" "${ext_cmd[@]}" -o $UPDATE_SCRIPT ||
-			die "Cannot pack firmware."
-		# TODO(sjg@chromium.org): Remove the above when validated.
-		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
-			-o "${UPDATE_SCRIPT}.PY" ||
-			die "Cannot pack firmware using Python script."
-		diff "${UPDATE_SCRIPT}" "${UPDATE_SCRIPT}.PY" ||
-			die "Python script produced a different result"
-	fi
-
-	# Create local updaters
-	local output_file
-	local_image_cmd+=( -b "${root}/firmware/image.bin" )
-	if use cros_ec; then
-		local_image_cmd+=( -e "${root}/firmware/ec.bin" )
-		if [ -e "$root/firmware/pd.bin" ]; then
-			local_image_cmd+=( -p "${root}/firmware/pd.bin" )
+		# Pack firmware update script!
+		if [ ${#image_cmd[@]} -ne 0 ]; then
+			einfo "Build ${BOARD_USE} firmware updater:" \
+				"${image_cmd[*]} ${ext_cmd[*]}"
+			./pack_firmware.sh "${image_cmd[@]}" "${ext_cmd[@]}" \
+				-o "${UPDATE_SCRIPT}" ||
+				die "Cannot pack firmware."
+			# TODO(sjg): Remove the above when validated.
+			./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
+				-o "${UPDATE_SCRIPT}.PY" ||
+				die "Cannot pack firmware using Python script."
+			diff "${UPDATE_SCRIPT}" "${UPDATE_SCRIPT}.PY" ||
+				die "Python script produced a different result"
 		fi
-	fi
-	if use bootimage; then
-		einfo "Updater for local fw"
-		output_file="updater.sh"
-		./pack_firmware.sh -o "${output_file}" \
-			"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
-			die "Cannot pack local firmware."
-		# TODO(sjg@chromium.org): Remove the above when validated.
-		./pack_firmware.py -o "${output_file}.PY" \
-			"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
-			die "Cannot pack local firmware using Python script."
-		diff "${output_file}" "${output_file}.PY" ||
-			die "Python script produced a different result"
-		if [[ ${#image_cmd[@]} -eq 0 ]]; then
-			# When no pre-built binaries are available,
-			# dupe local updater to system updater.
-			cp -f "$output_file" "$UPDATE_SCRIPT"
+
+		# Create local updaters
+		if use bootimage; then
+			local_image_cmd=(-b "${root}/firmware/image.bin")
+			if use cros_ec; then
+				local_image_cmd+=(-e "${root}/firmware/ec.bin")
+				if [ -e "$root/firmware/pd.bin" ]; then
+					local_image_cmd+=(-p
+						"${root}/firmware/pd.bin")
+				fi
+			fi
+
+			einfo "Updater for local fw"
+			output_file="updater.sh"
+			./pack_firmware.sh -o "${output_file}" \
+				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
+				die "Cannot pack local firmware."
+			# TODO(sjg): Remove the above when validated.
+			./pack_firmware.py -o "${output_file}.PY" \
+				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
+				die "Cannot pack local firmware (Python)."
+			diff "${output_file}" "${output_file}.PY" ||
+				die "Python script produced a different result"
+			if [[ ${#image_cmd[@]} -eq 0 ]]; then
+				# When no pre-built binaries are available,
+				# dupe local updater to system updater.
+				cp -f "${output_file}" "${UPDATE_SCRIPT}"
+			fi
 		fi
 	fi
 
