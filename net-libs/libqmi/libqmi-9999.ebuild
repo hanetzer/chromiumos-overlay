@@ -15,7 +15,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang doc mbim static-libs"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=">=dev-libs/glib-2.32
+RDEPEND=">=dev-libs/glib-2.36
 	mbim? ( >=net-libs/libmbim-1.14.0 )"
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )
