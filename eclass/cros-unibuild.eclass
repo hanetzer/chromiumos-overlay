@@ -66,4 +66,26 @@ install_private_model_file() {
 	)
 }
 
+# @FUNCTION: get_model_conf_value
+# @USAGE: <model> <path> <prop>
+# @DESCRIPTION:
+# Obtain a configuration value for a given model.
+# @RETURN: value of the property, or empty if not found, in which
+# case the return code indicates failure.
+# @CODE
+# model name of model to lookup.
+# @CODE
+# path path to config string, e.g. "/".
+# @CODE
+# @prop name of property to read (e.g. "wallpaper").
+get_model_conf_value() {
+	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
+
+	local model="$1"
+	local path="$2"
+	local prop="$3"
+	fdtget "${ROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null
+}
+
 fi
