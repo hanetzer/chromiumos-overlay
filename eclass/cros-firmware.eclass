@@ -5,7 +5,12 @@
 # Purpose: Generate shell script containing firmware update bundle.
 #
 
-inherit cros-workon
+# Skip unibuild if we don't have a board set.
+if [[ ${#CROS_BOARDS[@]} -eq 0 ]]; then
+	CROS_BOARDS=( "none" )
+fi
+
+inherit cros-workon cros-unibuild
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY
 # @DESCRIPTION: (Optional) Name of board overlay on Binary Component Server
@@ -79,8 +84,14 @@ DEPEND="
 	dev-util/shflags
 	>=sys-apps/flashrom-0.9.4-r269
 	sys-apps/mosys
-	unibuild? ( chromeos-base/chromeos-config )
 	"
+
+# For unibuild we need EAPI 5 for the sub-slot dependency feature.
+case "${EAPI:-0}" in
+5|6)
+	DEPEND+=" unibuild? ( chromeos-base/chromeos-config-bsp:= )"
+	;;
+esac
 
 # Build firmware from source.
 DEPEND="$DEPEND
@@ -190,7 +201,20 @@ _unpack_archive() {
 	eval ${var}="'${folder}/${contents}'"
 }
 
+cros-firmware_get_config() {
+	local leaf="$1"
+
+	echo "$(get_model_conf_value_noroot "${model}" /firmware "${leaf}")"
+}
+
 cros-firmware_src_unpack() {
+	case "${EAPI:-0}" in
+	1|2|3|4)
+		use unibuild &&
+			die "Update your EAPI version to 5 to use unibuild"
+		;;
+	esac
+
 	cros-workon_src_unpack
 	local i
 
@@ -389,13 +413,44 @@ _expand_list() {
 	IFS="${ifs}" read -r -a ${var} <<<"${*:3}"
 }
 
+# Add any files mentioned in the master configuration to SRC_URI so that they
+# will be downloaded if unibuild is enabled.
+cros-firmware_setup_source_unibuild() {
+	local extra_list image model overlay path uri uris
+
+	for model in ${FIRMWARE_UNIBUILD}; do
+		overlay="$(cros-firmware_get_config bcs-overlay)"
+		overlay="${overlay#overlay-}"
+		for image in main-image main-rw-image ec-image pd-image; do
+			uri="$(cros-firmware_get_config ${image})"
+			if [[ -n "${uri}" ]]; then
+				uris+=" $(_add_uri "${uri}" "${overlay}" \
+					"chromeos-firmware-${model}")"
+			fi
+		done
+		for path in $(cros-firmware_get_config extra); do
+			uris+=" $(_add_uri "${path}" "${overlay}" \
+				"chromeos-firmware-${model}")"
+		done
+	done
+	if [[ -n "${uris// }" ]]; then
+		SRC_URI+="unibuild? ( ${uris} )"
+	fi
+}
+
 # @FUNCTION: cros-firmware_setup_source
 # @DESCRIPTION:
 # Configures all firmware binary source files to SRC_URI, and updates local
 # destination mapping (*_LOCATION). Must be invoked after CROS_FIRMWARE_*_IMAGE
-# are set.
+# are set. This also reads the master configuration if available and adds files
+# from there for unified builds. The result is something like:
+#
+# SRC_URI="!unibuild? ( file1 file2 ) unibuild? ( file3 file3 )"
+#
+# With this we will end up downloading either the unibuild files or the
+# !unibuild files, depending on the 'unibuild' USE flag.
 cros-firmware_setup_source() {
-	local i
+	local i uris
 
 	FW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_IMAGE}"
 	FW_RW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_RW_IMAGE}"
@@ -403,13 +458,20 @@ cros-firmware_setup_source() {
 	PD_IMAGE_LOCATION="${CROS_FIRMWARE_PD_IMAGE}"
 	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
 
+	# Add these files for use if unibuild is not set.
 	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
-		SRC_URI+=" $(_add_source ${i})"
+		uris+=" $(_add_source ${i})"
 	done
 
 	for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
-		SRC_URI+=" $(_add_source "EXTRA_LOCATIONS[$i]")"
+		uris+=" $(_add_source "EXTRA_LOCATIONS[$i]")"
 	done
+	if [[ -n "${uris// }" ]]; then
+		SRC_URI+="!unibuild? ( ${uris} ) "
+	fi
+
+	# Now add files for use if USE=unibuild is enabled.
+	cros-firmware_setup_source_unibuild
 }
 
 # If "inherit cros-firmware" appears at end of ebuild file, build source URI
