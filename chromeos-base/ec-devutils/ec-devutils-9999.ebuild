@@ -16,7 +16,10 @@ SLOT="0"
 KEYWORDS="~*"
 ISUE=""
 
-RDEPEND="sys-apps/flashrom"
+RDEPEND="
+	app-mobilephone/dfu-util
+	sys-apps/flashrom
+	"
 DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
 
 set_board() {
