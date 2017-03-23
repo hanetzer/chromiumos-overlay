@@ -71,7 +71,7 @@ esac
 
 # $board-overlay/make.conf may contain these flags to always create "firmware
 # from source".
-IUSE="bootimage cros_ec"
+IUSE="bootimage cros_ec unibuild"
 
 # Some tools (flashrom, iotools, mosys, ...) were bundled in the updater so we
 # don't write RDEPEND=$DEPEND. RDEPEND should have an explicit list of what it
@@ -82,6 +82,7 @@ DEPEND="
 	dev-util/shflags
 	>=sys-apps/flashrom-0.9.4-r269
 	sys-apps/mosys
+	unibuild? ( chromeos-base/chromeos-config )
 	"
 
 # Build firmware from source.
@@ -195,13 +196,15 @@ cros-firmware_src_unpack() {
 	cros-workon_src_unpack
 	local i
 
-	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
-		_unpack_archive ${i}
-	done
+	if ! use unibuild; then
+		for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
+			_unpack_archive ${i}
+		done
 
-	for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
-		_unpack_archive "EXTRA_LOCATIONS[$i]"
-	done
+		for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
+			_unpack_archive "EXTRA_LOCATIONS[$i]"
+		done
+	fi
 }
 
 # Add members to an array.
