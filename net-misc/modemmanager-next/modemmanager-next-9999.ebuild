@@ -25,7 +25,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang doc gobi mbim systemd qmi"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=">=dev-libs/glib-2.32
+RDEPEND=">=dev-libs/glib-2.36
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	net-dialup/ppp
