@@ -36,6 +36,7 @@ pkg_setup() {
 
 src_install() {
 	cd "${OUT}"
+	dobin mount_extension_image
 
 	if use device_jail; then
 		dobin device_jail_fs
