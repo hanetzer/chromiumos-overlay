@@ -118,26 +118,43 @@ EC_IMAGE_LOCATION=""
 PD_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
-# New SRC_URI based approach.
-
-_add_source() {
-	local var="$1"
-	local input="${!var}"
+# Add a URL to SRC_URI.
+# This adds the given file to the list of files to retreive in SRC_URI.
+# Portage will then take care of downloading these files before the src_unpack
+# phase starts.
+# Args
+#   $1: Input file to read, with prefix (e.g. "bcs://Reef.9042.72.0.tbz2")
+#   $2: Overlay name (e.g. "reef-private")
+#   $3: Board directory containing file (e.g. "chromeos-firmware-reef")
+_add_uri() {
+	local input="$1"
+	local overlay="$2"
+	local board="$3"
 	local protocol="${input%%://*}"
 	local uri="${input#*://}"
-	local overlay="${CROS_FIRMWARE_BCS_OVERLAY#overlay-}"
 	local user="bcs-${overlay#variant-*-}"
 	local bcs_url="gs://chromeos-binaries/HOME/${user}/overlay-${overlay}"
 
 	# Input without ${protocol} are local files (ex, ${FILESDIR}/file).
 	case "${protocol}" in
 		bcs)
-			SRC_URI+=" ${bcs_url}/${CATEGORY}/${PN}/${uri}"
+			SRC_URI+=" ${bcs_url}/${CATEGORY}/${board}/${uri}"
 			;;
 		http|https|gs)
 			SRC_URI+=" ${input}"
 			;;
 	esac
+}
+
+# Add a URL to SRC_URI for the given firmware variable.
+# This calls _add_uri() after setting up the required parameters.
+#  $1: Variable containing the required filename (e.g. "FW_IMAGE_LOCATION")
+_add_source() {
+	local var="$1"
+	local overlay="${CROS_FIRMWARE_BCS_OVERLAY#overlay-}"
+	local input="${!var}"
+
+	_add_uri "${input}" "${overlay}" "${PN}"
 }
 
 _unpack_archive() {
