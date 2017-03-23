@@ -42,6 +42,7 @@ IUSE="
 	+clang
 	component_build
 	cups
+	+debug_fission
 	evdev_gestures
 	+fonts
 	+gold
@@ -424,9 +425,11 @@ set_build_args() {
 	fi
 
 	if use chrome_debug; then
-		if use x86 || use arm; then
+		if use debug_fission; then
 			# Use debug fission to avoid 4GB limit of ELF32 (see crbug.com/595763).
 			# Using -g1 causes problems with crash server (see crbug.com/601854).
+			# Set use_debug_fission=true to prevent slow link (see crbug.com/703468).
+			# Disable debug_fission for bots which generate Afdo profile. (see crbug.com/704602).
 			BUILD_ARGS+=( use_debug_fission=true )
 		fi
 		BUILD_ARGS+=( symbol_level=2 )
