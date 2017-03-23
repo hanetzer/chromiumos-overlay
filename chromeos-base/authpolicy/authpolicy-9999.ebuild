@@ -24,7 +24,7 @@ RDEPEND="
 	app-crypt/mit-krb5
 	chromeos-base/libbrillo
 	chromeos-base/metrics
-	>=chromeos-base/chromeos-minijail-0.0.1-r1445
+	>=chromeos-base/chromeos-minijail-0.0.1-r1477
 	dev-libs/protobuf
 	dev-libs/dbus-glib
 	samba? ( >=net-fs/samba-4.5.3-r4 )
