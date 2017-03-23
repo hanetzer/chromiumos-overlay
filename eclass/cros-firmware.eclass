@@ -244,9 +244,14 @@ _add_bool_param() {
 }
 
 cros-firmware_src_compile() {
-	local image_cmd=() ext_cmd=() local_image_cmd=()
+	local image_cmd=() ext_cmd=()
 	local root="${ROOT%/}"
+	local output_file="updater.sh"
 
+	# Prepare extra commands
+	_add_param ext_cmd --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}"
+	_add_param ext_cmd --tool_base \
+		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
 	if ! use unibuild; then
 		# Prepare images
 		_add_param image_cmd -b "${FW_IMAGE_LOCATION}"
@@ -261,9 +266,6 @@ cros-firmware_src_compile() {
 		_add_param ext_cmd --extra \
 			"$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")"
 		_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
-		_add_param ext_cmd --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}"
-		_add_param ext_cmd --tool_base \
-			"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
 		_add_param ext_cmd --stable_main_version \
 			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}"
 		_add_param ext_cmd --stable_ec_version \
@@ -288,7 +290,7 @@ cros-firmware_src_compile() {
 
 		# Create local updaters
 		if use bootimage; then
-			local_image_cmd=(-b "${root}/firmware/image.bin")
+			local local_image_cmd=(-b "${root}/firmware/image.bin")
 			if use cros_ec; then
 				local_image_cmd+=(-e "${root}/firmware/ec.bin")
 				if [ -e "$root/firmware/pd.bin" ]; then
@@ -298,7 +300,6 @@ cros-firmware_src_compile() {
 			fi
 
 			einfo "Updater for local fw"
-			output_file="updater.sh"
 			./pack_firmware.sh -o "${output_file}" \
 				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
 				die "Cannot pack local firmware."
