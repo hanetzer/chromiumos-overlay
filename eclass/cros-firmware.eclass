@@ -270,6 +270,7 @@ cros-firmware_src_compile() {
 
 	# Create local updaters
 	local output_file
+	local_image_cmd+=( -b "${root}/firmware/image.bin" )
 	if use cros_ec; then
 		local_image_cmd+=( -e "${root}/firmware/ec.bin" )
 		if [ -e "$root/firmware/pd.bin" ]; then
@@ -279,12 +280,12 @@ cros-firmware_src_compile() {
 	if use bootimage; then
 		einfo "Updater for local fw"
 		output_file="updater.sh"
-		./pack_firmware.sh -b $root/firmware/image.bin \
-			-o $output_file "${image_cmd[@]}" "${ext_cmd[@]}" ||
+		./pack_firmware.sh -o "${output_file}" \
+			"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
 			die "Cannot pack local firmware."
 		# TODO(sjg@chromium.org): Remove the above when validated.
-		./pack_firmware.py -b "${root}/firmware/image.bin" \
-			-o "${output_file}.PY" "${image_cmd[@]}" "${ext_cmd[@]}" ||
+		./pack_firmware.py -o "${output_file}.PY" \
+			"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
 			die "Cannot pack local firmware using Python script."
 		diff "${output_file}" "${output_file}.PY" ||
 			die "Python script produced a different result"
