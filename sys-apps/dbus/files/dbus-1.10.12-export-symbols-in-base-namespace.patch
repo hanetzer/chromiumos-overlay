@@ -1,0 +1,180 @@
+commit adad50d3cece2090ee06f97c98c884669b2aa1d8
+Author: Daniel Wang <wonderfly@google.com>
+Date:   Sun Apr 16 11:46:47 2017 -0700
+
+    Expose symbols used by chrome in the Base namespace
+    
+    Symbols used by chrome are obtained from
+    `readelf -sW /build/$BOARD/opt/google/chrome/chrome | grep -i @Base`
+
+diff --git a/dbus/Version.in b/dbus/Version.in
+index f6cc3676..412ecb80 100644
+--- a/dbus/Version.in
++++ b/dbus/Version.in
+@@ -8,3 +8,4 @@ LIBDBUS_PRIVATE_@DBUS_VERSION@ {
+   global:
+     _dbus_*;
+ };
++Base {};
+diff --git a/dbus/dbus-bus.c b/dbus/dbus-bus.c
+index 0fd48311..0c006e3d 100644
+--- a/dbus/dbus-bus.c
++++ b/dbus/dbus-bus.c
+@@ -1600,3 +1600,11 @@ dbus_bus_remove_match (DBusConnection *connection,
+ }
+ 
+ /** @} */
++__asm__(".symver dbus_bus_add_match,dbus_bus_add_match@Base");
++__asm__(".symver dbus_bus_get,dbus_bus_get@Base");
++__asm__(".symver dbus_bus_get_private,dbus_bus_get_private@Base");
++__asm__(".symver dbus_bus_get_unique_name,dbus_bus_get_unique_name@Base");
++__asm__(".symver dbus_bus_register,dbus_bus_register@Base");
++__asm__(".symver dbus_bus_release_name,dbus_bus_release_name@Base");
++__asm__(".symver dbus_bus_remove_match,dbus_bus_remove_match@Base");
++__asm__(".symver dbus_bus_request_name,dbus_bus_request_name@Base");
+diff --git a/dbus/dbus-connection.c b/dbus/dbus-connection.c
+index 81b3a838..cc975b38 100644
+--- a/dbus/dbus-connection.c
++++ b/dbus/dbus-connection.c
+@@ -6377,3 +6377,20 @@ _dbus_connection_get_address (DBusConnection *connection)
+ #endif
+ 
+ /** @} */
++__asm__(".symver dbus_connection_add_filter,dbus_connection_add_filter@Base");
++__asm__(".symver dbus_connection_close,dbus_connection_close@Base");
++__asm__(".symver dbus_connection_dispatch,dbus_connection_dispatch@Base");
++__asm__(".symver dbus_connection_get_dispatch_status,dbus_connection_get_dispatch_status@Base");
++__asm__(".symver dbus_connection_open,dbus_connection_open@Base");
++__asm__(".symver dbus_connection_open_private,dbus_connection_open_private@Base");
++__asm__(".symver dbus_connection_remove_filter,dbus_connection_remove_filter@Base");
++__asm__(".symver dbus_connection_send,dbus_connection_send@Base");
++__asm__(".symver dbus_connection_send_with_reply,dbus_connection_send_with_reply@Base");
++__asm__(".symver dbus_connection_send_with_reply_and_block,dbus_connection_send_with_reply_and_block@Base");
++__asm__(".symver dbus_connection_set_dispatch_status_function,dbus_connection_set_dispatch_status_function@Base");
++__asm__(".symver dbus_connection_set_exit_on_disconnect,dbus_connection_set_exit_on_disconnect@Base");
++__asm__(".symver dbus_connection_set_timeout_functions,dbus_connection_set_timeout_functions@Base");
++__asm__(".symver dbus_connection_set_watch_functions,dbus_connection_set_watch_functions@Base");
++__asm__(".symver dbus_connection_try_register_object_path,dbus_connection_try_register_object_path@Base");
++__asm__(".symver dbus_connection_unref,dbus_connection_unref@Base");
++__asm__(".symver dbus_connection_unregister_object_path,dbus_connection_unregister_object_path@Base");
+diff --git a/dbus/dbus-errors.c b/dbus/dbus-errors.c
+index 5a305ca0..735895ec 100644
+--- a/dbus/dbus-errors.c
++++ b/dbus/dbus-errors.c
+@@ -433,3 +433,6 @@ _dbus_set_error_valist (DBusError  *error,
+ }
+ 
+ /** @} */ /* End public API */
++__asm__(".symver dbus_error_free,dbus_error_free@Base");
++__asm__(".symver dbus_error_init,dbus_error_init@Base");
++__asm__(".symver dbus_error_is_set,dbus_error_is_set@Base");
+diff --git a/dbus/dbus-memory.c b/dbus/dbus-memory.c
+index 67d5cb05..e57a6d85 100644
+--- a/dbus/dbus-memory.c
++++ b/dbus/dbus-memory.c
+@@ -957,3 +957,4 @@ _dbus_memory_test (void)
+ }
+ 
+ #endif
++__asm__(".symver dbus_free,dbus_free@Base");
+diff --git a/dbus/dbus-message.c b/dbus/dbus-message.c
+index e0d9c8bd..3067d917 100644
+--- a/dbus/dbus-message.c
++++ b/dbus/dbus-message.c
+@@ -5007,3 +5007,39 @@ dbus_message_get_allow_interactive_authorization (DBusMessage *message)
+ /** @} */
+ 
+ /* tests in dbus-message-util.c */
++__asm__(".symver dbus_message_is_signal,dbus_message_is_signal@Base");
++__asm__(".symver dbus_message_ref,dbus_message_ref@Base");
++__asm__(".symver dbus_message_unref,dbus_message_unref@Base");
++__asm__(".symver dbus_message_get_destination,dbus_message_get_destination@Base");
++__asm__(".symver dbus_message_get_error_name,dbus_message_get_error_name@Base");
++__asm__(".symver dbus_message_get_interface,dbus_message_get_interface@Base");
++__asm__(".symver dbus_message_get_member,dbus_message_get_member@Base");
++__asm__(".symver dbus_message_get_path,dbus_message_get_path@Base");
++__asm__(".symver dbus_message_get_reply_serial,dbus_message_get_reply_serial@Base");
++__asm__(".symver dbus_message_get_sender,dbus_message_get_sender@Base");
++__asm__(".symver dbus_message_get_serial,dbus_message_get_serial@Base");
++__asm__(".symver dbus_message_get_signature,dbus_message_get_signature@Base");
++__asm__(".symver dbus_message_get_type,dbus_message_get_type@Base");
++__asm__(".symver dbus_message_iter_append_basic,dbus_message_iter_append_basic@Base");
++__asm__(".symver dbus_message_iter_append_fixed_array,dbus_message_iter_append_fixed_array@Base");
++__asm__(".symver dbus_message_iter_close_container,dbus_message_iter_close_container@Base");
++__asm__(".symver dbus_message_iter_get_arg_type,dbus_message_iter_get_arg_type@Base");
++__asm__(".symver dbus_message_iter_get_basic,dbus_message_iter_get_basic@Base");
++__asm__(".symver dbus_message_iter_get_fixed_array,dbus_message_iter_get_fixed_array@Base");
++__asm__(".symver dbus_message_iter_get_signature,dbus_message_iter_get_signature@Base");
++__asm__(".symver dbus_message_iter_init,dbus_message_iter_init@Base");
++__asm__(".symver dbus_message_iter_init_append,dbus_message_iter_init_append@Base");
++__asm__(".symver dbus_message_iter_next,dbus_message_iter_next@Base");
++__asm__(".symver dbus_message_iter_open_container,dbus_message_iter_open_container@Base");
++__asm__(".symver dbus_message_iter_recurse,dbus_message_iter_recurse@Base");
++__asm__(".symver dbus_message_new,dbus_message_new@Base");
++__asm__(".symver dbus_message_new_error,dbus_message_new_error@Base");
++__asm__(".symver dbus_message_new_method_return,dbus_message_new_method_return@Base");
++__asm__(".symver dbus_message_set_destination,dbus_message_set_destination@Base");
++__asm__(".symver dbus_message_set_error_name,dbus_message_set_error_name@Base");
++__asm__(".symver dbus_message_set_interface,dbus_message_set_interface@Base");
++__asm__(".symver dbus_message_set_member,dbus_message_set_member@Base");
++__asm__(".symver dbus_message_set_path,dbus_message_set_path@Base");
++__asm__(".symver dbus_message_set_reply_serial,dbus_message_set_reply_serial@Base");
++__asm__(".symver dbus_message_set_sender,dbus_message_set_sender@Base");
++__asm__(".symver dbus_message_set_serial,dbus_message_set_serial@Base");
+diff --git a/dbus/dbus-misc.c b/dbus/dbus-misc.c
+index a2da562a..69aa8dc3 100644
+--- a/dbus/dbus-misc.c
++++ b/dbus/dbus-misc.c
+@@ -250,3 +250,4 @@ _dbus_misc_test (void)
+ #endif /* !DOXYGEN_SHOULD_SKIP_THIS */
+ 
+ #endif
++__asm__(".symver dbus_get_version,dbus_get_version@Base");
+diff --git a/dbus/dbus-pending-call.c b/dbus/dbus-pending-call.c
+index be534105..0d40a7a4 100644
+--- a/dbus/dbus-pending-call.c
++++ b/dbus/dbus-pending-call.c
+@@ -841,3 +841,7 @@ dbus_pending_call_get_data (DBusPendingCall   *pending,
+ }
+ 
+ /** @} */
++__asm__(".symver dbus_pending_call_cancel,dbus_pending_call_cancel@Base");
++__asm__(".symver dbus_pending_call_set_notify,dbus_pending_call_set_notify@Base");
++__asm__(".symver dbus_pending_call_steal_reply,dbus_pending_call_steal_reply@Base");
++__asm__(".symver dbus_pending_call_unref,dbus_pending_call_unref@Base");
+diff --git a/dbus/dbus-threads.c b/dbus/dbus-threads.c
+index 12d40493..652de171 100644
+--- a/dbus/dbus-threads.c
++++ b/dbus/dbus-threads.c
+@@ -452,3 +452,4 @@ _dbus_threads_init_debug (void)
+ }
+ 
+ #endif /* DBUS_ENABLE_EMBEDDED_TESTS */
++__asm__(".symver dbus_threads_init_default,dbus_threads_init_default@Base");
+diff --git a/dbus/dbus-timeout.c b/dbus/dbus-timeout.c
+index a1d6ce59..a5ef8706 100644
+--- a/dbus/dbus-timeout.c
++++ b/dbus/dbus-timeout.c
+@@ -489,3 +489,8 @@ dbus_timeout_get_enabled (DBusTimeout *timeout)
+ }
+ 
+ /** @} end public API docs */
++__asm__(".symver dbus_timeout_get_data,dbus_timeout_get_data@Base");
++__asm__(".symver dbus_timeout_get_enabled,dbus_timeout_get_enabled@Base");
++__asm__(".symver dbus_timeout_get_interval,dbus_timeout_get_interval@Base");
++__asm__(".symver dbus_timeout_handle,dbus_timeout_handle@Base");
++__asm__(".symver dbus_timeout_set_data,dbus_timeout_set_data@Base");
+diff --git a/dbus/dbus-watch.c b/dbus/dbus-watch.c
+index 093f1937..81b25596 100644
+--- a/dbus/dbus-watch.c
++++ b/dbus/dbus-watch.c
+@@ -761,3 +761,9 @@ dbus_watch_handle (DBusWatch    *watch,
+ 
+ 
+ /** @} */
++__asm__(".symver dbus_watch_get_data,dbus_watch_get_data@Base");
++__asm__(".symver dbus_watch_get_enabled,dbus_watch_get_enabled@Base");
++__asm__(".symver dbus_watch_get_flags,dbus_watch_get_flags@Base");
++__asm__(".symver dbus_watch_get_unix_fd,dbus_watch_get_unix_fd@Base");
++__asm__(".symver dbus_watch_handle,dbus_watch_handle@Base");
++__asm__(".symver dbus_watch_set_data,dbus_watch_set_data@Base");

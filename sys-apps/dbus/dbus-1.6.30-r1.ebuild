@@ -1,1 +1,0 @@
-dbus-1.6.30.ebuild
