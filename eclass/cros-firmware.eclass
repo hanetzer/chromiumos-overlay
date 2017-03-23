@@ -270,12 +270,7 @@ cros-firmware_src_compile() {
 		"${CROS_FIRMWARE_STABLE_PD_VERSION}"
 
 	# Pack firmware update script!
-	if [ ${#image_cmd[@]} -eq 0 ]; then
-		# Create an empty update script for the generic case
-		# (no need to update)
-		einfo "Building empty firmware update script"
-		echo -n > ${UPDATE_SCRIPT}
-	else
+	if [ ${#image_cmd[@]} -ne 0 ]; then
 		# create a new script
 		einfo "Build ${BOARD_USE} firmware updater: ${image_cmd[*]} ${ext_cmd[*]}"
 		./pack_firmware.sh "${image_cmd[@]}" "${ext_cmd[@]}" -o $UPDATE_SCRIPT ||
@@ -314,12 +309,22 @@ cros-firmware_src_compile() {
 			# dupe local updater to system updater.
 			cp -f "$output_file" "$UPDATE_SCRIPT"
 		fi
-	elif use cros_ec; then
+	fi
+
+	if [ ${#image_cmd[@]} -eq 0 ]; then
+		# Create an empty update script for the generic case
+		# (no need to update)
+		einfo "Building empty firmware update script"
+		echo -n > "${UPDATE_SCRIPT}"
+	fi
+
+	if ! use bootimage && use cros_ec; then
 		# TODO(hungte) Deal with a platform that has only EC and no
 		# BIOS, which is usually incorrect configuration.
-		# We only warn here to allow for BCS based firmware to still generate
-		# a proper chromeos-firmwareupdate update script.
-		ewarn "WARNING: platform has no local BIOS, EC only is not supported."
+		# We only warn here to allow for BCS based firmware to still
+		# generate a proper chromeos-firmwareupdate update script.
+		ewarn "WARNING: platform has no local BIOS."
+		ewarn "EC-only is not supported."
 		ewarn "Not generating a locally built firmware update script."
 	fi
 }
