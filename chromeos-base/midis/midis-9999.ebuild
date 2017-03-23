@@ -28,3 +28,7 @@ pkg_preinst() {
 	enewuser midis
 	enewgroup midis
 }
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}"/device_tracker_test
+}
