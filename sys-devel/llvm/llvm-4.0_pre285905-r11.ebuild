@@ -51,8 +51,9 @@ fi
 LICENSE="UoI-NCSA"
 SLOT="0/${PV}"
 KEYWORDS="-* amd64"
-IUSE="clang debug doc gold libedit +libffi lldb multitarget ncurses ocaml
-	python +static-analyzer llvm-next llvm-tot test xml video_cards_radeon kernel_Darwin"
+IUSE="clang debug default-compiler-rt default-libcxx doc gold libedit +libffi
+	lldb multitarget ncurses ocaml python +static-analyzer llvm-next llvm-tot
+	test xml video_cards_radeon kernel_Darwin"
 
 COMMON_DEPEND="
 	sys-libs/zlib:0=
@@ -377,6 +378,9 @@ multilib_src_configure() {
 		-DHAVE_HISTEDIT_H=$(usex libedit)
 		-DENABLE_LINKER_BUILD_ID=ON
 		-DCLANG_VENDOR="Chromium OS ${PVR}"
+		# override default stdlib and rtlib
+		-DCLANG_DEFAULT_CXX_STDLIB=$(usex default-libcxx libc++ "")
+		-DCLANG_DEFAULT_RTLIB=$(usex default-compiler-rt compiler-rt "")
 	)
 
 	if use clang; then
