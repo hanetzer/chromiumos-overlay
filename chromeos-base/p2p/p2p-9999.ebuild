@@ -26,11 +26,7 @@ RDEPEND="chromeos-base/metrics
 	net-dns/avahi-daemon
 	net-firewall/iptables"
 
-DEPEND="test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)
-	${RDEPEND}"
+DEPEND="${RDEPEND}"
 
 platform_pkg_test() {
 	local tests=(

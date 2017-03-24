@@ -15,12 +15,11 @@ SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="test"
 KEYWORDS="~*"
+IUSE=""
 
 RDEPEND="chromeos-base/libbrillo"
-DEPEND="test? ( dev-cpp/gmock dev-cpp/gtest )
-	${RDEPEND}"
+DEPEND="${RDEPEND}"
 
 pkg_preinst() {
 	# Set up the touch_keyboard user and group, which will be used to run

@@ -15,8 +15,8 @@ DESCRIPTION="Disk mounting daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="chromeless_tty +seccomp test"
 KEYWORDS="~*"
+IUSE="chromeless_tty +seccomp"
 
 RDEPEND="
 	app-arch/unrar
@@ -37,7 +37,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
 pkg_preinst() {

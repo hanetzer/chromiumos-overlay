@@ -22,7 +22,7 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE}"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="
 	>=dev-libs/glib-2.30
@@ -31,10 +31,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	chromeos-base/protofiles
-	test? (
-		app-shells/dash
-		dev-cpp/gmock
-	)
+	test? ( app-shells/dash )
 	dev-cpp/gtest
 "
 

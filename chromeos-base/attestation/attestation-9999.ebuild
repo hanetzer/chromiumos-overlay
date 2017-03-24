@@ -37,7 +37,6 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	chromeos-base/vboot_reference
 	"

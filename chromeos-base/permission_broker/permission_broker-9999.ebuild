@@ -29,11 +29,7 @@ RDEPEND="
 	virtual/udev"
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)"
+	chromeos-base/system_api"
 
 src_install() {
 	dobin "${OUT}"/permission_broker

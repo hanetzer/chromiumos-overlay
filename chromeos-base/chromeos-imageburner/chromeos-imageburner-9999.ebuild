@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="
 	dev-libs/dbus-glib
@@ -28,10 +28,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/libbrillo
 	chromeos-base/system_api
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)"
+"
 
 src_install() {
 	dosbin "${OUT}"/image_burner

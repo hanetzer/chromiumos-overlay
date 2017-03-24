@@ -26,10 +26,6 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)
 "
 
 pkg_preinst() {

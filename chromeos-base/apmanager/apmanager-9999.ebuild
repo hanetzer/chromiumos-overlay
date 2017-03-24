@@ -16,9 +16,9 @@ DESCRIPTION="Access Point Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="BSD-Google"
-SLOT=0
-IUSE="test"
+SLOT="0"
 KEYWORDS="~*"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
@@ -32,10 +32,6 @@ DEPEND="
 	${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/shill
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)
 "
 
 src_unpack() {

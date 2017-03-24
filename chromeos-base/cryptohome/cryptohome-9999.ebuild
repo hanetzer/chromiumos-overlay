@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-direncryption systemd test tpm tpm2"
+IUSE="-direncryption systemd tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 

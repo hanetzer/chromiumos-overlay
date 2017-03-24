@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test cheets systemd unibuild"
+IUSE="cheets systemd unibuild"
 
 RDEPEND="chromeos-base/bootstat
 	unibuild? ( chromeos-base/chromeos-config )
@@ -38,7 +38,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
 platform_pkg_test() {

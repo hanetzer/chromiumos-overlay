@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/easy-unlock-crypto
@@ -29,9 +29,6 @@ DEPEND="
 	${RDEPEND}
 	chromeos-base/system_api
 	dev-cpp/gtest
-	test? (
-		dev-cpp/gmock
-	)
 "
 
 pkg_preinst() {

@@ -17,7 +17,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -30,7 +30,6 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
 

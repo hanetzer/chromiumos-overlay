@@ -43,10 +43,6 @@ DEPEND="
 	chromeos-base/protofiles
 	dev-cpp/gtest
 	dev-libs/modp_b64
-	test? (
-		app-shells/dash
-		dev-cpp/gmock
-	)
 "
 
 src_install() {

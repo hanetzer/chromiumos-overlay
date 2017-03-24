@@ -19,7 +19,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test tpm tpm2"
+IUSE="tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 

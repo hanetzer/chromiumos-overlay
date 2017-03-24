@@ -19,7 +19,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd test"
+IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd"
 
 RDEPEND="
 	cellular? (
@@ -33,7 +33,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
 pkg_setup() {

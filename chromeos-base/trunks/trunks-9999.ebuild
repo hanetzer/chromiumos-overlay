@@ -19,7 +19,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cr50_onboard ftdi_tpm test tpm2_simulator"
+IUSE="cr50_onboard ftdi_tpm tpm2_simulator"
 
 COMMON_DEPEND="
 	chromeos-base/chromeos-minijail
@@ -36,7 +36,6 @@ RDEPEND="
 
 DEPEND="
 	${COMMON_DEPEND}
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
 

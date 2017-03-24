@@ -37,10 +37,6 @@ DEPEND="
 	${COMMON_DEPEND}
 	chromeos-base/shill-client
 	chromeos-base/system_api
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)
 "
 
 pkg_preinst() {

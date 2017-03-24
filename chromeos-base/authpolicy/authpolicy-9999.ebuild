@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test +samba"
+IUSE="+samba"
 
 RDEPEND="
 	app-crypt/mit-krb5
@@ -35,7 +35,6 @@ DEPEND="
 	${RDEPEND}
 	>=chromeos-base/protofiles-0.0.2
 	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
 

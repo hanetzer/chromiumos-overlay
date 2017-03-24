@@ -15,8 +15,8 @@ DESCRIPTION="Document Scanning service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="test"
 KEYWORDS="~*"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
@@ -29,7 +29,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
 

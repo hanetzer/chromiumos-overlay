@@ -16,8 +16,8 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="cellular dhcpv6 json_store kernel-3_8 kernel-3_10 pppoe +seccomp systemd test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
 KEYWORDS="~*"
+IUSE="cellular dhcpv6 json_store kernel-3_8 kernel-3_10 pppoe +seccomp systemd +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
 
 # Sorted by the package we depend on. (Not by use flag!)
 RDEPEND="
@@ -51,7 +51,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/shill-client
 	chromeos-base/power_manager-client
 	chromeos-base/system_api
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
 pkg_preinst() {

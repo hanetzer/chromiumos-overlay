@@ -20,7 +20,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="gdmwimax test"
+IUSE="gdmwimax"
 
 RDEPEND="
 	dev-libs/dbus-c++
@@ -36,7 +36,6 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	gdmwimax? ( chromeos-base/system_api )
-	test? (	dev-cpp/gmock )
 	dev-cpp/gtest
 "
 

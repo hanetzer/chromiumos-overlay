@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cheets cros_embedded -cros_host -direncryption systemd test"
+IUSE="cheets cros_embedded -cros_host -direncryption systemd"
 REQUIRED_USE="!cros_host"
 
 RDEPEND="
@@ -39,9 +39,6 @@ DEPEND="
 	chromeos-base/session_manager-client
 	chromeos-base/system_api
 	dev-cpp/gtest
-	test? (
-		dev-cpp/gmock
-	)
 	sys-devel/flex
 "
 

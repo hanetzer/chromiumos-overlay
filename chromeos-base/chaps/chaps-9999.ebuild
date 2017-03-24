@@ -42,9 +42,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
-	test? (
-		dev-cpp/gmock
-	)
 "
 
 src_install() {

@@ -23,15 +23,12 @@ DESCRIPTION="Allow mounting verified utility images"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="chromeos-base/libbrillo
 	dev-libs/openssl"
 
-DEPEND="${RDEPEND}
-	test? (
-		dev-cpp/gtest
-	)"
+DEPEND="${RDEPEND}"
 
 src_unpack() {
 	local s="${S}"

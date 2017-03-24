@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE=""
 
 RDEPEND="chromeos-base/libbrillo
 	dev-libs/expat
@@ -29,9 +29,6 @@ RDEPEND="chromeos-base/libbrillo
 DEPEND="
 	${RDEPEND}
 	dev-cpp/gtest
-	test? (
-		dev-cpp/gmock
-	)
 "
 
 src_install() {

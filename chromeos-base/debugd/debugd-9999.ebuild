@@ -15,8 +15,8 @@ DESCRIPTION="Chrome OS debugging service"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="cellular test wimax"
 KEYWORDS="~*"
+IUSE="cellular wimax"
 
 RDEPEND="
 	chromeos-base/chromeos-login

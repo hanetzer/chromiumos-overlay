@@ -15,8 +15,8 @@ DESCRIPTION="L2TP/IPsec VPN manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="test"
 KEYWORDS="~*"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -26,7 +26,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
 src_install() {
