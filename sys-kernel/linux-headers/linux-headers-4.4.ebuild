@@ -38,6 +38,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0009-BACKPORT-v4l-Add-YUV-4-2-2-and-YUV-4-4-4-tri-planar-.patch"
 	epatch "${FILESDIR}/0010-UPSTREAM-Input-uinput-add-new-UINPUT_DEV_SETUP-and-U.patch"
 	epatch "${FILESDIR}/0011-CHROMIUM-kernel-device_jail.patch"
+	epatch "${FILESDIR}/0012-UPSTREAM-uapi-add-missing-install-of-dma-buf.h.patch"
 }
 
 src_install() {
