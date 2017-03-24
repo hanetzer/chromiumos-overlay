@@ -18,13 +18,15 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-# util-linux is for libuuid.
 RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libchrome
-	sys-apps/util-linux"
+	"
 
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/system_api
+	"
 
 src_install() {
 	dobin "${OUT}"/biod
