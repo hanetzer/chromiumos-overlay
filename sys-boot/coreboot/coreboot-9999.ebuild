@@ -167,7 +167,7 @@ EOF
 		echo "CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP=y" >> "${CONFIG}"
 	fi
 	local version=$(${CHROOT_SOURCE_ROOT}/src/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh |grep "^[[:space:]]*CHROMEOS_VERSION_STRING=" |cut -d= -f2)
-	echo "CONFIG_CHROMEOS_FWID_VERSION=\".${version}\"" >> "${CONFIG}"
+	echo "CONFIG_VBOOT_FWID_VERSION=\".${version}\"" >> "${CONFIG}"
 
 	cp "${CONFIG}" "${CONFIG_SERIAL}"
 	# handle the case when "${CONFIG}" does not have a newline in the end.
