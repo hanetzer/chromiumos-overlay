@@ -1,13 +1,15 @@
 From 12cfb740cc76c9c9fa906fee240dc028da2bddd0 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Fri, 17 Mar 2017 16:14:31 -0600
-Subject: [PATCH 2/6] Add tests for pylibfdt
+Subject: [PATCH v2 02/16] Add tests for pylibfdt
 
 Add a set of tests to cover the functionality in pylibfdt.
 
 Signed-off-by: Simon Glass <sjg@chromium.org>
 Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
 ---
+
+Changes in v2: None
 
  tests/pylibfdt_tests.py | 288 ++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 288 insertions(+)
@@ -308,5 +310,5 @@ index 0000000..ae392bb
 +if __name__ == "__main__":
 +    unittest.main()
 -- 
-2.12.1.500.gab5fba24ee-goog
+2.12.2.564.g063fe858b8-goog
 

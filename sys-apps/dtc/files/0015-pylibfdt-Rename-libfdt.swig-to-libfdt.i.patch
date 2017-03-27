@@ -1,0 +1,39 @@
+From bbf8b078d4d2bf0271d972b2cf4a5d48c23f4a89 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 29 Mar 2017 11:34:48 -0600
+Subject: [PATCH v2 15/16] pylibfdt: Rename libfdt.swig to libfdt.i
+
+The .i extension allows Python distutils to automatically handle the swig
+file. Rename it.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+Changes in v2:
+- Add new patch to rename libfdt.swig to libfdt.i
+
+ pylibfdt/Makefile.pylibfdt         | 2 +-
+ pylibfdt/{libfdt.swig => libfdt.i} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename pylibfdt/{libfdt.swig => libfdt.i} (100%)
+
+diff --git a/pylibfdt/Makefile.pylibfdt b/pylibfdt/Makefile.pylibfdt
+index 0d95c11..06f9296 100644
+--- a/pylibfdt/Makefile.pylibfdt
++++ b/pylibfdt/Makefile.pylibfdt
+@@ -13,7 +13,7 @@ $(PYMODULE): $(PYLIBFDT_srcs) $(WRAP)
+ 	@$(VECHO) PYMOD $@
+ 	$(call run_setup, $^, build_ext --inplace)
+ 
+-$(WRAP): $(PYLIBFDT_srcdir)/libfdt.swig
++$(WRAP): $(PYLIBFDT_srcdir)/libfdt.i
+ 	@$(VECHO) SWIG $@
+ 	$(SWIG) -python -o $@ $<
+ 
+diff --git a/pylibfdt/libfdt.swig b/pylibfdt/libfdt.i
+similarity index 100%
+rename from pylibfdt/libfdt.swig
+rename to pylibfdt/libfdt.i
+-- 
+2.12.2.564.g063fe858b8-goog
+

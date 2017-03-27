@@ -1,0 +1,75 @@
+From 90f90ebe0c91220e473fa44cca5d30cc3cf95330 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sun, 26 Mar 2017 12:50:50 -0600
+Subject: [PATCH v2 13/16] pylibfdt: Use the correct libfdt version in the
+ module
+
+Use the same version number in the module as with the rest of libfdt. This
+can be examined with:
+
+   import pkg_resources
+   print pkg_resources.require('libfdt')[0].version
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+Changes in v2:
+- Add a comment about the VERSION environment variable
+
+ pylibfdt/Makefile.pylibfdt | 3 ++-
+ pylibfdt/setup.py          | 4 +++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/pylibfdt/Makefile.pylibfdt b/pylibfdt/Makefile.pylibfdt
+index a0271da..a74cd30 100644
+--- a/pylibfdt/Makefile.pylibfdt
++++ b/pylibfdt/Makefile.pylibfdt
+@@ -8,6 +8,7 @@ PYMODULE = $(PYLIBFDT_objdir)/_libfdt.so
+ $(PYMODULE): $(PYLIBFDT_srcs) $(WRAP)
+ 	@$(VECHO) PYMOD $@
+ 	SOURCES="$^" CPPFLAGS="$(CPPFLAGS)" OBJDIR="$(PYLIBFDT_objdir)" \
++	VERSION="$(dtc_version)" \
+ 	python $(PYLIBFDT_objdir)/setup.py --quiet build_ext --inplace
+ 
+ $(WRAP): $(PYLIBFDT_srcdir)/libfdt.swig
+@@ -17,7 +18,7 @@ $(WRAP): $(PYLIBFDT_srcdir)/libfdt.swig
+ install_pylibfdt: $(WRAP) $(PYMODULE)
+ 	$(VECHO) INSTALL-PYLIB; \
+ 	SOURCES="$(PYLIBFDT_srcs) $(WRAP)" CPPFLAGS="$(CPPFLAGS)" \
+-	OBJDIR="$(PYLIBFDT_objdir)" \
++	OBJDIR="$(PYLIBFDT_objdir)" VERSION="$(dtc_version)" \
+ 	python $(PYLIBFDT_objdir)/setup.py --quiet install \
+ 		$(if $(SETUP_PREFIX),--prefix=$(SETUP_PREFIX))
+ 
+diff --git a/pylibfdt/setup.py b/pylibfdt/setup.py
+index ef6e2c0..9f87fe9 100644
+--- a/pylibfdt/setup.py
++++ b/pylibfdt/setup.py
+@@ -6,6 +6,7 @@ setup.py file for SWIG libfdt
+ Files to be built into the extension are provided in SOURCES
+ C flags to use are provided in CPPFLAGS
+ Object file directory is provided in OBJDIR
++Version is provided in VERSION
+ """
+ 
+ from distutils.core import setup, Extension
+@@ -16,6 +17,7 @@ progname = sys.argv[0]
+ files = os.environ['SOURCES'].split()
+ cflags = os.environ['CPPFLAGS'].split()
+ objdir = os.environ['OBJDIR']
++version = os.environ['VERSION']
+ 
+ libfdt_module = Extension(
+     '_libfdt',
+@@ -24,7 +26,7 @@ libfdt_module = Extension(
+ )
+ 
+ setup (name = 'libfdt',
+-       version = '0.1',
++       version = version,
+        author      = "Simon Glass <sjg@chromium.org>",
+        description = """Python binding for libfdt""",
+        ext_modules = [libfdt_module],
+-- 
+2.12.2.564.g063fe858b8-goog
+

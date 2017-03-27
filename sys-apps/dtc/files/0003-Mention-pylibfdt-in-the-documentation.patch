@@ -1,7 +1,7 @@
 From b40aa8359affa52bd79afe468c26683d6bb41c68 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Fri, 17 Mar 2017 16:14:32 -0600
-Subject: [PATCH 3/6] Mention pylibfdt in the documentation
+Subject: [PATCH v2 03/16] Mention pylibfdt in the documentation
 
 Add a note about pylibfdt in the README.
 
@@ -9,6 +9,8 @@ Signed-off-by: Simon Glass <sjg@chromium.org>
 Reviewed-by: David Gibson <david@gibson.dropbear.id.au>
 Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
 ---
+
+Changes in v2: None
 
  README | 47 +++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 47 insertions(+)
@@ -72,5 +74,5 @@ index f92008f..96d8486 100644
  ------------
  The following list is for discussion about dtc and libfdt implementation
 -- 
-2.12.1.500.gab5fba24ee-goog
+2.12.2.564.g063fe858b8-goog
 

@@ -1,0 +1,51 @@
+From 793f813862fef1b50e757489b488a90bf348bcf9 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sun, 26 Mar 2017 07:30:12 -0600
+Subject: [PATCH v2 11/16] pylibfdt: Allow building to be disabled
+
+Some build systems want to build python libraries separately from the
+rest of the build.
+
+Add a NO_PYTHON option to enable this.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+Changes in v2: None
+
+ Makefile | 1 +
+ README   | 6 ++++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index e6d8251..5cf4aee 100644
+--- a/Makefile
++++ b/Makefile
+@@ -120,6 +120,7 @@ SCRIPTS = dtdiff
+ # We need both Python and swig to build pylibfdt.
+ .PHONY: maybe_pylibfdt
+ maybe_pylibfdt: FORCE
++	if [ -n "${NO_PYTHON}" ]; then exit; fi; \
+ 	if $(PKG_CONFIG) --cflags python >/dev/null 2>&1; then \
+ 		if which swig >/dev/null 2>&1; then \
+ 			can_build=yes; \
+diff --git a/README b/README
+index 96d8486..d2323fd 100644
+--- a/README
++++ b/README
+@@ -50,6 +50,12 @@ If you add new features, please check code coverage:
+     # Open 'htmlcov/index.html' in your browser
+ 
+ 
++To disable building the python library, even if swig and Python are available,
++use:
++
++    make NO_PYTHON=1
++
++
+ More work remains to support all of libfdt, including access to numeric
+ values.
+ 
+-- 
+2.12.2.564.g063fe858b8-goog
+

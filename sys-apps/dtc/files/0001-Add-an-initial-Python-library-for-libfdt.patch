@@ -1,7 +1,7 @@
 From 50f2507016315e0b9499dd58876ffc1acf91cc5a Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Fri, 17 Mar 2017 16:14:30 -0600
-Subject: [PATCH 1/6] Add an initial Python library for libfdt
+Subject: [PATCH v2 01/16] Add an initial Python library for libfdt
 
 Add Python bindings for a bare-bones set of libfdt functions. These allow
 navigating the tree and reading node names and properties.
@@ -9,6 +9,8 @@ navigating the tree and reading node names and properties.
 Signed-off-by: Simon Glass <sjg@chromium.org>
 Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
 ---
+
+Changes in v2: None
 
  Makefile                   |   1 +
  pylibfdt/.gitignore        |   3 +
@@ -545,5 +547,5 @@ index 0000000..0ff160c
 +       py_modules = ["libfdt"],
 +       )
 -- 
-2.12.1.500.gab5fba24ee-goog
+2.12.2.564.g063fe858b8-goog
 

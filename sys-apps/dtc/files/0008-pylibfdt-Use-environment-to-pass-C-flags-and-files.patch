@@ -1,0 +1,77 @@
+From 89a5062ab23163a7cc4f6ec3d693e6b6883ac0a1 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sun, 26 Mar 2017 13:06:19 -0600
+Subject: [PATCH v2 08/16] pylibfdt: Use environment to pass C flags and files
+
+At present setup.py adjusts its command line when running, so that the
+C flags and file list can be passed as arguments. Pass them in environment
+variables instead, so we can avoid this messiness. It also allows us to
+support the 'install' command.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+Changes in v2: None
+
+ pylibfdt/Makefile.pylibfdt |  3 ++-
+ pylibfdt/setup.py          | 16 ++++++----------
+ 2 files changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/pylibfdt/Makefile.pylibfdt b/pylibfdt/Makefile.pylibfdt
+index 0d8c010..3d99fd4 100644
+--- a/pylibfdt/Makefile.pylibfdt
++++ b/pylibfdt/Makefile.pylibfdt
+@@ -7,7 +7,8 @@ PYMODULE = $(PYLIBFDT_objdir)/_libfdt.so
+ 
+ $(PYMODULE): $(PYLIBFDT_srcs) $(WRAP)
+ 	@$(VECHO) PYMOD $@
+-	python $(PYLIBFDT_objdir)/setup.py "$(CPPFLAGS)" $^
++	SOURCES="$^" CPPFLAGS="$(CPPFLAGS)" \
++	python $(PYLIBFDT_objdir)/setup.py --quiet build_ext --inplace
+ 	mv _libfdt.so $(PYMODULE)
+ 
+ $(WRAP): $(PYLIBFDT_srcdir)/libfdt.swig
+diff --git a/pylibfdt/setup.py b/pylibfdt/setup.py
+index 0ff160c..e45f110 100644
+--- a/pylibfdt/setup.py
++++ b/pylibfdt/setup.py
+@@ -2,6 +2,9 @@
+ 
+ """
+ setup.py file for SWIG libfdt
++
++Files to be built into the extension are provided in SOURCES
++C flags to use are provided in CPPFLAGS
+ """
+ 
+ from distutils.core import setup, Extension
+@@ -9,22 +12,15 @@ import os
+ import sys
+ 
+ progname = sys.argv[0]
+-cflags = sys.argv[1]
+-files = sys.argv[2:]
+-
+-if cflags:
+-    cflags = [flag for flag in cflags.split(' ') if flag]
+-else:
+-    cflags = None
++files = os.environ['SOURCES'].split()
++cflags = os.environ['CPPFLAGS'].split()
+ 
+ libfdt_module = Extension(
+     '_libfdt',
+     sources = files,
+-    extra_compile_args =  cflags
++    extra_compile_args = cflags
+ )
+ 
+-sys.argv = [progname, '--quiet', 'build_ext', '--inplace']
+-
+ setup (name = 'libfdt',
+        version = '0.1',
+        author      = "Simon Glass <sjg@chromium.org>",
+-- 
+2.12.2.564.g063fe858b8-goog
+

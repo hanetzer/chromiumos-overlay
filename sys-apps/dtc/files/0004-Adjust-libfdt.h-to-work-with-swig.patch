@@ -1,7 +1,7 @@
 From 8cb3896358e9f70b6f742772734b038ed0d4ea19 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Fri, 17 Mar 2017 16:14:33 -0600
-Subject: [PATCH 4/6] Adjust libfdt.h to work with swig
+Subject: [PATCH v2 04/16] Adjust libfdt.h to work with swig
 
 There are a few places where libfdt.h cannot be used as is with swig:
 
@@ -15,6 +15,8 @@ Add #ifdefs to work around these problem.
 Signed-off-by: Simon Glass <sjg@chromium.org>
 Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
 ---
+
+Changes in v2: None
 
  libfdt/libfdt.h | 21 ++++++++++++++++++++-
  1 file changed, 20 insertions(+), 1 deletion(-)
@@ -149,5 +151,5 @@ index ac42e04..2c9ddb4 100644
  /**
   * fdt_add_subnode - creates a new node
 -- 
-2.12.1.500.gab5fba24ee-goog
+2.12.2.564.g063fe858b8-goog
 

@@ -1,0 +1,30 @@
+From 6afd7d9688f58436bcc6025180473aa2ec1cdec4 Mon Sep 17 00:00:00 2001
+From: David Gibson <david@gibson.dropbear.id.au>
+Date: Wed, 22 Mar 2017 16:34:39 +1100
+Subject: [PATCH v2 06/16] Correct typo: s/pylibgfdt/pylibfdt/
+
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+Changes in v2: None
+
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index ed95384..1d08ec1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -127,7 +127,7 @@ maybe_pylibfdt: FORCE
+ 	if [ "$$can_build" = "yes" ]; then \
+ 		$(MAKE) pylibfdt; \
+ 	else \
+-		echo "## Skipping pylibgfdt (install python dev and swig to build)"; \
++		echo "## Skipping pylibfdt (install python dev and swig to build)"; \
+ 	fi
+ 
+ all: $(BIN) libfdt maybe_pylibfdt
+-- 
+2.12.2.564.g063fe858b8-goog
+

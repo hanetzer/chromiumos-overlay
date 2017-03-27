@@ -1,0 +1,42 @@
+From 741cdff85d3e57fbf9e71eac5c6c1140ae39a97b Mon Sep 17 00:00:00 2001
+From: David Gibson <david@gibson.dropbear.id.au>
+Date: Mon, 27 Mar 2017 16:30:27 +1100
+Subject: [PATCH v2 10/16] .travis.yml: Add builds with and without Python
+ library prerequisites
+
+To make sure the Makefile behaves in both cases, make Travis matrix builds
+with and without swig installed.
+
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+Changes in v2: None
+
+ .travis.yml | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/.travis.yml b/.travis.yml
+index f2336d8..de36443 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -1,5 +1,16 @@
+ language: c
+ 
++matrix:
++  include:
++    - addons:
++        apt:
++          packages:
++            - swig
++            - python-dev
++    - addons:
++        apt:
++          packages:
++
+ script:
+         - make
+         - make check
+-- 
+2.12.2.564.g063fe858b8-goog
+

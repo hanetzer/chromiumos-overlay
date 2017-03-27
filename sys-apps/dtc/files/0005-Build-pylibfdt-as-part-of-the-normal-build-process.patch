@@ -1,7 +1,7 @@
 From 756ffc4f52f6863ba8bf3a67129271566ba2000c Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Fri, 17 Mar 2017 16:14:34 -0600
-Subject: [PATCH 5/6] Build pylibfdt as part of the normal build process
+Subject: [PATCH v2 05/16] Build pylibfdt as part of the normal build process
 
 If swig and the Python are available, build pylibfdt automatically.
 Adjust the tests to run Python tests too in this case.
@@ -11,6 +11,8 @@ Signed-off-by: Simon Glass <sjg@chromium.org>
  fatal to the whole build]
 Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
 ---
+
+Changes in v2: None
 
  Makefile           | 34 ++++++++++++++++++++++++++++++++--
  tests/run_tests.sh | 28 ++++++++++++++++++++++++++++
@@ -129,5 +131,5 @@ index 0f5c3db..2a1ba44 100755
  done
  
 -- 
-2.12.1.500.gab5fba24ee-goog
+2.12.2.564.g063fe858b8-goog
 

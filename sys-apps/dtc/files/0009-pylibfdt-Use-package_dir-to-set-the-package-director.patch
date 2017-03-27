@@ -1,0 +1,64 @@
+From 14c4171f4f9ad2674249e06c54eb9ce0b533d4b6 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sun, 26 Mar 2017 13:06:20 -0600
+Subject: [PATCH v2 09/16] pylibfdt: Use package_dir to set the package
+ directory
+
+At present we manually move _libfdt.so into the correct place. Provide a
+package directory so we can avoid needing to do this.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+Changes in v2: None
+
+ pylibfdt/Makefile.pylibfdt | 3 +--
+ pylibfdt/setup.py          | 3 +++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/pylibfdt/Makefile.pylibfdt b/pylibfdt/Makefile.pylibfdt
+index 3d99fd4..861e67c 100644
+--- a/pylibfdt/Makefile.pylibfdt
++++ b/pylibfdt/Makefile.pylibfdt
+@@ -7,9 +7,8 @@ PYMODULE = $(PYLIBFDT_objdir)/_libfdt.so
+ 
+ $(PYMODULE): $(PYLIBFDT_srcs) $(WRAP)
+ 	@$(VECHO) PYMOD $@
+-	SOURCES="$^" CPPFLAGS="$(CPPFLAGS)" \
++	SOURCES="$^" CPPFLAGS="$(CPPFLAGS)" OBJDIR="$(PYLIBFDT_objdir)" \
+ 	python $(PYLIBFDT_objdir)/setup.py --quiet build_ext --inplace
+-	mv _libfdt.so $(PYMODULE)
+ 
+ $(WRAP): $(PYLIBFDT_srcdir)/libfdt.swig
+ 	@$(VECHO) SWIG $@
+diff --git a/pylibfdt/setup.py b/pylibfdt/setup.py
+index e45f110..ef6e2c0 100644
+--- a/pylibfdt/setup.py
++++ b/pylibfdt/setup.py
+@@ -5,6 +5,7 @@ setup.py file for SWIG libfdt
+ 
+ Files to be built into the extension are provided in SOURCES
+ C flags to use are provided in CPPFLAGS
++Object file directory is provided in OBJDIR
+ """
+ 
+ from distutils.core import setup, Extension
+@@ -14,6 +15,7 @@ import sys
+ progname = sys.argv[0]
+ files = os.environ['SOURCES'].split()
+ cflags = os.environ['CPPFLAGS'].split()
++objdir = os.environ['OBJDIR']
+ 
+ libfdt_module = Extension(
+     '_libfdt',
+@@ -26,5 +28,6 @@ setup (name = 'libfdt',
+        author      = "Simon Glass <sjg@chromium.org>",
+        description = """Python binding for libfdt""",
+        ext_modules = [libfdt_module],
++       package_dir = {'': objdir},
+        py_modules = ["libfdt"],
+        )
+-- 
+2.12.2.564.g063fe858b8-goog
+
