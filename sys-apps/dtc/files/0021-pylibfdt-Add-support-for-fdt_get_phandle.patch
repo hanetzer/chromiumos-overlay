@@ -1,0 +1,55 @@
+From 2d99645db5c14f649b032f97776e7271623c7406 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 09:00:23 -0600
+Subject: [PATCH 21/29] pylibfdt: Add support for fdt_get_phandle()
+
+Add this into the class to simplify use of this function.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ pylibfdt/libfdt.i       | 12 ++++++++++++
+ tests/pylibfdt_tests.py |  6 ++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/pylibfdt/libfdt.i b/pylibfdt/libfdt.i
+index c7b79ec..0731202 100644
+--- a/pylibfdt/libfdt.i
++++ b/pylibfdt/libfdt.i
+@@ -348,6 +348,18 @@ class Fdt:
+             return pdata
+         return bytearray(pdata[0])
+ 
++    def get_phandle(self, nodeoffset):
++        """Get the phandle of a node
++
++        Args:
++            nodeoffset: Node offset to check
++
++        Returns:
++            phandle of node, or 0 if the node has no phandle or another error
++            occurs
++        """
++        return fdt_get_phandle(self._fdt, nodeoffset)
++
+ 
+ class Property:
+     """Holds a device tree property name and value.
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index 32a1daa..14820d5 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -289,5 +289,11 @@ class PyLibfdtTests(unittest.TestCase):
+         node2 = self.fdt.path_offset('/subnode@2')
+         self.assertEquals(0x2000, libfdt.fdt_get_phandle(self.fdt._fdt, node2))
+ 
++    def testGetPhandle(self):
++        """Test for the get_phandle() method"""
++        self.assertEquals(0, self.fdt.get_phandle(0))
++        node2 = self.fdt.path_offset('/subnode@2')
++        self.assertEquals(0x2000, self.fdt.get_phandle(node2))
++
+ if __name__ == "__main__":
+     unittest.main()
+-- 
+2.14.1.480.gb18f417b89-goog
+

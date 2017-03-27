@@ -1,0 +1,32 @@
+From bed5b17710e167463801d363b6b12b33d411da06 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 08:48:16 -0600
+Subject: [PATCH 18/29] pylibfdt: Add a test for use of uint32_t
+
+Using the libfdt function without going through the Python Fdt class
+requires use of the uint32_t type. Add a test that this works correctly.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tests/pylibfdt_tests.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index ae392bb..e8a4582 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -283,6 +283,11 @@ class PyLibfdtTests(unittest.TestCase):
+         self.assertEquals(-libfdt.BADPATH,
+                           self.fdt.path_offset('missing', QUIET_ALL))
+ 
++    def testIntegers(self):
++        """Check that integers can be passed and returned"""
++        self.assertEquals(0, libfdt.fdt_get_phandle(self.fdt._fdt, 0))
++        node2 = self.fdt.path_offset('/subnode@2')
++        self.assertEquals(0x2000, libfdt.fdt_get_phandle(self.fdt._fdt, node2))
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-- 
+2.14.1.480.gb18f417b89-goog
+

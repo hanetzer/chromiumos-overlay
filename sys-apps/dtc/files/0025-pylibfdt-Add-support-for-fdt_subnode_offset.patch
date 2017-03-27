@@ -1,0 +1,69 @@
+From a37cbf24e4bdce66cd8387c95bea1ec26109a55c Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 09:21:15 -0600
+Subject: [PATCH 25/29] pylibfdt: Add support for fdt_subnode_offset()
+
+Add this into the class to simplify use of this function.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+Series-to: dtc
+Series-cc: david
+---
+ pylibfdt/libfdt.i       | 17 +++++++++++++++++
+ tests/pylibfdt_tests.py | 12 ++++++++++++
+ 2 files changed, 29 insertions(+)
+
+diff --git a/pylibfdt/libfdt.i b/pylibfdt/libfdt.i
+index 1f6809e..47d34ae 100644
+--- a/pylibfdt/libfdt.i
++++ b/pylibfdt/libfdt.i
+@@ -185,6 +185,23 @@ class Fdt:
+         """
+         return self._fdt
+ 
++    def subnode_offset(self, parentoffset, name, quiet=()):
++        """Get the offset of a named subnode
++
++        Args:
++            parentoffset: Offset of the parent node to check
++            name: Name of the required subnode, e.g. 'subnode@1'
++            quiet: Errors to ignore (empty to raise on all errors)
++
++        Returns:
++            The node offset of the found node, if any
++
++        Raises
++            FdtException if there is no node with that name, or other error
++        """
++        return check_err(fdt_subnode_offset(self._fdt, parentoffset, name),
++                         quiet)
++
+     def path_offset(self, path, quiet=()):
+         """Get the offset for a given path
+ 
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index a775d37..a6e3354 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -118,6 +118,18 @@ class PyLibfdtTests(unittest.TestCase):
+             fdt = libfdt.Fdt('a string')
+         self.assertEquals(e.exception.err, -libfdt.BADMAGIC)
+ 
++    def testSubnodeOffset(self):
++        """check that we can locate a subnode by name"""
++        node1 = self.fdt.path_offset('/subnode@1')
++        self.assertEquals(self.fdt.subnode_offset(0, 'subnode@1'), node1)
++
++        with self.assertRaises(FdtException) as e:
++            self.fdt.subnode_offset(0, 'missing')
++        self.assertEquals(e.exception.err, -libfdt.NOTFOUND)
++
++        node2 = self.fdt.path_offset('/subnode@1/subsubnode')
++        self.assertEquals(self.fdt.subnode_offset(node1, 'subsubnode'), node2)
++
+     def testPathOffset(self):
+         """Check that we can find the offset of a node"""
+         self.assertEquals(self.fdt.path_offset('/'), 0)
+-- 
+2.14.1.480.gb18f417b89-goog
+

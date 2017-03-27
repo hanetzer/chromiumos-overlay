@@ -1,0 +1,25 @@
+From 571fa25340fb8dd89661244790e8c2f79311d573 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 08:40:06 -0600
+Subject: [PATCH 20/29] tests: Return a failure code when any tests fail
+
+At present 'make check' succeeds even if some tests fail. Adjust this so
+that we can use things like 'git bisect run make check' to find a failure.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tests/run_tests.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index 3bc5b41..fa7b2f7 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -900,3 +900,4 @@ fi
+ echo "* Strange test result:	$tot_strange"
+ echo "**********"
+ 
++[ "$tot_tests" -eq "$tot_pass" ] || exit 1
+-- 
+2.14.1.480.gb18f417b89-goog
+

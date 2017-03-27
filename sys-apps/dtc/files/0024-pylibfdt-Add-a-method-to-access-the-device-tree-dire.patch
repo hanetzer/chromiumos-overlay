@@ -1,0 +1,59 @@
+From c569e806881196be73005fd7e5d81c3c0bea7dbc Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 09:21:15 -0600
+Subject: [PATCH 24/29] pylibfdt: Add a method to access the device tree
+ directly
+
+When calling libfdt functions which are not supported by the Fdt class it
+is necessary to get direct access to the device tree data. At present this
+requries using the internal _fdt member. Add a new method to provide
+public access to this.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ pylibfdt/libfdt.i       | 11 +++++++++++
+ tests/pylibfdt_tests.py |  5 +++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/pylibfdt/libfdt.i b/pylibfdt/libfdt.i
+index d492d58..1f6809e 100644
+--- a/pylibfdt/libfdt.i
++++ b/pylibfdt/libfdt.i
+@@ -174,6 +174,17 @@ class Fdt:
+         self._fdt = bytearray(data)
+         check_err(fdt_check_header(self._fdt));
+ 
++    def get_fdt(self):
++        """Get the device tree contents as a bytearray
++
++        This can be passed directly to libfdt functions that access a
++        const void * for the device tree.
++
++        Returns:
++            bytearray containing the device tree
++        """
++        return self._fdt
++
+     def path_offset(self, path, quiet=()):
+         """Get the offset for a given path
+ 
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index 8028c1a..a775d37 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -285,9 +285,10 @@ class PyLibfdtTests(unittest.TestCase):
+ 
+     def testIntegers(self):
+         """Check that integers can be passed and returned"""
+-        self.assertEquals(0, libfdt.fdt_get_phandle(self.fdt._fdt, 0))
++        self.assertEquals(0, libfdt.fdt_get_phandle(self.fdt.get_fdt(), 0))
+         node2 = self.fdt.path_offset('/subnode@2')
+-        self.assertEquals(0x2000, libfdt.fdt_get_phandle(self.fdt._fdt, node2))
++        self.assertEquals(0x2000,
++                          libfdt.fdt_get_phandle(self.fdt.get_fdt(), node2))
+ 
+     def testGetPhandle(self):
+         """Test for the get_phandle() method"""
+-- 
+2.14.1.480.gb18f417b89-goog
+

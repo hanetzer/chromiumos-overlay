@@ -38,7 +38,9 @@ DOCS="
 "
 
 src_prepare() {
-	epatch "${FILESDIR}"/*.patch
+	# patch -p0 does not work when creating files, so force -p1.
+	EPATCH_OPTS="-p1" epatch "${FILESDIR}"/*.patch
+
 	default
 
 	sed -i \

@@ -1,0 +1,61 @@
+From 7502c3be273fb9b684b50960b1f52738216f7cff Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 09:06:02 -0600
+Subject: [PATCH 23/29] pylibfdt: Add support for fdt_node_offset_by_phandle()
+
+Add this into the class to simplify use of this function.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ pylibfdt/libfdt.i       | 14 ++++++++++++++
+ tests/pylibfdt_tests.py | 10 ++++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/pylibfdt/libfdt.i b/pylibfdt/libfdt.i
+index 5a1eba5..d492d58 100644
+--- a/pylibfdt/libfdt.i
++++ b/pylibfdt/libfdt.i
+@@ -375,6 +375,20 @@ class Fdt:
+         """
+         return check_err(fdt_parent_offset(self._fdt, nodeoffset), quiet)
+ 
++    def node_offset_by_phandle(self, phandle, quiet=()):
++        """Get the offset of a node with the given phandle
++
++        Args:
++            phandle: Phandle to search for
++            quiet: Errors to ignore (empty to raise on all errors)
++
++        Returns:
++            The offset of node with that phandle, if any
++
++        Raises:
++            FdtException if no node found or other error occurs
++        """
++        return check_err(fdt_node_offset_by_phandle(self._fdt, phandle), quiet)
+ 
+ class Property:
+     """Holds a device tree property name and value.
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index 6b024d4..8028c1a 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -308,5 +308,15 @@ class PyLibfdtTests(unittest.TestCase):
+         node2 = self.fdt.path_offset('/subnode@2/subsubnode@0')
+         self.assertEquals(node1, self.fdt.parent_offset(node2))
+ 
++    def testNodeOffsetByPhandle(self):
++        """Test for the node_offset_by_phandle() method"""
++        self.assertEquals(-libfdt.NOTFOUND,
++                          self.fdt.node_offset_by_phandle(1, QUIET_NOTFOUND))
++        node1 = self.fdt.path_offset('/subnode@2')
++        self.assertEquals(node1, self.fdt.node_offset_by_phandle(0x2000))
++        node2 = self.fdt.path_offset('/subnode@2/subsubnode@0')
++        self.assertEquals(node2, self.fdt.node_offset_by_phandle(0x2001))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-- 
+2.14.1.480.gb18f417b89-goog
+

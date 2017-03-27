@@ -1,0 +1,136 @@
+From 97ee95e3698194cd3bc5267bc9712ee68418e2b4 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 19 Aug 2017 10:34:40 -0600
+Subject: [PATCH 27/29] pylibfdt: Allow reading integer values from properties
+
+Extend the Properties class with some functions to read a single integer
+property. Add a new getprop_obj() function to return a Property object
+instead of the raw data.
+
+This suggested approach can be extended to handle other types, as well as
+arrays.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ pylibfdt/libfdt.i       | 35 +++++++++++++++++++++++++++++++++++
+ tests/pylibfdt_tests.py | 12 ++++++++++++
+ tests/run_tests.sh      |  1 +
+ tests/test_props.dts    | 11 +++++++++++
+ 4 files changed, 59 insertions(+)
+ create mode 100644 tests/test_props.dts
+
+diff --git a/pylibfdt/libfdt.i b/pylibfdt/libfdt.i
+index 47d34ae..557e50f 100644
+--- a/pylibfdt/libfdt.i
++++ b/pylibfdt/libfdt.i
+@@ -376,6 +376,26 @@ class Fdt:
+             return pdata
+         return bytearray(pdata[0])
+ 
++    def getprop_obj(self, nodeoffset, prop_name, quiet=()):
++        """Get a property from a node as a Property object
++
++        Args:
++            nodeoffset: Node offset containing property to get
++            prop_name: Name of property to get
++            quiet: Errors to ignore (empty to raise on all errors)
++
++        Returns:
++            Property object, or None if not found
++
++        Raises:
++            FdtError if any error occurs (e.g. the property is not found)
++        """
++        pdata = check_err_null(fdt_getprop(self._fdt, nodeoffset, prop_name),
++                               quiet)
++        if isinstance(pdata, (int)):
++            return None
++        return Property(prop_name, bytearray(pdata[0]))
++
+     def get_phandle(self, nodeoffset):
+         """Get the phandle of a node
+ 
+@@ -432,6 +452,21 @@ class Property:
+     def __init__(self, name, value):
+         self.name = name
+         self.value = value
++
++    def to_cell(self, fmt):
++        return struct.unpack('>' + fmt, self.value)[0]
++
++    def to_uint32(self):
++        return self.to_cell('L')
++
++    def to_int32(self):
++        return self.to_cell('l')
++
++    def to_uint64(self):
++        return self.to_cell('Q')
++
++    def to_int64(self):
++        return self.to_cell('q')
+ %}
+ 
+ %rename(fdt_property) fdt_property_func;
+diff --git a/tests/pylibfdt_tests.py b/tests/pylibfdt_tests.py
+index a6e3354..e071582 100644
+--- a/tests/pylibfdt_tests.py
++++ b/tests/pylibfdt_tests.py
+@@ -89,6 +89,7 @@ class PyLibfdtTests(unittest.TestCase):
+     def setUp(self):
+         """Read in the device tree we use for testing"""
+         self.fdt = _ReadFdt('test_tree1.dtb')
++        self.fdt2 = _ReadFdt('test_props.dtb')
+ 
+     def GetPropList(self, node_path):
+         """Read a list of properties from a node
+@@ -330,6 +331,17 @@ class PyLibfdtTests(unittest.TestCase):
+         node2 = self.fdt.path_offset('/subnode@2/subsubnode@0')
+         self.assertEquals(node2, self.fdt.node_offset_by_phandle(0x2001))
+ 
++    def get_prop(self, name):
++        return self.fdt2.getprop_obj(0, name)
++
++    def testGetIntProperties(self):
++        """Test that we can access properties as integers"""
++        self.assertEquals(0xdeadbeef, self.get_prop("prop-hex32").to_uint32())
++        self.assertEquals(123, self.get_prop("prop-uint32").to_uint32())
++        self.assertEquals(-2, self.get_prop("prop-int32").to_int32())
++        self.assertEquals(9223372036854775807,
++                          self.get_prop("prop-uint64").to_uint64())
++        self.assertEquals(-2, self.get_prop("prop-int64").to_int64())
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index fa7b2f7..441e773 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -809,6 +809,7 @@ fdtoverlay_tests() {
+ }
+ 
+ pylibfdt_tests () {
++    run_dtc_test -I dts -O dtb -o test_props.dtb test_props.dts
+     TMP=/tmp/tests.stderr.$$
+     python pylibfdt_tests.py -v 2> $TMP
+ 
+diff --git a/tests/test_props.dts b/tests/test_props.dts
+new file mode 100644
+index 0000000..7e59bd1
+--- /dev/null
++++ b/tests/test_props.dts
+@@ -0,0 +1,11 @@
++/dts-v1/;
++
++/ {
++	compatible = "test_props";
++	prop-hex32 = <0xdeadbeef>;
++	prop-uint32 = <123>;
++	prop-int32 = <0xfffffffe>;
++	prop-hex64 = /bits/ 64 <0xdeadbeef01abcdef>;
++	prop-uint64 = /bits/ 64 <9223372036854775807>;
++	prop-int64 = /bits/ 64 <0xfffffffffffffffe>;
++};
+-- 
+2.14.1.480.gb18f417b89-goog
+
