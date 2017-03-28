@@ -33,7 +33,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/protofiles-0.0.2
+	>=chromeos-base/protofiles-0.0.3
 	chromeos-base/system_api
 	dev-cpp/gtest
 "
