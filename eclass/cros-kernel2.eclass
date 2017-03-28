@@ -90,6 +90,7 @@ CONFIG_FRAGMENTS=(
 	kasan
 	kcov
 	kgdb
+	kmemleak
 	kvm
 	kvm_host
 	loader_kernel_ramfs
@@ -255,6 +256,12 @@ CONFIG_KGDB_KDB=y
 # CONFIG_WATCHDOG is not set
 CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=1
 """
+
+kmemleak_desc="Enable kmemleak"
+kmemleak_config="
+CONFIG_DEBUG_KMEMLEAK=y
+CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=16384
+"
 
 lockdebug_desc="Additional lock debug settings"
 lockdebug_config="
