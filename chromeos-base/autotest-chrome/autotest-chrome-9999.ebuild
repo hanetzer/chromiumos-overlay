@@ -44,6 +44,7 @@ IUSE_TESTS=(
 	+tests_video_VideoDecodeAccelerator
 	+tests_video_VideoEncodeAccelerator
 	+tests_video_VDAPerf
+	+tests_video_VDASanity
 	+tests_video_VEAPerf
 
 	# Tests that depend on telemetry.
