@@ -30,7 +30,12 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	android-container-nyc cheets +classic debug dri egl +gallium -gbm gles1
-	gles2 +llvm +nptl pic selinux shared-glapi X xlib-glx"
+	gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
+
+REQUIRED_USE="
+	cheets? (
+		vulkan? ( video_cards_intel )
+	)"
 
 DEPEND="cheets? (
 		x11-libs/arc-libdrm[${MULTILIB_USEDEP}]
@@ -141,6 +146,10 @@ multilib_src_configure() {
 		gallium_enable video_cards_freedreno freedreno
 	fi
 
+	if use vulkan; then
+		vulkan_enable video_cards_intel intel
+	fi
+
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 	EGL_PLATFORM="surfaceless"
 
@@ -207,6 +216,7 @@ multilib_src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
+		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		$(use egl && echo "--with-egl-platforms=${EGL_PLATFORM}")
 }
 
@@ -225,6 +235,11 @@ multilib_src_install_cheets() {
 	fi
 	if use gallium; then
 		newexe $(get_libdir)/gallium/kms_swrast_dri.so kms_swrast_dri.so
+	fi
+
+	if use vulkan; then
+		exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/hw"
+		newexe $(get_libdir)/libvulkan_intel.so vulkan.cheets.so
 	fi
 }
 
@@ -287,9 +302,12 @@ multilib_src_install_all_cheets() {
 	insinto "${ARC_PREFIX}/vendor/etc/"
 	doins "${FILESDIR}"/drirc
 
-	# Install init file to advertise proper opengles version.
+	# Install init files to advertise supported API versions.
 	insinto "${ARC_PREFIX}/vendor/etc/init"
 	doins "${FILESDIR}/init.gpu.rc"
+	if use vulkan; then
+		doins "${FILESDIR}/vulkan.rc"
+	fi
 }
 
 multilib_src_install_all() {
