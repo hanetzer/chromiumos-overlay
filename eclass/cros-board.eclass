@@ -124,6 +124,7 @@ ALL_BOARDS=(
 	glimmer
 	glimmer-cheets
 	gnawty
+	gonzo
 	gru
 	guado
 	guado_moblab
