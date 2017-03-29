@@ -24,6 +24,7 @@
         "chrome_remoting", 
         "clang", 
         "cups", 
+        "debug_fission", 
         "evdev_gestures", 
         "fonts", 
         "gold", 
@@ -49,13 +50,18 @@
   }, 
   {
     "compat_id": {
-      "arch": "amd64", 
+      "arch": "x86", 
       "cflags": [
         "-O2", 
+        "-march=i686", 
         "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=x86-64", 
+        "-march=i686", 
+        "-mfpmath=sse", 
+        "-mmmx", 
+        "-msse", 
+        "-msse2", 
         "-msse3", 
         "-g", 
         "-fno-exceptions", 
@@ -64,14 +70,13 @@
       ], 
       "useflags": [
         "accessibility", 
-        "authpolicy", 
         "autotest", 
         "build_tests", 
         "buildcheck", 
         "chrome_debug", 
         "chrome_remoting", 
-        "clang", 
         "cups", 
+        "debug_fission", 
         "evdev_gestures", 
         "fonts", 
         "gold", 
@@ -87,8 +92,10 @@
       ]
     }, 
     "key": {
-      "board": "amd64-generic", 
-      "useflags": []
+      "board": "x86-generic", 
+      "useflags": [
+        "-chrome_internal"
+      ]
     }
   }, 
   {
@@ -116,6 +123,7 @@
         "chrome_remoting", 
         "clang", 
         "cups", 
+        "debug_fission", 
         "evdev_gestures", 
         "fonts", 
         "gold", 
@@ -163,6 +171,7 @@
         "chrome_remoting", 
         "clang", 
         "cups", 
+        "debug_fission", 
         "evdev_gestures", 
         "fonts", 
         "gold", 
@@ -187,18 +196,13 @@
   }, 
   {
     "compat_id": {
-      "arch": "x86", 
+      "arch": "amd64", 
       "cflags": [
         "-O2", 
-        "-march=i686", 
         "-pipe", 
         "-O2", 
         "-pipe", 
-        "-march=i686", 
-        "-mfpmath=sse", 
-        "-mmmx", 
-        "-msse", 
-        "-msse2", 
+        "-march=x86-64", 
         "-msse3", 
         "-g", 
         "-fno-exceptions", 
@@ -207,12 +211,15 @@
       ], 
       "useflags": [
         "accessibility", 
+        "authpolicy", 
         "autotest", 
         "build_tests", 
         "buildcheck", 
         "chrome_debug", 
         "chrome_remoting", 
+        "clang", 
         "cups", 
+        "debug_fission", 
         "evdev_gestures", 
         "fonts", 
         "gold", 
@@ -228,10 +235,8 @@
       ]
     }, 
     "key": {
-      "board": "x86-generic", 
-      "useflags": [
-        "-chrome_internal"
-      ]
+      "board": "amd64-generic", 
+      "useflags": []
     }
   }
 ]
