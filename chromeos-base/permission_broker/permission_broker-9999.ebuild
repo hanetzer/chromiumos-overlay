@@ -19,12 +19,12 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="containers"
+IUSE="device_jail"
 
 RDEPEND="
 	chromeos-base/firewalld
 	chromeos-base/libbrillo
-	containers? ( chromeos-base/container_utils )
+	device_jail? ( chromeos-base/container_utils )
 	sys-apps/dbus
 	virtual/udev"
 
