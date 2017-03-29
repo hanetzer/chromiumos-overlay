@@ -43,6 +43,7 @@ EC_BOARD_NAMES=(
 	fizz
 	glados
 	glados_pd
+	glkrvp
 	gru
 	hadoken
 	hammer
