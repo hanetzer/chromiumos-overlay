@@ -1,0 +1,41 @@
+librustc_back is essentially a dictionary of target triples to target
+configurations. Sadly it can't intelligently deal with cases where triples
+differ only in the vendor part. This patch makes librustc_back slighly more
+resilient to this issue by replacing vendor strings with "unknown" if the
+ordinary dictionary search fails.
+
+See: https://github.com/rust-lang/rust/issues/41402
+
+diff --git a/src/librustc_back/target/mod.rs b/src/librustc_back/target/mod.rs
+index 5afa85d155..50c44b514b 100644
+--- a/src/librustc_back/target/mod.rs
++++ b/src/librustc_back/target/mod.rs
+@@ -664,10 +664,28 @@ impl Target {
+             Target::from_json(obj)
+         }
+ 
++        fn vender_to_unknown(target: &str) -> Option<String> {
++            let mut triple: Vec<&str> = target.splitn(3, '-').collect();
++            if triple.len() < 3 {
++                return None
++            }
++            if triple[1] == "unknown" {
++                return None
++            }
++            triple[1] = "unknown";
++            Some(triple.join("-"))
++        }
++
+         if let Ok(t) = load_specific(target) {
+             return Ok(t)
+         }
+ 
++        if let Some(novendor_target) = vender_to_unknown(target) {
++             if let Ok(t) = load_specific(&novendor_target) {
++                return Ok(t)
++            }
++        }
++
+         let path = Path::new(target);
+ 
+         if path.is_file() {

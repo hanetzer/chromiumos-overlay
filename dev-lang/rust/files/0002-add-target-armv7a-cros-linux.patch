@@ -1,0 +1,16 @@
+Because of crbug.com/711369, armv7 target triple's arch and ABI parts differ
+between chromeos and the rust. Until that bug is fixed, we have to add our own
+triple for armv7.
+
+diff --git a/src/librustc_back/target/mod.rs b/src/librustc_back/target/mod.rs
+index 351d469..2779a65 100644
+--- a/src/librustc_back/target/mod.rs
++++ b/src/librustc_back/target/mod.rs
+@@ -147,6 +147,7 @@ supported_targets! {
+     ("arm-unknown-linux-musleabihf", arm_unknown_linux_musleabihf),
+     ("armv5te-unknown-linux-gnueabi", armv5te_unknown_linux_gnueabi),
+     ("armv7-unknown-linux-gnueabihf", armv7_unknown_linux_gnueabihf),
++    ("armv7a-cros-linux-gnueabi", armv7a_cros_linux_gnueabi),
+     ("armv7-unknown-linux-musleabihf", armv7_unknown_linux_musleabihf),
+     ("aarch64-unknown-linux-gnu", aarch64_unknown_linux_gnu),
+     ("x86_64-unknown-linux-musl", x86_64_unknown_linux_musl),
