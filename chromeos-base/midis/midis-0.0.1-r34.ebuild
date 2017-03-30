@@ -1,0 +1,32 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=5
+CROS_WORKON_COMMIT="fa711d21ac8e775faa6851f31558f4f2cf0bc951"
+CROS_WORKON_TREE="b50de0a70a28fb7f6197ae2b3c6e0aa46b4d0b4a"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+PLATFORM_SUBDIR="midis"
+
+inherit cros-workon platform user
+
+DESCRIPTION="MIDI Server for Chromium OS"
+HOMEPAGE=""
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+
+src_install() {
+	dobin "${OUT}"/midis
+
+	insinto /etc/init
+	doins init/*.conf
+}
+
+pkg_preinst() {
+	enewuser midis
+	enewgroup midis
+}
