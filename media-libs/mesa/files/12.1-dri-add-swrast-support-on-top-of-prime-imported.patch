@@ -281,7 +281,7 @@ index 94d5092..741af1b 100644
 +   char *name;
 +   int i, fd;
 +
-+   for (i = 128; i >= 0; i--) {
++   for (i = 64 * DRM_NODE_RENDER; i < 64 * DRM_NODE_RENDER + DRM_MAX_MINOR; i++) {
 +      struct stat _stat;
 +      int ret;
 +      ret = asprintf(&name, g_sys_card_path_format, i);
