@@ -45,11 +45,16 @@ IUSE="
 	-selinux_develop
 	-transparent_hugepage
 	tpm2
+	-kernel_afdo
 "
 STRIP_MASK="
 	/usr/lib/debug/boot/vmlinux
 	/usr/src/*
 "
+
+AFDO_BASENAME="autofdo-${PN}"
+AFDO_LOCATION="gs://chromeos-localmirror/distfiles/"
+SRC_URI="kernel_afdo? ( ${AFDO_LOCATION}${AFDO_BASENAME}.tar.xz )"
 
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
 MULTILIB_STRICT_EXEMPT+="|modules"
@@ -895,12 +900,24 @@ kmake() {
 		CXX="${CXX} -B${binutils_path}" \
 		"$@"
 
+	local AFDO_FILENAME="${WORKDIR}/${AFDO_BASENAME}/${CHROMEOS_KERNEL_SPLITCONFIG}.afdo"
+	local kcflags="${KCFLAGS}"
+	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
+
 	cw_emake \
 		ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}-" \
 		O="$(cros-workon_get_build_dir)" \
+		KCFLAGS="${kcflags}" \
 		"$@"
+}
+
+cros-kernel2_src_unpack() {
+	cros-workon_src_unpack
+	pushd "${WORKDIR}" > /dev/null
+	use kernel_afdo && unpack "${AFDO_BASENAME}.tar.xz"
+	popd > /dev/null
 }
 
 cros-kernel2_src_prepare() {
@@ -1264,4 +1281,4 @@ cros-kernel2_src_install() {
 	fi
 }
 
-EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_test src_install
+EXPORT_FUNCTIONS pkg_setup src_unpack src_prepare src_configure src_compile src_test src_install
