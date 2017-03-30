@@ -3,8 +3,8 @@
 # $Id$
 
 EAPI="4"
-CROS_WORKON_COMMIT="fe4c50f454bf6e3f361e4ee8bddea1edee45ea0d"
-CROS_WORKON_TREE="a3ddfd5ccd269088ade841a37df0e964cdc30646"
+CROS_WORKON_COMMIT="eaa779c3924b29824fcf7d2e21f75aef2494a16a"
+CROS_WORKON_TREE="4089f1c77e624a9adc4bfb2ed15436205390b718"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 CROS_WORKON_LOCALNAME=../third_party/wpa_supplicant
 
