@@ -51,6 +51,11 @@ src_configure() {
 	export BUNDLE_DIR="${ED}usr/local/factory/bundle"
 }
 
+src_unpack() {
+	cros-workon_src_unpack
+	default
+}
+
 src_install() {
 	emake bundle
 
