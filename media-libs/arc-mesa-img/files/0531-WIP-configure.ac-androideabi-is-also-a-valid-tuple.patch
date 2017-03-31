@@ -1,0 +1,28 @@
+From 4e48db325aa20118d843a2286d04c0e100a4fc3e Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@chromium.org>
+Date: Fri, 31 Mar 2017 11:50:12 +0800
+Subject: [PATCH 1/3] WIP: configure.ac: -androideabi is also a valid tuple
+
+Let's match both anything -android* to determine if target is Android.
+
+Change-Id: I219df34ac967a66cb889084a7560e038b16b7a25
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index f0cf5e57d0a..9d38a788db5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -252,7 +252,7 @@ DEFINES="-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS"
+ AC_SUBST([DEFINES])
+ android=no
+ case "$host_os" in
+-*-android)
++*-android*)
+     android=yes
+     ;;
+ linux*|*-gnu*|gnu*)
+-- 
+2.12.2.564.g063fe858b8-goog
+

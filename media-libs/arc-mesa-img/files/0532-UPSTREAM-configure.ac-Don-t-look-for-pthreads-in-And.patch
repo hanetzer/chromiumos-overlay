@@ -1,0 +1,42 @@
+From 0c32ace7c4072d4325dcffac4d003e56a374251b Mon Sep 17 00:00:00 2001
+From: Gurchetan Singh <gurchetansingh@chromium.org>
+Date: Thu, 27 Oct 2016 09:06:42 -0700
+Subject: [PATCH 2/3] UPSTREAM: configure.ac: Don't look for pthreads in
+ Android platform
+
+In Android, the pthreads libs are in bionic.  When building
+Mesa for Android with the autotools workflow, we shouldn't
+set -lpthread or -pthread.
+
+[Emil Velikov]
+Other platforms could use a similar fix, although that is left as
+separate exercise.
+
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit e23608db1cad3d3b86b5350255db4d47a0081d2e)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+---
+ configure.ac | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9d38a788db5..e1e08c1ae68 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -823,8 +823,11 @@ if test "x$ax_pthread_ok" = xno; then
+ fi
+ dnl AX_PTHREADS leaves PTHREAD_LIBS empty for gcc and sets PTHREAD_CFLAGS
+ dnl to -pthread, which causes problems if we need -lpthread to appear in
+-dnl pkgconfig files.
+-test -z "$PTHREAD_LIBS" && PTHREAD_LIBS="-lpthread"
++dnl pkgconfig files.  Since Android doesn't have a pthread lib, this check
++dnl is not valid for that platform.
++if test "x$android" = xno; then
++    test -z "$PTHREAD_LIBS" && PTHREAD_LIBS="-lpthread"
++fi
+ 
+ PKG_CHECK_MODULES(PTHREADSTUBS, pthread-stubs)
+ AC_SUBST(PTHREADSTUBS_CFLAGS)
+-- 
+2.12.2.564.g063fe858b8-goog
+

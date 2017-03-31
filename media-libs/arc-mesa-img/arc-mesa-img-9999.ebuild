@@ -42,14 +42,19 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X"
+	android-container-nyc cheets +classic debug dri egl +gallium -gbm gles1
+	gles2 +llvm +nptl pic selinux shared-glapi X xlib-glx"
+
 
 DEPEND="video_cards_powervr? (
 		media-libs/arc-img-ddk
 		!<media-libs/arc-img-ddk-1.7
 	)
+	cheets? (
+		x11-libs/arc-libdrm
+	)
 "
+RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -91,31 +96,56 @@ src_prepare() {
 }
 
 src_configure() {
-	arc-build-select-gcc
+	tc-getPROG PKG_CONFIG pkg-config
 
 	driver_enable pvr
 
-	export PKG_CONFIG="false"
+	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
+	EGL_PLATFORM="surfaceless"
 
-	export EXPAT_LIBS="-lexpat"
-	export PTHREAD_LIBS="-lc"
+	if use cheets; then
+		#
+		# cheets-specific overrides
+		#
 
-	export PTHREADSTUBS_CFLAGS=" "
-	export PTHREADSTUBS_LIBS="-lc"
+		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
+		arc-build-select-gcc
 
-	export DRM_GRALLOC_CFLAGS="-I${ARC_SYSROOT}/usr/include/drm_gralloc"
-	export DRM_GRALLOC_LIBS=" "
+		# Use llvm-config coming from ARC++ build.
+		if use android-container-nyc; then
+			export LLVM_CONFIG="${ARC_BASE}/arc-llvm/3.8/bin/llvm-config"
+		else
+			# Path for MNC.
+			export LLVM_CONFIG="${ARC_BASE}/arc-llvm-mesa/bin/llvm-config"
+		fi
 
-	export LIBDRM_CFLAGS="-I${ARC_SYSROOT}/usr/include/libdrm"
-	export LIBDRM_LIBS="-ldrm"
+		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
+		EXTRA_ARGS="
+			--enable-sysfs
+			--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
+			--sysconfdir=/system/vendor/etc
+			--enable-cross_compiling
+			--prefix=${ARC_PREFIX}/vendor
+			--libdir=\$(prefix)/lib
+		"
+		# FIXME(tfiga): Possibly use flag?
+		EGL_PLATFORM="android"
 
+		#
+		# end of arc-mesa specific overrides
+		#
+	fi
+
+	if ! use llvm; then
+		export LLVM_CONFIG="no"
+	fi
+
+	# TODO(drinkcat): We should provide a pkg-config file for this.
 	export PVR_CFLAGS="-I${SYSROOT}${ARC_PREFIX}/vendor/include"
 	export PVR_LIBS="-L${SYSROOT}${ARC_PREFIX}/vendor/lib -lpvr_dri_support "
-	export LLVM_CONFIG=""
 
-	./configure \
-		--host=armv7a-linux-android \
-		--with-sysroot=${ARC_SYSROOT} \
+	econf \
+		${EXTRA_ARGS} \
 		--disable-option-checking \
 		--with-driver=dri \
 		--disable-glu \
@@ -124,24 +154,26 @@ src_configure() {
 		--disable-va \
 		--disable-vdpau \
 		--disable-xvmc \
+		--disable-asm \
 		--without-demos \
 		--enable-texture-float \
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm llvm-gallium) \
+		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
+		$(use_enable gles1) \
+		$(use_enable gles2) \
 		$(use_enable shared-glapi) \
+		$(use_enable gallium) \
 		$(use_enable debug) \
-		--enable-glx-tls \
-		$(use_enable !pic asm) \
+		$(use_enable nptl glx-tls) \
+		$(use_enable xlib-glx) \
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
-		$(use egl && echo "--with-egl-platforms=android") \
-		--enable-sysfs \
-		--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
+		$(use egl && echo "--with-egl-platforms=${EGL_PLATFORM}")
 }
 
 src_install() {

@@ -1,0 +1,64 @@
+From 2d0c93ed9b43aabf150d455250d819198dc1cd0e Mon Sep 17 00:00:00 2001
+From: Gurchetan Singh <gurchetansingh@chromium.org>
+Date: Fri, 14 Oct 2016 20:33:36 -0700
+Subject: [PATCH 3/3] FROMLIST: egl: Use pkg-config for Android NDK build
+
+It's possible to build Mesa for Android using the traditional
+autotools workflow [1]. ChromiumOS fetches Android prebuilts and
+puts them in a sysroot. We now want to use pkg-config to specify
+the location of system headers and libraries [2].
+
+To enable this, let's add the required pkg-config checks and link
+against them.
+
+[1] https://developer.android.com/ndk/guides/standalone_toolchain.html
+[2] https://chromium-review.googlesource.com/#/c/403237/
+
+v2: Bundle pkg-config checks together (Emil)
+v3: Provide further context on standalone NDK Mesa build (Emil)
+
+BUG=b/32077475
+TEST=arc-mesa builds
+
+CQ-DEPEND=CL:403237, CL:404150, CL:404151
+
+Change-Id: Ia1cb9154b59e19e02a75de9642fbad7a440d54cc
+Reviewed-on: https://chromium-review.googlesource.com/403315
+Commit-Ready: Gurchetan Singh <gurchetansingh@chromium.org>
+Tested-by: Gurchetan Singh <gurchetansingh@chromium.org>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+(cherry picked from commit 32f6ed28cc097933a0b2cb82992a9cab46d68f80)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+---
+ configure.ac        | 1 +
+ src/egl/Makefile.am | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index e1e08c1ae68..82343f5386a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2044,6 +2044,7 @@ for plat in $egl_platforms; do
+ 		;;
+ 
+ 	android)
++		PKG_CHECK_MODULES([ANDROID], [cutils hardware sync])
+ 		;;
+ 
+ 	*)
+diff --git a/src/egl/Makefile.am b/src/egl/Makefile.am
+index 89af11415d1..800413eeb54 100644
+--- a/src/egl/Makefile.am
++++ b/src/egl/Makefile.am
+@@ -89,6 +89,8 @@ libEGL_la_LIBADD += -lhardware -lcutils -lsync
+ libEGL_la_LIBADD += $(DRM_GRALLOC_LIBS)
+ AM_CFLAGS += $(DRM_GRALLOC_CFLAGS)
+ AM_CFLAGS += -DHAVE_ANDROID_PLATFORM
++AM_CFLAGS += $(ANDROID_CFLAGS)
++libEGL_la_LIBADD += $(ANDROID_LIBS)
+ dri2_backend_FILES += \
+ 	drivers/dri2/platform_android.c \
+ 	drivers/dri2/egl_dri2_drm_gralloc.h
+-- 
+2.12.2.564.g063fe858b8-goog
+
