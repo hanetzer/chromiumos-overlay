@@ -27,9 +27,6 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS} libkms manpages +udev"
-REQUIRED_USE="video_cards_exynos? ( libkms )
-	video_cards_mediatek? ( libkms )
-	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="
