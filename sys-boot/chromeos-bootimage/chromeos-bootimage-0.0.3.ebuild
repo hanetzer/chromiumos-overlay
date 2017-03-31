@@ -13,7 +13,7 @@ KEYWORDS="*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex aplrvp auron bayleybay beltino bolt butterfly"
 BOARDS="${BOARDS} chell coral cyan emeraldlake2 eve falco fizz fox"
-BOARDS="${BOARDS} glados jecht kahlee kunimitsu link lumpy lumpy64 mario nasher panther"
+BOARDS="${BOARDS} glados jecht kahlee kblrvp kunimitsu link lumpy lumpy64 mario nasher panther"
 BOARDS="${BOARDS} parrot peppy poppy pyro rambi reef samus sand sklrvp slippy snappy"
 BOARDS="${BOARDS} soraka squawks stout strago stumpy sumo"
 IUSE="${BOARDS} +bmpblk cb_legacy_seabios cb_legacy_uboot"

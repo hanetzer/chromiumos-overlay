@@ -36,6 +36,7 @@ CROS_BOARDS=(
 	glimmer
 	gnawty
 	guado
+	kblrvp
 	kevin
 	kip
 	lars
