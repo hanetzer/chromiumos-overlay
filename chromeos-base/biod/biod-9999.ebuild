@@ -48,7 +48,3 @@ pkg_preinst() {
         enewuser biod
         enewgroup biod
 }
-
-platform_pkg_test() {
-	platform_test "run" "${OUT}/biod_test_runner"
-}
