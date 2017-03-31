@@ -1,0 +1,69 @@
+From 03c20822a963a994a3555a515d06acf84e315aaf Mon Sep 17 00:00:00 2001
+From: Stephen Barber <smbarber@chromium.org>
+Date: Tue, 21 Feb 2017 12:48:10 -0800
+Subject: [PATCH] CHROMIUM: use "noprefix" for cpuset.go
+
+Chromium OS mounts cpuset with the "noprefix" option, which conflicts with
+the hardcoded cpuset paths that assume prefixes.
+
+This patch is not upstreamable; the proper solution is to check for the
+mount option and pick the right path.
+
+Applied against runc v1.0.0-rc3.
+
+BUG=chromium:709122
+Signed-off-by: Stephen Barber <smbarber@chromium.org>
+---
+ libcontainer/cgroups/fs/cpuset.go | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libcontainer/cgroups/fs/cpuset.go b/libcontainer/cgroups/fs/cpuset.go
+index 918b9a3..5396994 100644
+--- a/libcontainer/cgroups/fs/cpuset.go
++++ b/libcontainer/cgroups/fs/cpuset.go
+@@ -31,12 +31,12 @@ func (s *CpusetGroup) Apply(d *cgroupData) error {
+ 
+ func (s *CpusetGroup) Set(path string, cgroup *configs.Cgroup) error {
+ 	if cgroup.Resources.CpusetCpus != "" {
+-		if err := writeFile(path, "cpuset.cpus", cgroup.Resources.CpusetCpus); err != nil {
++		if err := writeFile(path, "cpus", cgroup.Resources.CpusetCpus); err != nil {
+ 			return err
+ 		}
+ 	}
+ 	if cgroup.Resources.CpusetMems != "" {
+-		if err := writeFile(path, "cpuset.mems", cgroup.Resources.CpusetMems); err != nil {
++		if err := writeFile(path, "mems", cgroup.Resources.CpusetMems); err != nil {
+ 			return err
+ 		}
+ 	}
+@@ -91,10 +91,10 @@ func (s *CpusetGroup) ApplyDir(dir string, cgroup *configs.Cgroup, pid int) erro
+ }
+ 
+ func (s *CpusetGroup) getSubsystemSettings(parent string) (cpus []byte, mems []byte, err error) {
+-	if cpus, err = ioutil.ReadFile(filepath.Join(parent, "cpuset.cpus")); err != nil {
++	if cpus, err = ioutil.ReadFile(filepath.Join(parent, "cpus")); err != nil {
+ 		return
+ 	}
+-	if mems, err = ioutil.ReadFile(filepath.Join(parent, "cpuset.mems")); err != nil {
++	if mems, err = ioutil.ReadFile(filepath.Join(parent, "mems")); err != nil {
+ 		return
+ 	}
+ 	return cpus, mems, nil
+@@ -138,12 +138,12 @@ func (s *CpusetGroup) copyIfNeeded(current, parent string) error {
+ 	}
+ 
+ 	if s.isEmpty(currentCpus) {
+-		if err := writeFile(current, "cpuset.cpus", string(parentCpus)); err != nil {
++		if err := writeFile(current, "cpus", string(parentCpus)); err != nil {
+ 			return err
+ 		}
+ 	}
+ 	if s.isEmpty(currentMems) {
+-		if err := writeFile(current, "cpuset.mems", string(parentMems)); err != nil {
++		if err := writeFile(current, "mems", string(parentMems)); err != nil {
+ 			return err
+ 		}
+ 	}
+-- 
+2.12.2.715.g7642488e1d-goog
+
