@@ -58,6 +58,7 @@ IUSE_LINUX_FIRMWARE=(
 	fw_sst2
 	i915_bxt
 	i915_skl
+	i915_kbl
 	ibt-hw
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
@@ -87,6 +88,7 @@ LICENSE="
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_i915_bxt? ( LICENSE.i915 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
+	linux_firmware_i915_kbl? ( LICENSE.i915 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
@@ -157,6 +159,7 @@ src_install() {
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw i915_bxt && doins_subdir i915/bxt*
 	use_fw i915_skl && doins_subdir i915/skl*
+	use_fw i915_kbl && doins_subdir i915/kbl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
