@@ -31,4 +31,5 @@ pkg_preinst() {
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}"/device_tracker_test
+	platform_test "run" "${OUT}"/udev_handler_test
 }
