@@ -104,18 +104,29 @@ src_install() {
 	# service is received. We do not want this behaviour.
 	find "${D}" -name 'org.freedesktop.ModemManager1.service' -delete
 
-	# Only install plugins for supported modems to conserve space on the
-	# root filesystem.
-	find "${D}" -name 'libmm-plugin-*.so' ! \( \
-		-name 'libmm-plugin-altair-lte.so' -o \
-		-name 'libmm-plugin-generic.so' -o \
-		-name 'libmm-plugin-huawei.so' -o \
-		-name 'libmm-plugin-longcheer.so' -o \
-		-name 'libmm-plugin-novatel-lte.so' -o \
-		-name 'libmm-plugin-samsung.so' -o \
-		-name 'libmm-plugin-telit.so' -o \
-		-name 'libmm-plugin-zte.so' \
-		\) -delete
+	# Only install the following plugins for supported modems to conserve
+	# space on the root filesystem.
+	local plugins=(
+		altair-lte
+		generic
+		huawei
+		longcheer
+		novatel-lte
+		samsung
+		telit
+		zte
+	)
+	local plugins_regex=".*/libmm-plugin-($(IFS='|'; echo "${plugins[*]}")).so"
+
+	find "${D}" -regextype posix-extended \
+		-name 'libmm-plugin-*.so' \
+		! -regex "${plugins_regex}" \
+		-delete
+
+	local found_plugins="$(find "${D}" -regextype posix-extended \
+		-regex "${plugins_regex}" | wc -l)"
+	[[ "${found_plugins}" == "${#plugins[@]}" ]] || \
+		die "Expects ${#plugins[@]} plugins, but ${found_plugins} found."
 
 	# Install init scripts.
 	if use systemd; then
