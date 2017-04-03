@@ -376,6 +376,7 @@ multilib_src_configure() {
 
 		-DFFI_INCLUDE_DIR="${ffi_cflags#-I}"
 		-DFFI_LIBRARY_DIR="${ffi_ldflags#-L}"
+		-DLLVM_BINUTILS_INCDIR="${SYSROOT}"/usr/include
 
 		-DHAVE_HISTEDIT_H=$(usex libedit)
 		-DENABLE_LINKER_BUILD_ID=ON
