@@ -12,8 +12,10 @@
 # "[systemctl] start swap" or reboot.  To stop swap, remove the file and reboot.
 
 SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
+SWAP_SIZE_SYSTEM_OVERRIDE_FILE=/usr/share/misc/swap_size
 LOWMEM_MARGIN_OVERRIDE_FILE=/home/chronos/.lowmem_margin
 LOWMEM_MARGIN_SYSFS_ENTRY=/sys/kernel/mm/chromeos-low_mem/margin
+LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE=/usr/share/misc/lowmem_margin
 HIST_MIN=100
 HIST_MAX=10000
 HIST_BUCKETS=50
@@ -49,12 +51,10 @@ start() {
   mem_total=$(get_mem_total)
   if [ -e "${LOWMEM_MARGIN_OVERRIDE_FILE}" ]; then
     margin=$(cat "${LOWMEM_MARGIN_OVERRIDE_FILE}")  # MiB
+  elif [ -e "${LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE}" ]; then
+    margin=$(cat "${LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE}")
   else
     margin=$(default_low_memory_margin "${mem_total}")
-  fi
-  if [ -n "${MIN_LOW_MEMORY_MARGIN}" ] && \
-     [ "${margin}" -lt "${MIN_LOW_MEMORY_MARGIN}" ]; then
-    margin=${MIN_LOW_MEMORY_MARGIN}
   fi
   # set the margin
   echo "${margin}" > "${LOWMEM_MARGIN_SYSFS_ENTRY}"
@@ -69,6 +69,11 @@ start() {
   local requested_size_mb size_kb
   # For security, only read first few bytes of SWAP_ENABLE_FILE.
   requested_size_mb="$(head -c 5 "${SWAP_ENABLE_FILE}")" || :
+  # If SWAP_ENABLE_FILE does not exist or is empty, try the global override.
+  if [ -z "${requested_size_mb}" ]; then
+    requested_size_mb=$(cat "${SWAP_SIZE_SYSTEM_OVERRIDE_FILE}") || :
+  fi
+  # If still empty, compute swap based on RAM size.
   if [ -z "${requested_size_mb}" ]; then
     # Default multiplier for zram size. (Shell math is integer only.)
     local multiplier="3 / 2"

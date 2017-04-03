@@ -7,5 +7,4 @@ Description=Setup compressed memory swap
 After=system-services.target
 
 [Service]
-Environment=MIN_LOW_MEMORY_MARGIN=
 ExecStart=/usr/share/cros/init/swap.sh start
