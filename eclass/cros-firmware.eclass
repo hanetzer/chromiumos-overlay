@@ -119,8 +119,8 @@ EC_IMAGE_LOCATION=""
 PD_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
-# Add a URL to SRC_URI.
-# This adds the given file to the list of files to retreive in SRC_URI.
+# Output the URI associated with a file to download. This can be added to the
+# SRC_URI variable.
 # Portage will then take care of downloading these files before the src_unpack
 # phase starts.
 # Args
@@ -139,19 +139,20 @@ _add_uri() {
 	# Input without ${protocol} are local files (ex, ${FILESDIR}/file).
 	case "${protocol}" in
 		bcs)
-			SRC_URI+=" ${bcs_url}/${CATEGORY}/${board}/${uri}"
+			echo "${bcs_url}/${CATEGORY}/${board}/${uri}"
 			;;
 		http|https|gs)
-			SRC_URI+=" ${input}"
+			echo "${input}"
 			;;
 	esac
 }
 
-# Add a URL to SRC_URI for the given firmware variable.
+# Output a URL for the given firmware variable.
 # This calls _add_uri() after setting up the required parameters.
 #  $1: Variable containing the required filename (e.g. "FW_IMAGE_LOCATION")
 _add_source() {
 	local var="$1"
+	local src_uri="$2"
 	local overlay="${CROS_FIRMWARE_BCS_OVERLAY#overlay-}"
 	local input="${!var}"
 
@@ -407,11 +408,11 @@ cros-firmware_setup_source() {
 	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
 
 	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
-		_add_source ${i}
+		SRC_URI+=" $(_add_source ${i})"
 	done
 
 	for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
-		_add_source "EXTRA_LOCATIONS[$i]"
+		SRC_URI+=" $(_add_source "EXTRA_LOCATIONS[$i]")"
 	done
 }
 
