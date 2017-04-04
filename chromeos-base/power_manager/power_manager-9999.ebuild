@@ -19,7 +19,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog systemd +touchpad_wakeup -touchscreen_wakeup"
+IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup"
 
 RDEPEND="
 	cellular? (
@@ -93,7 +93,7 @@ src_install() {
 	doexe udev/*.sh
 	udev_dorules udev/*.rules
 
-	if ! use cros_embedded; then
+	if use powerknobs; then
 		udev/gen_autosuspend_rules.py > "${T}"/99-autosuspend.rules || die
 		udev_dorules "${T}"/99-autosuspend.rules
 	fi
