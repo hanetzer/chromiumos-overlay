@@ -149,7 +149,10 @@ CROS_COMMON_RDEPEND+="
 		chromeos-base/mist
 	)
 	buffet? ( chromeos-base/buffet )
-	containers? ( chromeos-base/container_utils )
+	containers? (
+		chromeos-base/container_utils
+		chromeos-base/run_oci
+	)
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
 	scanner? ( chromeos-base/lorgnette )

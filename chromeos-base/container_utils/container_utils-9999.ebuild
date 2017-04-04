@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI=5
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -19,7 +19,6 @@ IUSE="+device_jail"
 
 RDEPEND="
 	chromeos-base/libbrillo
-	chromeos-base/libcontainer
 	device_jail? (
 		virtual/udev
 		sys-fs/fuse
@@ -37,7 +36,6 @@ pkg_setup() {
 
 src_install() {
 	cd "${OUT}"
-	dobin run_oci
 
 	if use device_jail; then
 		dobin device_jail_fs
@@ -53,18 +51,6 @@ src_install() {
 
 		udev_dorules udev/*.rules
 	fi
-}
-
-platform_pkg_test() {
-	local tests=(
-		container_config_parser_unittest
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		# platform_test takes care of setting up your test environment
-		platform_test "run" "${OUT}/${test_bin}"
-	done
 }
 
 pkg_preinst() {
