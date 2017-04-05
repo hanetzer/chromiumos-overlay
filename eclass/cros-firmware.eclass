@@ -61,10 +61,6 @@ inherit cros-workon cros-unibuild
 # @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
 : ${CROS_FIRMWARE_EXTRA_LIST:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_FORCE_UPDATE
-# @DESCRIPTION: (Optional) Always add "force update firmware" tag.
-: ${CROS_FIRMWARE_FORCE_UPDATE:=}
-
 # Check for EAPI 2+
 case "${EAPI:-0}" in
 2|3|4|5|6) ;;
@@ -408,13 +404,6 @@ cros-firmware_src_install() {
 	if use bootimage; then
 		exeinto /firmware
 		doexe updater*.sh
-	fi
-
-	# The "force_update_firmware" tag file is used by chromeos-installer.
-	if [ -n "$CROS_FIRMWARE_FORCE_UPDATE" ]; then
-		insinto /root
-		touch .force_update_firmware
-		doins .force_update_firmware
 	fi
 }
 
