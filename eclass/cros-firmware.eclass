@@ -52,10 +52,6 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Entry script file name of updater
 : ${CROS_FIRMWARE_SCRIPT:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_BINARY
-# @DESCRIPTION: (Optional) location of custom flashrom tool
-: ${CROS_FIRMWARE_FLASHROM_BINARY:=}
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EXTRA_LIST
 # @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
 : ${CROS_FIRMWARE_EXTRA_LIST:=}
@@ -251,7 +247,6 @@ cros-firmware_src_compile() {
 	local output_file="updater.sh"
 
 	# Prepare extra commands
-	_add_param ext_cmd --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}"
 	_add_param ext_cmd --tool_base \
 		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
 	if ! use unibuild; then
