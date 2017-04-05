@@ -33,6 +33,7 @@ inherit cros-workon
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_VERSION
 # @DESCRIPTION: (Optional) Version name of EC firmware
+# This is deprecated. Please do not use it.
 : ${CROS_FIRMWARE_EC_VERSION:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_EC_VERSION
