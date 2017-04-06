@@ -88,4 +88,40 @@ get_model_conf_value() {
 		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null
 }
 
+# @FUNCTION: get_model_conf_value_noroot
+# @USAGE: <model> <path> <prop>
+# @DESCRIPTION:
+# Obtain a configuration value for a given model. This works without needing
+# access to the root directory, so it is suitable for getting information for
+# use # in SRC_URI, for example.
+# It requires a symlink in the calling ebuild from ${FILESDIR}/model.dtsi to
+# the board's configuration file. It also requires a subslot dependency.
+# @RETURN: value of the property, or empty if not found, in which
+# case the return code indicates failure.
+# @CODE
+# model name of model to lookup.
+# @CODE
+# path path to config string, e.g. "/".
+# @CODE
+# @prop name of property to read (e.g. "wallpaper").
+get_model_conf_value_noroot() {
+	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
+
+	# This function is called before FILESDIR is set so figure it out from
+	# the ebuild filename.
+	local filesdir="$(dirname "${EBUILD}")/files"
+
+	local model="$1"
+	local path="$2"
+	local prop="$3"
+
+	# We are not allowed to access the ROOT directory here, so compile the
+	# model fragment on the fly and pull out the value we want.
+	echo "/dts-v1/; / { chromeos { models: models { }; }; };" |
+		cat - "${filesdir}/model.dtsi" |
+		dtc -O dtb |
+		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
+			2>/dev/null
+}
+
 fi
