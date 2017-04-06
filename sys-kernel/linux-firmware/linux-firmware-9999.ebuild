@@ -100,7 +100,8 @@ LICENSE="
 	video_cards_amdgpu? ( LICENSE.amdgpu )
 "
 
-DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
+RDEPEND="
+	linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
 	linux_firmware_marvell-pcie8997? ( !net-wireless/marvell_sd8787[pcie] )
 	linux_firmware_ath3k-all? ( !net-wireless/ath3k )
 	linux_firmware_ath3k-ar3011? ( !net-wireless/ath3k )
@@ -119,7 +120,6 @@ DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
 	!net-wireless/iwl6030-ucode
 	!net-wireless/iwl6050-ucode
 "
-RDEPEND="${DEPEND}"
 
 RESTRICT="binchecks strip test"
 
