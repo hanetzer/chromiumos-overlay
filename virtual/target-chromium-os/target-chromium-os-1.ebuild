@@ -35,6 +35,7 @@ IUSE="
 	gobi
 	intel_lpe
 	kvm_host
+	linux_firmware_rt2870
 	mtd
 	+network_time
 	nfc
@@ -279,7 +280,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	bluetooth? ( net-wireless/ath3k )
 	net-wireless/crda
 	net-wireless/marvell_sd8787
-	net-wireless/realtek-rt2800-firmware
+	!linux_firmware_rt2870? ( net-wireless/realtek-rt2800-firmware )
 	sys-apps/dbus
 	sys-apps/flashrom
 	sys-apps/iproute2

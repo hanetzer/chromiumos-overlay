@@ -107,6 +107,7 @@ RDEPEND="
 	linux_firmware_ath3k-ar3011? ( !net-wireless/ath3k )
 	linux_firmware_ath3k-ar3012? ( !net-wireless/ath3k )
 	linux_firmware_nvidia-xusb? ( !sys-kernel/xhci-firmware )
+	linux_firmware_rt2870? ( !net-wireless/realtek-rt2800-firmware )
 	!net-wireless/ath6k
 	!net-wireless/ath10k
 	!net-wireless/iwl1000-ucode
