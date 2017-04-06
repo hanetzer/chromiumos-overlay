@@ -19,7 +19,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -legacy_power_button -mosys_eventlog systemd"
+IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog systemd"
 
 RDEPEND="
 	cellular? (
@@ -88,15 +88,18 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
 
+	# udev scripts and rules.
 	exeinto "$(udev_get_udevdir)"
 	doexe udev/*.sh
+	udev_dorules udev/*.rules
 
 	if ! use cros_embedded; then
 		udev/gen_autosuspend_rules.py > "${T}"/99-autosuspend.rules || die
 		udev_dorules "${T}"/99-autosuspend.rules
 	fi
-
-	udev_dorules udev/*.rules
+	if use keyboard_includes_side_buttons; then
+		udev_dorules udev/optional/92-powerd-tags-keyboard-side-buttons.rules
+	fi
 
 	# Init scripts
 	if use systemd; then
