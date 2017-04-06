@@ -79,7 +79,7 @@ net-misc/ntp		caps
 net-misc/openssh	-X
 net-misc/openvpn	pkcs11
 net-misc/strongswan	cisco nat-transport
-net-nds/openldap	minimal -cxx
+net-nds/openldap	minimal -cxx ipv6
 net-print/cups		zeroconf upstart
 net-print/cups-filters	zeroconf
 net-print/hplip		minimal
