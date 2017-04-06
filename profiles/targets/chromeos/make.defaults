@@ -23,6 +23,9 @@ USE="${USE} hardened"
 VIDEO_CARDS="-*"
 INPUT_DEVICES="-* evdev cmt"
 
+# USB firmware.
+LINUX_FIRMWARE="rt2870"
+
 # Various runtime features that control emerge behavior.
 # See "man 5 make.conf" for details.
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect

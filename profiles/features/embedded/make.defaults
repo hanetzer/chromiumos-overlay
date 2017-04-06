@@ -9,4 +9,4 @@ USE="${USE} -compupdates"
 USE="${USE} -cups"
 
 # Make each board select the firmware it needs.
-LINUX_FIRMWARE=""
+LINUX_FIRMWARE="-*"
