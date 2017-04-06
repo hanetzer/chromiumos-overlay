@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
 IUSE="-chromeless_tests chromeless_tty cros_ec cros_embedded opengl opengles ozone p2p
-	peerd +shill +tpm"
+	peerd +shill +tpm vaapi"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -82,6 +82,7 @@ CROS_COMMON_RDEPEND+="
 ################################################################################
 CROS_X86_RDEPEND="
 	sys-apps/pciutils
+	vaapi? ( media-video/libva-utils )
 	x11-misc/read-edid
 "
 

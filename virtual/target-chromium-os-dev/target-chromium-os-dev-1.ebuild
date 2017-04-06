@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
 IUSE="cras nvme pam opengl +power_management +profile
-	+shill tpm usb video_cards_intel"
+	+shill tpm usb vaapi video_cards_intel"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -39,6 +39,7 @@ CROS_X86_RDEPEND="
 	sys-apps/dmidecode
 	sys-apps/pciutils
 	sys-boot/syslinux
+	vaapi? ( media-video/libva-utils )
 	video_cards_intel? ( x11-apps/intel-gpu-tools )
 "
 
