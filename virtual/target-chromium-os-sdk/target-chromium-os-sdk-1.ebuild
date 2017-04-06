@@ -33,6 +33,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/baselayout
 	sys-apps/coreutils
 	sys-apps/diffutils
+	sys-apps/dtc
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/gawk
