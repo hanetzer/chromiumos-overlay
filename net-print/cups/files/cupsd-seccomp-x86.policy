@@ -1,6 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+_newselect: 1
 accept: 1
 access: 1
 bind: 1
@@ -112,6 +113,7 @@ timerfd_create: 1
 timerfd_settime: 1
 timerfd_gettime: 1
 times: 1
+ugetrlimit: 1
 umask: 1
 uname: 1
 unlink: 1

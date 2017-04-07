@@ -6,6 +6,7 @@ _llseek: 1
 access: 1
 brk: 1
 close: 1
+connect: 1
 exit: 1
 exit_group: 1
 fcntl64: 1
@@ -14,6 +15,7 @@ futex: 1
 getegid32: 1
 geteuid32: 1
 getgid32: 1
+getpeername: 1
 getrusage: 1
 gettimeofday: 1
 getuid32: 1
@@ -25,6 +27,15 @@ open: 1
 poll: 1
 read: 1
 rt_sigaction: 1
+setgroups32: 1
+setresgid32: 1
+setresuid32: 1
+setsockopt: 1
+# AF_UNIX = 1, AF_INET = 2, AF_INET6 = 10
+socket: arg0 == 1 || arg0 == 2 || arg0 == 10
+# SYS_SOCKET = 1, SYS_CONNECT = 3, SYS_GETPEERNAME = 7, SYS_SEND = 9,
+# SYS_RECV = 10, SETSOCKOPT = 14
+socketcall: arg0 == 1 || arg0 == 3 || arg0 == 7 || arg0 == 9 || arg0 == 10 || arg0 == 14
 stat64: 1
 time: 1
 uname: 1
