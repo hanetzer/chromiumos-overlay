@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("c7f6a6d912aed5391d9747c8d436e4d26ccf7dff" "4d34c18e5ce29d138c7946cc817dee8b3fce7cf0")
-CROS_WORKON_TREE=("78f6b0945ff69a5de2ea87589f7ddcebdb1f87a0" "9e5e5f0babaac163c429f5c30c9c53bce477e77b")
+CROS_WORKON_COMMIT=("c7f6a6d912aed5391d9747c8d436e4d26ccf7dff" "200be338e313e23543f98c36a5127b3e22c6f5ab")
+CROS_WORKON_TREE=("78f6b0945ff69a5de2ea87589f7ddcebdb1f87a0" "b4374c458f2cf0569c4e5bf4eb1aa064ecb4e7fb")
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/update_engine")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
@@ -22,7 +22,7 @@ SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management systemd"
+IUSE="cros_p2p +dbus -delta_generator -hwid_override mtd +power_management systemd"
 
 COMMON_DEPEND="
 	app-arch/bzip2

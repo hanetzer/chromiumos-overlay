@@ -22,6 +22,11 @@ KEYWORDS="*"
 VIDEO_CARDS="exynos intel marvell mediatek rockchip tegra"
 IUSE="$(printf 'video_cards_%s ' ${VIDEO_CARDS})"
 
+RDEPEND="
+	x11-libs/arc-libdrm
+"
+DEPEND="${RDEPEND}"
+
 src_compile() {
 	# Use arc-build base class to select the right compiler
 	arc-build-select-gcc

@@ -9,10 +9,11 @@ EAPI="4"
 
 # These are used to find the project sources. Since the gcc-libs sources are
 # within the gcc source tree, we leave these "gcc" rather than "gcc-libs".
-CROS_WORKON_COMMIT="a2bc87ab8851051e765d60626a6997f63ddfe00e"
-CROS_WORKON_TREE="032d3dbe42ba0c2a85ed68a5fe98b12db811c17a"
-CROS_WORKON_LOCALNAME=gcc
-CROS_WORKON_PROJECT=chromiumos/third_party/gcc
+CROS_WORKON_COMMIT="32c89c19b042a12b5a1bf0153299154ea5435c03"
+CROS_WORKON_TREE="63f7c3583b755ddfe5fd77bfa5f448db385fa4e5"
+CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="toolchain/gcc"
+CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit eutils cros-workon binutils-funcs multilib
@@ -27,6 +28,17 @@ RESTRICT="strip"
 
 : ${CTARGET:=${CHOST}}
 
+update_location_for_aosp() {
+	# For aosp gcc repository, the actual gcc directory is 1 more
+	# level down, eg. gcc/gcc-4.9, pick up the newest one in this
+	# case.
+	local gccsub=$(find "${S}" -maxdepth 1 -type d -name "gcc-*" | sort -r | head -1)
+	if [[ -d "${gccsub}" ]] && [[ -d "${gccsub}/gcc/config/arm/" ]]; then
+		S="${gccsub}"
+	fi
+	cd "${S}"
+}
+
 src_unpack() {
 	if use mounted_gcc; then
 		if [[ ! -d "$(get_gcc_dir)" ]]; then
@@ -34,6 +46,7 @@ src_unpack() {
 		fi
 	else
 		cros-workon_src_unpack
+		update_location_for_aosp
 	fi
 
 	# Hack around http://crbug.com/284838
