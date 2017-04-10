@@ -8,5 +8,9 @@ USE="${USE} -compupdates"
 # Printing is not yet evaluated for embedded.
 USE="${USE} -cups"
 
+# Disable certain power management settings like device autosuspend or
+# WiFi powersave mode.
+USE="${USE} -powerknobs"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE="-*"
