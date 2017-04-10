@@ -198,6 +198,7 @@ RDEPEND="${RDEPEND}
 	cups? ( net-print/cups )
 	opengl? ( virtual/opengl )
 	opengles? ( virtual/opengles )
+	sys-apps/dbus
 	sys-apps/pciutils
 	virtual/udev
 	sys-libs/libcap
