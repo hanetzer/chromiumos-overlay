@@ -30,6 +30,14 @@ pkg_preinst() {
 }
 
 platform_pkg_test() {
-	platform_test "run" "${OUT}"/device_tracker_test
-	platform_test "run" "${OUT}"/udev_handler_test
+	local unit_tests=(
+		"device_test"
+		"device_tracker_test"
+		"udev_handler_test"
+	)
+
+	local test
+	for test in "${unit_tests[@]}"; do
+		platform_test "run" "${OUT}"/${test}
+	done
 }
