@@ -19,7 +19,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog systemd"
+IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog systemd -touchscreen_wakeup"
 
 RDEPEND="
 	cellular? (
@@ -99,6 +99,9 @@ src_install() {
 	fi
 	if use keyboard_includes_side_buttons; then
 		udev_dorules udev/optional/92-powerd-tags-keyboard-side-buttons.rules
+	fi
+	if use touchscreen_wakeup; then
+		udev_dorules udev/optional/92-powerd-tags-touchscreen-wakeup.rules
 	fi
 
 	# Init scripts
