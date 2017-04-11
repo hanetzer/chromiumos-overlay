@@ -43,7 +43,6 @@ src_compile() {
 		export DRV_I915=1
 		append-cppflags -DDRV_I915
 		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/intel
-		append-libs drm_intel
 	fi
 
 	if use video_cards_rockchip; then
