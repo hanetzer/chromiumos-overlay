@@ -21,6 +21,9 @@ RDEPEND=">=sys-apps/dbus-1.2.16
 		sys-libs/libselinux
 		sys-libs/libsepol
 	)
+	udev_bridge? (
+		>=virtual/libudev-146
+	)
 	direncryption? (
 		sys-apps/keyutils
 	)"
