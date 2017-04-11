@@ -216,6 +216,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
 	!chromeless_tty? ( +tests_platform_SessionManagerStateKeyGeneration )
+	+tests_platform_TabletMode
 	+tests_platform_TempFS
 	network_time? (
 		+tests_platform_TLSDate
