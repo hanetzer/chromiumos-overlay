@@ -68,6 +68,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_ProfileBasic
 	+tests_network_WiFi_ProfileGUID
 	+tests_network_WiFi_PTK
+	+tests_network_WiFi_RandomMACAddress
 	+tests_network_WiFi_RateControl
 	+tests_network_WiFi_Reassociate
 	+tests_network_WiFi_ReconnectInDarkResume
