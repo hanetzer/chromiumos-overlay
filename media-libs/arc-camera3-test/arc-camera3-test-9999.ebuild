@@ -19,7 +19,9 @@ RDEPEND="
 	dev-cpp/gtest
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libsync
-	media-libs/minigbm"
+	media-libs/libexif
+	media-libs/minigbm
+	virtual/jpeg:0"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
