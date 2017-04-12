@@ -1,20 +1,24 @@
-This patch is from upstream gcc-rs pull request #151 (authored by yours
-truly). Its purpose is to be less strict on the vendor part of the target
-triple with respect to detecting armv7 support. While treating target triples
-this way is far from ideal, it is pervasive and this patch should do for our
-cases.
+From d56a40e05a1f1d2ae2ed79a638bccdee4c3126ab Mon Sep 17 00:00:00 2001
+From: Zach Reizner <zachr@google.com>
+Date: Wed, 30 Aug 2017 13:48:04 -0700
+Subject: [PATCH] recognize armv7a as an armv7 linux target
 
-See: https://github.com/alexcrichton/gcc-rs/pull/151
+---
+ src/lib.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/vendor/gcc/src/lib.rs b/src/vendor/gcc/src/lib.rs
-index 43cc371..934f677 100644
+diff --git a/src/lib.rs b/src/lib.rs
+index 510df12..3aa4cac 100644
 --- a/src/vendor/gcc/src/lib.rs
 +++ b/src/vendor/gcc/src/lib.rs
-@@ -515,7 +515,7 @@ impl Config {
-             }
+@@ -1009,7 +1009,7 @@ impl Build {
+                 }
  
-             // armv7 targets get to use armv7 instructions
--            if target.starts_with("armv7-unknown-linux-") {
-+            if target.starts_with("armv7-") && target.contains("-linux-") {
-                 cmd.args.push("-march=armv7-a".into());
-             }
+                 // armv7 targets get to use armv7 instructions
+-                if target.starts_with("armv7-") && target.contains("-linux-") {
++                if (target.starts_with("armv7-") || target.starts_with("armv7a-")) && target.contains("-linux-") {
+                     cmd.args.push("-march=armv7-a".into());
+                 }
+ 
+-- 
+2.14.1.581.gf28d330327-goog

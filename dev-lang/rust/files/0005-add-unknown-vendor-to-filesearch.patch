@@ -1,0 +1,120 @@
+This is similar to other patches that make rustc treat vendored target triples
+with a bit more intellegience. This patch makes it so that rustc will look in
+both the vendored and unknown-vendored rustlib locations while compiling.
+
+From 5bccf4b0858925b5f27851c71db509a481460448 Mon Sep 17 00:00:00 2001
+From: Zach Reizner <zachr@google.com>
+Date: Mon, 28 Aug 2017 17:41:14 -0700
+Subject: [PATCH] add unknown vendor to filesearch
+
+---
+ src/librustc/session/filesearch.rs | 26 +++++++++++++++++++++++++-
+ src/librustc_metadata/locator.rs   | 38 ++++++++++++++++++++++++++++++--------
+ 2 files changed, 55 insertions(+), 9 deletions(-)
+
+diff --git a/src/librustc/session/filesearch.rs b/src/librustc/session/filesearch.rs
+index 47b988a21b..f70748db6e 100644
+--- a/src/librustc/session/filesearch.rs
++++ b/src/librustc/session/filesearch.rs
+@@ -21,6 +21,18 @@ use std::path::{Path, PathBuf};
+ use session::search_paths::{SearchPaths, PathKind};
+ use util::fs as rustcfs;
+ 
++fn vender_to_unknown(target: &str) -> Option<String> {
++    let mut triple: Vec<&str> = target.splitn(3, '-').collect();
++    if triple.len() < 3 {
++        return None
++    }
++    if triple[1] == "unknown" {
++        return None
++    }
++    triple[1] = "unknown";
++    Some(triple.join("-"))
++}
++
+ #[derive(Copy, Clone)]
+ pub enum FileMatch {
+     FileMatches,
+@@ -57,10 +69,22 @@ impl<'a> FileSearch<'a> {
+         }
+ 
+         visited_dirs.insert(tlib_path);
++
++        if let Some(novendor_triple) = vender_to_unknown(self.triple) {
++            let tlib_path = make_target_lib_path(self.sysroot,
++                                                 novendor_triple.as_str());
++            if !visited_dirs.contains(&tlib_path) {
++                f(&tlib_path, PathKind::All);
++            }
++            visited_dirs.insert(tlib_path);
++        }
+     }
+ 
+     pub fn get_lib_path(&self) -> PathBuf {
+-        make_target_lib_path(self.sysroot, self.triple)
++        match vender_to_unknown(self.triple) {
++            Some(triple) => make_target_lib_path(self.sysroot, triple.as_str()),
++            None => make_target_lib_path(self.sysroot, self.triple),
++        }
+     }
+ 
+     pub fn search<F>(&self, mut pick: F)
+diff --git a/src/librustc_metadata/locator.rs b/src/librustc_metadata/locator.rs
+index 34b07af9f0..2739765307 100644
+--- a/src/librustc_metadata/locator.rs
++++ b/src/librustc_metadata/locator.rs
+@@ -245,6 +245,18 @@ use std::time::Instant;
+ use flate;
+ use owning_ref::{ErasedBoxRef, OwningRef};
+ 
++fn vender_to_unknown(target: &str) -> Option<String> {
++    let mut triple: Vec<&str> = target.splitn(3, '-').collect();
++    if triple.len() < 3 {
++        return None
++    }
++    if triple[1] == "unknown" {
++        return None
++    }
++    triple[1] = "unknown";
++    Some(triple.join("-"))
++}
++
+ pub struct CrateMismatch {
+     path: PathBuf,
+     got: String,
+@@ -698,14 +710,24 @@ impl<'a> Context<'a> {
+         }
+ 
+         if root.triple != self.triple {
+-            info!("Rejecting via crate triple: expected {} got {}",
+-                  self.triple,
+-                  root.triple);
+-            self.rejected_via_triple.push(CrateMismatch {
+-                path: libpath.to_path_buf(),
+-                got: root.triple,
+-            });
+-            return None;
++            if let Some(triple) = vender_to_unknown(self.triple) {
++                if root.triple != triple.as_str() {
++                    self.rejected_via_triple.push(CrateMismatch {
++                        path: libpath.to_path_buf(),
++                        got: root.triple,
++                    });
++                    return None;
++                }
++            } else {
++                info!("Rejecting via crate triple: expected {} got {}",
++                      self.triple,
++                      root.triple);
++                self.rejected_via_triple.push(CrateMismatch {
++                    path: libpath.to_path_buf(),
++                    got: root.triple,
++                });
++                return None;
++            }
+         }
+ 
+         if let Some(myhash) = self.hash {
+-- 
+2.14.1.342.g6490525c54-goog
+
