@@ -176,6 +176,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0531-WIP-configure.ac-androideabi-is-also-a-valid-tuple.patch
 	epatch "${FILESDIR}"/0532-UPSTREAM-configure.ac-Don-t-look-for-pthreads-in-And.patch
 	epatch "${FILESDIR}"/0533-FROMLIST-egl-Use-pkg-config-for-Android-NDK-build.patch
+	epatch "${FILESDIR}"/0534-FROMLIST-egl-android-Dequeue-buffers-inside-EGL-call.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
