@@ -246,6 +246,7 @@ ALL_BOARDS=(
 	smaug-kasan
 	snappy
 	sonic
+	soraka
 	#space
 	squawks
 	storm
