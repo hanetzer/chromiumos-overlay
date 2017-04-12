@@ -17,6 +17,8 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	dev-cpp/gtest
+	media-libs/arc-camera3-libcamera_metadata
+	media-libs/arc-camera3-libsync
 	media-libs/minigbm"
 
 DEPEND="${RDEPEND}

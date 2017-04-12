@@ -19,6 +19,8 @@ REQUIRED_USE="asan? ( clang )"
 RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libmojo
+	media-libs/arc-camera3-libcamera_metadata
+	media-libs/arc-camera3-libsync
 	media-libs/minigbm
 	x11-libs/libdrm
 	virtual/arc-camera3-hal"
