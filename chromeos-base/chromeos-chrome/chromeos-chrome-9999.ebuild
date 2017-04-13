@@ -56,6 +56,7 @@ IUSE="
 	opengl
 	opengles
 	+runhooks
+	thinlto
 	+v4l2_codec
 	v4lplugin
 	vaapi
@@ -63,7 +64,7 @@ IUSE="
 	vtable_verify
 	xkbcommon
 	"
-REQUIRED_USE="asan? ( clang )"
+REQUIRED_USE="asan? ( clang ) thinlto? (gold clang)"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
 OZONE_PLATFORMS=(gbm cast test egltest caca)
@@ -787,6 +788,11 @@ src_configure() {
 	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
+	if use clang && use gold && use thinlto; then
+		export RANLIB="llvm-ranlib"
+		export AR="llvm-ar"
+		append-flags -flto=thin
+	fi
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
 			export GOLD_SET="yes"
