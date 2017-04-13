@@ -60,7 +60,6 @@ IUSE_TESTS="
 	+tests_security_OpenSSLRegressions
 	+tests_security_ProtocolFamilies
 	+tests_security_ptraceRestrictions
-	+tests_security_ReservedPrivileges
 	+tests_security_RootCA
 	+tests_security_RootfsOwners
 	+tests_security_RootfsStatefulSymlinks
