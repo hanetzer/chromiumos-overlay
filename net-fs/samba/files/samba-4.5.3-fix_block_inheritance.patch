@@ -1,0 +1,67 @@
+Fixes issue with GPOPTIONS_BLOCK_INHERITANCE.
+
+GP links with the GPOPTIONS_BLOCK_INHERITANCE option set were
+blocking GPOs from the same link (i.e. an OU with the flag set would block
+its own GPOs). This CL makes sure the GPOs from the link are added to the list.
+
+crbug.com/710469.
+
+jra@ has reviewed the content of the patches for sanity.
+We will remove these patches once they are upstream.
+
+diff --git a/libgpo/gpo_ldap.c b/libgpo/gpo_ldap.c
+index adc578b7d0e..67ce8834db8 100644
+--- a/libgpo/gpo_ldap.c
++++ b/libgpo/gpo_ldap.c
+@@ -775,12 +775,6 @@ ADS_STATUS ads_get_gpo_list(ADS_STRUCT *ads,
+ 					dump_gplink(&gp_link);
+ 				}
+
+-				/* block inheritance from now on */
+-				if (gp_link.gp_opts &
+-				    GPOPTIONS_BLOCK_INHERITANCE) {
+-					add_only_forced_gpos = true;
+-				}
+-
+ 				status = add_gplink_to_gpo_list(ads,
+ 							mem_ctx,
+ 							gpo_list,
+@@ -792,6 +786,12 @@ ADS_STATUS ads_get_gpo_list(ADS_STRUCT *ads,
+ 				if (!ADS_ERR_OK(status)) {
+ 					return status;
+ 				}
++
++				/* block inheritance from now on */
++				if (gp_link.gp_opts &
++				    GPOPTIONS_BLOCK_INHERITANCE) {
++					add_only_forced_gpos = true;
++				}
+ 			}
+ 		}
+
+@@ -821,12 +821,6 @@ ADS_STATUS ads_get_gpo_list(ADS_STRUCT *ads,
+ 					dump_gplink(&gp_link);
+ 				}
+
+-				/* block inheritance from now on */
+-				if (gp_link.gp_opts &
+-				    GPOPTIONS_BLOCK_INHERITANCE) {
+-					add_only_forced_gpos = true;
+-				}
+-
+ 				status = add_gplink_to_gpo_list(ads,
+ 							mem_ctx,
+ 							gpo_list,
+@@ -838,6 +832,12 @@ ADS_STATUS ads_get_gpo_list(ADS_STRUCT *ads,
+ 				if (!ADS_ERR_OK(status)) {
+ 					return status;
+ 				}
++
++				/* block inheritance from now on */
++				if (gp_link.gp_opts &
++				    GPOPTIONS_BLOCK_INHERITANCE) {
++					add_only_forced_gpos = true;
++				}
+ 			}
+ 		}
+

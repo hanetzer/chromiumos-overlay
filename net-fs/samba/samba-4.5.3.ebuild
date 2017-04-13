@@ -95,6 +95,9 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-use_kerberos_enc_types.patch"
 	"${FILESDIR}/${PN}-4.5.3-skip_missing_ldap_attributes.patch"
 	"${FILESDIR}/${PN}-4.5.3-reuse_existing_computer_account.patch"
+	"${FILESDIR}/${PN}-4.5.3-reorder_ads_get_gpo_list.patch"
+	"${FILESDIR}/${PN}-4.5.3-fix_block_inheritance.patch"
+	"${FILESDIR}/${PN}-4.5.3-list_forced_gpos_last.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"
