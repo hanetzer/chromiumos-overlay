@@ -3,7 +3,7 @@
 
 EAPI=4
 
-# need to check out factory source for update_firmware_settings.py for now
+# need to check out factory source for netboot_firmware_settings.py for now
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="../platform/factory"
 
@@ -247,10 +247,10 @@ build_images() {
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
 	local argsfile="${PORTAGE_USERNAME}/${BOARD_USE}/cmdline"
-	"${S}"/setup/update_firmware_settings.py \
+	"${S}"/setup/netboot_firmware_settings.py \
 		-i "${outdir}image${suffix}.net.bin" \
 		--bootfile="${bootfile}" --argsfile="${argsfile}" &&
-		"${S}"/setup/update_firmware_settings.py \
+		"${S}"/setup/netboot_firmware_settings.py \
 			-i "${outdir}image${suffix}.dev.bin" \
 			--bootfile="${bootfile}" --argsfile="${argsfile}" ||
 		die "failed to preset netboot parameter defaults."
