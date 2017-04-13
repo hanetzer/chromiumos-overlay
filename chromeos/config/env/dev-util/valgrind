@@ -4,5 +4,7 @@
 
 # valgrind fails w/clang syntax checking. See crbug.com/710934
 cros_pre_src_prepare_use_gcc() {
-       filter_clang_syntax
+	if use x86 || use amd64; then
+		filter_clang_syntax
+	fi
 }
