@@ -35,11 +35,14 @@ src_install() {
 	"${S}"/platform2_preinstall.sh "${PV}" "/usr/include/chromeos" "${OUT}"
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	doins "${OUT}"/libcros_config.pc
+
+	dobin "${OUT}"/cros_config
 }
 
 platform_pkg_test() {
 	local tests=(
 		cros_config_unittest
+		cros_config_main_unittest
 	)
 
 	local test_bin
