@@ -1,16 +1,16 @@
-# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="0d0a30ba1d78bf8c05e303a4f58052d625b3c88a"
-CROS_WORKON_TREE="699af94bbf4847b7108f7979d33c93620817f152"
+CROS_WORKON_COMMIT="206ccdc3d63dd8e15d9fb19f241bafe5cd01edaa"
+CROS_WORKON_TREE="f45ec46d2bf85cc3566c93b5b83724e3463893b8"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Dependencies for WebGL clear test."
+DESCRIPTION="Dependencies for WebGL performance test."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
@@ -21,7 +21,7 @@ KEYWORDS="*"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-AUTOTEST_DEPS_LIST="webgl_clear"
+AUTOTEST_DEPS_LIST="webgl_perf"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
