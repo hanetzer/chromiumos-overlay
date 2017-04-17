@@ -60,6 +60,7 @@ CROS_BOARDS=(
 	quawks
 	reks
 	rikku
+	soraka
 	squawks
 	stout
 	stumpy
