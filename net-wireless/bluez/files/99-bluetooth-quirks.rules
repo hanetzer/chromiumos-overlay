@@ -17,3 +17,7 @@
 SUBSYSTEM=="input", ACTION=="add|change", ENV{ID_INPUT}=="1", PROGRAM="/usr/bin/get_bluetooth_device_class.sh $attr{device/uniq}"
 RESULT=="mouse", ENV{ID_INPUT_KEYBOARD}=="1", ENV{ID_INPUT_KEYBOARD}=""
 RESULT=="mouse", ENV{ID_INPUT_KEY}=="1", ENV{ID_INPUT_KEY}=""
+
+# Whenever a bluetooth device is connected or disconnected, check if we need to
+# toggle usb power control.
+SUBSYSTEM=="bluetooth", ACTION=="add|change|remove", RUN+="/usr/bin/toggle_bluetooth_usb_power_control.sh $env{DEVPATH}"

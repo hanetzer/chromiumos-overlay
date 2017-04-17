@@ -107,6 +107,7 @@ src_install() {
 	dobin tools/btmgmt tools/btgatt-client tools/btgatt-server
 	dobin "${FILESDIR}/dbus_send_blutooth_class.awk"
 	dobin "${FILESDIR}/get_bluetooth_device_class.sh"
+	dobin "${FILESDIR}/toggle_bluetooth_usb_power_control.sh"
 
 	# Install init scripts.
 	if use systemd; then
