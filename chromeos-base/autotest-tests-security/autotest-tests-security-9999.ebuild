@@ -51,7 +51,6 @@ IUSE_TESTS="
 	)
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
-	+tests_security_HtpdateHTTP
 	+tests_security_Minijail0
 	+tests_security_ModuleLocking
 	+tests_security_mprotect
