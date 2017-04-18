@@ -391,7 +391,7 @@ cros-firmware_src_install() {
 	# install additional scripts ( sbin/firmware-*.${version} ).
 	local main_script="${CROS_FIRMWARE_SCRIPT##*updater}"
 	local version="${main_script%.sh}"
-	for script in "${S}"/sbin/firmware-*; do
+	for script in "${S}"/sbin/firmware-* "${S}"/sbin/chromeos-*; do
 		local script_base="$(basename "${script}")"
 		if [[ "${script#*.}" == "${script}" ]] &&
 		   [[ ! -f "${script}.${version}" ]]; then
