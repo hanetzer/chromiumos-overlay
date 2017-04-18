@@ -322,15 +322,9 @@ cros-firmware_src_compile() {
 		if [ ${#image_cmd[@]} -ne 0 ]; then
 			einfo "Build ${BOARD_USE} firmware updater:" \
 				"${image_cmd[*]} ${ext_cmd[*]}"
-			./pack_firmware.sh "${image_cmd[@]}" "${ext_cmd[@]}" \
+			./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
 				-o "${UPDATE_SCRIPT}" ||
 				die "Cannot pack firmware."
-			# TODO(sjg): Remove the above when validated.
-			./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
-				-o "${UPDATE_SCRIPT}.PY" ||
-				die "Cannot pack firmware using Python script."
-			diff "${UPDATE_SCRIPT}" "${UPDATE_SCRIPT}.PY" ||
-				die "Python script produced a different result"
 		fi
 
 		# Create local updaters
@@ -345,15 +339,9 @@ cros-firmware_src_compile() {
 			fi
 
 			einfo "Updater for local fw"
-			./pack_firmware.sh -o "${output_file}" \
+			./pack_firmware.py -o "${output_file}" \
 				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
 				die "Cannot pack local firmware."
-			# TODO(sjg): Remove the above when validated.
-			./pack_firmware.py -o "${output_file}.PY" \
-				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
-				die "Cannot pack local firmware (Python)."
-			diff "${output_file}" "${output_file}.PY" ||
-				die "Python script produced a different result"
 			if [[ ${#image_cmd[@]} -eq 0 ]]; then
 				# When no pre-built binaries are available,
 				# dupe local updater to system updater.
