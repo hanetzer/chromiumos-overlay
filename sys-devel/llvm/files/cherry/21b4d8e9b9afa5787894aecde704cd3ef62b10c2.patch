@@ -1,0 +1,140 @@
+commit 21b4d8e9b9afa5787894aecde704cd3ef62b10c2
+Author: Chih-Hung Hsieh <chh@google.com>
+Date:   Tue Apr 18 20:15:18 2017 +0000
+
+    [X86] Keep EXTRACT_VECTOR_ELT result type as f128 for Android x86_64.
+    
+    Android x86_64 target uses f128 type and stores f128 values in %xmm* registers.
+    SoftenFloatRes_EXTRACT_VECTOR_ELT should not convert result value
+    from f128 to i128.
+    
+    Differential Revision: http://reviews.llvm.org/D32102
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@300583 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/CodeGen/SelectionDAG/LegalizeFloatTypes.cpp b/lib/CodeGen/SelectionDAG/LegalizeFloatTypes.cpp
+index 6f2b1b94ce4..c1cb5d9b523 100644
+--- a/lib/CodeGen/SelectionDAG/LegalizeFloatTypes.cpp
++++ b/lib/CodeGen/SelectionDAG/LegalizeFloatTypes.cpp
+@@ -72,7 +72,7 @@ bool DAGTypeLegalizer::SoftenFloatResult(SDNode *N, unsigned ResNo) {
+     case ISD::BUILD_PAIR:  R = SoftenFloatRes_BUILD_PAIR(N); break;
+     case ISD::ConstantFP:  R = SoftenFloatRes_ConstantFP(N, ResNo); break;
+     case ISD::EXTRACT_VECTOR_ELT:
+-      R = SoftenFloatRes_EXTRACT_VECTOR_ELT(N); break;
++      R = SoftenFloatRes_EXTRACT_VECTOR_ELT(N, ResNo); break;
+     case ISD::FABS:        R = SoftenFloatRes_FABS(N, ResNo); break;
+     case ISD::FMINNUM:     R = SoftenFloatRes_FMINNUM(N); break;
+     case ISD::FMAXNUM:     R = SoftenFloatRes_FMAXNUM(N); break;
+@@ -171,7 +171,10 @@ SDValue DAGTypeLegalizer::SoftenFloatRes_ConstantFP(SDNode *N, unsigned ResNo) {
+   }
+ }
+ 
+-SDValue DAGTypeLegalizer::SoftenFloatRes_EXTRACT_VECTOR_ELT(SDNode *N) {
++SDValue DAGTypeLegalizer::SoftenFloatRes_EXTRACT_VECTOR_ELT(SDNode *N, unsigned ResNo) {
++  // When LegalInHWReg, keep the extracted value in register.
++  if (isLegalInHWReg(N->getValueType(ResNo)))
++    return SDValue(N, ResNo);
+   SDValue NewOp = BitConvertVectorToIntegerVector(N->getOperand(0));
+   return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, SDLoc(N),
+                      NewOp.getValueType().getVectorElementType(),
+diff --git a/lib/CodeGen/SelectionDAG/LegalizeTypes.h b/lib/CodeGen/SelectionDAG/LegalizeTypes.h
+index 80c93970051..af55a22972a 100644
+--- a/lib/CodeGen/SelectionDAG/LegalizeTypes.h
++++ b/lib/CodeGen/SelectionDAG/LegalizeTypes.h
+@@ -428,7 +428,7 @@ private:
+   SDValue SoftenFloatRes_BITCAST(SDNode *N, unsigned ResNo);
+   SDValue SoftenFloatRes_BUILD_PAIR(SDNode *N);
+   SDValue SoftenFloatRes_ConstantFP(SDNode *N, unsigned ResNo);
+-  SDValue SoftenFloatRes_EXTRACT_VECTOR_ELT(SDNode *N);
++  SDValue SoftenFloatRes_EXTRACT_VECTOR_ELT(SDNode *N, unsigned ResNo);
+   SDValue SoftenFloatRes_FABS(SDNode *N, unsigned ResNo);
+   SDValue SoftenFloatRes_FMINNUM(SDNode *N);
+   SDValue SoftenFloatRes_FMAXNUM(SDNode *N);
+diff --git a/test/CodeGen/X86/extract-store.ll b/test/CodeGen/X86/extract-store.ll
+index 1751f03731d..5286a1b635d 100644
+--- a/test/CodeGen/X86/extract-store.ll
++++ b/test/CodeGen/X86/extract-store.ll
+@@ -5,6 +5,10 @@
+ ; RUN: llc < %s -mtriple=x86_64-unknown -mattr=+sse4.1 | FileCheck %s --check-prefix=X64 --check-prefix=SSE-X64 --check-prefix=SSE41-X64
+ ; RUN: llc < %s -mtriple=i686-unknown -mattr=+avx      | FileCheck %s --check-prefix=X32 --check-prefix=AVX-X32
+ ; RUN: llc < %s -mtriple=x86_64-unknown -mattr=+avx    | FileCheck %s --check-prefix=X64 --check-prefix=AVX-X64
++; RUN: llc < %s -O2 -mtriple=x86_64-linux-android -mattr=+mmx -enable-legalize-types-checking \
++; RUN:   | FileCheck %s --check-prefix=X64 --check-prefix=SSE-X64 --check-prefix=SSE-F128
++; RUN: llc < %s -O2 -mtriple=x86_64-linux-gnu -mattr=+mmx -enable-legalize-types-checking \
++; RUN:   | FileCheck %s --check-prefix=X64 --check-prefix=SSE-X64 --check-prefix=SSE-F128
+ 
+ define void @extract_i8_0(i8* nocapture %dst, <16 x i8> %foo) nounwind {
+ ; SSE2-X32-LABEL: extract_i8_0:
+@@ -458,6 +462,26 @@ define void @extract_f64_1(double* nocapture %dst, <2 x double> %foo) nounwind {
+   ret void
+ }
+ 
++define void @extract_f128_0(fp128* nocapture %dst, <2 x fp128> %foo) nounwind {
++; SSE-F128-LABEL: extract_f128_0:
++; SSE-F128:       # BB#0:
++; SSE-F128-NEXT:    movaps	%xmm0, (%rdi)
++; SSE-F128-NEXT:    retq
++  %vecext = extractelement <2 x fp128> %foo, i32 0
++  store fp128 %vecext, fp128* %dst, align 1
++  ret void
++}
++
++define void @extract_f128_1(fp128* nocapture %dst, <2 x fp128> %foo) nounwind {
++; SSE-F128-LABEL: extract_f128_1:
++; SSE-F128:       # BB#0:
++; SSE-F128-NEXT:    movaps	%xmm1, (%rdi)
++; SSE-F128-NEXT:    retq
++  %vecext = extractelement <2 x fp128> %foo, i32 1
++  store fp128 %vecext, fp128* %dst, align 1
++  ret void
++}
++
+ define void @extract_i8_undef(i8* nocapture %dst, <16 x i8> %foo) nounwind {
+ ; X32-LABEL: extract_i8_undef:
+ ; X32:       # BB#0:
+@@ -535,3 +559,16 @@ define void @extract_f64_undef(double* nocapture %dst, <2 x double> %foo) nounwi
+   store double %vecext, double* %dst, align 1
+   ret void
+ }
++
++define void @extract_f128_undef(fp128* nocapture %dst, <2 x fp128> %foo) nounwind {
++; X32-LABEL: extract_f128_undef:
++; X32:       # BB#0:
++; X32-NEXT:    retl
++;
++; X64-LABEL: extract_f128_undef:
++; X64:       # BB#0:
++; X64-NEXT:    retq
++  %vecext = extractelement <2 x fp128> %foo, i32 2 ; undef
++  store fp128 %vecext, fp128* %dst, align 1
++  ret void
++}
+diff --git a/test/CodeGen/X86/fp128-extract.ll b/test/CodeGen/X86/fp128-extract.ll
+new file mode 100644
+index 00000000000..5006ac898c7
+--- /dev/null
++++ b/test/CodeGen/X86/fp128-extract.ll
+@@ -0,0 +1,22 @@
++; RUN: llc < %s -O2 -mtriple=x86_64-linux-android -mattr=+mmx \
++; RUN:     -enable-legalize-types-checking | FileCheck %s
++; RUN: llc < %s -O2 -mtriple=x86_64-linux-gnu -mattr=+mmx \
++; RUN:     -enable-legalize-types-checking | FileCheck %s
++
++; Test the softened result of extractelement op code.
++define fp128 @TestExtract(<2 x double> %x) {
++entry:
++  ; Simplified instruction pattern from the output of llvm before r289042,
++  ; for a boost function ...::insert<...>::traverse<...>().
++  %a = fpext <2 x double> %x to <2 x fp128>
++  %0 = extractelement <2 x fp128> %a, i32 0
++  %1 = extractelement <2 x fp128> %a, i32 1
++  %2 = fmul fp128 %0, %1
++  ret fp128 %2
++; CHECK-LABEL: TestExtract:
++; CHECK:       movaps	%xmm0, (%rsp)
++; CHECK:       callq	__extenddftf2
++; CHECK:       callq	__extenddftf2
++; CHECK:       callq    __multf3
++; CHECK:       retq
++}

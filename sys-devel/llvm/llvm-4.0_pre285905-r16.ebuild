@@ -21,15 +21,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"3cc8445f85497cd1147c31d13ea4be1d2a629293" # EGIT_COMMIT r299809
+		"3183fbc849f015fd085ce6724e85ae1de65db4e6" # EGIT_COMMIT r300078
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"85fba5b8386cf1450c4ffbbbeb2e3be548a8fbcd" # EGIT_COMMIT r299804
+		"059c103b581e37d2be47cb403769bff20808bca2" # EGIT_COMMIT r300080
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"c6c997530987a170a82ad88b3b446402ec9d6bec"  # EGIT_COMMIT r299806
+		"8ae674d121a0c39b4ae6e83d10caad3fd29dce13"  # EGIT_COMMIT r300074
 )
 else
 EGIT_REPO_URIS=(
@@ -244,6 +244,7 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
+	CHERRIES+=" 7217e99fda533e3a439020fa5dfbc23b7b360988 " # r300571
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -252,6 +253,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
+	CHERRIES+=" 21b4d8e9b9afa5787894aecde704cd3ef62b10c2 " # r300583
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"

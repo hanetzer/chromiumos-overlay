@@ -1,0 +1,75 @@
+commit 7217e99fda533e3a439020fa5dfbc23b7b360988
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Tue Apr 18 17:36:10 2017 +0000
+
+    [AArch64][clang] Pass cpu/arch information to assembler for AArch64.
+    
+    Summary:
+    Pass Cpu/Arch options to assembler for AArch64 with no-integrated-as.
+    This fixes PR20019.
+    
+    Reviewers: richard.barton.arm, kristof.beyls, rengolin
+    
+    Reviewed By: rengolin
+    
+    Subscribers: srhines, pirama, aemerson, rengolin, cfe-commits
+    
+    Differential Revision: https://reviews.llvm.org/D32132
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@300571 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Driver/ToolChains/Gnu.cpp b/lib/Driver/ToolChains/Gnu.cpp
+index 549e24cbd2..165439538e 100644
+--- a/lib/Driver/ToolChains/Gnu.cpp
++++ b/lib/Driver/ToolChains/Gnu.cpp
+@@ -770,6 +770,12 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
+     Args.AddLastArg(CmdArgs, options::OPT_mfpu_EQ);
+     break;
+   }
++  case llvm::Triple::aarch64:
++  case llvm::Triple::aarch64_be: {
++    Args.AddLastArg(CmdArgs, options::OPT_march_EQ);
++    Args.AddLastArg(CmdArgs, options::OPT_mcpu_EQ);
++    break;
++  }
+   case llvm::Triple::mips:
+   case llvm::Triple::mipsel:
+   case llvm::Triple::mips64:
+diff --git a/test/Driver/linux-as.c b/test/Driver/linux-as.c
+index a07abc17e5..c5cb1cd600 100644
+--- a/test/Driver/linux-as.c
++++ b/test/Driver/linux-as.c
+@@ -100,6 +100,33 @@
+ // RUN:   | FileCheck -check-prefix=CHECK-ARM-HARDFP %s
+ // CHECK-ARM-HARDFP: as{{(.exe)?}}" "-mfloat-abi=hard"
+ //
++// RUN: %clang -target aarch64-linux-gnu -mcpu=cortex-a53 -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-MCPU %s
++// CHECK-ARM64-MCPU: as{{(.exe)?}}" "-mcpu=cortex-a53"
++//
++// RUN: %clang -target aarch64-linux-gnu -march=armv8-a -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-MARCH %s
++// CHECK-ARM64-MARCH: as{{(.exe)?}}" "-march=armv8-a"
++//
++// RUN: %clang -target aarch64-linux-gnu -mcpu=cortex-a53 -march=armv8-a -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-ALL %s
++// CHECK-ARM64-ALL: as{{(.exe)?}}" "-march=armv8-a" "-mcpu=cortex-a53"
++//
++// RUN: %clang -target aarch64_be-linux-gnu -mcpu=cortex-a53 -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-MCPU %s
++//
++// RUN: %clang -target aarch64_be-linux-gnu -march=armv8-a -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-MARCH %s
++//
++// RUN: %clang -target aarch64_be-linux-gnu -mcpu=cortex-a53 -march=armv8-a -### \
++// RUN:   -no-integrated-as -c %s 2>&1 \
++// RUN:   | FileCheck -check-prefix=CHECK-ARM64-ALL %s
++//
+ // RUN: %clang -target ppc-linux -mcpu=invalid-cpu -### \
+ // RUN:   -no-integrated-as -c %s 2>&1 \
+ // RUN:   | FileCheck -check-prefix=CHECK-PPC-NO-MCPU %s
