@@ -153,7 +153,7 @@ src_install() {
 			> "${D}/${shims_dir}/wpa_supplicant.conf"
 	fi
 
-	dosym /var/run/shill/resolv.conf /etc/resolv.conf
+	dosym /run/shill/resolv.conf /etc/resolv.conf
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
 
