@@ -13,7 +13,7 @@ diff --git a/configure.ac b/configure.ac
 index c4afd0f..1604b3b 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1609,7 +1609,7 @@ if test -n "$with_dri_drivers"; then
+@@ -1612,7 +1612,7 @@ if test -n "$with_dri_drivers"; then
          xpvr)
              HAVE_PVR_DRI=yes;
              PKG_CHECK_MODULES([PVR], [libdrm >= $LIBDRM_PVR_REQUIRED])
@@ -26,17 +26,12 @@ diff --git a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Mak
 index c3004da..1fbd8dd 100644
 --- a/src/mesa/drivers/dri/pvr/Makefile.am
 +++ b/src/mesa/drivers/dri/pvr/Makefile.am
-@@ -11,10 +11,15 @@ AM_CFLAGS = \
- 	-I$(top_srcdir)/src/mesa/drivers/dri/common \
+@@ -12,7 +12,12 @@ AM_CFLAGS = \
+ 	-I$(top_builddir)/src/mesa/main \
  	$(DEFINES) \
  	$(VISIBILITY_CFLAGS) \
 +	$(LIBDRM_CFLAGS) \
  	$(PVR_CFLAGS)
- 
--AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM.so\"
--AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2.so\"
-+AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM_POWERVR_ROGUE.so\"
-+AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2_POWERVR_ROGUE.so\"
 +
 +if HAVE_EGL_PLATFORM_ANDROID
 +AM_CFLAGS += -DHAVE_ANDROID_PLATFORM

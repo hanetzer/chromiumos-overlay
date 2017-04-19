@@ -52,7 +52,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 
 DEPEND="video_cards_powervr? (
 		media-libs/arc-img-ddk
-		!<media-libs/arc-img-ddk-1.7
+		!<media-libs/arc-img-ddk-1.8
 	)
 	cheets? (
 		x11-libs/arc-libdrm
