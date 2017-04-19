@@ -244,6 +244,7 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
+	CHERRIES+=" clang-5.0-enable-libunwind-with-compiler-rt " #PR28681
 	CHERRIES+=" 7217e99fda533e3a439020fa5dfbc23b7b360988 " # r300571
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do

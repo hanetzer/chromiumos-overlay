@@ -13,11 +13,8 @@ HOMEPAGE="http://compiler-rt.llvm.org/"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
-
-EGIT_COMMIT=692b01cdac57043f8a69f5943142266a63cb721d
+IUSE="llvm-next"
 DEPEND="~sys-devel/llvm-${PV}"
-
 if [[ ${CATEGORY} == cross-* ]] ; then
 	DEPEND+="
 		${CATEGORY}/binutils
@@ -34,6 +31,11 @@ if [[ ${CTARGET} == ${CHOST} ]] ; then
 fi
 
 src_unpack() {
+	if use llvm-next; then
+		EGIT_COMMIT="059c103b581e37d2be47cb403769bff20808bca2" #r300080
+	else
+		EGIT_COMMIT="692b01cdac57043f8a69f5943142266a63cb721d" #r285821
+	fi
 	git-2_src_unpack
 }
 

@@ -1,0 +1,19 @@
+diff --git a/lib/Driver/ToolChains/CommonArgs.cpp b/lib/Driver/ToolChains/CommonArgs.cpp
+index cb273300cd..5a435233ed 100644
+--- a/lib/Driver/ToolChains/CommonArgs.cpp
++++ b/lib/Driver/ToolChains/CommonArgs.cpp
+@@ -960,10 +960,13 @@ void tools::AddRunTimeLibs(const ToolChain &TC, const Driver &D,
+     default:
+       llvm_unreachable("unsupported OS");
+     case llvm::Triple::Win32:
+-    case llvm::Triple::Linux:
+     case llvm::Triple::Fuchsia:
+       CmdArgs.push_back(TC.getCompilerRTArgString(Args, "builtins"));
+       break;
++    case llvm::Triple::Linux:
++      CmdArgs.push_back(TC.getCompilerRTArgString(Args, "builtins"));
++      CmdArgs.push_back("-lunwind");
++      break;
+     }
+     break;
+   case ToolChain::RLT_Libgcc:

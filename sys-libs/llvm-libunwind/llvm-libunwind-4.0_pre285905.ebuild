@@ -9,15 +9,19 @@ DESCRIPTION="C++ runtime stack unwinder from LLVM"
 HOMEPAGE="https://github.com/llvm-mirror/libunwind"
 SRC_URI=""
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/external/llvm.org/libunwind"
-EGIT_COMMIT="0eea5e270b455f79c59df69b8fb38f68399314a2"
 
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug +static-libs"
+IUSE="debug llvm-next +static-libs"
 RDEPEND="!${CATEGORY}/libunwind"
 
 src_unpack() {
+	if use llvm-next; then
+		EGIT_COMMIT="ab68429b2d2159947e1c96933a034afbfb1feb55" #r300020
+	else
+		EGIT_COMMIT="0eea5e270b455f79c59df69b8fb38f68399314a2" #r285845
+	fi
 	git-2_src_unpack
 }
 
