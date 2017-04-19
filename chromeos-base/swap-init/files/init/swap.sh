@@ -11,11 +11,42 @@
 # To start swap, create file /home/chronos/.swap_enabled and run
 # "[systemctl] start swap" or reboot.  To stop swap, remove the file and reboot.
 
-SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
-SWAP_SIZE_SYSTEM_OVERRIDE_FILE=/usr/share/misc/swap_size
-LOWMEM_MARGIN_OVERRIDE_FILE=/home/chronos/.lowmem_margin
-LOWMEM_MARGIN_SYSFS_ENTRY=/sys/kernel/mm/chromeos-low_mem/margin
-LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE=/usr/share/misc/lowmem_margin
+PER_BOARD_OVERRIDE_DIR=/etc/swap
+PER_DEVICE_OVERRIDE_DIR=/var/lib/swap
+
+SWAP_SIZE_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/swap_size_mb"
+SWAP_ENABLE_FILE="${PER_DEVICE_OVERRIDE_DIR}/swap_enabled"
+
+MARGIN_MAX=20000  # MiB
+MARGIN_CONVERSION=1
+MARGIN_OVERRIDE_FILE="${PER_DEVICE_OVERRIDE_DIR}/lowmem_margin"
+MARGIN_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/lowmem_margin"
+MARGIN_SPECIAL_FILE="/sys/kernel/mm/chromeos-low_mem/margin"
+
+margin_default_generator() {
+  default_low_memory_margin "$(get_mem_total)"  # MiB
+}
+
+MIN_FILELIST_MAX=1000  # MiB
+MIN_FILELIST_CONVERSION=1024
+MIN_FILELIST_OVERRIDE_FILE="${PER_DEVICE_OVERRIDE_DIR}/min_filelist_kbytes"
+MIN_FILELIST_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/min_filelist_kbytes"
+MIN_FILELIST_SPECIAL_FILE="/proc/sys/vm/min_filelist_kbytes"
+
+min_filelist_default_generator() {
+  echo 50000  # KiB
+}
+
+EXTRA_FREE_MAX=20000  # MiB
+EXTRA_FREE_CONVERSION=1024
+EXTRA_FREE_OVERRIDE_FILE="${PER_DEVICE_OVERRIDE_DIR}/extra_free_kbytes"
+EXTRA_FREE_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/extra_free_kbytes"
+EXTRA_FREE_SPECIAL_FILE="/proc/sys/vm/extra_free_kbytes"
+
+extra_free_default_generator() {
+  echo 0
+}
+
 HIST_MIN=100
 HIST_MAX=10000
 HIST_BUCKETS=50
@@ -23,6 +54,11 @@ HIST_ARGS="${HIST_MIN} ${HIST_MAX} ${HIST_BUCKETS}"
 # Upstart sets JOB, but we're not always called by upstart,
 # so set it here too.
 JOB="swap"
+
+# Takes a string S and returns the value of ${S}.
+expand_var() {
+  eval echo "\"\$$1\""
+}
 
 get_mem_total() {
   # Extract second field of MemTotal entry in /proc/meminfo.
@@ -46,19 +82,60 @@ default_low_memory_margin() {
   echo "${margin}"
 }
 
-start() {
-  local margin mem_total
-  mem_total=$(get_mem_total)
-  if [ -e "${LOWMEM_MARGIN_OVERRIDE_FILE}" ]; then
-    margin=$(cat "${LOWMEM_MARGIN_OVERRIDE_FILE}")  # MiB
-  elif [ -e "${LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE}" ]; then
-    margin=$(cat "${LOWMEM_MARGIN_SYSTEM_OVERRIDE_FILE}")
-  else
-    margin=$(default_low_memory_margin "${mem_total}")
+# Sets the value of a kernel memory manager parameter, whose name is passed
+# in $1.
+#
+# Each parameter <P> has a default value, computed by <P>_default_generator.
+# The default value can be overridden by a board-specific value contained
+# in <P>_BOARD_OVERRIDE_FILE, or (with higher priority) a device-specific file,
+# <P>_OVERRIDE_FILE which a user may have set, typically for the purpose of
+# experimentation.
+#
+# After figuring out what value to use, the value is passed to the kernel via
+# a procfs or sysfs entry.
+initialize_parameter() {
+  local PARAM="$(echo "$1" | tr '[a-z]' '[A-Z]')"
+  local value
+  local board_override_file="$(expand_var "${PARAM}_BOARD_OVERRIDE_FILE")"
+  local override_file="$(expand_var "${PARAM}_OVERRIDE_FILE")"
+  local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
+  local default_generator="$1"_default_generator
+
+  # Older kernels don't support all parameters.
+  if [ ! -e "${special_file}" ]; then
+    return 0
   fi
-  # set the margin
-  echo "${margin}" > "${LOWMEM_MARGIN_SYSFS_ENTRY}"
-  logger -t "${JOB}" "setting low-mem margin to ${margin} MiB"
+
+  if [ -e "${override_file}" ]; then
+    value=$(cat "${override_file}")
+  elif [ -e "${board_override_file}" ]; then
+    value=$(cat "${board_override_file}")
+  else
+    value=$(${default_generator})
+  fi
+  echo "${value}" > "${special_file}"
+}
+
+
+# TODO(semenzato): Remove this after R65
+migrate_old_swap_setting() {
+  OLD_SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
+  if [ -e "${OLD_SWAP_ENABLE_FILE}" ]; then
+    mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
+    mv "${OLD_SWAP_ENABLE_FILE}" "${SWAP_ENABLE_FILE}"
+  fi
+}
+
+start() {
+  local mem_total param
+  mem_total=$(get_mem_total)
+
+  # TODO(semenzato): Remove this after R65
+  migrate_old_swap_setting
+
+  for param in margin min_filelist extra_free; do
+    initialize_parameter "${param}"
+  done
 
   # Allocate zram (compressed ram disk) for swap.
   # SWAP_ENABLE_FILE contains the zram size in MB.
@@ -69,9 +146,9 @@ start() {
   local requested_size_mb size_kb
   # For security, only read first few bytes of SWAP_ENABLE_FILE.
   requested_size_mb="$(head -c 5 "${SWAP_ENABLE_FILE}")" || :
-  # If SWAP_ENABLE_FILE does not exist or is empty, try the global override.
+  # If SWAP_ENABLE_FILE does not exist or is empty, try the board override.
   if [ -z "${requested_size_mb}" ]; then
-    requested_size_mb=$(cat "${SWAP_SIZE_SYSTEM_OVERRIDE_FILE}") || :
+    requested_size_mb=$(cat "${SWAP_SIZE_BOARD_OVERRIDE_FILE}") || :
   fi
   # If still empty, compute swap based on RAM size.
   if [ -z "${requested_size_mb}" ]; then
@@ -131,13 +208,19 @@ status() {
   # Show general swap info first.
   cat /proc/swaps
 
-  # Show low-memory notification threshold.
-  printf "low-memory margin in MiB: "
-  cat "${LOWMEM_MARGIN_SYSFS_ENTRY}"
+  # Show tunables.
+  printf "low-memory margin (MiB): "
+  cat "${MARGIN_SPECIAL_FILE}"
+  printf "min_filelist_kbytes (KiB): "
+  cat "${MIN_FILELIST_SPECIAL_FILE}"
+  if [ -e "${EXTRA_FREE_SPECIAL_FILE}" ]; then
+    printf "extra_free_kbytes (KiB): "
+    cat "${EXTRA_FREE_SPECIAL_FILE}"
+  fi
 
   # Then spam various zram settings.
   local dir="/sys/block/zram0"
-  printf '\n%s:\n' "${dir}"
+  printf '\ntop-level entries in %s:\n' "${dir}"
   cd "${dir}"
   grep -s '^' * || :
 }
@@ -169,33 +252,62 @@ disable() {
   echo "0" > "${SWAP_ENABLE_FILE}"
 }
 
-set_margin() {
-  local margin="$1"
-  if [ "${margin}" -gt 20000 ]; then
-    echo "${JOB}: error: margin=${margin}, must be <= 20000" >&2
+set_parameter() {
+  local param="$1"
+  local value="$2"
+  case "${param}" in
+  margin|min_filelist|extra_free)
+    # We're good.
+    ;;
+  *)
+    echo "invalid parameter ${param}" >&2
+    exit 1
+    ;;
+  esac
+  local PARAM="$(echo "${param}" | tr '[a-z]' '[A-Z]')"
+  local max="$(expand_var "${PARAM}_MAX")"
+  local override_file="$(expand_var "${PARAM}_OVERRIDE_FILE")"
+  local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
+  local conversion="$(expand_var "${PARAM}_CONVERSION")"
+  local default_generator=${param}_default_generator
+
+  # Don't try to set the parameter if the kernel doesn't support it.
+  if [ ! -e "${special_file}" ]; then
+    return 0
+  fi
+
+  # User units (always MiB) may differ from system units (sometimes KiB).
+  local system_value=$(( value * conversion ))
+
+  if [ "${value}" -gt "${max}" ]; then
+    echo "${JOB}: invalid set ${param} to ${value} (MiB), max is ${max}" >&2
     exit 1
   fi
-  if [ "${margin}" = "0" ]; then
-    rm -f "${LOWMEM_MARGIN_OVERRIDE_FILE}"
-    margin=$(default_low_memory_margin "$(get_mem_total)")
+  if [ "${value}" = "0" ]; then
+    rm -f "${override_file}"
+    system_value=$(${default_generator})
   else
-    echo "${margin}" > "${LOWMEM_MARGIN_OVERRIDE_FILE}"
+    mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
+    echo "${system_value}" > "${override_file}"
   fi
-  echo "${margin}" > "${LOWMEM_MARGIN_SYSFS_ENTRY}"
-  logger "changed low-mem margin to ${margin} MiB"
+  echo "${system_value}" > "${special_file}"
+  value=$(( system_value / conversion ))
+  logger "changed ${param} to ${value} MiB"
 }
 
 usage() {
   cat <<EOF
-Usage: $0 <start|stop|status|enable <size>|disable>
+Usage: $0 <start|stop|status|enable <size>|disable|
+           set_parameter <margin|min_filelist|extra_free> <value>>
 
-Start or stop the use of the compressed swap file.
+Start or stop the use of the compressed swap file, or persistently set
+various memory manager tunable parameters.
 
 The start phase is normally invoked by init during boot, but we never run the
 stop phase when shutting down (since there's no point).  The stop phase is used
 by developers via debugd to restart things on the fly.
 
-Disabling things changes the config, but doesn't actually turn on/off swap.
+Disabling changes the config, but doesn't actually turn on/off swap.
 EOF
   exit $1
 }
@@ -216,8 +328,13 @@ main() {
       usage 1
     fi
     ;;
-  enable|set_margin)
+  enable)
     if [ $# -ne 1 ]; then
+      usage 1
+    fi
+    ;;
+  set_parameter)
+    if [ $# -ne 2 ]; then
       usage 1
     fi
     ;;
