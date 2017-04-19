@@ -81,6 +81,7 @@ ALL_BOARDS=(
 	#chronos
 	cid
 	clapper
+	cobblepot
 	cosmos
 	cranky
 	cyan
