@@ -293,6 +293,7 @@ set_build_args() {
 		system_libdir="$(get_libdir)"
 		pkg_config="$(tc-getPKG_CONFIG)"
 		target_os=chromeos
+		host_pkg_config="$(tc-getBUILD_PKG_CONFIG)"
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
 
