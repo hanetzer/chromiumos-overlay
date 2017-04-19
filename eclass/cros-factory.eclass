@@ -72,8 +72,10 @@ factory_create_resource() {
 	[ -n "${local_dir}" ] || local_dir="${WORKDIR}"
 	[ -n "${resource_dir}" ] || resource_dir="."
 
+	# transform regular file paths, but not targets of symbolic links and hard
+	# links.
 	tar -cf "${archive_dir}/${name}.tar" \
-		-C "${local_dir}" --transform "s'^'${resource_dir}/'" \
+		-C "${local_dir}" --transform "s'^'${resource_dir}/'SH" \
 		"$@"
 }
 
