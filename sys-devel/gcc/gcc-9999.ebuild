@@ -44,8 +44,8 @@ PDEPEND=">=sys-devel/gcc-config-1.7"
 RESTRICT="mirror strip"
 
 IUSE="gcc_repo gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
-      nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
-      next_gcc prev_gcc"
+	nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
+	next_gcc prev_gcc"
 REQUIRED_USE="next_gcc? ( !prev_gcc )"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
@@ -71,7 +71,7 @@ update_location_for_aosp() {
 	# case.
 	local gccsub=$(find "${S}" -maxdepth 1 -type d -name "gcc-*" | sort -r | head -1)
 	if [[ -d "${gccsub}" ]] && [[ -d "${gccsub}/gcc/config/arm/" ]]; then
-	    S="${gccsub}"
+		S="${gccsub}"
 	fi
 	cd "${S}"
 }
@@ -98,10 +98,10 @@ src_unpack() {
 		fi
 		git clone --depth 1 --no-single-branch "${gcc_repository}" "${S}"
 		if use next_gcc ; then
-		    GCC_GITHASH="${NEXT_GCC}"
+			GCC_GITHASH="${NEXT_GCC}"
 		fi
 		if use prev_gcc ; then
-		    GCC_GITHASH="${PREV_GCC}"
+			GCC_GITHASH="${PREV_GCC}"
 		fi
 		if [[ -n ${GCC_GITHASH} ]] ; then
 			einfo "Checking out: ${GCC_GITHASH}"

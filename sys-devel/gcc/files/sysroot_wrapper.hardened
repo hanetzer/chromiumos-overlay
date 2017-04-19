@@ -445,7 +445,47 @@ if print_cmdline:
 
 sys.stdout.flush()
 
+# Log 'time' like resource usage, along with corresponding command line, to
+# GETRUSAGE file name if it is defined.
+def log_rusage(log_file):
+  import datetime
+  import logging
+
+  pid = os.fork()
+  if pid > 0:
+    t = datetime.datetime.now()
+    _, status, usage = os.wait3(0)
+    real = (datetime.datetime.now() - t).total_seconds()
+
+    logger = logging.getLogger('sysroot_wrapper')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.FileHandler(log_file))
+    logger.info('%f : %f : %f : %d : %s : %s' %
+                (real, usage.ru_utime, usage.ru_stime, usage.ru_maxrss,
+                 argv0, ' '.join(execargs)))
+
+    # So that a root-created log is writable by others.
+    try:
+      os.chmod(log_file, 0o0666)
+    except OSError:
+      pass
+
+    # Emulate child's exit status.
+    if os.WIFEXITED(status):
+      sys.exit(os.WEXITSTATUS(status))
+    elif os.WIFSIGNALED(status):
+      os.kill(os.getpid(), os.WTERMSIG(status))
+    raise RuntimeError('wait: compilation process returned for unknown reason.')
+
+getrusage = os.environ.get('GETRUSAGE')
 bisect_stage = os.environ.get('BISECT_STAGE')
+
+if getrusage and bisect_stage:
+    raise RuntimeError('GETRUSAGE is meaningless with BISECT_STAGE')
+
+if getrusage:
+  log_rusage(getrusage)
+
 if not bisect_stage:
   try:
     os.execv(argv0, execargs)
