@@ -68,7 +68,9 @@ src_configure() {
 src_compile() {
 	einfo "Building the bootstrap compiler."
 	cd "${GOROOT_BOOTSTRAP}/src"
-	./make.bash || die
+	# Build the bootstrap compiler with Cgo disabled.
+	#  - https://bugs.chromium.org/p/chromium/issues/detail?id=712784
+	CGO_ENABLED="0" ./make.bash || die
 
 	cd "${S}/src"
 	einfo "Building the cross compiler for ${CTARGET}."
