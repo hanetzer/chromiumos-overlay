@@ -104,8 +104,6 @@ IUSE_TESTS=(
 	+tests_platform_InputVolume
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
-	+tests_policy_AutoFillEnabled
-	+tests_policy_BlockThirdPartyCookies
 	+tests_policy_ChromeOsLockOnIdleSuspend
 	+tests_policy_CookiesAllowedForUrls
 	+tests_policy_CookiesBlockedForUrls
@@ -128,8 +126,6 @@ IUSE_TESTS=(
 	+tests_policy_PowerManagementIdleSettings
 	+tests_policy_ProxySettings
 	+tests_policy_RestoreOnStartupURLs
-	+tests_policy_SearchSuggestEnabled
-	+tests_policy_SpellCheckServiceEnabled
 	+tests_policy_URLBlacklist
 	+tests_policy_URLWhitelist
 	+tests_power_AudioDetector
