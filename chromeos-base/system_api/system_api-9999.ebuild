@@ -57,6 +57,7 @@ src_install() {
 	# library to access these files.
 	local dir dirs=(
 		apmanager
+		biod
 		cros-disks
 		cryptohome
 		debugd
@@ -72,7 +73,7 @@ src_install() {
 		doins dbus/"${dir}"/dbus-constants.h
 	done
 
-	dirs=( authpolicy cryptohome power_manager system_api )
+	dirs=( authpolicy biod cryptohome power_manager system_api )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
