@@ -138,6 +138,8 @@ eblit-run-maybe() {
 # eblit-run <function> [version]
 # aka: src_unpack() { eblit-run src_unpack ; }
 eblit-run() {
+	CC="${CTARGET}-gcc"
+	CXX="${CTARGET}-g++"
 	eblit-include --skip common "${*:2}"
 	eblit-include "$@"
 	eblit-run-maybe eblit-$1-pre

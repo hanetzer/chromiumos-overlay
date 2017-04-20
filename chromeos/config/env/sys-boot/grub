@@ -1,3 +1,7 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 PKG_INSTALL_MASK+=" /etc/grub.d/00_header
                     /etc/grub.d/10_linux
                     /etc/grub.d/30_os-prober
@@ -12,3 +16,10 @@ INSTALL_MASK+=" /etc/grub.d/00_header
                 /etc/grub.d/README
                 /lib64/grub/grub-mkconfig_lib
                 /lib64/grub/update-grub_lib"
+
+# We need to build grub with GCC, for host builds.
+cros_pre_src_prepare_use_gcc() {
+       if use cros_host; then
+               cros_use_gcc
+       fi
+}

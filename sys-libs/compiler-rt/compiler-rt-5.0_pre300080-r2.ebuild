@@ -52,7 +52,7 @@ src_prepare() {
 	done
 
 	# Apply patches
-    if use llvm-next; then
+	if use llvm-next; then
 	# leak-whitelist patch does not cleanly apply to llvm-next.
 		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	else
@@ -62,8 +62,8 @@ src_prepare() {
 }
 
 src_configure() {
-	export CC="$(tc-getCC ${CTARGET}) ${LDFLAGS}"
-	export CXX="$(tc-getCXX ${CTARGET}) ${LDFLAGS}"
+	export CC="${CTARGET}-gcc ${LDFLAGS}"
+	export CXX="${CTARGET}-g++ ${LDFLAGS}"
 	export STRIP="$(tc-getSTRIP ${CTARGET})"
 	export OBJCOPY="$(tc-getOBJCOPY ${CTARGET})"
 	append-flags -fomit-frame-pointer

@@ -76,6 +76,10 @@ update_location_for_aosp() {
 	cd "${S}"
 }
 
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+}
+
 src_unpack() {
 	if use mounted_gcc ; then
 		if [[ ! -d "$(get_gcc_dir)" ]] ; then
