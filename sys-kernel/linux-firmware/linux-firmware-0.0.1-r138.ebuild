@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="b3bf4ecaee66de377beb98ca679f710770076bfb"
-CROS_WORKON_TREE="c35683fd7bfc97384cfa60196ab9f033b0414c22"
+CROS_WORKON_COMMIT="7553e7c41607903a6a3ce10dbddfcffbae6b5c62"
+CROS_WORKON_TREE="0074e1c90e40bbdfe9d15e39f214077d5a417ad9"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
