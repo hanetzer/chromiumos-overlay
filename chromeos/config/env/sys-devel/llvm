@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 # llvm cannot compile with -clang-syntax, see crbug.com/493744
-# Force build with gcc (llvm mis-compiles llvm for x86; see crbug/597666).
 cros_pre_src_prepare_use_gcc() {
-	cros_use_gcc
 	filter_clang_syntax
 }
