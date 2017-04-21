@@ -36,7 +36,7 @@ src_compile() {
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include"
+	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
 	dobin hal_adapter/arc_camera3_service
@@ -45,6 +45,7 @@ src_install() {
 
 	insinto "${INCLUDE_DIR}"
 	doins include/arc/camera_buffer_mapper.h
+	doins include/arc/camera_buffer_mapper_typedefs.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		common/libcbm.pc.template > common/libcbm.pc
