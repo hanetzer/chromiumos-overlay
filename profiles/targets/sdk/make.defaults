@@ -52,3 +52,7 @@ QEMU_USER_TARGETS="aarch64 arm i386 mips mips64 mips64el mipsel x86_64"
 # Various compiler defaults.  Should be no arch-specific bits here.
 CFLAGS="-O2 -pipe"
 LDFLAGS="-Wl,-O2 -Wl,--as-needed"
+
+# We want to migrate away from this at some point.
+# https://crbug.com/360346
+SYMLINK_LIB="yes"
