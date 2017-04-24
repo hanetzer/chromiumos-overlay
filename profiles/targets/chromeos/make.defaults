@@ -53,3 +53,7 @@ STRIP_MASK="*.nexe"
 # Therefore, stripping should not be done. It's OK not to strip the ELF
 # files because these files are not installed into the image.
 STRIP_MASK="${STRIP_MASK} /firmware/*.elf"
+
+# We don't want legacy symlink lib cruft anywhere.
+SYMLINK_LIB="no"
+LIBDIR_x86="lib"
