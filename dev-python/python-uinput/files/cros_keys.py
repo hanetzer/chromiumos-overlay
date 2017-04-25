@@ -10,8 +10,18 @@ import subprocess
 import time
 import uinput
 
+
+# Time to wait after uinput device creation, before starting to type. This is
+# needed as kernel/Chrome takes some time to register the new input device.
+#
+# TODO(crbug.com/714950): This is a hack, we should figure out a way to check
+# when kernel/Chrome is ready (monitor udev events?), instead of waiting for
+# an arbitrary amount of time.
+STARTUP_DELAY = 0.2
+
 # Default delay between key presses in seconds. 12ms is the xdotool default.
-default_delay = 0.012
+DEFAULT_DELAY = 0.012
+
 uinput_device_keyboard = None
 
 
@@ -247,6 +257,7 @@ def _get_uinput_device_keyboard():
         # For DUTs without keyboard attached force load uinput.
         subprocess.Popen(['modprobe', 'uinput']).wait()
         uinput_device_keyboard = uinput.Device(_CROS_KEYS_ALL)
+        time.sleep(STARTUP_DELAY)
     return uinput_device_keyboard
 
 
@@ -262,7 +273,7 @@ def _uinput_emit_keycombo(device, events, syn=True):
     Wrapper for uinput.emit_combo. Emits sequence of events.
     Example: [KEY_LEFTCTRL, KEY_LEFTALT, KEY_F5]
     """
-    time.sleep(default_delay)
+    time.sleep(DEFAULT_DELAY)
     device.emit_combo(events, syn)
 
 
