@@ -1,0 +1,29 @@
+From 75226ba9c6559990947cc80e68301468bdcb9b9c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Tue, 25 Apr 2017 16:15:46 -0700
+Subject: [PATCH] CHROMIUM: Disable hw VP8 decode on skylake
+
+It is broken and causes GPU hanges. Let's disable it until
+somebody figures it out.
+
+BUG=b:35575268
+TEST=build on caroline, run hangouts
+---
+ src/i965_device_info.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index 0258cf0..5594a54 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -351,7 +351,6 @@ static struct hw_codec_info skl_hw_codec_info = {
+     .has_tiled_surface = 1,
+     .has_di_motion_adptive = 1,
+     .has_di_motion_compensated = 1,
+-    .has_vp8_decoding = 1,
+     .has_h264_mvc_encoding = 1,
+     .has_hevc_decoding = 1,
+     .has_hevc_encoding = 1,
+-- 
+2.13.0.rc0.306.g87b477812d-goog
+

@@ -58,6 +58,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/Follow-the-HW-spec-to-configure-the-buffer-cache-on-.patch
 	epatch "${FILESDIR}"/Fix-the-incorrect-configuration-of-media_pipeline-po.patch
 	epatch "${FILESDIR}"/H264-Encoding-Free-aux_batchbuffer-to-configure-acce.patch
+	epatch "${FILESDIR}"/CHROMIUM-Disable-hw-VP8-decode-on-skylake.patch
 	eautoreconf
 }
 
