@@ -15,7 +15,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang doc static-libs"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=">=dev-libs/glib-2.32
+RDEPEND=">=dev-libs/glib-2.36
 	virtual/libgudev"
 
 DEPEND="${RDEPEND}
