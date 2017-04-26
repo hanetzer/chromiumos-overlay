@@ -4,8 +4,8 @@
 EAPI=4
 
 # need to check out factory source for netboot_firmware_settings.py for now
-CROS_WORKON_COMMIT="71a9251f1519f4a05004fb6b7c28d362626d7c96"
-CROS_WORKON_TREE="781c17fb22a53a070bf1066f5e65f48bfb640353"
+CROS_WORKON_COMMIT="6ee3a16ab02bfc56317b1b46bce528dbefaf5b47"
+CROS_WORKON_TREE="047e3da2a3dd5743d0b0f93d63868cbaab00c74c"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="../platform/factory"
 
