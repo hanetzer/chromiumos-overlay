@@ -1,7 +1,9 @@
-diff --git a/lib/Driver/ToolChains/CommonArgs.cpp b/lib/Driver/ToolChains/CommonArgs.cpp
+This patch links libunwind when rtlib=compiler-rt.
+https://llvm.org/bugs/show_bug.cgi?id=28681
+diff --git a/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp b/lib/Driver/ToolChains/CommonArgs.cpp
 index cb273300cd..5a435233ed 100644
---- a/lib/Driver/ToolChains/CommonArgs.cpp
-+++ b/lib/Driver/ToolChains/CommonArgs.cpp
+--- a/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
++++ b/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
 @@ -960,10 +960,13 @@ void tools::AddRunTimeLibs(const ToolChain &TC, const Driver &D,
      default:
        llvm_unreachable("unsupported OS");

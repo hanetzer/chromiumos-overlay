@@ -1,0 +1,23 @@
+commit 46a48e5918ab64e40ed8b929fdb8d2ff4117cfa1
+Author: Evgeniy Stepanov <eugeni.stepanov@gmail.com>
+Date:   Mon Apr 24 20:25:39 2017 +0000
+
+    [asan] Use posix strerror_r interceptor on android.
+    
+    This fixes a regression in r297315.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@301243 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/sanitizer_common/sanitizer_common_interceptors.inc b/lib/sanitizer_common/sanitizer_common_interceptors.inc
+index 9da1822f3..4fe1ac8f9 100644
+--- a/lib/sanitizer_common/sanitizer_common_interceptors.inc
++++ b/lib/sanitizer_common/sanitizer_common_interceptors.inc
+@@ -3330,7 +3330,7 @@ INTERCEPTOR(char *, strerror, int errnum) {
+ //  * GNU version returns message pointer, which points to either buf or some
+ //    static storage.
+ #if ((_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE) || \
+-    SANITIZER_MAC
++    SANITIZER_MAC || SANITIZER_ANDROID
+ // POSIX version. Spec is not clear on whether buf is NULL-terminated.
+ // At least on OSX, buf contents are valid even when the call fails.
+ INTERCEPTOR(int, strerror_r, int errnum, char *buf, SIZE_T buflen) {

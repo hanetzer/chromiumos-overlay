@@ -1,0 +1,54 @@
+commit 385d9f6d5abb6b2d4ea27e59ac1e7b0e20d54f7c
+Author: Maxim Ostapenko <chefmax7@gmail.com>
+Date:   Tue Apr 18 07:22:26 2017 +0000
+
+    [sanitizer] Don't include <linux/user.h> in sanitizer_stoptheworld_linux_libcdep.cc on ARM Android
+    
+    Turned out that adding defined(_arm_) in sanitizer_stoptheworld_linux_libcdep.cc breaks android arm with some toolchains.
+    
+    .../llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc:36:11: fatal error:
+          'linux/user.h' file not found
+    # include <linux/user.h>  // for pt_regs
+              ^
+    1 error generated.
+    
+    Context:
+    #if SANITIZER_ANDROID && defined(__arm__)
+    # include <linux/user.h>  // for pt_regs
+    #else
+    
+    This patch removes corresponding #if SANITIZER_ANDROID && defined(__arm__) and a bit rearranges adjacent сode.
+    
+    Differential Revision: https://reviews.llvm.org/D32128
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@300531 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc b/lib/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
+index fb257fe0a..03f73ae88 100644
+--- a/lib/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
++++ b/lib/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
+@@ -32,17 +32,13 @@
+ #include <sys/types.h> // for pid_t
+ #include <sys/uio.h> // for iovec
+ #include <elf.h> // for NT_PRSTATUS
+-#if SANITIZER_ANDROID && defined(__arm__)
+-# include <linux/user.h>  // for pt_regs
+-#else
+-# ifdef __aarch64__
++#if defined(__aarch64__) && !SANITIZER_ANDROID
+ // GLIBC 2.20+ sys/user does not include asm/ptrace.h
+-#  include <asm/ptrace.h>
+-# endif
+-# include <sys/user.h>  // for user_regs_struct
+-# if SANITIZER_ANDROID && SANITIZER_MIPS
+-#   include <asm/reg.h>  // for mips SP register in sys/user.h
+-# endif
++# include <asm/ptrace.h>
++#endif
++#include <sys/user.h>  // for user_regs_struct
++#if SANITIZER_ANDROID && SANITIZER_MIPS
++# include <asm/reg.h>  // for mips SP register in sys/user.h
+ #endif
+ #include <sys/wait.h> // for signal-related stuff
+ 

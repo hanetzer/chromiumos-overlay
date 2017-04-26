@@ -1,0 +1,115 @@
+commit bde56a96995a329cf1df5716b1f84b32aac6c174
+Author: Chandler Carruth <chandlerc@gmail.com>
+Date:   Thu Apr 27 00:28:03 2017 +0000
+
+    Disable GVN Hoist due to still more bugs being found in it. There is
+    also a discussion about exactly what we should do prior to re-enabling
+    it.
+    
+    The current bug is http://llvm.org/PR32821 and the discussion about this
+    is in the review thread for r300200.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@301505 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Passes/PassBuilder.cpp b/lib/Passes/PassBuilder.cpp
+index 55ac2541948..0feb51fa9dc 100644
+--- a/lib/Passes/PassBuilder.cpp
++++ b/lib/Passes/PassBuilder.cpp
+@@ -150,6 +150,10 @@ using namespace llvm;
+ static cl::opt<unsigned> MaxDevirtIterations("pm-max-devirt-iterations",
+                                              cl::ReallyHidden, cl::init(4));
+ 
++static cl::opt<bool> EnableGVNHoist(
++    "enable-npm-gvn-hoist", cl::init(false), cl::Hidden,
++    cl::desc("Enable the GVN hoisting pass for the new PM (default = off)"));
++
+ static Regex DefaultAliasRegex("^(default|lto-pre-link|lto)<(O[0123sz])>$");
+ 
+ static bool isOptimizingForSize(PassBuilder::OptimizationLevel Level) {
+@@ -454,7 +458,8 @@ PassBuilder::buildPerModuleDefaultPipeline(OptimizationLevel Level,
+   EarlyFPM.addPass(SROA());
+   EarlyFPM.addPass(EarlyCSEPass());
+   EarlyFPM.addPass(LowerExpectIntrinsicPass());
+-  EarlyFPM.addPass(GVNHoistPass());
++  if (EnableGVNHoist)
++    EarlyFPM.addPass(GVNHoistPass());
+   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(EarlyFPM)));
+ 
+   // Interprocedural constant propagation now that basic cleanup has occured
+diff --git a/lib/Transforms/IPO/PassManagerBuilder.cpp b/lib/Transforms/IPO/PassManagerBuilder.cpp
+index 0d5910ebbfc..590fabf8808 100644
+--- a/lib/Transforms/IPO/PassManagerBuilder.cpp
++++ b/lib/Transforms/IPO/PassManagerBuilder.cpp
+@@ -137,8 +137,8 @@ static cl::opt<int> PreInlineThreshold(
+              "(default = 75)"));
+ 
+ static cl::opt<bool> EnableGVNHoist(
+-    "enable-gvn-hoist", cl::init(true), cl::Hidden,
+-    cl::desc("Enable the GVN hoisting pass (default = on)"));
++    "enable-gvn-hoist", cl::init(false), cl::Hidden,
++    cl::desc("Enable the GVN hoisting pass (default = off)"));
+ 
+ static cl::opt<bool>
+     DisableLibCallsShrinkWrap("disable-libcalls-shrinkwrap", cl::init(false),
+diff --git a/test/Feature/optnone-opt.ll b/test/Feature/optnone-opt.ll
+index a00013ec179..efd35e56603 100644
+--- a/test/Feature/optnone-opt.ll
++++ b/test/Feature/optnone-opt.ll
+@@ -41,7 +41,6 @@ attributes #0 = { optnone noinline }
+ ; OPT-O1-DAG: Skipping pass 'Combine redundant instructions'
+ ; OPT-O1-DAG: Skipping pass 'Dead Store Elimination'
+ ; OPT-O1-DAG: Skipping pass 'Early CSE'
+-; OPT-O1-DAG: Skipping pass 'Early GVN Hoisting of Expressions'
+ ; OPT-O1-DAG: Skipping pass 'Jump Threading'
+ ; OPT-O1-DAG: Skipping pass 'MemCpy Optimization'
+ ; OPT-O1-DAG: Skipping pass 'Reassociate expressions'
+@@ -59,7 +58,6 @@ attributes #0 = { optnone noinline }
+ ; OPT-MORE-DAG: Skipping pass 'Basic-Block Vectorization'
+ ; OPT-MORE-DAG: Skipping pass 'Dead Code Elimination'
+ ; OPT-MORE-DAG: Skipping pass 'Dead Instruction Elimination'
+-; OPT-MORE-DAG: Skipping pass 'Early GVN Hoisting of Expressions'
+ ; OPT-MORE-DAG: Skipping pass 'Lower atomic intrinsics
+ 
+ ; Loop IR passes that opt doesn't turn on by default.
+diff --git a/test/Other/new-pm-defaults.ll b/test/Other/new-pm-defaults.ll
+index fc1170c666f..a4a1c1f546c 100644
+--- a/test/Other/new-pm-defaults.ll
++++ b/test/Other/new-pm-defaults.ll
+@@ -43,10 +43,6 @@
+ ; CHECK-O-NEXT: Running pass: EarlyCSEPass
+ ; CHECK-O-NEXT: Running analysis: TargetLibraryAnalysis
+ ; CHECK-O-NEXT: Running pass: LowerExpectIntrinsicPass
+-; CHECK-O-NEXT: Running pass: GVNHoistPass
+-; CHECK-O-NEXT: Running analysis: AAManager
+-; CHECK-O-NEXT: Running analysis: MemoryDependenceAnalysis
+-; CHECK-O-NEXT: Running analysis: MemorySSAAnalysis
+ ; CHECK-O-NEXT: Finished llvm::Function pass manager run.
+ ; CHECK-O-NEXT: Running pass: IPSCCPPass
+ ; CHECK-O-NEXT: Running pass: GlobalOptPass
+@@ -69,6 +65,7 @@
+ ; CHECK-O-NEXT: Running analysis: OuterAnalysisManagerProxy<{{.*}}LazyCallGraph{{.*}}>
+ ; CHECK-O-NEXT: Running pass: PostOrderFunctionAttrsPass
+ ; CHECK-O-NEXT: Running analysis: FunctionAnalysisManagerCGSCCProxy
++; CHECK-O-NEXT: Running analysis: AAManager
+ ; CHECK-O3-NEXT: Running pass: ArgumentPromotionPass
+ ; CHECK-O-NEXT: Running pass: CGSCCToFunctionPassAdaptor<{{.*}}PassManager{{.*}}>
+ ; CHECK-O-NEXT: Starting llvm::Function pass manager run.
+@@ -108,13 +105,18 @@
+ ; CHECK-O-NEXT: Finished Loop pass manager run.
+ ; CHECK-Os-NEXT: Running pass: MergedLoadStoreMotionPass
+ ; CHECK-Os-NEXT: Running pass: GVN
++; CHECK-Os-NEXT: Running analysis: MemoryDependenceAnalysis
+ ; CHECK-Oz-NEXT: Running pass: MergedLoadStoreMotionPass
+ ; CHECK-Oz-NEXT: Running pass: GVN
++; CHECK-Oz-NEXT: Running analysis: MemoryDependenceAnalysis
+ ; CHECK-O2-NEXT: Running pass: MergedLoadStoreMotionPass
+ ; CHECK-O2-NEXT: Running pass: GVN
++; CHECK-O2-NEXT: Running analysis: MemoryDependenceAnalysis
+ ; CHECK-O3-NEXT: Running pass: MergedLoadStoreMotionPass
+ ; CHECK-O3-NEXT: Running pass: GVN
++; CHECK-O3-NEXT: Running analysis: MemoryDependenceAnalysis
+ ; CHECK-O-NEXT: Running pass: MemCpyOptPass
++; CHECK-O1-NEXT: Running analysis: MemoryDependenceAnalysis
+ ; CHECK-O-NEXT: Running pass: SCCPPass
+ ; CHECK-O-NEXT: Running pass: BDCEPass
+ ; CHECK-O-NEXT: Running analysis: DemandedBitsAnalysis

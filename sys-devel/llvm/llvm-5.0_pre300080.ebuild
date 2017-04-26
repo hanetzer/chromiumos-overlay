@@ -21,6 +21,21 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+		"960a40ec576f07b6fb196cc91d08abbcffbc04c0" # EGIT_COMMIT r301047
+	"compiler-rt"
+		"projects/compiler-rt"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"ba68c62d8b58b511859fd87a2b870e4a18e9b3b1" # EGIT_COMMIT r301043
+	"clang"
+		"tools/clang"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
+		"161f2d662400d104f1d07428ce3276b4db680af2"  # EGIT_COMMIT r301039
+)
+else
+EGIT_REPO_URIS=(
+	"llvm"
+		""
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 		"3183fbc849f015fd085ce6724e85ae1de65db4e6" # EGIT_COMMIT r300078
 	"compiler-rt"
 		"projects/compiler-rt"
@@ -30,21 +45,6 @@ EGIT_REPO_URIS=(
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
 		"8ae674d121a0c39b4ae6e83d10caad3fd29dce13"  # EGIT_COMMIT r300074
-)
-else
-EGIT_REPO_URIS=(
-	"llvm"
-		""
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"77e7778b3e097ad88c71c7dac789e245c8f3e33a" # EGIT_COMMIT
-	"compiler-rt"
-		"projects/compiler-rt"
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"692b01cdac57043f8a69f5943142266a63cb721d" # EGIT_COMMIT
-	"clang"
-		"tools/clang"
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"47592b1815f5423fa708fca47741886043e6bb32"  # EGIT_COMMIT
 )
 fi
 
@@ -170,8 +170,6 @@ trunk_src_unpack() {
 	git-r3_checkout
 }
 
-
-
 src_unpack() {
 	if use llvm-tot ; then
 		trunk_src_unpack
@@ -191,60 +189,6 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" d6168b6ed57fe78bf42f57509d73bde2680105b5 " # r286798
-	CHERRIES+=" 32dc773aa73602b5d5ee6881df5d76decd776018 " # r286613
-	CHERRIES+=" 4c434043b9a5140cf6ab9231c82e6000bb6f31f6 " # r289094
-	CHERRIES+=" 671d92a8e764a3266ecab219d791a27fb257be78 " # r289103
-	CHERRIES+=" objectsize-evalmodes " # r294800 (modified)
-	CHERRIES+=" cefec9cba5ec1629aac083bad2ad7e10e91dcf05 " # r295805
-	CHERRIES+=" e604e8210fa49cfe23fb262e228d40734eaed141 " # r295935
-	pushd "${S}"/tools/clang >/dev/null || die
-	for cherry in ${CHERRIES}; do
-		epatch "${FILESDIR}/cherry/${cherry}.patch"
-	done
-	popd >/dev/null || die
-
-	# llvm
-	CHERRIES=""
-	# Arm ChromeOS failed to boot without this.
-	CHERRIES+=" 6300980dd120ee39c6acb1449269a01e892ed3c7 " # r285912
-	CHERRIES+=" 81323af362fc053dbea0758ca1e02d9af82c0da6 " # r286611
-	CHERRIES+=" 06f9b86145451df76f74540867ea0d1671e41d20 " # r286636
-	CHERRIES+=" 3cd5f5be43861486db2205e85416d74403f063d2 " # r287873
-	CHERRIES+=" 8ac75a18fca87788bd3c69cf0d2b511f438e3262 " # r287874
-	CHERRIES+=" 242e37443552dd128bb35e9f500e05d7d6f4afed " # r287875
-	CHERRIES+=" 88948ad1d3271c40709bd931b1822b5710aa3e9f " # r288253
-	CHERRIES+=" bc7dc480be4b503b81d4e63f97fb499b6873a1fa " # r288420
-	CHERRIES+=" c31c930cdf7d34987fb1d08e92a4532343241dd3 " # r288433
-	CHERRIES+=" d7bfb58bc10fa2b57d986b3ca7e6b6d8b9a89974 " # r289008
-	CHERRIES+=" 38ab2af2b57bc9390bb9b695001cba63b9262f2b " # r289661
-	CHERRIES+=" 80ea0f28fb5be3e632b0ae712823c28715f3bbe7 " # r289679
-	CHERRIES+=" e209ab4879923a83e9c223aa8318ad9644124189 " # r289681
-	CHERRIES+=" 15e919d001037b85218dbf135ccc9522f91a86e1 " # r289684
-	CHERRIES+=" 5bf7eb503fb9d70121904ea8872f639b9497c1e6 " # r289688
-	CHERRIES+=" 1f177f4a3f2a90b90f5721a4962607d71d551223 " # r289693
-	CHERRIES+=" caba5d3de2f61c68651afdff72a223248a660384 " # r289699
-	CHERRIES+=" 133b0bceea54f061d2a4739a4cf93dcc0ece2879 " # r289704
-	CHERRIES+=" 9c5e4bac4a745f6a621dcf2803fa89f6bbe51862 " # PR30923
-	CHERRIES+=" 93418eeb1d886747332ff404f0e2651e8d77879a " # r295964
-	CHERRIES+=" cdc303e5ed4d3110e6f70931775a70bb1de44ed6 " # r298624
-	pushd "${S}" >/dev/null || die
-	for cherry in ${CHERRIES}; do
-		epatch "${FILESDIR}/cherry/${cherry}.patch"
-	done
-	popd >/dev/null || die
-
-	# compiler-rt
-	CHERRIES="9eaa3ef462b338fa2426930e2d3072b43291abcf" # r288091
-	pushd "${S}"/projects/compiler-rt >/dev/null || die
-	epatch "${FILESDIR}/cherry/${CHERRIES}.patch"
-	popd >/dev/null || die
-}
-
-pick_next_cherries() {
-	# clang
-	local CHERRIES=""
-	CHERRIES+=" clang-5.0-enable-libunwind-with-compiler-rt " #PR28681
 	CHERRIES+=" 7217e99fda533e3a439020fa5dfbc23b7b360988 " # r300571
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
@@ -255,6 +199,36 @@ pick_next_cherries() {
 	# llvm
 	CHERRIES=""
 	CHERRIES+=" 21b4d8e9b9afa5787894aecde704cd3ef62b10c2 " # r300583
+	CHERRIES+=" bde56a96995a329cf1df5716b1f84b32aac6c174 " # r301505
+	pushd "${S}" >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+
+	# compiler-rt
+	CHERRIES=""
+	CHERRIES+=" 385d9f6d5abb6b2d4ea27e59ac1e7b0e20d54f7c " # r300531
+	CHERRIES+=" 46a48e5918ab64e40ed8b929fdb8d2ff4117cfa1 " # r301243
+	pushd "${S}"/projects/compiler-rt >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+}
+
+pick_next_cherries() {
+	# clang
+	local CHERRIES=""
+	pushd "${S}"/tools/clang >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+
+	# llvm
+	CHERRIES=""
+	CHERRIES+=" bde56a96995a329cf1df5716b1f84b32aac6c174 " # r301505
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -268,11 +242,15 @@ src_prepare() {
 		use llvm-next && pick_next_cherries
 	fi
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
-	epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
+	if use llvm-next; then
+		# leak-whitelist patch does not cleanly apply to llvm-next.
+		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
+	else
+		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
+	fi
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
-
 
 	# Prevent race conditions with parallel Sphinx runs
 	# https://llvm.org/bugs/show_bug.cgi?id=23781
@@ -292,6 +270,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.8-invocation.patch
 
 	epatch "${FILESDIR}"/llvm-3.9-dwarf-version.patch
+
+	# Link libunwind when using compiler-rt as default rtlib.
+	# https://llvm.org/bugs/show_bug.cgi?id=28681
+	epatch "${FILESDIR}"/clang-5.0-enable-libunwind-with-compiler-rt.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913

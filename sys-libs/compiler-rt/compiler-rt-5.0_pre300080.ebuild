@@ -14,7 +14,7 @@ LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="*"
 IUSE="llvm-next"
-DEPEND="~sys-devel/llvm-${PV}"
+DEPEND="sys-devel/llvm"
 if [[ ${CATEGORY} == cross-* ]] ; then
 	DEPEND+="
 		${CATEGORY}/binutils
@@ -32,11 +32,33 @@ fi
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="059c103b581e37d2be47cb403769bff20808bca2" #r300080
+		EGIT_COMMIT="ba68c62d8b58b511859fd87a2b870e4a18e9b3b1" #r301043
 	else
-		EGIT_COMMIT="692b01cdac57043f8a69f5943142266a63cb721d" #r285821
+		EGIT_COMMIT="059c103b581e37d2be47cb403769bff20808bca2" #r300080
 	fi
 	git-2_src_unpack
+}
+
+src_prepare() {
+	# Cherry-picks
+	CHERRIES=""
+	if  ! use llvm-next ; then
+		# No llvm-next cherry-picks right now.
+		CHERRIES+=" 385d9f6d5abb6b2d4ea27e59ac1e7b0e20d54f7c " # r300531
+		CHERRIES+=" 46a48e5918ab64e40ed8b929fdb8d2ff4117cfa1 " # r301243
+	fi
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+
+	# Apply patches
+    if use llvm-next; then
+	# leak-whitelist patch does not cleanly apply to llvm-next.
+		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
+	else
+		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
+	fi
+	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 }
 
 src_configure() {
