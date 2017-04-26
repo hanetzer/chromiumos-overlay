@@ -421,6 +421,7 @@ RDEPEND="${RDEPEND}
 	!dev-python/twisted
 	dev-python/twisted-core
 	dev-python/twisted-web
+	www-servers/nginx
 	"
 
 # Host dependencies for building harfbuzz
