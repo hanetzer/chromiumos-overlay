@@ -10,7 +10,7 @@ CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/firewalld")
 
 PLATFORM_SUBDIR="firewalld"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="System service for handling firewall rules"
 HOMEPAGE="http://www.chromium.org/"
@@ -30,6 +30,12 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	dev-cpp/gtest
 "
+
+pkg_preinst() {
+	# Create user and group for firewalld.
+	enewuser "firewall"
+	enewgroup "firewall"
+}
 
 src_install() {
 	dobin "${OUT}/firewalld"
