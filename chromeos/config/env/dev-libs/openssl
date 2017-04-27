@@ -19,9 +19,3 @@ if [[ $(cros_target) != "cros_host" ]]; then
   INSTALL_MASK+=" ${openssl_mask}"
   unset openssl_mask
 fi
-
-# llvm/clang doesn't recognize certain asm syntax in thumb mode.
-# See crbug.com/630057
-cros_pre_src_prepare_use_gcc() {
-  cros_use_gcc
-}

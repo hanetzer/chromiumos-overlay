@@ -56,9 +56,15 @@ src_prepare() {
 
 		# Chromium OS patches.
 		epatch "${FILESDIR}"/${PN}-1.0.2-blacklist-by-sha1.patch
-		epatch "${FILESDIR}"/${PN}-1.0.2-clang.patch
 
 		epatch_user #332661
+	fi
+
+	# llvm/clang doesn't recognize certain asm syntax in thumb mode.
+	# See crbug.com/630057
+	if tc-is-clang ; then
+		epatch "${FILESDIR}"/${PN}-1.0.2-gas.patch
+		append-flags -no-integrated-as
 	fi
 
 	# disable fips in the build
