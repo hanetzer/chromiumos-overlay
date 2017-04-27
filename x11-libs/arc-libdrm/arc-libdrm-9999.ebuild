@@ -1,7 +1,7 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/third_party/libdrm"
 CROS_WORKON_LOCALNAME="libdrm"
 
@@ -9,6 +9,7 @@ P=${P#"arc-"}
 PN=${PN#"arc-"}
 S="${WORKDIR}/${P}"
 
+XORG_MULTILIB=yes
 inherit xorg-2 cros-workon arc-build
 
 DESCRIPTION="X.Org libdrm library"
@@ -30,7 +31,7 @@ IUSE="${IUSE_VIDEO_CARDS} libkms manpages +udev"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="
-	video_cards_intel? ( >=x11-libs/arc-libpciaccess-0.10 )
+	video_cards_intel? ( >=x11-libs/arc-libpciaccess-0.10[${MULTILIB_USEDEP}] )
 "
 
 DEPEND="${RDEPEND}"
@@ -61,7 +62,6 @@ src_configure() {
 		$(use_enable udev)
 		--disable-cairo-tests
 		"--prefix=${ARC_PREFIX}/vendor"
-		'--libdir=${prefix}/lib'
 	)
 	xorg-2_src_configure
 }
