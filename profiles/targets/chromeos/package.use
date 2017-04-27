@@ -90,7 +90,7 @@ net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd	-python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 # Prevent gnuplot from indirectly requiring harfbuzz to be bilt with glib.
 sci-visualization/gnuplot	-cairo
-sys-apps/busybox	-pam -selinux
+sys-apps/busybox	-pam -selinux static
 sys-apps/baselayout	-auto_seed_etc_files
 sys-apps/coreutils	multicall
 # flashrom's libraries must be static
