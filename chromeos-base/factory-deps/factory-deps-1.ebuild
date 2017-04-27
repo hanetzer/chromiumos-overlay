@@ -49,6 +49,7 @@ FACTORY_TEST_RDEPEND="
 	dev-python/pyserial
 	dev-python/python-evdev
 	dev-python/pyudev
+	dev-python/requests
 	dev-util/stressapptest
 	net-ftp/pybootd
 	net-misc/htpdate
