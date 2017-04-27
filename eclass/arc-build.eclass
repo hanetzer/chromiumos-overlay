@@ -21,11 +21,11 @@ case "${EAPI:-0}" in
 *) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
-inherit flag-o-matic
+inherit multilib-build
 
 IUSE="-android-container -android-container-nyc"
 DEPEND="
-	android-container-nyc? ( chromeos-base/arc-build-nyc )
+	android-container-nyc? ( chromeos-base/arc-build-nyc[${MULTILIB_USEDEP}] )
 	android-container? ( chromeos-base/arc-build )
 "
 
@@ -76,14 +76,15 @@ _arc-build-select-common() {
 		ARC_GCC_BASE="${ARC_BASE}/arc-gcc/x86_64/${ARC_GCC_TUPLE}-4.9"
 		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
 
-		# Our host is in fact i686. Toolchain binaries are specified
-		# with CC and CXX.
-		export CHOST=i686-linux-android
-
-		# Use 32-bit ABI on amd64 builds
-		append-cppflags -I"${ARC_SYSROOT}/usr/include/arch-x86/include/"
-		append-flags -m32
-		append-ldflags -m32
+		# multilib.eclass does not use CFLAGS_${DEFAULT_ABI}, but
+		# we need to add some flags valid only for amd64, so we trick
+		# it to think that neither x86 nor amd64 is the default.
+		export DEFAULT_ABI=none
+		export CHOST=x86_64-linux-android
+		export CHOST_amd64=x86_64-linux-android
+		export CHOST_x86=i686-linux-android
+		export CFLAGS_amd64="${CFLAGS_amd64} -I${ARC_SYSROOT}/usr/include/arch-x86_64/include/"
+		export CFLAGS_x86="${CFLAGS_x86} -I${ARC_SYSROOT}/usr/include/arch-x86/include/"
 		;;
 	esac
 
