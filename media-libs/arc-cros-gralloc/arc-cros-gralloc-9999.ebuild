@@ -1,13 +1,13 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/platform/minigbm"
 CROS_WORKON_LOCALNAME="../platform/minigbm"
 CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 
-inherit arc-build cros-workon
+inherit multilib-minimal arc-build cros-workon
 
 DESCRIPTION="ChromeOS gralloc implementation"
 HOMEPAGE="${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}"
@@ -21,19 +21,15 @@ VIDEO_CARDS="exynos intel marvell mediatek rockchip tegra"
 IUSE="$(printf 'video_cards_%s ' ${VIDEO_CARDS})"
 
 RDEPEND="
-	x11-libs/arc-libdrm
+	x11-libs/arc-libdrm[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}"
 
-src_compile() {
+src_configure() {
 	# Use arc-build base class to select the right compiler
 	arc-build-select-gcc
 
-	# The ARC sysroot only has prebuilt 32-bit libraries at this point
-	if use amd64; then
-		append-flags -m32
-		append-ldflags -m32
-	fi
+	BUILD_DIR="$(cros-workon_get_build_dir)"
 
 	append-lfs-flags
 
@@ -53,12 +49,16 @@ src_compile() {
 		append-cppflags -DDRV_MEDIATEK
 	fi
 
-	export TARGET_DIR="$(cros-workon_get_build_dir)/"
+	multilib-minimal_src_configure
+}
+
+multilib_src_compile() {
+	export TARGET_DIR="${BUILD_DIR}/"
 	cd "${S}/cros_gralloc/"
 	emake
 }
 
-src_install() {
-	exeinto "${ARC_PREFIX}/vendor/lib/hw/"
-	doexe "${TARGET_DIR}"gralloc.cros.so
+multilib_src_install() {
+	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/hw/"
+	doexe "${BUILD_DIR}"/gralloc.cros.so
 }
