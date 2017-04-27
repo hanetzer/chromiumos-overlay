@@ -1,0 +1,60 @@
+from __future__ import print_function
+
+# We need to be very careful about adding imports to this function, as the
+# imports will increase execution time, and this is called for every
+# compiler invocation.
+
+import os
+import re
+import sys
+
+WRAPPER_ONLY_OPTIONS = set(('-print-cmdline', '-nopie', '-noccache'))
+
+X86_DISABLE_FLAGS = set(['-mno-movbe'])
+
+# GCC flags to remove from the clang command line.
+# TODO: Once clang supports GCC compatibility mode, remove
+# these checks.
+#
+# Use of -Qunused-arguments allows this set to be small, just those
+# that clang still warns about.
+CLANG_UNSUPPORTED = set((
+    '-pass-exit-codes',
+    '-Wclobbered',
+    '-Wunsafe-loop-optimizations',
+    '-Wlogical-op',
+    '-Wmissing-parameter-type',
+    '-Woverride-init',
+    '-Wold-style-declaration',
+    '-Wno-psabi',
+    '-mno-movbe',
+))
+
+CLANG_UNSUPPORTED_PREFIXES = ('-Wstrict-aliasing=', '-finline-limit=')
+
+# clang with '-ftrapv' generates 'call __mulodi4', which is only implemented
+# in compiler-rt library. However compiler-rt library only has i386/x86_64
+# backends (see '/usr/lib/clang/3.7.0/lib/linux/libclang_rt.*'). GCC, on the
+# other hand, generate 'call __mulvdi3', which is implemented in libgcc. See
+# bug chromium:503229.
+CLANG_ARM_OPTIONS_TO_BE_DISCARDED = set(['-ftrapv'])
+
+# Clang may use different options for the same or similar functionality.
+GCC_TO_CLANG = {
+    '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
+    '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
+    '-Wno-unused-but-set-variable': '-Wno-unused-variable',
+    '-Wunused-but-set-variable': '-Wunused-variable',
+    '-Wno-error=cpp': '-Wno-#warnings',
+}
+
+def handle_exec_exception(exc, argv0, use_ccache, execargs):
+  """Analyze compiler execution errors."""
+  import errno
+
+  if use_ccache and exc.errno == errno.ENOENT:
+    print('error: make sure you install ccache\n', file=sys.stderr)
+  print(
+      'error: execution of (%s, %s) failed' % (argv0, execargs),
+      file=sys.stderr)
+  raise

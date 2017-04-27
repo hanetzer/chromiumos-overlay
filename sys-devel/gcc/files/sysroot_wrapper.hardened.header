@@ -1,0 +1,40 @@
+#!/usr/bin/env python2
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script is a meta-driver for the toolchain. It transforms the command
+# line to allow the following:
+# 1. This script ensures that '--sysroot' is passed to whatever it is wrapping.
+#
+# 2. It adds hardened flags to gcc invocation. The hardened flags are:
+#   -fstack-protector-strong
+#   -fPIE
+#   -pie
+#   -D_FORTIFY_SOURCE=2
+#
+# It can disable -fPIE -pie by checking if -nopie is passed to gcc. In this
+# case it removes -nopie as it is a non-standard flag.
+#
+# 3. Enable clang diagnostics with -clang-syntax option
+#
+# 4. Add new -print-cmdline option to print the command line before executon
+#
+# 5. Enable clang codegen.
+# This is currently implemented as two loops on the list of arguments. The
+# first loop # identifies hardening flags, as well as determining if clang
+# invocation is specified. The second loop build command line for clang
+# invocation as well adjusting gcc command line.
+#
+# This implementation ensure compile time of default path remains mostly
+# the same.
+#
+# There is a similar hardening wrapper that wraps ld and adds -z now -z relro
+# to the link command line (see ldwrapper).
+#
+# To use:
+#   mv <tool> <tool>.real
+#   ln -s <path_to_sysroot_wrapper> <tool>
+
+"""Compiler wrapper script for target compilers, to harden and adjust flags."""
+

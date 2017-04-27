@@ -582,6 +582,16 @@ multilib_src_install() {
 			done
 		fi
 	fi
+
+	local wrapper_script=clang_host_wrapper
+	cat "${FILESDIR}/clang_host_wrapper.header" \
+		"${FILESDIR}/wrapper_script_common" \
+		"${FILESDIR}/clang_host_wrapper.body" > \
+		"${D}/usr/bin/${wrapper_script}" || die
+	chmod 755 "${D}/usr/bin/${wrapper_script}" || die
+	exeinto "/usr/bin"
+	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang"
+	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang++"
 }
 
 multilib_src_install_all() {

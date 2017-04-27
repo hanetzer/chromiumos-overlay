@@ -1,0 +1,64 @@
+
+FLAGS_TO_ADD = set((
+    '-Wno-unused-local-typedefs',
+    '-Wno-deprecated-declarations',
+))
+
+
+def main(argv):
+  """Main function for clang wrapper script."""
+
+  # Only FORTIFY_SOURCE hardening flag is applicable for clang.
+  clang_flags = ['-Qunused-arguments']
+
+  myargs = argv[1:]
+
+  print_cmdline = '-print-cmdline' in myargs
+  clang_cmdline = clang_flags + list(FLAGS_TO_ADD)
+  clang_flags = list(FLAGS_TO_ADD)
+
+  cmdline = [x for x in myargs if x not in WRAPPER_ONLY_OPTIONS]
+
+  if re.match(r'i.86|x86_64', os.path.basename(argv[0])):
+    cmdline.extend(X86_DISABLE_FLAGS)
+
+  sysroot = os.environ.get('SYSROOT', '/')
+
+  clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
+
+  # Check for clang or clang++.
+  if sys.argv[0].endswith('++'):
+    clang_comp += '++'
+
+  for flag in cmdline:
+    if not (flag in CLANG_UNSUPPORTED or
+            flag.startswith(CLANG_UNSUPPORTED_PREFIXES)):
+      # Strip off -Xclang-only= if present.
+      if flag.startswith('-Xclang-only='):
+        opt = flag.partition('=')[2]
+        clang_cmdline.append(opt)
+      elif flag in GCC_TO_CLANG.keys():
+        clang_cmdline.append(GCC_TO_CLANG[flag])
+      elif not flag in CLANG_ARM_OPTIONS_TO_BE_DISCARDED:
+        clang_cmdline.append(flag)
+
+  execargs = []
+
+  argv0 = clang_comp
+  execargs += [clang_comp] + clang_cmdline
+
+  if print_cmdline:
+    print('[%s] %s' % (argv0, ' '.join(execargs)))
+
+  sys.stdout.flush()
+
+  try:
+    os.execv(argv0, execargs)
+  except OSError as e:
+    handle_exec_exception(e, argv0, False, execargs)
+
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv))

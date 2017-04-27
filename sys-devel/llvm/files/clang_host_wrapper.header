@@ -1,0 +1,13 @@
+#!/usr/bin/env python2
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Host wrapper script, for clang, to update flags as necessary.
+
+This script wraps host clang and disables a few warnings.  It can
+be used to add compilation flags to all host compilations.  Flags
+are added at the beginning of the compilation command line so that
+the user can override them.
+"""
+

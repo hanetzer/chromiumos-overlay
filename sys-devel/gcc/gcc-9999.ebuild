@@ -365,6 +365,11 @@ EOF
 		if use hardened
 		then
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
+			cat "${FILESDIR}/sysroot_wrapper.hardened.header" \
+				"${FILESDIR}/wrapper_script_common" \
+				"${FILESDIR}/sysroot_wrapper.hardened.body" > \
+				"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
+			chmod 755 "${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
 			insinto "$(get_bin_dir)"
 			doins "${FILESDIR}/bisect_driver.py" || die
 		else
@@ -372,9 +377,12 @@ EOF
 		fi
 
 		exeinto "$(get_bin_dir)"
-		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		if ! use hardened
+		then
+			doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		fi
 		sed -i \
-			-e "/^use_ccache = .*@CCACHE_DEFAULT@/s:=[^#]*:= $(usex wrapper_ccache True False) :" \
+			-e "/^  use_ccache = .*@CCACHE_DEFAULT@/s:=[^#]*:= $(usex wrapper_ccache True False) :" \
 			"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
 		for x in c++ cpp g++ gcc; do
 			if [[ -f "${CTARGET}-${x}" ]]; then

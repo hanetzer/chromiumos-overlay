@@ -1,0 +1,433 @@
+
+# Full hardening. Some/all of these may be discarded depending on
+# other flags.
+# Temporarily disable function splitting because of chromium:434751.
+FLAGS_TO_ADD = set(['-fstack-protector-strong', '-fPIE', '-pie',
+                    '-D_FORTIFY_SOURCE=2',
+                    '-fno-omit-frame-pointer',
+                   ])
+
+FSTACK = set(['-D__KERNEL__', '-fno-stack-protector', '-nodefaultlibs',
+              '-nostdlib'])
+FPIE = set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
+            '-fno-pic', '-fno-pie', '-fpic', '-fpie', '-nopie',
+            '-nostartfiles', '-nostdlib', '-pie', '-static'])
+PIE = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
+           '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared',
+           '-shared', '-static'])
+SSE = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
+
+WRAPPER_ONLY_OPTIONS |= set(['-clang-syntax'])
+
+def update_flags(arch, myargs):
+  # Generate thumb codes by default.  GCC is configured with
+  # --with-mode=thumb and defaults to thumb mode already.  This
+  # changes the default behavior of clang and doesn't affect GCC.
+  if arch[:5] in ('armv7', 'armv8'):
+    FLAGS_TO_ADD.add('-mthumb')
+  if FSTACK.intersection(myargs):
+    FLAGS_TO_ADD.remove('-fstack-protector-strong')
+    FLAGS_TO_ADD.add('-fno-stack-protector')
+  if FPIE.intersection(myargs):
+    FLAGS_TO_ADD.remove('-fPIE')
+  if PIE.intersection(myargs):
+    FLAGS_TO_ADD.remove('-pie')
+
+def get_proc_cmdline(pid):
+  with open('/proc/%i/cmdline' % pid) as fp:
+    return fp.read().replace('\0', ' ')
+  return None
+
+
+def get_proc_status(pid, item):
+  with open('/proc/%i/status' % pid) as fp:
+    for line in fp:
+      m = re.match(r'%s:\s*(.*)' % re.escape(item), line)
+      if m:
+        return m.group(1)
+  return None
+
+
+def log_parent_process_tree(log, ppid):
+  depth = 0
+
+  while ppid > 1:
+    cmd = get_proc_cmdline(ppid)
+    log.warning(' %*s {%5i}: %s' % (depth, '', ppid, cmd))
+
+    ppid = get_proc_status(ppid, 'PPid')
+    if not ppid:
+      break
+    ppid = int(ppid)
+    depth += 2
+
+
+def get_linker_path(cmd):
+  """Return the a directory which contains an 'ld' that gcc is using."""
+
+  # We did not pass the tuple i686-pc-linux-gnu to x86-32 clang. Instead,
+  # we passed '-m32' to clang. As a result, clang does not want to use the
+  # i686-pc-linux-gnu-ld, so we need to add this to help clang find the right
+  # linker.
+  for path in os.environ['PATH'].split(':'):
+    cmd_path = os.path.join(path, cmd)
+    if os.path.exists(cmd_path):
+      if os.path.islink(cmd_path):
+        cmd_path = os.readlink(cmd_path)
+      return os.path.dirname(cmd_path)
+
+  # When using the sdk outside chroot, we need to provide the cross linker path
+  # to the compiler via -B ${linker_path}. This is because for gcc, it can
+  # find the right linker via searching its internal paths. Clang does not have
+  # such feature, and it falls back to $PATH search only. However, the path of
+  # ${SDK_LOCATION}/bin is not necessarily in the ${PATH}. To fix this, we
+  # provide the directory that contains the cross linker wrapper to clang.
+  # Outside chroot, it is the top bin directory form the sdk tarball.
+  sdk_bin_dir = os.path.join(os.path.dirname(os.path.normpath(__file__)),
+                             '../../../../../bin')
+  return os.path.abspath(sdk_bin_dir)
+
+
+def get_gomacc_command():
+  """Return the gomacc command if it is found in $GOMACC_PATH."""
+  gomacc = os.environ.get('GOMACC_PATH')
+  if gomacc and os.path.isfile(gomacc):
+    return gomacc
+  return None
+
+
+def syntax_check_with_clang(clang_comp, clang_cmdline, print_cmdline):
+  """Execute clang for syntax checking."""
+  import subprocess
+
+  command = [clang_comp] + clang_cmdline
+  gomacc = get_gomacc_command()
+  if gomacc:
+    command.insert(0, gomacc)
+  if print_cmdline:
+    print('%s\n' % ' '.join(command))
+  p = subprocess.Popen(command)
+  p.wait()
+  if p.returncode != 0:
+    sys.exit(p.returncode)
+
+
+def exec_and_bisect(execargs, bisect_stage, argv0, use_ccache):
+  """Execute compiler, return and invoke bisection driver."""
+  import bisect_driver
+
+  bisect_dir = os.environ.get('BISECT_DIR', '/tmp/sysroot_bisect')
+  try:
+    bisect_driver.bisect_driver(bisect_stage, bisect_dir, execargs)
+  except OSError as e:
+    handle_exec_exception(e, argv0, use_ccache, execargs)
+
+  sys.exit(0)
+
+
+# Log 'time' like resource usage, along with corresponding command line, to
+# GETRUSAGE file name if it is defined.
+def log_rusage(log_file, argv0, execargs):
+  import datetime
+  import logging
+
+  pid = os.fork()
+  if pid > 0:
+    t = datetime.datetime.now()
+    _, status, usage = os.wait3(0)
+    real = (datetime.datetime.now() - t).total_seconds()
+
+    logger = logging.getLogger('sysroot_wrapper')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.FileHandler(log_file))
+    logger.info('%f : %f : %f : %d : %s : %s',
+                real, usage.ru_utime, usage.ru_stime, usage.ru_maxrss,
+                argv0, ' '.join(execargs))
+
+    # So that a root-created log is writable by others.
+    try:
+      os.chmod(log_file, 0o0666)
+    except OSError:
+      pass
+
+    # Emulate child's exit status.
+    if os.WIFEXITED(status):
+      sys.exit(os.WEXITSTATUS(status))
+    elif os.WIFSIGNALED(status):
+      os.kill(os.getpid(), os.WTERMSIG(status))
+    raise RuntimeError('wait: compilation process returned for unknown reason.')
+
+def ccache_env_init(sysroot, use_clang):
+  # Portage likes to set this for us when it has FEATURES=-ccache.
+  # The other vars we need to setup manually because of tools like
+  # scons that scrubs the env before we get executed.
+  os.environ.pop('CCACHE_DISABLE', None)
+
+  # We should be able to share the objects across compilers as
+  # the pre-processed output will differ.  This allows boards
+  # that share compiler flags (like x86 boards) to share caches.
+  ccache_dir = '/var/cache/distfiles/ccache'
+  os.environ['CCACHE_DIR'] = ccache_dir
+
+  # If RESTRICT=sandbox is enabled, then sandbox won't be setup,
+  # and the env vars won't be available for appending.
+  if 'SANDBOX_WRITE' in os.environ:
+    os.environ['SANDBOX_WRITE'] += ':%s' % ccache_dir
+
+  # We need to get ccache to make relative paths from within the
+  # sysroot.  This lets us share cached files across boards (if
+  # all other things are equal of course like CFLAGS) as well as
+  # across versions.  A quick test is something like:
+  #   $ export CFLAGS='-O2 -g -pipe' CXXFLAGS='-O2 -g -pipe'
+  #   $ BOARD=x86-alex
+  #   $ cros_workon-$BOARD stop cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ cros_workon-$BOARD start cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ BOARD=amd64-generic
+  #   $ cros_workon-$BOARD stop cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ cros_workon-$BOARD start cros-disks
+  #   $ emerge-$BOARD cros-disks
+  # All of those will get cache hits (ignoring the first one
+  # which will seed the cache) due to this setting.
+  if sysroot:
+    os.environ['CCACHE_BASEDIR'] = sysroot
+
+  # Minor speed up as we don't care about this in general.
+  # os.environ['CCACHE_NOSTATS'] = 'no'
+  # Useful for debugging.
+  # os.environ['CCACHE_LOG'] = '/dev/stderr'
+
+  # The GCC ebuild takes care of nuking the cache in the whenever it revbumps
+  # in a way that matters, so we should be able to disable ccache's check.
+  # We've found in practice though that sometimes that doesn't happen.  Since
+  # the default check is cheap (it's a stat() in mtime mode), keep it enabled.
+  # os.environ['CCACHE_COMPILERCHECK'] = 'none'
+
+  # Make sure we keep the cached files group writable.
+  os.environ['CCACHE_UMASK'] = '002'
+
+  # ccache may generate false positive warnings.
+  # Workaround bug https://crbug.com/649740
+  if use_clang:
+    os.environ['CCACHE_CPP2'] = 'yes'
+
+
+def get_relocatable_root():
+  """Get the root dir location relative to this wrapper's install dir."""
+  install_dir = os.path.dirname(os.path.realpath(__file__))
+  root_dir = os.path.join(install_dir, '../../../../..')
+  return os.path.normpath(root_dir)
+
+
+def main():
+  # Flags specifically to be used wtih the GCC compiler.
+  gcc_flags = ['-frecord-gcc-switches',
+               '-fno-reorder-blocks-and-partition',
+               '-Wno-unused-local-typedefs',
+               '-Wno-maybe-uninitialized',
+              ]
+
+  # Get target architecture, 'armv7a-cros-linux-gnueabi' or
+  # 'x86_64-cros-linux-gnu', etc.
+  gcc_comp = os.path.basename(sys.argv[0])
+  arch = '-'.join(gcc_comp.split('-')[0:-1])
+
+  myargs = sys.argv[1:]
+  update_flags(arch, myargs)
+
+  # If -clang-syntax is present or the command line uses clang instead
+  # of GCC.
+  invoke_clang = False
+
+  # If -print-cmdline is present.
+  print_cmdline = False
+
+  # The following value is found/updated by
+  # chromite/scripts/cros_setup_toolchain.py (in the function
+  # _ProcessSysrootWrappers).
+  use_ccache = True  # @CCACHE_DEFAULT@ Keep this comment for code.
+
+  if '-noccache' in myargs:
+    use_ccache = False
+
+  print_cmdline = '-print-cmdline' in myargs
+  # Only FORTIFY_SOURCE hardening flag is applicable for clang.
+  clang_flags = ['-Qunused-arguments']
+
+  clang_cmdline = clang_flags + list(FLAGS_TO_ADD)
+
+  gcc_flags += list(FLAGS_TO_ADD)
+  clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
+
+  if '-fstack-check' in myargs:
+    print('Option "-fstack-check" is not supported. See crbug.com/485492',
+          file=sys.stderr)
+    sys.exit(1)
+
+  invoke_clang = '-clang-syntax' in myargs or clang_codegen
+
+  cmdline = [x for x in myargs if x not in WRAPPER_ONLY_OPTIONS]
+
+  if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
+    cmdline.extend(X86_DISABLE_FLAGS)
+
+  if not invoke_clang:
+    gcc_cmdline = cmdline
+  else:
+
+    # If these options are specified, do not run clang, even if -clang-syntax is
+    # specified.
+    # This is mainly for utilities that depend on compiler output.
+    skip_clang_prefixes = ('-print-', '-dump', '@')
+    skip_clang_set = set(['-', '-E', '-M'])
+
+    # Reset gcc cmdline too. Only change is to remove -Xclang-only
+    # options if specified.
+    gcc_cmdline = []
+
+    skip_clang = False
+    for flag in cmdline:
+      if (not clang_codegen and
+          (flag.startswith(skip_clang_prefixes) or
+           flag in skip_clang_set or
+           flag.endswith('.S'))):
+        skip_clang = True
+      elif not (flag in CLANG_UNSUPPORTED or
+                flag.startswith(CLANG_UNSUPPORTED_PREFIXES)):
+        # Strip off -Xclang-only= if present.
+        if flag.startswith('-Xclang-only='):
+          opt = flag.partition('=')[2]
+          clang_cmdline.append(opt)
+          # No need to add to gcc_cmdline.
+          continue
+        elif flag in GCC_TO_CLANG.keys():
+          clang_cmdline.append(GCC_TO_CLANG[flag])
+        elif (not (arch == 'armv7a-cros-linux-gnueabi' and
+                   flag in CLANG_ARM_OPTIONS_TO_BE_DISCARDED)):
+          clang_cmdline.append(flag)
+      gcc_cmdline.append(flag)
+
+  sysroot = os.environ.get('SYSROOT', '')
+  if not sysroot:
+    # Keep these import statements here, rather than making them global, to
+    # prevent performance penalties when this execution path is taken (see
+    # commend at top of this file).
+    import logging
+    import logging.handlers
+    import traceback
+
+    # Use the bundled sysroot by default.
+    sysroot = os.path.join(get_relocatable_root(), 'usr', arch)
+
+    # Log the wrapper invocation without SYSROOT.
+
+    log_file = '/tmp/sysroot_wrapper.error'
+
+    log = logging.getLogger('sysroot_wrapper')
+    log.setLevel(logging.DEBUG)
+
+    handler = logging.handlers.RotatingFileHandler(log_file,
+                                                   maxBytes=0x20000000,
+                                                   backupCount=1)
+    formatter = logging.Formatter('%(asctime)s %(message)s')
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+
+    log.warning('Invocation with missing SYSROOT: %s', ' '.join(sys.argv))
+    try:
+      log_parent_process_tree(log, os.getppid())
+    except IOError:
+      log.error('%s', traceback.format_exc())
+
+    try:
+      # The logging module does not support setting permissions.
+      os.chmod(log_file, 0o0666)
+    except OSError:
+      pass
+
+  clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
+  gcc_cmdline.insert(0, '--sysroot=%s' % sysroot)
+
+  if invoke_clang and not skip_clang:
+    clang_comp = os.environ.get(
+        'CLANG', os.path.join(get_relocatable_root(), 'usr/bin/clang'))
+
+    # Check for clang or clang++.
+    if sys.argv[0].endswith('++'):
+      clang_comp += '++'
+
+    # Specify the target for clang.
+    linker = arch + '-ld'
+    linker_path = get_linker_path(linker)
+    clang_cmdline += ['-B' + linker_path]
+    if re.match(r'i.86', arch):
+      # TODO: -target i686-pc-linux-gnu causes clang to search for
+      # libclang_rt.asan-i686.a which doesn't exist because it's packaged
+      # as libclang_rt.asan-i386.a. We can't use -target i386-pc-linux-gnu
+      # because then it would try to run i386-pc-linux-gnu-ld which doesn't
+      # exist. Consider renaming the runtime library to use i686 in its name.
+      clang_cmdline += ['-m32']
+      # clang does not support -mno-movbe. This is the alternate way to do it.
+      clang_cmdline += ['-Xclang', '-target-feature', '-Xclang', '-movbe']
+    else:
+      clang_cmdline += ['-target', arch]
+
+    # All armv7a systems are built with hardfp, unlike gcc, which has
+    # "-mfloat-abi" baked in compiler binaries in configuration phase, for
+    # clang,  we share the same binary for all backends, so here we enforce
+    # hardfp via command line.
+    if arch == "armv7a-cros-linux-gnueabi":
+      clang_cmdline += ['-mfloat-abi=hard']
+
+    if not clang_codegen:
+      clang_cmdline.append('-fsyntax-only')
+
+    if not clang_codegen:
+      syntax_check_with_clang(clang_comp, clang_cmdline, print_cmdline)
+
+  execargs = []
+  real_gcc = '%s.real' % sys.argv[0]
+  gomacc = get_gomacc_command()
+  if gomacc:
+    argv0 = gomacc
+    execargs += [gomacc]
+  elif not use_ccache:
+    argv0 = clang_comp if clang_codegen else real_gcc
+  else:
+    ccache_env_init(sysroot, clang_codegen)
+    argv0 = '/usr/bin/ccache'
+    execargs += ['ccache']
+
+  if clang_codegen:
+    execargs += [clang_comp] + clang_cmdline
+  else:
+    execargs += [real_gcc] + gcc_flags + gcc_cmdline
+
+  if print_cmdline:
+    print('[%s] %s' % (argv0, ' '.join(execargs)))
+
+  sys.stdout.flush()
+
+  getrusage = os.environ.get('GETRUSAGE')
+  bisect_stage = os.environ.get('BISECT_STAGE')
+
+  if getrusage and bisect_stage:
+    raise RuntimeError('GETRUSAGE is meaningless with BISECT_STAGE')
+
+  if getrusage:
+    log_rusage(getrusage, argv0, execargs)
+
+  if not bisect_stage:
+    try:
+      os.execv(argv0, execargs)
+    except OSError as e:
+      handle_exec_exception(e, argv0, use_ccache, execargs)
+
+  # Only comes here if doing bisection.
+  exec_and_bisect(execargs, bisect_stage, argv0, use_ccache)
+
+
+if __name__ == '__main__':
+  sys.exit(main())
