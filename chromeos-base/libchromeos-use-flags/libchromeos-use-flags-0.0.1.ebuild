@@ -19,6 +19,7 @@ IUSE="
 	arc
 	asan
 	cheets
+	cfm_enabled_device
 	cros-debug
 	disable_flash_hw_video_decode
 	disable_login_animations
