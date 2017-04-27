@@ -1,21 +1,8 @@
-From 4a74adf19d7e46aef7c9ede87ffb0264193311dc Mon Sep 17 00:00:00 2001
-From: Priit Laes <plaes@plaes.org>
-Date: Thu, 28 Feb 2013 08:28:01 +0200
-Subject: [PATCH] Split out gdbus codegen
-
----
- configure.ac                                       | 17 ++++++++---------
- docs/reference/gio/Makefile.am                     |  3 +--
- gio/Makefile.am                                    |  2 +-
- gio/tests/Makefile.am                              |  6 ++----
- gio/tests/gdbus-object-manager-example/Makefile.am |  6 ++----
- 5 files changed, 14 insertions(+), 20 deletions(-)
-
 diff --git a/configure.ac b/configure.ac
-index f734b7c..8076e7f 100644
+index e8e7553..216e59d 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -374,14 +374,14 @@ AC_SUBST(PERL_PATH)
+@@ -385,14 +385,14 @@ AC_SUBST(PERL_PATH)
  # option to specify python interpreter to use; this just sets $PYTHON, so that
  # we will fallback to reading $PYTHON if --with-python is not given, and
  # python.m4 will get the expected input
@@ -38,7 +25,7 @@ index f734b7c..8076e7f 100644
  
  
  dnl ***********************
-@@ -3697,7 +3697,6 @@ gobject/glib-mkenums
+@@ -3453,7 +3453,6 @@ gobject/glib-mkenums
  gobject/tests/Makefile
  gthread/Makefile
  gio/Makefile
@@ -47,26 +34,23 @@ index f734b7c..8076e7f 100644
  gio/gnetworking.h
  gio/xdgmime/Makefile
 diff --git a/docs/reference/gio/Makefile.am b/docs/reference/gio/Makefile.am
-index 99606d3..067cd50 100644
+index 5741a3e..d38e768 100644
 --- a/docs/reference/gio/Makefile.am
 +++ b/docs/reference/gio/Makefile.am
-@@ -152,8 +152,7 @@ man_MANS +=			\
- 	glib-compile-resources.1	\
- 	gsettings.1		\
- 	gresource.1		\
--	gdbus.1			\
--	gdbus-codegen.1
-+	gdbus.1
+@@ -177,7 +177,6 @@ man_MANS +=				\
+ 	gsettings.1			\
+ 	gresource.1			\
+ 	gdbus.1				\
+-	gdbus-codegen.1			\
+ 	gio.1				\
+ 	$(NULL)
  
- XSLTPROC_FLAGS = \
-         --nonet \
 diff --git a/gio/Makefile.am b/gio/Makefile.am
-index 94d7f59..c07d00d 100644
+index ffe5ee2..929d1b5 100644
 --- a/gio/Makefile.am
 +++ b/gio/Makefile.am
-@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.decl
- 
- NULL =
+@@ -1,6 +1,6 @@
+ include $(top_srcdir)/glib.mk
  
 -SUBDIRS = gdbus-2.0/codegen
 +SUBDIRS =
@@ -74,28 +58,28 @@ index 94d7f59..c07d00d 100644
  if OS_UNIX
  SUBDIRS += xdgmime
 diff --git a/gio/tests/Makefile.am b/gio/tests/Makefile.am
-index c8a4090..feece02 100644
+index 749267b..f2a8c63 100644
 --- a/gio/tests/Makefile.am
 +++ b/gio/tests/Makefile.am
-@@ -212,10 +212,8 @@ gdbus_bz627724_SOURCES = gdbus-bz627724.c gdbus-sessionbus.c gdbus-sessionbus.h
- gdbus_close_pending_SOURCES = gdbus-close-pending.c gdbus-sessionbus.c gdbus-sessionbus.h gdbus-tests.h gdbus-tests.c
+@@ -449,10 +449,8 @@ gnotification_SOURCES                    = $(gdbus_sessionbus_sources) gnotifica
  
- if OS_UNIX
--gdbus-test-codegen-generated.h gdbus-test-codegen-generated.c : test-codegen.xml Makefile $(top_builddir)/gio/gdbus-2.0/codegen/gdbus-codegen
+ BUILT_SOURCES += gdbus-test-codegen-generated.c gdbus-test-codegen-generated.h
+ gdbus-test-codegen.o: gdbus-test-codegen-generated.h
+-gdbus-test-codegen-generated.h: test-codegen.xml Makefile $(top_builddir)/gio/gdbus-2.0/codegen/gdbus-codegen
 -	$(AM_V_GEN) UNINSTALLED_GLIB_SRCDIR=$(top_srcdir) \
 -		UNINSTALLED_GLIB_BUILDDIR=$(top_builddir) \
 -		$(PYTHON) $(top_builddir)/gio/gdbus-2.0/codegen/gdbus-codegen \
-+gdbus-test-codegen-generated.h gdbus-test-codegen-generated.c : test-codegen.xml Makefile
++gdbus-test-codegen-generated.h: test-codegen.xml Makefile
 +	$(AM_V_GEN) gdbus-codegen \
  		--interface-prefix org.project. \
  		--generate-c-code gdbus-test-codegen-generated \
  		--c-generate-object-manager \
 diff --git a/gio/tests/gdbus-object-manager-example/Makefile.am b/gio/tests/gdbus-object-manager-example/Makefile.am
-index 6875210..264c3c1 100644
+index 1d0464c..0603d9b 100644
 --- a/gio/tests/gdbus-object-manager-example/Makefile.am
 +++ b/gio/tests/gdbus-object-manager-example/Makefile.am
-@@ -21,10 +21,8 @@ GDBUS_GENERATED = 										\
- 	gdbus-example-objectmanager-generated-org.gtk.GDBus.Example.ObjectManager.Cat.xml 	\
+@@ -11,10 +11,8 @@ GDBUS_GENERATED = \
+ 	gdbus-example-objectmanager-generated-org.gtk.GDBus.Example.ObjectManager.Cat.xml	\
  	$(NULL)
  
 -$(GDBUS_GENERATED) : gdbus-example-objectmanager.xml Makefile $(top_builddir)/gio/gdbus-2.0/codegen/gdbus-codegen
@@ -107,6 +91,3 @@ index 6875210..264c3c1 100644
  		--interface-prefix org.gtk.GDBus.Example.ObjectManager. \
  		--c-namespace Example \
  		--c-generate-object-manager \
--- 
-1.8.1.2
-
