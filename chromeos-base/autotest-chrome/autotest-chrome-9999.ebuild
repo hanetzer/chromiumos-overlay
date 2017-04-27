@@ -152,6 +152,7 @@ IUSE_TESTS=(
 	+tests_touch_TouchscreenScroll
 	+tests_touch_TouchscreenTaps
 	+tests_touch_TouchscreenZoom
+	+tests_touch_StylusTaps
 	+tests_video_ChromeHWDecodeUsed
 	+tests_video_ChromeRTCHWDecodeUsed
 	+tests_video_ChromeRTCHWEncodeUsed
