@@ -2,12 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/mesa/mesa-7.9.ebuild,v 1.3 2010/12/05 17:19:14 arfrever Exp $
 
-EAPI=4
+EAPI="5"
 
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
 CROS_WORKON_LOCALNAME="arc-mesa"
 
-inherit base autotools multilib flag-o-matic python toolchain-funcs cros-workon arc-build
+inherit base autotools multilib-minimal flag-o-matic python toolchain-funcs cros-workon arc-build
 
 OPENGL_DIR="xorg-x11"
 
@@ -33,7 +33,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 	gles2 +llvm +nptl pic selinux shared-glapi X xlib-glx"
 
 DEPEND="cheets? (
-		x11-libs/arc-libdrm
+		x11-libs/arc-libdrm[${MULTILIB_USEDEP}]
 	)"
 
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
@@ -88,6 +88,19 @@ src_prepare() {
 }
 
 src_configure() {
+	if use cheets; then
+		#
+		# cheets-specific overrides
+		#
+
+		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
+		arc-build-select-gcc
+	fi
+
+	multilib-minimal_src_configure
+}
+
+multilib_src_configure() {
 	tc-getPROG PKG_CONFIG pkg-config
 
 	if use !gallium && use !classic; then
@@ -136,9 +149,6 @@ src_configure() {
 		# cheets-specific overrides
 		#
 
-		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
-		arc-build-select-gcc
-
 		# Use llvm-config coming from ARC++ build.
 		if use android-container-nyc; then
 			export LLVM_CONFIG="${ARC_BASE}/arc-llvm/3.8/bin/llvm-config"
@@ -150,11 +160,10 @@ src_configure() {
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
 			--enable-sysfs
-			--with-dri-searchpath=/system/lib/dri:/system/vendor/lib/dri
+			--with-dri-searchpath=/system/$(get_libdir)/dri:/system/vendor/$(get_libdir)/dri
 			--sysconfdir=/system/vendor/etc
 			--enable-cross_compiling
 			--prefix=${ARC_PREFIX}/vendor
-			--libdir=\$(prefix)/lib
 		"
 		# FIXME(tfiga): Possibly use flag?
 		EGL_PLATFORM="android"
@@ -168,6 +177,7 @@ src_configure() {
 		export LLVM_CONFIG="no"
 	fi
 
+	ECONF_SOURCE="${S}" \
 	econf \
 		${EXTRA_ARGS} \
 		--disable-option-checking \
@@ -200,36 +210,27 @@ src_configure() {
 		$(use egl && echo "--with-egl-platforms=${EGL_PLATFORM}")
 }
 
+multilib_src_install_cheets() {
+	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)"
+	newexe $(get_libdir)/libglapi.so libglapi.so
 
-src_install_arc() {
-	exeinto "${ARC_PREFIX}/vendor/lib"
-	newexe lib/libglapi.so libglapi.so
+	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/egl"
+	newexe $(get_libdir)/libEGL.so libEGL_mesa.so
+	newexe $(get_libdir)/libGLESv1_CM.so libGLESv1_CM_mesa.so
+	newexe $(get_libdir)/libGLESv2.so libGLESv2_mesa.so
 
-	exeinto "${ARC_PREFIX}/vendor/lib/egl"
-	newexe lib/libEGL.so libEGL_mesa.so
-	newexe lib/libGLESv1_CM.so libGLESv1_CM_mesa.so
-	newexe lib/libGLESv2.so libGLESv2_mesa.so
-
-	exeinto "${ARC_PREFIX}/vendor/lib/dri"
+	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/dri"
 	if use classic && use video_cards_intel; then
-		newexe lib/i965_dri.so i965_dri.so
+		newexe $(get_libdir)/i965_dri.so i965_dri.so
 	fi
 	if use gallium; then
-		newexe lib/gallium/kms_swrast_dri.so kms_swrast_dri.so
+		newexe $(get_libdir)/gallium/kms_swrast_dri.so kms_swrast_dri.so
 	fi
-
-	# Set driconf option to enable S3TC hardware decompression
-	insinto "${ARC_PREFIX}/vendor/etc/"
-	doins "${FILESDIR}"/drirc
-
-	# Install init file to advertise proper opengles version.
-	insinto "${ARC_PREFIX}/vendor/etc/init"
-	doins "${FILESDIR}/init.gpu.rc"
 }
 
-src_install() {
+multilib_src_install() {
 	if use cheets; then
-		src_install_arc
+		multilib_src_install_cheets
 		return
 	fi
 
@@ -279,6 +280,23 @@ src_install() {
 			doins "${S}/$(get_libdir)/${x}"
 		fi
 	done
+}
+
+multilib_src_install_all_cheets() {
+	# Set driconf option to enable S3TC hardware decompression
+	insinto "${ARC_PREFIX}/vendor/etc/"
+	doins "${FILESDIR}"/drirc
+
+	# Install init file to advertise proper opengles version.
+	insinto "${ARC_PREFIX}/vendor/etc/init"
+	doins "${FILESDIR}/init.gpu.rc"
+}
+
+multilib_src_install_all() {
+	if use cheets; then
+		multilib_src_install_all_cheets
+		return
+	fi
 
 	# Set driconf option to enable S3TC hardware decompression
 	insinto "/etc/"
