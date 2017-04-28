@@ -1,0 +1,37 @@
+diff --git a/googletest/Makefile.am b/googletest/Makefile.am
+index 29797e4..1f9765a 100644
+--- a/googletest/Makefile.am
++++ b/googletest/Makefile.am
+@@ -208,7 +208,10 @@ pkginclude_internal_HEADERS = \
+   include/gtest/internal/gtest-port-arch.h \
+   include/gtest/internal/gtest-string.h \
+   include/gtest/internal/gtest-tuple.h \
+-  include/gtest/internal/gtest-type-util.h \
++  include/gtest/internal/gtest-type-util.h
++
++pkginclude_internal_customdir = $(pkgincludedir)/internal/custom
++pkginclude_internal_custom_HEADERS = \
+   include/gtest/internal/custom/gtest.h \
+   include/gtest/internal/custom/gtest-port.h \
+   include/gtest/internal/custom/gtest-printers.h
+@@ -279,7 +282,7 @@ test_fused_gtest_test_CPPFLAGS = -I"$(srcdir)/fused-src"
+ # scripts/fuse_gtest_files.py.
+ $(test_fused_gtest_test_SOURCES): fused-gtest
+ 
+-fused-gtest: $(pkginclude_HEADERS) $(pkginclude_internal_HEADERS) \
++fused-gtest: $(pkginclude_HEADERS) $(pkginclude_internal_HEADERS) $(pkginclude_internal_custom_HEADERS) \
+              $(GTEST_SRC) src/gtest-all.cc src/gtest_main.cc \
+              scripts/fuse_gtest_files.py
+ 	mkdir -p "$(srcdir)/fused-src"
+@@ -302,9 +305,11 @@ CLEANFILES = core
+ # One-Definition Rule.
+ 
+ install-exec-local:
++disabled-install-exec-local:
+ 	echo "'make install' is dangerous and not supported. Instead, see README for how to integrate Google Test into your build system."
+ 	false
+ 
+ install-data-local:
++disabled-install-data-local:
+ 	echo "'make install' is dangerous and not supported. Instead, see README for how to integrate Google Test into your build system."
+ 	false
