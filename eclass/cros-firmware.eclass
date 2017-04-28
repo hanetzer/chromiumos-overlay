@@ -377,12 +377,12 @@ cros-firmware_src_install() {
 	local version="${main_script%.sh}"
 	for script in "${S}"/sbin/firmware-* "${S}"/sbin/chromeos-*; do
 		local script_base="$(basename "${script}")"
-		if [[ "${script#*.}" == "${script}" ]] &&
+		if [[ "${script_base#*.}" == "${script_base}" ]] &&
 		   [[ ! -f "${script}.${version}" ]]; then
 			# A general script to be installed on all systems, if no
 			# version-specific script exists.
 			dosbin "${script}"
-		elif [[ "${script#*.}" == "${version}" ]]; then
+		elif [[ "${script_base##*.}" == "${version}" ]]; then
 			# A script only installed if version matches.
 			newsbin "${script}" "${script_base%.*}"
 		fi
