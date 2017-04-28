@@ -16,10 +16,10 @@ case $1 in
   echo ''
   ;;
 --libs)
-  echo '-lgmock -pthread -lpthread'
+  echo '-lgtest -pthread -lpthread'
   ;;
 --version)
   # This doesn't really matter as gmock doesn't check the value.
-  echo "${PV:-1.7.0}"
+  echo "${PV:-1.8.0}"
   ;;
 esac
