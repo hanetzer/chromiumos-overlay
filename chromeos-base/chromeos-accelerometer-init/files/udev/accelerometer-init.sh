@@ -3,7 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Send calibration data to cros-ec accelerometers and gyroscopes.
 # Set up default trigger for cros-ec-accel devices
+
+if [ $# != 2 ]; then
+  echo "Usage: $0 iio_device_name device_type"
+  exit 1
+fi
 
 DEVICE=$1
 TYPE=$2
@@ -36,13 +42,7 @@ ABS_MAX_CALIB_anglvel=16384      # 16 dps
 # It could be an indication the calibration test was not done properly in the
 # factory.
 calibration_values_viable() {
-  local abs_max
-  local max_value
-  local min_value
-  local location
-  local sensor_type
-  local name
-  local value
+  local abs_max max_value min_value location sensor_type name value
 
   for sensor_type in ${SENSOR_TYPES}; do
     eval abs_max=\""\${ABS_MAX_CALIB_${sensor_type}}"\"
@@ -96,8 +96,6 @@ set_calibration_values() {
   local get_fct="$1"
   local locations="${SENSOR_LOCATIONS}"
   local value_types="${SENSOR_CALIB_TYPES}"
-  local name
-  local value
 
   # After kernel 3.18, it has separated iio:device for each accelerometer.
   # It needs to read values from in_accel_[xyz]_(lid|base)_calibbias in VPD and

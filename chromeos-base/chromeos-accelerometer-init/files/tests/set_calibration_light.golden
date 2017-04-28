@@ -1,0 +1,2 @@
+/sys/bus/iio/devices/dummy0/in_illuminance_calibbias=-99
+/sys/bus/iio/devices/dummy0/in_illuminance_calibscale=10000

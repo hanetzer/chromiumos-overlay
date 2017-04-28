@@ -26,7 +26,7 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-. "${SCRIPT_DIR}/accelerometer-init.sh"
+. "${SCRIPT_DIR}/accelerometer-init.sh" dummy0 accel
 
 declare -a mock_vpd_data
 declare test_name
@@ -69,10 +69,7 @@ vpd_get_value() {
   esac
 }
 
-DEVICE="dummy0"
-
 # Redo global variable initializaton.
-IIO_DEVICE_PATH="${IIO_DEVICES}/${DEVICE}"
 IIO_SINGLE_SENSOR_DIR=true
 
 # Test with one first accel vpd data too big.
@@ -118,7 +115,6 @@ if ! calibration_values_viable; then
 fi
 
 # Test checking these vpd values above are written correcly to sensors.
-TYPE="accel"
 for location in ${SENSOR_LOCATIONS}; do
   LOCATION_PATH="${TEST_DIR}/test_location_${location}.txt"
   test_name="set_calibration_values_good_${location}"

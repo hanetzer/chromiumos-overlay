@@ -21,17 +21,22 @@ RDEPEND="
 S=${WORKDIR}
 
 src_test() {
-	local cmd=(
+	local cmds=(
 		"${FILESDIR}"/tests/accelerometer-init-test.sh
+		"${FILESDIR}"/tests/light-init-test.sh
 	)
-	echo "${cmd[@]}"
-	"${cmd[@]}" || die
+	local cmd
+
+	for cmd in "${cmds[@]}"; do
+		echo "${cmd[@]}"
+		"${cmd[@]}" || die
+	done
 }
 
 src_install() {
 	udev_dorules "${FILESDIR}"/udev/99-cros-ec-accel.rules
 	exeinto $(udev_get_udevdir)
-	doexe "${FILESDIR}"/udev/accelerometer-init.sh
+	doexe "${FILESDIR}"/udev/*.sh
 
 	insinto /etc/init
 	doins "${FILESDIR}"/init/cros-ec-accel.conf
