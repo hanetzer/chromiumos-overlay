@@ -17,7 +17,8 @@ DEPEND="
 	virtual/libusb:1
 	virtual/libudev:0="
 
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+	app-arch/unzip"
 
 src_install() {
 	dosbin huddly-updater
