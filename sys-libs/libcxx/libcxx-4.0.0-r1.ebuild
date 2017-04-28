@@ -46,6 +46,9 @@ python_check_deps() {
 }
 
 pkg_setup() {
+	export ABI="default"
+	export MULTILIB_ABIS="default"
+	export DEFAULT_ABI="default"
 	llvm_pkg_setup
 	use test && python-any-r1_pkg_setup
 
