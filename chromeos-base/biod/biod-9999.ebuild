@@ -21,6 +21,7 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libchrome
+	virtual/libfp
 	"
 
 DEPEND="
