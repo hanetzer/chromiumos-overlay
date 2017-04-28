@@ -56,6 +56,7 @@ IUSE="
 	opengl
 	opengles
 	+runhooks
+	thinlto
 	+v4l2_codec
 	v4lplugin
 	vaapi
@@ -63,7 +64,10 @@ IUSE="
 	vtable_verify
 	xkbcommon
 	"
-REQUIRED_USE="asan? ( clang )"
+REQUIRED_USE="
+	asan? ( clang )
+	thinlto? ( clang gold )
+	"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
 OZONE_PLATFORMS=(gbm cast test egltest caca)
@@ -136,9 +140,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-60.0.3080.3_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-60.0.3080.3_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-60.0.3080.3_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-60.0.3082.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-60.0.3082.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-60.0.3082.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -180,6 +184,7 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
+	app-crypt/mit-krb5
 	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/nspr
@@ -787,6 +792,11 @@ src_configure() {
 	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
+	if use clang && use gold && use thinlto; then
+		export RANLIB="llvm-ranlib"
+		export AR="llvm-ar"
+		append-flags -flto=thin
+	fi
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
 			export GOLD_SET="yes"
