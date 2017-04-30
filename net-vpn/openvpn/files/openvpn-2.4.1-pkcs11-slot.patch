@@ -1,8 +1,30 @@
-diff -u openvpn-2.3.2.orig/src/openvpn/pkcs11.c openvpn-2.3.2/pkcs11.c
---- openvpn-2.3.2.orig/src/openvpn/pkcs11.c	2011-03-17 12:57:45.000000000 -0700
-+++ openvpn-2.3.2/src/openvpn/pkcs11.c	2011-10-10 09:36:55.000000000 -0700
-@@ -602,6 +602,115 @@
- 	return success;
+From 2a092116026030014c4e88430adabdf2651af78e Mon Sep 17 00:00:00 2001
+From: Sam Leffler <sleffler@chromium.org>
+Date: Sun, 30 Apr 2017 09:12:23 -0700
+Subject: [PATCH 2/4] CHROMIUM: add fallback search for pkcs11 cert
+
+Openvpn expects the PKCS11 ID to be specified using an ID suitable
+for the PKCS11 helper functions (as displayed by --show-pkcs11-ids).
+But for Chrome OS this is not how things are done; instead clients pass
+the PKCS11 slot number and short-form ID.  To cope with this, if the
+specified ID cannot be serialized due to a missing token ID, search the
+certificate list for the first entry with the specified ID.
+
+BUG=none
+TEST=manual:provision openvpn and use the UI to connect
+
+Signed-off-by: Sam Leffler <sleffler@chromium.org>
+Signed-off-by: Kevin Cernekee <cernekee@chromium.org>
+---
+ src/openvpn/pkcs11.c | 115 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 111 insertions(+), 4 deletions(-)
+
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index 3e494e51f1a6..292a94871cbe 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -665,6 +665,115 @@ cleanup:
+     return success;
  }
  
 +static CK_RV
@@ -115,31 +137,37 @@ diff -u openvpn-2.3.2.orig/src/openvpn/pkcs11.c openvpn-2.3.2/pkcs11.c
 +}
 +
  int
- SSL_CTX_use_pkcs11 (
- 	SSL_CTX * const ssl_ctx,
-@@ -653,23 +762,21 @@
- 		}
+ tls_ctx_use_pkcs11(
+     struct tls_root_ctx *const ssl_ctx,
+@@ -716,26 +825,24 @@ tls_ctx_use_pkcs11(
+         }
  
- 		if (
--			(rv = pkcs11h_certificate_deserializeCertificateId (
-+			(rv = get_certificate_id (
- 				&certificate_id,
- 				id_resp.password
- 			)) != CKR_OK
- 		) {
--			msg (M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv, pkcs11h_getMessage (rv));
- 			goto cleanup;
- 		}
- 	}
- 	else {
- 		if (
--			(rv = pkcs11h_certificate_deserializeCertificateId (
-+			(rv = get_certificate_id (
- 				&certificate_id,
- 				pkcs11_id
- 			)) != CKR_OK
- 		) {
--			msg (M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv, pkcs11h_getMessage (rv));
- 			goto cleanup;
- 		}
- 	}
+         if (
+-            (rv = pkcs11h_certificate_deserializeCertificateId(
++            (rv = get_certificate_id(
+                  &certificate_id,
+                  id_resp.password
+                  )) != CKR_OK
+             )
+         {
+-            msg(M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv, pkcs11h_getMessage(rv));
+             goto cleanup;
+         }
+     }
+     else
+     {
+         if (
+-            (rv = pkcs11h_certificate_deserializeCertificateId(
++            (rv = get_certificate_id(
+                  &certificate_id,
+                  pkcs11_id
+                  )) != CKR_OK
+             )
+         {
+-            msg(M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv, pkcs11h_getMessage(rv));
+             goto cleanup;
+         }
+     }
+-- 
+2.13.0.rc0.306.g87b477812d-goog
+

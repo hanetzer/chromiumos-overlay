@@ -1,0 +1,58 @@
+From 1f49fdce43854e88ecc813faa7de1210f3ca993f Mon Sep 17 00:00:00 2001
+From: Kevin Cernekee <cernekee@chromium.org>
+Date: Sun, 30 Apr 2017 09:04:12 -0700
+Subject: [PATCH 1/4] CHROMIUM: Set IV_PLAT and IV_PLAT_REL based on
+ environment variables
+
+IV_PLAT (platform type) is normally inferred from the build target.
+IV_PLAT_REL (platform release version) is specific to Chrome OS.
+
+Originally added in http://crosbug.com/28794 and http://crosbug.com/27507
+
+This is carried forward from openvpn-2.3.2-iv_plat.patch.
+
+Signed-off-by: Kevin Cernekee <cernekee@chromium.org>
+---
+ src/openvpn/ssl.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index fca1e7c530ac..83785e2e1c4b 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2244,11 +2244,14 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         struct env_set *es = session->opt->es;
+         struct env_item *e;
+         struct buffer out = alloc_buf_gc(512*3, &gc);
++        const char *iv_plat, *iv_plat_rel;
+ 
+         /* push version */
+         buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
+ 
+         /* push platform */
++        iv_plat = getenv("IV_PLAT");
++        if (iv_plat == NULL) {
+ #if defined(TARGET_LINUX)
+         buf_printf(&out, "IV_PLAT=linux\n");
+ #elif defined(TARGET_SOLARIS)
+@@ -2266,6 +2269,17 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ #elif defined(_WIN32)
+         buf_printf(&out, "IV_PLAT=win\n");
+ #endif
++        }
++        else
++        {
++            buf_printf(&out, "IV_PLAT=%s\n", iv_plat);
++        }
++
++        iv_plat_rel = getenv("IV_PLAT_REL");
++        if (iv_plat_rel != NULL)
++        {
++            buf_printf(&out, "IV_PLAT_REL=%s\n", iv_plat_rel);
++        }
+ 
+         /* support for P_DATA_V2 */
+         buf_printf(&out, "IV_PROTO=2\n");
+-- 
+2.13.0.rc0.306.g87b477812d-goog
+
