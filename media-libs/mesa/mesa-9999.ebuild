@@ -17,10 +17,6 @@ inherit base autotools multilib flag-o-matic python toolchain-funcs ${GIT_ECLASS
 
 OPENGL_DIR="xorg-x11"
 
-MY_PN="${PN/m/M}"
-MY_P="${MY_PN}-${PV/_/-}"
-MY_SRC_P="${MY_PN}Lib-${PV/_/-}"
-
 FOLDER="${PV/_rc*/}"
 [[ ${PV/_rc*/} == ${PV} ]] || FOLDER+="/RC"
 
@@ -31,7 +27,7 @@ HOMEPAGE="http://mesa3d.sourceforge.net/"
 if [[ $PV = 9999* ]] || [[ -n ${CROS_WORKON_COMMIT} ]]; then
 	SRC_URI="${SRC_PATCHES}"
 else
-	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${MY_SRC_P}.tar.bz2
+	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${P}.tar.bz2
 		${SRC_PATCHES}"
 fi
 
@@ -87,8 +83,6 @@ DEPEND="${RDEPEND}
 	)
 	!arm? ( sys-devel/llvm )
 "
-
-S="${WORKDIR}/${MY_P}"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
