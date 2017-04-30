@@ -13,7 +13,7 @@ EGIT_REPO_URI="${CROS_GIT_HOST_URL}/external/llvm.org/libunwind"
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug llvm-next +static-libs"
+IUSE="debug llvm-next +static-libs +shared-libs"
 RDEPEND="!${CATEGORY}/libunwind"
 
 src_unpack() {
@@ -38,7 +38,7 @@ src_configure() {
 		"${mycmakeargs[@]}"
 		-DLIBUNWIND_ENABLE_ASSERTIONS=$(usex debug)
 		-DLIBUNWIND_ENABLE_STATIC=$(usex static-libs)
-		-DLIBUNWIND_ENABLE_SHARED=$(usex !static-libs)
+		-DLIBUNWIND_ENABLE_SHARED=$(usex shared-libs)
 		-DLIBUNWIND_TARGET_TRIPLE=${CTARGET}
 	)
 

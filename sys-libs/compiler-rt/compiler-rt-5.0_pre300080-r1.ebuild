@@ -32,7 +32,7 @@ fi
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="ba68c62d8b58b511859fd87a2b870e4a18e9b3b1" #r301043
+		EGIT_COMMIT="9b8267f708fe852f22a50a3f8f5ff21f9c7f318f" #r301387
 	else
 		EGIT_COMMIT="059c103b581e37d2be47cb403769bff20808bca2" #r300080
 	fi
