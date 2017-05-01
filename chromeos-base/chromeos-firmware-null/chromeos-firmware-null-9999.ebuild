@@ -66,9 +66,6 @@ CROS_FIRMWARE_MAIN_IMAGE=""
 #  CROS_FIRMWARE_EC_IMAGE="${ROOT}/lib/firmware/filename.bin" - Absolute file path.
 CROS_FIRMWARE_EC_IMAGE=""
 
-# EC (embedded controller) firmware image version identifier.
-CROS_FIRMWARE_EC_VERSION=""
-
 # If you need any additional resources in firmware update (ex,
 # a customization script like "install_firmware_custom.sh"),
 # put the filename or directory name here. Accepts multiple colon delimited

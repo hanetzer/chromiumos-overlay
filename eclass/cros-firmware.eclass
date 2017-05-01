@@ -36,11 +36,6 @@ inherit cros-workon cros-unibuild
 # @DESCRIPTION: (Optional) Location of EC firmware image
 : ${CROS_FIRMWARE_EC_IMAGE:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_EC_VERSION
-# @DESCRIPTION: (Optional) Version name of EC firmware
-# This is deprecated. Please do not use it.
-: ${CROS_FIRMWARE_EC_VERSION:=}
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_EC_VERSION
 # @DESCRIPTION: (Optional) Version name of stabled EC firmware
 : ${CROS_FIRMWARE_STABLE_EC_VERSION:=}
@@ -303,7 +298,6 @@ cros-firmware_src_compile() {
 		_add_param image_cmd -e "${EC_IMAGE_LOCATION}"
 		_add_param image_cmd -p "${PD_IMAGE_LOCATION}"
 		_add_param image_cmd -w "${FW_RW_IMAGE_LOCATION}"
-		_add_param image_cmd --ec_version "${CROS_FIRMWARE_EC_VERSION}"
 		_add_bool_param image_cmd --create_bios_rw_image \
 			"${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}"
 
