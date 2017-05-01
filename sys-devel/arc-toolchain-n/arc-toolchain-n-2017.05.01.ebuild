@@ -6,7 +6,7 @@
 
 # Clang is from
 # prebuilts/clang/host/linux-x86/clang-2690385
-# Last commit is 6fb7f250b2d8cb796c236b394ea1044322bb13c7
+# Last commit is 42541fcf245ae2f4abead994b65603a02ffddea0
 
 # Gcc is from
 # prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
@@ -15,17 +15,15 @@
 # Last commit: 54c4ed4b1a910bcc8e37196acb7fa85e872de9e4
 
 # Libraries are from
-# https://android-build.googleplex.com/builds/submitted/3584361/cheets_arm-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/3584361/cheets_x86-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/3960532/cheets_arm-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/3960532/cheets_x86-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/3960532/cheets_x86_64-userdebug/latest
 
 # Headers are from
 # bionic
-# Last commit: c3474c7adbfd5f3f320dc569bd85bbfda1dab9ba
+# Last commit: 6d71e6543f7c7a45d9ce597986a019fe1b877bca
 # external/libcxx
-# Last commit: d8170174bf66c98fca967b7133783c0c95292993
-# external/libdrm
-# Branch chromeos-2.4.70
-# Last commit: 0ce18bedd3e62d4784fa755403801934ba171084
+# Last commit: 79a397804f08fd80a51e7b6c0b7d6d7880a530ea
 # external/llvm
 # Last commit: 9e582cde9f72e7fab98a3eb3e39a59081601be2c
 
