@@ -3,11 +3,11 @@
 
 EAPI=5
 
-DESCRIPTION="Atrus speaker/microphone firmware"
-HOMEPAGE="http://www.limesaudio.com/"
+DESCRIPTION="Atrus speakerphone firmware"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/atrusctl/"
 SRC_URI="gs://chromeos-localmirror/distfiles/atrus-firmware-${PV}.tgz"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
@@ -17,8 +17,8 @@ DEPEND=""
 S="${WORKDIR}"
 
 src_install() {
-	insinto "/lib/firmware/limes_audio/"
+	insinto /lib/firmware/google/
 	doins "atrus-fw-bundle-v${PV}.bin"
 	dosym "atrus-fw-bundle-v${PV}.bin" \
-		"/lib/firmware/limes_audio/atrus-fw-bundle.bin"
+		/lib/firmware/google/atrus-fw-bundle-latest.bin
 }
