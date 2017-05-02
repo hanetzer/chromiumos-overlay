@@ -1088,12 +1088,14 @@ diff --git a/misc/sys/cdefs.h b/misc/sys/cdefs.h
 index 7fd4154..55b773f 100644
 --- a/misc/sys/cdefs.h
 +++ b/misc/sys/cdefs.h
-@@ -129,8 +129,56 @@
+@@ -129,8 +129,51 @@
  
  
  /* Fortify support.  */
++#define __bos_level (__USE_FORTIFY_LEVEL > 1)
 -#define __bos(ptr) __builtin_object_size (ptr, __USE_FORTIFY_LEVEL > 1)
--#define __bos0(ptr) __builtin_object_size (ptr, 0)
++#define __bos(ptr) __builtin_object_size (ptr, __bos_level)
+ #define __bos0(ptr) __builtin_object_size (ptr, 0)
 +#define __fortify_function __extern_always_inline __attribute_artificial__
 +#if defined __clang__ && __USE_FORTIFY_LEVEL > 0 \
 +    && !defined _CLANG_FORTIFY_DISABLE
@@ -1114,9 +1116,6 @@ index 7fd4154..55b773f 100644
 +# define __clang_error(what) __attribute__ ((unavailable(what)))
 +# define __fortify_potential_overload __fortify_overload
 +# define __fortify_overloadable __attribute_overloadable__
-+/* FIXME: This is temporary until https://llvm.org/bugs/show_bug.cgi?id=23277
-+ * gets fixed. It will not work with n>1.  */
-+# define __bos_n(p, n) ((p) ? __builtin_object_size (p, n) : -1ULL)
 +#else
 +# define __fortify_potential_overload __fortify_function
 +/* Some functions/decls can be shared between clang-style and non-clang-style
@@ -1124,7 +1123,6 @@ index 7fd4154..55b773f 100644
 +# define __clang_pass_object_size_n(n)
 +# define __attribute_overloadable__
 +# define __fortify_overloadable
-+# define __bos_n(p, n) __builtin_object_size (p, n)
 +#endif
 +
 +#define __clang_pass_object_size0 __clang_pass_object_size_n (0)
@@ -1140,10 +1138,6 @@ index 7fd4154..55b773f 100644
 +#else
 +# define __CLANG_NO_MANGLE(name)
 +#endif
-+
-+#define __bos_level (__USE_FORTIFY_LEVEL > 1)
-+#define __bos(ptr) __bos_n (ptr, __bos_level)
-+#define __bos0(ptr) __bos_n (ptr, 0)
  
  #if __GNUC_PREREQ (4,3)
  # define __warndecl(name, msg) \
