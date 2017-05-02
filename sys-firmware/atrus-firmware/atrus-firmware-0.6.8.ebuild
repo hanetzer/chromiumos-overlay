@@ -11,7 +11,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="sys-apps/atrusctl"
+RDEPEND="chromeos-base/atrusctl"
 DEPEND=""
 
 S="${WORKDIR}"
