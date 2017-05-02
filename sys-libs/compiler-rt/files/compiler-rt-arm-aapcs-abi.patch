@@ -1,0 +1,15 @@
+llvm expects aapcs abi for arm builtin intrinsics.
+https://bugs.llvm.org//show_bug.cgi?id=33030
+diff --git a/lib/builtins/int_lib.h b/lib/builtins/int_lib.h
+index 8a202dde7..c3352dbea 100644
+--- a/lib/builtins/int_lib.h
++++ b/lib/builtins/int_lib.h
+@@ -33,7 +33,7 @@
+ # define ARM_EABI_FNALIAS(aeabi_name, name)         \
+   void __aeabi_##aeabi_name() __attribute__((alias("__" #name)));
+ # ifdef COMPILER_RT_ARMHF_TARGET
+-#   define COMPILER_RT_ABI
++#   define COMPILER_RT_ABI __attribute__((pcs("aapcs")))
+ # else
+ #   define COMPILER_RT_ABI __attribute__((pcs("aapcs")))
+ # endif

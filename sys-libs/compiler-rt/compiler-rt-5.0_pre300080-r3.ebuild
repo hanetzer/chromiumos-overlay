@@ -59,6 +59,8 @@ src_prepare() {
 		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	fi
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
+	# Builtins should have AAPCS ABI.
+	epatch "${FILESDIR}"/compiler-rt-arm-aapcs-abi.patch
 }
 
 src_configure() {

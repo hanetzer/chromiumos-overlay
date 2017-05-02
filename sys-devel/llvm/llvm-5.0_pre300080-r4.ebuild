@@ -273,9 +273,9 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/llvm-3.9-dwarf-version.patch
 
-	# Link libunwind when using compiler-rt as default rtlib.
+	# Link libgcc_eh when using compiler-rt as default rtlib.
 	# https://llvm.org/bugs/show_bug.cgi?id=28681
-	epatch "${FILESDIR}"/clang-5.0-enable-libunwind-with-compiler-rt.patch
+	epatch "${FILESDIR}"/clang-5.0-enable-libgcc-with-compiler-rt.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
