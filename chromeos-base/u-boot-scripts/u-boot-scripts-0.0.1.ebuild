@@ -10,6 +10,7 @@ SLOT="0"
 KEYWORDS="-* arm"
 IUSE=""
 
+RDEPEND="chromeos-base/u-boot-license"
 S=${WORKDIR}
 
 src_compile() {
