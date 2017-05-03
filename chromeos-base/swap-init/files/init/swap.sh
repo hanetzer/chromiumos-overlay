@@ -242,6 +242,7 @@ enable() {
 
   # Delete it first in case the permissions have gotten ... weird.
   rm -f "${SWAP_ENABLE_FILE}"
+  mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
   echo "${size}" > "${SWAP_ENABLE_FILE}"
 }
 
