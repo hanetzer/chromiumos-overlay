@@ -382,6 +382,11 @@ cros-firmware_src_install() {
 		fi
 	done
 
+	# install ${FILESDIR}/sbin/* (usually board-setgoodfirmware).
+	if [[ -d "${FILESDIR}"/sbin ]]; then
+		dosbin "${FILESDIR}"/sbin/*
+	fi
+
 	# install updaters for firmware-from-source archive.
 	if use bootimage; then
 		exeinto /firmware
