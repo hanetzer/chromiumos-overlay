@@ -35,26 +35,22 @@ src_compile() {
 		append-ldflags -m32
 	fi
 
-	append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm -D_LARGEFILE_SOURCE
-	append-cppflags -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+	append-lfs-flags
 
 	# TODO(gsingh): use pkgconfig
 	if use video_cards_intel; then
 		export DRV_I915=1
 		append-cppflags -DDRV_I915
-		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/intel
 	fi
 
 	if use video_cards_rockchip; then
 		export DRV_ROCKCHIP=1
 		append-cppflags -DDRV_ROCKCHIP
-		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/rockchip
 	fi
 
 	if use video_cards_mediatek; then
 		export DRV_MEDIATEK=1
 		append-cppflags -DDRV_MEDIATEK
-		append-cppflags -I${ARC_SYSROOT}/usr/include/libdrm/mediatek
 	fi
 
 	export TARGET_DIR="$(cros-workon_get_build_dir)/"
