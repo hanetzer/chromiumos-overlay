@@ -4,7 +4,7 @@
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/huddly-updater"
 
-inherit cros-workon udev
+inherit cros-workon libchrome udev
 
 DESCRIPTION="A utility to update Huddly camera firmware"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/huddly-updater"
@@ -14,6 +14,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 DEPEND="
+	chromeos-base/libbrillo
 	virtual/libusb:1
 	virtual/libudev:0="
 
