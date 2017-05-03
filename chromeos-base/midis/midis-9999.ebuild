@@ -22,6 +22,10 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+
+	# Install headers
+	insinto /usr/include/midis/
+	doins -r messages.h
 }
 
 pkg_preinst() {
@@ -31,6 +35,7 @@ pkg_preinst() {
 
 platform_pkg_test() {
 	local unit_tests=(
+		"client_tracker_test"
 		"device_test"
 		"device_tracker_test"
 		"udev_handler_test"
