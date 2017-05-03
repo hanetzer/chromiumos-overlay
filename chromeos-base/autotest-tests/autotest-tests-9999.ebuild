@@ -43,6 +43,7 @@ RDEPEND="${RDEPEND}
 	)
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
 	tests_platform_RootPartitionsNotMounted? ( virtual/udev )
+	tests_platform_SecureEraseFile? ( chromeos-base/secure-erase-file )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
@@ -214,6 +215,7 @@ CLIENT_IUSE_TESTS="
 	)
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
+	+tests_platform_SecureEraseFile
 	!chromeless_tty? ( +tests_platform_SessionManagerStateKeyGeneration )
 	+tests_platform_TabletMode
 	+tests_platform_TempFS
