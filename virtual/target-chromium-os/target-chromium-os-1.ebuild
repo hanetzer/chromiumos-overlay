@@ -19,7 +19,6 @@ IUSE="
 	cellular
 	compupdates
 	containers
-	coreboot
 	cr50_onboard
 	+cras
 	+crash_reporting
@@ -172,7 +171,6 @@ CROS_COMMON_RDEPEND+="
 	readahead? ( sys-apps/ureadahead )
 	pam? ( sys-auth/pam_pwdfile )
 	watchdog? ( sys-apps/daisydog )
-	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
 	cups? (
 		net-print/cups

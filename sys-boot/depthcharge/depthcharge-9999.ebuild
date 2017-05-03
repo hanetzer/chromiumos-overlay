@@ -14,12 +14,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync unibuild"
 
-RDEPEND="
-	sys-apps/coreboot-utils
-	sys-boot/libpayload
-	chromeos-base/vboot_reference
-	"
-DEPEND=${RDEPEND}
+DEPEND="sys-boot/libpayload"
 
 CROS_WORKON_LOCALNAME=("../platform/depthcharge" "../platform/vboot_reference")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"

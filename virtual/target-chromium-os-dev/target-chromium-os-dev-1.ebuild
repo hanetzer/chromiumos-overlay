@@ -95,6 +95,7 @@ RDEPEND="${RDEPEND}
 	dev-util/mem
 	dev-util/strace
 	net-dialup/lrzsz
+	sys-apps/coreboot-utils
 	sys-apps/coreutils
 	sys-apps/diffutils
 	sys-apps/file

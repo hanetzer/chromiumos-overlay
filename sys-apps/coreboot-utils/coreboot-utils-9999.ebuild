@@ -18,9 +18,6 @@ CROS_WORKON_DESTDIR=(
 
 inherit cros-workon toolchain-funcs
 
-RDEPEND="sys-apps/pciutils"
-DEPEND="${RDEPEND}"
-
 DESCRIPTION="Utilities for modifying coreboot firmware images"
 HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
@@ -52,17 +49,14 @@ src_compile() {
 			emake -C util/inteltool CC="${CC}"
 			emake -C util/nvramtool CC="${CC}"
 		fi
-		if use mma; then
-			emake -C util/cbmem CC="${CC}"
-		fi
 	fi
 }
 
 src_install() {
 	dobin util/cbfstool/cbfstool
-	dobin util/cbfstool/fmaptool
-	dobin util/cbfstool/cbfs-compression-tool
 	if use cros_host; then
+		dobin util/cbfstool/fmaptool
+		dobin util/cbfstool/cbfs-compression-tool
 		dobin util/archive/archive
 	else
 		dobin util/cbmem/cbmem
