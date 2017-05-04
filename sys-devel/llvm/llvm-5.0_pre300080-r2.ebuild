@@ -242,7 +242,7 @@ src_prepare() {
 		use llvm-next && pick_next_cherries
 	fi
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
-	if use llvm-next; then
+	if use llvm-next || use llvm-tot; then
 		# leak-whitelist patch does not cleanly apply to llvm-next.
 		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	else
