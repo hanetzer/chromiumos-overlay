@@ -378,6 +378,8 @@ CONFIG_KVM=y
 # CONFIG_KVM_ASYNC_PF is not set
 CONFIG_KVM_INTEL=y
 CONFIG_KVM_MMIO=y
+CONFIG_VSOCKETS=m
+CONFIG_VHOST_VSOCK=m
 "
 
 # TODO(benchan): Remove the 'mbim' use flag and unconditionally enable the
