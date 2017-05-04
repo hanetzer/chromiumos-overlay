@@ -997,4 +997,18 @@ clang-setup-env() {
 	fi
 }
 
+asan-setup-env() {
+	use asan || return 0
+	if ! tc-is-clang; then
+		die "ASAN is only supported for clang"
+	fi
+	local asan_flags=(
+		-fsanitize=address
+		-fsanitize=alignment
+		-fsanitize=shift
+	)
+	append-flags "${asan_flags[@]}"
+	append-ldflags "${asan_flags[@]}"
+}
+
 fi
