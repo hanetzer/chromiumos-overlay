@@ -55,19 +55,6 @@ src_unpack() {
 
 src_install() {
 	emake bundle
-
-	# Create cutoff resource from $(TOOLKIT_TEMP_DIR) for
-	# chromeos-base/factory_installer.
-	local build_toolkit="${BUILD_DIR}/tmp/toolkit"
-	local cutoff_base="${build_toolkit}/usr/local/factory/sh"
-	local cutoff_json="/usr/local/facory/py/config/cutoff.json"
-
-	if [ -f "${build_toolkit}/${cutoff_json}" ]; then
-		local new_base="${BUILD_DIR}/tmp"
-		cp -r "${cutoff_base}/cutoff" "${new_base}"
-		cp -f "${build_toolkit}/${cutoff_json}" "${new_base}/cutoff"
-		cutoff_base="${new_base}"
-	fi
-
-	factory_create_resource cutoff "${cutoff_base}" "" "cutoff"
+	insinto "${CROS_FACTORY_BOARD_RESOURCES_DIR}"
+	doins "${BUILD_DIR}/resource/installer.tar"
 }
