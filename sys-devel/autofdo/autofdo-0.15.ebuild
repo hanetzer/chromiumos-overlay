@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit autotools eutils
+inherit autotools eutils flag-o-matic
 
 DESCRIPTION="Utilies for generating, examining AFDO profiles"
 HOMEPAGE="http://gcc.gnu.org/wiki/AutoFDO"
@@ -24,6 +24,11 @@ src_prepare() {
 	# Fix a build problem with gcc.
 	epatch "${FILESDIR}/autofdo-0.15-rpath.patch"
 	eautoreconf
+}
+
+src_configure() {
+	append-ldflags $(no-as-needed)
+	econf
 }
 
 src_install() {
