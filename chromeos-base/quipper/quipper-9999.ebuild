@@ -1,6 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Don't use Makefile.external here as it fetches from the network.
 EAPI="4"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -65,10 +66,4 @@ platform_pkg_test() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
-
-	# TODO(dhsharp): Re-enable when external build is working again.
-	# TODO(dhsharp): See crbug.com/623156
-	# Test external makefile build.
-	#emake -f Makefile.external CC="$(tc-getCC)" CXX="$(tc-getCXX)" \
-	#	PKG_CONFIG="$(tc-getPKG_CONFIG)"
 }
