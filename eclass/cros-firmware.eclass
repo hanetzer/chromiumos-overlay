@@ -50,7 +50,7 @@ inherit cros-workon cros-unibuild
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_SCRIPT
 # @DESCRIPTION: (Optional) Entry script file name of updater
-: ${CROS_FIRMWARE_SCRIPT:=}
+: ${CROS_FIRMWARE_SCRIPT:=updater4.sh}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EXTRA_LIST
 # @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
