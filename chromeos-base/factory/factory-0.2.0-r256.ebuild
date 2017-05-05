@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="23b0473f10bf42e520810f03bc8b06bba1c90c71"
-CROS_WORKON_TREE="5713ddbdebb8ec464af02101f99412b05e4d027f"
+CROS_WORKON_COMMIT="c8d12cb6268231135c6bd558cf3fac9ca5287bd3"
+CROS_WORKON_TREE="86325eaa568948b93b6f16d6b06b58013089826c"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -57,19 +57,6 @@ src_unpack() {
 
 src_install() {
 	emake bundle
-
-	# Create cutoff resource from $(TOOLKIT_TEMP_DIR) for
-	# chromeos-base/factory_installer.
-	local build_toolkit="${BUILD_DIR}/tmp/toolkit"
-	local cutoff_base="${build_toolkit}/usr/local/factory/sh"
-	local cutoff_json="/usr/local/facory/py/config/cutoff.json"
-
-	if [ -f "${build_toolkit}/${cutoff_json}" ]; then
-		local new_base="${BUILD_DIR}/tmp"
-		cp -r "${cutoff_base}/cutoff" "${new_base}"
-		cp -f "${build_toolkit}/${cutoff_json}" "${new_base}/cutoff"
-		cutoff_base="${new_base}"
-	fi
-
-	factory_create_resource cutoff "${cutoff_base}" "" "cutoff"
+	insinto "${CROS_FACTORY_BOARD_RESOURCES_DIR}"
+	doins "${BUILD_DIR}/resource/installer.tar"
 }

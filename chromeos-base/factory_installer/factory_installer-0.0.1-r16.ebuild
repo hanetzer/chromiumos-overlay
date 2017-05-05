@@ -145,8 +145,9 @@ src_install() {
 	esac
 	newins $PMBR_SOURCE .pmbr_code
 
-	einfo "Install cutoff scripts from chromeos-base/factory."
-	factory_unpack_resource cutoff "${ED}usr/share"
+	einfo "Install resources from chromeos-base/factory."
+	factory_unpack_resource installer "${ED}usr" || \
+		die "Failed to unpack resource 'installer'."
 }
 
 pkg_postinst() {
