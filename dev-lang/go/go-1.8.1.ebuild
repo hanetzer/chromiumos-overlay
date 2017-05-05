@@ -75,15 +75,15 @@ src_compile() {
 	cd "${S}/src"
 	einfo "Building the cross compiler for ${CTARGET}."
 	GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
-		CC_FOR_TARGET="${CTARGET}-gcc" \
-		CXX_FOR_TARGET="${CTARGET}-g++" \
+		CC_FOR_TARGET="$(tc-getTARGET_CC)" \
+		CXX_FOR_TARGET="$(tc-getTARGET_CXX)" \
 		./make.bash || die
 
 	if is_cross ; then
 		einfo "Building the standard library with -buildmode=pie."
 		GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
-			CC="${CTARGET}-gcc" \
-			CXX="${CTARGET}-g++" \
+			CC="$(tc-getTARGET_CC)" \
+			CXX="$(tc-getTARGET_CXX)" \
 			GOROOT="${S}" \
 			"${S}/bin/go" install -v -buildmode=pie std || die
 	fi
@@ -147,8 +147,8 @@ src_install() {
 
 	# Fill in variable values in the compiler wrapper.
 	sed -e "s:@GOARCH@:$(get_goarch ${CTARGET}):" \
-		-e "s:@CC@:${CTARGET}-gcc:" \
-		-e "s:@CXX@:${CTARGET}-g++:" \
+		-e "s:@CC@:$(tc-getTARGET_CC):" \
+		-e "s:@CXX@:$(tc-getTARGET_CXX):" \
 		-e "s:@GOTOOL@:${GOROOT_FINAL}/bin/go:" \
 		-i "${D}/usr/bin/${CTARGET}-go" || die
 }

@@ -941,6 +941,20 @@ gen_usr_ldscript() {
 # @RETURN: name of the Go compiler for building binaries to run on the build machine
 tc-getBUILD_GO() { tc-getBUILD_PROG GO go "$@"; }
 
+tc-getTARGET_PROG() {
+	local CTARGET="${CTARGET:-${CHOST}}"
+	_tc-getPROG CTARGET "TARGET_$1 $1_FOR_TARGET" "${@:2}"
+}
+
+# @FUNCTION: tc-getTARGET_CC
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the C compiler for building binaries to run on the target machine
+tc-getTARGET_CC() { tc-getTARGET_PROG CC "${CC:-gcc}" "$@"; }
+# @FUNCTION: tc-getTARGET_CXX
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the C++ compiler for building binaries to run on the target machine
+tc-getTARGET_CXX() { tc-getTARGET_PROG CXX "${CXX:-g++}" "$@"; }
+
 # Returns true if gcc builds PIEs
 # For ARM, readelf -h | grep Type always has REL instead of EXEC.
 # That is why we have to read the flags one by one and check them instead
