@@ -1,0 +1,316 @@
+From d2e9fa00e02869d5c9592c326c4d567e693f3b5c Mon Sep 17 00:00:00 2001
+From: Kyle Brenneman <kbrenneman@nvidia.com>
+Date: Fri, 8 Jul 2016 15:21:17 -0600
+Subject: [PATCH 535/539] UPSTREAM: egl: Combine the GL and GLES current
+ contexts (v2)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Only keep track of a single current context, instead of separate
+contexts for GL and GLES.
+
+In EGL 1.4 (and 1.5), EGL_OPENGL_API and EGL_OPENGL_ES_API are supposed
+to be interchangeable for all purposes except for eglCreateContext.
+
+The _EGLThreadInfo::CurrentContexts array is now a single pointer to the
+current context, which may be a GL or GLES context. In addition, it now
+keeps track of the current API as an enum instead of an index.
+
+eglMakeCurrent will now replace the current context, regardless of which
+client API is used for for the current and new contexts. It no longer
+checks for a conflicting context. In addition, calling eglMakeCurrent
+with EGL_NO_CONTEXT will now release the current context regardless of
+the current API.
+
+BUG=b/33495228
+TEST=dEQP-EGL.functiona.negative_api.bind_api
+
+v2: Rebased against master (Adam Jackson)
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+[chromium: Cherry pick to arc-12.1.0-pre2].
+(cherry picked from commit 6e066f76ee22909b0653ff8b89429de819e60f14)
+Change-Id: I4c7593e279159a7d0f8bc7de1fb53262587721ae
+Depends-On: Iba127c3cb0982bdcb08d5ab72f2f0dbf8fd35a25
+Reviewed-on: https://chromium-review.googlesource.com/419576
+Commit-Ready: Chad Versace <chadversary@chromium.org>
+Tested-by: Chad Versace <chadversary@chromium.org>
+Reviewed-by: Stéphane Marchesin <marcheu@chromium.org>
+---
+ src/egl/main/eglapi.c     | 42 ++++++++++++------------------------------
+ src/egl/main/eglcontext.c | 31 ++++---------------------------
+ src/egl/main/eglcurrent.c | 15 ++-------------
+ src/egl/main/eglcurrent.h | 41 ++++-------------------------------------
+ 4 files changed, 22 insertions(+), 107 deletions(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 633dc127d36..baacafe4a79 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1093,18 +1093,8 @@ eglWaitClient(void)
+ EGLBoolean EGLAPIENTRY
+ eglWaitGL(void)
+ {
+-   _EGLThreadInfo *t = _eglGetCurrentThread();
+-   EGLint api_index = t->CurrentAPIIndex;
+-   EGLint es_index = _eglConvertApiToIndex(EGL_OPENGL_ES_API);
+-   EGLBoolean ret;
+-
+-   if (api_index != es_index && _eglIsCurrentThreadDummy())
+-      RETURN_EGL_ERROR(NULL, EGL_BAD_ALLOC, EGL_FALSE);
+-
+-   t->CurrentAPIIndex = es_index;
+-   ret = eglWaitClient();
+-   t->CurrentAPIIndex = api_index;
+-   return ret;
++   /* Since we only support OpenGL and GLES, eglWaitGL is equivalent to eglWaitClient. */
++   return eglWaitClient();
+ }
+ 
+ 
+@@ -1227,7 +1217,7 @@ eglBindAPI(EGLenum api)
+    if (!_eglIsApiValid(api))
+       RETURN_EGL_ERROR(NULL, EGL_BAD_PARAMETER, EGL_FALSE);
+ 
+-   t->CurrentAPIIndex = _eglConvertApiToIndex(api);
++   t->CurrentAPI = api;
+ 
+    RETURN_EGL_SUCCESS(NULL, EGL_TRUE);
+ }
+@@ -1243,7 +1233,7 @@ eglQueryAPI(void)
+    EGLenum ret;
+ 
+    /* returns one of EGL_OPENGL_API, EGL_OPENGL_ES_API or EGL_OPENVG_API */
+-   ret = _eglConvertApiFromIndex(t->CurrentAPIIndex);
++   ret = t->CurrentAPI;
+ 
+    RETURN_EGL_SUCCESS(NULL, ret);
+ }
+@@ -1276,25 +1266,17 @@ eglReleaseThread(void)
+    /* unbind current contexts */
+    if (!_eglIsCurrentThreadDummy()) {
+       _EGLThreadInfo *t = _eglGetCurrentThread();
+-      EGLint api_index = t->CurrentAPIIndex;
+-      EGLint i;
+-
+-      for (i = 0; i < _EGL_API_NUM_APIS; i++) {
+-         _EGLContext *ctx = t->CurrentContexts[i];
+-         if (ctx) {
+-            _EGLDisplay *disp = ctx->Resource.Display;
+-            _EGLDriver *drv;
+ 
+-            t->CurrentAPIIndex = i;
++      _EGLContext *ctx = t->CurrentContext;
++      if (ctx) {
++         _EGLDisplay *disp = ctx->Resource.Display;
++         _EGLDriver *drv;
+ 
+-            mtx_lock(&disp->Mutex);
+-            drv = disp->Driver;
+-            (void) drv->API.MakeCurrent(drv, disp, NULL, NULL, NULL);
+-            mtx_unlock(&disp->Mutex);
+-         }
++         mtx_lock(&disp->Mutex);
++         drv = disp->Driver;
++         (void) drv->API.MakeCurrent(drv, disp, NULL, NULL, NULL);
++         mtx_unlock(&disp->Mutex);
+       }
+-
+-      t->CurrentAPIIndex = api_index;
+    }
+ 
+    _eglDestroyCurrentThread();
+diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
+index bb92cded52b..254aaa1656d 100644
+--- a/src/egl/main/eglcontext.c
++++ b/src/egl/main/eglcontext.c
+@@ -575,20 +575,16 @@ _eglQueryContext(_EGLDriver *drv, _EGLDisplay *dpy, _EGLContext *c,
+ static _EGLContext *
+ _eglBindContextToThread(_EGLContext *ctx, _EGLThreadInfo *t)
+ {
+-   EGLint apiIndex;
+    _EGLContext *oldCtx;
+ 
+-   apiIndex = (ctx) ?
+-      _eglConvertApiToIndex(ctx->ClientAPI) : t->CurrentAPIIndex;
+-
+-   oldCtx = t->CurrentContexts[apiIndex];
++   oldCtx = t->CurrentContext;
+    if (ctx != oldCtx) {
+       if (oldCtx)
+          oldCtx->Binding = NULL;
+       if (ctx)
+          ctx->Binding = t;
+ 
+-      t->CurrentContexts[apiIndex] = ctx;
++      t->CurrentContext = ctx;
+    }
+ 
+    return oldCtx;
+@@ -603,7 +599,6 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+ {
+    _EGLThreadInfo *t = _eglGetCurrentThread();
+    _EGLDisplay *dpy;
+-   EGLint conflict_api;
+ 
+    if (_eglIsCurrentThreadDummy())
+       return _eglError(EGL_BAD_ALLOC, "eglMakeCurrent");
+@@ -635,13 +630,11 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+    if (ctx->Binding && ctx->Binding != t)
+       return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
+    if (draw && draw->CurrentContext && draw->CurrentContext != ctx) {
+-      if (draw->CurrentContext->Binding != t ||
+-          draw->CurrentContext->ClientAPI != ctx->ClientAPI)
++      if (draw->CurrentContext->Binding != t)
+          return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
+    }
+    if (read && read->CurrentContext && read->CurrentContext != ctx) {
+-      if (read->CurrentContext->Binding != t ||
+-          read->CurrentContext->ClientAPI != ctx->ClientAPI)
++      if (read->CurrentContext->Binding != t)
+          return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
+    }
+ 
+@@ -662,22 +655,6 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+          return _eglError(EGL_BAD_MATCH, "eglMakeCurrent");
+    }
+ 
+-   switch (ctx->ClientAPI) {
+-   /* OpenGL and OpenGL ES are conflicting */
+-   case EGL_OPENGL_ES_API:
+-      conflict_api = EGL_OPENGL_API;
+-      break;
+-   case EGL_OPENGL_API:
+-      conflict_api = EGL_OPENGL_ES_API;
+-      break;
+-   default:
+-      conflict_api = -1;
+-      break;
+-   }
+-
+-   if (conflict_api >= 0 && _eglGetAPIContext(conflict_api))
+-      return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
+-
+    return EGL_TRUE;
+ }
+ 
+diff --git a/src/egl/main/eglcurrent.c b/src/egl/main/eglcurrent.c
+index 835631d3ba3..345f4cc8922 100644
+--- a/src/egl/main/eglcurrent.c
++++ b/src/egl/main/eglcurrent.c
+@@ -111,7 +111,7 @@ _eglInitThreadInfo(_EGLThreadInfo *t)
+    memset(t, 0, sizeof(*t));
+    t->LastError = EGL_SUCCESS;
+    /* default, per EGL spec */
+-   t->CurrentAPIIndex = _eglConvertApiToIndex(EGL_OPENGL_ES_API);
++   t->CurrentAPI = EGL_OPENGL_ES_API;
+ }
+ 
+ 
+@@ -205,24 +205,13 @@ _eglIsCurrentThreadDummy(void)
+ 
+ 
+ /**
+- * Return the currently bound context of the given API, or NULL.
+- */
+-_EGLContext *
+-_eglGetAPIContext(EGLenum api)
+-{
+-   _EGLThreadInfo *t = _eglGetCurrentThread();
+-   return t->CurrentContexts[_eglConvertApiToIndex(api)];
+-}
+-
+-
+-/**
+  * Return the currently bound context of the current API, or NULL.
+  */
+ _EGLContext *
+ _eglGetCurrentContext(void)
+ {
+    _EGLThreadInfo *t = _eglGetCurrentThread();
+-   return t->CurrentContexts[t->CurrentAPIIndex];
++   return t->CurrentContext;
+ }
+ 
+ 
+diff --git a/src/egl/main/eglcurrent.h b/src/egl/main/eglcurrent.h
+index 3f8a0b28e38..b922435e31f 100644
+--- a/src/egl/main/eglcurrent.h
++++ b/src/egl/main/eglcurrent.h
+@@ -46,20 +46,14 @@ extern "C" {
+     EGL_OPENGL_BIT)
+ 
+ 
+-#define _EGL_API_FIRST_API EGL_OPENGL_ES_API
+-#define _EGL_API_LAST_API EGL_OPENGL_API
+-#define _EGL_API_NUM_APIS (_EGL_API_LAST_API - _EGL_API_FIRST_API + 1)
+-
+-
+ /**
+  * Per-thread info
+  */
+ struct _egl_thread_info
+ {
+    EGLint LastError;
+-   _EGLContext *CurrentContexts[_EGL_API_NUM_APIS];
+-   /* use index for fast access to current context */
+-   EGLint CurrentAPIIndex;
++   _EGLContext *CurrentContext;
++   EGLenum CurrentAPI;
+ };
+ 
+ 
+@@ -71,36 +65,13 @@ _eglIsApiValid(EGLenum api)
+ {
+ #ifdef ANDROID
+    /* OpenGL is not a valid/supported API on Android */
+-   return api >= _EGL_API_FIRST_API && api <= _EGL_API_LAST_API &&
+-          api != EGL_OPENGL_API;
++   return api == EGL_OPENGL_ES_API;
+ #else
+-   return api >= _EGL_API_FIRST_API && api <= _EGL_API_LAST_API;
++   return (api == EGL_OPENGL_ES_API || api == EGL_OPENGL_API);
+ #endif
+ }
+ 
+ 
+-/**
+- * Convert a client API enum to an index, for use by thread info.
+- * The client API enum is assumed to be valid.
+- */
+-static inline EGLint
+-_eglConvertApiToIndex(EGLenum api)
+-{
+-   return api - _EGL_API_FIRST_API;
+-}
+-
+-
+-/**
+- * Convert an index, used by thread info, to a client API enum.
+- * The index is assumed to be valid.
+- */
+-static inline EGLenum
+-_eglConvertApiFromIndex(EGLint idx)
+-{
+-   return _EGL_API_FIRST_API + idx;
+-}
+-
+-
+ extern _EGLThreadInfo *
+ _eglGetCurrentThread(void);
+ 
+@@ -114,10 +85,6 @@ _eglIsCurrentThreadDummy(void);
+ 
+ 
+ extern _EGLContext *
+-_eglGetAPIContext(EGLenum api);
+-
+-
+-extern _EGLContext *
+ _eglGetCurrentContext(void);
+ 
+ 
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+

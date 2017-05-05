@@ -1,0 +1,46 @@
+From 00a324fd528fa7f061aa33c559ef30bc884a0dab Mon Sep 17 00:00:00 2001
+From: Chad Versace <chadversary@chromium.org>
+Date: Wed, 3 May 2017 17:05:40 -0700
+Subject: [PATCH 539/539] CHROMIUM: HACK: egl: Change error codes for Android
+ CTS
+
+Fixes CTS test
+android.hardware.camera2.cts.RobustnessTest#testAbandonRepeatingRequestSurface
+on reef, and all tests in module CtsCameraTestCases pass.
+
+The Android CTS expects EGL_BAD_SURFACE in some places where the EGL
+spec mandates EGL_BAD_NATIVE_WINDOW or EGL_BAD_CURRENT_SURFACE. This
+patch is a quick hack that changes the error codes to satisfy the
+Android CTS.
+
+Specifically, method
+android.hardware.camera2.legacy.SurfaceTextureRenderer.swapBuffers
+interprets EGL_BAD_SURFACE as an indicatin that the buffer queue has
+been abandoned. On any other EGL error code, the method throws a fatal
+exception.
+
+BUG=b:36063477
+TEST=android.hardware.camera2.cts.RobustnessTest#testAbandonRepeatingRequestSurface
+
+References: https://android.googlesource.com/platform/frameworks/base/+/android-7.1.2_r11/core/java/android/hardware/camera2/legacy/SurfaceTextureRenderer.java#532
+Change-Id: Ia44d87de789c7d25d3b4f567d213fc86d21608a7
+---
+ src/egl/main/eglapi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 9702e22f54f..9b3b9087655 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1044,7 +1044,7 @@ eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
+     *    generated.
+     */
+    if (surf->Lost)
+-      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_FALSE);
++      RETURN_EGL_ERROR(disp, EGL_BAD_SURFACE, EGL_FALSE);
+ 
+    ret = drv->API.SwapBuffers(drv, disp, surf);
+ 
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+

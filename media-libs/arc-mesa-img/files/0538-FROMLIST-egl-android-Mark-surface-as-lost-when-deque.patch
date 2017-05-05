@@ -1,0 +1,61 @@
+From 5f14880818cd89f4bbc85c8dd30ef067742a0524 Mon Sep 17 00:00:00 2001
+From: Chad Versace <chadversary@chromium.org>
+Date: Wed, 3 May 2017 17:05:40 -0700
+Subject: [PATCH 538/539] FROMLIST: egl/android: Mark surface as lost when
+ dequeueBuffer fails
+
+This ensures that future calls to eglSwapBuffers and eglMakeCurrent emit
+an error.
+
+This patch is part of a series for fixing
+android.hardware.camera2.cts.RobustnessTest#testAbandonRepeatingRequestSurface
+on Chrome OS x86 devices.
+
+BUG=b:36063477
+TEST=None (The bugfix comes later in the patch series)
+[drinkcat: Replaced true by EGL_TRUE]
+
+Archived-At: https://lists.freedesktop.org/archives/mesa-dev/2017-May/154306.html
+Patchwork: https://patchwork.freedesktop.org/patch/154410/
+Change-Id: I58101fec0b9c791f2ff0da7eea7eb7c0078b91fb
+---
+ src/egl/drivers/dri2/platform_android.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 0c64f868350..2f1c884fcc6 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -398,12 +398,16 @@ droid_destroy_surface(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *surf)
+ static int
+ update_buffers(struct dri2_egl_surface *dri2_surf)
+ {
++   if (dri2_surf->base.Lost)
++      return -1;
++
+    if (dri2_surf->base.Type != EGL_WINDOW_BIT)
+       return 0;
+ 
+    /* try to dequeue the next back buffer */
+    if (!dri2_surf->buffer && !droid_window_dequeue_buffer(dri2_surf)) {
+       _eglLog(_EGL_WARNING, "Could not dequeue buffer from native window");
++      dri2_surf->base.Lost = EGL_TRUE;
+       return -1;
+    }
+ 
+@@ -536,6 +540,12 @@ droid_swap_buffers(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *draw)
+ 
+    dri2_flush_drawable_for_swapbuffers(disp, draw);
+ 
++   /* dri2_surf->buffer can be null even when no error has occured. For
++    * example, if the user has called no GL rendering commands since the
++    * previous eglSwapBuffers, then the driver may have not triggered
++    * a callback to ANativeWindow::dequeueBuffer, in which case
++    * dri2_surf->buffer remains null.
++    */
+    if (dri2_surf->buffer)
+       droid_window_enqueue_buffer(disp, dri2_surf);
+ 
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+

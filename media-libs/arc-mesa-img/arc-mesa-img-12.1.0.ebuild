@@ -176,6 +176,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/0531-WIP-configure.ac-androideabi-is-also-a-valid-tuple.patch
 	epatch "${FILESDIR}"/0532-UPSTREAM-configure.ac-Don-t-look-for-pthreads-in-And.patch
 	epatch "${FILESDIR}"/0533-FROMLIST-egl-Use-pkg-config-for-Android-NDK-build.patch
+	epatch "${FILESDIR}"/0534-UPSTREAM-egl-treat-EGL_OPENGL_API-as-invalid-on-Andr.patch
+	epatch "${FILESDIR}"/0535-UPSTREAM-egl-Combine-the-GL-and-GLES-current-context.patch
+	epatch "${FILESDIR}"/0536-FROMLIST-egl-Emit-error-when-EGLSurface-is-lost.patch
+	epatch "${FILESDIR}"/0537-FROMLIST-egl-android-Cancel-any-outstanding-ANativeB.patch
+	epatch "${FILESDIR}"/0538-FROMLIST-egl-android-Mark-surface-as-lost-when-deque.patch
+	epatch "${FILESDIR}"/0539-CHROMIUM-HACK-egl-Change-error-codes-for-Android-CTS.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch

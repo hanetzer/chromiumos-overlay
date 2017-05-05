@@ -1,0 +1,117 @@
+From 5e3603f590536dbd521280709dee48a349606e36 Mon Sep 17 00:00:00 2001
+From: Chad Versace <chadversary@chromium.org>
+Date: Wed, 3 May 2017 17:05:39 -0700
+Subject: [PATCH 536/539] FROMLIST: egl: Emit error when EGLSurface is lost
+
+Add a new bool, _EGLSurface::Lost, and check it in eglMakeCurrent and
+eglSwapBuffers. The EGL 1.5 spec says that those functions emit errors
+when the native surface is no longer valid.
+
+This patch just updates core EGL. No driver sets _EGLSurface::Lost yet.
+
+I discovered that Mesa failed to detect lost surfaces while debugging an
+Android CTS camera test,
+android.hardware.camera2.cts.RobustnessTest#testAbandonRepeatingRequestSurface.
+This patch doesn't fix the test though, though, because the test expects
+EGL_BAD_SURFACE when the surface lost, and this patch actually complies
+with the EGL spec. If I interpreted the EGL spec correctly,
+EGL_BAD_NATIVE_WINDOW or EGL_BAD_CURRENT_SURFACE is the correct
+error.
+
+BUG=b:36063477
+TEST=None (The bugfix comes later in the patch series)
+
+Archived-At: https://lists.freedesktop.org/archives/mesa-dev/2017-May/154305.html
+Patchwork: https://patchwork.freedesktop.org/patch/154409/
+Change-Id: Ic2bf371e913f9f6a2e0bbd41c16666e46bde8aea
+---
+ src/egl/main/eglapi.c     | 36 ++++++++++++++++++++++++++++++++++++
+ src/egl/main/eglsurface.c |  1 +
+ src/egl/main/eglsurface.h |  5 +++++
+ 3 files changed, 42 insertions(+)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index baacafe4a79..9702e22f54f 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -703,6 +703,33 @@ eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
+          RETURN_EGL_ERROR(disp, EGL_BAD_MATCH, EGL_FALSE);
+    }
+ 
++   _EGLThreadInfo *t =_eglGetCurrentThread();
++   _EGLContext *old_ctx = t->CurrentContext;
++   _EGLSurface *old_draw_surf = old_ctx ? old_ctx->DrawSurface : NULL;
++   _EGLSurface *old_read_surf = old_ctx ? old_ctx->ReadSurface : NULL;
++
++   /* From the EGL 1.5 spec, Section 3.7.3 Binding Context and Drawables:
++    *
++    *    If the previous context of the calling thread has unflushed commands,
++    *    and the previous surface is no longer valid, an
++    *    EGL_BAD_CURRENT_SURFACE error is generated.
++    *
++    * It's difficult to check if the context has unflushed commands, but it's
++    * easy to check if the surface is no longer valid.
++    */
++   if (old_draw_surf && old_draw_surf->Lost)
++      RETURN_EGL_ERROR(disp, EGL_BAD_CURRENT_SURFACE, EGL_FALSE);
++   if (old_read_surf && old_read_surf->Lost)
++      RETURN_EGL_ERROR(disp, EGL_BAD_CURRENT_SURFACE, EGL_FALSE);
++
++   /*    If a native window underlying either draw or read is no longer valid,
++    *    an EGL_BAD_NATIVE_WINDOW error is generated.
++    */
++   if (draw_surf && draw_surf->Lost)
++      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_FALSE);
++   if (read_surf && read_surf->Lost)
++      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_FALSE);
++
+    ret = drv->API.MakeCurrent(drv, disp, draw_surf, read_surf, context);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+@@ -1010,6 +1037,15 @@ eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
+       RETURN_EGL_ERROR(disp, EGL_BAD_SURFACE, EGL_FALSE);
+    #endif
+ 
++   /* From the EGL 1.5 spec:
++    *
++    *    If eglSwapBuffers is called and the native window associated with
++    *    surface is no longer valid, an EGL_BAD_NATIVE_WINDOW error is
++    *    generated.
++    */
++   if (surf->Lost)
++      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_FALSE);
++
+    ret = drv->API.SwapBuffers(drv, disp, surf);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+diff --git a/src/egl/main/eglsurface.c b/src/egl/main/eglsurface.c
+index 3af337fef4f..c2b5c3a6772 100644
+--- a/src/egl/main/eglsurface.c
++++ b/src/egl/main/eglsurface.c
+@@ -295,6 +295,7 @@ _eglInitSurface(_EGLSurface *surf, _EGLDisplay *dpy, EGLint type,
+    _eglInitResource(&surf->Resource, sizeof(*surf), dpy);
+    surf->Type = type;
+    surf->Config = conf;
++   surf->Lost = EGL_FALSE;
+ 
+    surf->Width = 0;
+    surf->Height = 0;
+diff --git a/src/egl/main/eglsurface.h b/src/egl/main/eglsurface.h
+index fc799ee43dc..f13cf49741b 100644
+--- a/src/egl/main/eglsurface.h
++++ b/src/egl/main/eglsurface.h
+@@ -56,6 +56,11 @@ struct _egl_surface
+ 
+    EGLint Type; /* one of EGL_WINDOW_BIT, EGL_PIXMAP_BIT or EGL_PBUFFER_BIT */
+ 
++   /* The native surface is lost. The EGL spec requires certain functions
++    * to generate EGL_BAD_NATIVE_WINDOW when given this surface.
++    */
++   EGLBoolean Lost;
++
+    /* attributes set by attribute list */
+    EGLint Width, Height;
+    EGLenum TextureFormat;
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+

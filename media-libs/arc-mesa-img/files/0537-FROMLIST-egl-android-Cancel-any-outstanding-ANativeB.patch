@@ -1,0 +1,63 @@
+From d5773f46395b363c2fb13886c7d69df15d0d0a6a Mon Sep 17 00:00:00 2001
+From: Chad Versace <chadversary@chromium.org>
+Date: Wed, 3 May 2017 17:05:39 -0700
+Subject: [PATCH 537/539] FROMLIST: egl/android: Cancel any outstanding
+ ANativeBuffer in surface destructor
+
+That is, call ANativeWindow::cancelBuffer in droid_destroy_surface().
+
+This should prevent application deadlock when the app destroys the
+EGLSurface after EGL has acquired a buffer from SurfaceFlinger
+(ANativeWindow::dequeueBuffer) but before EGL has released it
+(ANativeWindow::enqueueBuffer).
+
+This patch is part of a series for fixing
+android.hardware.camera2.cts.RobustnessTest#testAbandonRepeatingRequestSurface
+on Chrome OS x86 devices.
+
+BUG=b:36063477
+TEST=None (The bugfix comes later in the patch series)
+[drinkcat: Replaced true by EGL_TRUE]
+
+Archived-At: https://lists.freedesktop.org/archives/mesa-dev/2017-May/154307.html
+Patchwork: https://patchwork.freedesktop.org/patch/154411/
+Change-Id: I0fa9c0078946f8c84aedadd68236e7e84a651ff7
+---
+ src/egl/drivers/dri2/platform_android.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 2adfabbbf4e..0c64f868350 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -237,10 +237,15 @@ droid_window_enqueue_buffer(_EGLDisplay *disp, struct dri2_egl_surface *dri2_sur
+ }
+ 
+ static void
+-droid_window_cancel_buffer(_EGLDisplay *disp, struct dri2_egl_surface *dri2_surf)
++droid_window_cancel_buffer(struct dri2_egl_surface *dri2_surf)
+ {
+-   /* no cancel buffer? */
+-   droid_window_enqueue_buffer(disp, dri2_surf);
++   int ret;
++
++   ret = dri2_surf->window->cancelBuffer(dri2_surf->window, dri2_surf->buffer, -1);
++   if (ret < 0) {
++      _eglLog(_EGL_WARNING, "ANativeWindow::cancelBuffer failed");
++      dri2_surf->base.Lost = EGL_TRUE;
++   }
+ }
+ 
+ static __DRIbuffer *
+@@ -375,7 +380,7 @@ droid_destroy_surface(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *surf)
+ 
+    if (dri2_surf->base.Type == EGL_WINDOW_BIT) {
+       if (dri2_surf->buffer)
+-         droid_window_cancel_buffer(disp, dri2_surf);
++         droid_window_cancel_buffer(dri2_surf);
+ 
+       dri2_surf->window->common.decRef(&dri2_surf->window->common);
+    }
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+

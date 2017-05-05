@@ -1,0 +1,50 @@
+From c488f55ba2d53ef67e2846ab025d657dd73d31f8 Mon Sep 17 00:00:00 2001
+From: Emil Velikov <emil.velikov@collabora.com>
+Date: Thu, 25 Aug 2016 12:02:07 +0100
+Subject: [PATCH 534/539] UPSTREAM: egl: treat EGL_OPENGL_API as invalid on
+ Android
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+At the moment one can use OpenGL in eglBindAPI() only to clear the
+EGL_OPENGL_BIT from RenderableType and Conformant for _each_ config.
+
+BUG=b/33495228
+TEST=none
+
+Signed-off-by: Emil Velikov <emil.velikov@collabora.com>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+[chromium: Cherry pick to arc-12.1.0-pre2].
+(cherry picked from commit 7563c39641d07a604f22a9d47861121ce80116f9)
+Change-Id: Iba127c3cb0982bdcb08d5ab72f2f0dbf8fd35a25
+Reviewed-on: https://chromium-review.googlesource.com/419575
+Commit-Ready: Chad Versace <chadversary@chromium.org>
+Tested-by: Chad Versace <chadversary@chromium.org>
+Reviewed-by: Stéphane Marchesin <marcheu@chromium.org>
+---
+ src/egl/main/eglcurrent.h | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglcurrent.h b/src/egl/main/eglcurrent.h
+index 1e386acdafb..3f8a0b28e38 100644
+--- a/src/egl/main/eglcurrent.h
++++ b/src/egl/main/eglcurrent.h
+@@ -69,7 +69,13 @@ struct _egl_thread_info
+ static inline EGLBoolean
+ _eglIsApiValid(EGLenum api)
+ {
+-   return (api >= _EGL_API_FIRST_API && api <= _EGL_API_LAST_API);
++#ifdef ANDROID
++   /* OpenGL is not a valid/supported API on Android */
++   return api >= _EGL_API_FIRST_API && api <= _EGL_API_LAST_API &&
++          api != EGL_OPENGL_API;
++#else
++   return api >= _EGL_API_FIRST_API && api <= _EGL_API_LAST_API;
++#endif
+ }
+ 
+ 
+-- 
+2.13.0.rc1.294.g07d810a77f-goog
+
