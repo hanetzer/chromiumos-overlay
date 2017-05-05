@@ -462,6 +462,11 @@ cros-firmware_setup_source() {
 	PD_IMAGE_LOCATION="${CROS_FIRMWARE_PD_IMAGE}"
 	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
 
+	# Always add ${FILESDIR}/extra if available.
+	if [[ -d "${FILESDIR}/extra" ]]; then
+		EXTRA_LOCATIONS+=("${FILESDIR}/extra")
+	fi
+
 	# Add these files for use if unibuild is not set.
 	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
 		uris+=" $(_add_source ${i})"
