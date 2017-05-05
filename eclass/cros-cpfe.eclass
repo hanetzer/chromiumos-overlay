@@ -1,6 +1,10 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+if [[ -z "${EBUILD}" ]]; then
+	die "This eclass needs EBUILD environment variable."
+fi
+
 # @ECLASS: cros-cpfe.eclass
 # @MAINTAINER:
 # ChromiumOS Build Team
@@ -23,7 +27,8 @@
 # @ECLASS-VARIABLE: CROS_CPFE_BOARD_OVERLAY
 # @DESCRIPTION:
 # Name of current board overlay. Example: overlay-variant-peach-pit-private
-: ${CROS_CPFE_BOARD_OVERLAY:=${BOARD_OVERLAY##*/}}
+: ${CROS_CPFE_BOARD_OVERLAY:=\
+$(basename "$(dirname "$(dirname "$(dirname "${EBUILD}")")")")}
 
 # @ECLASS-VARIABLE: CROS_CPFE_OVERLAY_NAME
 # @DESCRIPTION:

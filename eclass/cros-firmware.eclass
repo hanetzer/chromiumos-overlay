@@ -10,11 +10,16 @@ if [[ ${#CROS_BOARDS[@]} -eq 0 ]]; then
 	CROS_BOARDS=( "none" )
 fi
 
+if [[ -z "${EBUILD}" ]]; then
+	die "This eclass needs EBUILD environment variable."
+fi
+
 inherit cros-workon cros-unibuild
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY
 # @DESCRIPTION: (Optional) Name of board overlay on Binary Component Server
-: ${CROS_FIRMWARE_BCS_OVERLAY:=${BOARD_OVERLAY##*/}}
+: ${CROS_FIRMWARE_BCS_OVERLAY:=\
+$(basename "$(dirname "$(dirname "$(dirname "${EBUILD}")")")")}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_IMAGE
 # @DESCRIPTION: (Optional) Location of system firmware (BIOS) image
