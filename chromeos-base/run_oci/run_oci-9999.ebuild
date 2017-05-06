@@ -8,7 +8,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 PLATFORM_SUBDIR="run_oci"
 
-inherit cros-workon platform
+inherit cros-workon libchrome platform
 
 DESCRIPTION="Utility for running OCI-compatible containers"
 
@@ -18,7 +18,6 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="
-	chromeos-base/libbrillo
 	chromeos-base/libcontainer
 "
 DEPEND="${RDEPEND}"
