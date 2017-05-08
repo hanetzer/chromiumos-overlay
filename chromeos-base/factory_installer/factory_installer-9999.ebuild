@@ -69,6 +69,7 @@ DEPEND="$COMMON_DEPEND
 
 RDEPEND="$COMMON_DEPEND
 	$PROVIDED_DEPEND
+	app-misc/jq
 	chromeos-base/chromeos-installer
 	chromeos-base/ec-utils
 	chromeos-base/memento_softwareupdate
