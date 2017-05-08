@@ -127,7 +127,7 @@ src_install() {
 	dosbin "${scripts[@]}" "${service_file}"
 
 	insinto /etc/init
-	doins factory_install.conf
+	doins init/*.conf
 
 	insinto /root
 	doins factory_verify.fio
