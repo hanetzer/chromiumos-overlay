@@ -1,0 +1,268 @@
+diff --git a/components/policy/core/common/policy_load_status.cc b/components/policy/core/common/policy_load_status.cc
+index 71c5059..1495d7c 100644
+--- a/components/policy/core/common/policy_load_status.cc
++++ b/components/policy/core/common/policy_load_status.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "components/policy/core/common/policy_load_status.h"
+ 
++#include "base/bind.h"
+ #include "base/metrics/histogram.h"
+ #include "base/strings/stringprintf.h"
+ #include "components/policy/core/common/policy_types.h"
+@@ -16,23 +17,27 @@ const char kHistogramName[] = "Enterprise.PolicyLoadStatus";
+ 
+ }  // namespace
+ 
+-PolicyLoadStatusSample::PolicyLoadStatusSample()
+-    : histogram_(base::LinearHistogram::FactoryGet(
+-          kHistogramName, 1, POLICY_LOAD_STATUS_SIZE,
+-          POLICY_LOAD_STATUS_SIZE + 1,
+-          base::Histogram::kUmaTargetedHistogramFlag)) {
++PolicyLoadStatusSampler::PolicyLoadStatusSampler() {
+   Add(POLICY_LOAD_STATUS_STARTED);
+ }
+ 
+-PolicyLoadStatusSample::~PolicyLoadStatusSample() {
+-  for (int i = 0; i < POLICY_LOAD_STATUS_SIZE; ++i) {
+-    if (status_bits_[i])
+-      histogram_->Add(i);
+-  }
+-}
++PolicyLoadStatusSampler::~PolicyLoadStatusSampler() {}
+ 
+-void PolicyLoadStatusSample::Add(PolicyLoadStatus status) {
++void PolicyLoadStatusSampler::Add(PolicyLoadStatus status) {
+   status_bits_[status] = true;
+ }
+ 
++PolicyLoadStatusUmaReporter::PolicyLoadStatusUmaReporter() {}
++
++PolicyLoadStatusUmaReporter::~PolicyLoadStatusUmaReporter() {
++  base::HistogramBase* histogram(base::LinearHistogram::FactoryGet(
++      kHistogramName, 1, POLICY_LOAD_STATUS_SIZE, POLICY_LOAD_STATUS_SIZE + 1,
++      base::Histogram::kUmaTargetedHistogramFlag));
++
++  for (int i = 0; i < POLICY_LOAD_STATUS_SIZE; ++i) {
++    if (GetStatusSet()[i])
++      histogram->Add(i);
++  }
++}
++
+ }  // namespace policy
+diff --git a/components/policy/core/common/policy_load_status.h b/components/policy/core/common/policy_load_status.h
+index 6c9e907..dc3979e 100644
+--- a/components/policy/core/common/policy_load_status.h
++++ b/components/policy/core/common/policy_load_status.h
+@@ -10,10 +10,6 @@
+ #include "base/macros.h"
+ #include "components/policy/policy_export.h"
+ 
+-namespace base {
+-class HistogramBase;
+-}
+-
+ namespace policy {
+ 
+ // UMA histogram enum for policy load status. Don't change existing constants,
+@@ -44,22 +40,35 @@ enum PolicyLoadStatus {
+   POLICY_LOAD_STATUS_SIZE
+ };
+ 
+-// A helper for generating policy load status UMA statistics that'll collect
+-// histogram samples for a policy load operation and records histogram samples
+-// for the status codes that were seen on destruction.
+-class POLICY_EXPORT PolicyLoadStatusSample {
++// A helper for collecting statuses for a policy load operation.
++class POLICY_EXPORT PolicyLoadStatusSampler {
+  public:
+-  PolicyLoadStatusSample();
+-  ~PolicyLoadStatusSample();
++  using StatusSet = std::bitset<POLICY_LOAD_STATUS_SIZE>;
++
++  PolicyLoadStatusSampler();
++  virtual ~PolicyLoadStatusSampler();
+ 
+   // Adds a status code.
+   void Add(PolicyLoadStatus status);
+ 
++  // Returns a set with all statuses.
++  const StatusSet& GetStatusSet() const { return status_bits_; }
++
+  private:
+-  std::bitset<POLICY_LOAD_STATUS_SIZE> status_bits_;
+-  base::HistogramBase* histogram_;
++  StatusSet status_bits_;
++  DISALLOW_COPY_AND_ASSIGN(PolicyLoadStatusSampler);
++};
+ 
+-  DISALLOW_COPY_AND_ASSIGN(PolicyLoadStatusSample);
++// A helper for generating policy load status UMA statistics. On destruction,
++// records histogram samples for the collected status codes.
++class POLICY_EXPORT PolicyLoadStatusUmaReporter
++    : public PolicyLoadStatusSampler {
++ public:
++  PolicyLoadStatusUmaReporter();
++  ~PolicyLoadStatusUmaReporter() override;
++
++ private:
++  DISALLOW_COPY_AND_ASSIGN(PolicyLoadStatusUmaReporter);
+ };
+ 
+ }  // namespace policy
+diff --git a/components/policy/core/common/preg_parser.cc b/components/policy/core/common/preg_parser.cc
+index 1fd7c31..a0bac73 100644
+--- a/components/policy/core/common/preg_parser.cc
++++ b/components/policy/core/common/preg_parser.cc
+@@ -216,8 +216,8 @@ void HandleRecord(const base::string16& key_name,
+     return;
+   }
+ 
+-  std::string action_trigger(base::ToLowerASCII(value_name.substr(
+-      arraysize(kActionTriggerPrefix) - 1)));
++  std::string action_trigger(base::ToLowerASCII(
++      value_name.substr(arraysize(kActionTriggerPrefix) - 1)));
+   if (action_trigger == kActionTriggerDeleteValues) {
+     for (const std::string& value :
+          base::SplitString(DecodePRegStringValue(data), ";",
+@@ -231,9 +231,8 @@ void HandleRecord(const base::string16& key_name,
+       dict->RemoveKey(key);
+   } else if (base::StartsWith(action_trigger, kActionTriggerDel,
+                               base::CompareCase::SENSITIVE)) {
+-  dict->RemoveValue(
+-        value_name.substr(arraysize(kActionTriggerPrefix) - 1 +
+-                          arraysize(kActionTriggerDel) - 1));
++    dict->RemoveValue(value_name.substr(arraysize(kActionTriggerPrefix) - 1 +
++                                        arraysize(kActionTriggerDel) - 1));
+   } else if (base::StartsWith(action_trigger, kActionTriggerDelVals,
+                               base::CompareCase::SENSITIVE)) {
+     // Delete all values.
+@@ -253,13 +252,13 @@ void HandleRecord(const base::string16& key_name,
+ namespace policy {
+ namespace preg_parser {
+ 
+-const char kPRegFileHeader[8] =
+-    { 'P', 'R', 'e', 'g', '\x01', '\x00', '\x00', '\x00' };
++const char kPRegFileHeader[8] = {'P',    'R',    'e',    'g',
++                                 '\x01', '\x00', '\x00', '\x00'};
+ 
+ bool ReadFile(const base::FilePath& file_path,
+               const base::string16& root,
+               RegistryDict* dict,
+-              PolicyLoadStatusSample* status) {
++              PolicyLoadStatusSampler* status) {
+   base::MemoryMappedFile mapped_file;
+   if (!mapped_file.Initialize(file_path) || !mapped_file.IsValid()) {
+     PLOG(ERROR) << "Failed to map " << file_path.value();
+@@ -268,8 +267,8 @@ bool ReadFile(const base::FilePath& file_path,
+   }
+ 
+   if (mapped_file.length() > kMaxPRegFileSize) {
+-    LOG(ERROR) << "PReg file " << file_path.value() << " too large: "
+-               << mapped_file.length();
++    LOG(ERROR) << "PReg file " << file_path.value()
++               << " too large: " << mapped_file.length();
+     status->Add(POLICY_LOAD_STATUS_TOO_BIG);
+     return false;
+   }
+diff --git a/components/policy/core/common/preg_parser.h b/components/policy/core/common/preg_parser.h
+index 03872a4..1aa1815 100644
+--- a/components/policy/core/common/preg_parser.h
++++ b/components/policy/core/common/preg_parser.h
+@@ -22,7 +22,7 @@ class FilePath;
+ 
+ namespace policy {
+ 
+-class PolicyLoadStatusSample;
++class PolicyLoadStatusSampler;
+ class RegistryDict;
+ 
+ namespace preg_parser {
+@@ -36,7 +36,7 @@ POLICY_EXPORT extern const char kPRegFileHeader[8];
+ POLICY_EXPORT bool ReadFile(const base::FilePath& file_path,
+                             const base::string16& root,
+                             RegistryDict* dict,
+-                            PolicyLoadStatusSample* status);
++                            PolicyLoadStatusSampler* status);
+ 
+ }  // namespace preg_parser
+ }  // namespace policy
+diff --git a/components/policy/core/common/preg_parser_unittest.cc b/components/policy/core/common/preg_parser_unittest.cc
+index 153f75a..b8c93f3 100644
+--- a/components/policy/core/common/preg_parser_unittest.cc
++++ b/components/policy/core/common/preg_parser_unittest.cc
+@@ -30,12 +30,11 @@ testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
+   for (; iter_key_a != a.keys().end() && iter_key_b != b.keys().end();
+        ++iter_key_a, ++iter_key_b) {
+     if (iter_key_a->first != iter_key_b->first) {
+-      return testing::AssertionFailure()
+-          << "Key mismatch " << iter_key_a->first
+-          << " vs. " << iter_key_b->first;
++      return testing::AssertionFailure() << "Key mismatch " << iter_key_a->first
++                                         << " vs. " << iter_key_b->first;
+     }
+-    testing::AssertionResult result = RegistryDictEquals(*iter_key_a->second,
+-                                                         *iter_key_b->second);
++    testing::AssertionResult result =
++        RegistryDictEquals(*iter_key_a->second, *iter_key_b->second);
+     if (!result)
+       return result;
+   }
+@@ -57,16 +56,14 @@ testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
+   return testing::AssertionSuccess();
+ }
+ 
+-void SetInteger(RegistryDict* dict,
+-                const std::string& name,
+-                int value) {
++void SetInteger(RegistryDict* dict, const std::string& name, int value) {
+   dict->SetValue(
+       name, base::WrapUnique<base::Value>(new base::FundamentalValue(value)));
+ }
+ 
+ void SetString(RegistryDict* dict,
+                const std::string& name,
+-               const std::string&  value) {
++               const std::string& value) {
+   dict->SetValue(name,
+                  base::WrapUnique<base::Value>(new base::StringValue(value)));
+ }
+@@ -94,10 +91,10 @@ TEST(PRegParserTest, TestParseFile) {
+   // Run the parser.
+   base::FilePath test_file(
+       test_data_dir.AppendASCII("chrome/test/data/policy/registry.pol"));
+-  PolicyLoadStatusSample status;
++  PolicyLoadStatusUmaReporter status;
+   ASSERT_TRUE(preg_parser::ReadFile(
+-      test_file, base::ASCIIToUTF16("SOFTWARE\\Policies\\Chromium"),
+-      &dict, &status));
++      test_file, base::ASCIIToUTF16("SOFTWARE\\Policies\\Chromium"), &dict,
++      &status));
+ 
+   // Build the expected output dictionary.
+   RegistryDict expected;
+@@ -118,6 +115,24 @@ TEST(PRegParserTest, TestParseFile) {
+   EXPECT_TRUE(RegistryDictEquals(dict, expected));
+ }
+ 
++TEST_F(PRegParserTest, LoadStatusSampling) {
++  base::FilePath test_data_dir;
++  ASSERT_TRUE(PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
++
++  base::FilePath test_file(test_data_dir.AppendASCII("does_not_exist.pol"));
++  PolicyLoadStatusUmaReporter status;
++  RegistryDict dict;
++  ASSERT_FALSE(preg_parser::ReadFile(
++      test_file, base::ASCIIToUTF16("SOFTWARE\\Policies\\Chromium"), &dict,
++      &status));
++
++  // Tests load status sampling.
++  PolicyLoadStatusSampler::StatusSet expected_status_set;
++  expected_status_set[POLICY_LOAD_STATUS_STARTED] = true;
++  expected_status_set[POLICY_LOAD_STATUS_READ_ERROR] = true;
++  EXPECT_EQ(expected_status_set, status.GetStatusSet());
++}
++
+ }  // namespace
+ }  // namespace preg_parser
+ }  // namespace policy
