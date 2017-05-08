@@ -41,6 +41,7 @@ EC_BOARD_NAMES=(
 	elm
 	eve
 	eve_fp
+	fizz
 	glados
 	glados_pd
 	gru
