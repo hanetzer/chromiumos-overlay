@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/third_party/nfs-ganesha"
-CROS_WORKON_LOCALNAME="nfs-ganesha"
+CROS_WORKON_PROJECT=("chromiumos/third_party/nfs-ganesha" "chromiumos/third_party/ntirpc")
+CROS_WORKON_LOCALNAME=("nfs-ganesha" "ntirpc")
+CROS_WORKON_DESTDIR=("${S}" "${S}/src/libntirpc")
 
 inherit user cmake-utils cros-workon
 
@@ -16,8 +17,10 @@ KEYWORDS="~*"
 IUSE="caps rdma test uuid"
 
 RDEPEND="
+	app-crypt/mit-krb5
+	!net-libs/ntirpc
+	net-libs/libnfsidmap
 	caps? ( sys-libs/libcap )
-	net-libs/ntirpc:=
 	uuid? ( sys-apps/util-linux )
 	"
 
@@ -33,9 +36,11 @@ CMAKE_BUILD_TYPE="Maintainer"
 
 src_configure() {
 	local mycmakeargs=(
-		-DUSE_SYSTEM_NTIRPC=ON
+		-DUSE_SYSTEM_NTIRPC=OFF
 		-DUSE_BLKIN=OFF
 		-DUSE_LTTNG=OFF
+		# nfs-ganesha does not honor the option above in its config
+		# -DNTIRPC_BASE_DIR=
 		$(cmake-utils_use_use caps LIBCAP)
 		$(cmake-utils_use_use rdma RPC_RDMA)
 		$(cmake-utils_use_use test GTEST)
