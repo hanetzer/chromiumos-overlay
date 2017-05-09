@@ -122,6 +122,18 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 	PATH+=":${CROS_BUILD_BOARD_BIN}"
 }
 
+# The python-utils-r1.eclass:python_wrapper_setup installs a stub program named
+# `python2` when PYTHON_COMPAT only lists python-3 programs.  It's designed to
+# catch bad packages that still use `python2` even though we said not to.  We
+# normally expect packages installed by Gentoo to use specific versions like
+# `python2.7`, so the stub doesn't break things there.  In Chromium OS though,
+# our chromite code (by design) uses `python2`.  We don't install a copy via
+# the ebuild, so we wouldn't rewrite the she-bang.  Delete the stub since it
+# doesn't add a lot of value for us and breaks chromite.
+cros_post_pkg_setup_python_eclass_hack() {
+	rm -f "${T}/python3.3/bin/python2"
+}
+
 # Set ASAN settings so they'll work for unittests. http://crbug.com/367879
 # We run at src_unpack time so that the hooks have time to get registered
 # and saved in the environment.  Portage has a bug where hooks registered
