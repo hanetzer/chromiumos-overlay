@@ -1,0 +1,122 @@
+commit 432ed0e4a6d58f7dda8992a167aad43bc91f76c6
+Author: George Burgess IV <george.burgess.iv@gmail.com>
+Date:   Tue May 9 04:06:24 2017 +0000
+
+    [Sema] Make typeof(OverloadedFunctionName) not a pointer.
+    
+    We were sometimes doing a function->pointer conversion in
+    Sema::CheckPlaceholderExpr, which isn't the job of CheckPlaceholderExpr.
+    
+    So, when we saw typeof(OverloadedFunctionName), where
+    OverloadedFunctionName referenced a name with only one function that
+    could have its address taken, we'd give back a function pointer type
+    instead of a function type. This is incorrect.
+    
+    I kept the logic for doing the function pointer conversion in
+    resolveAndFixAddressOfOnlyViableOverloadCandidate because it was more
+    consistent with existing ResolveAndFix* methods.
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@302506 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/include/clang/Sema/Sema.h b/include/clang/Sema/Sema.h
+index e5961079f7..b0cb34cf56 100644
+--- a/include/clang/Sema/Sema.h
++++ b/include/clang/Sema/Sema.h
+@@ -2726,7 +2726,8 @@ public:
+   resolveAddressOfOnlyViableOverloadCandidate(Expr *E,
+                                               DeclAccessPair &FoundResult);
+ 
+-  bool resolveAndFixAddressOfOnlyViableOverloadCandidate(ExprResult &SrcExpr);
++  bool resolveAndFixAddressOfOnlyViableOverloadCandidate(
++      ExprResult &SrcExpr, bool DoFunctionPointerConversion = false);
+ 
+   FunctionDecl *
+   ResolveSingleFunctionTemplateSpecialization(OverloadExpr *ovl,
+diff --git a/lib/Sema/SemaCast.cpp b/lib/Sema/SemaCast.cpp
+index 7e91709e67..7d534263f4 100644
+--- a/lib/Sema/SemaCast.cpp
++++ b/lib/Sema/SemaCast.cpp
+@@ -1871,7 +1871,8 @@ static bool fixOverloadedReinterpretCastExpr(Sema &Self, QualType DestType,
+   // No guarantees that ResolveAndFixSingleFunctionTemplateSpecialization
+   // preserves Result.
+   Result = E;
+-  if (!Self.resolveAndFixAddressOfOnlyViableOverloadCandidate(Result))
++  if (!Self.resolveAndFixAddressOfOnlyViableOverloadCandidate(
++          Result, /*DoFunctionPointerConversion=*/true))
+     return false;
+   return Result.isUsable();
+ }
+diff --git a/lib/Sema/SemaOverload.cpp b/lib/Sema/SemaOverload.cpp
+index 782c377e32..5179416027 100644
+--- a/lib/Sema/SemaOverload.cpp
++++ b/lib/Sema/SemaOverload.cpp
+@@ -11210,12 +11210,12 @@ Sema::resolveAddressOfOnlyViableOverloadCandidate(Expr *E,
+ /// \brief Given an overloaded function, tries to turn it into a non-overloaded
+ /// function reference using resolveAddressOfOnlyViableOverloadCandidate. This
+ /// will perform access checks, diagnose the use of the resultant decl, and, if
+-/// necessary, perform a function-to-pointer decay.
++/// requested, potentially perform a function-to-pointer decay.
+ ///
+ /// Returns false if resolveAddressOfOnlyViableOverloadCandidate fails.
+ /// Otherwise, returns true. This may emit diagnostics and return true.
+ bool Sema::resolveAndFixAddressOfOnlyViableOverloadCandidate(
+-    ExprResult &SrcExpr) {
++    ExprResult &SrcExpr, bool DoFunctionPointerConverion) {
+   Expr *E = SrcExpr.get();
+   assert(E->getType() == Context.OverloadTy && "SrcExpr must be an overload");
+ 
+@@ -11230,7 +11230,7 @@ bool Sema::resolveAndFixAddressOfOnlyViableOverloadCandidate(
+   DiagnoseUseOfDecl(Found, E->getExprLoc());
+   CheckAddressOfMemberAccess(E, DAP);
+   Expr *Fixed = FixOverloadedFunctionReference(E, DAP, Found);
+-  if (Fixed->getType()->isFunctionType())
++  if (DoFunctionPointerConverion && Fixed->getType()->isFunctionType())
+     SrcExpr = DefaultFunctionArrayConversion(Fixed, /*Diagnose=*/false);
+   else
+     SrcExpr = Fixed;
+diff --git a/test/Sema/overloadable.c b/test/Sema/overloadable.c
+index f5e17d2119..49d8085651 100644
+--- a/test/Sema/overloadable.c
++++ b/test/Sema/overloadable.c
+@@ -151,3 +151,18 @@ void dropping_qualifiers_is_incompatible() {
+   foo(ccharbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@148{{candidate function}} expected-note@149{{candidate function}}
+   foo(vcharbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@148{{candidate function}} expected-note@149{{candidate function}}
+ }
++
++// Bug: we used to treat `__typeof__(foo)` as though it was `__typeof__(&foo)`
++// if `foo` was overloaded with only one function that could have its address
++// taken.
++void typeof_function_is_not_a_pointer() {
++  void not_a_pointer(void *) __attribute__((overloadable));
++  void not_a_pointer(char *__attribute__((pass_object_size(1))))
++    __attribute__((overloadable));
++
++  __typeof__(not_a_pointer) *fn;
++
++  void take_fn(void (*)(void *));
++  // if take_fn is passed a void (**)(void *), we'll get a warning.
++  take_fn(fn);
++}
+diff --git a/test/SemaCXX/enable_if.cpp b/test/SemaCXX/enable_if.cpp
+index 9a06d38661..93014f50d5 100644
+--- a/test/SemaCXX/enable_if.cpp
++++ b/test/SemaCXX/enable_if.cpp
+@@ -499,3 +499,17 @@ void run() {
+   }
+ }
+ }
++
++namespace TypeOfFn {
++  template <typename T, typename U>
++  struct is_same;
++
++  template <typename T> struct is_same<T, T> {
++    enum { value = 1 };
++  };
++
++  void foo(int a) __attribute__((enable_if(a, "")));
++  void foo(float a) __attribute__((enable_if(1, "")));
++
++  static_assert(is_same<__typeof__(foo)*, decltype(&foo)>::value, "");
++}
