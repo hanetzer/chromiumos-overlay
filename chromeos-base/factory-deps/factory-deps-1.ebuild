@@ -43,6 +43,7 @@ FACTORY_X_RDEPEND="
 # TODO(itspeter): Might remove cryptohome once a conclusion
 #                 comes in http://crosbug.com/p/31800.
 FACTORY_TEST_RDEPEND="
+	app-arch/pigz
 	app-arch/xz-utils
 	chromeos-base/cryptohome
 	dev-python/numpy
