@@ -1,0 +1,34 @@
+From: Abbas Naderi <abiusx@chromium.org>
+CL-URL: https://chromium-review.googlesource.com/c/501988
+Project-Bug-URL: https://bugs.chromium.org/p/chromium/issues/detail?id=720151
+
+Fixes libevent lookup.
+
+nfs-utils build relies on libevent for NFSv4 support.
+However, libevent is hardcoded as -levent, whereas
+recent versions expose -levent_core.
+
+The patch uses pkg-config to lookup the library and
+replaces the previous LIBEVENT variable with it,
+because the lib is not always used.
+
+
+--- aclocal/libevent.m4
++++ aclocal/libevent.m4
+@@ -2,9 +2,13 @@ dnl Checks for libevent
+ AC_DEFUN([AC_LIBEVENT], [
+ 
+   dnl Check for libevent, but do not add -levent to LIBS
+-  AC_CHECK_LIB([event], [event_dispatch], [LIBEVENT=-levent],
+-               [AC_MSG_ERROR([libevent not found.])])
+-  AC_SUBST(LIBEVENT)
++  dnl LIBEVENT is the variable used, but PKG_CHECK_MODULES
++  dnl 	exposes V_LIBS and V_CFLAGS, so set LIBEVENT var
++  dnl 	to the result of pkg-config check. This approach
++  dnl 	prevents libevent libs to be added to LIBS.
++  PKG_CHECK_MODULES([LIBEVENT], [libevent])
++  AC_SUBST(LIBEVENT, $LIBEVENT_LIBS)
++  CPPFLAGS="$CPPFLAGS $LIBEVENT_CFLAGS"
+ 
+   AC_CHECK_HEADERS([event.h], ,
+                    [AC_MSG_ERROR([libevent headers not found.])])
