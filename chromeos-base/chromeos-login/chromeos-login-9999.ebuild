@@ -74,7 +74,7 @@ src_install() {
 	# Adding init scripts
 	if use systemd; then
 		systemd_dounit init/systemd/*
-		systemd_enable_service x-started.target clear-framebuffer.service
+		systemd_enable_service x-started.target
 		systemd_enable_service multi-user.target ui.target
 		systemd_enable_service ui.target ui.service
 		systemd_enable_service ui.service machine-info.service
