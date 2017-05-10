@@ -225,6 +225,7 @@ ALL_BOARDS=(
 	rambi
 	raspberrypi
 	reef
+	reef-uni
 	relm
 	reks
 	reptile
