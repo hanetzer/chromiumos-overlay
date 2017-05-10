@@ -216,9 +216,6 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 # assume sys-apps/which is already installed, since we dont install 'system'
 # explicitly list sys-apps/which.
 #
-# net-wireless/realtek-rt2800-firmware:
-# USB / WiFi Firmware.
-#
 # app-i18n/nacl-mozc:
 # A text input processors based on IME extension APIs.
 #
