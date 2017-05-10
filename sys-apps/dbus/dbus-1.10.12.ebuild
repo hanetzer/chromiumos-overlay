@@ -134,8 +134,8 @@ multilib_src_configure() {
 		--disable-modular-tests
 		$(use_enable debug stats)
 		--with-session-socket-dir="${EPREFIX}"/tmp
-		--with-system-pid-file="${EPREFIX}"/var/run/dbus.pid
-		--with-system-socket="${EPREFIX}"/var/run/dbus/system_bus_socket
+		--with-system-pid-file="${EPREFIX}"/run/dbus.pid
+		--with-system-socket="${EPREFIX}"/run/dbus/system_bus_socket
 		"$(systemd_with_unitdir)"
 		--with-dbus-user=messagebus
 		$(use_with X x)
