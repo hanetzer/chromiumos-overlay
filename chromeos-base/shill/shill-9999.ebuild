@@ -108,6 +108,7 @@ src_install() {
 		dobin bin/set_cellular_ppp
 	fi
 
+	dosbin bin/reload_network_device
 	dosbin bin/set_wifi_regulatory
 	dobin bin/set_arpgw
 	dobin bin/set_wake_on_lan
