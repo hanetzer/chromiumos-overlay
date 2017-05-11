@@ -23,7 +23,10 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host mma"
+IUSE="cros_host mma +pci"
+
+RDEPEND="pci? ( sys-apps/pciutils )"
+DEPEND="${RDEPEND}"
 
 src_configure() {
 	cros-workon_src_configure
@@ -45,7 +48,8 @@ src_compile() {
 		if use cros_host; then
 			emake -C util/ifdtool
 		else
-			emake -C util/superiotool CC="${CC}"
+			emake -C util/superiotool CC="${CC}" \
+				CONFIG_PCI=$(usex pci)
 			emake -C util/inteltool CC="${CC}"
 			emake -C util/nvramtool CC="${CC}"
 		fi
