@@ -69,6 +69,7 @@ DEPEND="$COMMON_DEPEND
 
 RDEPEND="$COMMON_DEPEND
 	$PROVIDED_DEPEND
+	app-arch/lbzip2
 	app-arch/pigz
 	app-misc/jq
 	chromeos-base/chromeos-installer
