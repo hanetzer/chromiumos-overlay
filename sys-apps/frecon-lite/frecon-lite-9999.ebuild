@@ -16,8 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="virtual/udev
 	media-libs/libpng:0=
@@ -35,6 +34,7 @@ src_prepare() {
 }
 
 src_configure() {
+	asan-setup-env
 	cros-workon_src_configure
 }
 

@@ -12,8 +12,7 @@ HOMEPAGE="http://cgit.freedesktop.org/libmbim/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang doc static-libs"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan doc static-libs"
 
 RDEPEND=">=dev-libs/glib-2.36
 	virtual/libgudev"
@@ -28,7 +27,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 
 	# Disable the unused function check as libmbim has auto-generated
 	# functions that may not be used.

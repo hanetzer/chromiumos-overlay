@@ -17,8 +17,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang vaapi"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan vaapi"
 
 RDEPEND="vaapi? ( x11-libs/libva )"
 DEPEND="${RDEPEND}"
@@ -34,7 +33,7 @@ src_prepare() {
 
 src_configure() {
 	export USE_VAAPI=$(usex vaapi)
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

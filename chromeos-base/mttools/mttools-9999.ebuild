@@ -11,8 +11,7 @@ DESCRIPTION="Chromium OS multitouch utilities"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="chromeos-base/gestures
 	app-misc/utouch-evemu
@@ -26,7 +25,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

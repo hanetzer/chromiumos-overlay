@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Autotest enabled by default.
-IUSE="+autotest"
+IUSE="-asan +autotest"
 
 AUTOTEST_DEPS_LIST="glmark2"
 
@@ -29,6 +29,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }

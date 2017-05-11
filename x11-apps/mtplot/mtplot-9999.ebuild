@@ -12,8 +12,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 RDEPEND="x11-libs/libX11"
 DEPEND="${RDEPEND}"
 
@@ -22,6 +21,6 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }

@@ -12,9 +12,7 @@ DESCRIPTION="ARC USB camera HAL v3."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
-
+USE="-asan"
 RDEPEND="
 	chromeos-base/libbrillo
 	media-libs/arc-camera3-libcamera_metadata
@@ -27,6 +25,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake BASE_VER=${LIBCHROME_VERS} camera_hal_usb

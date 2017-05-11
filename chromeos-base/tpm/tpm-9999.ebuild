@@ -14,14 +14,13 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="app-crypt/trousers"
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

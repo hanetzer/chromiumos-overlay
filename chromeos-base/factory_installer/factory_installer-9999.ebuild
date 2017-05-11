@@ -12,7 +12,6 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-REQUIRED_USE="asan? ( clang )"
 
 USE_PREFIX="tty_console_"
 ALL_PORTS=(
@@ -27,7 +26,7 @@ ALL_PORTS=(
 	tty{0..5}
 )
 IUSE_PORTS="${ALL_PORTS[@]/#/${USE_PREFIX}}"
-IUSE="${IUSE_PORTS} -asan -clang"
+IUSE="${IUSE_PORTS} -asan"
 
 # Factory install images operate by downloading content from a
 # server.  In some cases, the downloaded content contains programs
@@ -93,7 +92,7 @@ CROS_WORKON_LOCALNAME="factory_installer"
 FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

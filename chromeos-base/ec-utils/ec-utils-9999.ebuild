@@ -15,8 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang -cr50_onboard static"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-cr50_onboard static"
 
 DEPEND="dev-embedded/libftdi"
 RDEPEND="${DEPEND}"
@@ -32,7 +31,6 @@ set_board() {
 }
 
 src_configure() {
-	clang-setup-env
 	cros-workon_src_configure
 }
 

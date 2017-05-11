@@ -14,8 +14,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang +seccomp systemd test"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan +seccomp systemd test"
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -34,7 +33,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

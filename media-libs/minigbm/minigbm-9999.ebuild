@@ -17,11 +17,10 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 VIDEO_CARDS="amdgpu exynos intel marvell mediatek rockchip tegra"
-IUSE="-asan -clang"
+IUSE="-asan"
 for card in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${card}"
 done
-REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	x11-libs/libdrm
@@ -32,6 +31,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
+	asan-setup-env
 	cros-workon_src_prepare
 }
 

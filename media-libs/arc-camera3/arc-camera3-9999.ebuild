@@ -13,8 +13,7 @@ camera device. It uses unix domain socket to build a synchronous channel."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang cheets"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan cheets"
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -29,6 +28,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake BASE_VER=${LIBCHROME_VERS} hal_adapter

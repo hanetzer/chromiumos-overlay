@@ -17,8 +17,7 @@ SRC_URI=""
 LICENSE="BSD-chrontel"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -bogus_screen_resizes -clang -use_alsa_control"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan -bogus_screen_resizes -use_alsa_control"
 
 RDEPEND="x11-libs/libdrm
 	media-libs/alsa-lib
@@ -26,7 +25,7 @@ RDEPEND="x11-libs/libdrm
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

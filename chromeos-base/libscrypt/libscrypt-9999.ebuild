@@ -14,8 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang static-libs"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan static-libs"
 
 RDEPEND="dev-libs/openssl"
 DEPEND="${RDEPEND}"
@@ -27,7 +26,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure \
 		$(use_enable static-libs static)
 }

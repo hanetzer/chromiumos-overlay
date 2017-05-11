@@ -15,8 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="
 	sys-libs/ncurses
@@ -31,6 +30,7 @@ src_unpack() {
 }
 
 src_configure() {
+	asan-setup-env
 	cros-workon_src_configure
 }
 

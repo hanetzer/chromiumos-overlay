@@ -12,8 +12,7 @@ HOMEPAGE="http://cgit.freedesktop.org/libqmi/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang doc mbim static-libs"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan doc mbim static-libs"
 
 RDEPEND=">=dev-libs/glib-2.36
 	mbim? ( >=net-libs/libmbim-1.14.0 )"
@@ -27,7 +26,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 
 	# Disable the unused function check as libqmi has auto-generated
 	# functions that may not be used.

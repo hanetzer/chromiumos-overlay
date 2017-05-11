@@ -22,8 +22,7 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang doc gobi mbim systemd qmi"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan doc gobi mbim systemd qmi"
 
 RDEPEND=">=dev-libs/glib-2.36
 	>=sys-apps/dbus-1.2
@@ -80,7 +79,7 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	append-flags -Xclang-only=-Wno-unneeded-internal-declaration
 	cros-workon_src_configure \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \

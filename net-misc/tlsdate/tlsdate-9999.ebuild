@@ -12,8 +12,7 @@ HOMEPAGE="https://github.com/ioerror/tlsdate"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="asan clang +dbus +seccomp systemd"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan +dbus +seccomp systemd"
 
 DEPEND="dev-libs/openssl
 	dev-libs/libevent
@@ -27,6 +26,7 @@ src_prepare() {
 }
 
 src_configure() {
+	asan-setup-env
 	cros-workon_src_configure \
 		$(use_enable dbus) \
 		$(use_enable seccomp seccomp-filter) \

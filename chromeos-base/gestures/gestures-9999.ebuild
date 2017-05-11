@@ -14,8 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang +X"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan +X"
 
 RDEPEND="chromeos-base/gestures-conf
 	chromeos-base/libevdev
@@ -26,7 +25,7 @@ DEPEND="dev-cpp/gtest
 	${RDEPEND}"
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 	export USE_X11=$(usex X 1 0)
 }

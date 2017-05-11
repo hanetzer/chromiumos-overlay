@@ -12,8 +12,7 @@ HOMEPAGE="http://www.gctsemi.com/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="!net-wireless/gdmwimax-private"
 
@@ -34,7 +33,7 @@ src_configure() {
 	append-flags -U_FORTIFY_SOURCE
 	tc-export AR CC
 
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 

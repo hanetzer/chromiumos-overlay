@@ -12,8 +12,7 @@ DESCRIPTION="SDK for Qualcomm Gobi 3000 modems"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 # TODO(jglasgow): remove realpath dependency
 RDEPEND="
@@ -21,7 +20,7 @@ RDEPEND="
 "
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 	tc-export LD CXX CC OBJCOPY AR
 }

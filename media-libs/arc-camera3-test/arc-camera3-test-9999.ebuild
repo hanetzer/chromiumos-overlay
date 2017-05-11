@@ -12,8 +12,7 @@ DESCRIPTION="ARC camera HALv3 native test."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 RDEPEND="
 	dev-cpp/gtest
@@ -27,6 +26,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake BASE_VER=${LIBCHROME_VERS} camera3_test

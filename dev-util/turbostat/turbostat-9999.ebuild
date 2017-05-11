@@ -15,8 +15,7 @@ DESCRIPTION="Intel processor C-state and P-state reporting tool"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 domake() {
 	emake -C tools/power/x86/turbostat \
@@ -25,7 +24,7 @@ domake() {
 }
 
 src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-workon_src_configure
 }
 
