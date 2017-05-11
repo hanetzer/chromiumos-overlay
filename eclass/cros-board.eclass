@@ -340,7 +340,7 @@ fi
 # Also add cros_host so that we can inherit this eclass in ebuilds
 # that get emerged both in the cros-sdk and for target boards.
 # See REQUIRED_USE below.
-IUSE="${CROS_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host"
+IUSE="${CROS_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host unibuild"
 
 # Echo the current board, with variant.
 get_current_board_with_variant()
@@ -361,7 +361,13 @@ get_current_board_with_variant()
 	done
 
 	if [[ -n "${current}" ]]; then
-		echo ${current}
+		# For unified builds, output the reference board. These always
+		# end in "-uni".
+		if use unibuild; then
+			echo ${current%-uni}
+		else
+			echo ${current}
+		fi
 		return
 	fi
 
