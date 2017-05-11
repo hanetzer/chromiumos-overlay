@@ -17,6 +17,7 @@ KEYWORDS="*"
 IUSE="
 	allow_consumer_kiosk
 	arc
+	arc_oobe_optin
 	asan
 	cheets
 	cfm_enabled_device
