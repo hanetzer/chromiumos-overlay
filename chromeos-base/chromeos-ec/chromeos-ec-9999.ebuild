@@ -134,6 +134,16 @@ src_install() {
 	for board in "${EC_BOARDS[@]}"; do
 		board_install ${board} /firmware/${board}
 	done
+
+	# Use the same EC image as a fake for boards which we cannot build
+	# here, by install it into the requested directories. This keeps
+	# coreboot and chromeos-bootimage happy.
+	# TODO(sjg@chromium.org): Is there a better way?
+	if use unibuild; then
+		for board in ${EC_FIRMWARE_UNIBUILD_FAKE}; do
+			board_install "${EC_BOARDS[0]}" "/firmware/${board}"
+		done
+	fi
 }
 
 src_test() {
