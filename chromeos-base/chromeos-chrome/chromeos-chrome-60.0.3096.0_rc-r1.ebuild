@@ -277,6 +277,7 @@ set_build_args() {
 		use_cras=true
 		# use_system_minigbm is set below.
 		use_system_harfbuzz=true
+		use_system_freetype=true
 		use_cups=$(usetf cups)
 
 		# Clang features.
