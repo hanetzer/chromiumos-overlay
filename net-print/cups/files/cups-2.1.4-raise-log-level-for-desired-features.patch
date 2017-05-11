@@ -1,0 +1,95 @@
+From acec16c6fbaa2cdc33ab9b5fe3e53731a9821533 Mon Sep 17 00:00:00 2001
+From: Sean Kau <skau@chromium.org>
+Date: Wed, 10 May 2017 17:57:45 -0700
+Subject: [PATCH] raise log level for desired features
+
+log options
+---
+ scheduler/job.c  | 12 ++++++------
+ scheduler/main.c | 13 ++++---------
+ 2 files changed, 10 insertions(+), 15 deletions(-)
+
+diff --git a/scheduler/job.c b/scheduler/job.c
+index 0bdb855a7..37b346d9c 100644
+--- a/scheduler/job.c
++++ b/scheduler/job.c
+@@ -632,12 +632,12 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+     * Figure out the final content type...
+     */
+ 
+-    cupsdLogJob(job, CUPSD_LOG_DEBUG, "%d filters for job:",
++    cupsdLogJob(job, CUPSD_LOG_NOTICE, "%d filters for job:",
+                 cupsArrayCount(filters));
+     for (filter = (mime_filter_t *)cupsArrayFirst(filters);
+          filter;
+          filter = (mime_filter_t *)cupsArrayNext(filters))
+-      cupsdLogJob(job, CUPSD_LOG_DEBUG, "%s (%s/%s to %s/%s, cost %d)",
++      cupsdLogJob(job, CUPSD_LOG_NOTICE, "%s (%s/%s to %s/%s, cost %d)",
+ 		  filter->filter,
+ 		  filter->src ? filter->src->super : "???",
+ 		  filter->src ? filter->src->type : "???",
+@@ -1217,8 +1217,8 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+       goto abort_job;
+     }
+ 
+-    cupsdLogJob(job, CUPSD_LOG_INFO, "Started filter %s (PID %d)", command,
+-                pid);
++    cupsdLogJob(job, CUPSD_LOG_NOTICE, "Started filter %s (%s) (PID %d)",
++                command, options, pid);
+ 
+     if (argv[6])
+     {
+@@ -1274,7 +1274,7 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+       }
+       else
+       {
+-	cupsdLogJob(job, CUPSD_LOG_INFO, "Started backend %s (PID %d)",
++	cupsdLogJob(job, CUPSD_LOG_NOTICE, "Started backend %s (PID %d)",
+ 		    command, pid);
+       }
+     }
+@@ -3203,7 +3203,7 @@ finalize_job(cupsd_job_t *job,		/* I - Job */
+       exit_code = job->status;
+     }
+ 
+-    cupsdLogJob(job, CUPSD_LOG_INFO, "Backend returned status %d (%s)",
++    cupsdLogJob(job, CUPSD_LOG_NOTICE, "Backend returned status %d (%s)",
+ 		exit_code,
+ 		exit_code == CUPS_BACKEND_FAILED ? "failed" :
+ 		    exit_code == CUPS_BACKEND_AUTH_REQUIRED ?
+diff --git a/scheduler/main.c b/scheduler/main.c
+index d9691ea9a..d233e7838 100644
+--- a/scheduler/main.c
++++ b/scheduler/main.c
+@@ -1531,24 +1531,19 @@ process_children(void)
+         int code = WEXITSTATUS(status);	/* Exit code */
+ 
+         if (code > 100)
+-	  cupsdLogJob(job, CUPSD_LOG_DEBUG,
++	  cupsdLogJob(job, CUPSD_LOG_NOTICE,
+ 		      "PID %d (%s) stopped with status %d (%s)", pid, name,
+ 		      code, strerror(code - 100));
+ 	else
+-	  cupsdLogJob(job, CUPSD_LOG_DEBUG,
++	  cupsdLogJob(job, CUPSD_LOG_NOTICE,
+ 		      "PID %d (%s) stopped with status %d.", pid, name, code);
+       }
+       else
+-	cupsdLogJob(job, CUPSD_LOG_DEBUG, "PID %d (%s) crashed on signal %d.",
++	cupsdLogJob(job, CUPSD_LOG_NOTICE, "PID %d (%s) crashed on signal %d.",
+ 		    pid, name, WTERMSIG(status));
+-
+-      if (LogLevel < CUPSD_LOG_DEBUG)
+-        cupsdLogJob(job, CUPSD_LOG_INFO,
+-		    "Hint: Try setting the LogLevel to \"debug\" to find out "
+-		    "more.");
+     }
+     else
+-      cupsdLogJob(job, CUPSD_LOG_DEBUG, "PID %d (%s) exited with no errors.",
++      cupsdLogJob(job, CUPSD_LOG_NOTICE, "PID %d (%s) exited with no errors.",
+ 		  pid, name);
+   }
+ 
+-- 
+2.13.0.rc2.291.g57267f2277-goog
+
