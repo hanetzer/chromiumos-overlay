@@ -23,7 +23,6 @@ RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
 	media-sound/alsa-utils
-	sys-apps/coreboot-utils
 	sys-apps/hdparm
 	mmc? ( sys-apps/mmc-utils )
 	sys-apps/mosys
