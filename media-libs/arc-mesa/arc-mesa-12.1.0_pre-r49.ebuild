@@ -223,6 +223,10 @@ src_install_arc() {
 	# Set driconf option to enable S3TC hardware decompression
 	insinto "${ARC_PREFIX}/vendor/etc/"
 	doins "${FILESDIR}"/drirc
+
+	# Install init file to advertise proper opengles version.
+	insinto "${ARC_PREFIX}/vendor/etc/init"
+	doins "${FILESDIR}/init.gpu.rc"
 }
 
 src_install() {
