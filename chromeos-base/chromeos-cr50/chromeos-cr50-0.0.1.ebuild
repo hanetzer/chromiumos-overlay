@@ -40,4 +40,7 @@ src_install() {
 	fi
 
 	doins "${FILESDIR}"/cr50-result.conf
+
+	exeinto /usr/share/cros
+	doexe "${FILESDIR}"/cr50-update.sh
 }
