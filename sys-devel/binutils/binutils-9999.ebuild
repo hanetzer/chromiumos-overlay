@@ -140,6 +140,9 @@ toolchain_mips_use_sysv_gnuhash() {
 }
 
 src_configure() {
+	# Use gcc to build binutils.
+	cros_use_gcc
+
 	# make sure we filter $LINGUAS so that only ones that
 	# actually work make it through #42033
 	strip-linguas -u */po

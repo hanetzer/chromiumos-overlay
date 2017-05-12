@@ -79,10 +79,6 @@ githash_for_branch() {
 	eval CROS_WORKON_TREE"='$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%T" "${branch}")'"
 }
 
-cros_pre_src_prepare_use_gcc() {
-	cros_use_gcc
-}
-
 src_unpack() {
 	if use mounted_binutils ; then
 		local dir="/usr/local/toolchain_root/binutils"
@@ -146,6 +142,9 @@ toolchain_mips_use_sysv_gnuhash() {
 }
 
 src_configure() {
+	# Use gcc to build binutils.
+	cros_use_gcc
+
 	# make sure we filter $LINGUAS so that only ones that
 	# actually work make it through #42033
 	strip-linguas -u */po
