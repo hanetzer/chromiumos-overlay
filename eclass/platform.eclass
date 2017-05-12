@@ -43,12 +43,13 @@ REQUIRED_USE="asan? ( clang )"
 
 # Similarly to above, we use gmock/gtest for unittests in platform2 packages.
 # Add the dep all the time even if a few packages wouldn't use it as it doesn't
-# add any real overhead.
+# add any real overhead. As we often use the FRIEND_TEST macro provided by
+# gtest/gtest_prod.h in regular class definitions, the gtest dependency is needed
+# outside test as well.
 DEPEND="
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)"
+	test? ( dev-cpp/gmock )
+	dev-cpp/gtest
+"
 
 platform() {
 	local platform2_py="${PLATFORM_TOOLDIR}/platform2.py"
