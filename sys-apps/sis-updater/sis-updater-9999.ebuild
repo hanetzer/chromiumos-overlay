@@ -4,7 +4,7 @@
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/sis-updater"
 
-inherit cros-workon udev
+inherit cros-workon udev user
 
 DESCRIPTION="A tool to update SiS firmware on Mimo from Chromium OS."
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/sis-updater"
@@ -18,4 +18,9 @@ RDEPEND="${DEPEND}"
 src_install() {
 	dosbin sis-updater
 	udev_dorules conf/99-sis-usb.rules
+}
+
+pkg_preinst() {
+	enewuser cfm-firmware-updaters
+	enewgroup cfm-firmware-updaters
 }
