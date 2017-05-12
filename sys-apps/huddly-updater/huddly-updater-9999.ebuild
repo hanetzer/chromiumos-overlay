@@ -4,7 +4,7 @@
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/huddly-updater"
 
-inherit cros-workon libchrome udev
+inherit cros-workon libchrome udev user
 
 DESCRIPTION="A utility to update Huddly camera firmware"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/huddly-updater"
@@ -24,4 +24,9 @@ RDEPEND="${DEPEND}
 src_install() {
 	dosbin huddly-updater
 	udev_dorules conf/99-huddly.rules
+}
+
+pkg_preinst() {
+	enewuser cfm-firmware-updaters
+	enewgroup cfm-firmware-updaters
 }
