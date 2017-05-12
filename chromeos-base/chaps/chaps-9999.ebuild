@@ -33,6 +33,7 @@ RDEPEND="
 	)
 	chromeos-base/libbrillo
 	chromeos-base/metrics
+	chromeos-base/system_api
 	!dev-db/leveldb
 	dev-libs/dbus-c++
 	dev-libs/leveldb
