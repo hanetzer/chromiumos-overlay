@@ -23,10 +23,7 @@ RDEPEND="
 	net-dns/avahi-daemon
 "
 
-DEPEND="
-	${RDEPEND}
-	dev-cpp/gtest
-"
+DEPEND="${RDEPEND}"
 
 pkg_preinst() {
 	# Create user and group for peerd.

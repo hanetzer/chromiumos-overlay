@@ -25,10 +25,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	"
 
-DEPEND="
-	${RDEPEND}
-	dev-cpp/gtest
-	"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	local v

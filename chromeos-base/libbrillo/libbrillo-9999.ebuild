@@ -41,7 +41,6 @@ RDEPEND="
 DEPEND="
 	${COMMON_DEPEND}
 	chromeos-base/protofiles
-	dev-cpp/gtest
 	dev-libs/modp_b64
 "
 

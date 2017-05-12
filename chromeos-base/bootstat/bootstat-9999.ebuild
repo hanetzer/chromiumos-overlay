@@ -23,8 +23,7 @@ IUSE=""
 RDEPEND="
 	sys-apps/rootdev
 	"
-DEPEND="${RDEPEND}
-	dev-cpp/gtest"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	dosbin "${OUT}"/bootstat

@@ -34,10 +34,7 @@ RDEPEND="
 	cr50_onboard? ( chromeos-base/chromeos-cr50 )
 	"
 
-DEPEND="
-	${COMMON_DEPEND}
-	dev-cpp/gtest
-	"
+DEPEND="${COMMON_DEPEND}"
 
 src_unpack() {
 	local s="${S}"

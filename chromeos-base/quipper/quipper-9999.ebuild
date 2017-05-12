@@ -32,7 +32,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	test? ( app-shells/dash )
-	dev-cpp/gtest
 "
 
 src_unpack() {

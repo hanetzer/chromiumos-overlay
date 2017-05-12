@@ -28,7 +28,6 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	chromeos-base/system_api
-	dev-cpp/gtest
 "
 
 pkg_preinst() {

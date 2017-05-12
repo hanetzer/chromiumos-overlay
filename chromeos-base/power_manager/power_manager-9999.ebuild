@@ -32,8 +32,7 @@ RDEPEND="
 	virtual/udev"
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
-	dev-cpp/gtest"
+	chromeos-base/system_api"
 
 pkg_setup() {
 	# Create the 'power' user and group here in pkg_setup as src_install needs

@@ -49,7 +49,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
-	dev-cpp/gtest
 "
 
 src_install() {

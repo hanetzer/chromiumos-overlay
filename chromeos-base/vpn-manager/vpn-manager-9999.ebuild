@@ -25,8 +25,7 @@ RDEPEND="
 	net-misc/strongswan
 "
 
-DEPEND="${RDEPEND}
-	dev-cpp/gtest"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	insinto /usr/include/chromeos/vpn-manager

@@ -26,10 +26,7 @@ IUSE=""
 RDEPEND="chromeos-base/libbrillo
 	dev-libs/expat
 	sys-apps/dbus"
-DEPEND="
-	${RDEPEND}
-	dev-cpp/gtest
-"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	dobin "${OUT}"/generate-chromeos-dbus-bindings

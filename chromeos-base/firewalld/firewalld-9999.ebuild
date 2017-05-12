@@ -28,7 +28,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/system_api
-	dev-cpp/gtest
 "
 
 pkg_preinst() {

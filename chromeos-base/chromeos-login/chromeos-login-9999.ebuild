@@ -37,8 +37,7 @@ RDEPEND="chromeos-base/bootstat
 DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	chromeos-base/system_api
-	chromeos-base/vboot_reference
-	dev-cpp/gtest"
+	chromeos-base/vboot_reference"
 
 platform_pkg_test() {
 	local tests=( session_manager_test )

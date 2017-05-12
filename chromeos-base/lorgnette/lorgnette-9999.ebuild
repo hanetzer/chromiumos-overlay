@@ -29,7 +29,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/system_api
-	dev-cpp/gtest
 "
 
 src_install() {

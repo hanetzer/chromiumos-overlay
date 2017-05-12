@@ -30,11 +30,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	"
 
-DEPEND="
-	${RDEPEND}
-	dev-cpp/gmock
-	dev-cpp/gtest
-	"
+DEPEND="${RDEPEND}"
 
 pkg_preinst() {
 	enewuser tpm_manager

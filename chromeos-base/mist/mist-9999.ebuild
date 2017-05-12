@@ -28,10 +28,7 @@ RDEPEND="
 	virtual/udev
 "
 
-DEPEND="
-	${RDEPEND}
-	dev-cpp/gtest
-"
+DEPEND="${RDEPEND}"
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/mist_testrunner"

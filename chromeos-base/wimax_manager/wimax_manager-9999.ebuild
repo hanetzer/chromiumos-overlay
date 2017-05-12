@@ -36,7 +36,6 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	gdmwimax? ( chromeos-base/system_api )
-	dev-cpp/gtest
 "
 
 src_install() {

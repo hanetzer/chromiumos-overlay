@@ -20,14 +20,6 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND="
-"
-
-DEPEND="
-	dev-cpp/gmock
-	dev-cpp/gtest
-"
-
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack

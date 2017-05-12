@@ -36,8 +36,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
-	dev-cpp/gtest"
+	chromeos-base/system_api"
 
 pkg_preinst() {
 	enewuser "cros-disks"

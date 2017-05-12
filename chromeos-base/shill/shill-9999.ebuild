@@ -50,8 +50,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/shill-client
 	chromeos-base/power_manager-client
-	chromeos-base/system_api
-	dev-cpp/gtest"
+	chromeos-base/system_api"
 
 pkg_preinst() {
 	enewgroup "shill-crypto"

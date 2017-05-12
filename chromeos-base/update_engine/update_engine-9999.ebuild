@@ -48,8 +48,6 @@ DEPEND="
 	chromeos-base/session_manager-client
 	chromeos-base/shill-client
 	chromeos-base/update_engine-client
-	dev-cpp/gmock
-	dev-cpp/gtest
 	mtd? ( dev-embedded/android_mtdutils )
 	sys-fs/e2fsprogs
 	${COMMON_DEPEND}"

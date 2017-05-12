@@ -27,8 +27,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
-	test? ( dev-cpp/gtest )"
+	chromeos-base/system_api"
 
 src_prepare() {
 	cros-workon_src_prepare
