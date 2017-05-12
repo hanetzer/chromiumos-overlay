@@ -15,10 +15,11 @@ net-misc/openssh kerberos
 sys-apps/flashrom dediprog ft2232_spi serprog
 dev-lang/python gdbm
 
-# qemu is statically linked with glib when compiled for the host
-# and thus requires glib to be compiled with static-libs.
+# qemu is statically linked with glib when compiled for the host and thus
+# requires glib (and transitively, libpcre) to be compiled with static-libs.
 # See http://crosbug.com/35162 for details.
 dev-libs/glib static-libs
+dev-libs/libpcre static-libs
 sys-apps/attr static-libs
 
 # mksquashfs used in build_image requires lzo support.
