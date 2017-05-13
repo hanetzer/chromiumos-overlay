@@ -220,9 +220,22 @@ add_ec() {
 	local ecroot="$3"
 
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c lzma \
-		 -f "${ecroot}/ec.RW.bin" -n "${name}" || die
+		-f "${ecroot}/ec.RW.bin" -n "${name}" || die
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c none \
-		 -f "${ecroot}/ec.RW.hash" -n "${name}.hash" || die
+		-f "${ecroot}/ec.RW.hash" -n "${name}.hash" || die
+}
+
+add_fw_blob() {
+	local rom="$1"
+	local cbname="$2"
+	local blob="$3"
+	local cbhash="${cbname%.bin}.hash"
+	local hash="${blob%.bin}.hash"
+
+	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c lzma \
+		-f "${blob}" -n "${cbname}" || die
+	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c none \
+		-f "${hash}" -n "${cbhash}" || die
 }
 
 # Build coreboot with a supplied configuration and output directory.
@@ -265,6 +278,14 @@ make_coreboot() {
 	if use pd_sync; then
 		add_ec "${builddir}/coreboot.rom" "pdrw" "${froot}/${PD_FIRMWARE}"
 	fi
+
+	local blob
+	local cbname
+	for blob in ${FW_BLOBS}; do
+		cbname=$(basename "${blob}")
+		add_fw_blob "${builddir}/coreboot.rom" "${cbname}" \
+			"${froot}/${blob}" || die
+	done
 
 	( cd "${froot}/cbfs" 2>/dev/null && find . -type f) | \
 	while read file; do
