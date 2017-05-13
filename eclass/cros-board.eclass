@@ -82,6 +82,7 @@ ALL_BOARDS=(
 	cid
 	clapper
 	cobblepot
+	coral
 	cosmos
 	cranky
 	cyan

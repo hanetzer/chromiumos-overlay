@@ -34,6 +34,7 @@ EC_BOARD_NAMES=(
 	big
 	chell
 	chell_pd
+	coral
 	cr50
 	cyan
 	dingdong
