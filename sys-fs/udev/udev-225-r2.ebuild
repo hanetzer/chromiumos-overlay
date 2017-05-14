@@ -139,6 +139,8 @@ src_prepare() {
 		echo '#define secure_getenv(x) NULL' >> config.h.in
 		sed -i -e '/error.*secure_getenv/s:.*:#define secure_getenv(x) NULL:' src/shared/missing.h || die
 	fi
+
+	epatch "${FILESDIR}"/udev-225-50-udev-default.rules-set-default-group-for-mediaX.patch
 }
 
 src_configure() {
