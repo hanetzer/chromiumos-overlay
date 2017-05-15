@@ -54,10 +54,10 @@ pkg_setup()  {
 
 src_prepare() {
 	epatch "${FILESDIR}/${PN}-external-cmocka.patch"
-	epatch "${FILESDIR}/${P}-iv_plat.patch"
-	epatch "${FILESDIR}/${P}-large-passwords.patch"
-	epatch "${FILESDIR}/${P}-pkcs11-slot.patch"
-	epatch "${FILESDIR}/${P}-redirect-gateway.patch"
+	epatch "${FILESDIR}/${PN}-2.4.1-iv_plat.patch"
+	epatch "${FILESDIR}/${PN}-2.4.1-large-passwords.patch"
+	epatch "${FILESDIR}/${PN}-2.4.1-pkcs11-slot.patch"
+	epatch "${FILESDIR}/${PN}-2.4.1-redirect-gateway.patch"
 
 	default
 	eautoreconf
