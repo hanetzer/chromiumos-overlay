@@ -813,6 +813,10 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=$(tc-getBUILD_CXX)
 
+	# Set binutils path for goma.
+	CC_host+=" -B$(get_binutils_path "${LD_host}")"
+	CXX_host+=" -B$(get_binutils_path "${LD_host}")"
+
 	setup_compile_flags
 
 	export BOTO_CONFIG=/home/$(whoami)/.boto
