@@ -1,0 +1,10 @@
+--- xkeyboard-config-2.15/symbols/fr
++++ xkeyboard-config-2.15/symbols/fr
+@@ -36,6 +36,7 @@ xkb_symbols "basic" {
+     key <AB09>	{ [     colon,      slash, periodcentered,   division ]	};
+     key <AB10>	{ [    exclam,    section, dead_belowdot, dead_abovedot ] };
+ 
++    include "kpdl(comma)"
+     include "level3(ralt_switch)"
+ };
+ 
