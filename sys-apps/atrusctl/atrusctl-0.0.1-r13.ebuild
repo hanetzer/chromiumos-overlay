@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="0db2ba835b1b13855844bdd40618f7b365e67326"
-CROS_WORKON_TREE="46d6b9ceb9ea2c31e60245ac55f9df605621c242"
+CROS_WORKON_COMMIT="0bd2504604c3e3980025e11d2b45865b6806340c"
+CROS_WORKON_TREE="6f3a4322ea0e41bad11143b9402fe31c261349ae"
 CROS_WORKON_PROJECT="chromiumos/third_party/atrusctl"
 
 inherit cros-workon cmake-utils udev user
