@@ -368,8 +368,19 @@ cros-firmware_src_compile() {
 }
 
 cros-firmware_src_install() {
-	# install the main updater program
-	dosbin $UPDATE_SCRIPT || die "Failed to install update script."
+	# install updaters for firmware-from-source archive.
+	if use bootimage; then
+		exeinto /firmware
+		doexe updater*.sh
+	fi
+
+	# skip anything else if no main updater program.
+	if [[ ! -s "${UPDATE_SCRIPT}" ]]; then
+		return
+	fi
+
+	# install the main updater program if available.
+	dosbin "${UPDATE_SCRIPT}"
 
 	# install additional scripts ( sbin/firmware-*.${version} ).
 	local main_script="${CROS_FIRMWARE_SCRIPT##*updater}"
@@ -390,12 +401,6 @@ cros-firmware_src_install() {
 	# install ${FILESDIR}/sbin/* (usually board-setgoodfirmware).
 	if [[ -d "${FILESDIR}"/sbin ]]; then
 		dosbin "${FILESDIR}"/sbin/*
-	fi
-
-	# install updaters for firmware-from-source archive.
-	if use bootimage; then
-		exeinto /firmware
-		doexe updater*.sh
 	fi
 }
 
