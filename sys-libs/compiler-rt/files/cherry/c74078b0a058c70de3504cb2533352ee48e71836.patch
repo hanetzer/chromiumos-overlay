@@ -1,0 +1,36 @@
+commit c74078b0a058c70de3504cb2533352ee48e71836
+Author: Saleem Abdulrasool <compnerd@compnerd.org>
+Date:   Tue May 16 17:06:48 2017 +0000
+
+    builtins: add missing includes
+    
+    This inclusion is needed to fix the ARM build.  The int_lib.h include is
+    slightly ugly, but allows us to use the `AEABI_RTABI` macro to decorate
+    the CC for the functions.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@303190 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c b/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
+index b640f9776..7578433a1 100644
+--- a/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
++++ b/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
+@@ -8,6 +8,7 @@
+ //===----------------------------------------------------------------------===//
+ 
+ #include <stdint.h>
++#include "../int_lib.h"
+ 
+ AEABI_RTABI __attribute__((visibility("hidden")))
+ int __aeabi_cdcmpeq_check_nan(double a, double b) {
+diff --git a/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c b/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
+index f1729997a..43dde9a49 100644
+--- a/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
++++ b/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
+@@ -8,6 +8,7 @@
+ //===----------------------------------------------------------------------===//
+ 
+ #include <stdint.h>
++#include "../int_lib.h"
+ 
+ AEABI_RTABI __attribute__((visibility("hidden")))
+ int __aeabi_cfcmpeq_check_nan(float a, float b) {

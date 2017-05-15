@@ -1,0 +1,32 @@
+commit 96eed06b6e57a3c8e2593e73d6f33bdd407f43b9
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Mon May 15 20:41:17 2017 +0000
+
+    [builtins] Fix a check from __GNU__ to __GNUC__ for disabling executable stack.
+    
+    Summary:
+    Neither GCC nor Clang define __GNU__. Instead use __GNUC__ for the check.
+    
+    Reviewers: echristo, rengolin, compnerd
+    
+    Subscribers: srhines, krytarowski, llvm-commits
+    
+    Differential Revision: https://reviews.llvm.org/D33211
+    
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@303112 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/builtins/assembly.h b/lib/builtins/assembly.h
+index 29d9f8844..eafbe7de6 100644
+--- a/lib/builtins/assembly.h
++++ b/lib/builtins/assembly.h
+@@ -44,7 +44,7 @@
+ #endif
+ #define CONST_SECTION .section .rodata
+ 
+-#if defined(__GNU__) || defined(__ANDROID__) || defined(__FreeBSD__)
++#if defined(__GNUC__) || defined(__ANDROID__) || defined(__FreeBSD__)
+ #define NO_EXEC_STACK_DIRECTIVE .section .note.GNU-stack,"",%progbits
+ #else
+ #define NO_EXEC_STACK_DIRECTIVE

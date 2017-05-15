@@ -1,0 +1,1028 @@
+commit 99e2e66daf8d334858cec4f6e8e7a39d6a535a55
+Author: Saleem Abdulrasool <compnerd@compnerd.org>
+Date:   Tue May 16 16:41:37 2017 +0000
+
+    builtins: expand out the AEABI function stubs
+    
+    These actually may change calling conventions.  We cannot simply provide
+    function aliases as the aliased function may have a different calling
+    convention.  Provide a forwarding function instead to permit the
+    compiler to synthesize the calling convention adjustment thunk.
+    
+    Remove the `ARM_EABI_FNALIAS` macro as that is not safe to use.
+    
+    Resolves PR33030!
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@303188 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/builtins/adddf3.c b/lib/builtins/adddf3.c
+index 8b7aae0a6..c528e9e21 100644
+--- a/lib/builtins/adddf3.c
++++ b/lib/builtins/adddf3.c
+@@ -15,8 +15,13 @@
+ #define DOUBLE_PRECISION
+ #include "fp_add_impl.inc"
+ 
+-ARM_EABI_FNALIAS(dadd, adddf3)
+-
+ COMPILER_RT_ABI double __adddf3(double a, double b){
+     return __addXf3__(a, b);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI double __aeabi_dadd(double a, double b) {
++  return __adddf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/addsf3.c b/lib/builtins/addsf3.c
+index 0f5d6ea40..fe570687a 100644
+--- a/lib/builtins/addsf3.c
++++ b/lib/builtins/addsf3.c
+@@ -15,8 +15,13 @@
+ #define SINGLE_PRECISION
+ #include "fp_add_impl.inc"
+ 
+-ARM_EABI_FNALIAS(fadd, addsf3)
+-
+ COMPILER_RT_ABI float __addsf3(float a, float b) {
+     return __addXf3__(a, b);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI float __aeabi_fadd(float a, float b) {
++  return __addsf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c b/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
+index 577f6b2c5..b640f9776 100644
+--- a/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
++++ b/lib/builtins/arm/aeabi_cdcmpeq_check_nan.c
+@@ -9,8 +9,7 @@
+ 
+ #include <stdint.h>
+ 
+-__attribute__((pcs("aapcs")))
+-__attribute__((visibility("hidden")))
++AEABI_RTABI __attribute__((visibility("hidden")))
+ int __aeabi_cdcmpeq_check_nan(double a, double b) {
+     return __builtin_isnan(a) || __builtin_isnan(b);
+ }
+diff --git a/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c b/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
+index 992e31fbd..f1729997a 100644
+--- a/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
++++ b/lib/builtins/arm/aeabi_cfcmpeq_check_nan.c
+@@ -9,8 +9,7 @@
+ 
+ #include <stdint.h>
+ 
+-__attribute__((pcs("aapcs")))
+-__attribute__((visibility("hidden")))
++AEABI_RTABI __attribute__((visibility("hidden")))
+ int __aeabi_cfcmpeq_check_nan(float a, float b) {
+     return __builtin_isnan(a) || __builtin_isnan(b);
+ }
+diff --git a/lib/builtins/arm/aeabi_div0.c b/lib/builtins/arm/aeabi_div0.c
+index ccc95fa5c..6cc3505dc 100644
+--- a/lib/builtins/arm/aeabi_div0.c
++++ b/lib/builtins/arm/aeabi_div0.c
+@@ -30,12 +30,12 @@
+ extern unsigned char declaration;
+ 
+ #if defined(__ARM_EABI__)
+-int __attribute__((weak)) __attribute__((visibility("hidden")))
++AEABI_RTABI int __attribute__((weak)) __attribute__((visibility("hidden")))
+ __aeabi_idiv0(int return_value) {
+   return return_value;
+ }
+ 
+-long long __attribute__((weak)) __attribute__((visibility("hidden")))
++AEABI_RTABI long long __attribute__((weak)) __attribute__((visibility("hidden")))
+ __aeabi_ldiv0(long long return_value) {
+   return return_value;
+ }
+diff --git a/lib/builtins/arm/aeabi_drsub.c b/lib/builtins/arm/aeabi_drsub.c
+index fc17d5a4c..125488608 100644
+--- a/lib/builtins/arm/aeabi_drsub.c
++++ b/lib/builtins/arm/aeabi_drsub.c
+@@ -10,10 +10,10 @@
+ #define DOUBLE_PRECISION
+ #include "../fp_lib.h"
+ 
+-COMPILER_RT_ABI fp_t
++AEABI_RTABI fp_t
+ __aeabi_dsub(fp_t, fp_t);
+ 
+-COMPILER_RT_ABI fp_t
++AEABI_RTABI fp_t
+ __aeabi_drsub(fp_t a, fp_t b) {
+     return __aeabi_dsub(b, a);
+ }
+diff --git a/lib/builtins/arm/aeabi_frsub.c b/lib/builtins/arm/aeabi_frsub.c
+index 64258dc7e..34f230374 100644
+--- a/lib/builtins/arm/aeabi_frsub.c
++++ b/lib/builtins/arm/aeabi_frsub.c
+@@ -10,10 +10,10 @@
+ #define SINGLE_PRECISION
+ #include "../fp_lib.h"
+ 
+-COMPILER_RT_ABI fp_t
++AEABI_RTABI fp_t
+ __aeabi_fsub(fp_t, fp_t);
+ 
+-COMPILER_RT_ABI fp_t
++AEABI_RTABI fp_t
+ __aeabi_frsub(fp_t a, fp_t b) {
+     return __aeabi_fsub(b, a);
+ }
+diff --git a/lib/builtins/ashldi3.c b/lib/builtins/ashldi3.c
+index eb4698ac5..fcb0abdb1 100644
+--- a/lib/builtins/ashldi3.c
++++ b/lib/builtins/ashldi3.c
+@@ -18,8 +18,6 @@
+ 
+ /* Precondition:  0 <= b < bits_in_dword */
+ 
+-ARM_EABI_FNALIAS(llsl, ashldi3)
+-
+ COMPILER_RT_ABI di_int
+ __ashldi3(di_int a, si_int b)
+ {
+@@ -41,3 +39,10 @@ __ashldi3(di_int a, si_int b)
+     }
+     return result.all;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int __aeabi_llsl(di_int a, si_int b) {
++  return __ashldi3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/ashrdi3.c b/lib/builtins/ashrdi3.c
+index 14c878bb7..b4ab4c617 100644
+--- a/lib/builtins/ashrdi3.c
++++ b/lib/builtins/ashrdi3.c
+@@ -18,8 +18,6 @@
+ 
+ /* Precondition:  0 <= b < bits_in_dword */
+ 
+-ARM_EABI_FNALIAS(lasr, ashrdi3)
+-
+ COMPILER_RT_ABI di_int
+ __ashrdi3(di_int a, si_int b)
+ {
+@@ -42,3 +40,10 @@ __ashrdi3(di_int a, si_int b)
+     }
+     return result.all;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int __aeabi_lasr(di_int a, si_int b) {
++  return __ashrdi3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/comparedf2.c b/lib/builtins/comparedf2.c
+index 9e2975223..c5bb169d0 100644
+--- a/lib/builtins/comparedf2.c
++++ b/lib/builtins/comparedf2.c
+@@ -113,8 +113,6 @@ __gedf2(fp_t a, fp_t b) {
+     }
+ }
+ 
+-ARM_EABI_FNALIAS(dcmpun, unorddf2)
+-
+ COMPILER_RT_ABI int
+ __unorddf2(fp_t a, fp_t b) {
+     const rep_t aAbs = toRep(a) & absMask;
+@@ -144,3 +142,9 @@ __gtdf2(fp_t a, fp_t b) {
+     return __gedf2(a, b);
+ }
+ 
++#if defined(__ARM_EABI__)
++AEABI_RTABI int __aeabi_dcmpun(fp_t a, fp_t b) {
++  return __unorddf2(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/comparesf2.c b/lib/builtins/comparesf2.c
+index 1fd50636a..4badb5e1b 100644
+--- a/lib/builtins/comparesf2.c
++++ b/lib/builtins/comparesf2.c
+@@ -113,8 +113,6 @@ __gesf2(fp_t a, fp_t b) {
+     }
+ }
+ 
+-ARM_EABI_FNALIAS(fcmpun, unordsf2)
+-
+ COMPILER_RT_ABI int
+ __unordsf2(fp_t a, fp_t b) {
+     const rep_t aAbs = toRep(a) & absMask;
+@@ -143,3 +141,10 @@ COMPILER_RT_ABI enum GE_RESULT
+ __gtsf2(fp_t a, fp_t b) {
+     return __gesf2(a, b);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI int __aeabi_fcmpun(fp_t a, fp_t b) {
++  return __unordsf2(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/divdf3.c b/lib/builtins/divdf3.c
+index ab44c2b25..492e32b85 100644
+--- a/lib/builtins/divdf3.c
++++ b/lib/builtins/divdf3.c
+@@ -19,8 +19,6 @@
+ #define DOUBLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(ddiv, divdf3)
+-
+ COMPILER_RT_ABI fp_t
+ __divdf3(fp_t a, fp_t b) {
+     
+@@ -183,3 +181,10 @@ __divdf3(fp_t a, fp_t b) {
+         return result;
+     }
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_ddiv(fp_t a, fp_t b) {
++  return __divdf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/divsf3.c b/lib/builtins/divsf3.c
+index de2e37612..aa6289a6d 100644
+--- a/lib/builtins/divsf3.c
++++ b/lib/builtins/divsf3.c
+@@ -19,8 +19,6 @@
+ #define SINGLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(fdiv, divsf3)
+-
+ COMPILER_RT_ABI fp_t
+ __divsf3(fp_t a, fp_t b) {
+     
+@@ -167,3 +165,10 @@ __divsf3(fp_t a, fp_t b) {
+         return fromRep(absResult | quotientSign);
+     }
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_fdiv(fp_t a, fp_t b) {
++  return __divsf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/divsi3.c b/lib/builtins/divsi3.c
+index bab4aefda..3852e3990 100644
+--- a/lib/builtins/divsi3.c
++++ b/lib/builtins/divsi3.c
+@@ -16,8 +16,6 @@
+ 
+ /* Returns: a / b */
+ 
+-ARM_EABI_FNALIAS(idiv, divsi3)
+-
+ COMPILER_RT_ABI si_int
+ __divsi3(si_int a, si_int b)
+ {
+@@ -35,3 +33,10 @@ __divsi3(si_int a, si_int b)
+      */
+     return ((su_int)a/(su_int)b ^ s_a) - s_a;    /* negate if s_a == -1 */
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI si_int __aeabi_idiv(si_int a, si_int b) {
++  return __divsi3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/extendhfsf2.c b/lib/builtins/extendhfsf2.c
+index 27115a48c..e7d9fde8a 100644
+--- a/lib/builtins/extendhfsf2.c
++++ b/lib/builtins/extendhfsf2.c
+@@ -12,8 +12,6 @@
+ #define DST_SINGLE
+ #include "fp_extend_impl.inc"
+ 
+-ARM_EABI_FNALIAS(h2f, extendhfsf2)
+-
+ // Use a forwarding definition and noinline to implement a poor man's alias,
+ // as there isn't a good cross-platform way of defining one.
+ COMPILER_RT_ABI NOINLINE float __extendhfsf2(uint16_t a) {
+@@ -23,3 +21,10 @@ COMPILER_RT_ABI NOINLINE float __extendhfsf2(uint16_t a) {
+ COMPILER_RT_ABI float __gnu_h2f_ieee(uint16_t a) {
+     return __extendhfsf2(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI float __aeabi_h2f(uint16_t a) {
++  return __extendhfsf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/extendsfdf2.c b/lib/builtins/extendsfdf2.c
+index 7a267c2f4..b9e7a7471 100644
+--- a/lib/builtins/extendsfdf2.c
++++ b/lib/builtins/extendsfdf2.c
+@@ -12,8 +12,13 @@
+ #define DST_DOUBLE
+ #include "fp_extend_impl.inc"
+ 
+-ARM_EABI_FNALIAS(f2d, extendsfdf2)
+-
+ COMPILER_RT_ABI double __extendsfdf2(float a) {
+     return __extendXfYf2__(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI double __aeabi_f2d(float a) {
++  return __extendsfdf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixdfdi.c b/lib/builtins/fixdfdi.c
+index 14283ef42..31d76df28 100644
+--- a/lib/builtins/fixdfdi.c
++++ b/lib/builtins/fixdfdi.c
+@@ -10,7 +10,6 @@
+ 
+ #define DOUBLE_PRECISION
+ #include "fp_lib.h"
+-ARM_EABI_FNALIAS(d2lz, fixdfdi)
+ 
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; can set the invalid
+@@ -44,3 +43,15 @@ __fixdfdi(fp_t a) {
+ }
+ 
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int
++#if defined(__SOFT_FP__)
++__aeabi_d2lz(fp_t a) {
++#else
++__aeabi_d2lz(double a) {
++#endif
++  return __fixdfdi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixdfsi.c b/lib/builtins/fixdfsi.c
+index 704e65bc4..fc316dcd0 100644
+--- a/lib/builtins/fixdfsi.c
++++ b/lib/builtins/fixdfsi.c
+@@ -14,9 +14,14 @@ typedef si_int fixint_t;
+ typedef su_int fixuint_t;
+ #include "fp_fixint_impl.inc"
+ 
+-ARM_EABI_FNALIAS(d2iz, fixdfsi)
+-
+ COMPILER_RT_ABI si_int
+ __fixdfsi(fp_t a) {
+     return __fixint(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI si_int __aeabi_d2iz(fp_t a) {
++  return __fixdfsi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixsfdi.c b/lib/builtins/fixsfdi.c
+index fab47e272..c43473637 100644
+--- a/lib/builtins/fixsfdi.c
++++ b/lib/builtins/fixsfdi.c
+@@ -11,8 +11,6 @@
+ #define SINGLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(f2lz, fixsfdi)
+-
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; can set the invalid
+  * flag as a side-effect of computation.
+@@ -45,3 +43,15 @@ __fixsfdi(fp_t a) {
+ }
+ 
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int
++#if defined(__SOFT_FP__)
++__aeabi_f2lz(fp_t a) {
++#else
++__aeabi_f2lz(float a) {
++#endif
++  return __fixsfdi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixsfsi.c b/lib/builtins/fixsfsi.c
+index f045536d6..3276df966 100644
+--- a/lib/builtins/fixsfsi.c
++++ b/lib/builtins/fixsfsi.c
+@@ -14,9 +14,14 @@ typedef si_int fixint_t;
+ typedef su_int fixuint_t;
+ #include "fp_fixint_impl.inc"
+ 
+-ARM_EABI_FNALIAS(f2iz, fixsfsi)
+-
+ COMPILER_RT_ABI si_int
+ __fixsfsi(fp_t a) {
+     return __fixint(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI si_int __aeabi_f2iz(fp_t a) {
++  return __fixsfsi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixunsdfdi.c b/lib/builtins/fixunsdfdi.c
+index 4b0bc9e1d..b73440970 100644
+--- a/lib/builtins/fixunsdfdi.c
++++ b/lib/builtins/fixunsdfdi.c
+@@ -11,8 +11,6 @@
+ #define DOUBLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(d2ulz, fixunsdfdi)
+-
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; can set the invalid
+  * flag as a side-effect of computation.
+@@ -42,3 +40,15 @@ __fixunsdfdi(fp_t a) {
+ }
+ 
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI du_int
++#if defined(__SOFT_FP__)
++__aeabi_d2ulz(fp_t a) {
++#else
++__aeabi_d2ulz(double a) {
++#endif
++  return __fixunsdfdi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixunsdfsi.c b/lib/builtins/fixunsdfsi.c
+index 232d342d7..bb3d8e0f8 100644
+--- a/lib/builtins/fixunsdfsi.c
++++ b/lib/builtins/fixunsdfsi.c
+@@ -13,9 +13,14 @@
+ typedef su_int fixuint_t;
+ #include "fp_fixuint_impl.inc"
+ 
+-ARM_EABI_FNALIAS(d2uiz, fixunsdfsi)
+-
+ COMPILER_RT_ABI su_int
+ __fixunsdfsi(fp_t a) {
+     return __fixuint(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI su_int __aeabi_d2uiz(fp_t a) {
++  return __fixunsdfsi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixunssfdi.c b/lib/builtins/fixunssfdi.c
+index f8ebab854..5d92245df 100644
+--- a/lib/builtins/fixunssfdi.c
++++ b/lib/builtins/fixunssfdi.c
+@@ -11,8 +11,6 @@
+ #define SINGLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(f2ulz, fixunssfdi)
+-
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; can set the invalid
+  * flag as a side-effect of computation.
+@@ -43,3 +41,15 @@ __fixunssfdi(fp_t a) {
+ }
+ 
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI du_int
++#if defined(__SOFT_FP__)
++__aeabi_f2ulz(fp_t a) {
++#else
++__aeabi_f2ulz(float a) {
++#endif
++  return __fixunssfdi(a);
++}
++#endif
++
+diff --git a/lib/builtins/fixunssfsi.c b/lib/builtins/fixunssfsi.c
+index cc2b05bd8..91d5e8ae5 100644
+--- a/lib/builtins/fixunssfsi.c
++++ b/lib/builtins/fixunssfsi.c
+@@ -17,9 +17,14 @@
+ typedef su_int fixuint_t;
+ #include "fp_fixuint_impl.inc"
+ 
+-ARM_EABI_FNALIAS(f2uiz, fixunssfsi)
+-
+ COMPILER_RT_ABI su_int
+ __fixunssfsi(fp_t a) {
+     return __fixuint(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI su_int __aeabi_f2uiz(fp_t a) {
++  return __fixunssfsi(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatdidf.c b/lib/builtins/floatdidf.c
+index 2b023ad08..fccb29072 100644
+--- a/lib/builtins/floatdidf.c
++++ b/lib/builtins/floatdidf.c
+@@ -22,8 +22,6 @@
+ 
+ /* seee eeee eeee mmmm mmmm mmmm mmmm mmmm | mmmm mmmm mmmm mmmm mmmm mmmm mmmm mmmm */
+ 
+-ARM_EABI_FNALIAS(l2d, floatdidf)
+-
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; we'll set the inexact flag
+  * as a side-effect of this computation.
+@@ -105,3 +103,10 @@ __floatdidf(di_int a)
+     return fb.f;
+ }
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI double __aeabi_l2d(di_int a) {
++  return __floatdidf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatdisf.c b/lib/builtins/floatdisf.c
+index 3e47580ef..dd548165c 100644
+--- a/lib/builtins/floatdisf.c
++++ b/lib/builtins/floatdisf.c
+@@ -22,8 +22,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(l2f, floatdisf)
+-
+ COMPILER_RT_ABI float
+ __floatdisf(di_int a)
+ {
+@@ -78,3 +76,10 @@ __floatdisf(di_int a)
+            ((su_int)a & 0x007FFFFF);   /* mantissa */
+     return fb.f;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI float __aeabi_l2f(di_int a) {
++  return __floatdisf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatsidf.c b/lib/builtins/floatsidf.c
+index 1cf99b782..2ae395bdc 100644
+--- a/lib/builtins/floatsidf.c
++++ b/lib/builtins/floatsidf.c
+@@ -18,8 +18,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(i2d, floatsidf)
+-
+ COMPILER_RT_ABI fp_t
+ __floatsidf(int a) {
+     
+@@ -51,3 +49,10 @@ __floatsidf(int a) {
+     // Insert the sign bit and return
+     return fromRep(result | sign);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_i2d(int a) {
++  return __floatsidf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatsisf.c b/lib/builtins/floatsisf.c
+index 467dd1d1e..08891fcdf 100644
+--- a/lib/builtins/floatsisf.c
++++ b/lib/builtins/floatsisf.c
+@@ -18,8 +18,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(i2f, floatsisf)
+-
+ COMPILER_RT_ABI fp_t
+ __floatsisf(int a) {
+     
+@@ -57,3 +55,10 @@ __floatsisf(int a) {
+     // Insert the sign bit and return
+     return fromRep(result | sign);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_i2f(int a) {
++  return __floatsisf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatundidf.c b/lib/builtins/floatundidf.c
+index cfd3a7a3b..6c1a931ef 100644
+--- a/lib/builtins/floatundidf.c
++++ b/lib/builtins/floatundidf.c
+@@ -22,8 +22,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(ul2d, floatundidf)
+-
+ #ifndef __SOFT_FP__
+ /* Support for systems that have hardware floating-point; we'll set the inexact flag
+  * as a side-effect of this computation.
+@@ -104,3 +102,10 @@ __floatundidf(du_int a)
+     return fb.f;
+ }
+ #endif
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI double __aeabi_ul2d(du_int a) {
++  return __floatundidf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatundisf.c b/lib/builtins/floatundisf.c
+index 713a44abc..86841a75d 100644
+--- a/lib/builtins/floatundisf.c
++++ b/lib/builtins/floatundisf.c
+@@ -22,8 +22,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(ul2f, floatundisf)
+-
+ COMPILER_RT_ABI float
+ __floatundisf(du_int a)
+ {
+@@ -75,3 +73,10 @@ __floatundisf(du_int a)
+            ((su_int)a & 0x007FFFFF);  /* mantissa */
+     return fb.f;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI float __aeabi_ul2f(du_int a) {
++  return __floatundisf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatunsidf.c b/lib/builtins/floatunsidf.c
+index 445e18041..8d4807194 100644
+--- a/lib/builtins/floatunsidf.c
++++ b/lib/builtins/floatunsidf.c
+@@ -18,8 +18,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(ui2d, floatunsidf)
+-
+ COMPILER_RT_ABI fp_t
+ __floatunsidf(unsigned int a) {
+     
+@@ -40,3 +38,10 @@ __floatunsidf(unsigned int a) {
+     result += (rep_t)(exponent + exponentBias) << significandBits;
+     return fromRep(result);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_ui2d(unsigned int a) {
++  return __floatunsidf(a);
++}
++#endif
++
+diff --git a/lib/builtins/floatunsisf.c b/lib/builtins/floatunsisf.c
+index ea6f161ad..f194c046d 100644
+--- a/lib/builtins/floatunsisf.c
++++ b/lib/builtins/floatunsisf.c
+@@ -18,8 +18,6 @@
+ 
+ #include "int_lib.h"
+ 
+-ARM_EABI_FNALIAS(ui2f, floatunsisf)
+-
+ COMPILER_RT_ABI fp_t
+ __floatunsisf(unsigned int a) {
+     
+@@ -48,3 +46,10 @@ __floatunsisf(unsigned int a) {
+     result += (rep_t)(exponent + exponentBias) << significandBits;
+     return fromRep(result);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_ui2f(unsigned int a) {
++  return __floatunsisf(a);
++}
++#endif
++
+diff --git a/lib/builtins/int_lib.h b/lib/builtins/int_lib.h
+index 8a202dde7..9a8092d50 100644
+--- a/lib/builtins/int_lib.h
++++ b/lib/builtins/int_lib.h
+@@ -30,18 +30,17 @@
+ /* ABI macro definitions */
+ 
+ #if __ARM_EABI__
+-# define ARM_EABI_FNALIAS(aeabi_name, name)         \
+-  void __aeabi_##aeabi_name() __attribute__((alias("__" #name)));
+ # ifdef COMPILER_RT_ARMHF_TARGET
+ #   define COMPILER_RT_ABI
+ # else
+-#   define COMPILER_RT_ABI __attribute__((pcs("aapcs")))
++#   define COMPILER_RT_ABI __attribute__((__pcs__("aapcs")))
+ # endif
+ #else
+-# define ARM_EABI_FNALIAS(aeabi_name, name)
+ # define COMPILER_RT_ABI
+ #endif
+ 
++#define AEABI_RTABI __attribute__((__pcs__("aapcs")))
++
+ #ifdef _MSC_VER
+ #define ALWAYS_INLINE __forceinline
+ #define NOINLINE __declspec(noinline)
+diff --git a/lib/builtins/lshrdi3.c b/lib/builtins/lshrdi3.c
+index 6b1ea923b..becbbef4e 100644
+--- a/lib/builtins/lshrdi3.c
++++ b/lib/builtins/lshrdi3.c
+@@ -18,8 +18,6 @@
+ 
+ /* Precondition:  0 <= b < bits_in_dword */
+ 
+-ARM_EABI_FNALIAS(llsr, lshrdi3)
+-
+ COMPILER_RT_ABI di_int
+ __lshrdi3(di_int a, si_int b)
+ {
+@@ -41,3 +39,10 @@ __lshrdi3(di_int a, si_int b)
+     }
+     return result.all;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int __aeabi_llsr(di_int a, si_int b) {
++  return __lshrdi3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/muldf3.c b/lib/builtins/muldf3.c
+index 1eb733849..59a60190e 100644
+--- a/lib/builtins/muldf3.c
++++ b/lib/builtins/muldf3.c
+@@ -15,8 +15,13 @@
+ #define DOUBLE_PRECISION
+ #include "fp_mul_impl.inc"
+ 
+-ARM_EABI_FNALIAS(dmul, muldf3)
+-
+ COMPILER_RT_ABI fp_t __muldf3(fp_t a, fp_t b) {
+     return __mulXf3__(a, b);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_dmul(fp_t a, fp_t b) {
++  return __muldf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/muldi3.c b/lib/builtins/muldi3.c
+index 2dae44c11..6818a9e2f 100644
+--- a/lib/builtins/muldi3.c
++++ b/lib/builtins/muldi3.c
+@@ -40,8 +40,6 @@ __muldsi3(su_int a, su_int b)
+ 
+ /* Returns: a * b */
+ 
+-ARM_EABI_FNALIAS(lmul, muldi3)
+-
+ COMPILER_RT_ABI di_int
+ __muldi3(di_int a, di_int b)
+ {
+@@ -54,3 +52,10 @@ __muldi3(di_int a, di_int b)
+     r.s.high += x.s.high * y.s.low + x.s.low * y.s.high;
+     return r.all;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI di_int __aeabi_lmul(di_int a, di_int b) {
++  return __muldi3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/mulsf3.c b/lib/builtins/mulsf3.c
+index 478b3bc0e..f141af1ac 100644
+--- a/lib/builtins/mulsf3.c
++++ b/lib/builtins/mulsf3.c
+@@ -15,8 +15,13 @@
+ #define SINGLE_PRECISION
+ #include "fp_mul_impl.inc"
+ 
+-ARM_EABI_FNALIAS(fmul, mulsf3)
+-
+ COMPILER_RT_ABI fp_t __mulsf3(fp_t a, fp_t b) {
+     return __mulXf3__(a, b);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_fmul(fp_t a, fp_t b) {
++  return __mulsf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/negdf2.c b/lib/builtins/negdf2.c
+index d634b421c..5e2544cdb 100644
+--- a/lib/builtins/negdf2.c
++++ b/lib/builtins/negdf2.c
+@@ -14,9 +14,14 @@
+ #define DOUBLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(dneg, negdf2)
+-
+ COMPILER_RT_ABI fp_t
+ __negdf2(fp_t a) {
+     return fromRep(toRep(a) ^ signBit);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_dneg(fp_t a) {
++  return __negdf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/negsf2.c b/lib/builtins/negsf2.c
+index 29c17be41..f90b34335 100644
+--- a/lib/builtins/negsf2.c
++++ b/lib/builtins/negsf2.c
+@@ -14,9 +14,14 @@
+ #define SINGLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(fneg, negsf2)
+-
+ COMPILER_RT_ABI fp_t
+ __negsf2(fp_t a) {
+     return fromRep(toRep(a) ^ signBit);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_fneg(fp_t a) {
++  return __negsf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/subdf3.c b/lib/builtins/subdf3.c
+index 7a79e5e77..38340dfab 100644
+--- a/lib/builtins/subdf3.c
++++ b/lib/builtins/subdf3.c
+@@ -15,11 +15,15 @@
+ #define DOUBLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(dsub, subdf3)
+-
+ // Subtraction; flip the sign bit of b and add.
+ COMPILER_RT_ABI fp_t
+ __subdf3(fp_t a, fp_t b) {
+     return __adddf3(a, fromRep(toRep(b) ^ signBit));
+ }
+ 
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_dsub(fp_t a, fp_t b) {
++  return __subdf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/subsf3.c b/lib/builtins/subsf3.c
+index c3b85144a..34276b144 100644
+--- a/lib/builtins/subsf3.c
++++ b/lib/builtins/subsf3.c
+@@ -15,11 +15,15 @@
+ #define SINGLE_PRECISION
+ #include "fp_lib.h"
+ 
+-ARM_EABI_FNALIAS(fsub, subsf3)
+-
+ // Subtraction; flip the sign bit of b and add.
+ COMPILER_RT_ABI fp_t
+ __subsf3(fp_t a, fp_t b) {
+     return __addsf3(a, fromRep(toRep(b) ^ signBit));
+ }
+ 
++#if defined(__ARM_EABI__)
++AEABI_RTABI fp_t __aeabi_fsub(fp_t a, fp_t b) {
++  return __subsf3(a, b);
++}
++#endif
++
+diff --git a/lib/builtins/truncdfhf2.c b/lib/builtins/truncdfhf2.c
+index 17195cd9e..4bb71aa17 100644
+--- a/lib/builtins/truncdfhf2.c
++++ b/lib/builtins/truncdfhf2.c
+@@ -11,8 +11,13 @@
+ #define DST_HALF
+ #include "fp_trunc_impl.inc"
+ 
+-ARM_EABI_FNALIAS(d2h, truncdfhf2)
+-
+ COMPILER_RT_ABI uint16_t __truncdfhf2(double a) {
+     return __truncXfYf2__(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI uint16_t __aeabi_d2h(double a) {
++  return __truncdfhf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/truncdfsf2.c b/lib/builtins/truncdfsf2.c
+index 46ec11dcc..8bf58bb23 100644
+--- a/lib/builtins/truncdfsf2.c
++++ b/lib/builtins/truncdfsf2.c
+@@ -11,8 +11,13 @@
+ #define DST_SINGLE
+ #include "fp_trunc_impl.inc"
+ 
+-ARM_EABI_FNALIAS(d2f, truncdfsf2)
+-
+ COMPILER_RT_ABI float __truncdfsf2(double a) {
+     return __truncXfYf2__(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI float __aeabi_d2f(double a) {
++  return __truncdfsf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/truncsfhf2.c b/lib/builtins/truncsfhf2.c
+index 9d61895bf..f6ce1fa1d 100644
+--- a/lib/builtins/truncsfhf2.c
++++ b/lib/builtins/truncsfhf2.c
+@@ -11,8 +11,6 @@
+ #define DST_HALF
+ #include "fp_trunc_impl.inc"
+ 
+-ARM_EABI_FNALIAS(f2h, truncsfhf2)
+-
+ // Use a forwarding definition and noinline to implement a poor man's alias,
+ // as there isn't a good cross-platform way of defining one.
+ COMPILER_RT_ABI NOINLINE uint16_t __truncsfhf2(float a) {
+@@ -22,3 +20,10 @@ COMPILER_RT_ABI NOINLINE uint16_t __truncsfhf2(float a) {
+ COMPILER_RT_ABI uint16_t __gnu_f2h_ieee(float a) {
+     return __truncsfhf2(a);
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI uint16_t __aeabi_f2h(float a) {
++  return __truncsfhf2(a);
++}
++#endif
++
+diff --git a/lib/builtins/udivsi3.c b/lib/builtins/udivsi3.c
+index 5d0140cc3..8eccf102c 100644
+--- a/lib/builtins/udivsi3.c
++++ b/lib/builtins/udivsi3.c
+@@ -18,8 +18,6 @@
+ 
+ /* Translated from Figure 3-40 of The PowerPC Compiler Writer's Guide */
+ 
+-ARM_EABI_FNALIAS(uidiv, udivsi3)
+-
+ /* This function should not call __divsi3! */
+ COMPILER_RT_ABI su_int
+ __udivsi3(su_int n, su_int d)
+@@ -64,3 +62,10 @@ __udivsi3(su_int n, su_int d)
+     q = (q << 1) | carry;
+     return q;
+ }
++
++#if defined(__ARM_EABI__)
++AEABI_RTABI su_int __aeabi_uidiv(su_int n, su_int d) {
++  return __udivsi3(n, d);
++}
++#endif
++

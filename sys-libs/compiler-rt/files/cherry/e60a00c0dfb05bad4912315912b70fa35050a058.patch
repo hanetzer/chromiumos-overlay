@@ -1,0 +1,21 @@
+commit e60a00c0dfb05bad4912315912b70fa35050a058
+Author: Saleem Abdulrasool <compnerd@compnerd.org>
+Date:   Tue May 16 18:19:44 2017 +0000
+
+    builtins: one more case of a missing header
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/compiler-rt/trunk@303195 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/builtins/arm/aeabi_div0.c b/lib/builtins/arm/aeabi_div0.c
+index 6cc3505dc..dc3031326 100644
+--- a/lib/builtins/arm/aeabi_div0.c
++++ b/lib/builtins/arm/aeabi_div0.c
+@@ -26,6 +26,8 @@
+  * line.
+  */
+ 
++#include "../int_lib.h"
++
+ /* provide an unused declaration to pacify pendantic compilation */
+ extern unsigned char declaration;
+ 

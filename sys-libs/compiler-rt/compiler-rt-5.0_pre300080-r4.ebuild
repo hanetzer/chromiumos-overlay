@@ -42,10 +42,18 @@ src_unpack() {
 src_prepare() {
 	# Cherry-picks
 	CHERRIES=""
-	if  ! use llvm-next ; then
-		# No llvm-next cherry-picks right now.
+	if use llvm-next ; then
+		CHERRIES+=" 96eed06b6e57a3c8e2593e73d6f33bdd407f43b9 " # r303112
+		CHERRIES+=" 99e2e66daf8d334858cec4f6e8e7a39d6a535a55 " # r303188
+		CHERRIES+=" c74078b0a058c70de3504cb2533352ee48e71836 " # r303190
+		CHERRIES+=" e60a00c0dfb05bad4912315912b70fa35050a058 " # r303195
+	else
 		CHERRIES+=" 385d9f6d5abb6b2d4ea27e59ac1e7b0e20d54f7c " # r300531
 		CHERRIES+=" 46a48e5918ab64e40ed8b929fdb8d2ff4117cfa1 " # r301243
+		CHERRIES+=" 96eed06b6e57a3c8e2593e73d6f33bdd407f43b9 " # r303112
+		CHERRIES+=" 99e2e66daf8d334858cec4f6e8e7a39d6a535a55 " # r303188
+		CHERRIES+=" c74078b0a058c70de3504cb2533352ee48e71836 " # r303190
+		CHERRIES+=" e60a00c0dfb05bad4912315912b70fa35050a058 " # r303195
 	fi
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -59,8 +67,6 @@ src_prepare() {
 		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	fi
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
-	# Builtins should have AAPCS ABI.
-	epatch "${FILESDIR}"/compiler-rt-arm-aapcs-abi.patch
 }
 
 src_configure() {
