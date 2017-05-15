@@ -1,9 +1,8 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-fs/ntfs3g/ntfs3g-2012.1.15-r1.ebuild,v 1.11 2012/04/16 17:51:58 ssuominen Exp $
 
-EAPI=4
-inherit linux-info eutils user
+EAPI=5
+inherit eutils linux-info udev user toolchain-funcs libtool
 
 MY_PN=${PN/3g/-3g}
 MY_P=${MY_PN}_ntfsprogs-${PV}
@@ -13,24 +12,33 @@ HOMEPAGE="http://www.tuxera.com/community/ntfs-3g-download/"
 SRC_URI="http://tuxera.com/opensource/${MY_P}.tgz"
 
 LICENSE="GPL-2"
-SLOT="0"
+# The subslot matches the SONAME major #.
+SLOT="0/87"
 KEYWORDS="*"
-IUSE="acl crypt debug +external-fuse extras +ntfsprogs static-libs suid +udev xattr"
+IUSE="acl debug +external-fuse ntfsdecrypt +ntfsprogs static-libs suid xattr"
 
-RDEPEND="!<sys-apps/util-linux-2.19
+RDEPEND="!<sys-apps/util-linux-2.20.1-r2
 	!sys-fs/ntfsprogs
-	crypt? (
-		>=dev-libs/libgcrypt-1.2.2
+	ntfsdecrypt? (
+		>=dev-libs/libgcrypt-1.2.2:0
 		>=net-libs/gnutls-1.4.4
-		)
-	external-fuse? ( >=sys-fs/fuse-2.8.0 )"
+	)
+	external-fuse? (
+		>=sys-fs/fuse-2.8.0
+		<sys-fs/fuse-3.0.0_pre
+	)"
 DEPEND="${RDEPEND}
-	dev-util/pkgconfig
-	sys-apps/attr"
+	sys-apps/attr
+	virtual/pkgconfig"
 
-S=${WORKDIR}/${MY_P}
+S="${WORKDIR}/${MY_P}"
 
 DOCS="AUTHORS ChangeLog CREDITS README"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-2014.2.15-no-split-usr.patch
+	"${FILESDIR}"/${PN}-2016.2.22-sysmacros.patch #580136
+)
 
 pkg_setup() {
 	if use external-fuse && use kernel_linux; then
@@ -50,23 +58,37 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-2014.2.15-no-split-usr.patch
+	default
+	# Keep the symlinks in the same place we put the main binaries.
+	# Having them in / when all the progs are in /usr is pointless.
+	sed -i \
+		-e 's:/sbin:$(sbindir):g' \
+		{ntfsprogs,src}/Makefile.in || die #578336
+	# Note: patches apply to Makefile.in, so don't run autotools here.
+	elibtoolize
 }
 
 src_configure() {
+	# The following line is commented out as we test ntfs3g built with
+	# the gold linker and it works on Chrome OS.
+	#
+	# tc-ld-disable-gold
 	econf \
-		--exec-prefix="${EPREFIX}/usr" \
-		--docdir="${EPREFIX}/usr/share/doc/${PF}" \
+		--prefix="${EPREFIX}"/usr \
+		--exec-prefix="${EPREFIX}"/usr \
+		--docdir="${EPREFIX}"/usr/share/doc/${PF} \
 		$(use_enable debug) \
 		--enable-ldscript \
 		--disable-ldconfig \
 		$(use_enable acl posix-acls) \
 		$(use_enable xattr xattr-mappings) \
-		$(use_enable crypt crypto) \
+		$(use_enable ntfsdecrypt crypto) \
 		$(use_enable ntfsprogs) \
-		$(use_enable extras) \
+		$(use_enable ntfsprogs quarantined) \
+		--without-uuid \
+		--enable-extras \
 		$(use_enable static-libs static) \
-		--with-fuse=$(use external-fuse && echo external || echo internal)
+		--with-fuse=$(usex external-fuse external internal)
 }
 
 src_install() {
@@ -79,17 +101,8 @@ src_install() {
 		fperms u=rwxs,g=x,o= /usr/bin/${MY_PN}
 	fi
 
-	if use udev; then
-		insinto /lib/udev/rules.d
-		doins "${FILESDIR}"/99-ntfs3g.rules
-	fi
-
-	find "${ED}" -name '*.la' -exec rm -f {} +
-
-	# http://bugs.gentoo.org/398069
-	dodir /usr/sbin
-	mv -vf "${D}"/sbin/* "${ED}"/usr/sbin || die
-	rm -rf "${D}"/sbin
+	udev_dorules "${FILESDIR}"/99-ntfs3g.rules
+	prune_libtool_files
 
 	dosym mount.ntfs-3g /usr/sbin/mount.ntfs #374197
 }
