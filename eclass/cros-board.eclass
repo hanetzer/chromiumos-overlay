@@ -183,6 +183,7 @@ ALL_BOARDS=(
 	nasher
 	newbie
 	ninja
+	novato
 	nyan
 	nyan_big
 	nyan_blaze
