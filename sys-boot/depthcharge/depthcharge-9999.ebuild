@@ -15,8 +15,6 @@ KEYWORDS="~*"
 IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync unibuild"
 
 DEPEND="sys-boot/libpayload"
-# TODO(jwerner): Remove hacky, pointless RDEPEND
-RDEPEND="sys-apps/coreboot-utils"
 
 CROS_WORKON_LOCALNAME=("../platform/depthcharge" "../platform/vboot_reference")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
