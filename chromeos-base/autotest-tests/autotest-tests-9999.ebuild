@@ -96,7 +96,6 @@ CLIENT_IUSE_TESTS="
 	+tests_firmware_VbootCrypto
 	+tests_flaky_test
 	+tests_hardware_Badblocks
-	+tests_hardware_ch7036
 	+tests_hardware_DiskSize
 	+tests_hardware_EC
 	+tests_hardware_EepromWriteProtect
