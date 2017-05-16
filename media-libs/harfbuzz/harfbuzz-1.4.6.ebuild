@@ -1,6 +1,5 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/harfbuzz/harfbuzz-0.9.41.ebuild,v 1.1 2015/07/05 08:18:38 pacho Exp $
 
 EAPI=5
 
@@ -9,18 +8,19 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/harfbuzz"
 
 PYTHON_COMPAT=( python2_7 )
 
-inherit eutils libtool multilib-minimal python-any-r1
+inherit eutils flag-o-matic libtool multilib-minimal python-any-r1
+#inherit eutils libtool multilib-minimal python-any-r1 xdg-utils
 
 DESCRIPTION="An OpenType text shaping engine"
-HOMEPAGE="http://www.freedesktop.org/wiki/Software/HarfBuzz"
-[[ ${PV} == 9999 ]] || SRC_URI="http://www.freedesktop.org/software/${PN}/release/${P}.tar.bz2"
+HOMEPAGE="https://www.freedesktop.org/wiki/Software/HarfBuzz"
+[[ ${PV} == 9999 ]] || SRC_URI="https://www.freedesktop.org/software/${PN}/release/${P}.tar.bz2"
 
 LICENSE="Old-MIT ISC icu"
 SLOT="0/0.9.18" # 0.9.18 introduced the harfbuzz-icu split; bug #472416
 [[ ${PV} == 9999 ]] || \
 KEYWORDS="*"
 
-IUSE="+cairo fontconfig +glib +graphite icu +introspection static-libs test +truetype"
+IUSE="+cairo debug fontconfig +glib +graphite icu +introspection static-libs test +truetype"
 REQUIRED_USE="introspection? ( glib )"
 
 RDEPEND="
@@ -29,7 +29,7 @@ RDEPEND="
 	glib? ( >=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}] )
 	graphite? ( >=media-gfx/graphite2-1.2.1:=[${MULTILIB_USEDEP}] )
 	icu? ( >=dev-libs/icu-51.2-r1:=[${MULTILIB_USEDEP}] )
-	introspection? ( >=dev-libs/gobject-introspection-1.34 )
+	introspection? ( >=dev-libs/gobject-introspection-1.34:= )
 	truetype? ( >=media-libs/freetype-2.5.0.1:2=[${MULTILIB_USEDEP}] )
 "
 DEPEND="${RDEPEND}
@@ -46,9 +46,17 @@ DEPEND="${RDEPEND}
 
 pkg_setup() {
 	use test && python-any-r1_pkg_setup
+	if ! use debug ; then
+		append-cppflags -DNDEBUG
+		append-cppflags -DHB_NDEBUG
+	fi
 }
 
 src_prepare() {
+	default
+
+	xdg_environment_reset
+
 	if [[ ${CHOST} == *-darwin* || ${CHOST} == *-solaris* ]] ; then
 		# on Darwin/Solaris we need to link with g++, like automake defaults
 		# to, but overridden by upstream because on Linux this is not
@@ -69,7 +77,6 @@ src_prepare() {
 
 	# failing test, https://bugs.freedesktop.org/show_bug.cgi?id=89190
 	sed -e 's#tests/arabic-fallback-shaping.tests##' -i test/shaping/Makefile.in || die "sed failed"
-
 }
 
 multilib_src_configure() {
