@@ -58,13 +58,6 @@ src_prepare() {
 	# TODO(jshin): Evaluate the impact of disabling stem-darkening.
 	epatch "${FILESDIR}"/${PN}-2.6.2-enable-cff-stem-darkening.patch
 
-	# Apply additional changes beyond 2.7.1 up to e432ebf in the upstream.
-	epatch "${FILESDIR}"/${PN}-2.7.1-e432ebf.patch
-
-	# Fix a couple of constants so that fontconfig is happy.
-	# To be removed, when updating to 2.7.2.
-	epatch "${FILESDIR}"/${PN}-2.7.1-ttnames.patch
-
 	# Will be the new default for >=freetype-2.7.0
 	disable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  2"
 
