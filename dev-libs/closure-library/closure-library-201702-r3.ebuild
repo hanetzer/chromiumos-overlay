@@ -5,7 +5,7 @@ EAPI=4
 
 DESCRIPTION="A broad, well-tested, modular, and cross-browser JavaScript library"
 HOMEPAGE="https://developers.google.com/closure/library/"
-GIT_REV="2a79f2bc6b43115631fc6a1000e027c9d863a24d"
+GIT_REV="7744b75c637054ed38b14901d091ec3196b2ef9b"
 SRC_URI="https://github.com/google/${PN}/archive/${GIT_REV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="Apache-2.0"
