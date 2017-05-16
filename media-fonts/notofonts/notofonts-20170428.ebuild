@@ -22,6 +22,6 @@ FONTDIR="/usr/share/fonts/noto"
 RESTRICT="strip binchecks"
 
 src_install() {
-        # call src_install() in font.eclass.
+	# call src_install() in font.eclass.
 	font_src_install
 }
