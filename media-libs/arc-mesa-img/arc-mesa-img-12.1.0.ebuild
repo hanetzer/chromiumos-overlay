@@ -182,6 +182,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0537-FROMLIST-egl-android-Cancel-any-outstanding-ANativeB.patch
 	epatch "${FILESDIR}"/0538-FROMLIST-egl-android-Mark-surface-as-lost-when-deque.patch
 	epatch "${FILESDIR}"/0539-CHROMIUM-HACK-egl-Change-error-codes-for-Android-CTS.patch
+	epatch "${FILESDIR}"/0540-FROMLIST-egl-Partially-revert-23c86c74-fix-eglMakeCu.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch

@@ -1,0 +1,109 @@
+From b1ce10c51988e32854bad3709b09d7bbe083c78f Mon Sep 17 00:00:00 2001
+From: Chad Versace <chadversary@chromium.org>
+Date: Mon, 15 May 2017 16:04:04 -0700
+Subject: [PATCH] FROMLIST: egl: Partially revert 23c86c74, fix eglMakeCurrent
+
+Fixes regressions in Android CtsVerifier.apk on Intel Chrome OS devices
+due to incorrect error handling in eglMakeCurrent. See below on how to
+confirm the regression is fixed.
+
+This partially reverts
+
+    commit 23c86c74cc450a23848b85cfe914376caede1cdf
+    Author:  Chad Versace <chadversary@chromium.org>
+    Subject: egl: Emit error when EGLSurface is lost
+
+The bad commit added the error handling below. #2 and #3 were right,
+but #1 was wrong.
+
+    1. eglMakeCurrent emits EGL_BAD_CURRENT_SURFACE if the calling
+       thread has unflushed commands and either previous surface is no
+       longer valid.
+
+    2. eglMakeCurrent emits EGL_BAD_NATIVE_WINDOW if either new surface
+       is no longer valid.
+
+    3. eglSwapBuffers emits EGL_BAD_NATIVE_WINDOW if the swapped surface
+       is no longer valid.
+
+Whe I wrote the bad commit, I misunderstood the EGL spec language
+for #1. The correct behavior is, if I understand correctly now:
+
+    - Assume a bound EGLSurface is no longer valid.
+    - Assume the bound EGLContext has unflushed commands.
+    - The app calls eglMakeCurrent. The spec requires eglMakeCurrent to
+      implicitly flush. After flushing, eglMakeCurrent emits
+      EGL_BAD_CURRENT_SURFACE and does *not* alter the thread's
+      current bindings.
+    - If the app calls eglMakeCurrent again, and the app inserts no
+      commands into the GL command stream between the two eglMakeCurrent
+      calls, then this second eglMakeCurrent succeeds without emitting an
+      error.
+
+How to confirm this fixes the regression:
+
+    Download android-cts-verifier-7.1_r5-linux_x86-x86.zip from
+    source.android.com, unpack, and `adb install CtsVerifier.apk`.
+    Run test "Projection Cube". Click the Pass button (a
+    green checkmark). Then run test "Projection Widget". Confirm that
+    widgets are visible and that logcat does not complain about
+    eglMakeCurrent failure.
+
+    Then confirm there are no regressions in the cts-traded module that
+    commit 263243b1 fixed:
+
+        cts-tf > run cts --skip-preconditions --skip-device-info \
+                 -m CtsCameraTestCases \
+                 -t android.hardware.camera2.cts.RobustnessTest
+
+    Tested with Chrome OS board "reef".
+
+BUG=b:38210858
+TEST=See section "How to confirm..." above.
+
+Cc: "17.1" <mesa-stable@lists.freedesktop.org>
+Cc: Tomasz Figa <tfiga@chromium.org>
+Cc: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Emil Velikov <emil.velikov@collabora.com>
+Fixes: 23c86c74 (egl: Emit error when EGLSurface is lost)
+
+(am from https://patchwork.freedesktop.org/patch/156502/)
+Archived-at: https://lists.freedesktop.org/archives/mesa-dev/2017-May/155759.html
+Change-Id: I8da28d1b283044bb3c2fa30817d1825cae587ede
+---
+ src/egl/main/eglapi.c | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 9b3b9087655..7a99eccf1a6 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -703,25 +703,6 @@ eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
+          RETURN_EGL_ERROR(disp, EGL_BAD_MATCH, EGL_FALSE);
+    }
+ 
+-   _EGLThreadInfo *t =_eglGetCurrentThread();
+-   _EGLContext *old_ctx = t->CurrentContext;
+-   _EGLSurface *old_draw_surf = old_ctx ? old_ctx->DrawSurface : NULL;
+-   _EGLSurface *old_read_surf = old_ctx ? old_ctx->ReadSurface : NULL;
+-
+-   /* From the EGL 1.5 spec, Section 3.7.3 Binding Context and Drawables:
+-    *
+-    *    If the previous context of the calling thread has unflushed commands,
+-    *    and the previous surface is no longer valid, an
+-    *    EGL_BAD_CURRENT_SURFACE error is generated.
+-    *
+-    * It's difficult to check if the context has unflushed commands, but it's
+-    * easy to check if the surface is no longer valid.
+-    */
+-   if (old_draw_surf && old_draw_surf->Lost)
+-      RETURN_EGL_ERROR(disp, EGL_BAD_CURRENT_SURFACE, EGL_FALSE);
+-   if (old_read_surf && old_read_surf->Lost)
+-      RETURN_EGL_ERROR(disp, EGL_BAD_CURRENT_SURFACE, EGL_FALSE);
+-
+    /*    If a native window underlying either draw or read is no longer valid,
+     *    an EGL_BAD_NATIVE_WINDOW error is generated.
+     */
+-- 
+2.13.0.303.g4ebf302169-goog
+
