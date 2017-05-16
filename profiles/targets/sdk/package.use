@@ -14,6 +14,7 @@ chromeos-base/update_engine delta_generator
 net-misc/openssh kerberos
 sys-apps/flashrom dediprog ft2232_spi serprog
 dev-lang/python gdbm
+sys-fs/lvm2 -thin
 
 # qemu is statically linked with glib when compiled for the host and thus
 # requires glib (and transitively, libpcre) to be compiled with static-libs.
