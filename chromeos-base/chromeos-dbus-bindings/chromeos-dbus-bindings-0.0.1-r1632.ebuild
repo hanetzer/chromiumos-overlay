@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("da100acfcab1c909f6694fadff0e58100d7dfaef" "319acf9c7e9bfca277781a763217f757ab3be73e")
-CROS_WORKON_TREE=("a9130f1cdc12543bffe405904592daae94ba307f" "e87a3f0631d40c4cd159ebd5a0fde500cf73c62b")
+CROS_WORKON_COMMIT=("da100acfcab1c909f6694fadff0e58100d7dfaef" "0f36410cec3fe0c95afa666f17198706c7669656")
+CROS_WORKON_TREE=("a9130f1cdc12543bffe405904592daae94ba307f" "5ee6a646412b687cc623ef48edfde167ffb7b84a")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/dbus-binding-generator")
 CROS_WORKON_LOCALNAME=("platform2" "aosp/external/dbus-binding-generator")
