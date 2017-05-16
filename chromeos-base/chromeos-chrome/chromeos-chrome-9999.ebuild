@@ -285,6 +285,7 @@ set_build_args() {
 		is_clang=$(usetf clang)
 		cros_host_is_clang=$(usetf clang)
 		clang_use_chrome_plugins=false
+		use_thin_lto=$(usetf thinlto)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.
@@ -794,10 +795,9 @@ src_configure() {
 	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
-	if use clang && use gold && use thinlto; then
+	if use thinlto; then
 		export RANLIB="llvm-ranlib"
 		export AR="llvm-ar"
-		append-flags -flto=thin
 	fi
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
