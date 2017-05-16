@@ -22,6 +22,10 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
+# libweave-test, which depends on gmock, is built unconditionally, so the gmock
+# dependency is always needed.
+DEPEND="dev-cpp/gmock"
+
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
