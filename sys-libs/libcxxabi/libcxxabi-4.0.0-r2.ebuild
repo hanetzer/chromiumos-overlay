@@ -18,7 +18,7 @@ SRC_URI="http://releases.llvm.org/${PV/_//}/${P/_/}.src.tar.xz
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+libunwind +static-libs test"
+IUSE="libunwind +static-libs test"
 
 
 RDEPEND="
@@ -61,6 +61,7 @@ multilib_src_configure() {
 		append-flags -mfpu=neon
 	fi
 
+	append-flags -I"${WORKDIR}/libunwind-${PV/_/}.src/include"
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
 		-DLIBCXXABI_LIBDIR_SUFFIX=${libdir#lib}
@@ -71,14 +72,6 @@ multilib_src_configure() {
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}"
 
 		-DLIBCXXABI_LIBCXX_INCLUDES="${WORKDIR}"/libcxx/include
-		# upstream is omitting standard search path for this
-		# probably because gcc & clang are bundling their own unwind.h
-		-DLIBCXXABI_LIBUNWIND_INCLUDES="${EPREFIX}"/usr/include
-		-DLIBCXXABI_LIBUNWIND_INCLUDES_INTERNAL="${WORKDIR}/libunwind-${PV/_/}.src/include"
-
-		# this only needs to exist, it does not have to make sense
-		# FIXME: remove this once https://reviews.llvm.org/D25314 is merged
-		-DLIBCXXABI_LIBUNWIND_SOURCES="${WORKDIR}/libunwind-${PV/_/}.src/"
 	)
 	if use test; then
 		mycmakeargs+=(
