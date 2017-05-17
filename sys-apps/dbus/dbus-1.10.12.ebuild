@@ -31,10 +31,12 @@ CDEPEND="
 	)
 "
 DEPEND="${CDEPEND}
-	app-text/xmlto
-	app-text/docbook-xml-dtd:4.4
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
+	doc? (
+		app-doc/doxygen
+		app-text/xmlto
+		app-text/docbook-xml-dtd:4.4
+	)
 	test? (
 		>=dev-libs/glib-2.36:2
 		${PYTHON_DEPS}
@@ -150,7 +152,7 @@ multilib_src_configure() {
 
 	if multilib_is_native_abi; then
 		docconf=(
-			--enable-xml-docs
+			$(use_enable doc xml-docs)
 			$(use_enable doc doxygen-docs)
 		)
 	else

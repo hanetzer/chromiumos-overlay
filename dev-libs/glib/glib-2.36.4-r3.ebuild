@@ -15,7 +15,7 @@ SRC_URI="${SRC_URI}
 
 LICENSE="LGPL-2+"
 SLOT="2"
-IUSE="cros_host debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
+IUSE="cros_host doc debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
 KEYWORDS="*"
 
 # FIXME: want libselinux[${MULTILIB_USEDEP}] - bug #480960
@@ -41,10 +41,12 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}
-	app-text/docbook-xml-dtd:4.1.2
-	>=dev-libs/libxslt-1.0
+	doc? (
+		app-text/docbook-xml-dtd:4.1.2
+		>=dev-libs/libxslt-1.0
+		>=dev-util/gtk-doc-am-1.15
+	)
 	>=sys-devel/gettext-0.11
-	>=dev-util/gtk-doc-am-1.15
 	systemtap? ( >=dev-util/systemtap-1.3 )
 	test? (
 		sys-devel/gdb
@@ -213,6 +215,8 @@ multilib_src_configure() {
 		$(use_enable systemtap dtrace) \
 		$(use_enable systemtap systemtap) \
 		$(use_enable test modular-tests) \
+		$(use_enable doc man) \
+		$(use_enable doc gtk-doc-html) \
 		--disable-compile-warnings \
 		--enable-man \
 		--with-pcre=internal \
@@ -220,7 +224,9 @@ multilib_src_configure() {
 }
 
 multilib_src_install_all() {
-	einstalldocs
+	if use doc ; then
+		einstalldocs
+	fi
 
 	if use utils ; then
 		python_replicate_script "${ED}"/usr/bin/gtester-report
