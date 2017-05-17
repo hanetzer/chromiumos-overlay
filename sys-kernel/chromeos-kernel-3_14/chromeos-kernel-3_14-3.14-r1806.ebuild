@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="cb4d184804a129a318145df789c4cbd43c1bf0db"
-CROS_WORKON_TREE="3a9e0cc735f835ec7ca53596815e03c425d0aa93"
+CROS_WORKON_COMMIT="afbf7a1671398bfa62d4c6eb4fa4d38fde4c1362"
+CROS_WORKON_TREE="8ef65d7b532720be54479f6d022f6b5b19c03fba"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v3.14"
 
