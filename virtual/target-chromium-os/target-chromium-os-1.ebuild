@@ -257,6 +257,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
 	kvm_host? (
+		chromeos-base/vm_launcher
 		net-fs/nfs-ganesha
 		sys-kernel/kvmtool
 	)
