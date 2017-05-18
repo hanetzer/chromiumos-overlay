@@ -33,9 +33,10 @@ src_configure() {
 	if [[ ${CATEGORY} == cross-armv7a* ]] ; then
 		append-flags -mfpu=neon
 	fi
-
+	local libdir=$(get_libdir)
 	local mycmakeargs=(
 		"${mycmakeargs[@]}"
+		-DLLVM_LIBDIR_SUFFIX=${libdir#lib}
 		-DLIBUNWIND_ENABLE_ASSERTIONS=$(usex debug)
 		-DLIBUNWIND_ENABLE_STATIC=$(usex static-libs)
 		-DLIBUNWIND_ENABLE_SHARED=$(usex shared-libs)

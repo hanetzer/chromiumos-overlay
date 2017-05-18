@@ -41,9 +41,6 @@ python_check_deps() {
 }
 
 pkg_setup() {
-	export ABI="default"
-	export MULTILIB_ABIS="default"
-	export DEFAULT_ABI="default"
 	setup_cross_toolchain
 	llvm_pkg_setup
 	use test && python-any-r1_pkg_setup
@@ -62,6 +59,7 @@ multilib_src_configure() {
 	fi
 
 	append-flags -I"${WORKDIR}/libunwind-${PV/_/}.src/include"
+	append-flags "-stdlib=libstdc++"
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
 		-DLIBCXXABI_LIBDIR_SUFFIX=${libdir#lib}

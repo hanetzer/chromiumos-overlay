@@ -9,6 +9,8 @@
 # Functions to set the right toolchains and install prefix for llvm
 # related libraries in crossdev stages.
 
+inherit multilib
+
 if [[ ${CATEGORY} == cross-* ]] ; then
 	DEPEND="
 		${CATEGORY}/binutils
@@ -42,4 +44,6 @@ setup_cross_toolchain() {
 		export CC="${CTARGET}-clang"
 		export CXX="${CTARGET}-clang++"
 	fi
+	unset ABI MULTILIB_ABIS DEFAULT_ABI
+	multilib_env ${CTARGET}
 }

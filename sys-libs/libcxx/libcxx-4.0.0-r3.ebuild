@@ -46,9 +46,7 @@ python_check_deps() {
 }
 
 pkg_setup() {
-	export ABI="default"
-	export MULTILIB_ABIS="default"
-	export DEFAULT_ABI="default"
+	setup_cross_toolchain
 	llvm_pkg_setup
 	use test && python-any-r1_pkg_setup
 
@@ -67,7 +65,6 @@ pkg_setup() {
 }
 
 multilib_src_configure() {
-	setup_cross_toolchain
 	local cxxabi cxxabi_incs
 	if use libcxxabi; then
 		cxxabi=libcxxabi
@@ -103,6 +100,7 @@ multilib_src_configure() {
 		fi
 	fi
 
+	append-flags "-stdlib=libstdc++"
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
 		-DLIBCXX_LIBDIR_SUFFIX=${libdir#lib}
