@@ -30,3 +30,7 @@ RDEPEND="${DEPEND}"
 src_install() {
 	dobin "${OUT}/hammerd"
 }
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}/unittest_runner"
+}
