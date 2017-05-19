@@ -42,7 +42,6 @@ RDEPEND="${DEPEND}
 	!cros_embedded? (
 		chromeos-base/common-assets
 		chromeos-base/swap-init
-		media-gfx/ply-image
 		sys-apps/chvt
 		sys-apps/smartmontools
 	)

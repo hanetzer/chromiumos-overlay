@@ -32,7 +32,6 @@ RECOVERY_DEPENDS="
 	chromeos-base/common-assets
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
-	media-gfx/ply-image
 	sys-apps/flashrom
 	sys-apps/pv
 	virtual/assets

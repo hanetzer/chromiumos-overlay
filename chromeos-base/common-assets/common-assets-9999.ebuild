@@ -21,7 +21,6 @@ RDEPEND="!<chromeos-base/chromeos-assets-0.0.2"
 # display_boot_message calls the pango-view program.
 RDEPEND+="
 	fonts? ( chromeos-base/chromeos-fonts )
-	media-gfx/ply-image
 	x11-libs/pango"
 
 REAL_CURSOR_NAMES="
