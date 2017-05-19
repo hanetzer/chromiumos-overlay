@@ -106,6 +106,12 @@ RDEPEND+=" sys-apps/util-linux"
 # Provides gcc runtime libs.
 RDEPEND+=" sys-libs/gcc-libs"
 
+# Provides libc++ libs.
+RDEPEND+="
+	sys-libs/libcxxabi
+	sys-libs/libcxx
+"
+
 # This should be dropped once we have converted to 'virtual/libc'.
 RDEPEND+=" sys-libs/timezone-data"
 
