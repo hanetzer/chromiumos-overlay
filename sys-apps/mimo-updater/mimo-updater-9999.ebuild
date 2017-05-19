@@ -21,7 +21,7 @@ RDEPEND="${DEPEND}"
 
 src_install() {
 	dosbin mimo-updater
-	udev_dorules conf/99-displaylink-usb.rules
+	udev_dorules conf/90-displaylink-usb.rules
 }
 
 pkg_preinst() {
