@@ -6,7 +6,7 @@ EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
 
-inherit autotools multilib eutils systemd python udev user cros-workon
+inherit autotools multilib eutils systemd python udev user libchrome cros-workon
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -23,6 +23,7 @@ CDEPEND="
 	virtual/udev
 	cups? ( net-print/cups )
 	readline? ( sys-libs/readline )
+	chromeos-base/metrics
 "
 DEPEND="${CDEPEND}
 	>=dev-util/pkgconfig-0.20
