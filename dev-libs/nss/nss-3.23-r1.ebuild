@@ -1,1 +1,0 @@
-nss-3.23.ebuild
