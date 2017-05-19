@@ -21,7 +21,7 @@ PKGDIR="/var/lib/portage/pkgs"
 PORT_LOGDIR="/var/log/portage"
 
 source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHOST.conf
-FULL_BINHOST="gs://chromeos-prebuilt/host/amd64/amd64-host/chroot-2017.05.18.103731/packages/"
+FULL_BINHOST="gs://chromeos-prebuilt/host/amd64/amd64-host/chroot-2017.05.19.013901/packages/"
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
 GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
