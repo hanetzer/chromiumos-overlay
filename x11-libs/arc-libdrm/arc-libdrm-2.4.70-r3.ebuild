@@ -64,7 +64,7 @@ src_configure() {
 		$(use_enable udev)
 		--disable-cairo-tests
 		"--prefix=${ARC_PREFIX}/vendor"
-		'--libdir=$(prefix)/lib'
+		'--libdir=${prefix}/lib'
 	)
 	xorg-2_src_configure
 }
