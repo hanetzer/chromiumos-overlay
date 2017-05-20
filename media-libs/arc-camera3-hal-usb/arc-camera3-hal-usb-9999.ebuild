@@ -12,7 +12,7 @@ DESCRIPTION="ARC USB camera HAL v3."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-USE="-asan"
+IUSE="-asan"
 RDEPEND="
 	chromeos-base/libbrillo
 	media-libs/arc-camera3-libcamera_metadata

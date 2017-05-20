@@ -12,7 +12,7 @@ DESCRIPTION="Android libcamera_metadata"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-USE="-asan"
+IUSE="-asan"
 
 RDEPEND=""
 
