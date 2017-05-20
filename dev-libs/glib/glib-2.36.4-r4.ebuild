@@ -218,7 +218,6 @@ multilib_src_configure() {
 		$(use_enable doc man) \
 		$(use_enable doc gtk-doc-html) \
 		--disable-compile-warnings \
-		--enable-man \
 		--with-pcre=internal \
 		--with-xml-catalog="${EPREFIX}/etc/xml/catalog"
 }
