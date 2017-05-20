@@ -105,4 +105,7 @@ src_install() {
 	prune_libtool_files
 
 	dosym mount.ntfs-3g /usr/sbin/mount.ntfs #374197
+
+	# Remove lowntfs-3g as it's not used on Chrome OS.
+	rm -f "${D}/usr/bin/lowntfs-3g" "${D}/usr/sbin/mount.lowntfs-3g"
 }
