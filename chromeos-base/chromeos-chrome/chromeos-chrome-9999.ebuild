@@ -402,9 +402,6 @@ set_build_args() {
 		BUILD_ARGS+=(
 			treat_warnings_as_errors=false
 		)
-		# The chrome build system will add -m32 for 32bit arches, and
-		# clang defaults to 64bit because our cros_sdk is 64bit default.
-		export CC="clang" CXX="clang++"
 	else
 		cros_use_gcc
 	fi
