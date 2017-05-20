@@ -140,9 +140,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-60.0.3103.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-60.0.3103.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-60.0.3103.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-60.0.3105.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-60.0.3105.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-60.0.3105.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -285,6 +285,7 @@ set_build_args() {
 		is_clang=$(usetf clang)
 		cros_host_is_clang=$(usetf clang)
 		clang_use_chrome_plugins=false
+		use_thin_lto=$(usetf thinlto)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.
@@ -293,6 +294,7 @@ set_build_args() {
 		system_libdir="$(get_libdir)"
 		pkg_config="$(tc-getPKG_CONFIG)"
 		target_os=chromeos
+		host_pkg_config="$(tc-getBUILD_PKG_CONFIG)"
 	)
 	use internal_gles_conform && BUILD_ARGS+=( internal_gles2_conform_tests=true )
 
@@ -400,9 +402,6 @@ set_build_args() {
 		BUILD_ARGS+=(
 			treat_warnings_as_errors=false
 		)
-		# The chrome build system will add -m32 for 32bit arches, and
-		# clang defaults to 64bit because our cros_sdk is 64bit default.
-		export CC="clang" CXX="clang++"
 	else
 		cros_use_gcc
 	fi
@@ -785,18 +784,13 @@ setup_compile_flags() {
 }
 
 src_configure() {
-	clang-setup-env
-	# Chrome handles sanitizer flags by itself; so the '-fsanitize=*' flag added
-	# by clang-setup-env is not needed. -- crbug.com/425390
-	filter-flags "-fsanitize=*"
 	tc-export CXX CC AR AS RANLIB STRIP
 	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
-	if use clang && use gold && use thinlto; then
+	if use thinlto; then
 		export RANLIB="llvm-ranlib"
 		export AR="llvm-ar"
-		append-flags -flto=thin
 	fi
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
