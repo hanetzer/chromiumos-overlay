@@ -4,13 +4,18 @@
 
 # Require EAPI 2 since we now require at least python-2.6 (for python 3
 # syntax support) which also requires EAPI 2.
-EAPI=2
+EAPI=5
 PYTHON_COMPAT=(
 	pypy
 	python3_2 python3_3 python3_4
 	python2_7
 )
 inherit eutils multilib
+
+CROS_WORKON_COMMIT="3ccfed9fd25d8e3c01e5be7d737e8d478fb46f70"
+CROS_WORKON_PROJECT="chromiumos/third_party/portage_tool"
+CROS_WORKON_LOCALNAME="portage_tool"
+inherit cros-workon
 
 DESCRIPTION="Portage is the package management and distribution system for Gentoo"
 HOMEPAGE="http://www.gentoo.org/proj/en/portage/index.xml"
@@ -96,8 +101,6 @@ prefix_src_archives() {
 PV_PL="2.1.2"
 PATCHVER_PL=""
 TARBALL_PV=${PV}
-SRC_URI="mirror://gentoo/${PN}-${TARBALL_PV}.tar.bz2
-	$(prefix_src_archives ${PN}-${TARBALL_PV}.tar.bz2)"
 
 PATCHVER=
 [[ $TARBALL_PV = $PV ]] || PATCHVER=$PV
@@ -218,6 +221,10 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# This file is normally generated while creating tarballs, but it doesn't
+	# exist in git based installs, so stub it out to avoid install failures.
+	touch ChangeLog
+
 	if [ -n "${PATCHVER}" ] ; then
 		if [[ -L $S/bin/ebuild-helpers/portageq ]] ; then
 			rm "$S/bin/ebuild-helpers/portageq" \
@@ -225,7 +232,6 @@ src_prepare() {
 		fi
 		epatch "${WORKDIR}/${PN}-${PATCHVER}.patch"
 	fi
-	epatch "${FILESDIR}/${PVR}.patch"
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION = .*/VERSION = \"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
