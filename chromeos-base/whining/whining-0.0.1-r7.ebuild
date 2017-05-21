@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="bcf721d62d6a4c4c162c63714371fa4349df53bc"
-CROS_WORKON_TREE="5a65d0cff3a631ac473770555f1f5322f7e41582"
+CROS_WORKON_COMMIT="da45130ec7005ffc53c423f9df5fb5eed3a77981"
+CROS_WORKON_TREE="9157ea7d8bf392a78d851f33c21e706826e96320"
 CROS_WORKON_PROJECT="chromiumos/third_party/whining"
 CROS_WORKON_LOCALNAME=../third_party/whining
 
