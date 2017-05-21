@@ -62,6 +62,7 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
+	qca-bt
 	rtl8168g-1
 	marvell-mwlwifi
 	marvell-pcie8897
@@ -95,6 +96,7 @@ LICENSE="
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
 	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
+	linux_firmware_qca-bt? ( LICENCE.atheros_firmware )
 	linux_firmware_rtl8168g-1? ( LICENCE.rtl_nic )
 	video_cards_radeon? ( LICENSE.radeon )
 	video_cards_amdgpu? ( LICENSE.amdgpu )
@@ -156,6 +158,7 @@ src_install() {
 	use_fw i915_bxt && doins_subdir i915/bxt*
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
+	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
