@@ -1,30 +1,31 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_SUBTREE="common-mk smogcheck"
+CROS_WORKON_INCREMENTAL_BUILD="1"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit cros-workon cros-debug multilib
 
 DESCRIPTION="TPM SmogCheck library"
-HOMEPAGE="http://www.chromium.org/"
-SRC_URI=""
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/smogcheck/"
+
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="-asan"
 KEYWORDS="~*"
-
-RDEPEND=""
-DEPEND="${RDEPEND}
-	sys-kernel/linux-headers"
+IUSE="-asan"
 
 src_unpack() {
 	cros-workon_src_unpack
 	S+="/smogcheck"
+}
+
+src_prepare() {
+	cros-workon_src_prepare
 }
 
 src_configure() {
@@ -32,14 +33,6 @@ src_configure() {
 	cros-workon_src_configure
 }
 
-src_compile() {
-	tc-export CC
-	cros-debug-add-NDEBUG
-
-	emake clean
-	emake
-}
-
 src_install() {
-	emake DESTDIR="${D}" install
+	emake DESTDIR="${D}" LIBDIR="$(get_libdir)" install
 }
