@@ -25,6 +25,9 @@ src_install() {
 	doins upstart/test-init/*.conf
 	dosbin upstart/test-init/job-filter
 
+	insinto /usr/share/cros
+	doins upstart/test-init/*_utils.sh
+
 	use X || rm -f "${D}"/etc/init/vnc.conf
 }
 
