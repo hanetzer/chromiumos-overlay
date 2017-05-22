@@ -49,7 +49,7 @@ src_compile() {
 	if use cr50_onboard; then
 		# Make sure to override environment setting for BOARD, if any.
 		emake -C extra/usb_updater clean
-		BOARD=cr50 emake -C extra/usb_updater
+		BOARD=cr50 emake -C extra/usb_updater usb_updater
 	fi
 	set_board
 	emake utils-host
