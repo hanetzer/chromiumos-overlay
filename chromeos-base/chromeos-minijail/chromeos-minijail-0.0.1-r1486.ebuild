@@ -11,7 +11,7 @@ CROS_WORKON_PROJECT="platform/external/minijail"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-debug cros-workon eutils toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS helper binary for restricting privs of services."
 HOMEPAGE="http://www.chromium.org/"
@@ -27,20 +27,16 @@ DEPEND="test? ( dev-cpp/gtest )
 	test? ( dev-cpp/gmock )
 	${RDEPEND}"
 
-src_compile() {
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export CCFLAGS="$CFLAGS"
+src_configure() {
+	cros-workon_src_configure
+}
 
+src_compile() {
 	# Only build the tools.
 	emake LIBDIR=$(get_libdir) USE_seccomp=$(usex seccomp)
 }
 
 src_test() {
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export CCFLAGS="$CFLAGS"
-
 	# TODO(crbug.com/689060): Re-enable on ARM.
 	if use x86 || use amd64 ; then
 		emake USE_SYSTEM_GTEST=yes tests
