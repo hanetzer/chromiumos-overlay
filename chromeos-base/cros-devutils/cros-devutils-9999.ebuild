@@ -64,10 +64,8 @@ src_install() {
 		# Repo and git bash completion.
 		insinto /usr/share/bash-completion
 		newins host/repo_bash_completion repo
-		local f
-		for f in git{,-prompt} repo; do
-			dosym /usr/share/bash-completion/${f} /etc/bash_completion.d/${f}
-		done
+		dosym /usr/share/bash-completion/repo /etc/bash_completion.d/repo
+		dosym /usr/share/bash-completion/completions/git /etc/bash_completion.d/git
 
 		insinto "$(python_get_sitedir)"
 		# Copy the python files in this directory except __init__.py
