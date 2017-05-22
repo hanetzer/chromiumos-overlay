@@ -21,6 +21,10 @@ DEPEND="
 RDEPEND="${DEPEND}
 	app-arch/unzip"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_install() {
 	dosbin huddly-updater
 	udev_dorules conf/99-huddly.rules
