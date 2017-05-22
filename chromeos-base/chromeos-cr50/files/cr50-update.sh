@@ -17,7 +17,7 @@ root="$1"
 
 logit() {
   # TODO(vbendeb): use proper logger invocation once logger is fixed.
-  logger "${script_name}[${pid}]:" "$@"
+  logger -t "${script_name}" --id="${pid}" "$@"
 }
 
 logit "Starting"
