@@ -165,34 +165,4 @@ HTTP_SERVER_OVERRIDE=true
 # Change the below value to true to enable board prompt
 USER_SELECT=false
 EOF
-
-	# never execute the updater on install shim, because firmware are
-	# downloaded and installed from mini-omaha server
-	touch "${ROOT}"/root/.leave_firmware_alone ||
-		die "Cannot disable firmware updating"
-
-	# Upstart honors the last 'start on' clause it finds.
-	# Alter ui.conf startup script, which will make sure chrome doesn't
-	# run, since it tries to update on startup.
-	echo 'start on never' >> "${ROOT}/etc/init/ui.conf" ||
-		die "Failed to disable UI"
-
-	# Set network to start up another way
-	sed -i 's/login-prompt-visible/started boot-services/' \
-		"${ROOT}/etc/init/boot-complete.conf" ||
-		die "Failed to setup network"
-
-	# No TPM locking.
-	sed -i 's/start tcsd//' \
-		"${ROOT}/etc/init/tpm-probe.conf" ||
-		die "Failed to disable TPM locking"
-
-	# Stop any power management and updater daemons
-	for conf in powerd update-engine; do
-		echo 'start on never' >> "${ROOT}/etc/init/$conf.conf" ||
-			die "Failed to disable $conf"
-	done
-
-	# The "laptop_mode" may be triggered from udev
-	rm -f "${ROOT}/etc/udev/rules.d/99-laptop-mode.rules"
 }
