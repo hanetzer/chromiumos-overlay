@@ -135,6 +135,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
 	epatch "${FILESDIR}"/17.0-st-dri-Add-fence-extension-to-SW-path.patch
+	epatch "${FILESDIR}"/17.1-anv-formats-Update-the-three-channel-BC1-ma.patch
+	epatch "${FILESDIR}"/17.1-i965-formats-Update-the-three-channel-DXT1-.patch
 	base_src_prepare
 
 	eautoreconf
