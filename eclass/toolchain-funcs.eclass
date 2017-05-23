@@ -943,17 +943,17 @@ tc-getBUILD_GO() { tc-getBUILD_PROG GO go "$@"; }
 
 tc-getTARGET_PROG() {
 	local CTARGET="${CTARGET:-${CHOST}}"
-	_tc-getPROG CTARGET "TARGET_$1 $1_FOR_TARGET" "${@:2}"
+	_tc-getPROG CTARGET "TARGET_$1 $1_FOR_TARGET" "${2#${CHOST}-}" "${@:3}"
 }
 
 # @FUNCTION: tc-getTARGET_CC
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the C compiler for building binaries to run on the target machine
-tc-getTARGET_CC() { tc-getTARGET_PROG CC "${CC:-gcc}" "$@"; }
+tc-getTARGET_CC() { tc-getTARGET_PROG CC "$(tc-getCC)" "$@"; }
 # @FUNCTION: tc-getTARGET_CXX
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the C++ compiler for building binaries to run on the target machine
-tc-getTARGET_CXX() { tc-getTARGET_PROG CXX "${CXX:-g++}" "$@"; }
+tc-getTARGET_CXX() { tc-getTARGET_PROG CXX "$(tc-getCXX)" "$@"; }
 
 # Returns true if gcc builds PIEs
 # For ARM, readelf -h | grep Type always has REL instead of EXEC.
