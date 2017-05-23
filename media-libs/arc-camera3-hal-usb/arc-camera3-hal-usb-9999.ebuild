@@ -15,6 +15,7 @@ KEYWORDS="~*"
 IUSE="-asan"
 RDEPEND="
 	chromeos-base/libbrillo
+	media-libs/arc-camera3-libcamera_client
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libsync
 	media-libs/libexif
