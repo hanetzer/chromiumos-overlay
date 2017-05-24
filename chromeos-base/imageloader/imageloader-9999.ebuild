@@ -28,7 +28,8 @@ IUSE=""
 RDEPEND="chromeos-base/libbrillo
 	dev-libs/openssl"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	chromeos-base/system_api"
 
 src_unpack() {
 	local s="${S}"
