@@ -20,8 +20,7 @@
 
 inherit cros-debug toolchain-funcs
 
-IUSE="asan clang debug hardfp neon"
-REQUIRED_USE="asan? ( clang )"
+IUSE="asan debug hardfp neon"
 
 # @FUNCTION: _usetf
 # @INTERNAL
@@ -153,7 +152,6 @@ build_cpu_arch="$(_gn-chromium_friendly_arch "$(tc-arch "${CBUILD}")")"
 build_os="linux"
 host_cpu="$(_gn-chromium_friendly_arch "$(tc-arch "${CBUILD}")")"
 host_os="linux"
-is_clang=$(_usetf clang)
 is_asan=$(_usetf asan)
 is_debug=$(_usetf debug)
 EOF
@@ -180,7 +178,7 @@ gn-chromium_set_args() {
 # environment and generates ninja build files into directory returned by
 # $(gn-chromium_get_build_dir)
 gn-chromium_src_configure() {
-	clang-setup-env
+	asan-setup-env
 	cros-debug-add-NDEBUG
 	_gn-chromium_ensure_build_dir
 	[[ -e "$(_gn-chromium_get_args_file)" ]] || gn-chromium_set_args
