@@ -36,7 +36,7 @@
 		Install SKL firmware files for i915 driver
 	</flag>
 	<flag name='linux_firmware_ath10k'>
-                Install all firmware files for ath10k driver
+		Install all firmware files for ath10k driver
 	</flag>
 	<flag name='linux_firmware_qca-bt'>
 		Install all QCA firmware files for BT driver
