@@ -1,3 +1,0 @@
-# Pin chrome by masking more recent versions.
->chromeos-base/chromeos-chrome-60.0.3107.0_rc-r1
->chromeos-base/chromium-source-60.0.3107.0_rc-r1
