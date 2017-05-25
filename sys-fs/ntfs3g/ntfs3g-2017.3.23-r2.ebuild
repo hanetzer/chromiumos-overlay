@@ -58,7 +58,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	default
+	epatch "${PATCHES[@]}"
 	# Keep the symlinks in the same place we put the main binaries.
 	# Having them in / when all the progs are in /usr is pointless.
 	sed -i \
