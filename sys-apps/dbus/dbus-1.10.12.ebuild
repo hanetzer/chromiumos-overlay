@@ -13,7 +13,7 @@ SRC_URI="https://dbus.freedesktop.org/releases/dbus/${P}.tar.gz"
 LICENSE="|| ( AFL-2.1 GPL-2 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug doc selinux static-libs systemd test user-session X cros_host"
+IUSE="debug doc selinux static-libs systemd test user-session X"
 
 CDEPEND="
 	>=dev-libs/expat-2
@@ -86,15 +86,6 @@ src_prepare() {
 
 	# In libdbus, raise SIGTERM when the connection is dropped.
 	epatch "${FILESDIR}"/${PN}-1.6.8-raise-SIGTERM-on-connection-lost.patch
-
-	if ! use cros_host; then
-		# Hack. Export symbols used by Chrome in the Base namespace for backward
-		# compatibility. This has to be done as Chrome is not built for most
-		# precq/cq builders and it assumes dbus public APIs are in the Base
-		# namespace, which isn't true any more.
-		# TODO: remove the hack once a new Chrome is built with the new dbus.
-		epatch "${FILESDIR}"/${PN}-1.10.12-export-symbols-in-base-namespace.patch
-	fi
 
 	eapply_user
 
