@@ -1,0 +1,60 @@
+commit abf586838958632768fa4c91d7d8be1689e37bf8
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Thu May 25 19:07:57 2017 +0000
+
+    [AArch64]: add 'a' inline asm operand modifier.
+    
+    Summary:
+    This is used in the Linux kernel, and effectively just means "print an
+    address". This brings back r193593.
+    
+    Reviewed by: Renato Golin
+    
+    Reviewers: t.p.northover, rengolin, richard.barton.arm, kristof.beyls
+    
+    Subscribers: aemerson, javed.absar, llvm-commits, eraman
+    
+    Differential Revision: https://reviews.llvm.org/D33558
+    
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@303901 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Target/AArch64/AArch64AsmPrinter.cpp b/lib/Target/AArch64/AArch64AsmPrinter.cpp
+index 056ffd58b52..981fd22c213 100644
+--- a/lib/Target/AArch64/AArch64AsmPrinter.cpp
++++ b/lib/Target/AArch64/AArch64AsmPrinter.cpp
+@@ -320,6 +320,9 @@ bool AArch64AsmPrinter::PrintAsmOperand(const MachineInstr *MI, unsigned OpNum,
+     switch (ExtraCode[0]) {
+     default:
+       return true; // Unknown modifier.
++    case 'a':      // Print 'a' modifier
++      PrintAsmMemoryOperand(MI, OpNum, AsmVariant, ExtraCode, O);
++      return false;
+     case 'w':      // Print W register
+     case 'x':      // Print X register
+       if (MO.isReg())
+@@ -388,7 +391,7 @@ bool AArch64AsmPrinter::PrintAsmMemoryOperand(const MachineInstr *MI,
+                                               unsigned AsmVariant,
+                                               const char *ExtraCode,
+                                               raw_ostream &O) {
+-  if (ExtraCode && ExtraCode[0])
++  if (ExtraCode && ExtraCode[0] && ExtraCode[0] != 'a')
+     return true; // Unknown modifier.
+ 
+   const MachineOperand &MO = MI->getOperand(OpNum);
+diff --git a/test/CodeGen/AArch64/arm64-inline-asm.ll b/test/CodeGen/AArch64/arm64-inline-asm.ll
+index f28d0ab07c5..f849df2a51e 100644
+--- a/test/CodeGen/AArch64/arm64-inline-asm.ll
++++ b/test/CodeGen/AArch64/arm64-inline-asm.ll
+@@ -254,3 +254,10 @@ define void @test_constraint_w(i32 %a) {
+   tail call void asm sideeffect "sqxtn h0, ${0:s}\0A", "w"(i32 %a)
+   ret void
+ }
++
++define void @test_inline_modifier_a(i8* %ptr) nounwind {
++  ; CHECK-LABEL: test_inline_modifier_a:
++  tail call void asm sideeffect "prfm pldl1keep, ${0:a}\0A", "r"(i8* %ptr)
++  ; CHECK: prfm pldl1keep, [x0]
++  ret void
++}
