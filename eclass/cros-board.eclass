@@ -71,6 +71,7 @@ ALL_BOARDS=(
 	#bxt-rvp
 	candy
 	caroline
+	caroline-arc64
 	caroline-userdebug
 	cardhu
 	cave
