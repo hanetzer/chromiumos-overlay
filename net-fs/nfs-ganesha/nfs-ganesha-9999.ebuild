@@ -43,3 +43,10 @@ src_configure() {
 	)
 	cmake-utils_src_configure
 }
+
+src_install() {
+	# Install seccomp policy files.
+	insinto /usr/share/policy
+	newins "${FILESDIR}/nfs-ganesha-seccomp-${ARCH}.policy" nfs-ganesha-seccomp.policy
+	cmake-utils_src_install
+}
