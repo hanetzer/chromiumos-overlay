@@ -32,6 +32,6 @@ sys-libs/ncurses tinfo
 
 # icedtea-bin still has some linking issues when built without USE=cups. See
 # https://bugs.gentoo.org/486042 and https://crbug.com/656717
-dev-java/icedtea-bin cups
+dev-java/icedtea-bin cups -gtk headless-awt -multilib -webstart
 # We don't want cups-filters to pull in ghostscript.
 net-print/cups-filters -postscript

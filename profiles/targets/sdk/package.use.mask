@@ -4,3 +4,6 @@
 
 # Don't use clang to build llvm.
 sys-devel/llvm clang
+
+# We don't need multilib support here, so force it off.
+dev-java/icedtea-bin multilib
