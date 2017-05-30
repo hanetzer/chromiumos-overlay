@@ -5,7 +5,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashmap"
 
-inherit cros-workon toolchain-funcs multilib
+inherit cros-workon toolchain-funcs multilib python
 
 DESCRIPTION="Utility for manipulating firmware ROM mapping data structure"
 HOMEPAGE="http://flashmap.googlecode.com"
@@ -40,4 +40,8 @@ src_test() {
 
 src_install() {
 	emake LIBDIR=$(get_libdir) DESTDIR="${D}" USE_PKG_CONFIG=1 install || die
+
+	insinto "$(python_get_sitedir)"
+	# Copy the python files in this directory except __init__.py
+	doins "fmap.py"
 }

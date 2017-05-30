@@ -25,6 +25,7 @@ RDEPEND="cros_host? ( app-emulation/qemu )
 	dev-lang/python
 	dev-util/shflags
 	cros_host? ( dev-util/crosutils )
+	sys-apps/flashmap
 	"
 # These are all either bash / python scripts.  No actual builds DEPS.
 DEPEND=""
@@ -38,6 +39,7 @@ src_install() {
 	else
 		local host_tools
 		host_tools=(
+			blockdiff.py
 			cros_choose_profile
 			cros_chrome_make
 			cros_sign_bootstub
@@ -48,8 +50,8 @@ src_install() {
 			gdb_x86_local
 			gmergefs
 			image_to_live.sh
+			netboot_firmware_settings.py
 			paycheck.py
-			blockdiff.py
 			strip_package
 			ssh_no_update
 			willis

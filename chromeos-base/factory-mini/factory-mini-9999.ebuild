@@ -38,6 +38,14 @@ DEPEND="${PYTHON_DEPS}
 "
 RDEPEND="!chromeos-base/chromeos-factory-mini"
 
+src_configure() {
+	default
+	cros-workon_src_configure
+
+	# Export build settings
+	export SRCROOT="${CROS_WORKON_SRCROOT}"
+}
+
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
 }

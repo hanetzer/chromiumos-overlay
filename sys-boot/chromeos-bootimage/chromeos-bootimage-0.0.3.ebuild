@@ -3,13 +3,7 @@
 
 EAPI=4
 
-# need to check out factory source for netboot_firmware_settings.py for now
-CROS_WORKON_COMMIT="6c7c40b2d13ca73b8c932f13547d827593b6bc6b"
-CROS_WORKON_TREE="6697e529ee2953d5828ba96f97158225c124847a"
-CROS_WORKON_PROJECT="chromiumos/platform/factory"
-CROS_WORKON_LOCALNAME="../platform/factory"
-
-inherit cros-debug cros-workon
+inherit cros-debug
 
 DESCRIPTION="ChromeOS firmware image builder"
 HOMEPAGE="http://www.chromium.org"
@@ -46,6 +40,8 @@ DEPEND="
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
+
+S=${WORKDIR}
 
 prepare_legacy_image() {
 	local legacy_var="$1"
@@ -249,15 +245,15 @@ build_images() {
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
 	local argsfile="${PORTAGE_USERNAME}/${BOARD_USE}/cmdline"
-	"${S}"/setup/netboot_firmware_settings.py \
+	netboot_firmware_settings.py \
 		-i "${outdir}image${suffix}.net.bin" \
 		--bootfile="${bootfile}" --argsfile="${argsfile}" &&
-		"${S}"/setup/netboot_firmware_settings.py \
+		netboot_firmware_settings.py \
 			-i "${outdir}image${suffix}.dev.bin" \
 			--bootfile="${bootfile}" --argsfile="${argsfile}" ||
 		die "failed to preset netboot parameter defaults."
 	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
-		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
+		"line from ${argsfile}, and use the DHCP-provided TFTP server IP."
 
 	if use fastboot ; then
 		build_image fastboot "${coreboot_file}.serial" \
