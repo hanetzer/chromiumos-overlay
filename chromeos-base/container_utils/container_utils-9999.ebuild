@@ -15,7 +15,7 @@ DESCRIPTION="Helper utilities for generic containers"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+device_jail"
+IUSE="device_jail"
 
 RDEPEND="
 	chromeos-base/libbrillo
