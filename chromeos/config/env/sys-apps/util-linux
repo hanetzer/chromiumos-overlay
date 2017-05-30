@@ -5,6 +5,7 @@ util_linux_mask="
   /usr/bin/linux32
   /usr/bin/linux64
   /usr/bin/setarch
+  /usr/bin/uname26
 "
 
 # Punt support for filesystems we don't care about.
