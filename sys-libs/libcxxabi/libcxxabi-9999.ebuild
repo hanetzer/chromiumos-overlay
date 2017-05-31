@@ -6,18 +6,33 @@ EAPI=5
 : ${CMAKE_MAKEFILE_GENERATOR:=ninja}
 PYTHON_COMPAT=( python2_7 )
 
-inherit cmake-multilib cros-llvm flag-o-matic llvm python-any-r1
+inherit cros-constants
+
+CROS_WORKON_REPO=${CROS_GIT_AOSP_URL}
+CROS_WORKON_PROJECT=(
+	"external/libcxxabi"
+	"external/libcxx"
+	"external/libunwind_llvm"
+)
+CROS_WORKON_LOCALNAME=("../aosp/external/libcxxabi" "../aosp/external/libcxx" "../aosp/external/libunwind_llvm")
+
+S+=".src"
+CROS_WORKON_DESTDIR=(
+	"${S}"
+	"${S}/libcxx"
+	"${S}/libunwind_llvm"
+)
+
+CROS_WORKON_BLACKLIST="1"
+
+inherit cmake-multilib cros-llvm cros-workon flag-o-matic llvm python-any-r1
 
 DESCRIPTION="Low level support for a standard C++ library"
 HOMEPAGE="http://libcxxabi.llvm.org/"
-SRC_URI="http://releases.llvm.org/${PV/_//}/${P/_/}.src.tar.xz
-	http://releases.llvm.org/${PV/_//}/libcxx-${PV/_/}.src.tar.xz
-	http://releases.llvm.org/${PV/_//}/libunwind-${PV/_/}.src.tar.xz
-	"
 
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS="~*"
 IUSE="libunwind +static-libs test"
 
 
@@ -46,19 +61,12 @@ pkg_setup() {
 	use test && python-any-r1_pkg_setup
 }
 
-src_unpack() {
-	default
-
-	mv libcxx-* libcxx || die
-}
-
 multilib_src_configure() {
-	# Add neon fpu for armv7a
-	if [[ ${CATEGORY} == cross-armv7a* ]] ; then
+	# Add neon fpu for arm
+	if [[ $(tc-arch) == "arm" ]] ; then
 		append-flags -mfpu=neon
 	fi
-
-	append-flags -I"${WORKDIR}/libunwind-${PV/_/}.src/include"
+	append-flags -I"${S}/libunwind_llvm/include"
 	append-flags "-stdlib=libstdc++"
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
@@ -68,8 +76,7 @@ multilib_src_configure() {
 		-DLIBCXXABI_USE_LLVM_UNWINDER=$(usex libunwind)
 		-DLIBCXXABI_INCLUDE_TESTS=$(usex test)
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}"
-
-		-DLIBCXXABI_LIBCXX_INCLUDES="${WORKDIR}"/libcxx/include
+		-DLIBCXXABI_LIBCXX_INCLUDES="${S}"/libcxx/include
 	)
 	if use test; then
 		mycmakeargs+=(
@@ -89,6 +96,9 @@ multilib_src_test() {
 }
 
 multilib_src_install_all() {
+	if [[ ${CATEGORY} == cross-* ]]; then
+		rm -r "${ED}/usr/share/doc"
+	fi
 	insinto "${PREFIX}"/include/libcxxabi
 	doins -r include/.
 }
