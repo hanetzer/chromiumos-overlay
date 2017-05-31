@@ -15,6 +15,5 @@ DEPEND="!chromeos-base/chromeos-factory"
 RDEPEND="
 	chromeos-base/chromeos-hwid
 	chromeos-base/factory
-	chromeos-base/memento_softwareupdate
 	${DEPEND}
 "

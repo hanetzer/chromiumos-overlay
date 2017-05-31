@@ -100,7 +100,6 @@ FACTORY_TEST_RDEPEND+="
 
 # Packages used by finalize.
 FACTORY_TEST_RDEPEND+="
-	chromeos-base/memento_softwareupdate
 	sys-apps/coreboot-utils
 "
 

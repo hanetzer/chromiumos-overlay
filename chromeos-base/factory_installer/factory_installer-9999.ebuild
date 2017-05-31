@@ -73,7 +73,6 @@ RDEPEND="$COMMON_DEPEND
 	app-misc/jq
 	chromeos-base/chromeos-installer
 	chromeos-base/ec-utils
-	chromeos-base/memento_softwareupdate
 	chromeos-base/vpd
 	net-misc/htpdate
 	net-wireless/iw

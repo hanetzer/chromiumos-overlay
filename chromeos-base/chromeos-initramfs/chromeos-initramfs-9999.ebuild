@@ -53,7 +53,6 @@ FACTORY_NETBOOT_DEPENDS="
 	chromeos-base/chromeos-installshim
 	chromeos-base/ec-utils
 	chromeos-base/factory_installer
-	chromeos-base/memento_softwareupdate
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	dev-libs/openssl
