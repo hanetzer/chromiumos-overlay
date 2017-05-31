@@ -1,0 +1,334 @@
+diff --git a/cups/cups-private.h b/cups/cups-private.h
+index f3e794f..6d5842e 100644
+--- a/cups/cups-private.h
++++ b/cups/cups-private.h
+@@ -261,6 +261,13 @@ extern void		_cupsGlobalUnlock(void);
+ extern const char	*_cupsGSSServiceName(void);
+ #  endif /* HAVE_GSSAPI */
+ extern int		_cupsNextDelay(int current, int *previous);
++extern int		_cupsSearchFilter(const char *search_root,
++			                  const char *filter_name,
++			                  char *full_path,
++			                  size_t full_path_size);
++extern int 		_cupsSearchFilterLatest(const char *filter_name,
++			                        char       *full_path,
++			                        size_t     full_path_size);
+ extern void		_cupsSetDefaults(void);
+ extern void		_cupsSetError(ipp_status_t status, const char *message,
+ 			              int localize);
+diff --git a/cups/util.c b/cups/util.c
+index 689f3cf..26f2034 100644
+--- a/cups/util.c
++++ b/cups/util.c
+@@ -20,7 +20,10 @@
+  */
+ 
+ #include "cups-private.h"
++#include <dirent.h>
+ #include <fcntl.h>
++#include <ftw.h>
++#include <regex.h>
+ #include <sys/stat.h>
+ #if defined(WIN32) || defined(__EMX__)
+ #  include <io.h>
+@@ -1652,6 +1655,237 @@ cups_get_printer_uri(
+   return (0);
+ }
+ 
++static char cups_filter_name[PATH_MAX];
++static char cups_filter_path[PATH_MAX];
++
++int match_filter(const char *fpath,
++                 const struct stat *sb,
++                 int tflag,
++                 struct FTW *ftwbuf)
++{
++  char *filename;
++  if (tflag != FTW_F) {
++    return 0;
++  }
++  filename = basename(fpath);
++  if (filename) {
++    if (strcmp(filename, cups_filter_name) == 0) {
++      // filter is matched.
++      if (strlen(fpath) < sizeof(cups_filter_path))
++      {
++        strcpy(cups_filter_path, fpath);
++        return 1;
++      }
++      else
++      {
++        return 2;
++      }
++    }
++  }
++  return 0;
++}
++
++/*
++ * '_cupsSearchFilter()' - Recursively search in search_root with a
++ * filter_name
++ * and set the full_path of its first occurance.
++ *
++ * return 1 if filter is found,
++ * return 2 if buffer is too small,
++ * return 0 if filter is not found,
++ * return -1 if nftw encounters an error.
++ */
++
++/*
++ * nftw isn't thread-safe, use pthread mutex to make sure only one thread
++ * is executing it.
++ */
++pthread_mutex_t nftw_mut = PTHREAD_MUTEX_INITIALIZER;
++
++int _cupsSearchFilter(const char *search_root,
++                      const char *filter_name,
++                      char *full_path,
++                      size_t full_path_size)
++{
++  int status;
++  if (strlen(filter_name) >= sizeof(cups_filter_name))
++  {
++    return 2;
++  }
++  pthread_mutex_lock(&nftw_mut);
++  strncpy(cups_filter_name, filter_name, sizeof(cups_filter_name));
++  status = nftw(search_root, match_filter, 20, FTW_PHYS);
++  if (status == 1) {
++    if (full_path_size <= strlen(cups_filter_path))
++    {
++      pthread_mutex_unlock(&nftw_mut);
++      return 2;
++    }
++    strncpy(full_path, cups_filter_path, full_path_size);
++  }
++  pthread_mutex_unlock(&nftw_mut);
++  return status;
++}
++
++/*
++ * Check if a version is valid version.
++ *
++ * patterns:
++ * X
++ * X.Y
++ * X.Y.Z
++ * X.Y.Z.W
++ *
++ * For each block (X, Y, etc.), we allow maximum 7 digits and minimum 1 digit.
++ *
++ * Return 0 if v is a valid version;
++ * Otherwise, v is not valid version.
++ */
++
++int checkVersion(const char *v)
++{
++  regex_t re;
++  if (regcomp(&re, "^[0-9]{1,7}+(\\.[0-9]{1,7}){0,3}$", REG_EXTENDED | REG_NOSUB) == 0)
++  {
++    int status = regexec(&re, v, (size_t) 0, NULL, 0);
++    regfree(&re);
++    return status;
++  }
++  return -1;
++}
++
++/*
++ *Parse a version_string into version, most significant version number first.  If a subversion
++ *level doesn't exist, -1 is used.
++ *
++ *Examples:
++ *  "1" -> {1, -1, -1, -1};
++ *"1.2" -> {1, 2, -1, -1};
++ *"3.1.4.5 -> {3, 1, 4, 5};
++ */
++
++void parseVersion(const char* version_string, int version[4]) {
++  int index = sscanf(version_string, "%d.%d.%d.%d",
++                     &version[0], &version[1], &version[2], &version[3]);
++  while (index < 4) {
++    version[index - 1] = -1;
++    index++;
++  }
++}
++
++/*
++ * Compare two versions.
++ *
++ * Return values:
++ * 2,  If either v1 or v2 is not valid version
++ * -1, If v1 is newer than v2
++ * 0,  If v1 is same as v2
++ * 1,  If v1 is older than v2
++ */
++
++int compareVersion(const char *v1, const char *v2)
++{
++  int version1[4], version2[4];
++  int i = 0;
++  if (checkVersion(v1) || checkVersion(v2))
++    return 2;
++  parseVersion(v1, version1);
++  parseVersion(v2, version2);
++  for (i = 0; i < 4; i++) {
++    if (version1[i] > version2[i]) return -1;
++    else if (version1[i] < version2[i]) return 1;
++  }
++  return 0;
++}
++
++/*
++ * 'searchFilterLatest()' - Recursively search in search_root with a filter_name
++ * for its latest version and set the full_path of its first occurance.
++ *
++ * Dir structure:
++ *  /<version 1>/...
++ *  /<version 2>/...
++ *  ...
++ *
++ * return 1 if filter is found,
++ * return 2 if string buffer is too small,
++ * return 0 if filter is not found,
++ * return -1 if nftw encounters an error.
++ */
++
++int searchFilterLatest(const char *search_root,
++                       const char *filter_name,
++                       char       *full_path,
++                       size_t     full_path_size)
++{
++  DIR *dir = NULL;
++  struct dirent *ent = NULL;
++  char latest_version[PATH_MAX];
++  char latest_version_search_root[PATH_MAX];
++  int status = 0;
++  if (!(dir = opendir(search_root))) return -1;
++  latest_version[0] = '\0';
++  while ((ent = readdir(dir)))
++  {
++    if (ent->d_type == DT_DIR && checkVersion(ent->d_name) == 0) {
++      /*
++       * If any version entry is too large to handle, then we terminate immediately.
++       */
++      if (strlen(ent->d_name) >= sizeof(latest_version)) return 2;
++      if (latest_version[0] == '\0')
++        strncpy(latest_version, ent->d_name, sizeof(latest_version));
++      else if (compareVersion(latest_version, ent->d_name) == 1)
++        strncpy(latest_version, ent->d_name, sizeof(latest_version));
++    }
++  }
++  if (latest_version[0] != '\0')
++  {
++    if (sizeof(latest_version_search_root) >=
++        strlen(search_root) + strlen(latest_version) +
++        3 /* 3: sizeof('/') * 2 + sizeof('\0'); */)
++    {
++      sprintf(latest_version_search_root, "%s/%s/", search_root, latest_version);
++      status = _cupsSearchFilter(latest_version_search_root, filter_name,
++                                 full_path, full_path_size);
++    }
++  }
++  closedir(dir);
++  return status;
++}
++
++/*
++ * '_cupsSearchFilterLatest()' - Identify component folder for a filter. Then recursively
++ * search in the component's root folder with a filter_name
++ * for its latest version and set the full_path of its first occurance.
++ *
++ * Dir structure:
++ *  /<version 1>/...
++ *  /<version 2>/...
++ *  ...
++ *
++ * return 1 if filter is found,
++ * return 2 if buffer is too small,
++ * return 3 if component does not exist for this filter.
++ * return 0 if filter is not found,
++ * return -1 if nftw encounters an error.
++ */
++
++int _cupsSearchFilterLatest(const char *filter_name,
++                            char       *full_path,
++                            size_t     full_path_size)
++{
++  if (strcmp(filter_name, "epson-escpr-wrapper") == 0 ||
++      strcmp(filter_name, "epson-escpr") == 0)
++  {
++    const char search_root[] = "/run/imageloader/epson-inkjet-printer-escpr";
++    return searchFilterLatest(search_root, filter_name, full_path,
++                              full_path_size);
++  }
++  else
++  {
++    return 3;
++  }
++}
+ 
+ /*
+  * End of "$Id: util.c 12884 2015-10-07 20:31:46Z msweet $".
+diff --git a/scheduler/job.c b/scheduler/job.c
+index c112714..4c243a7 100644
+--- a/scheduler/job.c
++++ b/scheduler/job.c
+@@ -1129,9 +1129,15 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+        filter;
+        i ++, filter = (mime_filter_t *)cupsArrayNext(filters))
+   {
+-    if (filter->filter[0] != '/')
++    if (filter->filter[0] != '/') {
+       snprintf(command, sizeof(command), "%s/filter/%s", ServerBin,
+                filter->filter);
++      if (access(command, F_OK) != 0) {
++        _cupsSearchFilterLatest(filter->filter,
++                                command,
++                                sizeof(command));
++      }
++    }
+     else
+       strlcpy(command, filter->filter, sizeof(command));
+ 
+diff --git a/systemv/cupstestppd.c b/systemv/cupstestppd.c
+index 579feb5..7bafdb4 100644
+--- a/systemv/cupstestppd.c
++++ b/systemv/cupstestppd.c
+@@ -2434,6 +2434,11 @@ check_filters(ppd_file_t *ppd,		/* I - PPD file */
+ 		   program);
+       }
+ 
++      if (access(pathprog, F_OK) != 0) {
++	_cupsSearchFilterLatest(program,
++				pathprog,
++				sizeof(pathprog));
++      }
+       if (stat(pathprog, &fileinfo))
+       {
+ 	if (!warn && !errors && !verbose)
+@@ -3916,6 +3921,7 @@ valid_path(const char *keyword,		/* I - Keyword using path */
+   cups_dir_t	*dir;			/* Current directory */
+   cups_dentry_t	*dentry;		/* Current directory entry */
+   char		temp[1024],		/* Temporary path */
++		temp_slash[sizeof(temp) + 1],	/* Temporary path trailing with slash */
+ 		*ptr;			/* Pointer into temporary path */
+   const char	*prefix;		/* WARN/FAIL prefix */
+ 
+@@ -3938,11 +3944,16 @@ valid_path(const char *keyword,		/* I - Keyword using path */
+     *ptr++ = '\0';
+ 
+    /*
++    * Duplicate a basename that trails with slash.
++    * Since cupsDirOpen fails on a mount point not trails with slash.
++    */
++   snprintf(temp_slash, sizeof(temp_slash), "%s/", temp);
++   /*
+     * Try opening the directory containing the base name...
+     */
+ 
+     if (temp[0])
+-      dir = cupsDirOpen(temp);
++      dir = cupsDirOpen(temp_slash);
+     else
+       dir = cupsDirOpen("/");
+ 

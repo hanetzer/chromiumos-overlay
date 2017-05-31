@@ -109,6 +109,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.1.4-usb-device-uris.patch"
 	"${FILESDIR}/${PN}-2.1.4-non-standard-grays.patch"
 	"${FILESDIR}/${PN}-2.1.4-raise-log-level-for-desired-features.patch"
+	"${FILESDIR}/${PN}-2.1.4-search-filter.patch"
 )
 
 MULTILIB_CHOST_TOOLS=(
