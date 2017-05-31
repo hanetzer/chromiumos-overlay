@@ -88,7 +88,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="detachable_ui"
 DEPEND="
 	sys-apps/coreboot-utils
 "
@@ -99,6 +99,9 @@ src_prepare() {
 }
 
 src_compile() {
+	if use detachable_ui ; then
+		export DETACHABLE_UI=1
+	fi
 	emake OUTPUT="${WORKDIR}" "${BOARD}"
 	emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
 }
