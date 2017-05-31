@@ -18,7 +18,7 @@ DEPEND="virtual/libusb:1
 RDEPEND="${DEPEND}"
 
 src_install() {
-	dosbin "${BUILD_DIR}/src/atrusctl"
+	dosbin "${BUILD_DIR}/src/atrusd"
 	udev_newrules conf/udev-atrus.rules 99-atrus.rules
 	insinto /etc/rsyslog.d
 	newins conf/rsyslog-atrus.conf atrus.conf
