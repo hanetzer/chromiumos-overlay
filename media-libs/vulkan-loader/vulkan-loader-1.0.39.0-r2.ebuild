@@ -3,6 +3,7 @@
 # $Id$
 
 EAPI=5
+PYTHON_COMPAT=( python3_{3,4,5} )
 
 if [[ "${PV}" == "9999" ]]; then
 	EGIT_REPO_URI="https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers.git"
@@ -13,7 +14,7 @@ else
 	S="${WORKDIR}/Vulkan-LoaderAndValidationLayers-sdk-${PV}"
 fi
 
-inherit cmake-utils
+inherit cmake-utils python-any-r1
 
 DESCRIPTION="Vulkan Installable Client Driver (ICD) Loader"
 HOMEPAGE="https://www.khronos.org/vulkan/"
