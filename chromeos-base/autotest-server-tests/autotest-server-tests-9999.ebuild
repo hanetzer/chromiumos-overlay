@@ -114,6 +114,12 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_CorruptFwSigB
 	+tests_firmware_CorruptKernelA
 	+tests_firmware_CorruptKernelB
+	+tests_firmware_Cr50DeepSleepStress
+	+tests_firmware_Cr50InvalidateRW
+	+tests_firmware_Cr50Uart
+	+tests_firmware_Cr50Unlock
+	+tests_firmware_Cr50UpdateScriptStress
+	+tests_firmware_Cr50USB
 	+tests_firmware_DevBootUSB
 	+tests_firmware_DevMode
 	+tests_firmware_DevModeStress
@@ -141,6 +147,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_FastbootErase
 	+tests_firmware_FastbootReboot
 	+tests_firmware_FMap
+	+tests_firmware_FWMPDisableCCD
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
 	+tests_firmware_FWtries
