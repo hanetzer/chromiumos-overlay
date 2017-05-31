@@ -12,7 +12,7 @@ SRC_URI="https://github.com/google/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="llvm-next"
 
 DEPEND="dev-libs/openssl
 	dev-libs/libffi
@@ -23,6 +23,9 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	# Fix a build problem with gcc.
 	epatch "${FILESDIR}/autofdo-0.15-rpath.patch"
+	if use llvm-next; then
+		epatch "${FILESDIR}/autofdo-0.15-llvm-next.patch"
+	fi
 	eautoreconf
 }
 

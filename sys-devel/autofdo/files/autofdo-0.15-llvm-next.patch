@@ -1,0 +1,37 @@
+Upstream llvm has different APIs in ProfileData.h.
+Update autofdo files to use different APIs when using llvm-next.
+diff -Nuar old/llvm_profile_writer.cc new/llvm_profile_writer.cc
+--- old/llvm_profile_writer.cc	2017-05-31 15:58:32.055557537 -0700
++++ new/llvm_profile_writer.cc	2017-05-31 16:01:03.535523553 -0700
+@@ -95,10 +95,11 @@
+     inline_stack_.pop_back();
+   }
+   auto &caller_profile = *(inline_stack_.back());
++  auto CalleeName = GetNameRef(Symbol::Name(callsite.second));
+   auto &callee_profile =
+       caller_profile.functionSamplesAt(llvm::sampleprof::LineLocation(
+-          line, discriminator));
+-  callee_profile.setName(GetNameRef(callsite.second));
++          line, discriminator))[CalleeName];
++  callee_profile.setName(CalleeName);
+   inline_stack_.push_back(&callee_profile);
+ }
+ 
+diff -Nuar old/symbol_map.h new/symbol_map.h
+--- old/symbol_map.h	2017-05-31 15:56:26.311585759 -0700
++++ new/symbol_map.h	2017-05-31 15:55:32.107593139 -0700
+@@ -112,6 +112,14 @@
+ 
+   ~Symbol();
+ 
++  static string Name(const char *name) {
++    return (name && strlen(name) > 0) ? name : "noname";
++  }
++
++  string name() const {
++    return Name(info.func_name);
++  }
++
+   // Merges profile stored in src symbol with this symbol.
+   void Merge(const Symbol *src);
+ 
