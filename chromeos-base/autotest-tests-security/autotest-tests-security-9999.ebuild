@@ -27,9 +27,8 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	!chromeless_tty? (
 		!chromeless_tests? (
-			+tests_security_EnableChromeTesting
 			+tests_security_RendererSandbox
-			+tests_security_RestartJob
+			+tests_security_SessionManagerDbusEndpoints
 		)
 	)
 	seccomp? (
