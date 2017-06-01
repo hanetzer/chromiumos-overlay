@@ -5,9 +5,3 @@
 cros_pre_src_prepare_enable_cxx_exceptions() {
 	cros_enable_cxx_exceptions
 }
-
-# Force to use gcc to build it. See crbug.com/497443
-cros_pre_src_prepare_use_gcc() {
-	cros_use_gcc
-	filter_clang_syntax
-}
