@@ -153,6 +153,7 @@ ALL_BOARDS=(
 	kunimitsu
 	lakitu
 	lakitu-gpu
+	lakitu-st
 	lakitu_mobbuild
 	lakitu_next
 	lars
