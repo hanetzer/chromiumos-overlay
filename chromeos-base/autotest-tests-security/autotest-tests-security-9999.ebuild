@@ -41,7 +41,7 @@ IUSE_TESTS="
 	+tests_security_ASLR
 	+tests_security_ChromiumOSLSM
 	+tests_security_CroshModules
-	+tests_security_DbusMap
+	+tests_security_DbusOwners
 	containers? (
 		+tests_security_DeviceJail_AllowDeny
 		+tests_security_DeviceJail_Detach
