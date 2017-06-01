@@ -140,9 +140,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-60.0.3111.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-60.0.3111.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-60.0.3111.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3117.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3117.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3117.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -259,6 +259,11 @@ echox() {
 }
 echotf() { echox ${1:-$?} true false ; }
 usetf()  { usex $1 true false ; }
+
+use_goma() {
+	[[ "${USE_GOMA:-$(usetf goma)}" == "true" ]]
+}
+
 set_build_args() {
 	BUILD_ARGS=(
 		is_debug=false
@@ -409,7 +414,7 @@ set_build_args() {
 	if use component_build; then
 		BUILD_ARGS+=( is_component_build=true )
 	fi
-	if use goma; then
+	if use_goma; then
 		BUILD_ARGS+=( use_goma=true )
 		BUILD_STRING_ARGS+=( goma_dir="${GOMA_DIR:-/home/${WHOAMI}/goma}" )
 
@@ -875,7 +880,7 @@ chrome_make() {
 	# If goma is enabled, increase the number of parallel run to
 	# 10 * {number of processors}. Though, if it is too large the
 	# performance gets slow down, so limit by 200 heuristically.
-	if use goma; then
+	if use_goma; then
 		local num_parallel=$(($(nproc) * 10))
 		local j_limit=200
 		set -- -j $((num_parallel < j_limit ? num_parallel : j_limit)) "$@"
