@@ -19,9 +19,6 @@ IUSE=""
 
 DEPEND="virtual/udev"
 RDEPEND="${DEPEND}"
-PATCHES=(
-	"${FILESDIR}/0002-Check-for-input-event-codes-h-at-build.patch"
-)
 
 python_prepare_all() {
 	rm libsuinput/src/libudev.h || die
