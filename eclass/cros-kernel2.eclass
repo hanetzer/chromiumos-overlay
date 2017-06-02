@@ -52,9 +52,11 @@ STRIP_MASK="
 	/usr/src/*
 "
 
-AFDO_BASENAME="autofdo-${PN}"
-AFDO_LOCATION="gs://chromeos-localmirror/distfiles/"
-SRC_URI="kernel_afdo? ( ${AFDO_LOCATION}${AFDO_BASENAME}.tar.xz )"
+if [[ -n "${AFDO_PROFILE_VERSION}" ]]; then
+	AFDO_BASENAME="autofdo-${PN}-${CHROMEOS_KERNEL_SPLITCONFIG}-${AFDO_PROFILE_VERSION}"
+	AFDO_LOCATION="gs://chromeos-localmirror/distfiles/"
+	SRC_URI="kernel_afdo? ( ${AFDO_LOCATION}${AFDO_BASENAME}.afdo.xz )"
+fi
 
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
 MULTILIB_STRICT_EXEMPT+="|modules"
@@ -907,7 +909,7 @@ kmake() {
 		CXX="${CXX} -B${binutils_path}" \
 		"$@"
 
-	local AFDO_FILENAME="${WORKDIR}/${AFDO_BASENAME}/${CHROMEOS_KERNEL_SPLITCONFIG}.afdo"
+	local AFDO_FILENAME="${WORKDIR}/${AFDO_BASENAME}.afdo"
 	local kcflags="${KCFLAGS}"
 	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
 
@@ -922,8 +924,12 @@ kmake() {
 
 cros-kernel2_src_unpack() {
 	cros-workon_src_unpack
+	if use kernel_afdo && [[ -z "${AFDO_PROFILE_VERSION}" ]]; then
+		eerror "AFDO_PROFILE_VERSION is required in .ebuild by kernel_afdo."
+		die
+	fi
 	pushd "${WORKDIR}" > /dev/null
-	use kernel_afdo && unpack "${AFDO_BASENAME}.tar.xz"
+	use kernel_afdo && unpack "${AFDO_BASENAME}.afdo.xz"
 	popd > /dev/null
 }
 
