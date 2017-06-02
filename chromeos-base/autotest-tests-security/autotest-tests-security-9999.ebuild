@@ -55,7 +55,6 @@ IUSE_TESTS="
 	+tests_security_mprotect
 	+tests_security_OpenFDs
 	+tests_security_OpenSSLBlacklist
-	+tests_security_OpenSSLRegressions
 	+tests_security_ProtocolFamilies
 	+tests_security_ptraceRestrictions
 	+tests_security_RootCA
