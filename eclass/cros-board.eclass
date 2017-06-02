@@ -121,7 +121,7 @@ ALL_BOARDS=(
 	#fox_wtm2
 	gale
 	gandof
-	gizmo
+	#gizmo
 	glados
 	glados-cheets
 	glimmer

@@ -39,7 +39,7 @@ IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework quiet unibuild verbose"
 
 PER_BOARD_BOARDS=(
-	bayleybay beltino bolt butterfly chell cyan daisy eve falco fizz fox gizmo glados
+	bayleybay beltino bolt butterfly chell cyan daisy eve falco fizz fox glados
 	kunimitsu link lumpy nyan panther parrot peppy poppy rambi samus sklrvp
 	slippy stout stout32 strago stumpy urara variant-peach-pit
 )
