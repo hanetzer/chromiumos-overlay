@@ -24,7 +24,11 @@ RDEPEND="
 		sys-fs/fuse
 	)
 "
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/session_manager-client
+	chromeos-base/system_api
+"
 
 pkg_setup() {
 	if use device_jail; then
