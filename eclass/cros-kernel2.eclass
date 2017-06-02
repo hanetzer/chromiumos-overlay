@@ -1212,11 +1212,12 @@ cros-kernel2_src_install() {
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
 		# image name.
-		cd $(dirname "${kernel_bin}")
+		pushd "$(dirname "${kernel_bin}")" > /dev/null
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
 		if use arm; then
 			ln -sf $(basename "${zimage_bin}") zImage || die
 		fi
+		popd > /dev/null
 	fi
 	if [ ! -e "${D}/boot/vmlinuz" ]; then
 		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
