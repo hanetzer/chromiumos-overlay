@@ -1,7 +1,7 @@
 # Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit autotools eutils flag-o-matic
 
@@ -12,7 +12,7 @@ SRC_URI="https://github.com/google/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="llvm-next"
+IUSE=""
 
 DEPEND="dev-libs/openssl
 	dev-libs/libffi
@@ -23,7 +23,10 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	# Fix a build problem with gcc.
 	epatch "${FILESDIR}/autofdo-0.15-rpath.patch"
-	if use llvm-next; then
+	# LLVM ProfileData.h header has changed upstream.
+	# Patch to use new API if llvm was built with llvm-next use flag.
+	# Make this patch unconditional after next llvm roll.
+	if has_version --host-root 'sys-devel/llvm[llvm-next]'; then
 		epatch "${FILESDIR}/autofdo-0.15-llvm-next.patch"
 	fi
 	eautoreconf
