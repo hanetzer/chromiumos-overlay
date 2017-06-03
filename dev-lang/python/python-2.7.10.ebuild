@@ -91,6 +91,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# According to the comments at the top of cgi.py, Linux vendors need to
+	# patch the shebang in cgi.py. We'll ignore the comment about not using
+	# "/usr/bin/env python" and use it anyway.
+	sed -i -e '1 s:^#!.*$:#! /usr/bin/env python:' Lib/cgi.py || die
+
 	# Ensure that internal copies of expat, libffi and zlib are not used.
 	rm -r Modules/expat || die
 	rm -r Modules/_ctypes/libffi* || die
