@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="16985be90e5ef064858439380206656d75d7ad58"
-CROS_WORKON_TREE="28a99376218149502aaeed800aa39ddd64491f13"
+CROS_WORKON_COMMIT="0f15de779527e2359f6f179fd44290b68725a74b"
+CROS_WORKON_TREE="2fcbcd16b4db7527a22f728d271c436f6eb86a25"
 CROS_WORKON_PROJECT="external/git.kernel.org/fs/xfs/xfstests-dev"
 
 inherit autotools cros-workon
