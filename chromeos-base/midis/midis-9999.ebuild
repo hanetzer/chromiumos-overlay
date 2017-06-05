@@ -35,6 +35,7 @@ pkg_preinst() {
 
 platform_pkg_test() {
 	local unit_tests=(
+		"client_test"
 		"client_tracker_test"
 		"device_test"
 		"device_tracker_test"
