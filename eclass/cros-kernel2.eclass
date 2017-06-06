@@ -91,6 +91,7 @@ CONFIG_FRAGMENTS=(
 	factory_shim_ramfs
 	gdmwimax
 	gobi
+	goldfish
 	highmem
 	i2cdev
 	iscsi
@@ -209,6 +210,14 @@ CONFIG_WIMAX_GDM72XX_USB_PM=y
 gobi_desc="Qualcomm Gobi modem driver"
 gobi_config="
 CONFIG_USB_NET_GOBI=m
+"
+
+goldfish_dec="Goldfish virtual hardware platform"
+goldfish_config="
+CONFIG_GOLDFISH=y
+CONFIG_GOLDFISH_BUS=y
+CONFIG_GOLDFISH_PIPE=y
+CONFIG_KEYBOARD_GOLDFISH_EVENTS=y
 "
 
 highmem_desc="highmem"
