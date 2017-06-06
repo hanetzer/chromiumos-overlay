@@ -38,6 +38,9 @@
 	<flag name='linux_firmware_i915_kbl'>
 		Install KBL firmware files for i915 driver
 	</flag>
+	<flag name='linux_firmware_ipu3_fw'>
+		Install KBL IPU3 Camera firmware
+	</flag>
 	<flag name='linux_firmware_ath10k'>
 		Install all firmware files for ath10k driver
 	</flag>
