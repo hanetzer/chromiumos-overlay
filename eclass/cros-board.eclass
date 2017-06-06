@@ -196,6 +196,7 @@ ALL_BOARDS=(
 	nyan_kitty
 	oak
 	oak-cheets
+	octavius
 	#optimus
 	orco
 	panda
