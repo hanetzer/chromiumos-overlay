@@ -48,6 +48,7 @@ RDEPEND="${RDEPEND}
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
 	tests_security_SMMLocked? ( sys-apps/pciutils )
 	tests_camera_HAL3? ( chromeos-base/autotest-deps-camera-hal3 )
+	tests_camera_V4L2? ( media-libs/libyuv )
 "
 
 DEPEND="${RDEPEND}"
