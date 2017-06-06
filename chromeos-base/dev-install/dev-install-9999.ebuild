@@ -48,7 +48,8 @@ src_prepare() {
 src_compile() {
 	cd "$(cros-workon_get_build_dir)"
 
-	local useflags pkg pkgs BOARD=$(get_current_board_with_variant)
+	local useflags pkg pkgs
+	local BOARD=$(get_current_board_with_variant "default" true)
 
 	if [[ -z "${BOARD}" ]]; then
 		die "Could not determine the current board using cros-board.eclass."
