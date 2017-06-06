@@ -59,6 +59,7 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_AdapterLEAdvertising
 	+tests_bluetooth_AdapterPairing
 	+tests_bluetooth_AdapterStandalone
+	+tests_bluetooth_AdapterSuspendResume
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
 	android-container? (
