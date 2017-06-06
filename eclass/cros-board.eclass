@@ -346,14 +346,17 @@ fi
 # See REQUIRED_USE below.
 IUSE="${CROS_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host unibuild"
 
-# Echo the current board, with variant.
+# Echo the current board, with variant. The arguments are:
+#   1: default, the value to return when no board is found; default: ""
+#   2: keep_uni_suffix, retain "-uni" string at end of a board; default: false
 get_current_board_with_variant()
 {
-	[[ $# -gt 1 ]] && die "Usage: ${FUNCNAME} [default]"
+	[[ $# -gt 2 ]] && die "Usage: ${FUNCNAME} [default] [keep_uni_suffix]"
 
 	local b
 	local current
-	local default_board=$1
+	local default_board="$1"
+	local keep_uni="$2"
 
 	for b in "${CROS_BOARDS[@]}"; do
 		if use ${BOARD_USE_PREFIX}${b}; then
@@ -367,7 +370,7 @@ get_current_board_with_variant()
 	if [[ -n "${current}" ]]; then
 		# For unified builds, output the reference board. These always
 		# end in "-uni".
-		if use unibuild; then
+		if use unibuild && [ "${keep_uni}" = false -o -z "${keep_uni}" ]; then
 			echo ${current%-uni}
 		else
 			echo ${current}
