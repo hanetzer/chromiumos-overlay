@@ -120,7 +120,6 @@ src_install() {
 	if use syslog; then
 		# Install log cleaning script and run it daily.
 		dosbin chromeos-cleanup-logs
-		dosbin simple-rotate
 
 		insinto /etc
 		doins rsyslog.chromeos
