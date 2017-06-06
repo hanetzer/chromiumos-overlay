@@ -45,6 +45,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0016-uapi-intel-ipu3-Add-user-space-ABI-definitions.patch"
 	epatch "${FILESDIR}/0017-BACKPORT-net-diag-Add-the-ability-to-destroy-a-socke.patch"
 	epatch "${FILESDIR}/0018-BACKPORT-net-core-add-UID-to-flows-rules-and-routes.patch"
+	epatch "${FILESDIR}/0019-virtwl-add-virtwl-driver.patch"
 }
 
 src_install() {
