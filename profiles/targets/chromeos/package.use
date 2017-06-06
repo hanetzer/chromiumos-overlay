@@ -13,8 +13,6 @@ app-editors/vim		-X minimal
 # We don't use network functionality in bash, and since we ship it in a release
 # image, we'd prefer that attack surface simply not exist.
 app-shells/bash		-net
-# crosh CUPS CLI isn't ready yet: http://crbug.com/588231
-chromeos-base/crosh	-cups
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi	static-libs

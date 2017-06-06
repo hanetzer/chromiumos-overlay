@@ -16,7 +16,6 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cups"
 
 RDEPEND="app-admin/sudo
 	chromeos-base/vboot_reference
@@ -24,7 +23,6 @@ RDEPEND="app-admin/sudo
 	net-misc/openssh
 	net-wireless/iw
 	sys-apps/net-tools
-	cups? ( net-print/cups )
 "
 DEPEND=""
 
@@ -54,8 +52,6 @@ src_install() {
 	doins dev.d/*.sh
 	insinto "${d}/removable.d"
 	doins removable.d/*.sh
-	insinto "${d}/extra.d"
-	use cups && doins extra.d/??-cups.sh
 	insinto "${d}"
 	doins "${WORKDIR}"/inputrc.crosh
 }
