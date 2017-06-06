@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-direncryption systemd tpm tpm2"
+IUSE="-cert_provision -direncryption systemd tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -56,6 +56,10 @@ src_install() {
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache tpm-manager
 	dosbin mount-encrypted
+	if use cert_provision; then
+		dolib.so lib/libcert_provision.so
+		dosbin cert_provision_client
+	fi
 	popd >/dev/null
 
 	insinto /etc/dbus-1/system.d
@@ -92,6 +96,10 @@ src_install() {
 	fi
 	insinto /usr/share/cros/init
 	doins init/lockbox-cache.sh
+	if use cert_provision; then
+		insinto /usr/include/cryptohome
+		doins cert_provision.h
+	fi
 }
 
 platform_pkg_test() {
