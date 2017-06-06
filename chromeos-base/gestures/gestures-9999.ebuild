@@ -24,6 +24,9 @@ DEPEND="dev-cpp/gtest
 	X? ( x11-libs/libXi )
 	${RDEPEND}"
 
+# The last dir must be named "gestures" for include path reasons.
+S="${WORKDIR}/gestures"
+
 src_configure() {
 	asan-setup-env
 	cros-workon_src_configure
