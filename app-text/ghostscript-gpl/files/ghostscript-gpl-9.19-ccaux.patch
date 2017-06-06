@@ -1,50 +1,35 @@
-Rebased/squashed version of this branch:
+Pull upstream work from:
 
-  git://git.ghostscript.com/user/chrisl/ghostpdl.git CCAUX-configure
+http://bugs.ghostscript.com/show_bug.cgi?id=696508
 
-With work for this bug:
+Backported from commit:
 
-  http://bugs.ghostscript.com/show_bug.cgi?id=696508
+commit c3c4bf022a631be939ebb4bf6f59e41514cb1e48 (HEAD)
+Author: Chris Liddell <chris.liddell@artifex.com>
+Date:   Mon Jan 25 10:59:23 2016 +0000
 
-With the following commits (ordered oldest to newest):
+    Bug 696508: improve configure cross compile support
 
-4c5e0bd3fe90 First changes for CCAUX from configure
-ae9483b8b675 Move the configure subcall to a temp directory
-b526dba7feeb Ensure all the flags we need get set....
-0a9de688a93c Pass the CFLAGSAUX to the recursive configure call (as CFLAGS).
-e48338229a83 If the recursive call to configure fails, error out.
-adbfe2c1da69 Remove debugging code
-ec006b8ca327 Fix logic for keeping/deleting tmp directort for recursive configure call
-e4a37efddd8a Fix up missing quotes
-6d1e7220d0c2 Remove contents of CAPOPTAUX and fix setting CFLAGSAUX
-e3de4f83dc53 More cross compile tidy ups.
-e32efbf69732 Fix erroneous png.h dependency (should have been png_.h).
-69ea8e878bd0 Tweak CFLAGS for aux tools in unix-aux.mak
-1c9bcc96a63a Tweak .gitignore for new derived files
-9babee5fc154 Use AC_PATH_TOOL (rather than AC_PATH_PROG) for pkg-config
-60b419aae38c Tweak some places we use uname in configure
-8b2884cb620a Safer use of "uname"
-75f492cd3345 Allow configure to create an arch.h when cross compiling.
-db68bfe55488 Tidy up naming of configure generated arch.h
-42fea734590f Slightly hacky pkg-config solution for cross compiling
+    This is a squashing of the commits on the branch:
 
-And some additional patches (posted to the same bug) for allowing $LDFLAGSAUX
-and $CUPSCONFIG to be inherited for cross-compilation.
+    CCAUX-configure
 
+    This allows CCAUX and related settings to be set on the configure command
+    line, or in the environment.
 ---
- Makefile.in             |  16 +-
+ Makefile.in             |  21 +-
  arch/arch_autoconf.h.in |  97 +++++++
- auxflags.mak.in         |  29 +++
+ auxflags.mak.in         |  29 ++
  base/gsroprun.c         |   1 -
  base/unix-aux.mak       |   6 +-
  base/unix-end.mak       |  10 +-
- configure.ac            | 667 +++++++++++++++++++++++++++++++++---------------
- 7 files changed, 610 insertions(+), 216 deletions(-)
+ configure.ac            | 750 +++++++++++++++++++++++++++++++++++-------------
+ 7 files changed, 693 insertions(+), 221 deletions(-)
  create mode 100644 arch/arch_autoconf.h.in
  create mode 100644 auxflags.mak.in
 
 diff --git a/Makefile.in b/Makefile.in
-index df561083de92..c49ca8762922 100644
+index da6863b43e05..0b73d7554359 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -80,6 +80,7 @@ INSTALL_DATA = $(INSTALL) -m 644
@@ -71,18 +56,35 @@ index df561083de92..c49ca8762922 100644
  
  # Choose capability options.
  
-@@ -361,7 +362,9 @@ RANLIB=@RANLIB@
+@@ -361,7 +362,7 @@ RANLIB=@RANLIB@
  # Define the name of the C compiler (target and host (AUX))
  
  CC=@CC@
 -CCAUX=@CC@
-+
-+# CCAUX and it's flags come from:
-+include auxflags.mak
++CCAUX=@CCAUX@
  
  # Define the name of the linker for the final link step.
  # Normally this is the same as the C compiler.
-@@ -411,6 +414,7 @@ DBUS_LIBS=@DBUS_LIBS@
+@@ -371,6 +372,7 @@ CCAUXLD=$(CCAUX)
+ 
+ # Define the default gcc flags.
+ GCFLAGS=@CPPFLAGS@ @GCFLAGS@ @CFLAGS@
++GCFLAGSAUX=@GCFLAGSAUX@
+ 
+ # Define the added flags for standard, debugging, profiling 
+ # and shared object builds.
+@@ -380,6 +382,10 @@ CFLAGS_DEBUG=@DBG_CFLAGS@
+ CFLAGS_PROFILE=-pg @OPT_CFLAGS@
+ CFLAGS_SO=@DYNAMIC_CFLAGS@
+ 
++CFLAGSAUX_STANDARD=@CFLAGSAUX_STANDARD@
++CFLAGSAUX_DEBUG=@CFLAGSAUX_DEBUG@
++CFLAGSAUX_PROFILE=-pg @CFLAGSAUX_STANDARD@
++
+ # Define the extra flags added for address sanitizer builds
+ 
+ CFLAGS_SANITIZE=-fsanitize=address -fno-omit-frame-pointer
+@@ -411,6 +417,7 @@ DBUS_LIBS=@DBUS_LIBS@
  ACDEFS=@DEFS@
  
  CFLAGS=$(CFLAGS_STANDARD) $(GCFLAGS) $(AC_CFLAGS) $(XCFLAGS)
@@ -90,7 +92,16 @@ index df561083de92..c49ca8762922 100644
  
  # Define platform flags for ld.
  # SunOS 4.n may need -Bstatic.
-@@ -519,9 +523,6 @@ FEATURE_DEVS=$(GLD)pipe.dev $(GLD)gsnogc.dev $(GLD)htxlib.dev $(GLD)psl3lib.dev
+@@ -434,7 +441,7 @@ LDFLAGS_SO=@DYNAMIC_LDFLAGS@
+ # (Libraries required by individual drivers are handled automatically.)
+ 
+ EXTRALIBS=$(XTRALIBS) @LIBS@ @DYNAMIC_LIBS@ @FONTCONFIG_LIBS@ @FT_LIBS@ @JPX_AUTOCONF_LIBS@
+-AUXEXTRALIBS=$(XTRALIBS) @LIBS@ @DYNAMIC_LIBS@ @FONTCONFIG_LIBS@ @FT_LIBS@ @JPX_AUTOCONF_LIBS@ @AUX_SHARED_ZLIB@
++AUXEXTRALIBS=@AUXEXTRALIBS@
+ 
+ # Define the standard libraries to search at the end of linking.
+ # Most platforms require -lpthread for the POSIX threads library;
+@@ -519,9 +526,6 @@ FEATURE_DEVS=$(GLD)pipe.dev $(GLD)gsnogc.dev $(GLD)htxlib.dev $(GLD)psl3lib.dev
               $(GLD)psf2lib.dev $(GLD)lzwd.dev $(GLD)sicclib.dev \
               $(GLD)sjbig2.dev $(GLD)sjpx.dev $(GLD)ramfs.dev
  
@@ -100,7 +111,7 @@ index df561083de92..c49ca8762922 100644
  #FEATURE_DEVS=$(PSD)psl3.dev $(PSD)pdf.dev
  #FEATURE_DEVS=$(PSD)psl3.dev $(PSD)pdf.dev $(PSD)dpsnext.dev $(PSD)ttfont.dev $(PSD)rasterop.dev $(GLD)pipe.dev
  # The following is strictly for testing.
-@@ -637,8 +638,11 @@ AK=
+@@ -637,8 +641,11 @@ AK=
  
  CCFLAGS=$(GENOPT) $(CAPOPT) $(CFLAGS)
  CC_=$(CC) $(CCFLAGS)
@@ -330,7 +341,7 @@ index 093183b10d34..1d24a350d183 100644
  memento:
  	$(MAKE) $(SUB_MAKE_OPTION) $(MEMENTODEFS) default
 diff --git a/configure.ac b/configure.ac
-index bf6d3f587afb..80c39b3fa01d 100644
+index b88f63380e3d..e3a7fdf5e369 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -30,6 +30,20 @@ CPPFLAGS="${CPPFLAGS:=}"
@@ -354,10 +365,35 @@ index bf6d3f587afb..80c39b3fa01d 100644
  dnl --------------------------------------------------
  dnl List of non-threadsafe devices
  dnl defined at the top of the file for ease of access
-@@ -91,6 +105,37 @@ AC_PROG_CC
- AC_PROG_CPP
- CFLAGS=$save_cflags
+@@ -86,10 +100,87 @@ dnl --------------------------------------------------
  
+ dnl AC_PROG_CC likes to add '-g -O2' to CFLAGS. however,
+ dnl we ignore those flags and construct our own.
+-save_cflags=$CFLAGS
++save_cflags="$CFLAGS"
+ AC_PROG_CC
+ AC_PROG_CPP
+-CFLAGS=$save_cflags
++CFLAGS="$save_cflags"
++
++AUXFLAGS_MAK_LINE00="CCAUX=@CC@"
++AUXFLAGS_MAK_LINE01="GCFLAGSAUX=@CPPFLAGS@ @GCFLAGS@ @CFLAGS@"
++AUXFLAGS_MAK_LINE02="CAPOPTAUX="
++AUXFLAGS_MAK_LINE03="CFLAGSAUX_STANDARD=@OPT_CFLAGS@"
++AUXFLAGS_MAK_LINE04="CFLAGSAUX_DEBUG=@DBG_CFLAGS@"
++AUXFLAGS_MAK_LINE05="CFLAGSAUX_PROFILE=-pg @OPT_CFLAGS@"
++AUXFLAGS_MAK_LINE06="LDFLAGSAUX=@LDFLAGS@"
++AUXFLAGS_MAK_LINE07="AUXEXTRALIBS=@LIBS@"
++
++GCFLAGSAUXTMP="\$(GCFLAGS)"
++CAPOPTAUXTMP="\$(CAPOPT)"
++CFLAGSAUX_STANDARDTMP="\$(CFLAGS_STANDARD)"
++CFLAGSAUX_DEBUGTMP="\$(CFLAGS_DEBUG)"
++CFLAGSAUX_PROFILETMP="\$(CFLAGS_PROFILE)"
++LDFLAGSAUXTMP="\$(LDFLAGS)"
++AUXEXTRALIBSTMP="\$(EXTRALIBS)"
++
++
 +# purposefully do not include "help" output for this
 +AC_ARG_ENABLE([save_confaux])
 +
@@ -371,9 +407,29 @@ index bf6d3f587afb..80c39b3fa01d 100644
 +  fi
 +  mkdir $CONFAUXDIR
 +  cd $CONFAUXDIR
-+  ../$0 CC="$CCAUX" CFLAGS="$CFLAGSAUX" LDFLAGS="$LDFLAGSAUX" CCAUX= CFLAGSAUX= CFLAGSAUX= MAKEFILE=../$AUXFLAGS_MAK --host= --build= --without-libtiff --disable-contrib --disable-fontconfig --disable-dbus --disable-freetype --disable-fapi --disable-cups --disable-openjpeg --disable-gtk --with-libiconv=no --without-libidn --without-libpaper --without-pdftoraster --without-ijs --without-luratech --without-jbig2dec --without-x --with-drivers=""
++  echo -e $AUXFLAGS_MAK_CONTENTS > $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE00  > $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE01 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE02 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE03 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE04 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE05 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE06 >> $AUXFLAGS_MAK.in
++  echo $AUXFLAGS_MAK_LINE07 >> $AUXFLAGS_MAK.in
++
++  ../$0 CC="$CCAUX" CFLAGS="$CFLAGSAUX" LDFLAGS="$LDFLAGSAUX" CCAUX= CFLAGSAUX= CFLAGSAUX= MAKEFILE=$AUXFLAGS_MAK --host= --build= --without-libtiff --disable-contrib --disable-fontconfig --disable-dbus --disable-freetype --disable-fapi --disable-cups --disable-openjpeg --disable-gtk --with-libiconv=no --without-libidn --without-libpaper --without-pdftoraster --without-ijs --without-luratech --without-jbig2dec --without-x --with-drivers=""
 +  status=$?
 +  cp config.log ../configaux.log
++  if test $status -eq 0 ; then
++    CCAUX=$(grep CCAUX $AUXFLAGS_MAK | sed "s/\bCCAUX=//g")
++    GCFLAGSAUXTMP=$(grep GCFLAGSAUX $AUXFLAGS_MAK | sed "s/\bGCFLAGSAUX=//g")
++    CAPOPTAUXTMP=$(grep CAPOPTAUX $AUXFLAGS_MAK | sed "s/\bCAPOPTAUX=//g")
++    CFLAGSAUX_STANDARDTMP=$(grep CFLAGSAUX_STANDARD $AUXFLAGS_MAK | sed "s/\bCFLAGSAUX_STANDARD=//g")
++    CFLAGSAUX_DEBUGTMP=$(grep CFLAGSAUX_DEBUG $AUXFLAGS_MAK | sed "s/\bCFLAGSAUX_DEBUG=//g")
++    CFLAGS_PROFILETMP=$(grep CFLAGS_PROFILE $AUXFLAGS_MAK | sed "s/\bCFLAGS_PROFILE=//g")
++    LDFLAGSAUXTMP=$(grep LDFLAGSAUX $AUXFLAGS_MAK | sed "s/\bLDFLAGSAUX=//g")
++    AUXEXTRALIBSTMP=$(grep AUXEXTRALIBS$ $AUXFLAGS_MAK | sed "s/\bAUXEXTRALIBS$=//g")
++  fi
 +  cd $olddir
 +
 +  if test x"$enable_save_confaux" != x"yes"; then
@@ -385,14 +441,21 @@ index bf6d3f587afb..80c39b3fa01d 100644
 +  fi
 +fi
 +
++GCFLAGSAUX=$GCFLAGSAUXTMP
++CAPOPTAUX=$CAPOPTAUXTMP
++CFLAGSAUX_STANDARD=$CFLAGSAUX_STANDARDTMP
++CFLAGSAUX_DEBUG=$CFLAGSAUX_DEBUGTMP
++CFLAGS_PROFILE=$CFLAGS_PROFILETMP
++LDFLAGSAUX=$LDFLAGSAUXTMP
++AUXEXTRALIBS=$AUXEXTRALIBSTMP
++
 +# we have to do this here in case it took
 +# AC_PROG_CC to set CC (as it usually does)
 +CCAUX="${CCAUX:-$CC}"
-+
+ 
  AC_PROG_SED
  dnl See if it is GNU sed or else.
- dnl - need more work to tell SED features.
-@@ -106,29 +151,51 @@ AC_PROG_RANLIB
+@@ -106,29 +197,64 @@ AC_PROG_RANLIB
  #AC_PROG_INSTALL
  
  dnl pkg-config is used for several tests now...
@@ -409,15 +472,29 @@ index bf6d3f587afb..80c39b3fa01d 100644
 +    PKGCONFIG=
 +  fi
 +fi
++
++AC_PATH_TOOL(STRIP_XE, strip)
++
++# this is an unpleasant hack
++# but if we are cross compiling, and there isn't a matching
++# pkconfig for the --host setting, then don't use the 'local'
++# pkconfig at all
++if test x"$cross_compiling" = x"yes"; then
++  AC_PATH_PROG(BUILD_STRIP_XE, strip)
++  if test x"$BUILD_STRIP_XE" = x"$STRIP_XE" ; then
++    STRIP_XE=
++  fi
++fi
  
  dnl --------------------------------------------------  
  dnl Allow excluding the contributed drivers
- dnl --------------------------------------------------  
+-dnl --------------------------------------------------  
++dnl --------------------------------------------------
++
++AC_ARG_ENABLE([contrib], AC_HELP_STRING([--disable-contrib], [Do not include contributed drivers]))
  
 -AC_ARG_ENABLE([contrib], AC_HELP_STRING([--disable-contrib],
 -    [Do not include contributed drivers]))
-+AC_ARG_ENABLE([contrib], AC_HELP_STRING([--disable-contrib], [Do not include contributed drivers]))
-+
  CONTRIBINCLUDE="include $srcdir/contrib/contrib.mak"
  INSTALL_CONTRIB="install-contrib-extras"
  
@@ -456,7 +533,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  
  if test x$enable_contrib = xno; then
      CONTRIBINCLUDE=""
-@@ -147,7 +214,13 @@ dnl --------------------------------------------------
+@@ -147,7 +273,13 @@ dnl --------------------------------------------------
  CC_OPT_FLAGS_TO_TRY="-O"
  SET_DT_SONAME="-soname="
  
@@ -471,7 +548,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
          Linux*|GNU*)
          if test $ac_cv_prog_gcc = yes; then
              CC_OPT_FLAGS_TO_TRY="-O2"
-@@ -187,7 +260,8 @@ case `uname` in
+@@ -187,7 +319,8 @@ case `uname` in
              SET_DT_SONAME="so"
          fi
          ;;
@@ -481,7 +558,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  
  AC_SUBST(SET_DT_SONAME)
  
-@@ -205,16 +279,28 @@ else
+@@ -205,16 +338,28 @@ else
      dbgflags_to_try="$CC_DBG_FLAGS_TO_TRY"
  fi
  
@@ -518,7 +595,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  
  AC_SUBST(ARCH_CONF_HEADER)
  
-@@ -228,7 +314,7 @@ AC_SUBST(ARCH_CONF_HEADER)
+@@ -228,7 +373,7 @@ AC_SUBST(ARCH_CONF_HEADER)
  
  AC_MSG_CHECKING([supported compiler flags])
  old_cflags=$CFLAGS
@@ -527,7 +604,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  for flag in $optflags_to_try; do
      CFLAGS="$CFLAGS $flag"
      AC_TRY_COMPILE(, [return 0;], [
-@@ -246,7 +332,7 @@ for flag in $cflags_to_try; do
+@@ -246,7 +391,7 @@ for flag in $cflags_to_try; do
          CFLAGS=$old_cflags
  done
  old_cflags=$CFLAGS
@@ -536,7 +613,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  for flag in $dbgflags_to_try; do
      CFLAGS="$CFLAGS $flag"
      AC_TRY_COMPILE(, [return 0;], [
-@@ -406,18 +492,22 @@ if test x"$large_color_index" != "x0"; then
+@@ -406,18 +551,22 @@ if test x"$large_color_index" != "x0"; then
     AC_CHECK_SIZEOF(unsigned long long)
     if test $ac_cv_sizeof_unsigned_long_long = 8; then
            color_ind_type="unsigned long long"
@@ -559,7 +636,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
        fi
       fi
      fi
-@@ -428,18 +518,22 @@ else
+@@ -428,18 +577,22 @@ else
     AC_CHECK_SIZEOF(unsigned long int)
     if test $ac_cv_sizeof_unsigned_long_int = 4; then
            color_ind_type="unsigned long int"
@@ -582,7 +659,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
        fi
       fi
      fi
-@@ -450,8 +544,13 @@ dnl if a suitable type wasn't found above, we fall back to
+@@ -450,8 +603,13 @@ dnl if a suitable type wasn't found above, we fall back to
  dnl a default in genarch.
  if test "$color_ind_type" != "none"; then
          GCFLAGS="$GCFLAGS -DGX_COLOR_INDEX_TYPE=\"$color_ind_type\""
@@ -596,7 +673,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  dnl --------------------------------------------------
  dnl Set options that we want to pass into all other
  dnl configure scripts we might call
-@@ -459,8 +558,12 @@ dnl --------------------------------------------------
+@@ -459,8 +617,12 @@ dnl --------------------------------------------------
  
  SUBCONFIG_OPTS=""
  
@@ -611,7 +688,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  fi
  
  dnl --------------------------------------------------
-@@ -493,46 +596,39 @@ AC_ARG_ENABLE([threading], AC_HELP_STRING([--disable-threading],
+@@ -493,46 +655,39 @@ AC_ARG_ENABLE([threading], AC_HELP_STRING([--disable-threading],
  # if you haven't got pread/pwrite, we can't use multithreading
  if test "x$HAVE_PREAD_PWRITE" != "x"; then
    if test "$enable_threading" != "no"; then
@@ -691,7 +768,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
    fi
  fi
  
-@@ -983,9 +1079,17 @@ AC_SUBST(LCMS2DIR)
+@@ -983,9 +1138,17 @@ AC_SUBST(LCMS2DIR)
  
  dnl look for libtiff, it also requires lib
  dnl png for the png output device; it also requires zlib
@@ -709,7 +786,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  TIFFDEVS=''
  FAX_DEVS=''
  XPSWRITEDEVICE=''
-@@ -1073,10 +1177,11 @@ case "x$with_system_libtiff" in
+@@ -1073,10 +1236,11 @@ case "x$with_system_libtiff" in
              AC_MSG_NOTICE([Could not find local copy of libtiff. Disabling tiff and xps output devices.])
          fi
          ;;
@@ -723,7 +800,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
        echo "Running libtiff configure script..."
        olddir=`pwd`
        if ! test -d "$LIBTIFFCONFDIR" ; then
-@@ -1084,7 +1189,7 @@ if test $SHARE_LIBTIFF -eq 0; then
+@@ -1084,7 +1248,7 @@ if test $SHARE_LIBTIFF -eq 0; then
        fi
        cd "$LIBTIFFCONFDIR" && ../"$LIBTIFFDIR"/configure --disable-jbig --disable-lzma $SUBCONFIG_OPTS
        status=$?
@@ -732,19 +809,24 @@ index bf6d3f587afb..80c39b3fa01d 100644
          AC_MSG_ERROR([libtiff configure script failed], $status)
        fi
        cd "$olddir"
-@@ -1138,7 +1243,10 @@ if ( test -d $srcdir/cups ); then
+@@ -1138,7 +1302,15 @@ if ( test -d $srcdir/cups ); then
      CUPS_DIR="$srcdir/cups"
      if test x$enable_cups != xno; then
          if test x$with_local_cups != xyes; then
 -            AC_PATH_PROG(CUPSCONFIG,cups-config)
-+            # cross compiling - don't autodetect cups-config
-+            if test x"$host_alias" = x"" ; then
-+                AC_PATH_PROG(CUPSCONFIG,cups-config)
++            if test x"$CUPSCONFIG" = x""; then
++              AC_PATH_TOOL(CUPSCONFIG,cups-config)
++              if test x"$cross_compiling" = x"yes"; then
++                AC_PATH_PROG(BUILD_CUPSCONFIG, cups-config)
++                if test x"$BUILD_CUPSCONFIG" = x"$CUPSCONFIG" ; then
++                  CUPSCONFIG=
++                fi
++              fi
 +            fi
              # check for a libcups header
              AC_CHECK_HEADER([cups/cups.h],[],[CUPSCONFIG=""])
              # And check for a libcupsimage header
-@@ -1177,7 +1285,6 @@ if ( test -d $srcdir/cups ); then
+@@ -1177,7 +1349,6 @@ if ( test -d $srcdir/cups ); then
                  CUPSINCLUDE="include $srcdir/cups/cups.mak"
                  CUPSDEV="cups"
  
@@ -752,7 +834,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
                  # pwgraster support arrived in cups 1.5.x
                  if test "$CUPSAPIVERSION" ">" "1.4" ; then
                    CUPSDEV="$CUPSDEV pwgraster"
-@@ -1194,15 +1301,13 @@ if ( test -d $srcdir/cups ); then
+@@ -1194,15 +1365,13 @@ if ( test -d $srcdir/cups ); then
                  fi
              fi
          else
@@ -775,7 +857,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
          fi
      fi
  fi
-@@ -1231,15 +1336,16 @@ dnl look for IJS implementation
+@@ -1231,15 +1400,16 @@ dnl look for IJS implementation
  AC_ARG_WITH([ijs], AC_HELP_STRING([--without-ijs],
      [disable IJS driver support]))
  
@@ -795,7 +877,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  
  dnl set safe defaults
      IJSDIR=src
-@@ -1291,21 +1397,29 @@ if test x$with_luratech != xno; then
+@@ -1291,21 +1461,29 @@ if test x$with_luratech != xno; then
      SHARE_JBIG2=0
      JBIG2DIR=$srcdir/luratech/ldf_jb2
  
@@ -838,7 +920,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  
      JBIG2FILEDEVS='$(DD)gdevjbig2.dev'
      JBIG2DEVS='$(PSD)jbig2.dev'
-@@ -1366,7 +1480,6 @@ if test "x$JBIG2_DECODER" = x; then
+@@ -1366,7 +1544,6 @@ if test "x$JBIG2_DECODER" = x; then
              JBIG2_AUTOCONF_CFLAGS="$JBIG2_AUTOCONF_CFLAGS -DWORDS_BIGENDIAN"
          fi
  
@@ -846,7 +928,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
          AC_MSG_RESULT([$JBIG2DIR])
          echo "Continuing with Ghostscript configuration..."
      else
-@@ -1413,22 +1526,29 @@ if test x$with_luratech != xno; then
+@@ -1413,22 +1590,29 @@ if test x$with_luratech != xno; then
      SHARE_JPX=0
      JPXDIR=$srcdir/luratech/lwf_jp2
  
@@ -890,7 +972,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
      JPXDEVS='$(PSD)jpx.dev'
    else
      AC_MSG_RESULT([no])
-@@ -2056,97 +2176,109 @@ SO_LIB_EXT=".so"
+@@ -2056,97 +2240,109 @@ SO_LIB_EXT=".so"
  DLL_EXT=""
  SO_LIB_VERSION_SEPARATOR="."
  
@@ -1085,7 +1167,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
  ])
  
  AC_SUBST(DYNAMIC_CFLAGS)
-@@ -2441,7 +2573,9 @@ AUXDIRPOSTFIX=""
+@@ -2441,7 +2637,9 @@ AUXDIRPOSTFIX=""
  case `uname` in
      MINGW*|MSYS*)
      AUXDIRPOSTFIX="_"
@@ -1096,7 +1178,7 @@ index bf6d3f587afb..80c39b3fa01d 100644
      ;;
  esac
  AC_SUBST(AUXDIRPOSTFIX)
-@@ -2458,15 +2592,134 @@ AC_ARG_WITH([exe-ext],  AC_HELP_STRING([--with-exe-ext=EXT],
+@@ -2458,15 +2656,134 @@ AC_ARG_WITH([exe-ext],  AC_HELP_STRING([--with-exe-ext=EXT],
  if test "x"$with_exe_ext != "x"; then
    EXEEXT="$with_exe_ext"
  else
@@ -1236,20 +1318,32 @@ index bf6d3f587afb..80c39b3fa01d 100644
  dnl --------------------------------------------------
  dnl Do substitutions
  dnl --------------------------------------------------
-@@ -2476,7 +2729,11 @@ AC_SUBST(OPT_CFLAGS)
+@@ -2475,8 +2792,23 @@ AC_SUBST(SRCDIR)
+ AC_SUBST(OPT_CFLAGS)
  AC_SUBST(DBG_CFLAGS)
  AC_SUBST(GCFLAGS)
++AC_SUBST(STRIP_XE)
  
 -AC_OUTPUT(Makefile)
++AC_SUBST(CCAUX)
++AC_SUBST(GCFLAGSAUX)
++AC_SUBST(CAPOPTAUX)
++AC_SUBST(CFLAGSAUX_STANDARD)
++AC_SUBST(CFLAGSAUX_DEBUG)
++AC_SUBST(CFLAGSAUX_PROFILE)
++AC_SUBST(LDFLAGSAUX)
++AC_SUBST(AUXEXTRALIBS)
++
++
 +CONFIG_FILES_LIST="$CONFIG_FILES_LIST $THEMAKEFILE"
 +
 +if test x"$THEMAKEFILE" != x"$MAKEFILE" && test x"$CCAUX" = x"$CC"; then
-+  CONFIG_FILES_LIST="$CONFIG_FILES_LIST $AUXFLAGS_MAK"
++  CONFIG_FILES_LIST="$CONFIG_FILES_LIST"
 +fi
  
  if test "x$AFS" = "x1"; then
     AC_MSG_WARN([Using "native" font scaler which is now deprecated (rather than freetype),])
-@@ -2487,3 +2744,7 @@ if test "x$NTS_EXCLUDES" != "x" ; then
+@@ -2487,3 +2819,7 @@ if test "x$NTS_EXCLUDES" != "x" ; then
     AC_MSG_WARN([Due to the --enable-threadsafe option, the following devices have been excluded because they are not threadsafe:])
     echo "$NTS_EXCLUDES"
  fi
@@ -1258,5 +1352,5 @@ index bf6d3f587afb..80c39b3fa01d 100644
 +
 +AC_OUTPUT
 -- 
-2.8.0.rc3.226.g39d4020
+2.12.2
 
