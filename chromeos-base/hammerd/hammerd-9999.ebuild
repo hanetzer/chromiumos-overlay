@@ -10,7 +10,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="hammerd"
 
-inherit cros-workon platform
+inherit cros-workon platform udev user
 
 DESCRIPTION="A daemon to update EC firmware of hammer, the base of the detachable."
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/hammerd/"
@@ -27,8 +27,15 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
+pkg_preinst() {
+	# Create user and group for hammerd
+	enewuser "hammerd"
+	enewgroup "hammerd"
+}
+
 src_install() {
 	dobin "${OUT}/hammerd"
+	udev_dorules 99-hammerd.rules
 }
 
 platform_pkg_test() {
