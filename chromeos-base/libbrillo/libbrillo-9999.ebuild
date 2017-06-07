@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
@@ -28,7 +28,7 @@ COMMON_DEPEND="
 	chromeos-base/chromeos-minijail
 	dbus? ( dev-libs/dbus-glib )
 	dev-libs/openssl
-	dev-libs/protobuf
+	dev-libs/protobuf:=
 	net-misc/curl
 	sys-apps/rootdev
 "

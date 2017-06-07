@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
@@ -34,7 +34,7 @@ COMMON_DEPEND="
 	cros_p2p? ( chromeos-base/p2p )
 	dev-libs/expat
 	dev-libs/openssl
-	dev-libs/protobuf
+	dev-libs/protobuf:=
 	dev-libs/xz-embedded
 	dev-util/bsdiff
 	dev-util/imgdiff

@@ -111,7 +111,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	!chromeless_tests? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
 	dev-libs/opensc
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 	dev-python/btsocket
 	dev-python/contextlib2
 	dev-python/dbus-python

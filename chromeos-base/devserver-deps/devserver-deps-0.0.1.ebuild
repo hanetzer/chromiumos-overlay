@@ -14,7 +14,7 @@ IUSE=""
 # ChromiumOS Devsever code.
 RDEPEND="
 	dev-lang/python
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 	dev-python/lockfile
 	dev-python/cherrypy
 	net-misc/gsutil

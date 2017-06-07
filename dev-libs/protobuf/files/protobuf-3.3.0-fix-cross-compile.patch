@@ -1,0 +1,19 @@
+When the build directory isn't the same as the source directory the
+google/protobuf/compiler/js directory doesn't exist.  Make sure that it does
+before trying to stick a file in there.
+
+Sent upstream as https://github.com/google/protobuf/pull/3205
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index bfb875ac..dd041cb6 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -519,7 +519,7 @@ js_well_known_types_sources =                                  \
+ 	google/protobuf/compiler/js/well_known_types/timestamp.js
+ # We have to cd to $(srcdir) so that out-of-tree builds work properly.
+ google/protobuf/compiler/js/well_known_types_embed.cc: js_embed$(EXEEXT) $(js_well_known_types_sources)
+-	oldpwd=`pwd` && cd $(srcdir) && \
++	oldpwd=`pwd` && cd $(srcdir) && mkdir -p $$(dirname $$oldpwd/$@) && \
+ 	$$oldpwd/js_embed$(EXEEXT) $(js_well_known_types_sources) > $$oldpwd/$@
+ 
+ # Tests ==============================================================

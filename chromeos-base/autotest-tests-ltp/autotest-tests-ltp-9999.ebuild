@@ -19,7 +19,7 @@ IUSE="+autotest"
 RDEPEND="${RDEPEND}
 	chromeos-base/autotest-deps-ltp
 	chromeos-base/protofiles
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 	dev-python/pygobject
 	!<chromeos-base/autotest-tests-0.0.1-r1723
 "

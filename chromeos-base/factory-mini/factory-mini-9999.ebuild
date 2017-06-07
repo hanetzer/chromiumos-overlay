@@ -32,7 +32,7 @@ IUSE=""
 DEPEND="${PYTHON_DEPS}
 	dev-python/jsonrpclib
 	dev-python/pyyaml
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 	virtual/chromeos-bsp-factory
 	virtual/chromeos-regions
 "

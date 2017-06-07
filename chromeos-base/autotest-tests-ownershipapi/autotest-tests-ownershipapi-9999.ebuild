@@ -21,7 +21,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
 	chromeos-base/telemetry
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 	dev-python/pygobject
 "
 

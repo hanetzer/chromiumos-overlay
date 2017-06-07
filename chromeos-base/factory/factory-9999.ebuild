@@ -24,7 +24,7 @@ DEPEND="virtual/chromeos-bsp-factory
 	dev-python/enum34
 	dev-python/jsonrpclib
 	dev-python/pyyaml
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 "
 
 BUILD_DIR="${WORKDIR}/build"

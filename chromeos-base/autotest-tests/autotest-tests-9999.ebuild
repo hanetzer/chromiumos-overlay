@@ -39,7 +39,7 @@ RDEPEND="${RDEPEND}
 	)
 	tests_platform_MetricsUploader? (
 		chromeos-base/metrics
-		dev-libs/protobuf-python
+		dev-python/protobuf-python
 	)
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
 	tests_platform_RootPartitionsNotMounted? ( virtual/udev )

@@ -84,7 +84,7 @@ FACTORY_TEST_RDEPEND+="
 
 # Packages used by registration code tests.
 FACTORY_TEST_RDEPEND+="
-	dev-libs/protobuf-python
+	dev-python/protobuf-python
 "
 
 # Packages to support running autotest tests inside factory framework.

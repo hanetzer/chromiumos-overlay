@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_COMMIT=("01c3c6e8007f62df0d6371b71dacce1c035acb74" "a763c2ddabdb9cb51057823e0d79e53d089427af")
@@ -36,7 +36,7 @@ COMMON_DEPEND="
 	cros_p2p? ( chromeos-base/p2p )
 	dev-libs/expat
 	dev-libs/openssl
-	dev-libs/protobuf
+	dev-libs/protobuf:=
 	dev-libs/xz-embedded
 	dev-util/bsdiff
 	dev-util/imgdiff
