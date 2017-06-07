@@ -10,5 +10,5 @@ After=system-services.target
 [Service]
 Restart=on-failure
 ExecStart=/sbin/minijail0 -u bluetooth -g bluetooth -G \
-	-c 3500 -- \
+	-c 3500 -n -- \
 	/usr/libexec/bluetooth/bluetoothd --nodetach
