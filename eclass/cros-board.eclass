@@ -114,6 +114,7 @@ ALL_BOARDS=(
 	falco_li
 	fb1
 	fizz
+	fizz-moblab
 	foster
 	#fox
 	#fox_baskingridge
