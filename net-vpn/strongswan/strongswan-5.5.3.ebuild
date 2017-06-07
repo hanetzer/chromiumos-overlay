@@ -1,6 +1,5 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 inherit eutils linux-info systemd user
@@ -12,7 +11,7 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 LICENSE="GPL-2 RSA DES"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+caps curl +constraints debug dhcp eap farp gcrypt +gmp ldap mysql networkmanager +non-root +openssl selinux sqlite pam +pkcs11"
+IUSE="+caps curl +constraints debug dhcp eap farp gcrypt +gmp ldap mysql networkmanager +non-root +openssl selinux sqlite pam pkcs11"
 
 STRONGSWAN_PLUGINS_STD="led lookip systime-fix unity vici"
 STRONGSWAN_PLUGINS_OPT="blowfish ccm ctr gcm ha ipseckey ntru padlock rdrand unbound whitelist"
@@ -25,6 +24,7 @@ for mod in $STRONGSWAN_PLUGINS_OPT; do
 done
 
 COMMON_DEPEND="!net-misc/openswan
+	!net-misc/strongswan
 	gmp? ( >=dev-libs/gmp-4.1.5:= )
 	gcrypt? ( dev-libs/libgcrypt:0 )
 	caps? ( sys-libs/libcap )
@@ -42,7 +42,7 @@ DEPEND="${COMMON_DEPEND}
 RDEPEND="${COMMON_DEPEND}
 	virtual/logger
 	sys-apps/iproute2
-	!net-misc/libreswan
+	!net-vpn/libreswan
 	selinux? ( sec-policy/selinux-ipsec )"
 
 UGID="ipsec"
@@ -221,10 +221,10 @@ src_install() {
 }
 
 pkg_preinst() {
-	has_version "<net-misc/strongswan-4.3.6-r1"
+	has_version "<net-vpn/strongswan-4.3.6-r1"
 	upgrade_from_leq_4_3_6=$(( !$? ))
 
-	has_version "<net-misc/strongswan-4.3.6-r1[-caps]"
+	has_version "<net-vpn/strongswan-4.3.6-r1[-caps]"
 	previous_4_3_6_with_caps=$(( !$? ))
 }
 

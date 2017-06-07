@@ -22,7 +22,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	net-dialup/ppp
 	net-dialup/xl2tpd
-	net-misc/strongswan
+	net-vpn/strongswan
 "
 
 DEPEND="${RDEPEND}"
