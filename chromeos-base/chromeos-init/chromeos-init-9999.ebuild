@@ -80,7 +80,6 @@ src_install_upstart() {
 		doins upstart/pstore.conf upstart/reboot.conf
 		doins upstart/system-services.conf
 		doins upstart/uinput.conf
-		doins upstart/static-nodes.conf
 
 		if use syslog; then
 			doins upstart/log-rotate.conf upstart/syslog.conf
