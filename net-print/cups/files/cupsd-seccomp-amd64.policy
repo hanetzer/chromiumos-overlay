@@ -64,6 +64,8 @@ prctl: 1
 pread64: 1
 pwrite64: 1
 read: 1
+readlink: 1
+readlnikat: 1
 recvfrom: 1
 recvmsg: 1
 rename: 1
