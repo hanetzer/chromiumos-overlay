@@ -7,6 +7,10 @@ CROS_WORKON_TREE="c2c691c31a9581225c7ed3b29a9a643f70322e99"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v3.8"
 
+# AFDO_PROFILE_VERSION is the build on which the profile is collected.
+# This is required by kernel_afdo.
+AFDO_PROFILE_VERSION="9460.50.0"
+
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
