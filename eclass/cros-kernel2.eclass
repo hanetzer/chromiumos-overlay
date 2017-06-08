@@ -23,17 +23,30 @@ DEPEND="sys-apps/debianutils
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 	builtin_fw_t210_bpmp? ( sys-kernel/tegra_bpmp-t210 )
+	kernel-3_8? ( sys-kernel/chromeos-kernel-patches-3_8 )
+	kernel-3_10? ( sys-kernel/chromeos-kernel-patches-3_10 )
+	kernel-3_14? ( sys-kernel/chromeos-kernel-patches-3_14 )
+	kernel-3_18? ( sys-kernel/chromeos-kernel-patches-3_18 )
+	kernel-4_4? ( sys-kernel/chromeos-kernel-patches-4_4 )
+	kernel-4_12? ( sys-kernel/chromeos-kernel-patches-4_12 )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.18 4.2 )
 WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 
 IUSE="
+	apply_patches
 	-asan
 	clang
 	-device_tree
 	firmware_install
 	-kernel_sources
+	kernel-3_8
+	kernel-3_10
+	kernel-3_14
+	kernel-3_18
+	kernel-4_4
+	kernel-4_12
 	nfc
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
 	-wifi_testbed_ap
@@ -71,6 +84,16 @@ if [[ -n "${AFDO_PROFILE_VERSION}" ]]; then
 	"
 fi
 
+apply_private_patches() {
+	local PATCHDIR="${ROOT}"/usr/share/chromeos-kernel-patches
+	if [[ ! -d "${PATCHDIR}" ]]; then
+		return
+	fi
+	for p in "${PATCHDIR}"/[0-9][0-9][0-9][0-9]-*.patch; do
+		epatch "${p}"
+	done
+}
+
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
 MULTILIB_STRICT_EXEMPT+="|modules"
 
@@ -78,6 +101,11 @@ MULTILIB_STRICT_EXEMPT+="|modules"
 # this eclass to explicitly build in-tree.
 : ${CROS_WORKON_OUTOFTREE_BUILD:=1}
 : ${CROS_WORKON_INCREMENTAL_BUILD:=1}
+
+# Force in-tree builds if private patches may have to be applied.
+if [[ "${PV}" != "9999" ]] || use apply_patches; then
+	CROS_WORKON_OUTOFTREE_BUILD=0
+fi
 
 # Config fragments selected by USE flags. _config fragments are mandatory,
 # _config_disable fragments are optional and will be appended to kernel config
@@ -983,6 +1011,9 @@ cros-kernel2_src_unpack() {
 }
 
 cros-kernel2_src_prepare() {
+	if [[ "${PV}" != "9999" ]] || use apply_patches; then
+		apply_private_patches
+	fi
 	use clang || cros_use_gcc
 	cros-workon_src_prepare
 }
