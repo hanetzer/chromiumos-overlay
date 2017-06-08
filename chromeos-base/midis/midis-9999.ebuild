@@ -34,16 +34,12 @@ pkg_preinst() {
 }
 
 platform_pkg_test() {
-	local unit_tests=(
-		"client_test"
-		"client_tracker_test"
-		"device_test"
-		"device_tracker_test"
-		"udev_handler_test"
+	local tests=(
+		"midis_testrunner"
 	)
 
 	local test
-	for test in "${unit_tests[@]}"; do
+	for test in "${tests[@]}"; do
 		platform_test "run" "${OUT}"/${test}
 	done
 }
