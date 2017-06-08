@@ -140,9 +140,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3124.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3124.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3124.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3124.0_rc-r2.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3124.0_rc-r2.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3124.0_rc-r2.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -291,6 +291,7 @@ set_build_args() {
 		cros_host_is_clang=$(usetf clang)
 		clang_use_chrome_plugins=false
 		use_thin_lto=$(usetf thinlto)
+		allow_posix_link_time_opt=$(usetf thinlto)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.
