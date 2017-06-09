@@ -196,6 +196,7 @@ RDEPEND="${RDEPEND}
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/harfbuzz
+	media-libs/libsync
 	x11-libs/libdrm
 	ozone_platform_gbm? ( media-libs/minigbm )
 	media-libs/libpng
@@ -286,6 +287,7 @@ set_build_args() {
 		# use_system_minigbm is set below.
 		use_system_harfbuzz=true
 		use_system_freetype=true
+		use_system_libsync=true
 		use_cups=$(usetf cups)
 
 		# Clang features.
