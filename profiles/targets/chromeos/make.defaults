@@ -31,7 +31,7 @@ LINUX_FIRMWARE="rt2870"
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
           -ebuild-locks force-mirror nodoc noinfo noman -merge-sync
           parallel-install -preserve-libs sandbox splitdebug -strict userfetch
-          userpriv usersandbox -unknown-features-warn"
+          userpriv usersandbox -unknown-features-warn network-sandbox"
 
 # Enable license processing during our emerge hook:
 #   src/scripts/hooks/install/gen-package-licenses.sh.
