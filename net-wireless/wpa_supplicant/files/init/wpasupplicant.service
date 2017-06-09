@@ -9,4 +9,4 @@ After=boot-services.target
 [Service]
 Type=forking
 Restart=always
-ExecStart=/sbin/minijail0 -u wpa -g wpa -c 3000 -i -- /usr/sbin/wpa_supplicant -u -s -O/run/wpa_supplicant
+ExecStart=/sbin/minijail0 -u wpa -g wpa -c 3000 -n -i -- /usr/sbin/wpa_supplicant -u -s -O/run/wpa_supplicant
