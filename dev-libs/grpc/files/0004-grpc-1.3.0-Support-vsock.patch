@@ -1,0 +1,226 @@
+From 716cb35ab711efbd99a65c599b50f044e4912bd0 Mon Sep 17 00:00:00 2001
+From: Chirantan Ekbote <chirantan@google.com>
+Date: Mon, 10 Jul 2017 13:22:59 -0700
+Subject: [PATCH 4/5] grpc-1.3.0: Support vsock
+
+Add support for vsock as a transport for client <-> server communication. Has
+not been sent upstream because upstream has not indicated whether they are
+interested in adding support for this transport. Also the patch in its current
+form is probably not upstream-able because it assumes that vsock is always
+available, which is definitely not the case for all the platforms that upstream
+supports.
+---
+ .../ext/filters/client_channel/parse_address.c     | 15 +++++++++++
+ .../ext/filters/client_channel/parse_address.h     |  4 +++
+ src/core/ext/filters/client_channel/subchannel.c   |  2 ++
+ src/core/lib/iomgr/resolve_address_posix.c         |  5 ++++
+ src/core/lib/iomgr/sockaddr_posix.h                |  2 ++
+ src/core/lib/iomgr/sockaddr_utils.c                |  9 ++++++-
+ src/core/lib/iomgr/unix_sockets_posix.c            | 31 +++++++++++++++++++++-
+ src/core/lib/iomgr/unix_sockets_posix.h            |  3 +++
+ 8 files changed, 69 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/ext/filters/client_channel/parse_address.c b/src/core/ext/filters/client_channel/parse_address.c
+index 0c97062075..2932c56490 100644
+--- a/src/core/ext/filters/client_channel/parse_address.c
++++ b/src/core/ext/filters/client_channel/parse_address.c
+@@ -38,6 +38,8 @@
+ #include <string.h>
+ #ifdef GRPC_HAVE_UNIX_SOCKET
+ #include <sys/un.h>
++#include <sys/socket.h>
++#include <linux/vm_sockets.h>
+ #endif
+ 
+ #include <grpc/support/alloc.h>
+@@ -59,6 +61,19 @@ int parse_unix(grpc_uri *uri, grpc_resolved_address *resolved_addr) {
+   return 1;
+ }
+ 
++int parse_vsock(grpc_uri *uri, grpc_resolved_address *resolved_addr) {
++  memset(resolved_addr, 0, sizeof(grpc_resolved_address));
++  struct sockaddr_vm *vm = (struct sockaddr_vm *)resolved_addr->addr;
++
++  if (sscanf(uri->path, "%u:%u", &vm->svm_cid, &vm->svm_port) != 2) {
++    return 0;
++  }
++  vm->svm_family = AF_VSOCK;
++
++  resolved_addr->len = sizeof(struct sockaddr_vm);
++  return 1;
++}
++
+ #else /* GRPC_HAVE_UNIX_SOCKET */
+ 
+ int parse_unix(grpc_uri *uri, grpc_resolved_address *resolved_addr) { abort(); }
+diff --git a/src/core/ext/filters/client_channel/parse_address.h b/src/core/ext/filters/client_channel/parse_address.h
+index c8d77baa00..ad7182a90b 100644
+--- a/src/core/ext/filters/client_channel/parse_address.h
++++ b/src/core/ext/filters/client_channel/parse_address.h
+@@ -43,6 +43,10 @@
+  * unix socket path. Returns true upon success. */
+ int parse_unix(grpc_uri *uri, grpc_resolved_address *resolved_addr);
+ 
++/** Populate \a addr and \a len from \a uri, whose path is expected to contain a
++ * vsock specification. Returns true upon success. */
++int parse_vsock(grpc_uri *uri, grpc_resolved_address *resolved_addr);
++
+ /** Populate /a addr and \a len from \a uri, whose path is expected to contain a
+  * host:port pair. Returns true upon success. */
+ int parse_ipv4(grpc_uri *uri, grpc_resolved_address *resolved_addr);
+diff --git a/src/core/ext/filters/client_channel/subchannel.c b/src/core/ext/filters/client_channel/subchannel.c
+index 9a7a7a0ee5..f768b1e55a 100644
+--- a/src/core/ext/filters/client_channel/subchannel.c
++++ b/src/core/ext/filters/client_channel/subchannel.c
+@@ -801,6 +801,8 @@ static void grpc_uri_to_sockaddr(grpc_exec_ctx *exec_ctx, const char *uri_str,
+     GPR_ASSERT(parse_ipv4(uri, addr));
+   } else if (strcmp(uri->scheme, "ipv6") == 0) {
+     GPR_ASSERT(parse_ipv6(uri, addr));
++  } else if (strcmp(uri->scheme, "vsock") == 0) {
++    GPR_ASSERT(parse_vsock(uri, addr));
+   } else {
+     GPR_ASSERT(parse_unix(uri, addr));
+   }
+diff --git a/src/core/lib/iomgr/resolve_address_posix.c b/src/core/lib/iomgr/resolve_address_posix.c
+index d0ede0f2d5..bd45826f0f 100644
+--- a/src/core/lib/iomgr/resolve_address_posix.c
++++ b/src/core/lib/iomgr/resolve_address_posix.c
+@@ -70,6 +70,11 @@ static grpc_error *blocking_resolve_address_impl(
+     return grpc_resolve_unix_domain_address(name + 5, addresses);
+   }
+ 
++  if (name[0] == 'v' && name[1] == 's' && name[2] == 'o' && name[3] == 'c' &&
++      name[4] == 'k' && name[5] == ':' && name[6] != 0) {
++    return grpc_resolve_vsock_address(name + 6, addresses);
++  }
++
+   /* parse name, splitting it into host and port parts */
+   gpr_split_host_port(name, &host, &port);
+   if (host == NULL) {
+diff --git a/src/core/lib/iomgr/sockaddr_posix.h b/src/core/lib/iomgr/sockaddr_posix.h
+index b150de42f7..15d851dd45 100644
+--- a/src/core/lib/iomgr/sockaddr_posix.h
++++ b/src/core/lib/iomgr/sockaddr_posix.h
+@@ -41,4 +41,6 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
++#include <linux/vm_sockets.h>  // Needs to come after sys/socket.h
++
+ #endif /* GRPC_CORE_LIB_IOMGR_SOCKADDR_POSIX_H */
+diff --git a/src/core/lib/iomgr/sockaddr_utils.c b/src/core/lib/iomgr/sockaddr_utils.c
+index a6a4cac3e2..ab5fcb0639 100644
+--- a/src/core/lib/iomgr/sockaddr_utils.c
++++ b/src/core/lib/iomgr/sockaddr_utils.c
+@@ -207,7 +207,7 @@ char *grpc_sockaddr_to_uri(const grpc_resolved_address *resolved_addr) {
+     resolved_addr = &addr_normalized;
+   }
+   const char *scheme = grpc_sockaddr_get_uri_scheme(resolved_addr);
+-  if (scheme == NULL || strcmp("unix", scheme) == 0) {
++  if (scheme == NULL || strcmp("unix", scheme) == 0 || strcmp("vsock", scheme) == 0) {
+     return grpc_sockaddr_to_uri_unix_if_possible(resolved_addr);
+   }
+   char *path = NULL;
+@@ -231,6 +231,8 @@ const char *grpc_sockaddr_get_uri_scheme(
+       return "ipv6";
+     case AF_UNIX:
+       return "unix";
++    case AF_VSOCK:
++      return "vsock";
+   }
+   return NULL;
+ }
+@@ -242,6 +244,8 @@ int grpc_sockaddr_get_port(const grpc_resolved_address *resolved_addr) {
+       return ntohs(((struct sockaddr_in *)addr)->sin_port);
+     case AF_INET6:
+       return ntohs(((struct sockaddr_in6 *)addr)->sin6_port);
++    case AF_VSOCK:
++      return (int)((struct sockaddr_vm *)addr)->svm_port;
+     default:
+       if (grpc_is_unix_socket(resolved_addr)) {
+         return 1;
+@@ -264,6 +268,9 @@ int grpc_sockaddr_set_port(const grpc_resolved_address *resolved_addr,
+       GPR_ASSERT(port >= 0 && port < 65536);
+       ((struct sockaddr_in6 *)addr)->sin6_port = htons((uint16_t)port);
+       return 1;
++    case AF_VSOCK:
++      ((struct sockaddr_vm *)addr)->svm_port = (unsigned int)port;
++      return 1;
+     default:
+       gpr_log(GPR_ERROR, "Unknown socket family %d in grpc_sockaddr_set_port",
+               addr->sa_family);
+diff --git a/src/core/lib/iomgr/unix_sockets_posix.c b/src/core/lib/iomgr/unix_sockets_posix.c
+index 281865aece..98e7fb0a20 100644
+--- a/src/core/lib/iomgr/unix_sockets_posix.c
++++ b/src/core/lib/iomgr/unix_sockets_posix.c
+@@ -36,6 +36,7 @@
+ 
+ #include "src/core/lib/iomgr/sockaddr.h"
+ 
++#include <stdio.h>
+ #include <string.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+@@ -74,9 +75,30 @@ grpc_error *grpc_resolve_unix_domain_address(const char *name,
+   return GRPC_ERROR_NONE;
+ }
+ 
++grpc_error *grpc_resolve_vsock_address(const char *name,
++                                       grpc_resolved_addresses **addrs) {
++  struct sockaddr_vm *vm;
++  unsigned int cid;
++  unsigned int port;
++
++  if (sscanf(name, "%u:%u", &cid, &port) != 2) {
++    return GRPC_ERROR_CREATE_FROM_STATIC_STRING("Failed to parse cid:port pair");
++  }
++
++  *addrs = gpr_malloc(sizeof(grpc_resolved_addresses));
++  (*addrs)->naddrs = 1;
++  (*addrs)->addrs = gpr_zalloc(sizeof(grpc_resolved_address));
++  vm = (struct sockaddr_vm *)(*addrs)->addrs->addr;
++  vm->svm_family = AF_VSOCK;
++  vm->svm_cid = cid;
++  vm->svm_port = port;
++  (*addrs)->addrs->len = sizeof(struct sockaddr_vm);
++  return GRPC_ERROR_NONE;
++}
++
+ int grpc_is_unix_socket(const grpc_resolved_address *resolved_addr) {
+   const struct sockaddr *addr = (const struct sockaddr *)resolved_addr->addr;
+-  return addr->sa_family == AF_UNIX;
++  return addr->sa_family == AF_UNIX || addr->sa_family == AF_VSOCK;
+ }
+ 
+ void grpc_unlink_if_unix_domain_socket(
+@@ -96,6 +118,13 @@ void grpc_unlink_if_unix_domain_socket(
+ char *grpc_sockaddr_to_uri_unix_if_possible(
+     const grpc_resolved_address *resolved_addr) {
+   const struct sockaddr *addr = (const struct sockaddr *)resolved_addr->addr;
++  if (addr->sa_family == AF_VSOCK) {
++    char *result;
++    struct sockaddr_vm *vm = (struct sockaddr_vm*)addr;
++    gpr_asprintf(&result, "vsock:%u:%u", vm->svm_cid, vm->svm_port);
++    return result;
++  }
++
+   if (addr->sa_family != AF_UNIX) {
+     return NULL;
+   }
+diff --git a/src/core/lib/iomgr/unix_sockets_posix.h b/src/core/lib/iomgr/unix_sockets_posix.h
+index 21afd3aa15..57e09b1483 100644
+--- a/src/core/lib/iomgr/unix_sockets_posix.h
++++ b/src/core/lib/iomgr/unix_sockets_posix.h
+@@ -45,6 +45,9 @@ void grpc_create_socketpair_if_unix(int sv[2]);
+ grpc_error *grpc_resolve_unix_domain_address(
+     const char *name, grpc_resolved_addresses **addresses);
+ 
++grpc_error *grpc_resolve_vsock_address(
++    const char *name, grpc_resolved_addresses **addrs);
++
+ int grpc_is_unix_socket(const grpc_resolved_address *resolved_addr);
+ 
+ void grpc_unlink_if_unix_domain_socket(
+-- 
+2.14.0.rc0.284.gd933b75aa4-goog
+
