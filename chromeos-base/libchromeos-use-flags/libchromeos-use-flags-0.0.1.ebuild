@@ -17,6 +17,7 @@ KEYWORDS="*"
 IUSE="
 	allow_consumer_kiosk
 	arc
+	arc_always_start_with_no_play_store
 	arc_oobe_optin
 	asan
 	cheets
