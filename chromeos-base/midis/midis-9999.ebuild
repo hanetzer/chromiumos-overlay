@@ -8,7 +8,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="midis"
 
-inherit cros-workon platform user
+inherit cros-workon platform user multilib
 
 DESCRIPTION="MIDI Server for Chromium OS"
 HOMEPAGE=""
@@ -23,9 +23,16 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 
+	# Install libraries
+	./platform2_preinstall.sh "${OUT}"
+	dolib.a "${OUT}"/libmidis.a
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${OUT}"/obj/midis/libmidis.pc
+
 	# Install headers
 	insinto /usr/include/midis/
 	doins -r messages.h
+	doins libmidis/clientlib.h
 }
 
 pkg_preinst() {
