@@ -106,15 +106,7 @@ case "${EAPI:-0}" in
 esac
 
 cros-binary_check_file() {
-	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
-	elog "Checking for cached $target"
-	if [[ -z "${CROS_BINARY_SUM}" ]]; then
-		return 1
-	else
-		echo "${CROS_BINARY_SUM}  ${target}" |
-			sha1sum -c --quiet >/dev/null 2>&1
-		return
-	fi
+	cros-binary_dead_usage
 }
 
 cros-binary_fetch() {
