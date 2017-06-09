@@ -135,7 +135,7 @@ cros-binary_src_install() {
 	esac
 
 	cd "${D}" || die
-	tar "${flags}xpf" "${target}" ${CROS_BINARY_INSTALL_FLAGS} || die "Failed to unpack"
+	tar "${flags}xpf" "${target}" --no-same-owner ${CROS_BINARY_INSTALL_FLAGS} || die "Failed to unpack"
 }
 
 EXPORT_FUNCTIONS src_install
