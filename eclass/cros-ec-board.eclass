@@ -67,6 +67,7 @@ EC_BOARD_NAMES=(
 	ryu_sh_loader
 	samus
 	samus_pd
+	scarlet
 	soraka
 	strago
 	twinkie
