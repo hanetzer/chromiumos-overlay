@@ -8,11 +8,19 @@ EAPI=5
 : ${CMAKE_MAKEFILE_GENERATOR:=ninja}
 PYTHON_COMPAT=( python2_7 )
 
-inherit cmake-multilib cros-llvm llvm python-any-r1 toolchain-funcs
+inherit cros-constants
+
+CROS_WORKON_REPO=${CROS_GIT_AOSP_URL}
+CROS_WORKON_PROJECT="external/libcxx"
+CROS_WORKON_LOCALNAME="../aosp/external/libcxx"
+CROS_WORKON_COMMIT="1e705dad853445419ccc8d35d82de263e91de3f3"
+CROS_WORKON_TREE="334ca76de56b9d026c1b20885a2a98645b12e8f6"
+CROS_WORKON_BLACKLIST="1"
+
+inherit cmake-multilib cros-llvm cros-workon llvm python-any-r1 toolchain-funcs
 
 DESCRIPTION="New implementation of the C++ standard library, targeting C++11"
 HOMEPAGE="http://libcxx.llvm.org/"
-SRC_URI="http://releases.llvm.org/${PV/_//}/${P/_/}.src.tar.xz"
 
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
@@ -22,7 +30,7 @@ REQUIRED_USE="libunwind? ( || ( libcxxabi libcxxrt ) )
 	?? ( libcxxabi libcxxrt )"
 
 RDEPEND="
-	libcxxabi? ( ~${CATEGORY}/libcxxabi-${PV}[libunwind=,static-libs?,${MULTILIB_USEDEP}] )
+	libcxxabi? ( ${CATEGORY}/libcxxabi[libunwind=,static-libs?,${MULTILIB_USEDEP}] )
 	libcxxrt? ( ${CATEGORY}/libcxxrt[libunwind=,static-libs?,${MULTILIB_USEDEP}] )
 	!libcxxabi? ( !libcxxrt? ( >=sys-devel/gcc-4.7:=[cxx] ) )"
 # clang-3.9.0 installs necessary target symlinks unconditionally
@@ -68,7 +76,7 @@ multilib_src_configure() {
 	local cxxabi cxxabi_incs
 	if use libcxxabi; then
 		cxxabi=libcxxabi
-		cxxabi_incs="${PREFIX}/include/libcxxabi"
+		cxxabi_incs="${SYSROOT}/${PREFIX}/include/libcxxabi"
 	elif use libcxxrt; then
 		cxxabi=libcxxrt
 		cxxabi_incs="${EPREFIX}/usr/include/libcxxrt"
@@ -76,6 +84,9 @@ multilib_src_configure() {
 		local gcc_inc="${EPREFIX}/usr/lib/gcc/${CHOST}/$(gcc-fullversion)/include/g++-v$(gcc-major-version)"
 		cxxabi=libsupc++
 		cxxabi_incs="${gcc_inc};${gcc_inc}/${CHOST}"
+	fi
+	if [[ $(tc-arch) == "arm" ]] ; then
+		append-flags -mfpu=neon
 	fi
 
 	# we want -lgcc_s for unwinder, and for compiler runtime when using
@@ -182,6 +193,12 @@ multilib_src_install() {
 	cmake-utils_src_install
 	gen_shared_ldscript
 	use static-libs && gen_static_ldscript
+}
+
+multilib_src_install_all() {
+	if [[ ${CATEGORY} == cross-* ]]; then
+		rm -r "${ED}/usr/share/doc"
+	fi
 }
 
 pkg_postinst() {
