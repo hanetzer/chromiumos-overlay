@@ -5,7 +5,7 @@ EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/nfs-ganesha"
 CROS_WORKON_LOCALNAME="nfs-ganesha"
 
-inherit cmake-utils cros-workon
+inherit user cmake-utils cros-workon
 
 DESCRIPTION="Userspace NFS server"
 HOMEPAGE="https://github.com/nfs-ganesha/nfs-ganesha"
@@ -49,4 +49,9 @@ src_install() {
 	insinto /usr/share/policy
 	newins "${FILESDIR}/nfs-ganesha-seccomp-${ARCH}.policy" nfs-ganesha-seccomp.policy
 	cmake-utils_src_install
+}
+
+pkg_preinst() {
+	enewuser "ganesha"
+	enewgroup "ganesha"
 }
