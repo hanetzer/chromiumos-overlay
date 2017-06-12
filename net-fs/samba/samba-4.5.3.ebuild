@@ -98,6 +98,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-reorder_ads_get_gpo_list.patch"
 	"${FILESDIR}/${PN}-4.5.3-fix_block_inheritance.patch"
 	"${FILESDIR}/${PN}-4.5.3-list_forced_gpos_last.patch"
+	"${FILESDIR}/${PN}-4.5.3-fix_cve_2017_7494.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"
