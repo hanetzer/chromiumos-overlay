@@ -8,16 +8,15 @@
 # Before running it, please modify the following 4 variables
 #   - ANDROID_TREE
 #   - ARTIFACTS_DIR_ARM
-#   - ARTIFACTS_DIR_X86
 #   - ARTIFACTS_DIR_X86_64
 #   - TO_DIR_BASE
 # Then just run it from anywhere with no arguments.
-# The constructed tarball will contain the sysroots under amd64 and arm (currently for 32-bit x86).
+# The constructed tarball will contain the sysroots under amd64 and arm.
 #
 # *** PREREQUISITES ***
 # Before running the script, follow these steps:
 #
-# 1. Download prebuilts for ARM, x86, and x86_64
+# 1. Download prebuilts for ARM and x86_64
 #
 # Go to go/a-b, select branch git_nyc-mr1-arc. Pick a -userdebug build for all
 # architectures, then download cheets_${arch}-target_files-${build_id}.zip.
@@ -61,6 +60,9 @@ set -e
 # ARCH names used in sysroot.
 ARC_ARCH=('amd64' 'arm' 'amd64')
 
+# LIBRARY paths for each ARCH
+ARC_ARCH_LIB_DIR=('lib' 'lib' 'lib64')
+
 # ARCH names used in android.
 ARC_ARCH_ANDROID=('x86' 'arm' 'x86_64')
 
@@ -72,13 +74,12 @@ ARC_ARCH_UAPI=('x86' 'arm' 'x86')
 
 # 2. The dir to which the artifacts tarball (downloaded from go/a-b) was
 # extracted. Pick a -userdebug build.
-# Now we support two platforms: 32-bit arm and 32-bit x86.
+# Now we support two platforms: 32-bit arm and 32/64-bit x86.
 : "${ARTIFACTS_DIR_ARM:="${HOME}/android/arm_target_files/"}"
-: "${ARTIFACTS_DIR_X86:="${HOME}/android/x86_target_files/"}"
 : "${ARTIFACTS_DIR_X86_64:="${HOME}/android/x86_64_target_files/"}"
 
 ARTIFACTS_DIR_ARRAY=(
-	"${ARTIFACTS_DIR_X86}"
+	"${ARTIFACTS_DIR_X86_64}"
 	"${ARTIFACTS_DIR_ARM}"
 	"${ARTIFACTS_DIR_X86_64}"
 )
@@ -91,7 +92,6 @@ TO_DIR_BASE="${TO_DIR_BASE:-"${ANDROID_TREE}/arc-toolchain-n-dir"}"
 
 if [[ ! -d "${ANDROID_TREE}" ]] || \
 	[[ ! -d "${ARTIFACTS_DIR_ARM}" ]] || \
-	[[ ! -d "${ARTIFACTS_DIR_X86}" ]] || \
 	[[ ! -d "${ARTIFACTS_DIR_X86_64}" ]] ; then
 	echo "Please open and edit \"$0\" before running."
 	exit 1
@@ -154,48 +154,41 @@ for (( a = 0; a < ${len}; ++a )); do
 		crtend_so.o
 	)
 
-	LIB_DIRS=(
-		lib
-		lib64
-		libx32
-	)
+	lib="${ARC_ARCH_LIB_DIR[${a}]}"
+	artifacts_system_dir="${ARTIFACTS_DIR_ARRAY[${a}]}/SYSTEM/${lib}"
+	if [[ ! -d "${artifacts_system_dir}" ]]; then
+		echo "${artifacts_system_dir} not found, continuing."
+		continue
+	fi
+	runcmd mkdir -p "${arch_to_dir}/usr/${lib}/"
 
-	for lib in "${LIB_DIRS[@]}"; do
-		artifacts_system_dir="${ARTIFACTS_DIR_ARRAY[${a}]}/SYSTEM/${lib}"
-		if [[ ! -d "${artifacts_system_dir}" ]]; then
-			echo "${artifacts_system_dir} not found, continuing."
-			continue
-		fi
-		runcmd mkdir -p "${arch_to_dir}/usr/${lib}/"
-
-		for f in "${BINARY_FILES[@]}"; do
-			file=$(find "${artifacts_system_dir}" -name "${f}" 2>/dev/null)
-			case $(echo "${file}" | wc -l) in
-			0)
-				echo "${f} not found, aborted."
-				exit 1
-				;;
-			1) ;;
-			*)
-				echo "more than 1 ${f} found, aborted."
-				echo "${file}"
-				exit 1
-				;;
+	for f in "${BINARY_FILES[@]}"; do
+		file=$(find "${artifacts_system_dir}" -name "${f}" 2>/dev/null)
+		case $(echo "${file}" | wc -l) in
+		0)
+			echo "${f} not found, aborted."
+			exit 1
+			;;
+		1) ;;
+		*)
+			echo "more than 1 ${f} found, aborted."
+			echo "${file}"
+			exit 1
+			;;
 		esac
 
-			runcmd cp -p "${file}" "${arch_to_dir}/usr/${lib}/"
-		done
+		runcmd cp -p "${file}" "${arch_to_dir}/usr/${lib}/"
+	done
 
-		for f in crtbegin_static.o crtbegin_dynamic.o crtend_android.o; do
-			absolute_f="${ANDROID_TREE}/prebuilts/ndk/current/platforms/android-24"
-			absolute_f+="/arch-${arch}/usr/${lib}/${f}"
-			if [[ ! -e "${absolute_f}" ]]; then
-				echo "${absolute_f} not found, perhaps you forgot to check it out?"\
-					" Aborted."
-				exit 1
-			fi
-			runcmd cp -p "${absolute_f}" "${arch_to_dir}/usr/${lib}/"
-		done
+	for f in crtbegin_static.o crtbegin_dynamic.o crtend_android.o; do
+		absolute_f="${ANDROID_TREE}/prebuilts/ndk/current/platforms/android-24"
+		absolute_f+="/arch-${arch}/usr/${lib}/${f}"
+		if [[ ! -e "${absolute_f}" ]]; then
+			echo "${absolute_f} not found, perhaps you forgot to check it out?"\
+				" Aborted."
+			exit 1
+		fi
+		runcmd cp -p "${absolute_f}" "${arch_to_dir}/usr/${lib}/"
 	done
 
 
@@ -232,10 +225,8 @@ for (( a = 0; a < ${len}; ++a )); do
 		"${arch_to_dir}/usr/include/asm/"
 
 
-	### 4.3 Other include directories
+	### 4.3a Other include directories
 	INCLUDE_DIRS=(
-		"bionic/libc/arch-${arch}/include/machine"
-		"bionic/libm/include/${ARC_ARCH_LIBM[${a}]}/machine"
 		"frameworks/native/include/android"
 		"frameworks/native/include/ui"
 		"hardware/libhardware/include/hardware"
@@ -250,6 +241,18 @@ for (( a = 0; a < ${len}; ++a )); do
 	for f in "${INCLUDE_DIRS[@]}"; do
 		basename="$(basename "${f}")"
 		todir="${arch_to_dir}/usr/include/${basename}"
+		runcmd mkdir -p "${todir}"
+		runcmd cp -pP "${ANDROID_TREE}/${f}"/*.h "${todir}/"
+	done
+
+	### 4.3b Other include directories (arch-specific)
+	INCLUDE_DIRS=(
+		"bionic/libc/arch-${arch}/include/machine"
+		"bionic/libm/include/${ARC_ARCH_LIBM[${a}]}/machine"
+	)
+
+	for f in "${INCLUDE_DIRS[@]}"; do
+		todir="${arch_to_dir}/usr/include/arch-${arch}/include/machine"
 		runcmd mkdir -p "${todir}"
 		runcmd cp -pP "${ANDROID_TREE}/${f}"/*.h "${todir}/"
 	done
@@ -326,7 +329,7 @@ done
 # 5.2.4 Copy the x86 libLLVM shared object
 runcmd mkdir -p "${llvm_dir_base}/lib"
 runcmd cp -pP \
-	"${ARTIFACTS_DIR_X86}/SYSTEM/lib/libLLVM.so" \
+	"${ARTIFACTS_DIR_X86_64}/SYSTEM/lib/libLLVM.so" \
 	"${llvm_dir_base}/lib/"
 
 # 5.2.5 Symlink with the version number so arc-mesa finds the shared object
