@@ -4,7 +4,7 @@
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/sis-updater"
 
-inherit cros-workon udev user
+inherit cros-workon libchrome udev user
 
 DESCRIPTION="A tool to update SiS firmware on Mimo from Chromium OS."
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/sis-updater"
@@ -13,7 +13,13 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
+DEPEND="chromeos-base/libbrillo"
+
 RDEPEND="${DEPEND}"
+
+src_configure() {
+	cros-workon_src_configure
+}
 
 src_install() {
 	dosbin sis-updater
