@@ -69,3 +69,5 @@ CONFIG_MMCONF_BASE_ADDRESS=0xe0000000
 # CONFIG_ON_DEVICE_ROM_RUN is not set
 # CONFIG_S3_VGA_ROM_RUN is not set
 CONFIG_MMA_BLOBS_PATH="3rdparty/blobs/mainboard/intel/kunimitsu/mma"
+# CONFIG_CHECK_ME is not set
+# CONFIG_USE_ME_CLEANER is not set

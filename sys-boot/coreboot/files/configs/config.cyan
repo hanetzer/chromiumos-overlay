@@ -40,3 +40,5 @@ CONFIG_SPI_FLASH_SMM=y
 CONFIG_USE_BLOBS=y
 CONFIG_VBT_FILE="3rdparty/blobs/mainboard/google/cyan/vbt.bin"
 
+# CONFIG_CHECK_ME is not set
+# CONFIG_USE_ME_CLEANER is not set

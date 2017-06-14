@@ -71,3 +71,5 @@ CONFIG_GOP_SUPPORT=y
 # CONFIG_PCI_ROM_RUN is not set
 # CONFIG_ON_DEVICE_ROM_RUN is not set
 # CONFIG_S3_VGA_ROM_RUN is not set
+# CONFIG_CHECK_ME is not set
+# CONFIG_USE_ME_CLEANER is not set
