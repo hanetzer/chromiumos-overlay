@@ -55,6 +55,7 @@ mprotect: 1
 mremap: 1
 munmap: 1
 nanosleep: 1
+newfstatat: 1
 open: 1
 openat: 1
 pipe: 1
@@ -87,6 +88,7 @@ socket: 1
 socketpair: 1
 stat: 1
 statfs: 1
+symlink: 1
 sysinfo: 1
 timerfd_create: 1
 timerfd_settime: 1

@@ -14,10 +14,12 @@ getegid: 1
 geteuid: 1
 getgid: 1
 getuid: 1
+lstat: 1
 # Disallow mmap with PROT_EXEC set.  The syntax here doesn't allow bit
 # negation, thus the manually negated mask constant.
 mmap: arg2 in 0xfffffffb
 munmap: 1
+newfstatat: 1
 # Restrict open flags.  O_DIRECTORY (0x10000) and O_CLOEXEC (0x80000)
 # aren't symbols minijail knows, so are specified directly.
 open: arg1 in O_RDONLY|O_NONBLOCK|0x10000|0x80000

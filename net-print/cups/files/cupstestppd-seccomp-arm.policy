@@ -15,11 +15,13 @@ getegid32: 1
 geteuid32: 1
 getgid32: 1
 getuid32: 1
+lstat: 1
 # Disallow mmap with PROT_EXEC set.  The syntax here doesn't
 # allow bit negation, so we are using a negated mask as a
 # constant.
 mmap2: arg2 in 0xfffffffb
 munmap: 1
+newfstatat: 1
 # Restrict open flags.  O_DIRECTORY (0x4000), O_LARGEFILE (0x20000),
 # and O_CLOEXEC (0x80000) aren't symbols minijail knows, so are
 # specified directly.
