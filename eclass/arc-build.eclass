@@ -58,6 +58,10 @@ _arc-build-select-common() {
 		export ARC_VERSION_PATCH="1"
 	fi
 
+	export ARC_PREFIX="/opt/google/containers/android"
+	export ARC_SYSROOT="${SYSROOT}${ARC_PREFIX}"
+	export PKG_CONFIG="${ARC_SYSROOT}/build/bin/pkg-config"
+
 	case ${ARCH} in
 	arm)
 		ARC_GCC_TUPLE=arm-linux-androideabi
@@ -65,6 +69,7 @@ _arc-build-select-common() {
 		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
 
 		export CHOST="${ARC_GCC_TUPLE}"
+		append-flags -I"${ARC_SYSROOT}/usr/include/arch-arm/include/"
 		;;
 	amd64)
 		ARC_GCC_TUPLE=x86_64-linux-android
@@ -76,14 +81,10 @@ _arc-build-select-common() {
 		export CHOST=i686-linux-android
 
 		# Use 32-bit ABI on amd64 builds
-		append-flags -m32
+		append-flags -m32 -I"${ARC_SYSROOT}/usr/include/arch-x86/include/"
 		append-ldflags -m32
 		;;
 	esac
-
-	export ARC_PREFIX="/opt/google/containers/android"
-	export ARC_SYSROOT="${SYSROOT}${ARC_PREFIX}"
-	export PKG_CONFIG="${ARC_SYSROOT}/build/bin/pkg-config"
 
 	# Strip out flags that are specific to our compiler wrapper.
 	filter-flags -clang-syntax
