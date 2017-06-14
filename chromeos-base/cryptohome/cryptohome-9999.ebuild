@@ -36,6 +36,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libscrypt
 	chromeos-base/metrics
+	chromeos-base/secure-erase-file
 	chromeos-base/system_api
 	dev-libs/dbus-glib
 	dev-libs/glib

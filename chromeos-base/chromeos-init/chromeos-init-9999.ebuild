@@ -33,6 +33,7 @@ RDEPEND="${DEPEND}
 	app-arch/tar
 	chromeos-base/bootstat
 	!chromeos-base/chromeos-disableecho
+	chromeos-base/secure-erase-file
 	chromeos-base/tty
 	chromeos-base/vboot_reference
 	sys-apps/rootdev
