@@ -254,7 +254,9 @@ def main():
 
   print_cmdline = '-print-cmdline' in myargs
   # Only FORTIFY_SOURCE hardening flag is applicable for clang.
-  clang_flags = ['-Qunused-arguments']
+  clang_flags = ['-Qunused-arguments',
+                 '-grecord-gcc-switches',
+                ]
 
   clang_cmdline = clang_flags + list(FLAGS_TO_ADD)
 

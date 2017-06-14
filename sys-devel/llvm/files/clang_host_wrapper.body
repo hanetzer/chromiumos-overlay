@@ -9,7 +9,10 @@ def main(argv):
   """Main function for clang wrapper script."""
 
   # Only FORTIFY_SOURCE hardening flag is applicable for clang.
-  clang_flags = ['-Qunused-arguments']
+  clang_flags = [
+      '-Qunused-arguments',
+      '-grecord-gcc-switches',
+  ]
 
   myargs = argv[1:]
 
