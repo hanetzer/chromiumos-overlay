@@ -44,6 +44,7 @@ src_install() {
 	doins "${FILESDIR}"/hardware.pc
 	doins "${FILESDIR}"/pthread-stubs.pc
 	doins "${FILESDIR}"/sync.pc
+	doins "${FILESDIR}"/zlib.pc
 
 	exeinto "${BIN_DIR}"
 	doexe pkg-config
