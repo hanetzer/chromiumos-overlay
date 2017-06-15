@@ -14,7 +14,7 @@ DESCRIPTION="ARC camera HAL v3 buffer mapper."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan cheets"
+IUSE="-asan"
 
 RDEPEND="
 	media-libs/minigbm
