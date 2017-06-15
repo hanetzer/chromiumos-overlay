@@ -69,6 +69,7 @@ EC_BOARD_NAMES=(
 	samus_pd
 	scarlet
 	soraka
+	staff
 	strago
 	twinkie
 	zinger
