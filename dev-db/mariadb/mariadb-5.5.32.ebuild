@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-db/mariadb/mariadb-5.5.32.ebuild,v 1.1 2013/09/04 20:38:02 jmbsvicetto Exp $
 
-EAPI="4"
+EAPI="5"
 MY_EXTRAS_VER="20130120-0100Z"
 
 # Build system
