@@ -52,10 +52,9 @@ media-libs/mesa		llvm gallium classic
 media-libs/opencv	-gtk python png jpeg -tiff v4l
 media-sound/sox		alsa ogg
 media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
-net-analyzer/tcpdump	-chroot ipv6
+net-analyzer/tcpdump	-chroot
 net-dns/avahi-daemon	zeroconf
 net-dns/dnsmasq		script
-net-firewall/iptables	ipv6
 net-fs/samba		ads acl gnutls ldap -perl -python
 # C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
 # Clients don't need the C++ library anyway, so disabling it...
@@ -63,21 +62,20 @@ net-libs/gnutls	-cxx
 # We want HTTPS support in web server based on libmicrohttpd.
 # Also |messages| is for enabling POST processor in the library.
 net-libs/libmicrohttpd	ssl messages
-net-libs/libpcap	ipv6
 net-libs/libsoup	-ssl
-# for curl-7.19.6 turning on ipv6 use flag will turn off ares
-net-misc/curl		ares
+# For curl-7.19.6 turning on ipv6 use flag will turn off ares.
+# We should try and fix this at some point.
+net-misc/curl		ares -ipv6
 net-misc/dhcpcd		crash
-net-misc/dhcp		ipv6
 net-misc/iperf		threads
 # arping is used by some wifi autotests.
 # tracepath is exposed to the user via crosh.
-net-misc/iputils	ipv6 arping tracepath
+net-misc/iputils	arping tracepath
 net-misc/ntp		caps
 net-misc/openssh	-X
 net-vpn/openvpn		pkcs11
 net-vpn/strongswan	cisco nat-transport -strongswan_plugins_unity pkcs11
-net-nds/openldap	minimal -cxx ipv6
+net-nds/openldap	minimal -cxx
 net-print/cups		zeroconf upstart
 net-print/cups-filters	zeroconf
 net-print/hplip		minimal
@@ -95,11 +93,9 @@ sys-apps/coreutils	multicall
 sys-apps/dtc		static-libs
 sys-apps/dbus		-X
 sys-apps/hwids		-net
-sys-apps/iproute2	ipv6
 # mosys: crosbug.com/p/11630
 sys-apps/mosys		static
 sys-apps/flashrom	static
-sys-apps/net-tools	ipv6
 sys-apps/smartmontools	minimal
 sys-apps/util-linux     -unicode
 # pam_unix: empty password is not OK
