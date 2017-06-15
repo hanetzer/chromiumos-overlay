@@ -7,7 +7,7 @@ command line (-s).
 
 See crbug.com/242980 for details
 diff --git a/ftdi_eeprom/main.c b/ftdi_eeprom/main.c
-index 5e28034..9fac7e4 100644
+index 2592796..8a3585e 100644
 --- a/ftdi_eeprom/main.c
 +++ b/ftdi_eeprom/main.c
 @@ -35,6 +35,7 @@
@@ -18,7 +18,7 @@ index 5e28034..9fac7e4 100644
  
  #include <confuse.h>
  #include <libusb.h>
-@@ -143,8 +144,10 @@ int main(int argc, char *argv[])
+@@ -147,8 +148,10 @@ int main(int argc, char *argv[])
      normal variables
      */
      int _read = 0, _erase = 0, _flash = 0;
@@ -29,7 +29,7 @@ index 5e28034..9fac7e4 100644
      int my_eeprom_size = 0;
      unsigned char *eeprom_buf = NULL;
      char *filename;
-@@ -157,39 +160,67 @@ int main(int argc, char *argv[])
+@@ -161,39 +164,67 @@ int main(int argc, char *argv[])
      printf("\nFTDI eeprom generator v%s\n", EEPROM_VERSION_STRING);
      printf ("(c) Intra2net AG and the libftdi developers <opensource@intra2net.com>\n");
  
@@ -67,13 +67,9 @@ index 5e28034..9fac7e4 100644
 -            exit (-1);
 -        }
 -        argc_filename = 2;
--    }
--    else
--    {
--        argc_filename = 1;
 +    int option_index = 0;
 +    char c;
-+    while ((c = getopt_long(argc, argv, "v:p:s:", 
++    while ((c = getopt_long(argc, argv, "v:p:s:",
 +                            long_options, &option_index)) != -1)  {
 +      switch (c) {
 +        case 'v':
@@ -103,9 +99,11 @@ index 5e28034..9fac7e4 100644
 +          break;
 +      }
      }
- 
+-    else
++
 +    if (!_read & !_erase & !_flash)
-+     {
+     {
+-        argc_filename = 1;
 +        printf("Syntax: %s [switches|command] config-file\n", argv[0]);
 +        printf("Valid commands:\n");
 +        printf("--read-eeprom        Read eeprom and write to -filename- from config-file\n");
@@ -114,10 +112,10 @@ index 5e28034..9fac7e4 100644
 +        printf("--vendor|-v <num>    Vendor id to probe for on USB\n");
 +        printf("--product|-p <num>   Product id to probe for on USB\n");
 +        printf("--serial|-s <string> Serial string to override\n");
-+         exit (-1);
-+     }
++        exit (-1);
+     }
 +    argc_filename = optind;
-+
+ 
      if ((fp = fopen(argv[argc_filename], "r")) == NULL)
      {
 -        printf ("Can't open configuration file\n");
@@ -125,7 +123,7 @@ index 5e28034..9fac7e4 100644
          exit (-1);
      }
      fclose (fp);
-@@ -217,22 +248,26 @@ int main(int argc, char *argv[])
+@@ -221,22 +252,26 @@ int main(int argc, char *argv[])
  
          if (i != 0)
          {
@@ -150,15 +148,15 @@ index 5e28034..9fac7e4 100644
 +        printf("Found device at id:0x%04x/0x%04x\n",
 +               vendor_id, product_id);
      }
-     ftdi_eeprom_initdefaults (ftdi, cfg_getstr(cfg, "manufacturer"), 
-                               cfg_getstr(cfg, "product"), 
+     ftdi_eeprom_initdefaults (ftdi, cfg_getstr(cfg, "manufacturer"),
+                               cfg_getstr(cfg, "product"),
 -                              cfg_getstr(cfg, "serial"));
-+                              (_serial[0] == '\0') ? 
++                              (_serial[0] == '\0') ?
 +                              cfg_getstr(cfg, "serial") : _serial);
  
      printf("FTDI read eeprom: %d\n", ftdi_read_eeprom(ftdi));
      eeprom_get_value(ftdi, CHIP_SIZE, &my_eeprom_size);
-@@ -276,7 +311,8 @@ int main(int argc, char *argv[])
+@@ -280,7 +315,8 @@ int main(int argc, char *argv[])
      eeprom_set_value(ftdi, OUT_IS_ISOCHRONOUS, cfg_getbool(cfg, "out_is_isochronous"));
      eeprom_set_value(ftdi, SUSPEND_PULL_DOWNS, cfg_getbool(cfg, "suspend_pull_downs"));
  
