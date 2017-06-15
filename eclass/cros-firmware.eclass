@@ -85,7 +85,10 @@ DEPEND="
 # For unibuild we need EAPI 5 for the sub-slot dependency feature.
 case "${EAPI:-0}" in
 5|6)
-	DEPEND+=" unibuild? ( chromeos-base/chromeos-config-bsp:= )"
+	DEPEND+=" unibuild? (
+			chromeos-base/chromeos-config-bsp:=
+			chromeos-base/chromeos-config:=
+		) "
 	;;
 esac
 
