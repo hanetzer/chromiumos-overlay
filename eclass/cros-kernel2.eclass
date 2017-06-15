@@ -55,7 +55,7 @@ STRIP_MASK="
 "
 
 if [[ -n "${AFDO_PROFILE_VERSION}" ]]; then
-	AFDO_BASENAME="autofdo-${PN}-${CHROMEOS_KERNEL_SPLITCONFIG}-${AFDO_PROFILE_VERSION}"
+	AFDO_BASENAME="autofdo-${PN}-${AFDO_PROFILE_VERSION}"
 	AFDO_LOCATION="gs://chromeos-localmirror/distfiles/"
 	SRC_URI="kernel_afdo? ( ${AFDO_LOCATION}${AFDO_BASENAME}.afdo.xz )"
 fi
