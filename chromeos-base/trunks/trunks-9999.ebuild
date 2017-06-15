@@ -67,6 +67,11 @@ src_install() {
 
 	insinto /usr/include/trunks
 	doins *.h
+
+	"${PLATFORM_TOOLDIR}/generate_pc_file.sh" \
+		"${OUT}/lib" libtrunks /usr/include/trunks
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${OUT}"/lib/libtrunks.pc
 }
 
 platform_pkg_test() {
