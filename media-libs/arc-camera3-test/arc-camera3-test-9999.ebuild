@@ -17,6 +17,7 @@ IUSE="-asan"
 RDEPEND="
 	dev-cpp/gtest
 	media-libs/libexif
+	media-libs/libyuv
 	media-libs/minigbm
 	virtual/jpeg:0"
 
