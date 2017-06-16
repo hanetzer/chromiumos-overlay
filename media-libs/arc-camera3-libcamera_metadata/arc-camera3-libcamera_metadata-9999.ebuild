@@ -16,7 +16,8 @@ IUSE="-asan"
 
 RDEPEND=""
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	media-libs/arc-camera3-android-headers"
 
 src_compile() {
 	asan-setup-env

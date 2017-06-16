@@ -15,14 +15,15 @@ KEYWORDS="~*"
 IUSE="-asan"
 RDEPEND="
 	chromeos-base/libbrillo
-	media-libs/arc-camera3-libcamera_client
-	media-libs/arc-camera3-libcamera_metadata
-	media-libs/arc-camera3-libsync
 	media-libs/libexif
 	media-libs/libyuv
 	virtual/jpeg:0"
 
 DEPEND="${RDEPEND}
+	media-libs/arc-camera3-android-headers
+	media-libs/arc-camera3-libcamera_client
+	media-libs/arc-camera3-libcamera_metadata
+	media-libs/arc-camera3-libsync
 	virtual/pkgconfig"
 
 src_compile() {
