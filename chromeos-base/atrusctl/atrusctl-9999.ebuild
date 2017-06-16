@@ -43,6 +43,9 @@ src_install() {
 	newins conf/rsyslog-atrus.conf atrus.conf
 
 	udev_newrules conf/udev-atrus.rules 99-atrus.rules
+
+	insinto /etc/init
+	doins init/atrusd.conf
 }
 
 pkg_preinst() {
