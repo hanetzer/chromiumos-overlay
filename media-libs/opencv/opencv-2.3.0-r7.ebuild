@@ -84,10 +84,6 @@ src_prepare() {
 	sed -i \
 		-e '/add_subdirectory(3rdparty)/ d' \
 		CMakeLists.txt || die
-
-	# Force building with gcc. Clang ICE when building this
-	# package for arm, bug here - http://crbug.com/507735
-	use arm && cros_use_gcc
 }
 
 src_configure() {
