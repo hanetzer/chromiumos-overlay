@@ -8,7 +8,7 @@ mkdir -p "${SSH_DIR}"
 
 if ! sshd -t -q ; then
   # sshd will not start with current config, generate a new set of keys.
-  for KEY_TYPE in rsa dsa ; do
+  for KEY_TYPE in rsa ed25519 ; do
     KEY_FILE="${SSH_DIR}/ssh_host_${KEY_TYPE}_key"
     # If keys exist delete them because they are not valid and ssh-keygen
     # will not overwrite them.
