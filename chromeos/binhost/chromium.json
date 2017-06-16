@@ -50,6 +50,56 @@
   }, 
   {
     "compat_id": {
+      "arch": "x86", 
+      "cflags": [
+        "-O2", 
+        "-march=i686", 
+        "-pipe", 
+        "-O2", 
+        "-pipe", 
+        "-march=i686", 
+        "-mfpmath=sse", 
+        "-mmmx", 
+        "-msse", 
+        "-msse2", 
+        "-msse3", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "cups", 
+        "debug_fission", 
+        "evdev_gestures", 
+        "fonts", 
+        "gold", 
+        "highdpi", 
+        "nacl", 
+        "opengles", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "vaapi", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "x86-generic", 
+      "useflags": [
+        "-chrome_internal"
+      ]
+    }
+  }, 
+  {
+    "compat_id": {
       "arch": "arm", 
       "cflags": [
         "-O2", 
