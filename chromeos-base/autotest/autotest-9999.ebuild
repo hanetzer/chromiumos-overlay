@@ -24,6 +24,10 @@ RDEPEND="
 # chromeos dependent ebuilds that depend on this ebuild.
 DEPEND="${RDEPEND}"
 
+# The unittests hit the network.  Until we can fix them, allow access.
+# https://crbug.com/731905
+RESTRICT="network-sandbox"
+
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
 
