@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-# The binaries are from the android nyc-arc branch.
+# The binaries are from the android nyc-mr1-arc branch.
 
 # Clang is from
 # prebuilts/clang/host/linux-x86/clang-2690385
@@ -15,9 +15,8 @@
 # Last commit: 54c4ed4b1a910bcc8e37196acb7fa85e872de9e4
 
 # Libraries are from
-# https://android-build.googleplex.com/builds/submitted/3960532/cheets_arm-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/3960532/cheets_x86-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/3960532/cheets_x86_64-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4096676/cheets_arm-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4096676/cheets_x86_64-userdebug/latest
 
 # Headers are from
 # bionic

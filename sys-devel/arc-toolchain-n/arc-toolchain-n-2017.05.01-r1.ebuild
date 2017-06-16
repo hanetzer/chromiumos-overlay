@@ -1,1 +1,0 @@
-arc-toolchain-n-2017.05.01.ebuild
