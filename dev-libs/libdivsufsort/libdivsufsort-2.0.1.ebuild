@@ -1,14 +1,12 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
-EAPI="3"
+EAPI=5
+inherit cmake-utils multilib
 
-inherit cmake-utils
-
-DESCRIPTION="library to construct the suffix array and the Burrows-Wheeler transformed string"
-HOMEPAGE="http://code.google.com/p/libdivsufsort/"
-SRC_URI="http://libdivsufsort.googlecode.com/files/${P}.tar.gz"
+DESCRIPTION="Suffix-sorting library (for BWT)"
+HOMEPAGE="https://github.com/y-256/libdivsufsort"
+SRC_URI="https://github.com/y-256/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
@@ -16,7 +14,11 @@ KEYWORDS="*"
 IUSE=""
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-2.0.1-libsuffix.patch
+	cmake-utils_src_prepare
+
+	# will appreciate saner approach, if there is any
+	sed -i -e "s:\(DESTINATION \)lib:\1$(get_libdir):" \
+		*/CMakeLists.txt || die
 }
 
 src_configure() {
