@@ -15,7 +15,7 @@ HOMEPAGE="http://www.bluez.org/"
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cups debug systemd test-programs readline"
+IUSE="cups debug systemd test-programs readline bt_deprecated_tools"
 
 CDEPEND="
 	>=dev-libs/glib-2.14:2
@@ -73,7 +73,8 @@ src_configure() {
 		--disable-systemd \
 		--disable-obex \
 		--enable-sixaxis \
-		--disable-network
+		--disable-network \
+		 $(use_enable bt_deprecated_tools deprecated)
 }
 
 src_test() {
