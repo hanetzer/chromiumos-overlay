@@ -3,8 +3,8 @@
 # Based on gentoo's modemmanager ebuild
 
 EAPI="4"
-CROS_WORKON_COMMIT="eaf6403e050faa9239890519c00d354b6108df25"
-CROS_WORKON_TREE="c39510c28f4308b834039fc88c9c33fd38f54787"
+CROS_WORKON_COMMIT="2c7221537edf60cd01fdf317454fa514f363a3b4"
+CROS_WORKON_TREE="0af8d1ff64d8388465f8dd5d26264c3dd72d44c1"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 
 # Skip tests on this ebuild has it's suspected of contributing to hangs in the
