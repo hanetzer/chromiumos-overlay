@@ -29,12 +29,7 @@ RDEPEND=">=media-libs/alsa-lib-1.0.27
 DEPEND="${RDEPEND}
 	media-libs/ladspa-sdk"
 
-# Exclude adhd from clang build. clang rejects access to cp10/cp11,
-# which is not correct. Upstream bug here -
-# https://llvm.org/bugs/show_bug.cgi?id=23998
 src_prepare() {
-	cros_use_gcc
-	filter_clang_syntax
 	cd cras
 	eautoreconf
 }
