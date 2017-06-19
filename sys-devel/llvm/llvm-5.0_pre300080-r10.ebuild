@@ -21,15 +21,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"1ebb1b7a388ac9bd47a518a92f7cfe53e632ebf9" # EGIT_COMMIT r301386
+		"b903fddc562ccc622cabc4f08f5df2af90ceb251" # EGIT_COMMIT r305632
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"9b8267f708fe852f22a50a3f8f5ff21f9c7f318f" # EGIT_COMMIT r301387
+		"f0d7258f4a2f5e6443011f7be011b5e9999c33f2" # EGIT_COMMIT r305593
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"a530e823ed2793ac149de7a984014e242a787682"  # EGIT_COMMIT r301384
+		"30060bff5b4cb49e17c27672d1aa60e6bc7a95e8"  # EGIT_COMMIT r305619
 )
 else
 EGIT_REPO_URIS=(
@@ -224,7 +224,6 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 432ed0e4a6d58f7dda8992a167aad43bc91f76c6 " # r302506
 	CHERRIES+=" b8c6e47bedeba554a913c71653d6ce778f398155 " # r305728
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
@@ -234,8 +233,6 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" bde56a96995a329cf1df5716b1f84b32aac6c174 " # r301505
-	CHERRIES+=" abf586838958632768fa4c91d7d8be1689e37bf8 " # r303901
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -244,7 +241,6 @@ pick_next_cherries() {
 
 	# compiler-rt
 	CHERRIES=""
-	CHERRIES+=" 96eed06b6e57a3c8e2593e73d6f33bdd407f43b9 " # r303112
 	pushd "${S}"/projects/compiler-rt >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -261,6 +257,9 @@ src_prepare() {
 	if use llvm-next || use llvm-tot; then
 		# leak-whitelist patch does not cleanly apply to llvm-next.
 		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
+		# Disable newly added project lib/Testing/Support is breaking llvm-next build.
+		# Remove once https://bugs.llvm.org/show_bug.cgi?id=33528 is fixed.
+		epatch "${FILESDIR}"/llvm-next-disable-testing-support.patch
 	else
 		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	fi

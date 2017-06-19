@@ -18,7 +18,7 @@ RDEPEND="!${CATEGORY}/libunwind"
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="0854f16fd93f3eede43a2c7fff509f6933321964" #r300419
+		EGIT_COMMIT="86219d8c6a73f95e694b4e1594e1a8a0a33613b6" #r303206
 	else
 		EGIT_COMMIT="ab68429b2d2159947e1c96933a034afbfb1feb55" #r300020
 	fi

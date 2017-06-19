@@ -1,0 +1,14 @@
+Disable building LLVMTestingSupport project since it breaks the llvm build.
+Remove this after https://bugs.llvm.org/show_bug.cgi?id=33528 is fixed.
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 946067e6358..afb8ae7c98c 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -24,4 +24,4 @@ add_subdirectory(Fuzzer)
+ add_subdirectory(Passes)
+ add_subdirectory(ToolDrivers)
+ add_subdirectory(XRay)
+-add_subdirectory(Testing)
++#add_subdirectory(Testing)
+
+ 
