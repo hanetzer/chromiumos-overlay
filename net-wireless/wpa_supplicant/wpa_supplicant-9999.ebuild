@@ -28,7 +28,7 @@ CDEPEND="
 			( >net-wireless/madwifi-ng-tools-0.9.3
 			net-wireless/madwifi-old )
 		)
-		dev-libs/libnl:3
+		dev-libs/libnl:0
 		net-wireless/crda
 	)
 	!kernel_linux? ( net-libs/libpcap )
