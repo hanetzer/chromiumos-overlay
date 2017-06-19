@@ -813,6 +813,15 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=$(tc-getBUILD_CXX)
 
+	# USE=thinlto affects host build, we need to make changes below
+	# to make sure host package builds with thinlto.
+	# crosbug.com/731335
+	if use thinlto; then
+		export AR_host="llvm-ar"
+		export LD_host="${CXX_host}"
+		LD_host+=" -B$(get_binutils_path "${LD_host}")"
+	fi
+
 	# Set binutils path for goma.
 	CC_host+=" -B$(get_binutils_path "${LD_host}")"
 	CXX_host+=" -B$(get_binutils_path "${LD_host}")"
