@@ -247,6 +247,7 @@ make_coreboot() {
 	local config_fname="$2"
 	local model="$3"
 	local froot="${SYSROOT}/firmware"
+	local fblobroot="${SYSROOT}/firmware"
 
 	if use unibuild; then
 		froot+="/${model}"
@@ -284,7 +285,7 @@ make_coreboot() {
 	for blob in ${FW_BLOBS}; do
 		cbname=$(basename "${blob}")
 		add_fw_blob "${builddir}/coreboot.rom" "${cbname}" \
-			"${froot}/${blob}" || die
+			"${fblobroot}/${blob}" || die
 	done
 
 	( cd "${froot}/cbfs" 2>/dev/null && find . -type f) | \
