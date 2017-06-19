@@ -1,0 +1,100 @@
+commit b8c6e47bedeba554a913c71653d6ce778f398155
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Mon Jun 19 18:45:03 2017 +0000
+
+    [Clang] Handle interaction of -pg and no_instrument_function attribute.
+    
+    Summary:
+    Disable generation of counting-function attribute if no_instrument_function
+    attribute is present in function.
+    Interaction between -pg and no_instrument_function is the desired behavior
+    and matches gcc as well.
+    This is required for fixing a crash in Linux kernel when function tracing
+    is enabled.
+    
+    Fixes PR33515.
+    
+    Reviewers: hfinkel, rengolin, srhines, hans
+    
+    Reviewed By: hfinkel
+    
+    Subscribers: cfe-commits
+    
+    Differential Revision: https://reviews.llvm.org/D34357
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@305728 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/CodeGen/CodeGenFunction.cpp b/lib/CodeGen/CodeGenFunction.cpp
+index ac1a1334f1..1a7797b37e 100644
+--- a/lib/CodeGen/CodeGenFunction.cpp
++++ b/lib/CodeGen/CodeGenFunction.cpp
+@@ -887,8 +887,10 @@ void CodeGenFunction::StartFunction(GlobalDecl GD,
+   if (CGM.getCodeGenOpts().InstrumentForProfiling) {
+     if (CGM.getCodeGenOpts().CallFEntry)
+       Fn->addFnAttr("fentry-call", "true");
+-    else
+-      Fn->addFnAttr("counting-function", getTarget().getMCountName());
++    else {
++      if (!CurFuncDecl || !CurFuncDecl->hasAttr<NoInstrumentFunctionAttr>())
++        Fn->addFnAttr("counting-function", getTarget().getMCountName());
++    }
+   }
+ 
+   if (RetTy->isVoidType()) {
+diff --git a/test/CodeGen/mcount.c b/test/CodeGen/mcount.c
+index 7f91584195..2839d8ef6a 100644
+--- a/test/CodeGen/mcount.c
++++ b/test/CodeGen/mcount.c
+@@ -1,18 +1,18 @@
+ // RUN: %clang_cc1 -pg -triple i386-unknown-unknown -emit-llvm -o - %s | FileCheck %s
+ // RUN: %clang_cc1 -pg -triple i386-unknown-unknown -emit-llvm -O2 -o - %s | FileCheck %s
+-// RUN: %clang_cc1 -pg -triple powerpc-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple powerpc64-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple powerpc64le-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple i386-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple x86_64-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple arm-netbsd-eabi -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple aarch64-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple mips-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple powerpc-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple powerpc64-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple powerpc64le-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple sparc-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
+-// RUN: %clang_cc1 -pg -triple sparc64-netbsd -emit-llvm -o - %s | FileCheck -check-prefix=CHECK-PREFIXED %s
++// RUN: %clang_cc1 -pg -triple powerpc-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple powerpc64-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple powerpc64le-unknown-gnu-linux -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple i386-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple x86_64-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple arm-netbsd-eabi -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple aarch64-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple mips-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple powerpc-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple powerpc64-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple powerpc64le-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple sparc-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
++// RUN: %clang_cc1 -pg -triple sparc64-netbsd -emit-llvm -o - %s | FileCheck -check-prefixes=CHECK-PREFIXED,NO-MCOUNT1 %s
+ // RUN: %clang_cc1 -emit-llvm -o - %s | FileCheck %s -check-prefix=NO-MCOUNT
+ 
+ int bar(void) {
+@@ -23,10 +23,17 @@ int foo(void) {
+   return bar();
+ }
+ 
+-int main(void) {
++int __attribute__((no_instrument_function)) no_instrument(void) {
+   return foo();
+ }
+ 
+-// CHECK: attributes #{{[0-9]+}} = { {{.*}}"counting-function"="mcount"{{.*}} }
+-// CHECK-PREFIXED: attributes #{{[0-9]+}} = { {{.*}}"counting-function"="_mcount"{{.*}} }
++int main(void) {
++  return no_instrument();
++}
++
++// CHECK: attributes #0 = { {{.*}}"counting-function"="mcount"{{.*}} }
++// CHECK: attributes #1 = { {{.*}} }
++// CHECK-PREFIXED: attributes #0 = { {{.*}}"counting-function"="_mcount"{{.*}} }
++// CHECK-PREFIXED: attributes #1 = { {{.*}} }
+ // NO-MCOUNT-NOT: attributes #{{[0-9]}} = { {{.*}}"counting-function"={{.*}} }
++// NO-MCOUNT1-NOT: attributes #1 = { {{.*}}"counting-function"={{.*}} }
