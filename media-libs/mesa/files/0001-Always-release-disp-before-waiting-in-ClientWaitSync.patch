@@ -1,0 +1,39 @@
+From cd86c47f275900074c0f0e93ff3ddac620914520 Mon Sep 17 00:00:00 2001
+From: Daniele Castagna <dcastagna@chromium.org>
+Date: Tue, 20 Jun 2017 18:49:27 -0400
+Subject: [PATCH] Always release disp before waiting in ClientWaitSync
+
+Change-Id: I5b056b11d7d6c683c91ae26f5b2e4b6cdfe4e4eb
+---
+ src/egl/main/eglapi.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index cab05c2301a..9003b95ed86 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1757,8 +1757,7 @@ eglClientWaitSync(EGLDisplay dpy, EGLSync sync, EGLint flags, EGLTime timeout)
+     * go into waiting state.
+     */
+ 
+-   if (s->Type == EGL_SYNC_REUSABLE_KHR)
+-      _eglUnlockDisplay(dpy);
++   _eglUnlockDisplay(dpy);
+ 
+    ret = drv->API.ClientWaitSyncKHR(drv, disp, s, flags, timeout);
+ 
+@@ -1766,10 +1765,7 @@ eglClientWaitSync(EGLDisplay dpy, EGLSync sync, EGLint flags, EGLTime timeout)
+     * 'disp' is already unlocked for reusable sync type,
+     * so passing 'NULL' to bypass unlocking display.
+     */
+-   if (s->Type == EGL_SYNC_REUSABLE_KHR)
+-      RETURN_EGL_EVAL(NULL, ret);
+-   else
+-      RETURN_EGL_EVAL(disp, ret);
++   RETURN_EGL_EVAL(NULL, ret);
+ }
+ 
+ 
+-- 
+2.13.1.611.g7e3b11ae1-goog
+

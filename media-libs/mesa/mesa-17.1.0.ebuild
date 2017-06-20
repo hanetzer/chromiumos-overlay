@@ -136,6 +136,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.0-st-dri-Add-fence-extension-to-SW-path.patch
 	epatch "${FILESDIR}"/17.1-anv-formats-Update-the-three-channel-BC1-ma.patch
 	epatch "${FILESDIR}"/17.1-i965-formats-Update-the-three-channel-DXT1-.patch
+	epatch "${FILESDIR}"/0001-Always-release-disp-before-waiting-in-ClientWaitSync.patch	
 	base_src_prepare
 
 	eautoreconf
