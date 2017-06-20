@@ -36,12 +36,13 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
-IUSE="${IUSE} +bmpblk cros_ec pd_sync qca-framework quiet unibuild verbose"
+IUSE="${IUSE} +bmpblk cros_ec +intel_mrc pd_sync qca-framework quiet unibuild verbose"
 
 PER_BOARD_BOARDS=(
-	bayleybay beltino bolt butterfly chell cyan daisy eve falco fizz fox glados
-	kunimitsu link lumpy nyan panther parrot peppy poppy rambi samus sklrvp
-	slippy stout stout32 strago stumpy urara variant-peach-pit
+	bayleybay beltino bolt butterfly chell cyan daisy eve falco
+	fizz fox glados kahlee kunimitsu link lumpy nyan panther
+	parrot peppy poppy rambi samus sklrvp slippy stout stout32
+	strago stumpy urara variant-peach-pit
 )
 
 DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
@@ -54,7 +55,7 @@ RDEPEND="
 # Dependency shared by x86 and amd64.
 DEPEND_X86="
 	sys-power/iasl
-	sys-boot/chromeos-mrc
+	intel_mrc? ( sys-boot/chromeos-mrc )
 	"
 DEPEND="
 	mtc? ( sys-boot/mtc )
