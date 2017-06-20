@@ -16,6 +16,10 @@ app-shells/bash		-net
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi	static-libs
+# Disable Segger J-Link for building openocd-0.10.0. We currently
+# don't use J-Link. It requires upgrading libjaylink, which is not yet
+# supported by official Gentoo portage repository.
+dev-embedded/openocd	-jlink
 dev-lang/perl		-berkdb gdbm
 dev-lang/python		-berkdb gdbm -sqlite
 dev-libs/dbus-glib	tools

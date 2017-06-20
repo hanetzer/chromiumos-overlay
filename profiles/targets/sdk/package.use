@@ -35,3 +35,8 @@ sys-libs/ncurses tinfo
 dev-java/icedtea-bin cups -gtk headless-awt -multilib -webstart
 # We don't want cups-filters to pull in ghostscript.
 net-print/cups-filters -postscript
+
+# Disable Segger J-Link for building openocd-0.10.0. We currently
+# don't use J-Link. It requires upgrading libjaylink, which is not yet
+# supported by official Gentoo portage repository.
+dev-embedded/openocd	-jlink
