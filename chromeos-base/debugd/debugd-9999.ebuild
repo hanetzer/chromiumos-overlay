@@ -56,7 +56,6 @@ pkg_preinst() {
 }
 
 src_install() {
-	dobin "${OUT}"/drm_display_info
 	dobin "${OUT}"/generate_logs
 
 	into /
