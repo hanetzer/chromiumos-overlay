@@ -16,9 +16,5 @@
 		configuration must specify this flag. The flag is required for installing
 		the package itself as a safeguared against accidental inclusion on a system.
 	</flag>
-	<flag name='h1_over_spi'>
-		Use SPI as opposed to USB to communicate with H1 (the security
-		controller deployed on some Chrome OS devices).
-	</flag>
 </use>
 </pkgmetadata>
