@@ -6,7 +6,7 @@ USE=""
 
 USE="${USE} acpi bluetooth cairo cros_p2p -fbconsole opengl pam usb vlan -vtconsole X"
 USE="${USE} zlib bindist cros-debug -introspection"
-USE="${USE} -acl -cracklib -gpm ipv6 -openmp -python -sha512"
+USE="${USE} -acl -cracklib -gpm ipv6 -openmp -python -sha512 xattr"
 USE="${USE} -fortran -abiword -perl -poppler-data -nls -openrc"
 USE="${USE} -mime -peerd scanner"
 USE="${USE} -gtk2 -gtk3 -qt4"
