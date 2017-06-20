@@ -34,7 +34,13 @@ MIN_FILELIST_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/min_filelist_kbytes"
 MIN_FILELIST_SPECIAL_FILE="/proc/sys/vm/min_filelist_kbytes"
 
 min_filelist_default_generator() {
-  echo 50000  # KiB
+  if grep -q CHROMEOS_ARC_VERSION /etc/lsb-release; then
+    echo 400000  # KiB
+  else
+    # It is a good idea for this value to match that in
+    # platform/cheets-scripts/arc-stop-sysctl.conf.  (See comment there.)
+    echo 100000  # KiB
+  fi
 }
 
 EXTRA_FREE_MAX=20000  # MiB
@@ -82,29 +88,21 @@ default_low_memory_margin() {
   echo "${margin}"
 }
 
-# Sets the value of a kernel memory manager parameter, whose name is passed
-# in $1.
+
+# Gets the target value of a kernel memory manager parameter, whose name is
+# passed in $1.
 #
 # Each parameter <P> has a default value, computed by <P>_default_generator.
 # The default value can be overridden by a board-specific value contained
 # in <P>_BOARD_OVERRIDE_FILE, or (with higher priority) a device-specific file,
 # <P>_OVERRIDE_FILE which a user may have set, typically for the purpose of
 # experimentation.
-#
-# After figuring out what value to use, the value is passed to the kernel via
-# a procfs or sysfs entry.
-initialize_parameter() {
+get_target_value() {
   local PARAM="$(echo "$1" | tr '[a-z]' '[A-Z]')"
   local value
   local board_override_file="$(expand_var "${PARAM}_BOARD_OVERRIDE_FILE")"
   local override_file="$(expand_var "${PARAM}_OVERRIDE_FILE")"
-  local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
   local default_generator="$1"_default_generator
-
-  # Older kernels don't support all parameters.
-  if [ ! -e "${special_file}" ]; then
-    return 0
-  fi
 
   if [ -e "${override_file}" ]; then
     value=$(cat "${override_file}")
@@ -113,6 +111,21 @@ initialize_parameter() {
   else
     value=$(${default_generator})
   fi
+  echo "${value}"
+}
+
+
+# Sets the kernel value of a memory manager parameter, whose name is passed in
+# $1, via a procfs or sysfs entry.
+initialize_parameter() {
+  local value="$(get_target_value "$1")"
+  local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
+
+  # Older kernels don't support all parameters.
+  if [ ! -e "${special_file}" ]; then
+    return 0
+  fi
+
   echo "${value}" > "${special_file}"
 }
 
@@ -320,7 +333,8 @@ main() {
     usage 1
   fi
 
-  # Make sure the subcommand is one we know.
+  # Make sure that the subcommand is one we know and that it has the right
+  # number of arguments.
   local cmd="$1"
   shift
   case "${cmd}" in
@@ -329,7 +343,7 @@ main() {
       usage 1
     fi
     ;;
-  enable)
+  enable|get_target_value)
     if [ $# -ne 1 ]; then
       usage 1
     fi
