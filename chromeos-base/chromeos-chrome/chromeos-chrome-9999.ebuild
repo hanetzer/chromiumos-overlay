@@ -1268,7 +1268,7 @@ src_install() {
 	einfo "CHROME_DIR after deploy_chrome\n${LS}"
 
 	# Keep the .dwp file.
-	if use chrome_debug && ( use x86 || use arm ); then
+	if use chrome_debug && use debug_fission; then
 		mkdir -p "${D}/usr/lib/debug/${CHROME_DIR}"
 		DWP="${CHOST}"-dwp
 		cd "${D}/${CHROME_DIR}"
