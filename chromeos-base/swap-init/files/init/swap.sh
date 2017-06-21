@@ -119,6 +119,7 @@ get_target_value() {
 # $1, via a procfs or sysfs entry.
 initialize_parameter() {
   local value="$(get_target_value "$1")"
+  local PARAM="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
   local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
 
   # Older kernels don't support all parameters.
@@ -278,7 +279,7 @@ set_parameter() {
     exit 1
     ;;
   esac
-  local PARAM="$(echo "${param}" | tr '[a-z]' '[A-Z]')"
+  local PARAM="$(echo "${param}" | tr '[:lower:]' '[:upper:]')"
   local max="$(expand_var "${PARAM}_MAX")"
   local override_file="$(expand_var "${PARAM}_OVERRIDE_FILE")"
   local special_file="$(expand_var "${PARAM}_SPECIAL_FILE")"
@@ -312,16 +313,18 @@ set_parameter() {
 usage() {
   cat <<EOF
 Usage: $0 <start|stop|status|enable <size>|disable|
-           set_parameter <margin|min_filelist|extra_free> <value>>
+           set_parameter <margin|min_filelist|extra_free> <value>>|
+           get_target_value <margin|min_filelist|extra_free> <value>>
 
 Start or stop the use of the compressed swap file, or persistently set
-various memory manager tunable parameters.
+various memory manager tunable parameters, or get their chosen values.
 
 The start phase is normally invoked by init during boot, but we never run the
 stop phase when shutting down (since there's no point).  The stop phase is used
 by developers via debugd to restart things on the fly.
 
 Disabling changes the config, but doesn't actually turn on/off swap.
+That will happen at the next reboot.
 EOF
   exit $1
 }
