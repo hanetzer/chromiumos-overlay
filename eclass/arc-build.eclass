@@ -69,7 +69,7 @@ _arc-build-select-common() {
 		ARC_GCC_LIBDIR="${ARC_BASE}/lib/gcc/${ARC_GCC_TUPLE}/4.9"
 
 		export CHOST="${ARC_GCC_TUPLE}"
-		append-flags -I"${ARC_SYSROOT}/usr/include/arch-arm/include/"
+		append-cppflags -I"${ARC_SYSROOT}/usr/include/arch-arm/include/"
 		;;
 	amd64)
 		ARC_GCC_TUPLE=x86_64-linux-android
@@ -81,7 +81,8 @@ _arc-build-select-common() {
 		export CHOST=i686-linux-android
 
 		# Use 32-bit ABI on amd64 builds
-		append-flags -m32 -I"${ARC_SYSROOT}/usr/include/arch-x86/include/"
+		append-cppflags -I"${ARC_SYSROOT}/usr/include/arch-x86/include/"
+		append-flags -m32
 		append-ldflags -m32
 		;;
 	esac
