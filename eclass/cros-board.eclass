@@ -334,6 +334,7 @@ ALL_BOARDS=(
 	x86-zgb32_he
 	x86-zgb_he
 	zako
+	zoombini
 )
 
 # Use the CROS_BOARDS defined by ebuild, otherwise use ALL_BOARDS.
