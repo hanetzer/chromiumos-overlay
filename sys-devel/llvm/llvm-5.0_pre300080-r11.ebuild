@@ -233,6 +233,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
+	CHERRIES+=" 5773fa6550fa9b33017d8d1e4ebdb96cf5eaf626 " # r305853
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
