@@ -50,6 +50,7 @@ RDEPEND="${RDEPEND}
 	tests_security_SMMLocked? ( sys-apps/pciutils )
 	arc-camera3? (
 		tests_camera_HAL3? ( chromeos-base/autotest-deps-camera-hal3 )
+		tests_camera_HAL3Perf? ( chromeos-base/autotest-deps-camera-hal3 )
 	)
 	tests_camera_V4L2? ( media-libs/libyuv )
 	tests_xfsFilesystemTestSuite? ( app-benchmarks/xfstests )
@@ -83,7 +84,10 @@ CLIENT_IUSE_TESTS="
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_build_RootFilesystemSize
 	+tests_camera_V4L2
-	arc-camera3? ( +tests_camera_HAL3 )
+	arc-camera3? (
+		+tests_camera_HAL3
+		+tests_camera_HAL3Perf
+	)
 	!chromeless_tty? (
 		!chromeless_tests? (
 			+tests_desktopui_CrashyReboot
