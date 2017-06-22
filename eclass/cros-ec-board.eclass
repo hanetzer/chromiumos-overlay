@@ -31,7 +31,6 @@ EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
 # EC firmware board names for overlay with special configuration
 EC_BOARD_NAMES=(
 	bds
-	big
 	chell
 	chell_pd
 	coral
@@ -56,7 +55,6 @@ EC_BOARD_NAMES=(
 	minimuffin
 	oak
 	oak_pd
-	pit
 	plankton
 	poppy
 	reef
