@@ -1,0 +1,70 @@
+From 78f855e132513e2effda73f02913f743a5689d7c Mon Sep 17 00:00:00 2001
+From: Ben Chan <benchan@chromium.org>
+Date: Wed, 21 Jun 2017 22:37:50 -0700
+Subject: [PATCH] Replace deprecated g_memmove with memmove.
+
+This patch backports the following upstream patches that replace
+g_memmove with memmove as the g_memmove has been removed from newer glib
+versions:
+
+    From 9fba5a787ebce032b31105aad1d575258db0c568 Mon Sep 17 00:00:00 2001
+    From: Evan Huus <eapache@gmail.com>
+    Date: Fri, 20 Dec 2013 14:35:34 +0000
+    Subject: [PATCH] g_memmove has been removed in favour of normal memmove in the
+     latest glib versions, so do the same. Plain old memmove appears to be
+     specified in C90, so I'm not sure why they ever needed a compat function in
+     the first place...
+
+    svn path=/trunk/; revision=54295
+
+    From c38424311f573b631b4015ff587c8423ceaef57f Mon Sep 17 00:00:00 2001
+    From: Evan Huus <eapache@gmail.com>
+    Date: Fri, 20 Dec 2013 14:45:24 +0000
+    Subject: [PATCH] Replace one more g_memmove with memmove, add a cast to make
+     the Lua stuff compile.
+
+    svn path=/trunk/; revision=54296
+---
+---
+ epan/dissectors/packet-ssl-utils.c | 4 ++--
+ ui/export_object_smb.c             | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/epan/dissectors/packet-ssl-utils.c b/epan/dissectors/packet-ssl-utils.c
+index 1ab3c8d477..0f1ad44d1f 100644
+--- a/epan/dissectors/packet-ssl-utils.c
++++ b/epan/dissectors/packet-ssl-utils.c
+@@ -1633,7 +1633,7 @@ ssl_private_decrypt(guint len, guchar* encr_data, SSL_PRIVATE_KEY* pk)
+     ssl_debug_printf("pcry_private_decrypt: stripping %d bytes, decr_len %" G_GSIZE_MODIFIER "u\n",
+         rc, decr_len);
+     ssl_print_data("decrypted_unstrip_pre_master", decr_data_ptr, decr_len);
+-    g_memmove(decr_data_ptr, &decr_data_ptr[rc], decr_len - rc);
++    memmove(decr_data_ptr, &decr_data_ptr[rc], decr_len - rc);
+     decr_len -= rc;
+ 
+ out:
+@@ -1670,7 +1670,7 @@ out:
+     ssl_debug_printf("pcry_private_decrypt: stripping %d bytes, decr_len %d\n",
+         rc, decr_len);
+     ssl_print_data("decrypted_unstrip_pre_master", decr_data_ptr, decr_len);
+-    g_memmove(decr_data_ptr, &decr_data_ptr[rc], decr_len - rc);
++    memmove(decr_data_ptr, &decr_data_ptr[rc], decr_len - rc);
+     decr_len -= rc;
+ #endif /* SSL_FAST */
+     gcry_mpi_release(text);
+diff --git a/ui/export_object_smb.c b/ui/export_object_smb.c
+index dec3de9eca..59ccaa2cb2 100644
+--- a/ui/export_object_smb.c
++++ b/ui/export_object_smb.c
+@@ -254,7 +254,7 @@ gpointer    dest_memory_addr;
+ 	/* ...then, put the chunk of the file in the right place */
+ 	if (!file->is_out_of_memory) {
+ 		dest_memory_addr = entry->payload_data + chunk_offset;
+-		g_memmove(dest_memory_addr, eo_info->payload_data, eo_info->payload_len);
++		memmove(dest_memory_addr, eo_info->payload_data, eo_info->payload_len);
+ 	}
+ }
+ 
+-- 
+2.13.1.611.g7e3b11ae1-goog
+
