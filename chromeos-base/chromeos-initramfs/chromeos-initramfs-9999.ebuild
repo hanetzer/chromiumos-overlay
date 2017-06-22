@@ -20,7 +20,6 @@ IUSE="device_tree frecon +interactive_recovery -mtd +power_management"
 TARGETS_IUSE="
 	factory_netboot_ramfs
 	factory_shim_ramfs
-	loader_kernel_ramfs
 	recovery_ramfs
 "
 IUSE+=" ${TARGETS_IUSE}"
@@ -70,17 +69,9 @@ FACTORY_NETBOOT_DEPENDS="
 	sys-apps/iproute2
 	"
 
-# Packages required for building the loader kernel initramfs.
-LOADER_KERNEL_DEPENDS="
-	chromeos-base/vboot_reference
-	device_tree? ( sys-apps/fitpicker )
-	sys-apps/kexec-tools
-	"
-
 DEPEND="
 	factory_netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
 	factory_shim_ramfs? ( ${FACTORY_SHIM_DEPENDS} )
-	loader_kernel_ramfs? ( ${LOADER_KERNEL_DEPENDS} )
 	recovery_ramfs? ( ${RECOVERY_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
 	sys-fs/lvm2
