@@ -140,9 +140,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3136.5_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3136.5_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3136.5_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3138.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3138.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3138.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -813,6 +813,15 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=$(tc-getBUILD_CXX)
 
+	# USE=thinlto affects host build, we need to make changes below
+	# to make sure host package builds with thinlto.
+	# crosbug.com/731335
+	if use thinlto; then
+		export AR_host="llvm-ar"
+		export LD_host="${CXX_host}"
+		LD_host+=" -B$(get_binutils_path "${LD_host}")"
+	fi
+
 	# Set binutils path for goma.
 	CC_host+=" -B$(get_binutils_path "${LD_host}")"
 	CXX_host+=" -B$(get_binutils_path "${LD_host}")"
@@ -1259,7 +1268,7 @@ src_install() {
 	einfo "CHROME_DIR after deploy_chrome\n${LS}"
 
 	# Keep the .dwp file.
-	if use chrome_debug && ( use x86 || use arm ); then
+	if use chrome_debug && use debug_fission; then
 		mkdir -p "${D}/usr/lib/debug/${CHROME_DIR}"
 		DWP="${CHOST}"-dwp
 		cd "${D}/${CHROME_DIR}"
