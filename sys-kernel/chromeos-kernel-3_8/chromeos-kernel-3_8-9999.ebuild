@@ -12,6 +12,6 @@ AFDO_PROFILE_VERSION="9460.50.0"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
-DESCRIPTION="Chrome OS Linux Kernel 3.8"
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
+DESCRIPTION="Chrome OS Linux Kernel 3.8"
 KEYWORDS="~*"

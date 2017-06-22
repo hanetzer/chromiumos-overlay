@@ -8,7 +8,7 @@ CROS_WORKON_LOCALNAME="kernel/v3.10"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
-DESCRIPTION="Chrome OS Linux Kernel 3.10"
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
+DESCRIPTION="Chrome OS Linux Kernel 3.10"
 KEYWORDS="~*"
 RDEPEND="!sys-kernel/kernel-freon"

@@ -11,6 +11,6 @@ CROS_WORKON_ALWAYS_LIVE="1"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
-DESCRIPTION="Linux Kernel Upstream (mainline)"
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
+DESCRIPTION="Linux Kernel Upstream (mainline)"
 KEYWORDS="*"
