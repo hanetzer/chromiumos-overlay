@@ -18,14 +18,15 @@ IUSE="-asan cheets"
 RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libmojo
-	x11-libs/libdrm
 	virtual/arc-camera3-hal"
 
 DEPEND="${RDEPEND}
 	media-libs/arc-camera3-android-headers
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libsync
-	virtual/pkgconfig"
+	media-libs/minigbm
+	virtual/pkgconfig
+	x11-libs/libdrm"
 
 src_compile() {
 	asan-setup-env
