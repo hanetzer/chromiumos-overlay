@@ -39,6 +39,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0010-UPSTREAM-Input-uinput-add-new-UINPUT_DEV_SETUP-and-U.patch"
 	epatch "${FILESDIR}/0011-CHROMIUM-kernel-device_jail.patch"
 	epatch "${FILESDIR}/0012-UPSTREAM-uapi-add-missing-install-of-dma-buf.h.patch"
+	epatch "${FILESDIR}/0013-Input-introduce-KEY_ASSISTANT.patch"
 }
 
 src_install() {
