@@ -6,7 +6,7 @@ EAPI="5"
 
 inherit eutils toolchain-funcs
 
-DESCRIPTIION="Infineon TPM firmware updater"
+DESCRIPTION="Infineon TPM firmware updater"
 SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="BSD-Infineon LICENSE.infineon-firmware-updater-TCG"
@@ -14,7 +14,6 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
-	chromeos-base/infineon-firmware
 	dev-libs/openssl
 "
 
@@ -24,6 +23,7 @@ S="${WORKDIR}"
 
 src_prepare() {
 	epatch "${FILESDIR}"/makefile-fixes.patch
+	epatch "${FILESDIR}"/unlimited-log-file-size.patch
 }
 
 src_configure() {
@@ -36,4 +36,5 @@ src_compile() {
 
 src_install() {
 	newsbin TPMFactoryUpd/TPMFactoryUpd infineon-firmware-updater
+	dosbin "${FILESDIR}"/tpm-firmware-updater
 }
