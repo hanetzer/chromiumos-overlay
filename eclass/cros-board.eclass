@@ -185,6 +185,7 @@ ALL_BOARDS=(
 	monroe
 	moose
 	nasher
+	nefario
 	newbie
 	ninja
 	novato
