@@ -84,7 +84,7 @@ src_test() {
 	# upstream. We're taking this approach for now since dbus-run-session
 	# requires at least dbus-1.8.
 	[[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]] && \
-		dbus-launch --exit-with-session emake check
+		dbus-launch --exit-with-session emake check VERBOSE=1
 }
 
 src_install() {
