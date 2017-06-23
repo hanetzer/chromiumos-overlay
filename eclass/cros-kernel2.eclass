@@ -49,6 +49,7 @@ IUSE="
 	tpm2
 	-kernel_afdo
 "
+REQUIRED_USE=""
 STRIP_MASK="
 	/usr/lib/debug/boot/vmlinux
 	/usr/src/*
@@ -275,6 +276,8 @@ CONFIG_KGDB_KDB=y
 # CONFIG_WATCHDOG is not set
 CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=1
 """
+# kgdb over serial port depends on CONFIG_HW_CONSOLE which depends on CONFIG_VT
+REQUIRED_USE="${REQUIRED_USE} kgdb? ( vtconsole )"
 
 kmemleak_desc="Enable kmemleak"
 kmemleak_config="
@@ -650,7 +653,7 @@ CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
 
 # Add all config and firmware fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]} ${FIRMWARE_BINARIES[@]}"
-REQUIRED_USE="
+REQUIRED_USE="${REQUIRED_USE}
 	factory_netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
 	factory_shim_ramfs? ( !recovery_ramfs !factory_netboot_ramfs )
 	recovery_ramfs? ( !factory_netboot_ramfs !factory_shim_ramfs )
