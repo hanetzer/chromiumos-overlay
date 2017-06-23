@@ -14,12 +14,12 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan"
 RDEPEND="
-	chromeos-base/libbrillo
-	media-libs/libexif"
+	chromeos-base/libbrillo"
 
 DEPEND="${RDEPEND}
 	media-libs/arc-camera3-android-headers
 	media-libs/arc-camera3-libcamera_client
+	media-libs/arc-camera3-libcamera_exif
 	media-libs/arc-camera3-libcamera_jpeg
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libsync
