@@ -7,9 +7,6 @@
 # Configure and start swap if SWAP_ENABLE_FILE exists.
 # SWAP_ENABLE_FILE may optionally contain the uncompressed swap size (in Mb).
 # Otherwise it is set to 1.5 times total RAM.
-#
-# To start swap, create file /home/chronos/.swap_enabled and run
-# "[systemctl] start swap" or reboot.  To stop swap, remove the file and reboot.
 
 PER_BOARD_OVERRIDE_DIR=/etc/swap
 PER_DEVICE_OVERRIDE_DIR=/var/lib/swap
@@ -131,12 +128,24 @@ initialize_parameter() {
 }
 
 
+create_write_file() {
+  file="$1"
+  dir=$(dirname "${file}")
+  content="$2"
+  # Delete the file first in case its permissions have gotten ... weird.
+  rm -f "${file}"
+  mkdir -p -m 0755 "${dir}"
+  echo "${content}" > "${file}"
+}
+
+
 # TODO(semenzato): Remove this after R65
 migrate_old_swap_setting() {
   OLD_SWAP_ENABLE_FILE=/home/chronos/.swap_enabled
   if [ -e "${OLD_SWAP_ENABLE_FILE}" ]; then
-    mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
-    mv "${OLD_SWAP_ENABLE_FILE}" "${SWAP_ENABLE_FILE}"
+    old_content="$(cat "${OLD_SWAP_ENABLE_FILE}")"
+    create_write_file "${SWAP_ENABLE_FILE}" "${old_content}"
+    rm -f "${OLD_SWAP_ENABLE_FILE}"
   fi
 }
 
@@ -254,17 +263,12 @@ enable() {
     logger -t "${JOB}" "enabling swap via config with size ${size}"
   fi
 
-  # Delete it first in case the permissions have gotten ... weird.
-  rm -f "${SWAP_ENABLE_FILE}"
-  mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
-  echo "${size}" > "${SWAP_ENABLE_FILE}"
+  create_write_file "${SWAP_ENABLE_FILE}" "${size}"
 }
 
 disable() {
   logger -t "${JOB}" "disabling swap via config"
-  # Delete it first in case the permissions have gotten ... weird.
-  rm -f "${SWAP_ENABLE_FILE}"
-  echo "0" > "${SWAP_ENABLE_FILE}"
+  create_write_file "${SWAP_ENABLE_FILE}" "0"
 }
 
 set_parameter() {
@@ -302,8 +306,7 @@ set_parameter() {
     rm -f "${override_file}"
     system_value=$(${default_generator})
   else
-    mkdir -p -m 0755 "${PER_DEVICE_OVERRIDE_DIR}"
-    echo "${system_value}" > "${override_file}"
+    create_write_file "${override_file}" "${system_value}"
   fi
   echo "${system_value}" > "${special_file}"
   value=$(( system_value / conversion ))
