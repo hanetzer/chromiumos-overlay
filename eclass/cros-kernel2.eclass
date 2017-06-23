@@ -20,6 +20,7 @@ DEPEND="sys-apps/debianutils
 	sys-kernel/linux-firmware
 	factory_netboot_ramfs? ( chromeos-base/chromeos-initramfs[factory_netboot_ramfs] )
 	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs[factory_shim_ramfs] )
+	loader_kernel_ramfs? ( chromeos-base/chromeos-initramfs[loader_kernel_ramfs] )
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 	builtin_fw_t210_bpmp? ( sys-kernel/tegra_bpmp-t210 )
@@ -102,6 +103,7 @@ CONFIG_FRAGMENTS=(
 	kmemleak
 	kvm
 	kvm_host
+	loader_kernel_ramfs
 	lockdebug
 	lxc
 	mbim
@@ -312,6 +314,13 @@ recovery_ramfs_desc="Initramfs for recovery image"
 recovery_ramfs_config='
 CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/recovery_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
+'
+
+loader_kernel_ramfs_desc="Initramfs for loader kernel"
+loader_kernel_ramfs_config='
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/loader_kernel_ramfs.cpio.xz"
+CONFIG_INITRAMFS_COMPRESSION_XZ=y
+CONFIG_KEXEC=y
 '
 
 factory_netboot_ramfs_desc="Initramfs for factory netboot installer"
