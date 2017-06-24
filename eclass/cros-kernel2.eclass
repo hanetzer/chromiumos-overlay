@@ -145,7 +145,7 @@ acpi_ac_off_config="
 allocator_slab_desc="Turn on SLAB allocator"
 allocator_slab_config="
 CONFIG_SLAB=y
-CONFIG_SLUB=n
+# CONFIG_SLUB is not set
 "
 
 binder_desc="binder IPC"
@@ -199,7 +199,7 @@ fbconsole_config="
 CONFIG_FRAMEBUFFER_CONSOLE=y
 "
 fbconsole_config_disable="
-CONFIG_FRAMEBUFFER_CONSOLE=n
+# CONFIG_FRAMEBUFFER_CONSOLE is not set
 "
 
 gdmwimax_desc="GCT GDM72xx WiMAX support"
@@ -453,7 +453,7 @@ CONFIG_SERIAL_SAMSUNG_CONSOLE=y
 
 selinux_develop_desc="SELinux developer mode"
 selinux_develop_config="
-CONFIG_SECURITY_SELINUX_PERMISSIVE_DONTAUDIT=n
+# CONFIG_SECURITY_SELINUX_PERMISSIVE_DONTAUDIT is not set
 "
 
 socketmon_desc="INET socket monitoring interface (for iproute2 ss)"
@@ -549,13 +549,13 @@ CONFIG_VT=y
 CONFIG_VT_CONSOLE=y
 "
 vtconsole_config_disable="
-CONFIG_VT=n
-CONFIG_VT_CONSOLE=n
+# CONFIG_VT is not set
+# CONFIG_VT_CONSOLE is not set
 "
 
 nowerror_desc="Don't build with -Werror (warnings aren't fatal)."
 nowerror_config="
-CONFIG_ERROR_ON_WARNING=n
+# CONFIG_ERROR_ON_WARNING is not set
 "
 
 lxc_desc="LXC Support (Linux Containers)"
