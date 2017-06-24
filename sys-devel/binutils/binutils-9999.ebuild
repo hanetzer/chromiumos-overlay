@@ -195,7 +195,6 @@ src_configure() {
 		--libdir="${EPREFIX}"${LIBPATH}
 		--libexecdir="${EPREFIX}"${LIBPATH}
 		--includedir="${EPREFIX}"${INCPATH}
-		--enable-compressed-debug-sections=none
 		--enable-threads
 		--enable-shared
 		# Newer versions (>=2.24) make this an explicit option. #497268
