@@ -59,6 +59,7 @@ media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -
 net-analyzer/tcpdump	-chroot
 net-dns/avahi-daemon	zeroconf
 net-dns/dnsmasq		script
+net-firewall/iptables	conntrack pcap
 net-fs/samba		ads acl gnutls ldap -perl -python
 # C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
 # Clients don't need the C++ library anyway, so disabling it...
