@@ -22,7 +22,7 @@ inherit cros-constants git-2
 EGIT_REPO_URIS=(
 	"cloud/policy"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy.git"
-	"a7a1169194088503a0c1655f090623b45724f576"
+	"c7d963321cb91af21cfa124799016b9c131d0ba3"
 
 	# If you uprev these repos, also update files/VERSION to the corresponding
 	# revision of chromium/src/chrome/VERSION in the Chromium code base (only the
@@ -31,7 +31,7 @@ EGIT_REPO_URIS=(
 
 	"chromeos/policy/proto"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
-	"8af5a78c6094c6942a1ea25cd6828a69edf6d24e"
+	"605533d3439f0477ed94200b1d18e9e2b83668eb"
 )
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
