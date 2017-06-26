@@ -258,23 +258,12 @@ src_prepare() {
 	if use llvm-next || use llvm-tot; then
 		# leak-whitelist patch does not cleanly apply to llvm-next.
 		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
-		# Disable newly added project lib/Testing/Support is breaking llvm-next build.
-		# Remove once https://bugs.llvm.org/show_bug.cgi?id=33528 is fixed.
-		epatch "${FILESDIR}"/llvm-next-disable-testing-support.patch
 	else
 		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
 	fi
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
-
-	# Prevent race conditions with parallel Sphinx runs
-	# https://llvm.org/bugs/show_bug.cgi?id=23781
-	epatch "${FILESDIR}"/cmake/0003-cmake-Add-an-ordering-dep-between-HTML-man-Sphinx-ta.patch
-
-	# Prevent installing libgtest
-	# https://llvm.org/bugs/show_bug.cgi?id=18341
-	epatch "${FILESDIR}"/cmake/0004-cmake-Do-not-install-libgtest.patch
 
 	# Allow custom cmake build types (like 'Gentoo')
 	epatch "${FILESDIR}"/cmake/${PN}-3.8-allow_custom_cmake_build_types.patch
