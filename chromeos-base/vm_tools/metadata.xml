@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<use>
+	<flag name='kvm_host'>
+    Build tools that run on the host system for managing VMs instead of
+    building tools that run in the guest.
+	</flag>
+</use>
+</pkgmetadata>
