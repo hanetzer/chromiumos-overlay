@@ -37,6 +37,7 @@ src_prepare() {
 
 src_compile() {
 	protoc --proto_path "${S}" --python_out="${AUTOTEST_WORK}" "${S}/tko/tko.proto"
+	protoc --proto_path "${S}" --python_out="${AUTOTEST_WORK}" "${S}/site_utils/cloud_console.proto"
 }
 
 src_configure() {
