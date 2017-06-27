@@ -156,6 +156,8 @@ EOF
 		echo "CONFIG_MMA=y" >> "${CONFIG}"
 	fi
 
+	# allow using non-coreboot toolchains
+	echo "CONFIG_ANY_TOOLCHAIN=y" >> "${CONFIG}"
 	# disable coreboot's own EC firmware building mechanism
 	echo "CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE=y" >> "${CONFIG}"
 	echo "CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE=y" >> "${CONFIG}"
