@@ -29,12 +29,11 @@ inherit cros-board
 # @USAGE:
 # @DESCRIPTION:
 # Installs the .dtsi file for the current board. This is called from the
-# chromeos-config-<board> public ebuild. It is named "<board>-model.dtsi".
+# chromeos-config-<board> public ebuild. It is named "model.dtsi".
 install_model_file() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	local board="$(get_current_board_no_variant)"
-	local dest="${board}-model.dtsi"
+	local dest="model.dtsi"
 
 	einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
 
@@ -50,12 +49,11 @@ install_model_file() {
 # @DESCRIPTION:
 # Installs the .dtsi file for the current board. This is intended to be called
 # from the chromeos-config-<board> private ebuild. The file is named
-# "<board>-model.dtsi".
+# "private-model.dtsi".
 install_private_model_file() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	local board="$(get_current_board_no_variant)"
-	local dest="${board}-private-model.dtsi"
+	local dest="private-model.dtsi"
 
 	einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
 
