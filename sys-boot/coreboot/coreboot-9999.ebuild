@@ -37,6 +37,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk cros_ec +intel_mrc pd_sync qca-framework quiet unibuild verbose"
+IUSE="${IUSE} coreboot-sdk"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco
@@ -303,8 +304,6 @@ make_coreboot() {
 }
 
 src_compile() {
-	tc-export CC
-
 	# Set KERNELREVISION (really coreboot revision) to the ebuild revision
 	# number followed by a dot and the first seven characters of the git
 	# hash. The name is confusing but consistent with the coreboot
@@ -312,19 +311,24 @@ src_compile() {
 	local sha1v="${VCSID/*-/}"
 	export KERNELREVISION=".${PV}.${sha1v:0:7}"
 
-	# Export the known cross compilers so there isn't a reliance
-	# on what the default profile is for exporting a compiler. The
-	# reasoning is that the firmware may need more than one to build
-	# and boot.
-	export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
-	# For coreboot.org upstream architecture naming.
-	export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
-	export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
-	# aarch64: used on chromeos-2013.04
-	export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
-	# arm64: used on coreboot upstream
-	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
-	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
+	if ! use coreboot-sdk; then
+		tc-export CC
+		# Export the known cross compilers so there isn't a reliance
+		# on what the default profile is for exporting a compiler. The
+		# reasoning is that the firmware may need more than one to build
+		# and boot.
+		export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
+		# For coreboot.org upstream architecture naming.
+		export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
+		export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
+		# aarch64: used on chromeos-2013.04
+		export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
+		# arm64: used on coreboot upstream
+		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
+		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
+	else
+		export XGCCPATH=/opt/coreboot-sdk/bin/
+	fi
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 

@@ -13,7 +13,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="coreboot-sdk"
 
 RDEPEND=""
 DEPEND=""
@@ -26,23 +26,27 @@ STRIP_MASK="*"
 inherit cros-workon cros-board toolchain-funcs
 
 src_compile() {
-	tc-getCC
 	local src_root="payloads/libpayload"
 	local board=$(get_current_board_with_variant)
 
-	# Export the known cross compilers so there isn't a reliance
-	# on what the default profile is for exporting a compiler. The
-	# reasoning is that the firmware may need more than one to build
-	# and boot.
-	export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
-	# For coreboot.org upstream architecture naming.
-	export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
-	export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
-	# aarch64: used on chromeos-2013.04
-	export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
-	# arm64: used on coreboot upstream
-	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
-	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
+	if ! use coreboot-sdk; then
+		tc-getCC
+		# Export the known cross compilers so there isn't a reliance
+		# on what the default profile is for exporting a compiler. The
+		# reasoning is that the firmware may need more than one to build
+		# and boot.
+		export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
+		# For coreboot.org upstream architecture naming.
+		export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
+		export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
+		# aarch64: used on chromeos-2013.04
+		export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
+		# arm64: used on coreboot upstream
+		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
+		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
+	else
+		export XGCCPATH=/opt/coreboot-sdk/bin/
+	fi
 
 	# we have all kinds of userland-cruft in CFLAGS that has no place in firmware.
 	# coreboot ignores CFLAGS, libpayload doesn't, so prune it.
