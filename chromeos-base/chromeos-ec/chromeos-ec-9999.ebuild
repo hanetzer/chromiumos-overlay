@@ -31,7 +31,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="quiet verbose"
+IUSE="quiet verbose coreboot-sdk"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -45,8 +45,15 @@ src_configure() {
 }
 
 set_build_env() {
-	# The firmware is running on ARMv7-m (Cortex-M4)
-	export CROSS_COMPILE=arm-none-eabi-
+	if ! use coreboot-sdk; then
+		export CROSS_COMPILE_arm=arm-none-eabi-
+		export CROSS_COMPILE_i386=i686-pc-linux-gnu-
+		export CROSS_COMPILE_nds=nds32le-cros-elf-
+	else
+		export CROSS_COMPILE_arm=/opt/coreboot-sdk/bin/arm-eabi-
+		export CROSS_COMPILE_i386=/opt/coreboot-sdk/bin/i386-elf-
+		export CROSS_COMPILE_nds=/opt/coreboot-sdk/bin/nds32le-elf-
+	fi
 	tc-export CC BUILD_CC
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
