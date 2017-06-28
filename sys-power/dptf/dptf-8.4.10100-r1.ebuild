@@ -15,8 +15,14 @@ SLOT="0"
 KEYWORDS="-* amd64 x86"
 IUSE="debug"
 
+# Makefile for DPTF policies
 CMAKE_USE_DIR="${S}/DPTF/Linux"
+# Makefile for ESIF daemon
 ESIF_BUILD_DIR="ESIF/Products/ESIF_UF/Linux"
+# Makefile for ESIF compression library
+ESIFCMP_BUILD_DIR="ESIF/Products/ESIF_CMP/Linux"
+# Makefile for ESIF web server
+ESIFWS_BUILD_DIR="ESIF/Products/ESIF_WS/Linux"
 
 DEPEND="sys-apps/dbus
 	sys-libs/ncurses sys-libs/readline"
@@ -34,11 +40,14 @@ src_compile() {
 	# Build ESIF daemon
 	local extra_cflags=""
 	use debug && extra_cflags="Debug"
-	emake \
-		-C "${ESIF_BUILD_DIR}" \
-		CC="$(tc-getCC)" \
-		BUILD="${extra_cflags}" \
-		OS=Chrome
+
+	for build_dir in "${ESIF_BUILD_DIR}" "${ESIFCMP_BUILD_DIR}" "${ESIFWS_BUILD_DIR}"; do
+		emake \
+			-C ${build_dir} \
+			CC="$(tc-getCC)" \
+			BUILD="${extra_cflags}" \
+			OS=Chrome
+	done
 
 	# Build DPTF policy shared libraries
 	cmake-utils_src_compile
@@ -52,6 +61,10 @@ src_install() {
 	doins ESIF/Packages/DSP/dsp.dv
 	insinto "/etc/init"
 	doins "${startcmd_src_dir}/dptf.conf"
+
+	# Install ESIF loadable libraries
+	dolib.so "${ESIFCMP_BUILD_DIR}/esif_cmp.so"
+	dolib.so "${ESIFWS_BUILD_DIR}/esif_ws.so"
 
 	# Install DPTF policy shared libraries
 	local policy_build_dir="${BUILD_DIR}"/$(usex amd64 x64 x32)
