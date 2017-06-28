@@ -1,0 +1,27 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+CROS_WORKON_COMMIT="1ab88d25b45dac3a400dfcd088e0e4f0118960df"
+CROS_WORKON_TREE="05eed616472c8e537a6b599974ea4cedede09d0a"
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
+
+inherit cros-workon autotest-deponly
+
+DESCRIPTION="Dependencies for WebGL many planets deep test"
+HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
+
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="*"
+
+# Autotest enabled by default.
+IUSE="+autotest"
+
+AUTOTEST_DEPS_LIST="webgl_mpd"
+
+# NOTE: For deps, we need to keep *.a
+AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
