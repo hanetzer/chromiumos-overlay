@@ -49,6 +49,10 @@ src_install() {
 	insinto /usr/share/policy
 	newins "${FILESDIR}/nfs-ganesha-seccomp-${ARCH}.policy" nfs-ganesha-seccomp.policy
 	cmake-utils_src_install
+
+	# Install the upstart job
+	insinto /etc/init
+	doins "${FILESDIR}"/nfs-ganesha.conf
 }
 
 pkg_preinst() {
