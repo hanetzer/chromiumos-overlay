@@ -49,7 +49,7 @@ EGIT_REPO_URIS=(
 fi
 
 LICENSE="UoI-NCSA"
-SLOT="0/${PV}"
+SLOT="0/${PV%%_*}"
 KEYWORDS="-* amd64"
 IUSE="clang debug default-compiler-rt default-libcxx doc gold libedit +libffi
 	lldb multitarget ncurses ocaml python +static-analyzer llvm-next llvm-tot
