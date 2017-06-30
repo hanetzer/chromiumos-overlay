@@ -2,21 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="fac6ad8a7d1e6a8927277b3f74b6aa31c9b61feb"
-CROS_WORKON_TREE="f51c2123cea431fcad03fcf70f59aedb5870873b"
+CROS_WORKON_COMMIT="13689bfb6a3716e683b44b92e6fe8777ea526b4a"
+CROS_WORKON_TREE="33f52f363b8f5a193fd95bd6de61080cff8bece6"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Jpeg compressor util."
+DESCRIPTION="ARC camera HAL v3 buffer mapper."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND="virtual/jpeg:0"
+RDEPEND="
+	media-libs/minigbm
+	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -25,21 +27,31 @@ src_compile() {
 	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
+	emake BASE_VER=${LIBCHROME_VERS} libcbm
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_jpeg.pic.a
+	dolib common/libcbm.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/jpeg_compressor.h
+	doins include/arc/camera_buffer_mapper.h
+	doins include/arc/camera_buffer_mapper_typedefs.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_jpeg.pc.template > common/libcamera_jpeg.pc
+		common/libcbm.pc.template > common/libcbm.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_jpeg.pc
+	doins common/libcbm.pc
+}
+
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
+
+	if use x86 || use amd64; then
+		./common/camera_buffer_mapper_unittest || \
+			die "camera_buffer_mapper unit tests failed!"
+	fi
 }
