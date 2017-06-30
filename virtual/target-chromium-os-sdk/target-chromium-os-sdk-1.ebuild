@@ -412,11 +412,11 @@ RDEPEND="${RDEPEND}
 	dev-python/django
 	dev-python/enum34
 	dev-python/flup
+	dev-python/gnupg
 	dev-python/jsonrpclib
 	dev-python/jsonschema
 	dev-python/paramiko
 	dev-python/pycrypto
-	dev-python/python-gnupg
 	dev-python/requests
 	dev-python/sphinx
 	!dev-python/twisted

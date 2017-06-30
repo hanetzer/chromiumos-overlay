@@ -47,6 +47,7 @@ FACTORY_TEST_RDEPEND="
 	app-arch/pigz
 	app-arch/xz-utils
 	chromeos-base/cryptohome
+	dev-python/gnupg
 	dev-python/numpy
 	dev-python/pyserial
 	dev-python/python-evdev
