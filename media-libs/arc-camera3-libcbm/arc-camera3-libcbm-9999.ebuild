@@ -19,6 +19,7 @@ RDEPEND="
 	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
+	media-libs/arc-camera3-android-headers
 	virtual/pkgconfig"
 
 src_compile() {
