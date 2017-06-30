@@ -11,7 +11,7 @@
 # then they should be done in the Chromium repository, and the commits below
 # should be updated.
 
-EAPI="4"
+EAPI="5"
 
 inherit cros-constants git-2
 
@@ -24,10 +24,19 @@ EGIT_REPO_URIS=(
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy.git"
 	"c7d963321cb91af21cfa124799016b9c131d0ba3"
 
-	# If you uprev these repos, also update files/VERSION to the corresponding
-	# revision of chromium/src/chrome/VERSION in the Chromium code base (only the
-	# MAJOR version matters, really). Also keep the revisions of policy.git and
-	# proto.git in sync. A failure to do so might result in broken unit tests.
+	# If you uprev these repos, please also:
+	# - Update files/VERSION to the corresponding revision of
+	#   chromium/src/chrome/VERSION in the Chromium code base.
+	#   Only the MAJOR version matters, really. This is necessary so policy
+	#   code builders have the right set of policies.
+	# - Keep the revisions of policy.git and proto.git in sync.
+	#   A failure to do so might result in broken unit tests.
+	# - Update authpolicy/policy/device_policy_encoder[_unittest].cc to
+	#   include new device policies. The unit test tells you missing ones:
+	#     cros_run_unit_tests --board=$BOARD --packages authpolicy
+	#   User policy is generated and doesn't have to be updated manually.
+	# - Bump the package version:
+	#     git mv protofiles-0.0.N.ebuild protofiles-0.0.N+1.ebuild
 
 	"chromeos/policy/proto"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
@@ -39,7 +48,7 @@ HOMEPAGE="http://chromium.org"
 SRC_URI=""
 
 LICENSE="BSD-Google"
-SLOT="0"
+SLOT="0/${PV}"
 KEYWORDS="*"
 IUSE=""
 

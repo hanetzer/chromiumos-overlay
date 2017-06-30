@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
@@ -33,7 +33,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/protofiles-0.0.3
+	>=chromeos-base/protofiles-0.0.4:=
 	chromeos-base/system_api
 "
 
