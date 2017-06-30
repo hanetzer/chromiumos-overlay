@@ -1,1 +1,0 @@
-chromeos-bmpblk-0.ebuild
