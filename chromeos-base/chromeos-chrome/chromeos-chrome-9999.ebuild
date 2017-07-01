@@ -80,7 +80,7 @@ REQUIRED_USE+=" ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} )"
 
 # The gclient hooks that run in src_prepare hit the network.
 # https://crbug.com/731905
-RESTRICT="network-sandbox"
+RESTRICT="network-sandbox mirror"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -183,8 +183,6 @@ add_afdo_files() {
 }
 
 add_afdo_files
-
-RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
