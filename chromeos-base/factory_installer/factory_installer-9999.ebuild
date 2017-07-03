@@ -79,6 +79,7 @@ RDEPEND="$COMMON_DEPEND
 	sys-apps/flashrom
 	sys-apps/hdparm
 	sys-apps/mmc-utils
+	sys-apps/nvme-cli
 	sys-apps/net-tools
 	sys-apps/upstart
 	sys-apps/util-linux
