@@ -80,7 +80,7 @@ REQUIRED_USE+=" ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} )"
 
 # The gclient hooks that run in src_prepare hit the network.
 # https://crbug.com/731905
-RESTRICT="network-sandbox"
+RESTRICT="network-sandbox mirror"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -144,9 +144,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3147.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3147.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3147.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3150.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3150.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3150.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -183,8 +183,6 @@ add_afdo_files() {
 }
 
 add_afdo_files
-
-RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
