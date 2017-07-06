@@ -69,6 +69,10 @@ src_prepare() {
 }
 
 src_configure() {
+	# When built with clang, mkfs.ntfs crashes on arm (chromium:739958).
+	# TODO(benchan): Remove this workaround after the issue is fixed.
+	cros_use_gcc
+
 	# The following line is commented out as we test ntfs3g built with
 	# the gold linker and it works on Chrome OS.
 	#
