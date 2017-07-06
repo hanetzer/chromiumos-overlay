@@ -90,8 +90,8 @@ make_depthcharge() {
 		echo "CONFIG_DETACHABLE_UI=y" >> "board/${board}/defconfig"
 	fi
 
-	[[ ${PV} == "9999" ]] && dc_make distclean "${builddir}" ""
-	dc_make defconfig "${builddir}" "" BOARD="${board}"
+	[[ ${PV} == "9999" ]] && dc_make distclean "${builddir}" libpayload
+	dc_make defconfig "${builddir}" libpayload BOARD="${board}"
 	cp .config "${builddir}/depthcharge.config"
 
 	dc_make depthcharge "${builddir}" libpayload
