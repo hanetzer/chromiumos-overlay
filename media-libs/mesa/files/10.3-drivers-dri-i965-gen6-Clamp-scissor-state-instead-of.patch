@@ -1,8 +1,8 @@
-From 02f81d05cfd5a77ed7bafc363b91262154c43558 Mon Sep 17 00:00:00 2001
+From bd3c01004e6eb34907f71d7fdb9c95f60431dcc4 Mon Sep 17 00:00:00 2001
 From: Corbin Simpson <simpsoco@chromium.org>
 Date: Thu, 28 Aug 2014 14:48:31 -0700
-Subject: [PATCH 17/24] CHROMIUM: i965: Clamp scissor state instead of
- truncating on gen6.
+Subject: [PATCH] CHROMIUM: i965: Clamp scissor state instead of truncating on
+ gen6.
 
 Replaces one undefined behavior with another, slightly more friendly,
 undefined behavior.
@@ -19,17 +19,18 @@ Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
 Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
 Signed-off-by: James Ausmus <james.ausmus@intel.com>
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
 ---
- src/mesa/drivers/dri/i965/gen6_scissor_state.c | 23 +++++++++++++++--------
+ src/mesa/drivers/dri/i965/genX_state_upload.c | 23 +++++++++++++++--------
  1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/src/mesa/drivers/dri/i965/gen6_scissor_state.c b/src/mesa/drivers/dri/i965/gen6_scissor_state.c
-index 17b4a7fba96b..b7190e4d4f5a 100644
---- a/src/mesa/drivers/dri/i965/gen6_scissor_state.c
-+++ b/src/mesa/drivers/dri/i965/gen6_scissor_state.c
-@@ -32,6 +32,13 @@
- #include "main/fbobject.h"
- #include "main/framebuffer.h"
+diff --git a/src/mesa/drivers/dri/i965/genX_state_upload.c b/src/mesa/drivers/dri/i965/genX_state_upload.c
+index a5ad2ca473..2fbf90ac7b 100644
+--- a/src/mesa/drivers/dri/i965/genX_state_upload.c
++++ b/src/mesa/drivers/dri/i965/genX_state_upload.c
+@@ -56,6 +56,13 @@
+ #include "main/varray.h"
+ #include "main/viewport.h"
  
 +/* Clamp scissors to 16-bit unsigned values; otherwise, the compiler truncates
 + * them to fit inside the bitfields, which is often not what is desired.
@@ -38,35 +39,34 @@ index 17b4a7fba96b..b7190e4d4f5a 100644
 + * switching from truncation to clamping is probably not a problem. ~ C. */
 +#define CLAMP_SCISSOR(X) CLAMP(X, 0x0000, 0xffff)
 +
- static void
- gen6_upload_scissor_state(struct brw_context *brw)
+ UNUSED static void *
+ emit_dwords(struct brw_context *brw, unsigned n)
  {
-@@ -77,17 +84,17 @@ gen6_upload_scissor_state(struct brw_context *brw)
-          scissor[i].ymax = 0;
-       } else if (render_to_fbo) {
-          /* texmemory: Y=0=bottom */
--         scissor[i].xmin = bbox[0];
--         scissor[i].xmax = bbox[1] - 1;
--         scissor[i].ymin = bbox[2];
--         scissor[i].ymax = bbox[3] - 1;
-+         scissor[i].xmin = CLAMP_SCISSOR(bbox[0]);
-+         scissor[i].xmax = CLAMP_SCISSOR(bbox[1] - 1);
-+         scissor[i].ymin = CLAMP_SCISSOR(bbox[2]);
-+         scissor[i].ymax = CLAMP_SCISSOR(bbox[3] - 1);
-       }
-       else {
-          /* memory: Y=0=top */
--         scissor[i].xmin = bbox[0];
--         scissor[i].xmax = bbox[1] - 1;
--         scissor[i].ymin = fb_height - bbox[3];
--         scissor[i].ymax = fb_height - bbox[2] - 1;
-+         scissor[i].xmin = CLAMP_SCISSOR(bbox[0]);
-+         scissor[i].xmax = CLAMP_SCISSOR(bbox[1] - 1);
-+         scissor[i].ymin = CLAMP_SCISSOR(fb_height - bbox[3]);
-+         scissor[i].ymax = CLAMP_SCISSOR(fb_height - bbox[2] - 1);
-       }
+@@ -1980,16 +1987,16 @@ set_scissor_bits(const struct gl_context *ctx, int i,
+       sc->ScissorRectangleYMax = 0;
+    } else if (render_to_fbo) {
+       /* texmemory: Y=0=bottom */
+-      sc->ScissorRectangleXMin = bbox[0];
+-      sc->ScissorRectangleXMax = bbox[1] - 1;
+-      sc->ScissorRectangleYMin = bbox[2];
+-      sc->ScissorRectangleYMax = bbox[3] - 1;
++      sc->ScissorRectangleXMin = CLAMP_SCISSOR(bbox[0]);
++      sc->ScissorRectangleXMax = CLAMP_SCISSOR(bbox[1] - 1);
++      sc->ScissorRectangleYMin = CLAMP_SCISSOR(bbox[2]);
++      sc->ScissorRectangleYMax = CLAMP_SCISSOR(bbox[3] - 1);
+    } else {
+       /* memory: Y=0=top */
+-      sc->ScissorRectangleXMin = bbox[0];
+-      sc->ScissorRectangleXMax = bbox[1] - 1;
+-      sc->ScissorRectangleYMin = fb_height - bbox[3];
+-      sc->ScissorRectangleYMax = fb_height - bbox[2] - 1;
++      sc->ScissorRectangleXMin = CLAMP_SCISSOR(bbox[0]);
++      sc->ScissorRectangleXMax = CLAMP_SCISSOR(bbox[1] - 1);
++      sc->ScissorRectangleYMin = CLAMP_SCISSOR(fb_height - bbox[3]);
++      sc->ScissorRectangleYMax = CLAMP_SCISSOR(fb_height - bbox[2] - 1);
     }
-    BEGIN_BATCH(2);
+ }
+ 
 -- 
-2.5.1
+2.12.2
 

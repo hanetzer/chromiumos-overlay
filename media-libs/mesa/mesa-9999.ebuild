@@ -116,7 +116,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
-	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
@@ -130,11 +129,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
-	epatch "${FILESDIR}"/17.0-st-dri-Add-fence-extension-to-SW-path.patch
-	epatch "${FILESDIR}"/17.1-anv-formats-Update-the-three-channel-BC1-ma.patch
-	epatch "${FILESDIR}"/17.1-i965-formats-Update-the-three-channel-DXT1-.patch
 	epatch "${FILESDIR}"/0001-Always-release-disp-before-waiting-in-ClientWaitSync.patch
-	epatch "${FILESDIR}"/17.1-i965-Improve-same-buffer-restriction-for-imports.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory

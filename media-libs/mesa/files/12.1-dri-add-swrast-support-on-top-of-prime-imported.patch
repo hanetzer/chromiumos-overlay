@@ -1,4 +1,4 @@
-From d35d4be163466cee7d0f06249475e7f688f49acd Mon Sep 17 00:00:00 2001
+From 216b021322d0b6edbc04a42bf9d88c079db0c333 Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@chromium.org>
 Date: Tue, 3 May 2016 16:04:59 -0700
 Subject: [PATCH] CHROMIUM: dri: add swrast support on top of prime imported
@@ -12,6 +12,7 @@ BUG=chromium:469666
 TEST=boot freon ChromeOS under qemu and see the UI
 
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
 ---
  src/gallium/state_trackers/dri/Makefile.am |   1 +
  src/gallium/state_trackers/dri/drisw.c     | 127 +++++++++++++++++
@@ -20,7 +21,7 @@ Signed-off-by: Tomasz Figa <tfiga@chromium.org>
  4 files changed, 339 insertions(+), 16 deletions(-)
 
 diff --git a/src/gallium/state_trackers/dri/Makefile.am b/src/gallium/state_trackers/dri/Makefile.am
-index 74bccaa..d7cf34b 100644
+index 61a1cabeb8..9f085bcfdd 100644
 --- a/src/gallium/state_trackers/dri/Makefile.am
 +++ b/src/gallium/state_trackers/dri/Makefile.am
 @@ -28,6 +28,7 @@ AM_CPPFLAGS = \
@@ -28,15 +29,15 @@ index 74bccaa..d7cf34b 100644
  	-I$(top_srcdir)/src/mapi \
  	-I$(top_srcdir)/src/mesa \
 +	-I$(top_srcdir)/src/gallium/include/state_tracker \
- 	-I$(top_srcdir)/src/mesa/drivers/dri/common \
  	-I$(top_builddir)/src/mesa/drivers/dri/common \
+ 	-I$(top_srcdir)/src/mesa/drivers/dri/common \
  	$(GALLIUM_CFLAGS) \
 diff --git a/src/gallium/state_trackers/dri/drisw.c b/src/gallium/state_trackers/dri/drisw.c
-index b85a73c..e5f59ae 100644
+index 8fbfa9ecea..3a3a125fd8 100644
 --- a/src/gallium/state_trackers/dri/drisw.c
 +++ b/src/gallium/state_trackers/dri/drisw.c
-@@ -48,6 +48,8 @@
- #include "dri_drawable.h"
+@@ -49,6 +49,8 @@
+ #include "dri_extensions.h"
  #include "dri_query_renderer.h"
  
 +#include "drm_driver.h"
@@ -44,7 +45,7 @@ index b85a73c..e5f59ae 100644
  DEBUG_GET_ONCE_BOOL_OPTION(swrast_no_present, "SWRAST_NO_PRESENT", FALSE);
  static boolean swrast_no_present = FALSE;
  
-@@ -361,6 +363,126 @@ drisw_update_tex_buffer(struct dri_drawable *drawable,
+@@ -362,6 +364,126 @@ drisw_update_tex_buffer(struct dri_drawable *drawable,
     pipe_transfer_unmap(pipe, transfer);
  }
  
@@ -171,17 +172,17 @@ index b85a73c..e5f59ae 100644
  /*
   * Backend function for init_screen.
   */
-@@ -369,6 +491,9 @@ static const __DRIextension *drisw_screen_extensions[] = {
-    &driTexBufferExtension.base,
+@@ -371,6 +493,9 @@ static const __DRIextension *drisw_screen_extensions[] = {
     &dri2RendererQueryExtension.base,
     &dri2ConfigQueryExtension.base,
+    &dri2FenceExtension.base,
 +#ifdef HAVE_LIBDRM
 +   &dri2ImageExtension.base,
 +#endif
     NULL
  };
  
-@@ -407,6 +532,8 @@ drisw_init_screen(__DRIscreen * sPriv)
+@@ -409,6 +534,8 @@ drisw_init_screen(__DRIscreen * sPriv)
     if (!configs)
        goto fail;
  
@@ -191,7 +192,7 @@ index b85a73c..e5f59ae 100644
  fail:
     dri_destroy_screen_helper(screen);
 diff --git a/src/gallium/winsys/sw/dri/Makefile.am b/src/gallium/winsys/sw/dri/Makefile.am
-index a7d3253..a0fe9d3 100644
+index a7d325383c..a0fe9d3f17 100644
 --- a/src/gallium/winsys/sw/dri/Makefile.am
 +++ b/src/gallium/winsys/sw/dri/Makefile.am
 @@ -24,8 +24,13 @@ include Makefile.sources
@@ -209,7 +210,7 @@ index a7d3253..a0fe9d3 100644
  
  libswdri_la_SOURCES = $(C_SOURCES)
 diff --git a/src/gallium/winsys/sw/dri/dri_sw_winsys.c b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
-index 94d5092..741af1b 100644
+index 00849985d6..296c44fe27 100644
 --- a/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 +++ b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 @@ -26,6 +26,18 @@
@@ -528,5 +529,5 @@ index 94d5092..741af1b 100644
  
     ws->base.is_displaytarget_format_supported = dri_sw_is_displaytarget_format_supported;
 -- 
-2.8.0.rc3.226.g39d4020
+2.12.2
 
