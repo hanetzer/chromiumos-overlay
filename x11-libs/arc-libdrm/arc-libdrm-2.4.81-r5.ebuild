@@ -23,7 +23,7 @@ SRC_URI=""
 LICENSE="|| ( MIT X )"
 SLOT="0"
 KEYWORDS="*"
-VIDEO_CARDS="amdgpu exynos freedreno intel mediatek nouveau omap radeon vmware rockchip"
+VIDEO_CARDS="amdgpu exynos freedreno intel nouveau omap radeon vc4 vmware"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -53,12 +53,11 @@ src_configure() {
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno)
 		$(use_enable video_cards_intel intel)
-		$(use_enable video_cards_mediatek mediatek-experimental-api)
 		$(use_enable video_cards_nouveau nouveau)
 		$(use_enable video_cards_omap omap-experimental-api)
 		$(use_enable video_cards_radeon radeon)
+		$(use_enable video_cards_vc4 vc4)
 		$(use_enable video_cards_vmware vmwgfx)
-		$(use_enable video_cards_rockchip rockchip-experimental-api)
 		$(use_enable libkms)
 		$(use_enable manpages)
 		$(use_enable udev)
