@@ -122,6 +122,7 @@ src_unpack() {
 		update_location_for_aosp
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
+	epatch "${FILESDIR}"/gcc-disable-linker-pie-copyreloc.patch
 
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
 	if [[ -d ${S}/.git ]]; then
