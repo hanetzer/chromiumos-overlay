@@ -114,6 +114,7 @@ ALL_BOARDS=(
 	falco_li
 	fb1
 	fizz
+	fizz-accelerator
 	fizz-moblab
 	foster
 	#fox
