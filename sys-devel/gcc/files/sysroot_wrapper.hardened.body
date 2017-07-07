@@ -428,7 +428,7 @@ def main():
       handle_exec_exception(e, argv0, use_ccache, execargs)
 
   # Only comes here if doing bisection.
-  exec_and_bisect(execargs, bisect_stage, argv0, use_ccache)
+  return exec_and_bisect(execargs, bisect_stage, argv0, use_ccache)
 
 
 if __name__ == '__main__':

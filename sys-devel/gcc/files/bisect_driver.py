@@ -126,18 +126,21 @@ def get_obj_path(execargs):
 
   Returns:
     Absolute object path from execution args (-o argument). If no object being
-    outputted or output doesn't end in ".o" then return empty string.
+    outputted, then return empty string. -o argument is checked only if -c is
+    also present.
   """
   try:
     i = execargs.index('-o')
+    _ = execargs.index('-c')
   except ValueError:
     return ''
 
   obj_path = execargs[i + 1]
-  if not obj_path.endswith(('.o',)):
-    # TODO: what suffixes do we need to contemplate
-    # TODO: add this as a warning
-    # TODO: need to handle -r compilations
+  # Ignore args that do not create a file.
+  if obj_path in ('-', '/dev/null',):
+    return ''
+  # Ignore files ending in .tmp.
+  if obj_path.endswith(('.tmp', )):
     return ''
 
   return os.path.abspath(obj_path)
@@ -226,6 +229,8 @@ def cache_file(execargs, bisect_dir, cache, abs_file_path):
     bisect_dir: The directory where bisection caches live.
     cache: Which cache the file will be cached to (GOOD/BAD).
     abs_file_path: Absolute path to file being cached.
+  Returns:
+    True if caching was successful, False otherwise.
   """
   # os.path.join fails with absolute paths, use + instead
   bisect_path = os.path.join(bisect_dir, cache) + abs_file_path
@@ -236,10 +241,21 @@ def cache_file(execargs, bisect_dir, cache, abs_file_path):
 
   try:
     if os.path.exists(abs_file_path):
+      if os.path.exists(bisect_path):
+        # File exists
+        population_dir = os.path.join(bisect_dir, cache)
+        with lock_file(os.path.join(population_dir, '_DUPS'), 'a') as dup_object_list:
+          dup_object_list.write('%s\n' % abs_file_path)
+        raise Exception('Trying to cache file %s multiple times.' % abs_file_path)
+
       shutil.copy2(abs_file_path, bisect_path)
       # Set cache object to be read-only so later compilations can't
       # accidentally overwrite it.
       os.chmod(bisect_path, 0o444)
+      return True
+    else:
+      # File not found (happens when compilation fails but error code is still 0)
+      return False
   except Exception:
     print('Could not cache file %s' % abs_file_path, file=sys.stderr)
     raise
@@ -283,21 +299,24 @@ def bisect_populate(execargs, bisect_dir, population_name):
 
   full_obj_path = get_obj_path(execargs)
   # This is not a normal compiler call because it doesn't have a -o argument,
-  # or the -o argument has a non .o output file.
+  # or the -o argument has an unusable output file.
   # It's likely that this compiler call was actually made to invoke the linker.
   # In this case we want to simply call the compiler and return.
   if not full_obj_path:
-    return
+    return retval
 
-  cache_file(execargs, bisect_dir, population_name, full_obj_path)
+  # Return if not able to cache the object file
+  if not cache_file(execargs, bisect_dir, population_name, full_obj_path):
+    return retval
 
   population_dir = os.path.join(bisect_dir, population_name)
   with lock_file(os.path.join(population_dir, '_LIST'), 'a') as object_list:
     object_list.write('%s\n' % full_obj_path)
 
   for side_effect in get_side_effects(execargs):
-    cache_file(execargs, bisect_dir, population_name, side_effect)
+    _ = cache_file(execargs, bisect_dir, population_name, side_effect)
 
+  return retval
 
 def bisect_triage(execargs, bisect_dir):
   """Use object object file from appropriate cache (good/bad).
@@ -342,7 +361,7 @@ def bisect_triage(execargs, bisect_dir):
       return retval
     os.remove(full_obj_path)
     restore_file(bisect_dir, cache, full_obj_path)
-    return
+    return retval
 
   # Generate compiler side effects. Trick Make into thinking compiler was
   # actually executed.
@@ -354,14 +373,15 @@ def bisect_triage(execargs, bisect_dir):
   if not os.path.exists(full_obj_path):
     restore_file(bisect_dir, cache, full_obj_path)
 
+  return 0
 
 def bisect_driver(bisect_stage, bisect_dir, execargs):
   """Call appropriate bisection stage according to value in bisect_stage."""
   if bisect_stage == 'POPULATE_GOOD':
-    bisect_populate(execargs, bisect_dir, GOOD_CACHE)
+    return bisect_populate(execargs, bisect_dir, GOOD_CACHE)
   elif bisect_stage == 'POPULATE_BAD':
-    bisect_populate(execargs, bisect_dir, BAD_CACHE)
+    return bisect_populate(execargs, bisect_dir, BAD_CACHE)
   elif bisect_stage == 'TRIAGE':
-    bisect_triage(execargs, bisect_dir)
+    return bisect_triage(execargs, bisect_dir)
   else:
     raise ValueError('wrong value for BISECT_STAGE: %s' % bisect_stage)
