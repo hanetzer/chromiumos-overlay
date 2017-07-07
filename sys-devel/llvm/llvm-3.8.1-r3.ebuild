@@ -268,6 +268,7 @@ src_prepare() {
 
 	eapply "${FILESDIR}"/xconfigure.patch
 	eapply "${FILESDIR}"/xmakefile.patch
+	eapply "${FILESDIR}"/libdir-suffix.patch
 	# User patches
 	epatch_user
 
@@ -287,12 +288,14 @@ set_build_tools_makeargs() {
 		llvm-symbolizer obj2yaml yaml2obj lto bugpoint
 	)
 
+	local libdir=$(get_libdir)
 	MAKEARGS+=(
 		# filter tools + disable unittests implicitly
 		ONLY_TOOLS="${tools[*]}"
 		REQUIRES_RTTI=1
 		# this disables unittests & docs from clang
 		BUILD_CLANG_ONLY=YES
+		LLVM_LIBDIR_SUFFIX=${libdir#lib}
 	)
 }
 

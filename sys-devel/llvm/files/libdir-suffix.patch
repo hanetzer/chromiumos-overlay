@@ -1,0 +1,13 @@
+diff --git a/tools/llvm-config/Makefile b/tools/llvm-config/Makefile
+index d2fe2cfa34aa..e10dade6b051 100644
+--- a/tools/llvm-config/Makefile
++++ b/tools/llvm-config/Makefile
+@@ -65,7 +65,7 @@ $(ObjDir)/BuildVariables.inc: $(BUILDVARIABLES_SRCPATH) Makefile $(ObjDir)/.dir
+ 	  >> temp.sed
+ 	$(Verb) $(ECHO) 's/@LLVM_BUILDMODE@/$(subst /,\/,$(BuildMode))/' \
+ 	  >> temp.sed
+-	$(Verb) $(ECHO) 's/@LLVM_LIBDIR_SUFFIX@//' \
++	$(Verb) $(ECHO) 's/@LLVM_LIBDIR_SUFFIX@/$(subst /,\/,$(LLVM_LIBDIR_SUFFIX))/' \
+ 	  >> temp.sed
+ 	$(Verb) $(ECHO) 's/@LLVM_SYSTEM_LIBS@/$(subst /,\/,$(LLVM_SYSTEM_LIBS))/' \
+ 	  >> temp.sed
