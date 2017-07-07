@@ -2,39 +2,41 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="994c2c4bec6e90dc7744ed29049f4ad226b18e74"
-CROS_WORKON_TREE="b1ca4e0a9c0ff4ffca2cca76b6b54d09b8dd0687"
+CROS_WORKON_COMMIT="2fb694f4296a9810d5459f0451174d899629378d"
+CROS_WORKON_TREE="c3bba2b07c211057743176aa2d7b206b538a37c8"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
+CROS_WORKON_LOCALNAME='../platform/arc-camera'
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC USB camera HAL v3."
+DESCRIPTION="ARC camera HALv3 native test."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
+
 RDEPEND="
-	chromeos-base/libbrillo"
+	dev-cpp/gtest
+	media-libs/libexif
+	media-libs/libyuv
+	media-libs/minigbm
+	virtual/jpeg:0"
 
 DEPEND="${RDEPEND}
 	media-libs/arc-camera3-android-headers
 	media-libs/arc-camera3-libcamera_client
-	media-libs/arc-camera3-libcamera_exif
-	media-libs/arc-camera3-libcamera_jpeg
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libsync
-	media-libs/libyuv
 	virtual/pkgconfig"
 
 src_compile() {
 	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} camera_hal_usb
+	emake BASE_VER=${LIBCHROME_VERS} camera3_test
 }
 
 src_install() {
-	dolib.so hal/usb/camera_hal.so
+	dobin camera3_test/arc_camera3_test
 }
