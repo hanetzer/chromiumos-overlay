@@ -33,7 +33,6 @@ dev-libs/libpcre	-bzip2 -readline -zlib
 dev-libs/leveldb	-tcmalloc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
-dev-libs/opensc		ssl -pcsc-lite
 dev-libs/openssl	pkcs11 -tls-heartbeat
 # flashrom's libraries must be static
 dev-libs/libusb		static-libs
