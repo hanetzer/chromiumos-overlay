@@ -65,6 +65,7 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_BRCMWIFI[@]}"
 	qca-bt
 	rtl8168g-1
+	rtl8168g-2
 	marvell-mwlwifi
 	marvell-pcie8897
 	marvell-pcie8997
@@ -100,6 +101,7 @@ LICENSE="
 	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
 	linux_firmware_qca-bt? ( LICENCE.atheros_firmware )
 	linux_firmware_rtl8168g-1? ( LICENCE.rtl_nic )
+	linux_firmware_rtl8168g-2? ( LICENCE.rtl_nic )
 	video_cards_radeon? ( LICENSE.radeon )
 	video_cards_amdgpu? ( LICENSE.amdgpu )
 "
@@ -163,6 +165,7 @@ src_install() {
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
+	use_fw rtl8168g-2 && doins_subdir rtl_nic/rtl8168g-2.fw
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v4.bin
