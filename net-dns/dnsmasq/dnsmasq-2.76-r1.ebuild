@@ -1,10 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-dns/dnsmasq/dnsmasq-2.72-r2.ebuild,v 1.2 2015/04/30 08:48:34 vapier Exp $
 
-EAPI=5
+EAPI="5"
 
-inherit fcaps eutils toolchain-funcs flag-o-matic user systemd
+inherit eutils toolchain-funcs flag-o-matic user systemd
 
 DESCRIPTION="Small forwarding DNS server"
 HOMEPAGE="http://www.thekelleys.org.uk/dnsmasq/doc.html"
@@ -13,7 +12,7 @@ SRC_URI="http://www.thekelleys.org.uk/dnsmasq/${P}.tar.xz"
 LICENSE="|| ( GPL-2 GPL-3 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="auth-dns conntrack dbus +dhcp dhcp-options dhcp-tools dnssec idn ipv6 lua nls script selinux static tftp"
+IUSE="auth-dns conntrack dbus +dhcp dhcp-options dhcp-tools dnssec idn +inotify ipv6 lua nls script selinux static tftp"
 DM_LINGUAS="de es fi fr id it no pl pt_BR ro"
 for dm_lingua in ${DM_LINGUAS}; do
 	IUSE+=" linguas_${dm_lingua}"
@@ -21,13 +20,8 @@ done
 
 CDEPEND="dbus? ( sys-apps/dbus )
 	idn? ( net-dns/libidn )
-	lua? (
-		|| (
-			dev-lang/lua:0
-			dev-lang/lua:5.1
-		)
-	)
-	conntrack? ( !s390? ( net-libs/libnetfilter_conntrack ) )
+	lua? ( dev-lang/lua:* )
+	conntrack? ( net-libs/libnetfilter_conntrack )
 	nls? (
 		sys-devel/gettext
 		net-dns/libidn
@@ -54,8 +48,7 @@ RDEPEND="${CDEPEND}
 "
 
 REQUIRED_USE="dhcp-tools? ( dhcp )
-	lua? ( script )
-	s390? ( !conntrack )"
+	lua? ( script )"
 
 use_have() {
 	local useflag no_only uword
@@ -70,7 +63,7 @@ use_have() {
 	shift
 
 	while [[ ${uword} ]]; do
-		uword=${uword^^*}
+		uword="${uword^^}"
 
 		if ! use "${useflag}"; then
 			echo -n " -DNO_${uword}"
@@ -95,14 +88,14 @@ pkg_setup() {
 }
 
 src_prepare() {
+	default
+
+	if use dhcp-options; then
+		epatch "${FILESDIR}"/${PN}-2.72-Write-DHCP-request-options-to-lease-file.patch
+	fi
+
 	sed -i -r 's:lua5.[0-9]+:lua:' Makefile
 	sed -i "s:%%PREFIX%%:${EPREFIX}/usr:" dnsmasq.conf.example
-
-	epatch "${FILESDIR}"/${P}-Fix-crash-on-receipt-of-certain-malformed-DNS-requests.patch
-	epatch "${FILESDIR}"/${P}-Fix-crash-caused-by-looking-up-servers.bind-when-many-servers-defined.patch
-	if use dhcp-options; then
-		epatch "${FILESDIR}"/${P}-Write-DHCP-request-options-to-lease-file.patch
-	fi
 }
 
 src_configure() {
@@ -110,6 +103,7 @@ src_configure() {
 	COPTS+="$(use_have conntrack)"
 	COPTS+="$(use_have dbus)"
 	COPTS+="$(use_have idn)"
+	COPTS+="$(use_have -n inotify)"
 	COPTS+="$(use_have -n dhcp dhcp dhcp6)"
 	COPTS+="$(use_have -n ipv6 ipv6 dhcp6)"
 	COPTS+="$(use_have lua luascript)"
@@ -122,18 +116,20 @@ src_configure() {
 src_compile() {
 	emake \
 		PREFIX=/usr \
-		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
+		MANDIR=/usr/share/man \
 		CC="$(tc-getCC)" \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 		CFLAGS="${CFLAGS}" \
 		LDFLAGS="${LDFLAGS}" \
 		COPTS="${COPTS}" \
 		CONFFILE="/etc/${PN}.conf" \
 		all$(use nls && echo "-i18n")
 
-	use dhcp-tools && emake -C contrib/wrt \
+	use dhcp-tools && emake -C contrib/lease-tools \
 		PREFIX=/usr \
-		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
+		MANDIR=/usr/share/man \
 		CC="$(tc-getCC)" \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 		CFLAGS="${CFLAGS}" \
 		LDFLAGS="${LDFLAGS}" \
 		all
@@ -144,6 +140,7 @@ src_install() {
 	emake \
 		PREFIX=/usr \
 		MANDIR=/usr/share/man \
+		COPTS="${COPTS}" \
 		DESTDIR="${D}" \
 		install$(use nls && echo "-i18n")
 
@@ -155,8 +152,8 @@ src_install() {
 	dodoc CHANGELOG CHANGELOG.archive FAQ dnsmasq.conf.example
 	dodoc -r logo
 
-	dodoc CHANGELOG FAQ
-	dohtml *.html
+	docinto html/
+	dodoc *.html
 
 	newinitd "${FILESDIR}"/dnsmasq-init-r2 ${PN}
 	newconfd "${FILESDIR}"/dnsmasq.confd-r1 ${PN}
@@ -177,12 +174,15 @@ src_install() {
 	fi
 
 	if use dhcp-tools; then
-		dosbin contrib/wrt/{dhcp_release,dhcp_lease_time}
-		doman contrib/wrt/{dhcp_release,dhcp_lease_time}.1
+		dosbin contrib/lease-tools/{dhcp_release,dhcp_lease_time}
+		doman contrib/lease-tools/{dhcp_release,dhcp_lease_time}.1
+		if use ipv6; then
+			dosbin contrib/lease-tools/dhcp_release6
+			doman contrib/lease-tools/dhcp_release6.1
+		fi
 	fi
 
 	systemd_newunit "${FILESDIR}"/${PN}.service-r1 ${PN}.service
-
 }
 
 pkg_preinst() {
@@ -193,7 +193,4 @@ pkg_preinst() {
 pkg_postinst() {
 	# temporary workaround to (hopefully) prevent leases file from being removed
 	[[ -f "${T}"/dnsmasq.leases ]] && cp "${T}"/dnsmasq.leases /var/lib/misc/dnsmasq.leases
-	# Inherit network related capabilities from parent process. Needed in order
-	# for it to run in the minijail.
-	fcaps cap_net_admin,cap_net_raw,cap_net_bind_service=ie usr/sbin/${PN}
 }
