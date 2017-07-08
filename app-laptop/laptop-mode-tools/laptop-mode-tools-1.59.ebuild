@@ -64,6 +64,7 @@ PATCHES=(
 	"0034-wireless-power-disable-module.patch" \
 	"0035-disable-usb-autosuspend-and-runtime-pm.patch" \
 	"0036-disable-wireless-power-management.patch" \
+	"0037-disable-intel-hda-power-management.patch" \
 )
 
 src_prepare() {

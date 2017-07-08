@@ -1,0 +1,17 @@
+Disable Intel HDA power management module
+
+Intel HDA power save mode is now enabled through a udev rule
+
+BUG=chromium:214886, chromium:740253
+
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-hda-powersave.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-hda-powersave.conf
+@@ -20,7 +20,7 @@
+ 
+ # Control INTEL HDA audio chipset power?
+ # Set to 0 to disable
+-CONTROL_INTEL_HDA_POWER=1
++CONTROL_INTEL_HDA_POWER=0
+ 
+ # Handle power savings for Intel HDA under specific circumstances
+ BATT_INTEL_HDA_POWERSAVE=1
