@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="tpm tpm2"
+IUSE="test tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -27,7 +27,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks
+		chromeos-base/trunks[test?]
 	)
 	chromeos-base/chaps
 	chromeos-base/chromeos-minijail

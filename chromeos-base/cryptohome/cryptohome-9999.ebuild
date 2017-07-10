@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-cert_provision -direncryption systemd tpm tpm2"
+IUSE="-cert_provision -direncryption systemd test tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -28,7 +28,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks
+		chromeos-base/trunks[test?]
 		chromeos-base/tpm_manager
 		chromeos-base/attestation
 	)

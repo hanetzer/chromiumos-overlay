@@ -19,13 +19,13 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="tpm tpm2"
+IUSE="test tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
 	tpm? ( app-crypt/trousers )
-	tpm2? ( chromeos-base/trunks )
+	tpm2? ( chromeos-base/trunks[test?] )
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	"

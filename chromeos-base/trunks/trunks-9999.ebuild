@@ -19,7 +19,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cr50_onboard ftdi_tpm tpm2_simulator"
+IUSE="cr50_onboard ftdi_tpm test tpm2_simulator"
 
 # platform.eclass conditionally depends on dev-cpp/gmock when the test USE flag
 # is set, but this ebuild unconditionally builds and installs libtrunks_test.a
@@ -66,7 +66,7 @@ src_install() {
 	dosbin tpm_version
 	dosbin "${OUT}"/trunksd
 	dolib.so "${OUT}"/lib/libtrunks.so
-	dolib.a "${OUT}"/libtrunks_test.a
+	use test && dolib.a "${OUT}"/libtrunks_test.a
 
 	insinto /usr/share/policy
 	newins trunksd-seccomp-${ARCH}.policy trunksd-seccomp.policy

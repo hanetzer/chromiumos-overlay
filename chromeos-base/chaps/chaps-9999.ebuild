@@ -20,7 +20,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="systemd tpm tpm2"
+IUSE="systemd test tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -29,7 +29,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks
+		chromeos-base/trunks[test?]
 	)
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
