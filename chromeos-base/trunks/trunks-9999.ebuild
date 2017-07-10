@@ -21,10 +21,16 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cr50_onboard ftdi_tpm tpm2_simulator"
 
+# platform.eclass conditionally depends on dev-cpp/gmock when the test USE flag
+# is set, but this ebuild unconditionally builds and installs libtrunks_test.a
+# (which depends on gmock), apparently for use by other clients.
+# TODO(derat): Figure out if libtrunks_test.a is actually needed:
+# http://crbug.com/740549
 COMMON_DEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libbrillo
 	chromeos-base/power_manager-client
+	dev-cpp/gmock
 	ftdi_tpm? ( dev-embedded/libftdi )
 	tpm2_simulator? ( chromeos-base/tpm2 )
 	"
