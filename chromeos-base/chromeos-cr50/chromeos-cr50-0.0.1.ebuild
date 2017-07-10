@@ -8,11 +8,8 @@ DESCRIPTION="Ebuild to support the Chrome OS CR50 device."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cr50_onboard"
 
-REQUIRED_USE="cr50_onboard"
-
-RDEPEND="chromeos-base/ec-utils"
+RDEPEND="chromeos-base/chromeos-cr50-scripts"
 
 CR50_NAME="cr50.r0.0.10.w0.0.21"
 TARBALL_NAME="${CR50_NAME}.tbz2"
@@ -23,11 +20,4 @@ src_install() {
 	insinto /opt/google/cr50/firmware
 	newins "${CR50_NAME}"/*.bin.prod cr50.bin.prod
 	newins "${CR50_NAME}"/*.bin.dev cr50.bin.dev
-
-	insinto /etc/init
-	doins "${FILESDIR}/cr50-update.conf"
-	doins "${FILESDIR}"/cr50-result.conf
-
-	exeinto /usr/share/cros
-	doexe "${FILESDIR}"/cr50-update.sh
 }
