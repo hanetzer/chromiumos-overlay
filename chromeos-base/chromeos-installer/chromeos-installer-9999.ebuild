@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host direncryption -mtd pam systemd test"
+IUSE="cros_embedded cros_host direncryption +mmc -mtd nvme pam +sata systemd test"
 
 DEPEND="
 	chromeos-base/verity
@@ -33,12 +33,19 @@ RDEPEND="
 	chromeos-base/vboot_reference
 	dev-util/shflags
 	sys-apps/rootdev
+	!cros_embedded? (
+		sata? ( sys-apps/hdparm )
+		sata? ( sys-apps/smartmontools )
+		nvme? ( sys-apps/smartmontools )
+		mmc? ( sys-apps/mmc-utils )
+	)
 	sys-apps/util-linux
 	sys-apps/which
 	sys-fs/e2fsprogs"
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/cros_installer_unittest"
+	platform_test "run" "test/storage_info_unit_test"
 }
 
 src_install() {
@@ -68,6 +75,9 @@ src_install() {
 
 	insinto /usr/share/misc
 	doins share/chromeos-common.sh
+	if ! use cros_embedded; then
+		doins share/storage-info-common.sh
+	fi
 	if use direncryption; then
 		sed -i '/local direncryption_enabled=/s/false/true/' \
 			"${D}/usr/share/misc/chromeos-common.sh" ||

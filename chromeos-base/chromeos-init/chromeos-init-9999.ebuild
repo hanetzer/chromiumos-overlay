@@ -43,8 +43,8 @@ RDEPEND="${DEPEND}
 	virtual/chromeos-bootcomplete
 	!cros_embedded? (
 		chromeos-base/common-assets
+		>=chromeos-base/chromeos-installer-0.0.2
 		chromeos-base/swap-init
-		sys-apps/smartmontools
 		sys-fs/e2fsprogs
 	)
 	frecon? (
@@ -56,6 +56,7 @@ platform_pkg_test() {
 	local tests=(
 		periodic_scheduler_unittest
 		killers_unittest
+		tests/chromeos-disk-metrics-test.sh
 		tests/send-kernel-errors-test.sh
 	)
 
@@ -93,6 +94,7 @@ src_install_upstart() {
 	else
 		doins upstart/*.conf
 
+		dosbin chromeos-disk-metrics
 		dosbin chromeos-send-kernel-errors
 		dosbin display_low_battery_alert
 	fi
