@@ -6,7 +6,7 @@ EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
 
-inherit autotools multilib eutils systemd python udev user libchrome cros-workon
+inherit autotools multilib eutils systemd python udev user libchrome cros-workon toolchain-funcs
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -15,7 +15,7 @@ HOMEPAGE="http://www.bluez.org/"
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cups debug systemd test-programs readline bt_deprecated_tools"
+IUSE="asan cups debug systemd test-programs readline bt_deprecated_tools"
 
 CDEPEND="
 	>=dev-libs/glib-2.14:2
@@ -50,6 +50,7 @@ pkg_setup() {
 }
 
 src_prepare() {
+	asan-setup-env
 	eautoreconf
 
 	if use cups; then
