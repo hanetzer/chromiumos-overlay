@@ -209,6 +209,14 @@ cros_use_gcc() {
 	fi
 }
 
+# Enforce use of libstdc++ instead of libc++ when building with clang.
+cros_use_libstdcxx() {
+	if [[ $(basename "${CC:-clang}") == *"clang"* ]]; then
+		CXXFLAGS+=" -Xclang-only=-stdlib=libstdc++"
+		LDFLAGS+=" -Xclang-only=-stdlib=libstdc++"
+	fi
+}
+
 filter_clang_syntax() {
 	local var flag flags=()
 	for var in CFLAGS CXXFLAGS; do
