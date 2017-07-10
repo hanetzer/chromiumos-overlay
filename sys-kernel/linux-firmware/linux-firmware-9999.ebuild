@@ -171,7 +171,7 @@ src_install() {
 	use_fw rtl8168g-2 && doins_subdir rtl_nic/rtl8168g-2.fw
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
-	use_fw marvell-pcie8997 && doins_subdir mrvl/pcie{uart,usb}8997_combo_v4.bin
+	use_fw marvell-pcie8997 && doins_subdir mrvl/pcieusb8997_combo_v4.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use_fw rockchip-dptx && doins_subdir rockchip/dptx.bin
 	use video_cards_radeon && doins_subdir radeon/*
