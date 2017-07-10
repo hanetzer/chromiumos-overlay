@@ -6,8 +6,8 @@ EAPI="4"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/binutils"
 CROS_WORKON_LOCALNAME="../aosp/toolchain/binutils"
-CROS_WORKON_COMMIT="082ed0f10cf59b53381cefda2f90247e2a81015b"
-CROS_WORKON_TREE="0ec9cd10d3b529c84a90baf3589842f6ad519426"
+CROS_WORKON_COMMIT="85fafaf039799ebc8053bf36ce1c6e6df7adbbec"
+CROS_WORKON_TREE="d88416491ba5dc0f87f861d0fdb6b75e1312100e"
 CROS_WORKON_BLACKLIST="1"
 
 NEXT_BINUTILS=cros/binutils-2_25-google
@@ -197,6 +197,7 @@ src_configure() {
 		--libdir="${EPREFIX}"${LIBPATH}
 		--libexecdir="${EPREFIX}"${LIBPATH}
 		--includedir="${EPREFIX}"${INCPATH}
+		--enable-compressed-debug-sections=none
 		--enable-threads
 		--enable-shared
 		# Newer versions (>=2.24) make this an explicit option. #497268
