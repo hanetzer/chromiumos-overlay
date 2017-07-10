@@ -907,10 +907,9 @@ kmake() {
 		unset CC CXX LD STRIP OBJCOPY
 	fi
 
+	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
 	if use clang; then
 		CHOST=${cross} clang-setup-env
-	else
-		CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
 	fi
 	local binutils_path=$(LD=${cross}-ld get_binutils_path_ld)
 
