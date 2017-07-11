@@ -53,6 +53,12 @@ python_check_deps() {
 	has_version "dev-python/lit[${PYTHON_USEDEP}]"
 }
 
+src_prepare() {
+	# Remove a symoblic link pointing to some location
+	# outside of the source tree. crbug.com/740232
+	rm "include/__cxxabi_config.h"
+}
+
 pkg_setup() {
 	setup_cross_toolchain
 	llvm_pkg_setup
