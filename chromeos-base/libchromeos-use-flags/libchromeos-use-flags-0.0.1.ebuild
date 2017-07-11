@@ -21,6 +21,7 @@ IUSE="
 	arc_migration_policy_check
 	arc_oobe_optin
 	asan
+	big_little
 	cheets
 	cfm_enabled_device
 	cros-debug
