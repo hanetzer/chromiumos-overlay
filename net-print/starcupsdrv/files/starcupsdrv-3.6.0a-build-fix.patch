@@ -1,0 +1,152 @@
+Fix ebuild file and src code for cross compilation.
+
+1. Fix dependency check (use compiler preprocessor instead of checking path existence).
+2. Use flags like $(CC), etc. for cross compilation.
+3. Remove inline for clang linker to find definition (compiler unfolds leaf function as optimizations).
+4. Allow parallel compilation.
+
+--- a/makefile
++++ b/makefile
+@@ -11,11 +11,11 @@ LIBS=-ldl
+ endif
+ 
+ define dependencies
+-@if [ ! -e /usr/include/cups ]; then echo "CUPS headers not available - exiting"; exit 1; fi
++@if ! echo '#include <cups/cups.h>' | $(CC) $(CPPFLAGS) -E ->/dev/null 2>&1; then echo "CUPS headers not available - exiting"; exit 1; fi
+ endef
+ 
+ define init
+-@if [ ! -e bin ]; then echo "mkdir bin"; mkdir bin; fi
++@if [ ! -e bin ]; then echo "mkdir bin"; mkdir -p bin; fi
+ endef
+ 
+ define sweep
+@@ -66,16 +66,17 @@ rastertostar: rastertostar.c
+ 	$(dependencies)
+ 	$(init)
+ 	# compiling rastertostar filter
+-	gcc -Wl,-rpath,/usr/lib -Wall -fPIC -O2 $(DEFS) -o bin/rastertostar src/rastertostar.c $(LIBS)
++	$(CC) -Wall $(DEFS) $(CPPFLAGS) $(CFLAGS) -fPIC $(LDFLAGS) -o bin/rastertostar src/rastertostar.c $(LIBS)
+ 
+ rastertostarlm: rastertostarlm.c
+ 	$(dependencies)
+ 	$(init)
+ 	# compiling rastertostarlm filter
+-	gcc -Wl,-rpath,/usr/lib -Wall -fPIC -O2 $(DEFS) -o bin/rastertostarlm src/rastertostarlm.c $(LIBS)
++	$(CC) -Wall $(DEFS) $(CPPFLAGS) $(CFLAGS) -fPIC $(LDFLAGS) -o bin/rastertostarlm src/rastertostarlm.c $(LIBS)
+ 
+ 
+ $(ppds): %.ppd.gz: %.ppd
++	$(init)
+ 	# gzip ppd file
+ 	gzip -c $< >> bin/$@
+ 
+--- a/src/rastertostar.c
++++ b/src/rastertostar.c
+@@ -636,7 +636,7 @@ static const struct command endJobCommand =
+ static const struct command yRelCommand =
+ {9,(char[9]){0x1b,'*','r','Y','x','x','x','x',0x00}};
+ 
+-inline void debugPrintSettings(struct settings_ * settings)
++void debugPrintSettings(struct settings_ * settings)
+ {
+   fprintf(stderr, "DEBUG: pageType = %d\n"    , settings->pageType);
+   fprintf(stderr, "DEBUG: focusArea = %d\n"   , settings->focusArea);
+@@ -670,7 +670,7 @@ inline void debugPrintSettings(struct settings_ * settings)
+   fprintf(stderr, "DEBUG: dataTreatmentRecoverFromError = %d\n", settings->dataTreatmentRecoverFromError);
+ }
+ 
+-inline void outputCommand(struct command output)
++void outputCommand(struct command output)
+ {
+     int i = 0;
+ 
+@@ -680,17 +680,17 @@ inline void outputCommand(struct command output)
+     }
+ }
+ 
+-inline void outputAsciiEncodedLength(int length)
++void outputAsciiEncodedLength(int length)
+ {
+     printf("%d",length);
+ }
+ 
+-inline void outputNullTerminator()
++void outputNullTerminator()
+ {
+     putchar(0x00);
+ }
+ 
+-inline int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
++int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
+ {
+     ppd_choice_t * choice;
+     ppd_option_t * option;
+@@ -705,7 +705,7 @@ inline int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
+     return atoi(choice->choice);
+ }
+ 
+-inline void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings)
++void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings)
+ {
+     ppd_choice_t * choice;
+     ppd_option_t * option;
+@@ -819,7 +819,7 @@ inline void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings
+     }
+ }
+ 
+-inline void initializeSettings(char * commandLineOptionSettings, struct settings_ * settings)
++void initializeSettings(char * commandLineOptionSettings, struct settings_ * settings)
+ {
+     ppd_file_t *    ppd         = NULL;
+     cups_option_t * options     = NULL;
+--- a/src/rastertostarlm.c
++++ b/src/rastertostarlm.c
+@@ -447,7 +447,7 @@ static const struct command docCutTypeCommand [4] =
+ static const struct command yRelCommand =
+ {3,(char[3]){0x1b,'I','x'}};
+ 
+-inline void outputCommand(struct command output)
++void outputCommand(struct command output)
+ {
+     int i = 0;
+ 
+@@ -457,17 +457,17 @@ inline void outputCommand(struct command output)
+     }
+ }
+ 
+-inline void outputAsciiEncodedLength(int length)
++void outputAsciiEncodedLength(int length)
+ {
+     printf("%d",length);
+ }
+ 
+-inline void outputNullTerminator()
++void outputNullTerminator()
+ {
+     putchar(0x00);
+ }
+ 
+-inline int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
++int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
+ {
+     ppd_choice_t * choice;
+     ppd_option_t * option;
+@@ -484,7 +484,7 @@ inline int getOptionChoiceIndex(const char * choiceName, ppd_file_t * ppd)
+     return atoi(choice->choice);
+ }
+ 
+-inline void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings)
++void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings)
+ {
+     ppd_choice_t * choice;
+     ppd_option_t * option;
+@@ -598,7 +598,7 @@ inline void getPageWidthPageHeight(ppd_file_t * ppd, struct settings_ * settings
+     }
+ }
+ 
+-inline void initializeSettings(char * commandLineOptionSettings, struct settings_ * settings)
++void initializeSettings(char * commandLineOptionSettings, struct settings_ * settings)
+ {
+     ppd_file_t *    ppd         = NULL;
+     cups_option_t * options     = NULL;
