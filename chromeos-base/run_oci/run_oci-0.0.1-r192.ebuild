@@ -21,6 +21,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/libcontainer
+	sys-libs/libcap
 "
 DEPEND="${RDEPEND}"
 
