@@ -23,6 +23,10 @@ RDEPEND="
 
 DEPEND=""
 
+# The unittests hit the network.  Until we can fix them, allow access.
+# https://crbug.com/741791
+RESTRICT="network-sandbox"
+
 AUTOTEST_WORK="${WORKDIR}/autotest-work"
 AUTOTEST_BASE="/autotest"
 
