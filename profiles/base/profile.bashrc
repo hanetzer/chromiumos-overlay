@@ -143,13 +143,22 @@ cros_post_pkg_setup_python_eclass_hack() {
 cros_post_src_unpack_asan_init() {
 	local log_path="${T}/asan_logs/asan"
 	mkdir -p "${log_path%/*}"
-	export ASAN_OPTIONS+=" log_path=${log_path#${SYSROOT}}"
+
+	local strip_sysroot
+	if [[ -n "${PLATFORM_GYP_FILE}" ]]; then
+		# platform_test chroots into $SYSROOT before running the unit
+		# tests, so we need to strip the $SYSROOT prefix from the
+		# 'log_path' option specified in $ASAN_OPTIONS and the
+		# 'suppressions' option specified in $LSAN_OPTIONS.
+		strip_sysroot="${SYSROOT}"
+	fi
+	export ASAN_OPTIONS+=" log_path=${log_path#${strip_sysroot}}"
 
 	local lsan_suppression="${S}/lsan_suppressions"
 	local lsan_suppression_ebuild="${FILESDIR}/lsan_suppressions"
 	export LSAN_OPTIONS+=" print_suppressions=0"
 	if [[ -f ${lsan_suppression} ]]; then
-		export LSAN_OPTIONS+=" suppressions=${lsan_suppression#${SYSROOT}}"
+		export LSAN_OPTIONS+=" suppressions=${lsan_suppression#${strip_sysroot}}"
 	elif [[ -f ${lsan_suppression_ebuild} ]]; then
 		export LSAN_OPTIONS+=" suppressions=${lsan_suppression_ebuild}"
 	fi
