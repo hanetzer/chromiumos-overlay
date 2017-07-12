@@ -95,12 +95,7 @@ src_configure() {
 src_install() {
 	default
 
-	# If suid is used, change the ntfs-3g binary to "root:ntfs-3g rws--x---"
-	# See crosbug.com/19887 for details.
-	if use suid; then
-		fowners root:ntfs-3g /usr/bin/${MY_PN}
-		fperms u=rwxs,g=x,o= /usr/bin/${MY_PN}
-	fi
+	use suid && fperms u+s /usr/bin/${MY_PN}
 
 	udev_dorules "${FILESDIR}"/99-ntfs3g.rules
 	prune_libtool_files
