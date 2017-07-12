@@ -52,6 +52,11 @@ DEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 "
 
+pkg_preinst() {
+	enewuser "cryptohome"
+	enewgroup "cryptohome"
+}
+
 src_install() {
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache tpm-manager
