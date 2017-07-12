@@ -11,27 +11,6 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="cros_host internal"
 
-# Internal and external builds deliver different fonts for Japanese.
-# Although the two fonts can in theory co-exist, the font selection
-# code in the chromeos-initramfs build prefers one or the other, but
-# not both.
-#
-# The build system will actually try to make both fonts co-exist in
-# some cases, because the default chroot downloaded by cros_sdk
-# includes the ja-ipafonts package.  The logic here also protects
-# in the case that you switch a repo from internal to external, and
-# vice-versa.
-JA_FONTS="
-	internal? (
-		chromeos-base/ja-motoyafonts
-		!media-fonts/ja-ipafonts
-	)
-	!internal? (
-		!chromeos-base/ja-motoyafonts
-		media-fonts/ja-ipafonts
-	)
-	"
-
 # List of font packages used in Chromium OS.  This list is separate
 # so that it can be shared between the host in
 # chromeos-base/hard-host-depends and the target in
@@ -47,8 +26,7 @@ JA_FONTS="
 # The gcc-libs requirement is a similar situation.  Ultimately this comes down
 # to fixing http://crbug.com/205424.
 DEPEND="
-	${JA_FONTS}
-	internal? ( chromeos-base/ascender_to_license )
+	internal? ( chromeos-base/monotype-fonts )
 	media-fonts/croscorefonts
 	media-fonts/crosextrafonts
 	media-fonts/crosextrafonts-carlito

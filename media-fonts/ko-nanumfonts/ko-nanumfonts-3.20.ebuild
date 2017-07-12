@@ -1,11 +1,14 @@
-# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-EAPI="5"
+EAPI=5
 
 inherit font
 
-DESCRIPTION="Noto Pan CJK fonts developed by Adobe"
+DESCRIPTION="Nanum Gothic fonts released by Naver Inc. under OFL"
+HOMEPAGE="http://hangeul.naver.com/index.nhn"
+
+# download link does not have a version number.
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="OFL-1.1"
@@ -13,15 +16,15 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-FONT_SUFFIX="ttc"
+FONT_SUFFIX="ttf"
 FONT_S="${S}"
-FONTDIR="/usr/share/fonts/notocjk"
+FONTDIR="/usr/share/fonts/ko-nanum"
 
 
 # Only installs fonts
 RESTRICT="strip binchecks"
 
 src_install() {
-        # call src_install() in font.eclass.
+	# call src_install() in font.eclass.
 	font_src_install
 }
