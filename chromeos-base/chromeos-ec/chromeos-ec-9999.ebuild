@@ -92,7 +92,9 @@ board_install() {
 	# Intermediate file for debugging.
 	doins RW/ec.RW.elf
 
-	if grep -q '^CONFIG_RW_B=y' .config; then
+	# Install RW_B files except for RWSIG, which uses the same files as RW_A
+	if grep -q '^CONFIG_RW_B=y' .config && \
+			! grep -q '^CONFIG_RWSIG_TYPE_RWSIG=y' .config; then
 		openssl dgst -sha256 -binary RW/ec.RW_B.flat > RW/ec.RW_B.hash
 		newins RW/ec.RW_B.flat ec.RW_B.bin
 		doins RW/ec.RW_B.hash
