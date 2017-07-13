@@ -37,4 +37,9 @@ src_compile() {
 src_install() {
 	newsbin TPMFactoryUpd/TPMFactoryUpd infineon-firmware-updater
 	dosbin "${FILESDIR}"/tpm-firmware-updater
+
+	insinto /etc/init
+	doins "${FILESDIR}"/tpm-firmware-update.conf
+	exeinto /usr/share/cros/init
+	doexe "${FILESDIR}"/tpm-firmware-update.sh
 }
