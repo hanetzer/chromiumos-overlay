@@ -43,6 +43,7 @@ PATCHES=(
 	"${FILESDIR}/0007-data-Remove-unused-uniforms-from-shaders.patch"
 	"${FILESDIR}/clang-syntax.patch"
 	"${FILESDIR}/libpng-1.6.patch"
+	"${FILESDIR}/glmark2-libcxx.patch"
 )
 
 src_configure() {
