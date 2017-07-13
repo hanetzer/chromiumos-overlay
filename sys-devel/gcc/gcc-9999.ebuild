@@ -132,10 +132,6 @@ src_unpack() {
 	COST_PKG_VERSION+="_${PVR}"
 }
 
-src_prepare() {
-	epatch "${FILESDIR}"/gcc-disable-linker-pie-copyreloc.patch
-}
-
 src_configure() {
 	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]]; then
 		ewarn "Skipping configure due to existing build output"
