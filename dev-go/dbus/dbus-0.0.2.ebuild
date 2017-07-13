@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="25c3068a42a0b50b877953fb249dbcffc6bd1bca"
+CROS_WORKON_COMMIT="bd29ed602e2cf4207ebcabcd530259169e4289ba"
 CROS_WORKON_PROJECT="external/github.com/godbus/dbus"
 CROS_WORKON_DESTDIR="${S}/src/github.com/godbus/dbus"
 
