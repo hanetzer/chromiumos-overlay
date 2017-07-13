@@ -30,7 +30,7 @@ src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_exif.pic.a
+	dolib.so common/libcamera_exif.so
 
 	insinto "${INCLUDE_DIR}"
 	doins include/arc/exif_utils.h
