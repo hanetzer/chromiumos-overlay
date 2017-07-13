@@ -5,11 +5,6 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 
-# Skip tests on this ebuild has it's suspected of contributing to hangs in the
-# unit test stage. See http://crbug.com/554043
-# TODO: Re-enable this once the hangs have been figured out.
-RESTRICT="test"
-
 inherit eutils autotools cros-workon flag-o-matic systemd udev user
 
 # ModemManager likes itself with capital letters
