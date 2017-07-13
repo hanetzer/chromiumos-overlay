@@ -69,6 +69,11 @@ MULTILIB_WRAPPED_HEADERS=(
 /usr/include/va/va_glx.h
 )
 
+src_prepare() {
+	epatch "${FILESDIR}"/libva-1.7.1_Remove-zero-size-union-ambiguous-to-C-compiler.patch
+	autotools-utils_src_prepare
+}
+
 multilib_src_configure() {
 	local myeconfargs=(
 		--with-drivers-path="${EPREFIX}/usr/$(get_libdir)/va/drivers"

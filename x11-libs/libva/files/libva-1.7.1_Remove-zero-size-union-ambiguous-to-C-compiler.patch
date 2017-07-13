@@ -1,0 +1,30 @@
+From 7c9c3a928fa8525004d7a0b19706db4dac72ed14 Mon Sep 17 00:00:00 2001
+From: Alexandre Courbot <acourbot@chromium.org>
+Date: Thu, 13 Jul 2017 17:00:11 +0900
+Subject: [PATCH] Remove zero-size union ambiguous to C++ compiler
+
+The 'bits' union of struct _VAEncMacroblockParameterBufferH264 is empty,
+which results in a 0 bytes member in C but 1 byte in C++. Remove it to
+make sure the structure has the right size everywhere.
+
+Signed-off-by: Alexandre Courbot <acourbot@chromium.org>
+---
+ va/va_enc_h264.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/va/va_enc_h264.h b/va/va_enc_h264.h
+index 604877f..45e1dea 100644
+--- a/va/va_enc_h264.h
++++ b/va/va_enc_h264.h
+@@ -575,8 +575,6 @@ typedef struct _VAEncMacroblockParameterBufferH264 {
+         /** @name Data for inter macroblock */
+         /**@{*/
+         struct {
+-            union {
+-            } bits;
+             unsigned int value;
+         } inter_fields;
+         /**@}*/
+-- 
+2.13.2.932.g7449e964c-goog
+
