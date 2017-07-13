@@ -22,6 +22,7 @@ IUSE="
 	arc_oobe_optin
 	asan
 	big_little
+	caroline
 	cheets
 	cfm_enabled_device
 	cros-debug
