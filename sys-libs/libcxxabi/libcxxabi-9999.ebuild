@@ -62,9 +62,9 @@ pkg_setup() {
 }
 
 multilib_src_configure() {
-	# Add neon fpu for arm
+	# Use vpfv3 fpu to be able to target non-neon targets.
 	if [[ $(tc-arch) == "arm" ]] ; then
-		append-flags -mfpu=neon
+		append-flags -mfpu=vfpv3
 	fi
 	append-flags -I"${S}/libunwind_llvm/include"
 	append-flags "-stdlib=libstdc++"

@@ -91,8 +91,9 @@ multilib_src_configure() {
 		cxxabi=libsupc++
 		cxxabi_incs="${gcc_inc};${gcc_inc}/${CHOST}"
 	fi
+	# Use vfpv3 to be able to target non-neon targets.
 	if [[ $(tc-arch) == "arm" ]] ; then
-		append-flags -mfpu=neon
+		append-flags -mfpu=vfpv3
 	fi
 
 	# we want -lgcc_s for unwinder, and for compiler runtime when using
