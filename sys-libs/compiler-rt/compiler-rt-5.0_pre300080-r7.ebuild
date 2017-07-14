@@ -80,7 +80,7 @@ src_configure() {
 	local llvm_version=$(llvm-config --version)
 	# Strip git and svn from llvm_version string
 	local clang_version=${llvm_version%svn*}
-	clang_version=${llvm_version%git*}
+	clang_version=${clang_version%git*}
 	local mycmakeargs=(
 			"${mycmakeargs[@]}"
 			-DCOMPILER_RT_TEST_TARGET_TRIPLE="${CTARGET}"
