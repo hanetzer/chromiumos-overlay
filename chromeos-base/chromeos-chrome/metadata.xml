@@ -24,6 +24,7 @@
 	<flag name='reorder'>Re-order symbols using profile data</flag>
 	<flag name='runhooks'>Run build hooks</flag>
 	<flag name='v4l2_codec'>Use Video4Linux2 codec</flag>
+	<flag name='vaapi'>Use VA-API</flag>
 	<flag name='v4lplugin'>Use Video4Linux plugin shared libraries</flag>
 	<flag name='verbose'>Verbose build output</flag>
 </use>

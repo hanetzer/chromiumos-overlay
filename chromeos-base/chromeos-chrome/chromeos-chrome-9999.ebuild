@@ -272,6 +272,7 @@ set_build_args() {
 		"${EXTRA_GN_ARGS}"
 		use_v4l2_codec=$(usetf v4l2_codec)
 		use_v4lplugin=$(usetf v4lplugin)
+		use_vaapi=$(usetf vaapi)
 		use_ozone=true
 		use_evdev_gestures=$(usetf evdev_gestures)
 		use_xkbcommon=$(usetf xkbcommon)
