@@ -16,7 +16,9 @@ IUSE="-asan"
 
 RDEPEND="
 	dev-cpp/gtest
+	!media-libs/arc-camera3-libsync
 	media-libs/libexif
+	media-libs/libsync
 	media-libs/libyuv
 	media-libs/minigbm
 	virtual/jpeg:0"
@@ -26,7 +28,6 @@ DEPEND="${RDEPEND}
 	media-libs/arc-camera3-libcamera_client
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libcbm
-	media-libs/arc-camera3-libsync
 	virtual/pkgconfig"
 
 src_compile() {

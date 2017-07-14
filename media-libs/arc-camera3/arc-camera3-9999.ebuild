@@ -17,6 +17,8 @@ IUSE="-asan cheets"
 
 RDEPEND="
 	chromeos-base/libbrillo
+	!media-libs/arc-camera3-libsync
+	media-libs/libsync
 	virtual/arc-camera3-hal
 	virtual/arc-camera3-hal-configs"
 
@@ -24,7 +26,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/libmojo
 	media-libs/arc-camera3-android-headers
 	media-libs/arc-camera3-libcamera_metadata
-	media-libs/arc-camera3-libsync
 	media-libs/minigbm
 	virtual/pkgconfig
 	x11-libs/libdrm"
