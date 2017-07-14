@@ -2892,6 +2892,27 @@ index 1f3e348..c66c577 100644
  #endif
  
  #ifdef	__USE_GNU
+diff --git a/string/strings.h b/string/strings.h
+index e372a331b3..9f24ffbc5b 100644
+--- a/string/strings.h
++++ b/string/strings.h
+@@ -40,10 +40,14 @@ extern int bcmp (const void *__s1, const void *__s2, size_t __n)
+      __THROW __attribute_pure__;
+ 
+ /* Copy N bytes of SRC to DEST (like memmove, but args reversed).  */
+-extern void bcopy (const void *__src, void *__dest, size_t __n) __THROW;
++__fortify_overloadable
++extern void bcopy (const void *__src, void *__dest, size_t __n)
++     __THROW __CLANG_NO_MANGLE (bcopy);
+ 
+ /* Set N bytes of S to 0.  */
+-extern void bzero (void *__s, size_t __n) __THROW;
++__fortify_overloadable
++extern void bzero (void *__s, size_t __n)
++     __THROW __CLANG_NO_MANGLE (bzero);
+ 
+ /* Find the first occurrence of C in S (same as strchr).  */
+ #  ifdef __CORRECT_ISO_CPP_STRINGS_H_PROTO
 diff --git a/wcsmbs/bits/wchar2.h b/wcsmbs/bits/wchar2.h
 index ccf8dc9..2e5f6d5 100644
 --- a/wcsmbs/bits/wchar2.h
