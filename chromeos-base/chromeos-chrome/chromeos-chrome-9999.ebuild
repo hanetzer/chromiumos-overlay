@@ -780,9 +780,6 @@ setup_compile_flags() {
 		export CFLAGS_host+=" -Wno-unknown-warning-option"
 	fi
 
-	# crbug.com/532532
-	filter-flags "-Wl,--fix-cortex-a53-843419"
-
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
 
 	local flags
