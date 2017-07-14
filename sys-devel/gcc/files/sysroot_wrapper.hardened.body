@@ -385,6 +385,9 @@ def main():
 
     if not clang_codegen:
       clang_cmdline.append('-fsyntax-only')
+      # Enforce use of libstdc++ if clang is used only for syntax checks.
+      # This avoids strange warnings when libc++ is default in clang.
+      clang_cmdline.append('-stdlib=libstdc++')
 
     if not clang_codegen:
       syntax_check_with_clang(clang_comp, clang_cmdline, print_cmdline)
