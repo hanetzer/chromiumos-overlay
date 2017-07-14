@@ -4,8 +4,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("9fad1adc800cd950e4bd3f292f83186eb0e4f272" "cb2de5a810df1898cd3ae47d517603b8b12371c0" "6283eeeaf5ccebcca982d5318b36d49e7b32cb6d")
-CROS_WORKON_TREE=("8ff7d8f1838c9f325345a9f1dda23e9bd74d28e2" "2ab28c94ddc37b42631b31c70984af0d1d56074d" "cc44d33412e29b2c10a03bf8ac819f5630af57b2")
+CROS_WORKON_COMMIT=("1106dea40d3b18fbab2f42a2510d0a7899650db9" "cb2de5a810df1898cd3ae47d517603b8b12371c0" "6283eeeaf5ccebcca982d5318b36d49e7b32cb6d")
+CROS_WORKON_TREE=("11900831f90cbc9f16f213618de360ad110c9cc2" "2ab28c94ddc37b42631b31c70984af0d1d56074d" "cc44d33412e29b2c10a03bf8ac819f5630af57b2")
 S="${WORKDIR}/platform/ec"
 
 CROS_WORKON_PROJECT=(
@@ -94,7 +94,9 @@ board_install() {
 	# Intermediate file for debugging.
 	doins RW/ec.RW.elf
 
-	if grep -q '^CONFIG_RW_B=y' .config; then
+	# Install RW_B files except for RWSIG, which uses the same files as RW_A
+	if grep -q '^CONFIG_RW_B=y' .config && \
+			! grep -q '^CONFIG_RWSIG_TYPE_RWSIG=y' .config; then
 		openssl dgst -sha256 -binary RW/ec.RW_B.flat > RW/ec.RW_B.hash
 		newins RW/ec.RW_B.flat ec.RW_B.bin
 		doins RW/ec.RW_B.hash

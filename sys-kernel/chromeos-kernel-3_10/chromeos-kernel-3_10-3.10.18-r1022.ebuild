@@ -2,18 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="4db98a3f7a8de099c617c158ffd0d275bad1ef6c"
-CROS_WORKON_TREE="b6cf9c5e0cde1a3c5519c495f885b20fdc80b702"
+CROS_WORKON_COMMIT="2c69ed44821ff293f40b7f008fffcd4debffe8bd"
+CROS_WORKON_TREE="35606279e83c040e57725b85bcef0da417dc42fe"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v3.8"
-
-# AFDO_PROFILE_VERSION is the build on which the profile is collected.
-# This is required by kernel_afdo.
-AFDO_PROFILE_VERSION="9460.50.0"
+CROS_WORKON_LOCALNAME="kernel/v3.10"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 3.8"
+DESCRIPTION="Chrome OS Linux Kernel 3.10"
 KEYWORDS="*"
+RDEPEND="!sys-kernel/kernel-freon"
