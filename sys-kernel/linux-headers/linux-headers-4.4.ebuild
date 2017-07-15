@@ -44,6 +44,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0015-videodev2.h-add-IPU3-meta-buffer-format.patch"
 	epatch "${FILESDIR}/0016-uapi-intel-ipu3-Add-user-space-ABI-definitions.patch"
 	epatch "${FILESDIR}/0017-BACKPORT-net-diag-Add-the-ability-to-destroy-a-socke.patch"
+	epatch "${FILESDIR}/0018-BACKPORT-net-core-add-UID-to-flows-rules-and-routes.patch"
 }
 
 src_install() {

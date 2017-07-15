@@ -1,0 +1,69 @@
+From 5e24d65723c31b4b53bca2f3a3414c23f45ddae1 Mon Sep 17 00:00:00 2001
+From: Lorenzo Colitti <lorenzo@google.com>
+Date: Fri, 4 Nov 2016 02:23:42 +0900
+Subject: [PATCH] BACKPORT: net: core: add UID to flows, rules, and routes
+
+- Define a new FIB rule attributes, FRA_UID_RANGE, to describe a
+  range of UIDs.
+- Define a RTA_UID attribute for per-UID route lookups and dumps.
+- Support passing these attributes to and from userspace via
+  rtnetlink. The value INVALID_UID indicates no UID was
+  specified.
+- Add a UID field to the flow structures.
+
+Bug: 16355602
+Signed-off-by: Lorenzo Colitti <lorenzo@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+(cherry picked from commit 622ec2c9d52405973c9f1ca5116eb1c393adfc7d)
+
+BUG=chromium:686577
+TEST=compile-tested only
+
+Change-Id: Iedf4280acd4517b9cf683f144e4b9047e6737e36
+Signed-off-by: Satya Tangirala <satyat@google.com>
+Reviewed-on: https://chromium-review.googlesource.com/524278
+Reviewed-by: Abhishek Bhardwaj <abhishekbh@google.com>
+---
+diff --git a/include/uapi/linux/fib_rules.h b/include/uapi/linux/fib_rules.h
+index 96161b8202b5..bbf02a63a011 100644
+--- a/include/uapi/linux/fib_rules.h
++++ b/include/uapi/linux/fib_rules.h
+@@ -29,6 +29,11 @@ struct fib_rule_hdr {
+ 	__u32		flags;
+ };
+ 
++struct fib_rule_uid_range {
++	__u32		start;
++	__u32		end;
++};
++
+ enum {
+ 	FRA_UNSPEC,
+ 	FRA_DST,	/* destination address */
+@@ -49,6 +54,9 @@ enum {
+ 	FRA_TABLE,	/* Extended table id */
+ 	FRA_FWMASK,	/* mask for netfilter mark */
+ 	FRA_OIFNAME,
++	FRA_PAD,
++	FRA_L3MDEV,	/* iif or oif is l3mdev goto its table */
++	FRA_UID_RANGE,	/* UID range */
+ 	__FRA_MAX
+ };
+ 
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index fa3b34365560..d7d7599b112a 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -311,6 +311,9 @@ enum rtattr_type_t {
+ 	RTA_PREF,
+ 	RTA_ENCAP_TYPE,
+ 	RTA_ENCAP,
++	RTA_EXPIRES,
++	RTA_PAD,
++	RTA_UID,
+ 	__RTA_MAX
+ };
+ 
+-- 
+2.13.2.932.g7449e964c-goog
+
