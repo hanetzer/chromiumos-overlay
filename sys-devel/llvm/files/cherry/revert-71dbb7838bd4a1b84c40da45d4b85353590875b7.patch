@@ -1,0 +1,506 @@
+Temporarily revert "[BasicAA] Use MayAlias instead of PartialAlias for fallback."
+This reverts commit 52ebe03cb0a728134e66d04f85281bc5a60d7091.
+Clang crashes in LoopVectorizer while building OpenCV with this commit.
+https://bugs.llvm.org/show_bug.cgi?id=33804
+
+diff --git a/lib/Analysis/BasicAliasAnalysis.cpp b/lib/Analysis/BasicAliasAnalysis.cpp
+index e682a644ef2..7dc016aebcf 100644
+--- a/lib/Analysis/BasicAliasAnalysis.cpp
++++ b/lib/Analysis/BasicAliasAnalysis.cpp
+@@ -1348,7 +1348,11 @@ AliasResult BasicAAResult::aliasGEP(const GEPOperator *GEP1, uint64_t V1Size,
+   // Statically, we can see that the base objects are the same, but the
+   // pointers have dynamic offsets which we can't resolve. And none of our
+   // little tricks above worked.
+-  return MayAlias;
++  //
++  // TODO: Returning PartialAlias instead of MayAlias is a mild hack; the
++  // practical effect of this is protecting TBAA in the case of dynamic
++  // indices into arrays of unions or malloc'd memory.
++  return PartialAlias;
+ }
+ 
+ static AliasResult MergeAliasResults(AliasResult A, AliasResult B) {
+diff --git a/test/Analysis/BasicAA/2007-08-01-NoAliasAndGEP.ll b/test/Analysis/BasicAA/2007-08-01-NoAliasAndGEP.ll
+index 200e24f428e..8388d6c97ad 100644
+--- a/test/Analysis/BasicAA/2007-08-01-NoAliasAndGEP.ll
++++ b/test/Analysis/BasicAA/2007-08-01-NoAliasAndGEP.ll
+@@ -3,9 +3,9 @@
+ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+ 
+ ; CHECK: Function: foo
+-; CHECK:   MayAlias: i32* %Ipointer, i32* %Jpointer
++; CHECK:   PartialAlias: i32* %Ipointer, i32* %Jpointer
+ ; CHECK: 9 no alias responses
+-; CHECK: 6 may alias responses
++; CHECK: 6 partial alias responses
+ 
+ define void @foo(i32* noalias %p, i32* noalias %q, i32 %i, i32 %j) {
+   %Ipointer = getelementptr i32, i32* %p, i32 %i
+diff --git a/test/Analysis/BasicAA/2010-09-15-GEP-SignedArithmetic.ll b/test/Analysis/BasicAA/2010-09-15-GEP-SignedArithmetic.ll
+index 79421824e6e..b2e7a60047b 100644
+--- a/test/Analysis/BasicAA/2010-09-15-GEP-SignedArithmetic.ll
++++ b/test/Analysis/BasicAA/2010-09-15-GEP-SignedArithmetic.ll
+@@ -3,7 +3,7 @@
+ 
+ target datalayout = "e-p:32:32:32"
+ 
+-; CHECK: 1 may alias responses
++; CHECK: 1 partial alias response
+ 
+ define i32 @test(i32* %tab, i32 %indvar) nounwind {
+   %tmp31 = mul i32 %indvar, -2
+diff --git a/test/Analysis/BasicAA/bug.23540.ll b/test/Analysis/BasicAA/bug.23540.ll
+index 6a00abdce3a..f693bcf73cd 100644
+--- a/test/Analysis/BasicAA/bug.23540.ll
++++ b/test/Analysis/BasicAA/bug.23540.ll
+@@ -5,7 +5,7 @@ target triple = "x86_64-unknown-linux-gnu"
+ @c = external global i32
+ 
+ ; CHECK-LABEL: f
+-; CHECK: MayAlias: i32* %arrayidx, i32* %arrayidx6
++; CHECK: PartialAlias: i32* %arrayidx, i32* %arrayidx6
+ define void @f() {
+   %idxprom = zext i32 undef to i64
+   %add4 = add i32 0, 1
+diff --git a/test/Analysis/BasicAA/bug.23626.ll b/test/Analysis/BasicAA/bug.23626.ll
+index 7d5b5ad0669..6a1478c65ce 100644
+--- a/test/Analysis/BasicAA/bug.23626.ll
++++ b/test/Analysis/BasicAA/bug.23626.ll
+@@ -3,12 +3,12 @@ target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+ target triple = "x86_64-apple-darwin13.4.0"
+ 
+ ; CHECK-LABEL: compute1
+-; CHECK: MayAlias:	i32* %arrayidx8, i32* %out
+-; CHECK: MayAlias:	i32* %arrayidx11, i32* %out
+-; CHECK: MayAlias:	i32* %arrayidx11, i32* %arrayidx8
+-; CHECK: MayAlias:	i32* %arrayidx14, i32* %out
+-; CHECK: MayAlias:	i32* %arrayidx14, i32* %arrayidx8
+-; CHECK: MayAlias:	i32* %arrayidx11, i32* %arrayidx14
++; CHECK: PartialAlias:	i32* %arrayidx8, i32* %out
++; CHECK: PartialAlias:	i32* %arrayidx11, i32* %out
++; CHECK: PartialAlias:	i32* %arrayidx11, i32* %arrayidx8
++; CHECK: PartialAlias:	i32* %arrayidx14, i32* %out
++; CHECK: PartialAlias:	i32* %arrayidx14, i32* %arrayidx8
++; CHECK: PartialAlias:	i32* %arrayidx11, i32* %arrayidx14
+ define void @compute1(i32 %num.0.lcssa, i32* %out) {
+   %idxprom = zext i32 %num.0.lcssa to i64
+   %arrayidx8 = getelementptr inbounds i32, i32* %out, i64 %idxprom
+@@ -22,7 +22,7 @@ define void @compute1(i32 %num.0.lcssa, i32* %out) {
+ }
+ 
+ ; CHECK-LABEL: compute2
+-; CHECK: MayAlias: i32* %arrayidx11, i32* %out.addr
++; CHECK: PartialAlias: i32* %arrayidx11, i32* %out.addr
+ define void @compute2(i32 %num, i32* %out.addr) {
+   %add9 = add i32 %num, 1
+   %idxprom10 = zext i32 %add9 to i64
+diff --git a/test/Analysis/BasicAA/constant-over-index.ll b/test/Analysis/BasicAA/constant-over-index.ll
+index f77156305c2..f5e2c7c1361 100644
+--- a/test/Analysis/BasicAA/constant-over-index.ll
++++ b/test/Analysis/BasicAA/constant-over-index.ll
+@@ -3,7 +3,7 @@
+ 
+ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+ 
+-; CHECK: MayAlias: double* %p.0.i.0, double* %p3
++; CHECK: PartialAlias: double* %p.0.i.0, double* %p3
+ 
+ ; %p3 is equal to %p.0.i.0 on the second iteration of the loop,
+ ; so MayAlias is needed.  In practice, basicaa returns PartialAlias
+diff --git a/test/Analysis/BasicAA/fallback-mayalias.ll b/test/Analysis/BasicAA/fallback-mayalias.ll
+deleted file mode 100644
+index a1e4b12d20a..00000000000
+--- a/test/Analysis/BasicAA/fallback-mayalias.ll
++++ /dev/null
+@@ -1,23 +0,0 @@
+-; RUN: opt -basicaa -aa-eval -print-all-alias-modref-info -disable-output < %s 2>&1 | FileCheck %s
+-
+-; Check that BasicAA falls back to MayAlias (instead of PartialAlias) when none
+-; of its little tricks are applicable.
+-
+-; CHECK: MayAlias: float* %arrayidxA, float* %arrayidxB
+-
+-define void @fallback_mayalias(float* noalias nocapture %C, i64 %i, i64 %j) local_unnamed_addr {
+-entry:
+-  %shl = shl i64 %i, 3
+-  %mul = shl nsw i64 %j, 4
+-  %addA = add nsw i64 %mul, %shl
+-  %orB = or i64 %shl, 1
+-  %addB = add nsw i64 %mul, %orB
+-
+-  %arrayidxA = getelementptr inbounds float, float* %C, i64 %addA
+-  store float undef, float* %arrayidxA, align 4
+-
+-  %arrayidxB = getelementptr inbounds float, float* %C, i64 %addB
+-  store float undef, float* %arrayidxB, align 4
+-
+-  ret void
+-}
+diff --git a/test/Analysis/BasicAA/q.bad.ll b/test/Analysis/BasicAA/q.bad.ll
+index 2c7bc1d8591..f2de6a76c5e 100644
+--- a/test/Analysis/BasicAA/q.bad.ll
++++ b/test/Analysis/BasicAA/q.bad.ll
+@@ -15,7 +15,7 @@ define void @test_zext_sext_amounts255(i8* %mem) {
+ }
+ 
+ ; CHECK-LABEL: test_zext_sext_amounts
+-; CHECK: MayAlias: i8* %a, i8* %b
++; CHECK: PartialAlias: i8* %a, i8* %b
+ ; %a and %b only PartialAlias as, although they're both zext(sext(%num)) they'll extend the sign by a different
+ ; number of bits before zext-ing the remainder.
+ define void @test_zext_sext_amounts(i8* %mem, i8 %num) {
+@@ -44,9 +44,9 @@ define void @based_on_pr18068(i32 %loaded, i8* %mem) {
+ }
+ 
+ ; CHECK-LABEL: test_path_dependence
+-; CHECK: MayAlias: i8* %a, i8* %b
++; CHECK: PartialAlias: i8* %a, i8* %b
+ ; CHECK: MustAlias: i8* %a, i8* %c
+-; CHECK: MayAlias: i8* %a, i8* %d
++; CHECK: PartialAlias: i8* %a, i8* %d
+ define void @test_path_dependence(i32 %p, i8* %mem) {
+   %p.minus1 = add i32 %p, -1 ; this will always unsigned-wrap, unless %p == 0
+   %p.minus1.64 = zext i32 %p.minus1 to i64
+@@ -83,7 +83,7 @@ define void @test_zext_sext_255(i8* %mem) {
+ }
+ 
+ ; CHECK-LABEL: test_zext_sext_num
+-; CHECK: MayAlias: i8* %a, i8* %b
++; CHECK: PartialAlias: i8* %a, i8* %b
+ ; %a and %b NoAlias if %num == 255 (see @test_zext_sext_255), but %a and %b NoAlias for other values of %num (e.g. 0)
+ define void @test_zext_sext_num(i8* %mem, i8 %num) {
+   %zext.num = zext i8 %num to i16
+@@ -142,9 +142,9 @@ define void @constantOffsetHeuristic_i8_i32(i32* %mem, i8 %val) {
+ }
+ 
+ ; CHECK-LABEL: constantOffsetHeuristic_i3_i8
+-; CHECK: MayAlias:  i32* %a, i32* %b
++; CHECK: PartialAlias:  i32* %a, i32* %b
+ ; CHECK: NoAlias:  i32* %a, i32* %c
+-; CHECK: MayAlias:  i32* %b, i32* %c
++; CHECK: PartialAlias:  i32* %b, i32* %c
+ define void @constantOffsetHeuristic_i3_i8(i8* %mem, i3 %val) {
+   %zext.plus.7 = add nsw i3 %val, 7
+   %zext.plus.4 = add nsw i3 %val, 4
+@@ -161,7 +161,7 @@ define void @constantOffsetHeuristic_i3_i8(i8* %mem, i3 %val) {
+ }
+ 
+ ; CHECK-LABEL: constantOffsetHeuristic_i8_i8
+-; CHECK: MayAlias:  i32* %a, i32* %b
++; CHECK: PartialAlias:  i32* %a, i32* %b
+ ; CHECK: NoAlias:  i32* %a, i32* %c
+ ; CHECK: NoAlias:  i32* %b, i32* %c
+ define void @constantOffsetHeuristic_i8_i8(i8* %mem, i8 %val) {
+diff --git a/test/Analysis/BasicAA/returned.ll b/test/Analysis/BasicAA/returned.ll
+index f0d0f1ec1fe..c6ef6806140 100644
+--- a/test/Analysis/BasicAA/returned.ll
++++ b/test/Analysis/BasicAA/returned.ll
+@@ -8,20 +8,20 @@ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+ 
+ ; CHECK-DAG: MustAlias: %struct* %st, %struct* %sta
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %x
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %y
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %z
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %x
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %y
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %z
+ 
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %y
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %z
+ ; CHECK-DAG: NoAlias: i32* %y, i32* %z
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, %struct* %y_12
+-; CHECK-DAG: MayAlias: %struct* %y_12, i32* %x
+-; CHECK-DAG: MayAlias: i32* %x, i80* %y_10
++; CHECK-DAG: PartialAlias: %struct* %st, %struct* %y_12
++; CHECK-DAG: PartialAlias: %struct* %y_12, i32* %x
++; CHECK-DAG: PartialAlias: i32* %x, i80* %y_10
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, i64* %y_8
+-; CHECK-DAG: MayAlias: i32* %z, i64* %y_8
++; CHECK-DAG: PartialAlias: %struct* %st, i64* %y_8
++; CHECK-DAG: PartialAlias: i32* %z, i64* %y_8
+ ; CHECK-DAG: NoAlias: i32* %x, i64* %y_8
+ 
+ ; CHECK-DAG: MustAlias: %struct* %y_12, i32* %y
+diff --git a/test/Analysis/BasicAA/sequential-gep.ll b/test/Analysis/BasicAA/sequential-gep.ll
+index 5bedab61e17..c17a782aa04 100644
+--- a/test/Analysis/BasicAA/sequential-gep.ll
++++ b/test/Analysis/BasicAA/sequential-gep.ll
+@@ -11,7 +11,7 @@ define void @t1([8 x i32]* %p, i32 %addend, i32* %q) {
+ }
+ 
+ ; CHECK: Function: t2
+-; CHECK: MayAlias: i32* %gep1, i32* %gep2
++; CHECK: PartialAlias: i32* %gep1, i32* %gep2
+ define void @t2([8 x i32]* %p, i32 %addend, i32* %q) {
+   %knownnonzero = load i32, i32* %q, !range !0
+   %add = add nsw nuw i32 %addend, %knownnonzero
+@@ -31,7 +31,7 @@ define void @t3([8 x i32]* %p, i32 %addend, i32* %q) {
+ }
+ 
+ ; CHECK: Function: t4
+-; CHECK: MayAlias: i32* %gep1, i32* %gep2
++; CHECK: PartialAlias: i32* %gep1, i32* %gep2
+ define void @t4([8 x i32]* %p, i32 %addend, i32* %q) {
+   %knownnonzero = load i32, i32* %q, !range !0
+   %add = add nsw nuw i32 %addend, %knownnonzero
+@@ -41,7 +41,7 @@ define void @t4([8 x i32]* %p, i32 %addend, i32* %q) {
+ }
+ 
+ ; CHECK: Function: t5
+-; CHECK: MayAlias: i32* %gep2, i64* %bc
++; CHECK: PartialAlias: i32* %gep2, i64* %bc
+ define void @t5([8 x i32]* %p, i32 %addend, i32* %q) {
+   %knownnonzero = load i32, i32* %q, !range !0
+   %add = add nsw nuw i32 %addend, %knownnonzero
+diff --git a/test/Analysis/BasicAA/struct-geps.ll b/test/Analysis/BasicAA/struct-geps.ll
+index e048baf4c64..2d85e1dd017 100644
+--- a/test/Analysis/BasicAA/struct-geps.ll
++++ b/test/Analysis/BasicAA/struct-geps.ll
+@@ -6,20 +6,20 @@ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+ 
+ ; CHECK-LABEL: test_simple
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %x
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %y
+-; CHECK-DAG: MayAlias: %struct* %st, i32* %z
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %x
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %y
++; CHECK-DAG: PartialAlias: %struct* %st, i32* %z
+ 
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %y
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %z
+ ; CHECK-DAG: NoAlias: i32* %y, i32* %z
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, %struct* %y_12
+-; CHECK-DAG: MayAlias: %struct* %y_12, i32* %x
+-; CHECK-DAG: MayAlias: i32* %x, i80* %y_10
++; CHECK-DAG: PartialAlias: %struct* %st, %struct* %y_12
++; CHECK-DAG: PartialAlias: %struct* %y_12, i32* %x
++; CHECK-DAG: PartialAlias: i32* %x, i80* %y_10
+ 
+-; CHECK-DAG: MayAlias: %struct* %st, i64* %y_8
+-; CHECK-DAG: MayAlias: i32* %z, i64* %y_8
++; CHECK-DAG: PartialAlias: %struct* %st, i64* %y_8
++; CHECK-DAG: PartialAlias: i32* %z, i64* %y_8
+ ; CHECK-DAG: NoAlias: i32* %x, i64* %y_8
+ 
+ ; CHECK-DAG: MustAlias: %struct* %y_12, i32* %y
+@@ -38,20 +38,20 @@ define void @test_simple(%struct* %st, i64 %i, i64 %j, i64 %k) {
+ 
+ ; CHECK-LABEL: test_in_array
+ 
+-; CHECK-DAG: MayAlias: [1 x %struct]* %st, i32* %x
+-; CHECK-DAG: MayAlias: [1 x %struct]* %st, i32* %y
+-; CHECK-DAG: MayAlias: [1 x %struct]* %st, i32* %z
++; CHECK-DAG: PartialAlias: [1 x %struct]* %st, i32* %x
++; CHECK-DAG: PartialAlias: [1 x %struct]* %st, i32* %y
++; CHECK-DAG: PartialAlias: [1 x %struct]* %st, i32* %z
+ 
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %y
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %z
+ ; CHECK-DAG: NoAlias: i32* %y, i32* %z
+ 
+-; CHECK-DAG: MayAlias: %struct* %y_12, [1 x %struct]* %st
+-; CHECK-DAG: MayAlias: %struct* %y_12, i32* %x
+-; CHECK-DAG: MayAlias: i32* %x, i80* %y_10
++; CHECK-DAG: PartialAlias: %struct* %y_12, [1 x %struct]* %st
++; CHECK-DAG: PartialAlias: %struct* %y_12, i32* %x
++; CHECK-DAG: PartialAlias: i32* %x, i80* %y_10
+ 
+-; CHECK-DAG: MayAlias: [1 x %struct]* %st, i64* %y_8
+-; CHECK-DAG: MayAlias: i32* %z, i64* %y_8
++; CHECK-DAG: PartialAlias: [1 x %struct]* %st, i64* %y_8
++; CHECK-DAG: PartialAlias: i32* %z, i64* %y_8
+ ; CHECK-DAG: NoAlias: i32* %x, i64* %y_8
+ 
+ ; CHECK-DAG: MustAlias: %struct* %y_12, i32* %y
+@@ -70,20 +70,20 @@ define void @test_in_array([1 x %struct]* %st, i64 %i, i64 %j, i64 %k, i64 %i1,
+ 
+ ; CHECK-LABEL: test_in_3d_array
+ 
+-; CHECK-DAG: MayAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %x
+-; CHECK-DAG: MayAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %y
+-; CHECK-DAG: MayAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %z
++; CHECK-DAG: PartialAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %x
++; CHECK-DAG: PartialAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %y
++; CHECK-DAG: PartialAlias: [1 x [1 x [1 x %struct]]]* %st, i32* %z
+ 
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %y
+ ; CHECK-DAG: NoAlias: i32* %x, i32* %z
+ ; CHECK-DAG: NoAlias: i32* %y, i32* %z
+ 
+-; CHECK-DAG: MayAlias: %struct* %y_12, [1 x [1 x [1 x %struct]]]* %st
+-; CHECK-DAG: MayAlias: %struct* %y_12, i32* %x
+-; CHECK-DAG: MayAlias: i32* %x, i80* %y_10
++; CHECK-DAG: PartialAlias: %struct* %y_12, [1 x [1 x [1 x %struct]]]* %st
++; CHECK-DAG: PartialAlias: %struct* %y_12, i32* %x
++; CHECK-DAG: PartialAlias: i32* %x, i80* %y_10
+ 
+-; CHECK-DAG: MayAlias: [1 x [1 x [1 x %struct]]]* %st, i64* %y_8
+-; CHECK-DAG: MayAlias: i32* %z, i64* %y_8
++; CHECK-DAG: PartialAlias: [1 x [1 x [1 x %struct]]]* %st, i64* %y_8
++; CHECK-DAG: PartialAlias: i32* %z, i64* %y_8
+ ; CHECK-DAG: NoAlias: i32* %x, i64* %y_8
+ 
+ ; CHECK-DAG: MustAlias: %struct* %y_12, i32* %y
+@@ -106,14 +106,14 @@ define void @test_in_3d_array([1 x [1 x [1 x %struct]]]* %st, i64 %i, i64 %j, i6
+ ; CHECK-DAG: NoAlias: i32* %y, i32* %y2
+ ; CHECK-DAG: NoAlias: i32* %z, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x, i32* %y2
+-; CHECK-DAG: MayAlias: i32* %x, i32* %z2
++; CHECK-DAG: PartialAlias: i32* %x, i32* %y2
++; CHECK-DAG: PartialAlias: i32* %x, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x2, i32* %y
+-; CHECK-DAG: MayAlias: i32* %y, i32* %z2
++; CHECK-DAG: PartialAlias: i32* %x2, i32* %y
++; CHECK-DAG: PartialAlias: i32* %y, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x2, i32* %z
+-; CHECK-DAG: MayAlias: i32* %y2, i32* %z
++; CHECK-DAG: PartialAlias: i32* %x2, i32* %z
++; CHECK-DAG: PartialAlias: i32* %y2, i32* %z
+ 
+ define void @test_same_underlying_object_same_indices(%struct* %st, i64 %i, i64 %j, i64 %k) {
+   %st2 = getelementptr %struct, %struct* %st, i32 10
+@@ -128,18 +128,18 @@ define void @test_same_underlying_object_same_indices(%struct* %st, i64 %i, i64
+ 
+ ; CHECK-LABEL: test_same_underlying_object_different_indices
+ 
+-; CHECK-DAG: MayAlias: i32* %x, i32* %x2
+-; CHECK-DAG: MayAlias: i32* %y, i32* %y2
+-; CHECK-DAG: MayAlias: i32* %z, i32* %z2
++; CHECK-DAG: PartialAlias: i32* %x, i32* %x2
++; CHECK-DAG: PartialAlias: i32* %y, i32* %y2
++; CHECK-DAG: PartialAlias: i32* %z, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x, i32* %y2
+-; CHECK-DAG: MayAlias: i32* %x, i32* %z2
++; CHECK-DAG: PartialAlias: i32* %x, i32* %y2
++; CHECK-DAG: PartialAlias: i32* %x, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x2, i32* %y
+-; CHECK-DAG: MayAlias: i32* %y, i32* %z2
++; CHECK-DAG: PartialAlias: i32* %x2, i32* %y
++; CHECK-DAG: PartialAlias: i32* %y, i32* %z2
+ 
+-; CHECK-DAG: MayAlias: i32* %x2, i32* %z
+-; CHECK-DAG: MayAlias: i32* %y2, i32* %z
++; CHECK-DAG: PartialAlias: i32* %x2, i32* %z
++; CHECK-DAG: PartialAlias: i32* %y2, i32* %z
+ 
+ define void @test_same_underlying_object_different_indices(%struct* %st, i64 %i1, i64 %j1, i64 %k1, i64 %i2, i64 %k2, i64 %j2) {
+   %st2 = getelementptr %struct, %struct* %st, i32 10
+diff --git a/test/Analysis/BasicAA/zext.ll b/test/Analysis/BasicAA/zext.ll
+index f8f02353db2..685d45be615 100644
+--- a/test/Analysis/BasicAA/zext.ll
++++ b/test/Analysis/BasicAA/zext.ll
+@@ -69,7 +69,7 @@ for.loop.exit:
+ }
+ 
+ ; CHECK-LABEL: test_sign_extension
+-; CHECK:  MayAlias: i64* %b.i64, i8* %a
++; CHECK:  PartialAlias: i64* %b.i64, i8* %a
+ 
+ define void @test_sign_extension(i32 %p) {
+   %1 = tail call i8* @malloc(i64 120)
+@@ -83,7 +83,7 @@ define void @test_sign_extension(i32 %p) {
+ }
+ 
+ ; CHECK-LABEL: test_fe_tools
+-; CHECK:  MayAlias: i32* %a, i32* %b
++; CHECK:  PartialAlias: i32* %a, i32* %b
+ 
+ define void @test_fe_tools([8 x i32]* %values) {
+   br label %reorder
+@@ -108,7 +108,7 @@ for.loop.exit:
+ @d = global i32 0, align 4
+ 
+ ; CHECK-LABEL: test_spec2006
+-; CHECK:  MayAlias: i32** %x, i32** %y
++; CHECK:  PartialAlias: i32** %x, i32** %y
+ 
+ define void @test_spec2006() {
+   %h = alloca [1 x [2 x i32*]], align 16
+@@ -164,7 +164,7 @@ for.loop.exit:
+ }
+ 
+ ; CHECK-LABEL: test_modulo_analysis_with_global
+-; CHECK:  MayAlias: i32** %x, i32** %y
++; CHECK:  PartialAlias: i32** %x, i32** %y
+ 
+ define void @test_modulo_analysis_with_global() {
+   %h = alloca [1 x [2 x i32*]], align 16
+diff --git a/test/Analysis/TypeBasedAliasAnalysis/dynamic-indices.ll b/test/Analysis/TypeBasedAliasAnalysis/dynamic-indices.ll
+index 8ac6301f931..455968d7a40 100644
+--- a/test/Analysis/TypeBasedAliasAnalysis/dynamic-indices.ll
++++ b/test/Analysis/TypeBasedAliasAnalysis/dynamic-indices.ll
+@@ -26,21 +26,21 @@ for.body:                                         ; preds = %entry, %for.body
+   %idxprom = sext i32 %sub to i64
+   %half = bitcast %union.vector_t* %vb to [8 x i16]*
+   %arrayidx = getelementptr inbounds [8 x i16], [8 x i16]* %half, i64 0, i64 %idxprom
+-  %tmp4 = load i16, i16* %arrayidx, align 2, !tbaa !10
++  %tmp4 = load i16, i16* %arrayidx, align 2, !tbaa !0
+   %conv = zext i16 %tmp4 to i32
+   %and = and i32 %conv, 15
+   %sub6 = sub nsw i32 7, %i.01
+   %idxprom7 = sext i32 %sub6 to i64
+   %half9 = bitcast %union.vector_t* %va to [8 x i16]*
+   %arrayidx10 = getelementptr inbounds [8 x i16], [8 x i16]* %half9, i64 0, i64 %idxprom7
+-  %tmp11 = load i16, i16* %arrayidx10, align 2, !tbaa !10
++  %tmp11 = load i16, i16* %arrayidx10, align 2, !tbaa !0
+   %conv12 = zext i16 %tmp11 to i32
+   %shl = shl i32 %conv12, %and
+   %sub15 = sub nsw i32 7, %i.01
+   %idxprom16 = sext i32 %sub15 to i64
+   %half18 = bitcast %union.vector_t* %va to [8 x i16]*
+   %arrayidx19 = getelementptr inbounds [8 x i16], [8 x i16]* %half18, i64 0, i64 %idxprom16
+-  %tmp20 = load i16, i16* %arrayidx19, align 2, !tbaa !10
++  %tmp20 = load i16, i16* %arrayidx19, align 2, !tbaa !0
+   %conv21 = zext i16 %tmp20 to i32
+   %sub23 = sub nsw i32 16, %and
+   %shr = lshr i32 %conv21, %sub23
+@@ -50,20 +50,20 @@ for.body:                                         ; preds = %entry, %for.body
+   %idxprom27 = sext i32 %sub26 to i64
+   %half28 = bitcast %union.vector_t* %t to [8 x i16]*
+   %arrayidx29 = getelementptr inbounds [8 x i16], [8 x i16]* %half28, i64 0, i64 %idxprom27
+-  store i16 %conv24, i16* %arrayidx29, align 2, !tbaa !10
++  store i16 %conv24, i16* %arrayidx29, align 2, !tbaa !0
+   %inc = add nsw i32 %i.01, 1
+   %cmp = icmp slt i32 %inc, 8
+   br i1 %cmp, label %for.body, label %for.end
+ 
+ for.end:                                          ; preds = %for.body
+   %arrayidx31 = getelementptr inbounds %union.vector_t, %union.vector_t* %t, i64 0, i32 0, i64 1
+-  %tmp32 = load i64, i64* %arrayidx31, align 8, !tbaa !10
++  %tmp32 = load i64, i64* %arrayidx31, align 8, !tbaa !3
+   %arrayidx35 = getelementptr inbounds %union.vector_t, %union.vector_t* %vd, i64 0, i32 0, i64 1
+-  store i64 %tmp32, i64* %arrayidx35, align 8, !tbaa !10
++  store i64 %tmp32, i64* %arrayidx35, align 8, !tbaa !3
+   %arrayidx37 = getelementptr inbounds %union.vector_t, %union.vector_t* %t, i64 0, i32 0, i64 0
+-  %tmp38 = load i64, i64* %arrayidx37, align 8, !tbaa !10
++  %tmp38 = load i64, i64* %arrayidx37, align 8, !tbaa !3
+   %arrayidx41 = getelementptr inbounds %union.vector_t, %union.vector_t* %vd, i64 0, i32 0, i64 0
+-  store i64 %tmp38, i64* %arrayidx41, align 8, !tbaa !10
++  store i64 %tmp38, i64* %arrayidx41, align 8, !tbaa !3
+   ret void
+ }
+ 
+@@ -124,7 +124,7 @@ for.end:                                          ; preds = %for.body
+ }
+ 
+ ; CHECK: [[TAG]] = !{[[TYPE_LL:!.*]], [[TYPE_LL]], i64 0}
+-; CHECK: [[TYPE_LL]] = !{!"omnipotent char", {{!.*}}}
++; CHECK: [[TYPE_LL]] = !{!"long long", {{!.*}}}
+ !0 = !{!6, !6, i64 0}
+ !1 = !{!"omnipotent char", !2}
+ !2 = !{!"Simple C/C++ TBAA"}
+@@ -135,4 +135,3 @@ for.end:                                          ; preds = %for.body
+ !7 = !{!"long long", !1}
+ !8 = !{!"int", !1}
+ !9 = !{!"float", !1}
+-!10 = !{!1, !1, i64 0}
