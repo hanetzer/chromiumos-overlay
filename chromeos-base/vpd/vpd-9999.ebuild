@@ -39,7 +39,7 @@ src_install() {
 	# This target list should be architecture specific
 	# (no ACPI stuff on ARM for instance)
 	dosbin vpd vpd_s
-	dosbin util/check_rw_vpd util/dump_vpd_log util/set_binary_flag_vpd
+	dosbin util/check_rw_vpd util/dump_vpd_log util/update_rw_vpd
 	dosbin util/vpd_get_value
 
 	# install the init script
