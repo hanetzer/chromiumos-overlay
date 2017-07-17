@@ -2,14 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="bf21bcfb76b4215f7cc5e0532a355c7f6e447240"
-CROS_WORKON_TREE="6d88cbe319c0a2f88c564d280d7493359c30bc99"
+CROS_WORKON_COMMIT="3a9271ba34559b75c9202fd0e6c163dfc3cbd711"
+CROS_WORKON_TREE="e378e5c94f858ce4df39e44dc46f4ae8613d87b5"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon toolchain-funcs
 
-DESCRIPTION="Android libsync"
+DESCRIPTION="Android libcamera_client"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -26,21 +26,22 @@ src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	cd android
-	emake libsync
+	emake libcamera_client
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/android"
 	local LIB_DIR="/usr/$(get_libdir)"
-	local SRC_DIR="android/libsync"
+	local SRC_DIR="android/libcamera_client"
 
-	dolib "${SRC_DIR}/libsync.pic.a"
+	dolib "${SRC_DIR}/libcamera_client.pic.a"
 
-	insinto "${INCLUDE_DIR}/sync"
-	doins "${SRC_DIR}/include/sync/sync.h"
+	insinto "${INCLUDE_DIR}/camera"
+	doins "${SRC_DIR}/include/camera"/*.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
-		"${SRC_DIR}/libsync.pc.template" > "${SRC_DIR}/libsync.pc"
+		"${SRC_DIR}/libcamera_client.pc.template" > \
+		"${SRC_DIR}/libcamera_client.pc"
 	insinto "${LIB_DIR}/pkgconfig"
-	doins "${SRC_DIR}/libsync.pc"
+	doins "${SRC_DIR}/libcamera_client.pc"
 }
