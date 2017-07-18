@@ -19,10 +19,11 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/autotest-server-deps
 	chromeos-base/autotest-web-frontend
+	chromeos-base/infra-virtualenv
 	chromeos-base/lucifer
 "
 
-DEPEND=""
+DEPEND="${RDEPEND}"
 
 # The unittests hit the network.  Until we can fix them, allow access.
 # https://crbug.com/741791
@@ -63,4 +64,5 @@ src_install() {
 src_test() {
 	# Run the autotest unit tests.
 	./utils/unittest_suite.py --debug || die "Autotest unit tests failed."
+	./bin/test_lucifer || die "Virtualenv Autotest unit tests failed."
 }
