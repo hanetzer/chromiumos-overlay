@@ -100,6 +100,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/arc-llvm
 	sys-devel/arc-llvm-mesa
 	sys-devel/arc-toolchain-n
+	sys-devel/dex2oatds
 	"
 
 # Needed to run 'repo selfupdate'
