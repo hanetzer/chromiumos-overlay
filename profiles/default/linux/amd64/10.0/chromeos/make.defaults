@@ -13,6 +13,3 @@ USE="${USE} dri"
 # The default set of video cards / input devices we support.
 VIDEO_CARDS="-* intel fbdev"
 INPUT_DEVICES="-* evdev synaptics cmt"
-
-# We only want a single ABI by default.
-MULTILIB_ABIS="amd64"
