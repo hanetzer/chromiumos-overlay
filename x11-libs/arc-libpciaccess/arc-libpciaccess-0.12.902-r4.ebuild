@@ -2,14 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-libs/libpciaccess/libpciaccess-0.12.902.ebuild,v 1.1 2011/12/19 01:39:15 chithanh Exp $
 
-EAPI="5"
+EAPI=4
 SLOT="0"
 
 P=${P#"arc-"}
 PN=${PN#"arc-"}
 S="${WORKDIR}/${P}"
 
-XORG_MULTILIB=yes
 inherit xorg-2 arc-build
 
 DESCRIPTION="Library providing generic access to the PCI bus and devices"
@@ -34,9 +33,10 @@ pkg_setup() {
 		"$(use_with zlib)"
 		"--with-pciids-path=${EPREFIX}/usr/share/misc"
 		"--prefix=${ARC_PREFIX}/vendor"
+		'--libdir=$(prefix)/lib'
 	)
 }
 
-multilib_src_install() {
-	default
+src_install() {
+	xorg-2_src_install
 }
