@@ -13,10 +13,10 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND="
-	chromeos-base/libmojo"
+RDEPEND=""
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	chromeos-base/libmojo"
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
