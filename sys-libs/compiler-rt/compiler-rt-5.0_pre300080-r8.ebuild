@@ -73,7 +73,8 @@ src_configure() {
 	export OBJCOPY="$(tc-getOBJCOPY ${CTARGET})"
 	append-flags -fomit-frame-pointer
 	if [[ ${CATEGORY} == cross-armv7a* ]] ; then
-		append-flags -mfpu=neon
+		# Use vfpv3 to be able to target non-neon targets
+		append-flags -mfpu=vfpv3
 	fi
 	BUILD_DIR=${WORKDIR}/${P}_build
 	local libdir=$(get_libdir)
