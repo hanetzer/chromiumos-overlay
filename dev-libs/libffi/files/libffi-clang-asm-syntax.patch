@@ -1,0 +1,14 @@
+Fix libffi build with clang because of unsupported asm syntax.
+https://crbug.com/524171
+diff -Nuar old/src/arm/sysv.S new/src/arm/sysv.S
+--- old/src/arm/sysv.S
++++ new/src/arm/sysv.S
+@@ -396,7 +396,7 @@
+ 	beq	LSYM(Lepilogue_vfp)
+ 
+ 	cmp	r3, #FFI_TYPE_SINT64
+-	stmeqia	r2, {r0, r1}
++	stmiaeq	r2, {r0, r1}
+ 	beq	LSYM(Lepilogue_vfp)
+ 
+ 	cmp	r3, #FFI_TYPE_FLOAT
