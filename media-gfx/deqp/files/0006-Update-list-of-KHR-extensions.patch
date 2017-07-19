@@ -1,0 +1,71 @@
+From: Chad Versace <chadversary@chromium.org>
+Date: Wed Jul 19 10:55:38 PDT 2017
+Subject: Update list of KHR extensions for dEQP-VK.api.info.*.extensions
+
+Fixes failures on drivers that expose extensions newer than dEQP.
+---
+ CMakeLists.txt | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+ .../modules/vulkan/api/vktApiFeatureInfo.cpp       |  24 +++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/a/external/vulkancts/modules/vulkan/api/vktApiFeatureInfo.cpp b/b/external/vulkancts/modules/vulkan/api/vktApiFeatureInfo.cpp
+index 8b98f08..0146932 100644
+--- a/a/external/vulkancts/modules/vulkan/api/vktApiFeatureInfo.cpp
++++ b/b/external/vulkancts/modules/vulkan/api/vktApiFeatureInfo.cpp
+@@ -651,31 +651,55 @@ void checkInstanceExtensions (tcu::ResultCollector& results, const vector<string
+ 		"VK_KHR_display",
+ 		"VK_KHR_android_surface",
+ 		"VK_KHR_mir_surface",
+ 		"VK_KHR_wayland_surface",
+ 		"VK_KHR_win32_surface",
+ 		"VK_KHR_xcb_surface",
+ 		"VK_KHR_xlib_surface",
+ 		"VK_KHR_get_physical_device_properties2",
++		"VK_KHR_get_surface_capabilities2",
++		"VK_KHR_external_memory_capabilities",
++		"VK_KHR_external_semaphore_capabilities",
++		"VK_KHR_external_fence_capabilities",
++
+ 	};
+ 
+ 	checkKhrExtensions(results, extensions, DE_LENGTH_OF_ARRAY(s_allowedInstanceKhrExtensions), s_allowedInstanceKhrExtensions);
+ 	checkDuplicateExtensions(results, extensions);
+ }
+ 
+ void checkDeviceExtensions (tcu::ResultCollector& results, const vector<string>& extensions)
+ {
+ 	static const char* s_allowedDeviceKhrExtensions[] =
+ 	{
+ 		"VK_KHR_swapchain",
+ 		"VK_KHR_display_swapchain",
+ 		"VK_KHR_sampler_mirror_clamp_to_edge",
+ 		"VK_KHR_shader_draw_parameters",
+ 		"VK_KHR_maintenance1",
++		"VK_KHR_push_descriptor",
++		"VK_KHR_descriptor_update_template",
++		"VK_KHR_incremental_present",
++		"VK_KHR_shared_presentable_image",
++		"VK_KHR_storage_buffer_storage_class",
++		"VK_KHR_16bit_storage",
++		"VK_KHR_get_memory_requirements2",
++		"VK_KHR_external_memory",
++		"VK_KHR_external_memory_fd",
++		"VK_KHR_external_memory_win32",
++		"VK_KHR_external_semaphore",
++		"VK_KHR_external_semaphore_fd",
++		"VK_KHR_external_semaphore_win32",
++		"VK_KHR_external_fence",
++		"VK_KHR_external_fence_fd",
++		"VK_KHR_external_fence_win32",
++		"VK_KHR_win32_keyed_mutex",
++		"VK_KHR_dedicated_allocation",
++		"VK_KHR_variable_pointers",
+ 	};
+ 
+ 	checkKhrExtensions(results, extensions, DE_LENGTH_OF_ARRAY(s_allowedDeviceKhrExtensions), s_allowedDeviceKhrExtensions);
+ 	checkDuplicateExtensions(results, extensions);
+ }
+ 
+ tcu::TestStatus enumerateInstanceLayers (Context& context)
+ {

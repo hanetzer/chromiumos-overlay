@@ -52,6 +52,7 @@ PATCHES=(
 	"${FILESDIR}"/0003-Added-support-for-creating-pBuffer-target.patch
 	"${FILESDIR}"/0004-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
 	"${FILESDIR}"/0005-platform-surfaceless-Add-Vulkan-support.patch
+	"${FILESDIR}"/0006-Update-list-of-KHR-extensions.patch
 )
 
 src_unpack() {
