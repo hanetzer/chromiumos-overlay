@@ -171,12 +171,13 @@ IUSE_TESTS=(
 	+tests_video_VideoSeek
 	+tests_video_WebRtcCamera
 	+tests_video_WebRtcMediaRecorder
-	+tests_video_WebRtcPausePlayPeerConnections
 	+tests_video_WebRtcPerf
 	+tests_video_WebRtcPeerConnectionWithCamera
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
+	+tests_webrtc_PausePlayPeerConnections.audio
+	+tests_webrtc_PausePlayPeerConnections.video
 )
 
 IUSE_TESTS_CELLULAR="
