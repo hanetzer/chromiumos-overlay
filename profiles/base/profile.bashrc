@@ -131,7 +131,7 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 # the ebuild, so we wouldn't rewrite the she-bang.  Delete the stub since it
 # doesn't add a lot of value for us and breaks chromite.
 cros_post_pkg_setup_python_eclass_hack() {
-	rm -f "${T}/python3.3/bin/python2"
+	rm -f "${T}"/python3.*/bin/python2
 }
 
 # Set ASAN settings so they'll work for unittests. http://crbug.com/367879
