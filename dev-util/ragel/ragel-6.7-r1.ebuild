@@ -26,6 +26,7 @@ DOCS=( ChangeLog CREDITS README TODO )
 src_prepare() {
 	epatch "${FILESDIR}"/${P}+gcc-4.7.patch
 	epatch "${FILESDIR}"/${P}-config.patch
+	epatch "${FILESDIR}"/${P}-libcxx.patch
 	sed -i -e '/CXXFLAGS/d' configure.in || die
 
 	eautoreconf
