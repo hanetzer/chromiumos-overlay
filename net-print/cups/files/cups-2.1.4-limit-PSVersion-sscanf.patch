@@ -1,0 +1,26 @@
+From 95633d62829e1babc3ef7b8ac710994aa69901b1 Mon Sep 17 00:00:00 2001
+From: Rory McNamara <git@rorym.cnamara.com>
+Date: Wed, 10 May 2017 13:31:00 +0100
+Subject: [PATCH] cupstestppd.c: limit PSVersion sscanf size and stop at a
+ newline
+
+---
+ systemv/cupstestppd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/systemv/cupstestppd.c b/systemv/cupstestppd.c
+index dbce71865..9344c51ee 100644
+--- a/systemv/cupstestppd.c
++++ b/systemv/cupstestppd.c
+@@ -923,7 +923,7 @@ main(int  argc,				/* I - Number of command-line args */
+ 	int	junkint;			/* Temp integer */
+ 
+ 
+-        if (sscanf(attr->value, "(%[^)])%d", junkstr, &junkint) != 2)
++        if (sscanf(attr->value, "(%254[^)\n])%d", junkstr, &junkint) != 2)
+ 	{
+ 	  if (verbose >= 0)
+ 	  {
+-- 
+2.14.0.rc0.284.gd933b75aa4-goog
+
