@@ -61,7 +61,12 @@ src_configure() {
 		einfo "Configuring 32-bit build"
 		mkdir work32
 		pushd work32 >/dev/null
-		use cros_host && append-flags "-m32"
+		if use cros_host; then
+			append-flags "-m32"
+			# Use libstdc++ instead of libc++ in host build (https://crbug.com/747106).
+			# Not required for use_i686 because that code hardcodes gcc.
+			cros_use_libstdcxx
+		fi
 		use_i686 && push_i686_env
 		# Can be dropped once this is merged upstream:
 		# https://breakpad.appspot.com/619002/
