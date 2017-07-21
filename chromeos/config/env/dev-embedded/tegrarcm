@@ -1,0 +1,11 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Build tegrarcm with libstdc++ if using clang.
+# Root cause is dependency on dev-libs/crypto++ which is built
+# with libstdc++. Remove this once crypto++ is built with libc++.
+# crbug.com/747618
+cros_pre_src_prepare_use_gcc() {
+	cros_use_libstdcxx
+}
