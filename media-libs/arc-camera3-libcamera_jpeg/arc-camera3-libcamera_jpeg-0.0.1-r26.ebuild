@@ -2,51 +2,44 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="570cd5cc8232eb4b0f655fb74c0dc2448840f770"
-CROS_WORKON_TREE="774583639aeb729000d16c54b57734441773b7c4"
+CROS_WORKON_COMMIT="024cf97f4e97aec09f2d3df992a7232db1532643"
+CROS_WORKON_TREE="4e2246588ac44939944d35dc580a43698bcc2d0d"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="Camera algorithm bridge library for 3A isolation"
+DESCRIPTION="ARC camera HAL v3 Jpeg compressor util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="-asan"
 
-RDEPEND=""
+RDEPEND="virtual/jpeg:0"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libmojo"
+	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcab
+	emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dobin common/arc_camera_algo
-
-	dolib common/libcab.pic.a
+	dolib.a common/libcamera_jpeg.pic.a
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/camera_algorithm.h
-	doins include/arc/camera_algorithm_bridge.h
+	doins include/arc/jpeg_compressor.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		"common/libcab.pc.template" > "common/libcab.pc"
+		common/libcamera_jpeg.pc.template > common/libcamera_jpeg.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcab.pc
-
-	insinto /etc/init
-	doins common/init/arc-camera-algo.conf
-
-	insinto "/usr/share/policy"
-	doins common/arc-camera-algo.policy
+	doins common/libcamera_jpeg.pc
 }
