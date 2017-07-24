@@ -3,8 +3,8 @@
 # $Id$
 
 EAPI=4
-CROS_WORKON_COMMIT="e483f93f22868ae743c02f1f4582da226c95a531"
-CROS_WORKON_TREE="9c66db18efada90f3726d250f3e93f4e171d7330"
+CROS_WORKON_COMMIT="cdf1ba81770712e3d9af77de51bef88223c96a39"
+CROS_WORKON_TREE="25073059f993f65e47aa70391ff3d6bc443cf28a"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 
 inherit cros-workon eutils toolchain-funcs qt4-r2 qmake-utils multilib systemd user
@@ -53,7 +53,7 @@ CDEPEND="
 		!libressl? ( dev-libs/openssl:0 )
 		libressl? ( dev-libs/libressl )
 	)
-	smartcard? ( dev-libs/engine_pkcs11 )
+	smartcard? ( dev-libs/libp11 )
 	!ssl? (
 		gnutls? (
 			net-libs/gnutls
