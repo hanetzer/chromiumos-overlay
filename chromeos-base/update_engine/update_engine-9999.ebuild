@@ -36,6 +36,7 @@ COMMON_DEPEND="
 	dev-libs/protobuf:=
 	dev-libs/xz-embedded
 	dev-util/bsdiff
+	dev-util/puffin
 	net-misc/curl
 	sys-apps/rootdev"
 
