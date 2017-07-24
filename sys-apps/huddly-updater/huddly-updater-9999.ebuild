@@ -12,9 +12,11 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/third_party/huddly-update
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="test"
 
 DEPEND="
 	chromeos-base/libbrillo
+	test? ( dev-cpp/gtest )
 	virtual/libusb:1
 	virtual/libudev:0="
 
@@ -25,8 +27,15 @@ src_configure() {
 	cros-workon_src_configure
 }
 
+src_test() {
+	if use amd64; then
+		emake tests
+	fi
+}
+
 src_install() {
 	dosbin huddly-updater
+	dosbin huddly-manifest
 	udev_dorules conf/99-huddly.rules
 }
 
