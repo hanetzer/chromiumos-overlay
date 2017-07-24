@@ -24,7 +24,7 @@ done
 # we can leverage the cached VPD file.
 # This is a soft check, the activate_date script will also check the vpd
 # directly to see if a date has been set.
-ACTIVATE_DATE="$(vpd_get_value "${FIELD_NAME}")"
+ACTIVATE_DATE="$(vpd_get_value "${FIELD_NAME}" || :)"
 if [ -n "${ACTIVATE_DATE}" ]; then
   exit 0
 fi
