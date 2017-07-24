@@ -15,16 +15,16 @@
 # Last commit: 54c4ed4b1a910bcc8e37196acb7fa85e872de9e4
 
 # Libraries are from
-# https://android-build.googleplex.com/builds/submitted/4096676/cheets_arm-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/4096676/cheets_x86_64-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4207971/cheets_arm-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4207971/cheets_x86_64-userdebug/latest
 
 # Headers are from
 # bionic
-# Last commit: 6d71e6543f7c7a45d9ce597986a019fe1b877bca
+# Last commit: a7ca05bc94d9e2af01ec4f9f22db893682f27f22
 # external/libcxx
 # Last commit: 79a397804f08fd80a51e7b6c0b7d6d7880a530ea
 # external/llvm
-# Last commit: 9e582cde9f72e7fab98a3eb3e39a59081601be2c
+# Last commit: 95badd62d5d1db0957a17dcbb5ecd05a218c51e7
 
 EAPI=5
 
