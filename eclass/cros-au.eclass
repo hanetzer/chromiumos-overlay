@@ -14,6 +14,7 @@ inherit flag-o-matic
 # always build the AU code as 32bit.
 #
 # Setup the build env to create 32bit objects.
+# Force use of stdlibc++ in 32 mode (crbug.com/747696).
 board_setup_32bit_au_env()
 {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
@@ -29,6 +30,7 @@ board_setup_32bit_au_env()
 	if [[ ${CC} == *"clang"* ]]; then
 		export CC=${CHOST}-clang
 		export CXX=${CHOST}-clang++
+		append-flags "-Xclang-only=-stdlib=libstdc++"
 	fi
 	__AU_OLD_SYSROOT=${SYSROOT}
 	export SYSROOT=/usr/${CHOST}
@@ -53,5 +55,6 @@ board_teardown_32bit_au_env()
 	if [[ ${CC} == *"clang"* ]]; then
 		export CC=${__AU_OLD_CC}
 		export CXX=${__AU_OLD_CXX}
+		filter-flags "-Xclang-only=-stdlib=libstdc++"
 	fi
 }
