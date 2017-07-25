@@ -84,6 +84,8 @@ net-nds/openldap	minimal -cxx
 net-print/cups		zeroconf upstart
 net-print/cups-filters	zeroconf
 net-print/hplip		minimal
+# squid requires gnutls 3.1.5 for ssl, default it to off until newer gnutls is available
+net-proxy/squid		-ssl
 net-proxy/tsocks	tordns
 # No support for bluetooth printing.
 net-wireless/bluez	-cups
