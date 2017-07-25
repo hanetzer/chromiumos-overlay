@@ -108,7 +108,7 @@ sys-auth/pambase	-nullok
 sys-block/fio		aio
 sys-block/parted	device-mapper
 sys-devel/clang		-multitarget
-sys-devel/llvm		-multitarget
+sys-devel/llvm		-multitarget -ncurses
 sys-fs/avfs		-extfs
 sys-fs/lvm2		-lvm1 -readline -static device-mapper-only -thin
 sys-fs/mtools		-X
