@@ -497,7 +497,7 @@ vlan_config="
 CONFIG_VLAN_8021Q=m
 "
 
-wifi_testbed_ap_desc="Defer ath9k EEPROM regulatory"
+wifi_testbed_ap_desc="Defer Atheros Wifi EEPROM regulatory"
 wifi_testbed_ap_warning="
 Don't use the wifi_testbed_ap flag unless you know what you are doing!
 An image built with this flag set must never be run outside a
