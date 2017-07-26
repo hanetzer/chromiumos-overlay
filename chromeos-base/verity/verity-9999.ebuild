@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon cros-au
+inherit cros-workon
 
 DESCRIPTION="File system integrity image generator for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au test valgrind splitdebug"
+IUSE="valgrind"
 
 RDEPEND=""
 
@@ -23,10 +23,6 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	dev-cpp/gmock
-	32bit_au? (
-		dev-cpp/gtest32
-		dev-cpp/gmock32
-	)
 	valgrind? ( dev-util/valgrind )"
 
 src_prepare() {
@@ -34,26 +30,19 @@ src_prepare() {
 }
 
 src_configure() {
-	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_configure
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_compile() {
-	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_compile
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_test() {
 	! use amd64 && ! use x86 && ewarn "Skipping unittests for non-x86" && return 0
-	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_test
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_install() {
-	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_install
 	dolib.a "${OUT}"/libdm-bht.a
 	insinto /usr/include/verity
@@ -65,5 +54,4 @@ src_install() {
 	into /
 	dobin "${OUT}"/verity-static
 	dosym verity-static bin/verity
-	use 32bit_au && board_teardown_32bit_au_env
 }
