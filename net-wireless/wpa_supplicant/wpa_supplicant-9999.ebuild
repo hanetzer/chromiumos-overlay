@@ -51,7 +51,7 @@ CDEPEND="
 		!libressl? ( dev-libs/openssl:0 )
 		libressl? ( dev-libs/libressl )
 	)
-	smartcard? ( dev-libs/libp11 )
+	smartcard? ( dev-libs/engine_pkcs11 )
 	!ssl? (
 		gnutls? (
 			net-libs/gnutls
