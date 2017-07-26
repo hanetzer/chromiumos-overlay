@@ -6,14 +6,14 @@ EAPI="4"
 CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
-inherit cros-debug cros-workon cros-au
+inherit cros-debug cros-workon
 
 DESCRIPTION="Chrome OS verified boot tools"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host dev_debug_force -mtd pd_sync tpmtests tpm tpm2"
+IUSE="cros_host dev_debug_force -mtd pd_sync tpmtests tpm tpm2"
 
 REQUIRED_USE="tpm2? ( !tpm )"
 
@@ -41,7 +41,7 @@ vemake() {
 		"$@"
 }
 
-_src_compile_main() {
+src_compile() {
 	mkdir "${WORKDIR}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
@@ -49,21 +49,6 @@ _src_compile_main() {
 	unset CFLAGS
 	vemake BUILD="${WORKDIR}"/build-main all
 	unset CC AR CXX PKG_CONFIG
-}
-
-_src_compile_au() {
-	board_setup_32bit_au_env
-	mkdir "${WORKDIR}"/build-au
-	einfo "Building 32-bit library for installer to use"
-	tc-export CC AR CXX PKG_CONFIG
-	vemake BUILD="${WORKDIR}"/build-au/ tinyhostlib
-	unset CC AR CXX PKG_CONFIG
-	board_teardown_32bit_au_env
-}
-
-src_compile() {
-	_src_compile_main
-	use 32bit_au && _src_compile_au
 }
 
 src_test() {
@@ -111,12 +96,4 @@ src_install() {
 
 	einfo "Installing host library"
 	dolib.a "${WORKDIR}"/build-main/libvboot_host.a
-
-	# Install 32-bit library needed by installer programs.
-	if use 32bit_au; then
-		einfo "Installing 32-bit host library"
-		insopts -m0644
-		insinto /usr/lib/vboot32
-		doins "${WORKDIR}"/build-au/libvboot_host.a
-	fi
 }
