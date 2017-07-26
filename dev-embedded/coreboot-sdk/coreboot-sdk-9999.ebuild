@@ -66,6 +66,6 @@ src_compile() {
 }
 
 src_install() {
-	dodir out/opt
+	dodir /opt
 	cp -a out/opt/coreboot-sdk "${D}"/opt/coreboot-sdk || die
 }
