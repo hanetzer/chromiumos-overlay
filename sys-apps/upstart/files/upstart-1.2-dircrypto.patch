@@ -65,19 +65,21 @@ diff --git a/init/main.c b/init/main.c
 index 10d6c27..821ed53 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -43,6 +43,11 @@
+@@ -43,6 +43,13 @@
  #include <syslog.h>
  #include <unistd.h>
  
 +#ifdef ADD_DIRCRYPTO_RING
 +#include <ext2fs/ext2_fs.h>
 +#include <keyutils.h>
++#include <pwd.h>
++#include <grp.h>
 +#endif
 +
  #ifdef HAVE_SELINUX
  #include <selinux/selinux.h>
  #endif
-@@ -125,6 +130,11 @@ main (int   argc,
+@@ -125,6 +132,11 @@ main (int   argc,
  	char **args;
  	char  *arg_end = NULL;
  	int    ret;
@@ -89,7 +91,7 @@ index 10d6c27..821ed53 100644
  
  	argv0 = argv[0];
  	nih_main_init (argv0);
-@@ -294,6 +304,49 @@ main (int   argc,
+@@ -294,6 +306,94 @@ main (int   argc,
  		(int)getpid (), (int)getppid ());
  #endif /* DEBUG */
  
@@ -117,8 +119,36 @@ index 10d6c27..821ed53 100644
 +			ret = errno;
 +		close(fd);
 +	}
++
++	/*
++	 * Get the uid and gid of the "cryptohome" user and "cryptohome" group,
++	 * in order to set the owner of the dircrypto keyring to the
++	 * "cryptohome" user and group, which the cryptohomed daemon runs under.
++	 * This is because cryptohomed must be able to write and set attributes
++	 * of the keyring.
++	 */
++	uid_t cryptohome_uid = 0;
++	gid_t cryptohome_gid = 0;
++	static const char cryptohome_user[] = "cryptohome";
++	static const char cryptohome_group[] = "cryptohome";
++
++	struct passwd *ppw = getpwnam (cryptohome_user);
++	if (!ppw)
++		nih_warn ("Unable to get \"%s\" uid: %s", cryptohome_user,
++			  strerror (errno));
++	else
++		cryptohome_uid = ppw->pw_uid;
++
++	struct group *pgr = getgrnam (cryptohome_group);
++	if (!pgr)
++		nih_warn ("Unable to get \"%s\" gid: %s", cryptohome_group,
++			  strerror (errno));
++	else
++		cryptohome_gid = pgr->gr_gid;
++
++
 +	if (ret != EINVAL && ret != EOPNOTSUPP && ret != ENOTTY) {
-+		keyring_id = add_key ("keyring", "dircrypt", 0, 0,
++		keyring_id = add_key ("keyring", "dircrypt", NULL, 0,
 +				KEY_SPEC_SESSION_KEYRING);
 +		if (keyring_id == -1) {
 +			nih_warn ("%s: %s",
@@ -133,6 +163,23 @@ index 10d6c27..821ed53 100644
 +				       KEY_POS_VIEW | KEY_POS_SEARCH |
 +				       KEY_POS_LINK | KEY_POS_READ |
 +				       KEY_USR_ALL);
++			/*
++			 * Finally check if we got uid 0 or gid 0. If so, we
++			 * failed to get the right uid or gid, and the
++			 * "cryptohome" user will not own the dircrypto
++			 * keyring. Otherwise, use keyctl_chown to set the
++			 * "cryptohome" user as the owner of the dircrypto
++			 * keyring.
++			 */
++			if (cryptohome_uid == 0 || cryptohome_gid == 0) {
++				nih_warn ("Unable to get correct uid or gid "
++					  "for user %s or group %s, cannot set "
++					  "permissions for dircrypt keyring",
++					  cryptohome_user, cryptohome_group);
++			} else {
++				keyctl_chown(keyring_id, cryptohome_uid,
++					     cryptohome_gid);
++			}
 +		}
 +	}
 +#endif
