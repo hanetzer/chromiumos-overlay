@@ -272,6 +272,7 @@ cros-firmware_src_compile() {
 	# Prepare extra commands
 	_add_param ext_cmd --tool_base \
 		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
+	_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
 	if use unibuild; then
 		local model
 
@@ -312,7 +313,6 @@ cros-firmware_src_compile() {
 		# Prepare extra commands
 		_add_param ext_cmd --extra \
 			"$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")"
-		_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
 		_add_param ext_cmd --stable_main_version \
 			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}"
 		_add_param ext_cmd --stable_ec_version \
