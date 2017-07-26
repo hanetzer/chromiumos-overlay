@@ -46,6 +46,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_CSADisconnect
 	+tests_network_WiFi_DarkResumeActiveScans
 	+tests_network_WiFi_DisableEnable
+	+tests_network_WiFi_DisableRandomMACAddress
 	+tests_network_WiFi_DisconnectClearsIP
 	+tests_network_WiFi_DisconnectReason
 	+tests_network_WiFi_DTIMPeriod
