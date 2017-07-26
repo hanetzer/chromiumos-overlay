@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="cras pam opengl +power_management +profile
+IUSE="cras nvme pam opengl +power_management +profile
 	+shill tpm usb video_cards_intel"
 
 # The dependencies here are meant to capture "all the packages
@@ -105,6 +105,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/kbd
 	sys-apps/less
 	sys-apps/mmc-utils
+	nvme? ( sys-apps/nvme-cli )
 	sys-apps/smartmontools
 	usb? ( sys-apps/usbutils )
 	sys-apps/which
