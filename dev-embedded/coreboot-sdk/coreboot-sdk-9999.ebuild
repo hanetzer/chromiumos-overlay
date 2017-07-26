@@ -31,16 +31,16 @@ http://ftpmirror.gnu.org/make/make-4.2.1.tar.bz2
 
 SRC_URI="
 ${CROSSGCC_URIS}
-http://mirrors.cdn.adacore.com/art/564b3ebec8e196b040fbe66c -> gnat-gpl-2014-x86_64-linux-bin.tar.gz
+http://mirrors.cdn.adacore.com/art/591c6d80c7a447af2deed1d7 -> gnat-gpl-2017-x86_64-linux-bin.tar.gz
 "
 
 src_prepare() {
 	mkdir util/crossgcc/tarballs
 	ln -s "${DISTDIR}"/* util/crossgcc/tarballs/
-	unpack gnat-gpl-2014-x86_64-linux-bin.tar.gz
+	unpack gnat-gpl-2017-x86_64-linux-bin.tar.gz
 	# buildgcc uses 'cc' to find gnat1 so it needs to find the gnat-gpl
 	# compiler under that name
-	ln -s gcc gnat-gpl-2014-x86_64-linux-bin/bin/cc
+	ln -s gcc gnat-gpl-2017-x86_64-linux-bin/bin/cc
 }
 
 src_compile() {
@@ -49,7 +49,7 @@ src_compile() {
 	# buildgcc asks gcc for the Ada compiler's path using the compiler's
 	# -print-prog-name option which only deals with programs from the very
 	# same compiler distribution, so make sure we use the right one.
-	export PATH="${S}"/gnat-gpl-2014-x86_64-linux-bin/bin:"${PATH}"
+	export PATH="${S}"/gnat-gpl-2017-x86_64-linux-bin/bin:"${PATH}"
 	export CC=gcc CXX=g++
 
 	# make calls into buildgcc, which then uses CPUS to parallelize its
