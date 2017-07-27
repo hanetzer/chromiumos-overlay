@@ -82,6 +82,7 @@ cros-go_src_test() {
 cros-go_src_install() {
 	local workspace="${CROS_GO_WORKSPACE:-${S}}"
 
+	# Install the compiled binaries.
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
 		local name="${bin##*/}"
@@ -89,6 +90,7 @@ cros-go_src_install() {
 		dobin "${name}"
 	done
 
+	# Install the importable packages in /usr/lib/gopath.
 	local pkg
 	for pkg in "${CROS_GO_PACKAGES[@]}" ; do
 		local pkgdir="${workspace}/src/${pkg}"
@@ -101,6 +103,15 @@ cros-go_src_install() {
 				doins "${file}"
 			done < <(find "${pkgdir}" -maxdepth 1 ! -type d -print0)
 		)
+	done
+
+	# Check for missing dependencies of installed packages.
+	local CROS_GO_WORKSPACE="${D}/usr/lib/gopath"
+	for pkg in "${CROS_GO_PACKAGES[@]}" ; do
+		if [[ $(cros_go list -f "{{.Incomplete}}" "${pkg}") == "true" ]] ; then
+			cros_go list -f "{{.DepsErrors}}" "${pkg}"
+			die "Package has missing dependency: \"${pkg}\""
+		fi
 	done
 }
 
