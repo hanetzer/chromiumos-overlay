@@ -176,8 +176,7 @@ IUSE_TESTS=(
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
-	+tests_webrtc_PausePlayPeerConnections.audio
-	+tests_webrtc_PausePlayPeerConnections.video
+	+tests_webrtc_PausePlayPeerConnections
 )
 
 IUSE_TESTS_CELLULAR="
