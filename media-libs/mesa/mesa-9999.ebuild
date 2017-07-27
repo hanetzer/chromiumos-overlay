@@ -141,6 +141,9 @@ src_prepare() {
 src_configure() {
 	tc-getPROG PKG_CONFIG pkg-config
 
+	# Needs std=gnu++11 to build with libc++. crbug.com/750831
+	append-cxxflags "-std=gnu++11"
+
 	if use !gallium && use !classic && use !vulkan; then
 		ewarn "You enabled neither classic, gallium, nor vulkan "
 		ewarn "USE flags. No hardware drivers will be built."
