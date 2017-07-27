@@ -1,0 +1,30 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=5
+CROS_WORKON_COMMIT="9d35582949818d6579721cec0fd92c210c0a16de"
+CROS_WORKON_TREE="e01cefd2ee65d2c350acdc34218e85c4e2f11024"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_INCREMENTAL_BUILD=1
+PLATFORM_SUBDIR="vm_launcher"
+
+inherit cros-workon platform
+
+DESCRIPTION="Utility for launching a container in a VM"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+IUSE=""
+
+RDEPEND="
+	chromeos-base/libbrillo
+"
+DEPEND="${RDEPEND}"
+
+src_install() {
+	cd "${OUT}"
+	dobin vm_launcher
+}
