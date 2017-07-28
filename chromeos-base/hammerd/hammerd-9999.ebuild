@@ -22,6 +22,7 @@ KEYWORDS="~*"
 DEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/vboot_reference
+	dev-libs/openssl
 	sys-apps/flashmap
 	virtual/libusb:1
 "
