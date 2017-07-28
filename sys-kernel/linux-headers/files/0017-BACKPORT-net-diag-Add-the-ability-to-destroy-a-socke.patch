@@ -1,0 +1,34 @@
+commit a97da7fbbf7fdc2fe32cda9373fe5de94ae9a09b
+Author: Lorenzo Colitti <lorenzo@google.com>
+Date:   Wed Dec 16 12:30:03 2015 +0900
+Subject: [PATCH] BACKPORT: net: diag: Add the ability to destroy a socket.
+
+This patch adds a SOCK_DESTROY operation, a destroy function
+pointer to sock_diag_handler, and a diag_destroy function
+pointer.  It does not include any implementation code.
+
+[backport of net-next 64be0aed59ad519d6f2160868734f7e278290ac1]
+
+BUG=706213
+TEST=Build and boot kernel
+
+Signed-off-by: Lorenzo Colitti <lorenzo@google.com>
+Acked-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Abhishek Bhardwaj <abhishekbh@google.com>
+Original-reviewed-on: https://chromium-review.googlesource.com/464190
+Original-reviewed-by: Kevin Cernekee <cernekee@chromium.org>
+---
+
+--- a/include/uapi/linux/sock_diag.h
++++ b/include/uapi/linux/sock_diag.h
+@@ -4,6 +4,7 @@
+ #include <linux/types.h>
+ 
+ #define SOCK_DIAG_BY_FAMILY 20
++#define SOCK_DESTROY 21
+ 
+ struct sock_diag_req {
+        __u8    sdiag_family;
+---
+2.12.2
