@@ -92,8 +92,10 @@ SERVER_IUSE_TESTS="
 	+tests_dummy_PassServer
 	+tests_dummy_FailServer
 	+tests_dummy_FlakyTestServer
+	+tests_enterprise_CFM_AutoZoomSanity
 	+tests_enterprise_CFM_MeetAppSanity
 	+tests_enterprise_CFM_Perf
+	+tests_enterprise_CFM_RebootStress
 	+tests_enterprise_CFM_Sanity
 	+tests_enterprise_CFM_SessionStress
 	+tests_enterprise_CFM_USBPeripheralHotplugDetect
