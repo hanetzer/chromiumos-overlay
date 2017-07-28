@@ -39,6 +39,7 @@ IUSE="
 	has_diamond_key
 	has_hdd
 	highdpi
+	internal_stylus
 	kevin
 	legacy_keyboard
 	legacy_power_button
