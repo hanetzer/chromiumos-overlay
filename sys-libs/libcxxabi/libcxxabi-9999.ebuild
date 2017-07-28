@@ -10,9 +10,9 @@ inherit cros-constants
 
 CROS_WORKON_REPO=${CROS_GIT_AOSP_URL}
 CROS_WORKON_PROJECT=(
-	"external/libcxxabi"
-	"external/libcxx"
-	"external/libunwind_llvm"
+	"platform/external/libcxxabi"
+	"platform/external/libcxx"
+	"platform/external/libunwind_llvm"
 )
 CROS_WORKON_LOCALNAME=("../aosp/external/libcxxabi" "../aosp/external/libcxx" "../aosp/external/libunwind_llvm")
 
@@ -22,8 +22,6 @@ CROS_WORKON_DESTDIR=(
 	"${S}/libcxx"
 	"${S}/libunwind_llvm"
 )
-
-CROS_WORKON_BLACKLIST="1"
 
 inherit cmake-multilib cros-llvm cros-workon flag-o-matic llvm python-any-r1
 
