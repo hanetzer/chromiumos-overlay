@@ -33,6 +33,10 @@ src_install() {
 	insinto /usr/include/midis/
 	doins -r messages.h
 	doins libmidis/clientlib.h
+
+	# Install midis DBUS configuration file
+	insinto /etc/dbus-1/system.d
+	doins dbus_permissions/org.chromium.Midis.conf
 }
 
 pkg_preinst() {
