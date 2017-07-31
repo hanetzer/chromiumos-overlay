@@ -32,6 +32,7 @@ IUSE="
 	feedback
 	+fonts
 	gobi
+	hammerd
 	intel_lpe
 	kvm_host
 	mtd
@@ -156,6 +157,7 @@ CROS_COMMON_RDEPEND+="
 	debugd? ( chromeos-base/debugd )
 	scanner? ( chromeos-base/lorgnette )
 	peerd? ( chromeos-base/peerd )
+	hammerd? ( chromeos-base/hammerd )
 	power_management? ( chromeos-base/power_manager )
 	!chromeos-base/platform2
 	profile? ( chromeos-base/quipper )
