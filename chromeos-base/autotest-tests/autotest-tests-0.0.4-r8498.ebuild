@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="132c7a9b1075acf9c120a84cd24ea12ef05a9e33"
-CROS_WORKON_TREE="c89ef6d4267ab823d029d6853bba528719a4b794"
+CROS_WORKON_COMMIT="228e8d0ea690e467b584d2c9a052f5f37a1c7806"
+CROS_WORKON_TREE="66573a57bb3feb275ac254fcbbe1c7823fe44613"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic libchrome cros-debug cros-workon autotest
@@ -52,12 +52,14 @@ RDEPEND="${RDEPEND}
 	tests_security_SMMLocked? ( sys-apps/pciutils )
 	tests_camera_HAL3? ( chromeos-base/autotest-deps-camera-hal3 )
 	tests_camera_V4L2? ( media-libs/libyuv )
+	tests_xfsFilesystemTestSuite? ( app-benchmarks/xfstests )
 "
 
 DEPEND="${RDEPEND}"
 
 X86_IUSE_TESTS="
 	+tests_security_SMMLocked
+	+tests_xfsFilesystemTestSuite
 "
 
 CLIENT_IUSE_TESTS="
