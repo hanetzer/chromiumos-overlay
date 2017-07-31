@@ -19,3 +19,7 @@ DEPEND=">=dev-python/psutil-1.2.1[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}
 	app-crypt/gnupg
 	!dev-python/python-gnupg"
+
+PATCHES=(
+	${FILESDIR}/gnupg-2.3.0-fix-psutil-process-error.patch
+)
