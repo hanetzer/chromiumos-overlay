@@ -59,6 +59,7 @@ ALL_BOARDS=(
 	beaglebone_vv1
 	beltino
 	betty
+	betty-arc64
 	blackwall
 	bob
 	bobcat
@@ -190,6 +191,7 @@ ALL_BOARDS=(
 	newbie
 	ninja
 	novato
+	novato-arc64
 	nyan
 	nyan_big
 	nyan_blaze
