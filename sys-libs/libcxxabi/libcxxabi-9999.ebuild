@@ -31,7 +31,7 @@ HOMEPAGE="http://libcxxabi.llvm.org/"
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="libunwind +static-libs test"
+IUSE="cros_host libunwind +static-libs test"
 
 
 RDEPEND="
@@ -43,6 +43,7 @@ RDEPEND="
 	)"
 
 DEPEND="${RDEPEND}
+	cros_host? ( sys-devel/llvm )
 	test? ( >=sys-devel/clang-3.9.0
 		~sys-libs/libcxx-${PV}[libcxxabi(-)]
 		$(python_gen_any_dep 'dev-python/lit[${PYTHON_USEDEP}]') )"

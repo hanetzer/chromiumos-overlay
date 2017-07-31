@@ -25,7 +25,7 @@ HOMEPAGE="http://libcxx.llvm.org/"
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="elibc_glibc elibc_musl +libcxxabi libcxxrt libunwind +static-libs test"
+IUSE="cros_host elibc_glibc elibc_musl +libcxxabi libcxxrt libunwind +static-libs test"
 REQUIRED_USE="libunwind? ( || ( libcxxabi libcxxrt ) )
 	?? ( libcxxabi libcxxrt )"
 
@@ -36,10 +36,10 @@ RDEPEND="
 # clang-3.9.0 installs necessary target symlinks unconditionally
 # which removes the need for MULTILIB_USEDEP
 DEPEND="${RDEPEND}
+	cros_host? ( sys-devel/llvm )
 	test? ( >=sys-devel/clang-3.9.0
 		$(python_gen_any_dep 'dev-python/lit[${PYTHON_USEDEP}]') )
-	app-arch/xz-utils
-	>=sys-devel/llvm-4"
+	app-arch/xz-utils"
 
 S=${WORKDIR}/${P/_/}.src
 
