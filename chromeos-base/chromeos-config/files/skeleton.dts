@@ -9,6 +9,9 @@
 
 / {
 	chromeos {
+		family: family {
+		};
+
 		models: models {
 		};
 	};

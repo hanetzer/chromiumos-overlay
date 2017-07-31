@@ -115,7 +115,8 @@ get_model_conf_value_noroot() {
 
 	# We are not allowed to access the ROOT directory here, so compile the
 	# model fragment on the fly and pull out the value we want.
-	echo "/dts-v1/; / { chromeos { models: models { }; }; };" |
+	echo "/dts-v1/; / { chromeos { family: family { }; " \
+		"models: models { }; }; };" |
 		cat - "${filesdir}/model.dtsi" |
 		dtc -O dtb |
 		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
