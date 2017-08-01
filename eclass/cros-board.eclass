@@ -83,6 +83,7 @@ ALL_BOARDS=(
 	#chronos
 	cid
 	clapper
+	cnlrvp
 	cobblepot
 	coral
 	cosmos
