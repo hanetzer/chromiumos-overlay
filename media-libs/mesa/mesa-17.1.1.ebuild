@@ -154,13 +154,7 @@ src_configure() {
 		driver_enable swrast
 
 		# Intel code
-		driver_enable video_cards_intel i915 i965
-
-		# Nouveau code
-		driver_enable video_cards_nouveau nouveau
-
-		# ATI code
-		driver_enable video_cards_radeon radeon r200
+		driver_enable video_cards_intel i965
 	fi
 
 	if use gallium; then
