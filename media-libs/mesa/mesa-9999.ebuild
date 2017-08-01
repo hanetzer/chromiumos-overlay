@@ -151,8 +151,6 @@ src_configure() {
 
 	if use classic; then
 	# Configurable DRI drivers
-		driver_enable swrast
-
 		# Intel code
 		driver_enable video_cards_intel i965
 	fi
