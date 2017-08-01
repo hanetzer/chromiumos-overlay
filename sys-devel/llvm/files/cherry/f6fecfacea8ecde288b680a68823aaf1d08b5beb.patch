@@ -1,0 +1,66 @@
+commit f6fecfacea8ecde288b680a68823aaf1d08b5beb
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Tue Aug 1 15:39:12 2017 +0000
+
+    [X86] Fix a crash in FEntryInserter Pass.
+    
+    Summary:
+    FEntryInserter pass unconditionally derefs the first Instruction
+    in the first Basic Block. The pass crashes when the first
+    BasicBlock is empty. Fix the crash by not dereferencing the basic
+    Block iterator. This fixes an issue observed when building Linux kernel
+    4.4 with clang.
+    
+    Fixes PR33971.
+    
+    Reviewers: hfinkel, niravd, dblaikie
+    
+    Reviewed By: niravd
+    
+    Subscribers: davide, llvm-commits
+    
+    Differential Revision: https://reviews.llvm.org/D35979
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@309694 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/CodeGen/FEntryInserter.cpp b/lib/CodeGen/FEntryInserter.cpp
+index 0759bf6713e..9781338f952 100644
+--- a/lib/CodeGen/FEntryInserter.cpp
++++ b/lib/CodeGen/FEntryInserter.cpp
+@@ -41,10 +41,8 @@ bool FEntryInserter::runOnMachineFunction(MachineFunction &MF) {
+     return false;
+ 
+   auto &FirstMBB = *MF.begin();
+-  auto &FirstMI = *FirstMBB.begin();
+-
+   auto *TII = MF.getSubtarget().getInstrInfo();
+-  BuildMI(FirstMBB, FirstMI, FirstMI.getDebugLoc(),
++  BuildMI(FirstMBB, FirstMBB.begin(), DebugLoc(),
+           TII->get(TargetOpcode::FENTRY_CALL));
+   return true;
+ }
+diff --git a/test/CodeGen/X86/fentry-insertion.ll b/test/CodeGen/X86/fentry-insertion.ll
+index a585d96b209..c5fb3b254b2 100644
+--- a/test/CodeGen/X86/fentry-insertion.ll
++++ b/test/CodeGen/X86/fentry-insertion.ll
+@@ -12,5 +12,19 @@ entry:
+ ; CHECK: retq
+ }
+ 
+-attributes #0 = { "fentry-call"="true" }
++define void @test2() #1 {
++entry:
++  br label %bb1
++bb1:
++  call void @address_taken(i64 ptrtoint (i8* blockaddress(@test2, %bb1) to i64), i32 512)
++  ret void
+ 
++; CHECK-LABEL: @test2
++; CHECK: callq __fentry__
++; CHECK-NOT: mcount
++; CHECK: retq
++}
++
++declare void @address_taken(i64, i32) local_unnamed_addr
++attributes #0 = { "fentry-call"="true" }
++attributes #1 = { inlinehint minsize noredzone nounwind optsize sspstrong "fentry-call"="true" }
