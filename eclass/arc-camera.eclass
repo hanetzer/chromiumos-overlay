@@ -53,8 +53,9 @@ EOF
 	for index in "${!symlink_table[@]}"; do
 		local rules=""
 		if [[ -n "${vid_pid_table[${index}]}" ]]; then
-			rules+="ATTRS{idVendor}==\"${vid_pid_table[${index}]:0:4}\", \
-ATTRS{idProduct}==\"${vid_pid_table[${index}]:5:4}\""
+			rules+="SUBSYSTEM==\"video4linux\", ATTRS{idVendor}==\"\
+${vid_pid_table[${index}]:0:4}\", ATTRS{idProduct}==\
+\"${vid_pid_table[${index}]:5:4}\""
 		fi
 		if [[ -n "${usb_path_table[${index}]}" ]]; then
 			rules+=", KERNELS==\"${usb_path_table[${index}]}\""
