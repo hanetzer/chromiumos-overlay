@@ -130,6 +130,7 @@ ALL_BOARDS=(
 	glados-cheets
 	glimmer
 	glimmer-cheets
+	glkrvp
 	gnawty
 	gonzo
 	gru
