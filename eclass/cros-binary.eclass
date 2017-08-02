@@ -34,8 +34,6 @@ cros-binary_add_uri()
 	case "${uri}" in
 		http://*|https://*|gs://*)
 			SRC_URI+=" ${uri}"
-			CROS_BINARY_FETCH_REQUIRED=false
-			CROS_BINARY_STORE_DIR="${DISTDIR}"
 			;;
 		*)
 			die "Unknown protocol: ${uri}"
@@ -118,13 +116,7 @@ cros-binary_src_unpack() {
 }
 
 cros-binary_src_install() {
-	local target="${CROS_BINARY_URI##*/}"
-	if ${CROS_BINARY_FETCH_REQUIRED}; then
-		target="${CROS_BINARY_STORE_DIR}/${target}"
-	else
-		target="${DISTDIR}/${target}"
-	fi
-
+	local target="${DISTDIR}/${CROS_BINARY_URI##*/}"
 	local extension="${CROS_BINARY_URI##*.}"
 	local flags
 
