@@ -9,7 +9,7 @@
 # Reject old users of cros-binary eclass that expected us to download files
 # directly rather than going through SRC_URI.
 cros-binary_dead_usage() {
-	die "You must add files to SRC_URI now"
+	die "You must add files to SRC_URI now and install them manually"
 }
 if [[ ${CROS_BINARY_STORE_DIR:+set} == "set" ||
       ${CROS_BINARY_SUM:+set} == "set" ||
@@ -121,19 +121,5 @@ cros-binary_src_unpack() {
 }
 
 cros-binary_src_install() {
-	ewarn "cros-binary_src_install is deprecated."
-	ewarn "Please convert this ebuild to src_install and install files manually."
-
-	local target="${DISTDIR}/${CROS_BINARY_URI##*/}"
-	local extension="${CROS_BINARY_URI##*.}"
-	local flags
-
-	case "${CROS_BINARY_URI##*.}" in
-		gz|tgz) flags="z";;
-		bz2|tbz2) flags="j";;
-		*) die "Unsupported binary file format ${CROS_BINARY_URI##*.}"
-	esac
-
-	cd "${D}" || die
-	tar "${flags}xpf" "${target}" --no-same-owner ${CROS_BINARY_INSTALL_FLAGS} || die "Failed to unpack"
+	cros-binary_dead_usage
 }
