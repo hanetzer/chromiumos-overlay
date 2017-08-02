@@ -791,8 +791,8 @@ setup_compile_flags() {
 
 src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
-	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
-	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
+	export CC_host=$(usex clang "${CBUILD}-clang" "$(tc-getBUILD_CC)")
+	export CXX_host=$(usex clang "${CBUILD}-clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
 	if use thinlto; then
 		export RANLIB="llvm-ranlib"
