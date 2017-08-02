@@ -43,7 +43,7 @@ KEYWORDS="*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="amdgpu radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau r128 radeonsi savage sis vmware tdfx via freedreno"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau r128 radeonsi savage sis vmware tdfx via"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -156,9 +156,7 @@ src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
-		if use !xlib-glx; then
-			gallium_driver_enable swrast
-		fi
+		gallium_driver_enable video_cards_llvmpipe swrast
 
 		# Nouveau code
 		gallium_driver_enable video_cards_nouveau nouveau
@@ -194,7 +192,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm gallium-llvm) \
+		$(use_enable video_cards_llvmpipe gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
