@@ -116,6 +116,9 @@ cros-binary_src_unpack() {
 }
 
 cros-binary_src_install() {
+	ewarn "cros-binary_src_install is deprecated."
+	ewarn "Please convert this ebuild to src_install and install files manually."
+
 	local target="${DISTDIR}/${CROS_BINARY_URI##*/}"
 	local extension="${CROS_BINARY_URI##*.}"
 	local flags
