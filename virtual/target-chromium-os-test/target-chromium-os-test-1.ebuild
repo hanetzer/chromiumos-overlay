@@ -136,6 +136,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
 	media-gfx/zbar
+	media-libs/libexif
 	media-libs/opencv
 	ozone? ( media-gfx/deqp )
 	media-libs/tiff
