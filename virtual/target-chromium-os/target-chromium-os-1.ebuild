@@ -29,7 +29,6 @@ IUSE="
 	+debugd
 	dptf
 	eclog
-	feedback
 	+fonts
 	gobi
 	hammerd
@@ -308,7 +307,6 @@ CROS_DEPEND="${CROS_RDEPEND}
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
 	sys-apps/util-linux
-	feedback? ( chromeos-base/feedback )
 "
 
 # Build time dependencies
