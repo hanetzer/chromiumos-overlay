@@ -31,7 +31,7 @@ index 689f3cf..26f2034 100644
  #include <sys/stat.h>
  #if defined(WIN32) || defined(__EMX__)
  #  include <io.h>
-@@ -1652,6 +1655,237 @@ cups_get_printer_uri(
+@@ -1652,6 +1655,244 @@ cups_get_printer_uri(
    return (0);
  }
  
@@ -258,6 +258,13 @@ index 689f3cf..26f2034 100644
 +      strcmp(filter_name, "epson-escpr") == 0)
 +  {
 +    const char search_root[] = "/run/imageloader/epson-inkjet-printer-escpr";
++    return searchFilterLatest(search_root, filter_name, full_path,
++                              full_path_size);
++  }
++  else if (strcmp(filter_name, "rastertostar") == 0 ||
++           strcmp(filter_name, "rastertostarlm") == 0)
++  {
++    const char search_root[] = "/run/imageloader/star-cups-driver";
 +    return searchFilterLatest(search_root, filter_name, full_path,
 +                              full_path_size);
 +  }
