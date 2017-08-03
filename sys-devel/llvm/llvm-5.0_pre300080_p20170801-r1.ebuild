@@ -227,6 +227,7 @@ pick_next_cherries() {
 	# clang
 	local CHERRIES=""
 	CHERRIES+=" b8c6e47bedeba554a913c71653d6ce778f398155 " # r305728
+	CHERRIES+=" 74dbb6c51a6706c959ed323673a7d1a9269720e0 " # r306346
 	CHERRIES+=" 9330fda9a0ef108d03334f20319508e409bb356d " # r307051
 	CHERRIES+=" c9c456edbdc7004d08581528219ee59362e59e8e " # r309263
 	pushd "${S}"/tools/clang >/dev/null || die
