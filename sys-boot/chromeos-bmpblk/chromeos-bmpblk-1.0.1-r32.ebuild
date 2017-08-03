@@ -38,6 +38,7 @@ CROS_BOARDS=(
 	glimmer
 	gnawty
 	guado
+	kahlee
 	kblrvp
 	kevin
 	kip
