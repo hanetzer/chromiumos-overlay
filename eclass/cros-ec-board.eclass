@@ -53,6 +53,7 @@ EC_BOARD_NAMES=(
 	kevin
 	llama
 	minimuffin
+	nefario
 	oak
 	oak_pd
 	plankton
