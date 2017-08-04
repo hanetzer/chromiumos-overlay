@@ -25,8 +25,9 @@ src_prepare() {
 	epatch "${FILESDIR}/autofdo-0.15-rpath.patch"
 	# LLVM ProfileData.h header has changed upstream.
 	# Patch to use new API if llvm was built with llvm-next use flag.
-	# Make this patch unconditional after next llvm roll.
-	if has_version --host-root 'sys-devel/llvm[llvm-next]'; then
+	# Make this patch unconditional after next chromiumos-sdk update.
+	if has_version --host-root 'sys-devel/llvm[llvm-next]' ||
+		has_version --host-root ">=sys-devel/llvm-5.0_pre305632"; then
 		epatch "${FILESDIR}/autofdo-0.15-llvm-next.patch"
 	fi
 	eautoreconf

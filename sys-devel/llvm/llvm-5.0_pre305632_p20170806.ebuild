@@ -36,22 +36,22 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"3183fbc849f015fd085ce6724e85ae1de65db4e6" # EGIT_COMMIT r300078
+		"b903fddc562ccc622cabc4f08f5df2af90ceb251" # EGIT_COMMIT r305632
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"059c103b581e37d2be47cb403769bff20808bca2" # EGIT_COMMIT r300080
+		"f0d7258f4a2f5e6443011f7be011b5e9999c33f2" # EGIT_COMMIT r305593
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"8ae674d121a0c39b4ae6e83d10caad3fd29dce13"  # EGIT_COMMIT r300074
+		"30060bff5b4cb49e17c27672d1aa60e6bc7a95e8"  # EGIT_COMMIT r305619
 )
 fi
 
 LICENSE="UoI-NCSA"
 SLOT="0/${PV%%_*}"
 KEYWORDS="-* amd64"
-IUSE="clang debug default-compiler-rt default-libcxx doc gold libedit +libffi
+IUSE="clang debug +default-compiler-rt default-libcxx doc gold libedit +libffi
 	lldb multitarget ncurses ocaml python +static-analyzer llvm-next llvm-tot
 	test xml video_cards_radeon kernel_Darwin"
 
@@ -189,10 +189,10 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 7217e99fda533e3a439020fa5dfbc23b7b360988 " # r300571
-	CHERRIES+=" 432ed0e4a6d58f7dda8992a167aad43bc91f76c6 " # r302506
 	CHERRIES+=" b8c6e47bedeba554a913c71653d6ce778f398155 " # r305728
+	CHERRIES+=" 74dbb6c51a6706c959ed323673a7d1a9269720e0 " # r306346
 	CHERRIES+=" 9330fda9a0ef108d03334f20319508e409bb356d " # r307051
+	CHERRIES+=" c9c456edbdc7004d08581528219ee59362e59e8e " # r309263
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -201,9 +201,7 @@ pick_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 21b4d8e9b9afa5787894aecde704cd3ef62b10c2 " # r300583
-	CHERRIES+=" bde56a96995a329cf1df5716b1f84b32aac6c174 " # r301505
-	CHERRIES+=" abf586838958632768fa4c91d7d8be1689e37bf8 " # r303901
+	CHERRIES+=" 5773fa6550fa9b33017d8d1e4ebdb96cf5eaf626 " # r305853
 	CHERRIES+=" f6fecfacea8ecde288b680a68823aaf1d08b5beb " # r309694
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
@@ -213,9 +211,6 @@ pick_cherries() {
 
 	# compiler-rt
 	CHERRIES=""
-	CHERRIES+=" 385d9f6d5abb6b2d4ea27e59ac1e7b0e20d54f7c " # r300531
-	CHERRIES+=" 46a48e5918ab64e40ed8b929fdb8d2ff4117cfa1 " # r301243
-	CHERRIES+=" 96eed06b6e57a3c8e2593e73d6f33bdd407f43b9 " # r303112
 	pushd "${S}"/projects/compiler-rt >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -261,12 +256,7 @@ src_prepare() {
 		use llvm-next && pick_next_cherries
 	fi
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
-	if use llvm-next || use llvm-tot; then
-		# leak-whitelist patch does not cleanly apply to llvm-next.
-		epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
-	else
-		epatch "${FILESDIR}"/llvm-4.0-leak-whitelist.patch
-	fi
+	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
