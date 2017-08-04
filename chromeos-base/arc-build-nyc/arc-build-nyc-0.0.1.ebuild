@@ -11,8 +11,9 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-DEPEND="!!chromeos-base/arc-build"
-RDEPEND=""
+# The RDEPEND setting reflects what is installed into the SYSROOT.
+RDEPEND="!!chromeos-base/arc-build"
+DEPEND=""
 
 S=${WORKDIR}
 INSTALL_DIR="/opt/google/containers/android"
