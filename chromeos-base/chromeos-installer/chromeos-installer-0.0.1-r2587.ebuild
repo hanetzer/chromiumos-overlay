@@ -9,7 +9,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon cros-debug cros-au libchrome systemd
+inherit cros-workon cros-debug libchrome systemd
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,26 +18,22 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="32bit_au cros_host direncryption -mtd pam systemd test"
+IUSE="cros_host direncryption -mtd pam systemd test"
 
 DEPEND="
-	chromeos-base/verity[32bit_au=]
+	chromeos-base/verity
 	mtd? ( dev-embedded/android_mtdutils )
 	test? (
-		32bit_au? (
-			dev-cpp/gmock32[32bit_au]
-			dev-cpp/gtest32[32bit_au]
-		)
 		dev-cpp/gmock[static-libs(+)]
 		dev-cpp/gtest[static-libs(+)]
 	)
 	!cros_host? (
-		chromeos-base/vboot_reference[32bit_au=]
+		chromeos-base/vboot_reference
 	)"
 RDEPEND="
 	pam? ( app-admin/sudo )
 	chromeos-base/libbrillo
-	chromeos-base/vboot_reference[32bit_au=]
+	chromeos-base/vboot_reference
 	dev-util/shflags
 	sys-apps/rootdev
 	sys-apps/util-linux
@@ -59,34 +55,26 @@ src_configure() {
 	append-cppflags -I"${SYSROOT}"/usr/include/vboot
 	append-ldflags -L"${SYSROOT}"/usr/lib/vboot32
 
-	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_configure
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_compile() {
 	# We don't need the installer in the sdk, just helper scripts.
 	use cros_host && return 0
 
-	use 32bit_au && board_setup_32bit_au_env
 	USE_mtd=$(usev mtd) cros-workon_src_compile
 	if use mtd; then
 		USE_mtd=$(usev mtd) cw_emake -r nand_partition
 	fi
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_test() {
-	use 32bit_au && board_setup_32bit_au_env
-
 	if ! use x86 && ! use amd64 ; then
 		einfo Skipping unit tests on non-x86 platform
 	else
 		# Needed for `cros_run_unit_tests`.
 		cros-workon_src_test
 	fi
-
-	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_install() {

@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="d8a535dacf7f6986cb3d6b98da825f37d7d41523"
-CROS_WORKON_TREE="bee1d6d1febe0b7deb9c118479d0f573fdcfafc6"
+CROS_WORKON_COMMIT="817b3f1e88adb59dc8d8833abd4e46b2b773a362"
+CROS_WORKON_TREE="3ca958aa8027b1eae9a5244194e8d4ca6c0d9fd2"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
@@ -199,6 +199,7 @@ SERVER_IUSE_TESTS="
 	moblab? ( +tests_moblab_RunSuite )
 	cros_p2p? ( +tests_p2p_EndToEndTest )
 	+tests_network_FirewallHolePunchServer
+	+tests_platform_ActivateDate
 	+tests_platform_BootDevice
 	+tests_platform_BootPerfServer
 	+tests_platform_CompromisedStatefulPartition
