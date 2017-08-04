@@ -21,6 +21,7 @@ IUSE="
 	arc_migration_policy_check
 	arc_oobe_optin
 	asan
+	background_blur
 	big_little
 	caroline
 	cheets
