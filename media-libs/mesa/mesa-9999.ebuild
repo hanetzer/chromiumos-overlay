@@ -81,7 +81,7 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	!arm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm )
 "
 
 # It is slow without texrels, if someone wants slow
