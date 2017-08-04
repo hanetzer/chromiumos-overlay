@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="bcfd758b6de740e13c2cc2dc1f9374111c896448"
-CROS_WORKON_TREE="703bf6e901ae2f4bfd55de0090baff865b300353"
+CROS_WORKON_COMMIT="3f25951570d82dc940f63cae34b48d13490c55c0"
+CROS_WORKON_TREE="3c17f5d366b9d5ebba8a8f2137a5c4363820920a"
 CROS_WORKON_PROJECT="chromiumos/platform/minigbm"
 CROS_WORKON_LOCALNAME="../platform/minigbm"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -18,7 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-VIDEO_CARDS="amdgpu exynos intel marvell mediatek rockchip tegra"
+VIDEO_CARDS="amdgpu exynos intel marvell mediatek radeon radeonsi rockchip tegra"
 IUSE="-asan"
 for card in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${card}"
@@ -43,6 +43,8 @@ src_configure() {
 	use video_cards_intel && append-cppflags -DDRV_I915 && export DRV_I915=1
 	use video_cards_marvell && append-cppflags -DDRV_MARVELL && export DRV_MARVELL=1
 	use video_cards_mediatek && append-cppflags -DDRV_MEDIATEK && export DRV_MEDIATEK=1
+	use video_cards_radeon && append-cppflags -DDRV_RADEON && export DRV_RADEON=1
+	use video_cards_radeonsi && append-cppflags -DDRV_RADEON && export DRV_RADEON=1
 	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
 	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
 	use video_cards_amdgpu && append-cppflags -DDRV_AMDGPU && export DRV_AMDGPU=1
