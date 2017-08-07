@@ -534,9 +534,9 @@ cros-workon_src_unpack() {
 	# If the repository exists just punt and let it be copied off for build.
 	if [[ "${fetch_method}" == "local" && ! -d ${path} ]] ; then
 		ewarn "Sources are missing in ${path}"
-		ewarn "You need to cros_workon and repo sync your project. For example if you are working on the platform2 ebuild and shill repository:"
-		ewarn "cros_workon --board=amd64-generic start platform2"
-		ewarn "repo sync shill"
+		ewarn "You need to cros_workon and repo sync your project. For example if you are working on the crash-reporter package:"
+		ewarn "cros_workon --board=amd64-generic start crash-reporter"
+		ewarn "repo sync"
 	fi
 
 	einfo "path: ${path[*]}"
