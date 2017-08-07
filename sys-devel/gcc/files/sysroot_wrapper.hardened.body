@@ -20,11 +20,14 @@ SSE = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 WRAPPER_ONLY_OPTIONS |= set(['-clang-syntax'])
 
 def update_flags(arch, myargs):
-  # Generate thumb codes by default.  GCC is configured with
-  # --with-mode=thumb and defaults to thumb mode already.  This
-  # changes the default behavior of clang and doesn't affect GCC.
+  # ARM32 specfic:
+  # 1. Generate thumb codes by default.  GCC is configured with
+  #    --with-mode=thumb and defaults to thumb mode already.  This
+  #    changes the default behavior of clang and doesn't affect GCC.
+  # 2. Do not force frame pointers on ARM32 (https://crbug.com/693137).
   if arch[:5] in ('armv7', 'armv8'):
     FLAGS_TO_ADD.add('-mthumb')
+    FLAGS_TO_ADD.remove('-fno-omit-frame-pointer')
   if FSTACK.intersection(myargs):
     FLAGS_TO_ADD.remove('-fstack-protector-strong')
     FLAGS_TO_ADD.add('-fno-stack-protector')
