@@ -80,6 +80,7 @@ CROS_BOARDS=(
 	winky
 	wolf
 	zako
+	zoombini
 )
 
 inherit cros-workon cros-board
