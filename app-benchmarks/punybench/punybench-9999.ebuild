@@ -21,20 +21,26 @@ IUSE=""
 ##DEPEND="sys-libs/ncurses"
 
 src_compile() {
+	# Clang generates deprecated symbol "mcount", by default, on arm
+	# architectures, resulting in unresolved symbol error. Using
+	#'-meabi gnu' causes clang to generate an alternative symbol instead.
+	case ${ARCH} in
+	arm)
+		if tc-is-clang ; then
+			append-flags "-meabi gnu"
+		fi
+		;;
+	esac
 	tc-export CC
 	if [ "${ARCH}" == "amd64" ]; then
-        PUNYARCH="x86_64"
+		PUNYARCH="x86_64"
 	else
-        PUNYARCH=${ARCH}
+		PUNYARCH=${ARCH}
 	fi
 	emake BOARD="${PUNYARCH}"
 }
 
-# Exclude punybench from clang build. Clang generates deprecated symbol
-# "mcount", resulting in unresolved symbol error. Upstream bug -
-# https://llvm.org/bugs/show_bug.cgi?id=23969
 src_prepare() {
-	cros_use_gcc
 	filter_clang_syntax
 	cros-workon_src_prepare
 }
