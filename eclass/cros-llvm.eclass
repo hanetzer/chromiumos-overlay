@@ -29,8 +29,8 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 fi
 
 setup_cross_toolchain() {
-	export CC="clang"
-	export CXX="clang++"
+	export CC="${CBUILD}-clang"
+	export CXX="${CBUILD}-clang++"
 	export PREFIX="/usr"
 
 	if [[ ${CATEGORY} == cross-* ]] ; then
