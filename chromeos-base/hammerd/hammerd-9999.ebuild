@@ -21,6 +21,7 @@ KEYWORDS="~*"
 
 DEPEND="
 	chromeos-base/libbrillo
+	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/openssl
 	sys-apps/flashmap
@@ -45,6 +46,10 @@ src_install() {
 	dolib.so "${OUT}"/lib/libhammerd-api.so
 	insinto /usr/include/hammerd/
 	doins hammerd_api.h
+
+	# Install DBus config.
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.hammerd.conf
 }
 
 platform_pkg_test() {
