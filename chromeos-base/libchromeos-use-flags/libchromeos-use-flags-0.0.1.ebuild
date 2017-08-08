@@ -55,6 +55,7 @@ IUSE="
 	pointer_events
 	rialto
 	rialto_enterprise_enrollment
+	screenshare_sw_codec
 	stylus
 	test
 	touchview
