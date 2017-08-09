@@ -36,6 +36,11 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
 
+# Some deps we only need at runtime.
+RDEPEND+="
+	mosys_eventlog? ( sys-apps/mosys )
+"
+
 pkg_setup() {
 	# Create the 'power' user and group here in pkg_setup as src_install needs
 	# them to change the ownership of power manager files.
