@@ -23,7 +23,9 @@ RDEPEND="
 	input_devices_synaptics? ( chromeos-base/rmi4utils )
 	input_devices_wacom? ( chromeos-base/wacom_fw_flash )
 	input_devices_st? ( chromeos-base/st_flash )
+	sys-apps/mosys
 "
+
 src_install() {
 	insinto "/etc/init"
 	doins "scripts/chromeos-touch-update.conf"
