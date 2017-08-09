@@ -31,7 +31,6 @@ src_install() {
 
 	# Install headers
 	insinto /usr/include/midis/
-	doins -r messages.h
 	doins libmidis/clientlib.h
 
 	# Install midis DBUS configuration file
