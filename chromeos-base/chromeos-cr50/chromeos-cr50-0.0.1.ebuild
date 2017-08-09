@@ -11,7 +11,7 @@ KEYWORDS="*"
 
 RDEPEND="chromeos-base/chromeos-cr50-scripts"
 
-CR50_NAME="cr50.r0.0.10.w0.0.21"
+CR50_NAME="cr50.r0.0.10.w0.0.22"
 TARBALL_NAME="${CR50_NAME}.tbz2"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}"
 S="${WORKDIR}"
