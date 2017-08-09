@@ -19,6 +19,7 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/autotest-server-deps
 	chromeos-base/autotest-web-frontend
+	chromeos-base/lucifer
 "
 
 DEPEND=""
@@ -63,4 +64,3 @@ src_test() {
 	# Run the autotest unit tests.
 	./utils/unittest_suite.py --debug || die "Autotest unit tests failed."
 }
-
