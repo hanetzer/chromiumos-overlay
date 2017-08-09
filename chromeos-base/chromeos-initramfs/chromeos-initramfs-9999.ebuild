@@ -45,7 +45,10 @@ FACTORY_SHIM_DEPENDS="
 
 # Packages required for building factory netboot installer initramfs.
 FACTORY_NETBOOT_DEPENDS="
+	app-arch/lbzip2
+	app-arch/pigz
 	app-arch/sharutils
+	app-misc/jq
 	app-shells/bash
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-installer
@@ -57,16 +60,19 @@ FACTORY_NETBOOT_DEPENDS="
 	dev-libs/openssl
 	dev-util/shflags
 	dev-util/xxd
+	net-misc/curl
 	net-misc/htpdate
 	net-misc/wget
 	sys-apps/coreutils
 	sys-apps/flashrom
+	sys-apps/iproute2
+	sys-apps/mosys
 	sys-apps/util-linux
 	sys-block/parted
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs
 	sys-libs/ncurses
-	sys-apps/iproute2
+	virtual/udev
 	"
 
 DEPEND="
