@@ -40,3 +40,6 @@ net-print/cups-filters -postscript
 # don't use J-Link. It requires upgrading libjaylink, which is not yet
 # supported by official Gentoo portage repository.
 dev-embedded/openocd	-jlink
+
+# We want to get rid of elfutils. Remove the utils is the first step.
+dev-libs/elfutils       -utils
