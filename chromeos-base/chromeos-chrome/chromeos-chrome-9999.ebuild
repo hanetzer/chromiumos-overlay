@@ -811,7 +811,7 @@ src_configure() {
 
 	# Use g++ as the linker driver.
 	export LD="${CXX}"
-	export LD_host=${CXX_host}
+	export LD_host=$(tc-getBUILD_CXX)
 
 	# USE=thinlto affects host build, we need to make changes below
 	# to make sure host package builds with thinlto.
