@@ -32,7 +32,7 @@ fi
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="f0d7258f4a2f5e6443011f7be011b5e9999c33f2" #r305593
+		EGIT_COMMIT="b07ae8ba81c69f8b1ad896536585c66295fde4f3" #r310330
 	else
 		EGIT_COMMIT="f0d7258f4a2f5e6443011f7be011b5e9999c33f2" #r305593
 	fi
@@ -87,4 +87,16 @@ src_install() {
 	rm -f "${ED}"usr/$(get_libdir)/clang/*/msan_blacklist.txt || die
 	rm -f "${ED}"usr/$(get_libdir)/clang/*/dfsan_abilist.txt || die
 	rm -f "${ED}"usr/$(get_libdir)/clang/*/dfsan_blacklist.txt || die
+
+	if use llvm-next ; then
+		local llvm_version=$(llvm-config --version)
+		local clang_version=${llvm_version%svn*}
+		clang_version=${clang_version%git*}
+		if [[ ${clang_version} == "5.0.0" ]] ; then
+			new_version="6.0.0"
+		else
+			new_version="5.0.0"
+		fi
+		cp -r  "${D}/usr/$(get_libdir)/clang/${clang_version}" "${D}/usr/$(get_libdir)/clang/${new_version}"
+	fi
 }

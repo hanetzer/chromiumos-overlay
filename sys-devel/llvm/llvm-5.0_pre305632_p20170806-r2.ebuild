@@ -21,15 +21,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"b903fddc562ccc622cabc4f08f5df2af90ceb251" # EGIT_COMMIT r305632
+		"56199e7135e10c344df07f1029b59903338e63e4" # EGIT_COMMIT r310337
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"f0d7258f4a2f5e6443011f7be011b5e9999c33f2" # EGIT_COMMIT r305593
+		"b07ae8ba81c69f8b1ad896536585c66295fde4f3" # EGIT_COMMIT r310330
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"30060bff5b4cb49e17c27672d1aa60e6bc7a95e8"  # EGIT_COMMIT r305619
+		"e21edc4d3c662f6bfc601a4975106f4d687edd9d"  # EGIT_COMMIT r310331
 )
 else
 EGIT_REPO_URIS=(
@@ -222,11 +222,6 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" b8c6e47bedeba554a913c71653d6ce778f398155 " # r305728
-	CHERRIES+=" 74dbb6c51a6706c959ed323673a7d1a9269720e0 " # r306346
-	CHERRIES+=" 9330fda9a0ef108d03334f20319508e409bb356d " # r307051
-	CHERRIES+=" 37cdc82da7d49a9fe3991eca89f44cd05d86fc55 " # r308997
-	CHERRIES+=" c9c456edbdc7004d08581528219ee59362e59e8e " # r309263
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -235,8 +230,6 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 5773fa6550fa9b33017d8d1e4ebdb96cf5eaf626 " # r305853
-	CHERRIES+=" f6fecfacea8ecde288b680a68823aaf1d08b5beb " # r309694
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -260,6 +253,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
+
+	# To workaround the upstream bug
+	# https://bugs.llvm.org/show_bug.cgi?id=33804
+	if use llvm-next ; then
+		epatch "${FILESDIR}"/llvm-6.0-loop-vector.patch
+	fi
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 
