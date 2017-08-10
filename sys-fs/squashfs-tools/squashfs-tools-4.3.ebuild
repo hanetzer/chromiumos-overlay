@@ -39,6 +39,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-mem-overflow.patch
 	epatch "${FILESDIR}"/${P}-xattrs.patch
 	epatch "${FILESDIR}"/${P}-file-map.patch
+	epatch "${FILESDIR}"/${P}-4k-align.patch
 }
 
 use10() { usex $1 1 0 ; }
