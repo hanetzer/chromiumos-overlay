@@ -215,13 +215,15 @@ approve_update() {
 install_update() {
   local tpm_auth_mechanism="$1"
   local firmware_file="$2"
+  local options="$3"
   (
     set +e
     infineon-firmware-updater \
       -update "${tpm_auth_mechanism}" \
       -access-mode 3 /dev/tpm0 \
       -firmware "${firmware_file}" \
-      -log /dev/stderr
+      -log /dev/stderr \
+      ${options}
     echo $? >/run/infineon-firmware-updater.status
   ) | (
     # The updater writes progress indication to stdout. We post-process the
@@ -308,6 +310,12 @@ main() {
     exit "${EXIT_CODE_LOW_BATTERY}"
   fi
 
+  local updater_options
+  read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
+  if [ "${vpd_param_dryrun}" = "1" ]; then
+    updater_options="-dry-run"
+  fi
+
   # This is the point of no return. Fingers crossed!
   # We write 0 and 100 before and after the updater runs as progress indicators
   # so consuming code can depend on them always showing up.
@@ -316,7 +324,8 @@ main() {
   vpd_params="$(update_vpd_params "${vpd_params}" 'image' "${fw_image_hash}")"
   vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
   dlog "Installing TPM firmware update ${firmware_file}"
-  if ! install_update "${tpm_auth_mechanism}" "${firmware_file}"; then
+  if ! install_update "${tpm_auth_mechanism}" "${firmware_file}" \
+                      "${updater_options}"; then
     exit "${EXIT_CODE_UPDATE_FAILED}"
   fi
   echo 100

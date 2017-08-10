@@ -24,6 +24,7 @@ S="${WORKDIR}"
 src_prepare() {
 	epatch "${FILESDIR}"/makefile-fixes.patch
 	epatch "${FILESDIR}"/unlimited-log-file-size.patch
+	epatch "${FILESDIR}"/dry-run-option.patch
 }
 
 src_configure() {
