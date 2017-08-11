@@ -17,14 +17,6 @@ UNIBOARD_DTB_INSTALL_PATH="/usr/share/chromeos-config/config.dtb"
 #  This is the installation directory of the device-tree source files.
 UNIBOARD_DTS_DIR="/usr/share/chromeos-config/dts"
 
-# We require that CROS_BOARD be defined to avoid using ALL_BOARDS here.
-[[ "${#CROS_BOARDS[@]}" -eq 1 ]] || die "uniboard eclass requires CROS_BOARDS"
-
-# We don't need need functions if there is no board.
-if [[ "${CROS_BOARDS}" != "none" ]]; then
-
-inherit cros-board
-
 # @FUNCTION: install_model_file
 # @USAGE:
 # @DESCRIPTION:
@@ -122,5 +114,3 @@ get_model_conf_value_noroot() {
 		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
 			2>/dev/null
 }
-
-fi
