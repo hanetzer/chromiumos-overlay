@@ -18,6 +18,7 @@ KEYWORDS="~*"
 RDEPEND="sys-fs/e2fsprogs
 	dev-lang/perl
 	sys-apps/attr
+	sys-apps/diffutils
 	sys-apps/util-linux
 	sys-devel/bc
 	sys-fs/xfsprogs
