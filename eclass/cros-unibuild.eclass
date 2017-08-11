@@ -58,24 +58,68 @@ install_private_model_file() {
 
 # @FUNCTION: get_model_conf_value
 # @USAGE: <model> <path> <prop>
-# @DESCRIPTION:
-# Obtain a configuration value for a given model.
 # @RETURN: value of the property, or empty if not found, in which
 # case the return code indicates failure.
+# @DESCRIPTION:
+# Obtain a configuration value for a given model.
 # @CODE
-# model name of model to lookup.
+# model: name of model to lookup.
+# path: path to config string, e.g. "/". Starts with "/".
+# prop: name of property to read (e.g. "wallpaper").
 # @CODE
-# path path to config string, e.g. "/".
-# @CODE
-# @prop name of property to read (e.g. "wallpaper").
 get_model_conf_value() {
 	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
 
 	local model="$1"
 	local path="$2"
 	local prop="$3"
-	fdtget "${ROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+	fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
 		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null
+}
+
+# @FUNCTION: get_model_list
+# @USAGE:
+# @DESCRIPTION:
+# Obtain a list of all of the models known to the build root DTB
+# @RETURN:
+# A newline-separated string representing the list of known models; may be empty
+get_model_list() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+		-l /chromeos/models 2>/dev/null
+}
+
+# @FUNCTION: get_each_model_conf_value_set
+# @USAGE: <path> <prop>
+# @RETURN:
+# IFS separated string representing unique value of the property
+# across all models or empty if not found.
+# @DESCRIPTION:
+# Obtain a a set of configuration values across all models. As a set,
+# contains only unique values.
+# @CODE
+# path: path to config string, e.g. "/". Starts with "/".
+# prop: name of property to read (e.g. "wallpaper").
+# @CODE
+get_each_model_conf_value_set() {
+	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
+
+	local path="$1"
+	local prop="$2"
+	local models=( $(get_model_list) )
+	local model
+	local values=()
+
+	for model in "${models[@]}"; do
+		values+=(
+			$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+			"/chromeos/models/${model}${path}" "${prop}" \
+			2>/dev/null)
+		)
+	done
+
+	printf '%s\n' "${values[@]}" | sort -u
 }
 
 # @FUNCTION: get_model_conf_value_noroot
@@ -89,11 +133,10 @@ get_model_conf_value() {
 # @RETURN: value of the property, or empty if not found, in which
 # case the return code indicates failure.
 # @CODE
-# model name of model to lookup.
+# model: name of model to lookup.
+# path: path to config string, e.g. "/". Starts with "/".
+# prop: name of property to read (e.g. "wallpaper").
 # @CODE
-# path path to config string, e.g. "/".
-# @CODE
-# @prop name of property to read (e.g. "wallpaper").
 get_model_conf_value_noroot() {
 	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
 
