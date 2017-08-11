@@ -28,7 +28,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}/util/nvidia/cbootimage"
 )
 
-inherit cros-board cros-workon toolchain-funcs
+inherit cros-board cros-workon toolchain-funcs cros-unibuild
 
 DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
@@ -70,6 +70,7 @@ DEPEND="
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	qca-framework? ( sys-boot/qca-framework )
+	unibuild? ( chromeos-base/chromeos-config )
 	"
 
 # Get the coreboot board config to build for.
@@ -89,6 +90,10 @@ get_board() {
 		fi
 	fi
 	echo "${board}"
+}
+
+get_model_build_targets() {
+	echo $( get_each_model_conf_value_set /firmware/build-targets coreboot )
 }
 
 set_build_env() {
@@ -210,7 +215,7 @@ src_prepare() {
 	if use unibuild; then
 		local model
 
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			create_config "${model}" "$(get_board)"
 		done
 	else
@@ -336,7 +341,7 @@ src_compile() {
 	if use unibuild; then
 		local model
 
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			set_build_env "${model}"
 			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${model}"
 			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}" \
@@ -400,7 +405,7 @@ src_install() {
 	local model
 
 	if use unibuild; then
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			set_build_env "${model}" "$(get_board)"
 			do_install ${model}
 		done
