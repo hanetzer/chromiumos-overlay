@@ -35,7 +35,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/protofiles-0.0.4:=
+	chromeos-base/protofiles:=
 	chromeos-base/system_api
 "
 
