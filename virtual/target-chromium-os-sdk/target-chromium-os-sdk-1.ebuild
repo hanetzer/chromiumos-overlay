@@ -440,6 +440,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for building chromeos-bootimage
 RDEPEND="${RDEPEND}
 	sys-apps/coreboot-utils
+	dev-embedded/coreboot-sdk
 	"
 
 # Host dependencies for virtualbox-guest-additions
