@@ -37,7 +37,6 @@ src_install() {
 
 	insinto "${INCLUDE_DIR}"
 	doins include/arc/camera_buffer_mapper.h
-	doins include/arc/camera_buffer_mapper_typedefs.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
