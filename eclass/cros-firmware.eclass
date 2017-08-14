@@ -126,6 +126,10 @@ EC_IMAGE_LOCATION=""
 PD_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
+_get_model_build_targets() {
+	get_each_model_conf_value_set_noroot /firmware/build-targets coreboot
+}
+
 # Output the URI associated with a file to download. This can be added to the
 # SRC_URI variable.
 # Portage will then take care of downloading these files before the src_unpack
@@ -280,7 +284,7 @@ cros-firmware_src_compile() {
 			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
 			-i "${DISTDIR}"
 		)
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(_get_model_build_targets); do
 			image_cmd+=( -m "${model}" )
 		done
 		einfo "Build ${BOARD_USE} firmware updater:" \
@@ -288,7 +292,25 @@ cros-firmware_src_compile() {
 		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
 			-o "${UPDATE_SCRIPT}" ||
 			die "Cannot pack firmware."
+
 		if use bootimage; then
+			image_cmd=(
+				-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
+				-i "${DISTDIR}"
+			)
+
+			for model in $(_get_model_build_targets); do
+				# If we're building unibuild bootimage at ToT,
+				# we won't have a relevant ec.bin/pd.bin target
+				# for every model because those are only
+				# available on a firmware branch. Make sure at
+				# least one succeeds.
+				if [[ -e "${root}/firmware/${model}/ec.bin" ]]
+				then
+					image_cmd+=( -m "${model}" )
+				fi
+			done
+
 			einfo "Updater for local fw"
 			# Tell pack_firmware.py where to find the files.
 			# 'MODEL' will be replaced with the model.
@@ -435,7 +457,7 @@ _expand_list() {
 cros-firmware_setup_source_unibuild() {
 	local extra_list image model overlay path uri uris
 
-	for model in ${FIRMWARE_UNIBUILD}; do
+	for model in $(_get_model_build_targets); do
 		overlay="$(cros-firmware_get_config bcs-overlay)"
 		overlay="${overlay#overlay-}"
 		for image in main-image main-rw-image ec-image pd-image; do

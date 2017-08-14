@@ -25,6 +25,8 @@ case "${EAPI:-0}" in
 *) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
+inherit cros-unibuild
+
 EC_BOARD_USE_PREFIX="ec_firmware_"
 EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
 
@@ -96,17 +98,7 @@ get_ec_boards()
 	local ec_board
 	if use unibuild; then
 		# At present USE=unibuild is optional for all boards.
-		# TODO(sjg): Should we be trying to enable multiple 'use'
-		# flags here? If so, we would end up enabling use flags for
-		# several models (e.g. reef when building reef
-		# with USE=unibuild. But then where would we set these 'use'
-		# flags? It should presumably be done in make.conf, but then
-		# we need to set USE=unibuild there, meaning it is no-longer
-		# optional.
-		# On the other hand, doing it this way means that (I think)
-		# we cannot detect a change like adding a new model to reef,
-		# since there is no change in the defined USE flags.
-		EC_BOARDS+=(${EC_FIRMWARE_UNIBUILD} ${EC_FIRMWARE_EXTRA_UNIBUILD})
+		EC_BOARDS+=($(get_model_build_targets) ${EC_FIRMWARE_EXTRA_UNIBUILD})
 	else
 		for ec_board in ${IUSE_FIRMWARES}; do
 			use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
@@ -122,4 +114,8 @@ get_ec_boards()
 		EC_BOARDS=(bds)
 	fi
 	einfo "Building for boards: ${EC_BOARDS[*]}"
+}
+
+get_model_build_targets() {
+	echo $(get_each_model_conf_value_set /firmware/build-targets ec)
 }

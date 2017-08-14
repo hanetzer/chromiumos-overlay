@@ -90,13 +90,35 @@ get_model_list() {
 		-l /chromeos/models 2>/dev/null
 }
 
+# @FUNCTION: get_model_list_noroot
+# @USAGE:
+# @DESCRIPTION:
+# Obtain a list of all of the models known to the build DTB in files/
+# @RETURN:
+# A newline-separated string representing the list of known models; may be empty
+get_model_list_noroot() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	# This function is called before FILESDIR is set so figure it out from
+	# the ebuild filename.
+	local filesdir="$(dirname "${EBUILD}")/files"
+
+	# We are not allowed to access the ROOT directory here, so compile the
+	# model fragment on the fly and pull out the value we want.
+	echo "/dts-v1/; / { chromeos { family: family { }; " \
+		"models: models { }; }; };" |
+		cat - "${filesdir}/model.dtsi" |
+		dtc -O dtb |
+		fdtget - -l "/chromeos/models" 2>/dev/null
+}
+
 # @FUNCTION: get_each_model_conf_value_set
 # @USAGE: <path> <prop>
 # @RETURN:
 # IFS separated string representing unique value of the property
 # across all models or empty if not found.
 # @DESCRIPTION:
-# Obtain a a set of configuration values across all models. As a set,
+# Obtain a set of configuration values across all models. As a set,
 # contains only unique values.
 # @CODE
 # path: path to config string, e.g. "/". Starts with "/".
@@ -113,9 +135,38 @@ get_each_model_conf_value_set() {
 
 	for model in "${models[@]}"; do
 		values+=(
-			$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
-			"/chromeos/models/${model}${path}" "${prop}" \
+			$(get_model_conf_value "${model}" "${path}" "${prop}" \
 			2>/dev/null)
+		)
+	done
+
+	printf '%s\n' "${values[@]}" | sort -u
+}
+
+# @FUNCTION: get_each_model_conf_value_set_noroot
+# @USAGE: <path> <prop>
+# @RETURN:
+# IFS separated string representing unique value of the property
+# across all models in the files/ directory or empty if not found.
+# @DESCRIPTION:
+# Obtain a set of configuration values across all models. As a set,
+# contains only unique values.
+# @CODE
+# path: path to config string, e.g. "/". Starts with "/".
+# prop: name of property to read (e.g. "wallpaper").
+# @CODE
+get_each_model_conf_value_set_noroot() {
+	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
+	local path="$1"
+	local prop="$2"
+	local models=( $(get_model_list_noroot) )
+	local model
+	local values=()
+
+	for model in "${models[@]}"; do
+		values+=(
+			$(get_model_conf_value_noroot "${model}" "${path}" \
+			"${prop}" 2>/dev/null)
 		)
 	done
 
