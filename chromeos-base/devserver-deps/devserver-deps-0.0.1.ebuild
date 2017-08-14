@@ -19,6 +19,7 @@ RDEPEND="
 	dev-python/cherrypy
 	net-misc/gsutil
 	dev-python/rtslib-fb
+	chromeos-base/update_payload
 "
 
 DEPEND=""

@@ -51,7 +51,6 @@ src_install() {
 			gmergefs
 			image_to_live.sh
 			netboot_firmware_settings.py
-			paycheck.py
 			strip_package
 			ssh_no_update
 			willis
