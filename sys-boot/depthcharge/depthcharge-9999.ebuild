@@ -14,7 +14,10 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync unibuild"
 
-DEPEND="sys-boot/libpayload"
+DEPEND="
+	sys-boot/libpayload
+	unibuild? ( chromeos-base/chromeos-config )
+"
 
 CROS_WORKON_LOCALNAME=("../platform/depthcharge" "../platform/vboot_reference")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
@@ -23,7 +26,11 @@ CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 # Don't strip to ease remote GDB use (cbfstool strips final binaries anyway)
 STRIP_MASK="*"
 
-inherit cros-workon cros-board toolchain-funcs
+inherit cros-workon cros-board toolchain-funcs cros-unibuild
+
+get_model_build_targets() {
+	echo $(get_each_model_conf_value_set /firmware/build-targets depthcharge)
+}
 
 src_configure() {
 	cros-workon_src_configure
@@ -116,7 +123,7 @@ src_compile() {
 	if use unibuild; then
 		local model
 
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			make_depthcharge "${model}" "${model}"
 		done
 	else
@@ -157,7 +164,7 @@ src_install() {
 	local model
 
 	if use unibuild; then
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			do_install "${model}" "${model}"
 		done
 	else
