@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit cros-debug
+inherit cros-debug cros-unibuild
 
 DESCRIPTION="ChromeOS firmware image builder"
 HOMEPAGE="http://www.chromium.org"
@@ -35,6 +35,7 @@ DEPEND="
 	cb_legacy_seabios? ( sys-boot/chromeos-seabios )
 	sys-boot/coreboot
 	sys-boot/depthcharge
+	unibuild? ( chromeos-base/chromeos-config )
 	"
 
 # Directory where the generated files are looked for and placed.
@@ -58,6 +59,10 @@ prepare_legacy_image() {
 	else
 		einfo "No legacy boot payloads specified."
 	fi
+}
+
+get_model_build_targets() {
+	echo $(get_each_model_conf_value_set /firmware/build-targets coreboot)
 }
 
 do_cbfstool() {
@@ -278,7 +283,7 @@ src_compile() {
 	if use unibuild; then
 		local model
 
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			build_images "${froot}/${model}" "${model}"
 		done
 	else
@@ -291,7 +296,7 @@ src_install() {
 	if use unibuild; then
 		local model
 
-		for model in ${FIRMWARE_UNIBUILD}; do
+		for model in $(get_model_build_targets); do
 			doins "${model}"/image-${model}*.bin
 		done
 	else
