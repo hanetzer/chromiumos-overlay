@@ -19,5 +19,4 @@ S="${WORKDIR}"
 src_install() {
 	insinto /opt/google/cr50/firmware
 	newins "${CR50_NAME}"/*.bin.prod cr50.bin.prod
-	newins "${CR50_NAME}"/*.bin.dev cr50.bin.dev
 }
