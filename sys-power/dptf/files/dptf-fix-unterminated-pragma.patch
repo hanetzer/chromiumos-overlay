@@ -1,0 +1,13 @@
+This fixes the warning
+unterminated '#pragma pack (push, ...)' at end of file [-Werror,-Wpragma-pack]
+--- ESIF/Products/ESIF_UF/Sources/esif_uf_shell.c
++++ ESIF/Products/ESIF_UF/Sources/esif_uf_shell.c
+@@ -164,6 +164,8 @@
+ 	char mask[8 + 1];	// "--------"
+ } config_flags_str_t;
+ 
++#pragma pack(pop)
++
+ // Convert DataVault Header or Item Flags to a readable mask string ("SC-FNRXP")
+ static config_flags_str_t config_flags_str(esif_flags_t flags)
+ {

@@ -28,6 +28,12 @@ DEPEND="sys-apps/dbus
 	sys-libs/ncurses sys-libs/readline"
 RDEPEND="${DEPEND}"
 
+src_prepare() {
+	# This fixes a warning unterminated '#pragma.
+	# See crbug.com/755573
+	epatch "${FILESDIR}"/dptf-fix-unterminated-pragma.patch
+}
+
 src_configure() {
 	# cmake configuration for DPTF policy shared libraries
 	local mycmakeargs=( -DCHROMIUM_BUILD=YES )
