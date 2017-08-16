@@ -266,6 +266,11 @@ usetf()  { usex $1 true false ; }
 use_goma() {
 	[[ "${USE_GOMA:-$(usetf goma)}" == "true" ]]
 }
+use_goma_log() {
+	use_goma && \
+	[[ -n "${GOMA_TMP_DIR}" && -n "${GLOG_log_dir}" && \
+		"${GLOG_log_dir}" == "${GOMA_TMP_DIR}"* ]]
+}
 
 set_build_args() {
 	BUILD_ARGS=(
@@ -902,8 +907,27 @@ chrome_make() {
 		fi
 		set -- -j $((num_parallel < j_limit ? num_parallel : j_limit)) "$@"
 	fi
-	PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
-		${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+	local command=(
+		${ENINJA}
+		${MAKEOPTS}
+		-C "${BUILD_OUT_SYM}/${BUILDTYPE}"
+		$(usex verbose -v "")
+		"$@"
+	)
+	# If goma is used, log the command, cwd and env vars, which will be
+	# uploaded to the logging server.
+	if use_goma_log; then
+		env --null > "${GLOG_log_dir}/ninja_env"
+		pwd > "${GLOG_log_dir}/ninja_cwd"
+		echo "${command[@]}" > "${GLOG_log_dir}/ninja_command"
+	fi
+	PATH=${PATH}:/home/$(whoami)/depot_tools "${command[@]}"
+	local ret=$?
+	if use_goma_log; then
+		echo "${ret}" > "${GLOG_log_dir}/ninja_exit"
+		cp -p "${BUILD_OUT_SYM}/${BUILDTYPE}/.ninja_log" "${GLOG_log_dir}/ninja_log"
+	fi
+	[[ "${ret}" -eq 0 ]] || die
 }
 
 src_compile() {
