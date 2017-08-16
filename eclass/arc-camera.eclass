@@ -46,6 +46,8 @@ EOF
 			local usb_path="${line#*=}"
 			usb_path_table[${index}]="${usb_path}"
 			symlink_table[${index}]="${symlink}"
+		elif [[ ${line} == *'camera1.lens_facing=1'* ]]; then
+			die "Second camera should be front camera"
 		fi
 	done < "${config_file}"
 
