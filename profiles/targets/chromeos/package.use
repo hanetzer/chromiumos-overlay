@@ -5,7 +5,6 @@ app-accessibility/brltty	-beeper -contracted-braille -doc -fm -gpm -java -learn-
 app-admin/logrotate	-cron
 app-admin/rsyslog	-gcrypt -ssl -zlib
 app-benchmarks/i7z	-X
-app-crypt/tpm-tools	pkcs11
 app-i18n/zinnia		-perl
 app-editors/nano	-unicode
 app-editors/qemacs	-X
