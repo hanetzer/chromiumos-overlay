@@ -33,6 +33,7 @@ IUSE="
 	disable_webaudio
 	drm_atomic
 	edge_touch_filtering
+	eve
 	fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
 	gpu_sandbox_start_after_initialization
