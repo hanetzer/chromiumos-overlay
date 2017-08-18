@@ -13,7 +13,6 @@ KEYWORDS="*"
 
 DEPEND="!chromeos-base/chromeos-factory"
 RDEPEND="
-	chromeos-base/chromeos-hwid
 	chromeos-base/factory
 	${DEPEND}
 "
