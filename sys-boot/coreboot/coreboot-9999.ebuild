@@ -41,9 +41,9 @@ IUSE="${IUSE} amd_cpu coreboot-sdk"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco
-	fizz fox glados grunt kahlee kunimitsu link lumpy nami nyan panther
-	parrot peppy poppy rambi samus sklrvp slippy stout stout32
-	strago stumpy urara variant-peach-pit
+	fizz fox glados glkrvp grunt kahlee kunimitsu link lumpy nami
+	nyan panther parrot peppy poppy rambi samus sklrvp slippy
+	stout stout32 strago stumpy urara variant-peach-pit
 )
 
 DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
