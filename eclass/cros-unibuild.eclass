@@ -73,8 +73,26 @@ get_model_conf_value() {
 	local model="$1"
 	local path="$2"
 	local prop="$3"
-	fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
-		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null
+	local r
+	r=$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null)
+	local ret=$?
+
+	if [[ ${ret} -ne 0 ]]; then
+		# Terrible hack to work around fdtget not supporting phandle.
+		# When it does, we can remove this and just follow the shares
+		# phandle.
+		if [[ "${path}" =~ ^/firmware ]]; then
+			fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+			"/chromeos/family/firmware/shared${path#/firmware}" \
+			"${prop}" 2>/dev/null
+			return $?
+		fi
+
+		return $ret
+	fi
+
+	echo "${r}"
 }
 
 # @FUNCTION: get_model_list
@@ -190,21 +208,43 @@ get_each_model_conf_value_set_noroot() {
 # @CODE
 get_model_conf_value_noroot() {
 	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
+	local model="$1"
+	local path="$2"
+	local prop="$3"
 
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local filesdir="$(dirname "${EBUILD}")/files"
 
-	local model="$1"
-	local path="$2"
-	local prop="$3"
-
 	# We are not allowed to access the ROOT directory here, so compile the
 	# model fragment on the fly and pull out the value we want.
-	echo "/dts-v1/; / { chromeos { family: family { }; " \
+	local r
+	r=$(
+		echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
 		cat - "${filesdir}/model.dtsi" |
 		dtc -O dtb |
 		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
-			2>/dev/null
+		2>/dev/null
+	)
+	local ret=$?
+
+	if [[ ${ret} -ne 0 ]]; then
+		# Terrible hack to work around fdtget not supporting phandle.
+		# When it does, we can remove this and just follow the shares
+		# phandle.
+		if [[ "${path}" =~ ^/firmware ]]; then
+			echo "/dts-v1/; / { chromeos { family: family { }; " \
+			"models: models { }; }; };" |
+			cat - "${filesdir}/model.dtsi" |
+			dtc -O dtb | fdtget - \
+			"/chromeos/family/firmware/shared${path#/firmware}" \
+			"${prop}" 2>/dev/null
+			return $?
+		fi
+
+		return ${ret}
+	fi
+
+	echo "${r}"
 }
