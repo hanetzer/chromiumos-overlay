@@ -231,9 +231,9 @@ add_ec() {
 	local ecroot="$3"
 
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c lzma \
-		-f "${ecroot}/ec.RW.bin" -n "${name}" || die
+		-f "${ecroot}/ec.RW.bin" -n "${name}" || return 1
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c none \
-		-f "${ecroot}/ec.RW.hash" -n "${name}.hash" || die
+		-f "${ecroot}/ec.RW.hash" -n "${name}.hash" || return 1
 }
 
 add_fw_blob() {
@@ -285,10 +285,48 @@ make_coreboot() {
 
 	if use cros_ec; then
 		add_ec "${builddir}/coreboot.rom" "ecrw" "${froot}"
+
+		if [[ $? -ne 0 ]]; then
+			# This might be a unibuild model which only exists on
+			# other firmware branches. Only die if this is not
+			# unibuild.
+			if ! use unibuild; then
+				die "Could not add EC in '${froot}' to Coreboot"
+			fi
+
+			# Try to find another EC in this family to install (for
+			# ToT build validation). Technically, this may not work
+			# for the currently-targetted model but this does at
+			# least validate that cbfstool properly incorporates
+			# a blob for this model.
+			local ec_found=false
+			local other_model
+
+			for other_model in $(get_model_list); do
+				local other_froot="${SYSROOT}/firmware\
+/${other_model}"
+
+				if [[ -e "${other_froot}/ec.RW.bin" ]]; then
+					ec_found=true
+					add_ec "${builddir}/coreboot.rom" \
+						"ecrw" \
+						"${other_froot}" || die
+					break
+				fi
+			done
+
+			if [[ ${ec_found} == false ]]; then
+				die "We were not able to find an EC target \
+to include from the set '${get_model_list[*]}'"
+			fi
+		fi
 	fi
 
 	if use pd_sync; then
-		add_ec "${builddir}/coreboot.rom" "pdrw" "${froot}/${PD_FIRMWARE}"
+		add_ec "${builddir}/coreboot.rom" "pdrw" \
+			"${froot}/${PD_FIRMWARE}" ||
+			die "Could not add PD in '${froot}/${PD_FIRMWARE}' \
+to Coreboot"
 	fi
 
 	local blob
