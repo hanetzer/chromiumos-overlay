@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-inherit eutils linux-info udev user toolchain-funcs libtool
+inherit eutils linux-info udev toolchain-funcs libtool
 
 MY_PN=${PN/3g/-3g}
 MY_P=${MY_PN}_ntfsprogs-${PV}
@@ -50,12 +50,6 @@ pkg_setup() {
 		FUSE_FS_WARNING="You need to have FUSE module built to use ntfs-3g"
 		linux-info_pkg_setup
 	fi
-
-	# Chrome OS runs the ntfs-3g process under the 'ntfs-3g' user and group,
-	# which are created here in pkg_setup such that src_install can change
-	# the ntfs-3g binary to be owned by the 'ntfs-3g' group.
-	enewuser "ntfs-3g"
-	enewgroup "ntfs-3g"
 }
 
 src_prepare() {
