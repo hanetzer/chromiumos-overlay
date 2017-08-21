@@ -27,6 +27,7 @@ IUSE_TESTS="
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
 	+tests_platform_CrosDisksFormat
+	+tests_platform_CrosDisksRename
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
