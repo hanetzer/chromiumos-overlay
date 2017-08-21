@@ -75,8 +75,8 @@ ARC_ARCH_UAPI=('x86' 'arm' 'x86')
 # 2. The dir to which the artifacts tarball (downloaded from go/a-b) was
 # extracted. Pick a -userdebug build.
 # Now we support two platforms: 32-bit arm and 32/64-bit x86.
-: "${ARTIFACTS_DIR_ARM:="${HOME}/android/arm_target_files/"}"
-: "${ARTIFACTS_DIR_X86_64:="${HOME}/android/x86_64_target_files/"}"
+: "${ARTIFACTS_DIR_ARM:="${ANDROID_TREE}/arm_target_files/"}"
+: "${ARTIFACTS_DIR_X86_64:="${ANDROID_TREE}/x86_64_target_files/"}"
 
 ARTIFACTS_DIR_ARRAY=(
 	"${ARTIFACTS_DIR_X86_64}"
