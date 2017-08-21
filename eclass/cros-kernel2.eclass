@@ -923,12 +923,12 @@ kmake() {
 	local kcflags="${KCFLAGS}"
 	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
 
-	cw_emake \
-		ARCH=${kernel_arch} \
+	ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}-" \
-		O="$(cros-workon_get_build_dir)" \
 		KCFLAGS="${kcflags}" \
+		cw_emake \
+		O="$(cros-workon_get_build_dir)" \
 		"$@"
 }
 
