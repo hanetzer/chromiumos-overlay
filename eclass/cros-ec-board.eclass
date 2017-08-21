@@ -98,7 +98,7 @@ get_ec_boards()
 	local ec_board
 	if use unibuild; then
 		# At present USE=unibuild is optional for all boards.
-		EC_BOARDS+=($(get_model_build_targets) ${EC_FIRMWARE_EXTRA_UNIBUILD})
+		EC_BOARDS+=($(get_model_build_targets) ${EC_FIRMWARE_EXTRA})
 	else
 		for ec_board in ${IUSE_FIRMWARES}; do
 			use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
