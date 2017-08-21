@@ -1,14 +1,26 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
-CROS_WORKON_OUTOFTREE_BUILD=1
+EAPI="5"
+CROS_WORKON_LOCALNAME=(
+	"platform2"
+	"platform/mtpd"
+)
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform2"
+	"chromiumos/platform/mtpd"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform2"
+	"${S}/platform/mtpd"
+)
+PLATFORM_SUBDIR="mtpd"
+PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-debug cros-workon libchrome systemd user
+inherit cros-workon platform systemd user
 
 DESCRIPTION="MTP daemon for Chromium OS"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/mtpd/"
 SRC_URI=""
 
 LICENSE="BSD-Google"
@@ -20,7 +32,7 @@ RDEPEND="
 	chromeos-base/libbrillo
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
-	dev-libs/protobuf
+	dev-libs/protobuf:=
 	media-libs/libmtp
 	virtual/udev
 "
@@ -28,30 +40,14 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
 
-src_prepare() {
-	cros-workon_src_prepare
-}
-
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cros-workon_src_compile
-}
-
-src_test() {
-	if ! use x86 && ! use amd64 ; then
-		einfo Skipping unit tests on non-x86 platform
-	else
-		# Needed for `cros_run_unit_tests`.
-		cros-workon_src_test
-	fi
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	# look in src/platform
+	S="${s}/platform/mtpd"
 }
 
 src_install() {
-	cros-workon_src_install
 	exeinto /opt/google/mtpd
 	doexe "${OUT}"/mtpd
 
@@ -70,7 +66,11 @@ src_install() {
 
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.Mtpd.conf
+	doins dbus/org.chromium.Mtpd.conf
+}
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}/mtpd_testrunner"
 }
 
 pkg_preinst() {
