@@ -12,7 +12,8 @@ KEYWORDS="*"
 IUSE=""
 
 # The RDEPEND setting reflects what is installed into the SYSROOT.
-RDEPEND="!!chromeos-base/arc-build"
+RDEPEND="!!chromeos-base/arc-build
+	!!chromeos-base/arc-build-master"
 DEPEND=""
 
 S=${WORKDIR}
