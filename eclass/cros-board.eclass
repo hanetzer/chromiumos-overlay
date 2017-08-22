@@ -73,6 +73,7 @@ ALL_BOARDS=(
 	candy
 	caroline
 	caroline-arc64
+	caroline-bertha
 	caroline-userdebug
 	cardhu
 	cave
