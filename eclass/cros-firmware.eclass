@@ -284,7 +284,7 @@ cros-firmware_src_compile() {
 			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
 			-i "${DISTDIR}"
 		)
-		for model in $(_get_model_build_targets); do
+		for model in $(get_model_list_noroot); do
 			image_cmd+=( -m "${model}" )
 		done
 		einfo "Build ${BOARD_USE} firmware updater:" \
@@ -299,7 +299,7 @@ cros-firmware_src_compile() {
 				-i "${DISTDIR}"
 			)
 
-			for model in $(_get_model_build_targets); do
+			for model in $(get_model_list_noroot); do
 				# If we're building unibuild bootimage at ToT,
 				# we won't have a relevant ec.bin/pd.bin target
 				# for every model because those are only
@@ -457,7 +457,7 @@ _expand_list() {
 cros-firmware_setup_source_unibuild() {
 	local extra_list image model overlay path uri uris
 
-	for model in $(_get_model_build_targets); do
+	for model in $(get_model_list_noroot); do
 		overlay="$(cros-firmware_get_config bcs-overlay)"
 		overlay="${overlay#overlay-}"
 		for image in main-image main-rw-image ec-image pd-image; do
