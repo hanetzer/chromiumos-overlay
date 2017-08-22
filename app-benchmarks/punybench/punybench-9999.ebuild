@@ -40,7 +40,15 @@ src_compile() {
 	emake BOARD="${PUNYARCH}"
 }
 
+# Exclude punybench from clang build.  It uses the -pg flag
+# which causes clang, by default, to generate the symbol
+# "mcount", which the linker cannot resolve.  Passing
+# "-meabi gnu" fixes that issue by causing clang to generate
+# "__gnu_mcount_nc" instead, but LLVM's current implementation
+# of that is incorrect and can corrupt the stack pointer.
+# (see https://bugs.llvm.org/show_bug.cgi?id=33845)
 src_prepare() {
+	cros_use_gcc
 	filter_clang_syntax
 	cros-workon_src_prepare
 }
