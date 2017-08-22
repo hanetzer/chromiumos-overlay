@@ -45,6 +45,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-tr-lira-sign.patch
 	"${FILESDIR}"/${P}-fr-keypad-comma.patch
 	"${FILESDIR}"/${P}-us-intl-pc.patch
+	"${FILESDIR}"/${P}-bg-101.patch
 )
 
 use parrot && PATCHES+=( "${FILESDIR}"/${P}-parrot-euro-sign.patch )
