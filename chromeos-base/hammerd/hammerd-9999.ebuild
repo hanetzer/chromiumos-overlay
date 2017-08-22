@@ -36,7 +36,7 @@ pkg_preinst() {
 
 src_install() {
 	dobin "${OUT}/hammerd"
-	udev_dorules 99-hammerd.rules
+	udev_dorules udev/99-hammerd.rules
 
 	# Install upstart config.
 	insinto /etc/init
