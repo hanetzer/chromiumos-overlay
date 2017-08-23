@@ -17,7 +17,6 @@ IUSE="fwserial"
 
 RDEPEND=""
 DEPEND="
-	sys-apps/coreboot-utils
 	sys-boot/coreboot
 "
 

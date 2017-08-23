@@ -91,9 +91,6 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="detachable_ui"
-DEPEND="
-	sys-apps/coreboot-utils
-"
 
 src_prepare() {
 	export BOARD="$(get_current_board_with_variant "${ARCH}-generic")"

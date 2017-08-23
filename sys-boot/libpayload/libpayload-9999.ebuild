@@ -15,9 +15,6 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="coreboot-sdk"
 
-RDEPEND=""
-DEPEND=""
-
 CROS_WORKON_LOCALNAME="coreboot"
 
 # Don't strip to ease remote GDB use (cbfstool strips final binaries anyway)

@@ -11,12 +11,7 @@ DESCRIPTION="Open Source implementation of X86 BIOS"
 HOMEPAGE="http://www.coreboot.org/SeaBIOS"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
-
-RDEPEND=""
-DEPEND="
-	sys-apps/coreboot-utils
-"
+KEYWORDS="-* ~amd64 ~x86"
 
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
