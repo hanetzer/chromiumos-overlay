@@ -28,13 +28,11 @@ IUSE="
 	cfm_enabled_device
 	cros-debug
 	disable_flash_hw_video_decode
-	disable_login_animations
 	disable_low_latency_audio
 	disable_webaudio
 	drm_atomic
 	edge_touch_filtering
 	eve
-	fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
 	gpu_sandbox_start_after_initialization
 	gpu_sandbox_start_early
