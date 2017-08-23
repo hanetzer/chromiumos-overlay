@@ -78,21 +78,22 @@ get_model_conf_value() {
 		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null)
 	local ret=$?
 
-	if [[ ${ret} -ne 0 ]]; then
-		# Terrible hack to work around fdtget not supporting phandle.
-		# When it does, we can remove this and just follow the shares
-		# phandle.
-		if [[ "${path}" =~ ^/firmware ]]; then
+	if [[ ${ret} -ne 0 && "${path}" =~ ^/firmware ]]; then
+		# The value is missing; is it available at a firmware shares
+		# phandle?
+		local share
+		share=$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" -f \
+			"/chromeos/models/${model}/firmware" shares 2>/dev/null)
+
+		if [[ $? -eq 0 ]]; then
 			fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
-			"/chromeos/family/firmware/shared${path#/firmware}" \
-			"${prop}" 2>/dev/null
+			"${share}${path#/firmware}" "${prop}" 2>/dev/null
 			return $?
 		fi
-
-		return $ret
 	fi
 
 	echo "${r}"
+	return ${ret}
 }
 
 # @FUNCTION: get_model_list
@@ -208,6 +209,7 @@ get_each_model_conf_value_set_noroot() {
 # @CODE
 get_model_conf_value_noroot() {
 	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
+
 	local model="$1"
 	local path="$2"
 	local prop="$3"
@@ -229,22 +231,29 @@ get_model_conf_value_noroot() {
 	)
 	local ret=$?
 
-	if [[ ${ret} -ne 0 ]]; then
-		# Terrible hack to work around fdtget not supporting phandle.
-		# When it does, we can remove this and just follow the shares
-		# phandle.
-		if [[ "${path}" =~ ^/firmware ]]; then
+	if [[ ${ret} -ne 0 && "${path}" =~ ^/firmware ]]; then
+		# The value is missing; is it available at a firmware shares
+		# phandle?
+		local share
+		share=$(
+			echo "/dts-v1/; / { chromeos { family: family { }; " \
+			"models: models { }; }; };" |
+			cat - "${filesdir}/model.dtsi" |
+			dtc -O dtb |
+			fdtget - -f \
+			"/chromeos/models/${model}/firmware" shares 2>/dev/null
+		)
+
+		if [[ $? -eq 0 ]]; then
 			echo "/dts-v1/; / { chromeos { family: family { }; " \
 			"models: models { }; }; };" |
 			cat - "${filesdir}/model.dtsi" |
 			dtc -O dtb | fdtget - \
-			"/chromeos/family/firmware/shared${path#/firmware}" \
-			"${prop}" 2>/dev/null
+			"${share}${path#/firmware}" "${prop}" 2>/dev/null
 			return $?
 		fi
-
-		return ${ret}
 	fi
 
 	echo "${r}"
+	return ${ret}
 }
