@@ -30,8 +30,6 @@ IUSE="-asan +seccomp systemd test"
 
 RDEPEND="
 	chromeos-base/libbrillo
-	dev-libs/dbus-c++
-	>=dev-libs/glib-2.30
 	dev-libs/protobuf:=
 	media-libs/libmtp
 	virtual/udev
