@@ -104,6 +104,7 @@ platform_pkg_test() {
 	local tests=(
 		chaps_test
 		chaps_service_test
+		dbus_test
 		slot_manager_test
 		session_test
 		object_test
