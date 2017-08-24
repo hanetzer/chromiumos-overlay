@@ -144,9 +144,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3163.60_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3163.60_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3163.60_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-61.0.3163.61_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-61.0.3163.61_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-61.0.3163.61_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -196,6 +196,7 @@ RDEPEND="${RDEPEND}
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/harfbuzz
+	media-libs/libsync
 	x11-libs/libdrm
 	ozone_platform_gbm? ( media-libs/minigbm )
 	media-libs/libpng
@@ -286,6 +287,7 @@ set_build_args() {
 		# use_system_minigbm is set below.
 		use_system_harfbuzz=true
 		use_system_freetype=true
+		use_system_libsync=true
 		use_cups=$(usetf cups)
 
 		# Clang features.
