@@ -10,7 +10,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="hammerd"
 
-inherit cros-workon platform udev user
+inherit cros-workon platform user
 
 DESCRIPTION="A daemon to update EC firmware of hammer, the base of the detachable."
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/hammerd/"
@@ -36,7 +36,6 @@ pkg_preinst() {
 
 src_install() {
 	dobin "${OUT}/hammerd"
-	udev_dorules udev/99-hammerd.rules
 
 	# Install upstart config.
 	insinto /etc/init
