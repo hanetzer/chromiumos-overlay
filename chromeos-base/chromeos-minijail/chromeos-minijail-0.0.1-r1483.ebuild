@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="1617f637380ee38039b1a650d4f417c11d8dcb5e"
-CROS_WORKON_TREE="9b1236bf9f60396a538e63d6f13b4e9ca1dc1176"
+
+CROS_WORKON_COMMIT="eaab420df53d5fc6a724aad93895d6ebc12fc423"
+CROS_WORKON_TREE="c3f4d6d81d16ab6000c25666d5525af5ad88cdf7"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
