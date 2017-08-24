@@ -40,6 +40,11 @@ src_install() {
 	# Install upstart config.
 	insinto /etc/init
 	doins init/*.conf
+
+	# Install exposed API.
+	dolib.so "${OUT}"/lib/libhammerd-api.so
+	insinto /usr/include/hammerd/
+	doins hammerd_api.h
 }
 
 platform_pkg_test() {
