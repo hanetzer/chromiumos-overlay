@@ -74,6 +74,7 @@ ALL_BOARDS=(
 	caroline
 	caroline-arc64
 	caroline-bertha
+	caroline-ndktranslation
 	caroline-userdebug
 	cardhu
 	cave
@@ -111,6 +112,7 @@ ALL_BOARDS=(
 	enguarde
 	#envoy-jerry
 	eve
+	eve-userdebug
 	expresso
 	falco
 	falco_gles
