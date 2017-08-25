@@ -42,6 +42,7 @@ src_install() {
 
 	insinto /etc/init
 	doins "${FILESDIR}"/tpm-firmware-update.conf
+	doins "${FILESDIR}"/send-tpm-firmware-update-metrics.conf
 	exeinto /usr/share/cros/init
 	doexe "${FILESDIR}"/tpm-firmware-update.sh
 }

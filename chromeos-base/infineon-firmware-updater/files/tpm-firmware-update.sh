@@ -46,8 +46,10 @@ run_updater() {
     fi
   ) >/dev/null
 
+  # Read and return the updater status code. Leave the file around so the
+  # send-tpm-firmware-update-metrics job can pick it up later for inclusion in
+  # metrics.
   local status="$(cat /run/tpm-firmware-updater.status)"
-  rm /run/tpm-firmware-updater.status
   echo "${status:-1}"
 }
 
