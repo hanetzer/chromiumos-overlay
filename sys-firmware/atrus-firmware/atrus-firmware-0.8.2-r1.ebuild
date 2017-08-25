@@ -1,1 +1,0 @@
-atrus-firmware-0.8.2.ebuild
