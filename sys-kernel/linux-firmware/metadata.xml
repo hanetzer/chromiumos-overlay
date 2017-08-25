@@ -39,7 +39,7 @@
 		Install KBL firmware files for i915 driver
 	</flag>
 	<flag name='linux_firmware_ipu3_fw'>
-		Install KBL IPU3 Camera firmware
+		Install KBL IPU3 firmware to enable MIPI camera
 	</flag>
 	<flag name='linux_firmware_ath10k'>
 		Install all firmware files for ath10k driver

@@ -91,7 +91,7 @@ LICENSE="
 	linux_firmware_i915_bxt? ( LICENSE.i915 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_i915_kbl? ( LICENSE.i915 )
-	linux_firmware_ipu3_fw? ( LICENSE.ipu3_fw )
+	linux_firmware_ipu3_fw? ( LICENSE.ipu3_firmware )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
@@ -164,7 +164,8 @@ src_install() {
 	use_fw i915_bxt && doins_subdir i915/bxt*
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw i915_kbl && doins_subdir i915/kbl*
-	use_fw ipu3_fw && doins ipu3-fw.bin
+	# ipu3-fw.bin is a symlink to irci_*.bin
+	use_fw ipu3_fw && doins intel/irci_* intel/ipu3-fw.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
