@@ -123,7 +123,7 @@ main() {
       flag="0xff7f"
       ;;
     "mp"* | "pvt"*)
-      flag="0xff80"
+      flag="0x7f80"
       ;;
     *)
       die "Unknown phase (${phase})"
