@@ -28,6 +28,7 @@ S=${WORKDIR}/${PN}-${P}
 
 src_prepare() {
 	epatch "${FILESDIR}/1.29-add-grab-flag.patch"
+	epatch "${FILESDIR}/1.31-add-safe-flag.patch"
 	eautoreconf
 }
 

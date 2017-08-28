@@ -1,0 +1,94 @@
+diff --git a/evtest.c b/evtest.c
+index 2cf25f0..e937edd 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -98,6 +98,7 @@ static const struct query_mode {
+ };
+ 
+ static int grab_flag = 0;
++static int safe_flag = 0;
+ static volatile sig_atomic_t stop = 0;
+ 
+ static void interrupt_handler(int sig)
+@@ -595,6 +596,7 @@ static const char * const * const names[EV_MAX + 1] = {
+ 	[EV_FF] = force,			[EV_FF_STATUS] = forcestatus,
+ };
+ 
++static int cached_absinfo[ABS_MAX][6] = {0};
+ /**
+  * Convert a string to a specific key/snd/led/sw code. The string can either
+  * be the name of the key in question (e.g. "SW_DOCK") or the numerical
+@@ -733,7 +735,7 @@ static int usage(void)
+  */
+ static void print_absdata(int fd, int axis)
+ {
+-	int abs[6] = {0};
++	int* abs = cached_absinfo[axis];
+ 	int k;
+ 
+ 	ioctl(fd, EVIOCGABS(axis), abs);
+@@ -823,6 +825,47 @@ static int print_device_info(int fd)
+ 	return 0;
+ }
+ 
++/**
++ * Print event safely and do not print any sensitive infomation.
++ *
++ * @param ev The event to print.
++ */
++static void safe_print_event(struct input_event* ev) {
++	const char* type_str = events[ev->type] ? events[ev->type] : "?";
++	const char* code_str =
++		names[ev->type] ? (names[ev->type][ev->code] ?
++				  names[ev->type][ev->code] : "?") : "?";
++	printf("type %d (%s)", ev->type, type_str);
++	switch (ev->type) {
++		case EV_KEY:
++			printf(", code *, value %d\n", ev->value);
++			break;
++		case EV_REL:
++			printf(", code %d (%s)\n", ev->code, code_str);
++			break;
++		case EV_ABS:
++			printf(", code %d (%s), ", ev->code, code_str);
++			if (ev->value == cached_absinfo[ev->code][1])
++				printf("%s\n", "value = abs_min");
++			else if (ev->value == cached_absinfo[ev->code][2])
++				printf("%s\n", "value = abs_max");
++			else if (ev->value > cached_absinfo[ev->code][2] &&
++				 ev->value < cached_absinfo[ev->code][1])
++				printf("%s\n", "value out of range (min, max)");
++			else
++				printf("%s\n", "value in range (min, max)");
++			break;
++		case EV_MSC:
++			if (ev->code == MSC_TIMESTAMP)
++				printf(", code %d (%s), value %02x\n", ev->code,
++				       code_str, ev->value);
++			else
++				printf(", code %d (%s)\n", ev->code, code_str);
++		default:
++			break;
++	}
++}
++
+ /**
+  * Print device events as they come in.
+  *
+@@ -858,6 +901,8 @@ static int print_events(int fd)
+ 					printf("++++++++++++++ %s ++++++++++++\n", syns[ev[i].code]);
+ 				else
+ 					printf("-------------- %s ------------\n", syns[ev[i].code]);
++			} else if (safe_flag) {
++				safe_print_event(&ev[i]);
+ 			} else {
+ 				printf("type %d (%s), code %d (%s), ",
+ 					ev[i].type,
+@@ -1034,6 +1079,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
+ static const struct option long_options[] = {
+ 	{ "grab", no_argument, &grab_flag, 1 },
+ 	{ "query", no_argument, NULL, MODE_QUERY },
++	{ "safe", no_argument, &safe_flag, 1 },
+ 	{ "version", no_argument, NULL, MODE_VERSION },
+ 	{ 0, },
+ };
