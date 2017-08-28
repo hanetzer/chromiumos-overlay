@@ -26,6 +26,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/unlimited-log-file-size.patch
 	epatch "${FILESDIR}"/dry-run-option.patch
 	epatch "${FILESDIR}"/change_default_password.patch
+	epatch "${FILESDIR}"/retry-send-on-ebusy.patch
 }
 
 src_configure() {
