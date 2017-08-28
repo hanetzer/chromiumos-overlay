@@ -133,8 +133,9 @@ src_install() {
 	# Install various utility files.
 	dosbin killers
 
-	# Install static node tool.
+	# Install various helper programs.
 	dosbin "${OUT}"/static_node_tool
+	dosbin "${OUT}"/net_poll_tool
 
 	# Install startup/shutdown scripts.
 	dosbin chromeos_startup chromeos_shutdown
