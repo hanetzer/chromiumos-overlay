@@ -12,7 +12,7 @@ DESCRIPTION="ARC USB camera HAL v3."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
+IUSE="-asan test"
 RDEPEND="
 	chromeos-base/libbrillo
 	!media-libs/arc-camera3-libsync
@@ -33,8 +33,16 @@ src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake BASE_VER=${LIBCHROME_VERS} camera_hal_usb
+	use test && emake BASE_VER=${LIBCHROME_VERS} hal_usb_test
 }
 
 src_install() {
 	dolib.so hal/usb/camera_hal.so
+}
+
+src_test() {
+	if use x86 || use amd64; then
+		./hal/usb/unittest/image_processor_unittest || \
+			die "image_processor unit tests failed!"
+	fi
 }
