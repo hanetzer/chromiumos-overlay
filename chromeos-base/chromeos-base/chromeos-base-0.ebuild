@@ -30,14 +30,14 @@ DEPEND=">=sys-apps/baselayout-2
 	!<app-shells/bash-4.1
 	!<app-shells/dash-0.5.5
 	!<net-misc/openssh-5.2_p1-r8
+	!cros_embedded? (
+		app-shells/bash
+	)
 	!cros_host? (
 		!pam? (
 			!app-admin/sudo
 		)
 		!app-misc/editor-wrapper
-		!cros_embedded? (
-			app-shells/bash
-		)
 		cros_embedded? (
 			app-shells/dash
 		)
