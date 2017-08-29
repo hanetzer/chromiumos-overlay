@@ -103,6 +103,29 @@ pkg_preinst() {
 	add_daemon_user "input"  # For /dev/input/event access
 	enewgroup "i2c"          # For I2C device node access.
 	enewgroup "serial"       # For owning access to serial devices.
+
+	# The user that all user-facing processes will run as.
+	local system_user="${SHARED_USER_NAME}"
+	local system_id="1000"
+	local system_home="/home/${system_user}/user"
+	# Add a chronos-access group to provide non-chronos users,
+	# mostly system daemons running as a non-chronos user, group permissions
+	# to access files/directories owned by chronos.
+	local system_access_user="chronos-access"
+	local system_access_id="1001"
+
+	enewgroup "${system_user}" "${system_id}"
+	add_daemon_user "${system_user}"
+	add_daemon_user "${system_access_user}" "${system_access_id}"
+
+	# Some default directories. These are created here rather than at
+	# install because some of them may already exist and have mounts.
+	local x
+	for x in /dev /home /media /run \
+		/mnt/stateful_partition /proc /root /sys /var/lock; do
+		[[ -d "${ROOT}/${x}" ]] && continue
+		install -d --mode=0755 --owner=root --group=root "${ROOT}/${x}"
+	done
 }
 
 src_install() {
@@ -172,90 +195,4 @@ src_install() {
 	echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
 	insopts -m 440
 	doins 95_cros_base
-}
-
-pkg_postinst() {
-	# TODO(cmasone): Once http://crbug.com/360815 is sorted, move as much
-	# remaining user/group creation as possible to pkg_preinst(). Failures
-	# there are fatal, while those in pkg_postinst() are not.
-
-	# The user that all user-facing processes will run as.
-	local system_user="${SHARED_USER_NAME}"
-	local system_id="1000"
-	local system_home="/home/${system_user}/user"
-	# Add a chronos-access group to provide non-chronos users,
-	# mostly system daemons running as a non-chronos user, group permissions
-	# to access files/directories owned by chronos.
-	local system_access_user="chronos-access"
-	local system_access_id="1001"
-
-	enewgroup "${system_user}" "${system_id}"
-	add_daemon_user "${system_user}"
-	add_daemon_user "${system_access_user}" "${system_access_id}"
-
-	# The following users and groups should mostly be created by
-	# ebuilds that actually need them: http://crbug.com/360815
-
-#	add_daemon_user "messagebus" 201     # For dbus. Now in sys-apps/dbus.
-#	add_daemon_user "syslog" 202         # For rsyslog. Now installed by chromeos-init
-#	add_daemon_user "ntp" 203
-#	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
-#	add_daemon_user "polkituser" 206     # For policykit
-#	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
-#	add_daemon_user "pkcs11" 208         # For pkcs11 clients
-#	add_daemon_user "qdlservice" 209     # For QDLService. Now in platform2.
-#	add_daemon_user "cromo" 210          # For cromo (modem manager). Now in platform2.
-#	add_daemon_user "cashew" 211         # Deprecated, do not reuse
-#	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
-#	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
-#	add_daemon_user "tor" 214            # For tor (anonymity service)
-#	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
-#	add_daemon_user "debugd" 216         # For debugd
-#	add_daemon_user "openvpn" 217        # For openvpn
-	add_daemon_user "bluetooth" 218      # For bluez
-#	add_daemon_user "wpa" 219            # For wpa_supplicant
-#	add_daemon_user "cras" 220           # For cras (audio)
-#	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
-#	add_daemon_user "input" 222          # For /dev/input/event access
-#	add_daemon_user "chaps" 223          # For chaps (pkcs11)
-#	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
-#	add_daemon_user "tpmd" 225           # For tpmd
-#	add_daemon_user "mtp" 226            # For mtpd. In mtpd.
-#	add_daemon_user "proxystate" 227     # For proxy monitoring
-#	add_daemon_user "power" 228          # For powerd. In platform2.
-#	add_daemon_user "watchdog" 229       # For daisydog
-#	add_daemon_user "devbroker" 230      # For permission_broker
-#	add_daemon_user "xorg" 231           # For Xorg. In xorg-conf
-#	add_daemon_user "nfqueue" 232        # For netfilter-queue
-#	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
-#	add_daemon_user "tlsdate" 234
-#	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
-#	add_daemon_user "debugfs-access" 236 # Access to debugfs
-#	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
-#	add_daemon_user "avahi" 238          # For avahi-daemon
-#	add_daemon_user "p2p" 239            # For p2p
-#	add_daemon_user "brltty" 240         # For braille displays
-#	add_daemon_user "modem" 241          # For modem manager. Now in net-misc/modemmanager-next.
-	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
-	# filesystem daemons.
-#	add_daemon_user "ntfs-3g" 300        # For ntfs-3g prcoess. Now in sys-fs/ntfs-3g.
-#	add_daemon_user "avfs" 301           # For avfs process. Now in platform2.
-#	add_daemon_user "fuse-exfat" 302     # For exfat-fuse prcoess. Now in platform2.
-
-	# Group that is allowed to create directories under /home/root/<hash>.
-#	enewgroup "daemon-store" 400
-#	enewgroup "logs-access" 401
-#	enewgroup "serial" 402        # For owning access to serial devices.
-
-	# Create a group for device access via permission_broker.
-#	enewgroup "devbroker-access" 403
-#	enewgroup "i2c" 404           # For I2C device node access.
-
-	# Some default directories. These are created here rather than at
-	# install because some of them may already exist and have mounts.
-	for x in /dev /home /media /run \
-		/mnt/stateful_partition /proc /root /sys /var/lock; do
-		[ -d "${ROOT}/$x" ] && continue
-		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
-	done
 }
