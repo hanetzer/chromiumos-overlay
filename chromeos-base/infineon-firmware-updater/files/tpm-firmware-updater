@@ -316,6 +316,11 @@ main() {
     updater_options="-dry-run"
   fi
 
+  # Request another TPM reset to take place after installing the update. This is
+  # important because owner-authorized update carries over some state (notably
+  # the SRK) which we specifically don't want to happen.
+  crossystem clear_tpm_owner_request=1
+
   # This is the point of no return. Fingers crossed!
   # We write 0 and 100 before and after the updater runs as progress indicators
   # so consuming code can depend on them always showing up.
