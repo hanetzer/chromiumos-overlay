@@ -25,7 +25,7 @@ HOMEPAGE="http://libcxx.llvm.org/"
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_host elibc_glibc elibc_musl +libcxxabi libcxxrt libunwind +static-libs test"
+IUSE="+compiler-rt cros_host elibc_glibc elibc_musl +libcxxabi libcxxrt libunwind +static-libs test"
 REQUIRED_USE="libunwind? ( || ( libcxxabi libcxxrt ) )
 	?? ( libcxxabi libcxxrt )"
 
@@ -57,6 +57,8 @@ src_prepare() {
 	# Remove a symoblic link pointing to some location
 	# outside of the source tree. crbug.com/740232
 	rm "include/__cxxabi_config.h"
+	# Link with libgcc_eh when compiler-rt is used.
+	epatch "${FILESDIR}"/libcxx-use-libgcc_eh.patch
 }
 
 pkg_setup() {
@@ -99,9 +101,9 @@ multilib_src_configure() {
 	# we want -lgcc_s for unwinder, and for compiler runtime when using
 	# gcc, clang with gcc runtime (or any unknown compiler)
 	local extra_libs=() want_gcc_s=ON
-	if use libunwind; then
+	if use libunwind || use compiler-rt; then
 		# work-around missing -lunwind upstream
-		extra_libs+=( -lunwind )
+		use libunwind && extra_libs+=( -lunwind )
 		# if we're using libunwind and clang with compiler-rt, we want
 		# to link to compiler-rt instead of -lgcc_s
 		if tc-is-clang; then
@@ -130,6 +132,7 @@ multilib_src_configure() {
 		-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF
 		-DLIBCXX_HAS_MUSL_LIBC=$(usex elibc_musl)
 		-DLIBCXX_HAS_GCC_S_LIB=${want_gcc_s}
+		-DLIBCXX_USE_COMPILER_RT=$(usex compiler-rt)
 		-DLIBCXX_INCLUDE_TESTS=$(usex test)
 		-DCMAKE_INSTALL_PREFIX=${PREFIX}
 		-DCMAKE_SHARED_LINKER_FLAGS="${extra_libs[*]} ${LDFLAGS}"
@@ -191,7 +194,7 @@ gen_shared_ldscript() {
 	# libsupc++ doesn't have a shared version
 	local cxxabi_lib=$(usex libcxxabi "libc++abi.so" "$(usex libcxxrt "libcxxrt.so" "libsupc++.a")")
 	mv "${ED}/${PREFIX}/${libdir}/libc++.so" "${ED}/${PREFIX}/${libdir}/libc++_shared.so" || die
-	local deps="libc++_shared.so ${cxxabi_lib} $(usex libunwind libunwind.so libgcc_s.so)"
+	local deps="libc++_shared.so ${cxxabi_lib} $(usex compiler-rt '' $(usex libunwind libunwind.so libgcc_s.so))"
 
 	gen_ldscript "${deps}" > "${ED}/${PREFIX}/${libdir}/libc++.so" || die
 }

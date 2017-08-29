@@ -1,0 +1,29 @@
+Link libcxx with gcc_eh when linking with gcc_s is
+not desired. Normally, llvm's libunwind would be used but
+we are not using libunwind in ChromeOS right now because of
+some reported crashes when libunwind was used.
+https://crbug.com/747113
+
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 66bb14c89..eb7416f27 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -85,6 +85,9 @@ add_library_flags_if(LIBCXX_HAS_M_LIB m)
+ add_library_flags_if(LIBCXX_HAS_RT_LIB rt)
+ add_library_flags_if(LIBCXX_HAS_GCC_S_LIB gcc_s)
+ add_library_flags_if(LIBCXX_HAVE_CXX_ATOMICS_WITH_LIB atomic)
++if (NOT LIBCXX_HAS_GCC_S_LIB)
++  add_library_flags(gcc_eh)
++endif()
+ 
+ # Add the unwinder library.
+ if (LIBCXXABI_USE_LLVM_UNWINDER)
+@@ -102,7 +102,7 @@ if (NOT WIN32)
+   add_flags_if_supported(-fPIC)
+ endif()
+ 
+-add_link_flags_if_supported(-nodefaultlibs)
++add_link_flags_if_supported(-nostdlib++)
+ 
+ if (LIBCXX_TARGETING_MSVC)
+   if (LIBCXX_DEBUG_BUILD)

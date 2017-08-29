@@ -31,8 +31,7 @@ HOMEPAGE="http://libcxxabi.llvm.org/"
 LICENSE="|| ( UoI-NCSA MIT )"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host libunwind +static-libs test"
-
+IUSE="+compiler-rt cros_host libunwind +static-libs test"
 
 RDEPEND="
 	libunwind? (
@@ -60,6 +59,11 @@ pkg_setup() {
 	use test && python-any-r1_pkg_setup
 }
 
+src_prepare() {
+	# Link with libgcc_eh when compiler-rt is used.
+	epatch "${FILESDIR}"/libcxxabi-use-libgcc_eh.patch
+}
+
 multilib_src_configure() {
 	# Use vpfv3 fpu to be able to target non-neon targets.
 	if [[ $(tc-arch) == "arm" ]] ; then
@@ -76,6 +80,7 @@ multilib_src_configure() {
 		-DLIBCXXABI_INCLUDE_TESTS=$(usex test)
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}"
 		-DLIBCXXABI_LIBCXX_INCLUDES="${S}"/libcxx/include
+		-DLIBCXXABI_USE_COMPILER_RT=$(usex compiler-rt)
 	)
 	if use test; then
 		mycmakeargs+=(
