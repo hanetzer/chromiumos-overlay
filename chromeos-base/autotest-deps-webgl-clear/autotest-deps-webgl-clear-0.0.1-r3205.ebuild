@@ -2,17 +2,18 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="61ebfdfd4d3b9f6f39fbb8b329ce6c839971e82b"
-CROS_WORKON_TREE="023bca005ea104712a9f140162bd57bbc6d971f7"
+CROS_WORKON_COMMIT="9e2576b58e8d592839b1ae88737dbf513812148e"
+CROS_WORKON_TREE="4a5c38c3b2bcdc7bcf5aede80ea79be26601e954"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Autotest p2p deps"
+DESCRIPTION="Dependencies for WebGL clear test."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
@@ -20,15 +21,7 @@ KEYWORDS="*"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-AUTOTEST_DEPS_LIST="lansim"
+AUTOTEST_DEPS_LIST="webgl_clear"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
-
-RDEPEND="!<chromeos-base/autotest-deps-0.0.4"
-
-# deps/lansim
-RDEPEND="${RDEPEND}
-	dev-python/dpkt
-"
-DEPEND="${RDEPEND}"
