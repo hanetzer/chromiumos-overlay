@@ -43,11 +43,7 @@ esac
 
 inherit multilib-build
 
-IUSE="-android-container -android-container-nyc"
-DEPEND="
-	android-container-nyc? ( chromeos-base/arc-build-nyc[${MULTILIB_USEDEP}] )
-	android-container? ( chromeos-base/arc-build )
-"
+DEPEND="sys-devel/arc-build[${MULTILIB_USEDEP}]"
 
 # Make sure we know how to handle the active system.
 arc-build-check-arch() {

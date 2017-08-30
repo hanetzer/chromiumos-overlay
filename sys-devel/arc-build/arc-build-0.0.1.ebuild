@@ -9,18 +9,28 @@ DESCRIPTION="Ebuild for per-sysroot arc-build components."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="android-container android-container-nyc android-container-master-arc-dev"
+REQUIRED_USE="^^ ( android-container android-container-nyc android-container-master-arc-dev )"
 
 # The RDEPEND setting reflects what is installed into the SYSROOT.
-RDEPEND="!!chromeos-base/arc-build
-	!!chromeos-base/arc-build-nyc"
+RDEPEND="!!chromeos-base/arc-build-master
+	!!chromeos-base/arc-build-nyc
+	!!chromeos-base/arc-build"
 DEPEND=""
 
 S=${WORKDIR}
 INSTALL_DIR="/opt/google/containers/android"
 BIN_DIR="${INSTALL_DIR}/build/bin"
 PREBUILT_DIR="${INSTALL_DIR}/usr"
-PREBUILT_SRC="/opt/android-master/${ARCH}/usr"
+PREBUILT_SRC="${ARC_BASE}/${ARCH}/usr"
+
+if use android-container; then
+	PC_SRC_DIR="${FILESDIR}/mnc"
+elif use android-container-nyc; then
+	PC_SRC_DIR="${FILESDIR}/nyc"
+elif use android-container-master-arc-dev; then
+	PC_SRC_DIR="${FILESDIR}/master"
+fi
 
 multilib_src_compile() {
 	cat > pkg-config <<EOF
@@ -52,7 +62,7 @@ EOF
 }
 
 install_pc_file() {
-	sed "/^libdir=/s:/lib:/$(get_libdir):" "${FILESDIR}"/"$1" > "$1" || die
+	sed "/^libdir=/s:/lib:/$(get_libdir):" "${PC_SRC_DIR}"/"$1" > "$1" || die
 	doins "$1"
 }
 
