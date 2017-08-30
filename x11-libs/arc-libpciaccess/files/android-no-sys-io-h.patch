@@ -1,0 +1,12 @@
+--- a/src/linux_sysfs.c	2017-08-30 17:07:15.120522019 +0900
++++ b/src/linux_sysfs.c	2017-08-30 17:11:51.815180340 +0900
+@@ -45,7 +45,8 @@
+ #include <dirent.h>
+ #include <errno.h>
+ 
+-#if defined(__i386__) || defined(__x86_64__) || defined(__arm__)
++#if (defined(__i386__) || defined(__x86_64__) || defined(__arm__)) \
++	&& !defined(ANDROID)
+ #include <sys/io.h>
+ #else
+ #define inb(x) -1

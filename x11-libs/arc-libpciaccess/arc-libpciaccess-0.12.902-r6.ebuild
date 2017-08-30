@@ -22,6 +22,7 @@ RDEPEND="${DEPEND}"
 PATCHES=(
 	"${FILESDIR}/nodevport.patch"
 	"${FILESDIR}/nodevport-2.patch"
+	"${FILESDIR}/android-no-sys-io-h.patch"
 )
 
 pkg_setup() {
