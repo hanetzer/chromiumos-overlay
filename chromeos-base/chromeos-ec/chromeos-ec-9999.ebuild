@@ -44,6 +44,7 @@ IUSE="quiet verbose coreboot-sdk unibuild"
 RDEPEND="dev-embedded/libftdi"
 DEPEND="
 	${RDEPEND}
+	virtual/chromeos-ec-touch-firmware
 	unibuild? ( chromeos-base/chromeos-config )
 "
 
@@ -82,6 +83,13 @@ src_compile() {
 	local board
 	local some_board_built=false
 	for board in "${EC_BOARDS[@]}"; do
+		# Always pass TOUCHPAD_FW parameter: boards that do not require
+		# it will simply ignore the parameter, even if the touchpad FW
+		# file does not exist.
+		local ec_opts_all=(
+			TOUCHPAD_FW="${SYSROOT}/firmware/${board}/touchpad.bin"
+		)
+
 		# We need to test whether the board make target
 		# exists. For Unified Build EC_BOARDS, the engineer or
 		# the firmware builder might be checked out on a
@@ -95,7 +103,8 @@ src_compile() {
 		if [[ $? -ne 2 ]]; then
 			some_board_built=true
 			BOARD=${board} emake "${EC_OPTS[@]}" clean
-			BOARD=${board} emake "${EC_OPTS[@]}" all
+			BOARD=${board} emake \
+				"${EC_OPTS[@]}" "${ec_opts_all[@]}" all
 			BOARD=${board} emake "${EC_OPTS[@]}" tests
 		fi
 	done
