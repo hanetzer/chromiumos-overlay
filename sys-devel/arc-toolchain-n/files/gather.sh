@@ -229,6 +229,8 @@ for (( a = 0; a < ${len}; ++a )); do
 	INCLUDE_DIRS=(
 		"frameworks/native/include/android"
 		"frameworks/native/include/ui"
+		"frameworks/native/vulkan/include/hardware"
+		"frameworks/native/vulkan/include/vulkan"
 		"hardware/libhardware/include/hardware"
 		"system/core/include/android"
 		"system/core/include/cutils"

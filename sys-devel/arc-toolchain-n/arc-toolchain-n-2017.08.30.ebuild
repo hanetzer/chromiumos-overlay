@@ -25,6 +25,8 @@
 # Last commit: 79a397804f08fd80a51e7b6c0b7d6d7880a530ea
 # external/llvm
 # Last commit: 95badd62d5d1db0957a17dcbb5ecd05a218c51e7
+#
+# frameworks/native/vulkan/include c6193c7d91de80e93f97d946d94d662210fd5981
 
 EAPI=5
 
