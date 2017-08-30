@@ -1,0 +1,76 @@
+commit 7313cf88d8717af101e89811a410faf4591f2864
+Author: Davide Italiano <davide@freebsd.org>
+Date:   Fri Jul 28 02:57:43 2017 +0000
+
+    [JumpThreading] Add an option to dump LazyValueInfo after the run.
+    
+    Differential Revision:  https://reviews.llvm.org/D35973
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@309353 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Transforms/Scalar/JumpThreading.cpp b/lib/Transforms/Scalar/JumpThreading.cpp
+index c5557bef8cc..0da003b14ed 100644
+--- a/lib/Transforms/Scalar/JumpThreading.cpp
++++ b/lib/Transforms/Scalar/JumpThreading.cpp
+@@ -64,6 +64,11 @@ ImplicationSearchThreshold(
+            "condition to use to thread over a weaker condition"),
+   cl::init(3), cl::Hidden);
+ 
++static cl::opt<bool> PrintLVIAfterJumpThreading(
++    "print-lvi-after-jump-threading",
++    cl::desc("Print the LazyValueInfo cache after JumpThreading"), cl::init(false),
++    cl::Hidden);
++
+ namespace {
+   /// This pass performs 'jump threading', which looks at blocks that have
+   /// multiple predecessors and multiple successors.  If one or more of the
+@@ -93,6 +98,8 @@ namespace {
+     bool runOnFunction(Function &F) override;
+ 
+     void getAnalysisUsage(AnalysisUsage &AU) const override {
++      if (PrintLVIAfterJumpThreading)
++        AU.addRequired<DominatorTreeWrapperPass>();
+       AU.addRequired<AAResultsWrapperPass>();
+       AU.addRequired<LazyValueInfoWrapperPass>();
+       AU.addPreserved<LazyValueInfoWrapperPass>();
+@@ -137,8 +144,14 @@ bool JumpThreading::runOnFunction(Function &F) {
+     BFI.reset(new BlockFrequencyInfo(F, *BPI, LI));
+   }
+ 
+-  return Impl.runImpl(F, TLI, LVI, AA, HasProfileData, std::move(BFI),
+-                      std::move(BPI));
++  bool Changed = Impl.runImpl(F, TLI, LVI, AA, HasProfileData, std::move(BFI),
++                              std::move(BPI));
++  if (PrintLVIAfterJumpThreading) {
++    dbgs() << "LVI for function '" << F.getName() << "':\n";
++    LVI->printLVI(F, getAnalysis<DominatorTreeWrapperPass>().getDomTree(),
++                  dbgs());
++  }
++  return Changed;
+ }
+ 
+ PreservedAnalyses JumpThreadingPass::run(Function &F,
+diff --git a/test/Analysis/LazyValueAnalysis/lvi-after-jumpthreading.ll b/test/Analysis/LazyValueAnalysis/lvi-after-jumpthreading.ll
+index e797b377556..41bb8c9c820 100644
+--- a/test/Analysis/LazyValueAnalysis/lvi-after-jumpthreading.ll
++++ b/test/Analysis/LazyValueAnalysis/lvi-after-jumpthreading.ll
+@@ -1,4 +1,4 @@
+-; RUN: opt < %s -jump-threading -print-lazy-value-info -disable-output 2>&1 | FileCheck %s
++; RUN: opt < %s -jump-threading -print-lvi-after-jump-threading -disable-output 2>&1 | FileCheck %s
+ 
+ ; Testing LVI cache after jump-threading
+ 
+@@ -19,13 +19,10 @@ entry:
+ ; CHECK-NEXT:     ; LatticeVal for: 'i32 %a' is: overdefined
+ ; CHECK-NEXT:     ; LatticeVal for: 'i32 %length' is: overdefined
+ ; CHECK-NEXT:     ; LatticeVal for: '  %iv = phi i32 [ 0, %entry ], [ %iv.next, %backedge ]' in BB: '%backedge' is: constantrange<0, 400>
+-; CHECK-NEXT:     ; LatticeVal for: '  %iv = phi i32 [ 0, %entry ], [ %iv.next, %backedge ]' in BB: '%exit' is: constantrange<399, 400>
+ ; CHECK-NEXT:  %iv = phi i32 [ 0, %entry ], [ %iv.next, %backedge ]
+ ; CHECK-NEXT:     ; LatticeVal for: '  %iv.next = add nsw i32 %iv, 1' in BB: '%backedge' is: constantrange<1, 401>
+-; CHECK-NEXT:     ; LatticeVal for: '  %iv.next = add nsw i32 %iv, 1' in BB: '%exit' is: constantrange<400, 401>
+ ; CHECK-NEXT:  %iv.next = add nsw i32 %iv, 1
+ ; CHECK-NEXT:     ; LatticeVal for: '  %cont = icmp slt i32 %iv.next, 400' in BB: '%backedge' is: overdefined
+-; CHECK-NEXT:     ; LatticeVal for: '  %cont = icmp slt i32 %iv.next, 400' in BB: '%exit' is: constantrange<0, -1>
+ ; CHECK-NEXT:  %cont = icmp slt i32 %iv.next, 400
+ ; CHECK-NOT: loop
+ loop:

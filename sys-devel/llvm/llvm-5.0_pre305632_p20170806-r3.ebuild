@@ -204,6 +204,8 @@ pick_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 5773fa6550fa9b33017d8d1e4ebdb96cf5eaf626 " # r305853
 	CHERRIES+=" f6fecfacea8ecde288b680a68823aaf1d08b5beb " # r309694
+	CHERRIES+=" 7313cf88d8717af101e89811a410faf4591f2864 " # r309353
+	CHERRIES+=" bc62a9f5d4a276a5f023e3ebd957b6915f101a3e " # r309355
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
