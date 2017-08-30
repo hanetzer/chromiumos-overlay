@@ -12,6 +12,26 @@
 # We want to build some libraries to run under ARC.  These funcs will help
 # write ebuilds to accomplish that.
 
+# @ECLASS-VARIABLE: ARC_BASE
+# @DESCRIPTION:
+# The path to ARC toolchain root directory. Normally defined by the profile.
+# e.g. /opt/android-n, for sys-devel/arc-toolchain-n
+
+# @ECLASS-VARIABLE: ARC_VERSION_MAJOR
+# @DESCRIPTION:
+# Major version of Android that was used to generate the ARC toolchain.
+# Normally defined by the profile. e.g. 7, for Android 7.1.0
+
+# @ECLASS-VARIABLE: ARC_VERSION_MINOR
+# @DESCRIPTION:
+# Minor version of Android that was used to generate the ARC toolchain.
+# Normally defined by the profile. e.g. 1, for Android 7.1.0
+
+# @ECLASS-VARIABLE: ARC_VERSION_PATCH
+# @DESCRIPTION:
+# Minor version of Android that was used to generate the ARC toolchain.
+# Normally defined by the profile. e.g. 0, for Android 7.1.0
+
 if [[ -z ${_ARC_BUILD_ECLASS} ]]; then
 _ARC_BUILD_ECLASS=1
 
@@ -44,19 +64,6 @@ _arc-build-select-common() {
 	fi
 
 	arc-build-check-arch
-
-	# Setup internal variables
-	if use android-container-nyc; then
-		ARC_BASE="/opt/android-n"
-		export ARC_VERSION_MAJOR="7"
-		export ARC_VERSION_MINOR="1"
-		export ARC_VERSION_PATCH="0"
-	else
-		ARC_BASE="/opt/android"
-		export ARC_VERSION_MAJOR="6"
-		export ARC_VERSION_MINOR="0"
-		export ARC_VERSION_PATCH="1"
-	fi
 
 	export ARC_PREFIX="/opt/google/containers/android"
 	export ARC_SYSROOT="${SYSROOT}${ARC_PREFIX}"
