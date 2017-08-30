@@ -459,6 +459,9 @@ cros-firmware_setup_source_unibuild() {
 
 	for model in $(get_model_list_noroot); do
 		overlay="$(cros-firmware_get_config bcs-overlay)"
+		if [[ -z "${overlay}" ]]; then
+			die "Please add bcs-overlay to master configuration"
+		fi
 		overlay="${overlay#overlay-}"
 		for image in main-image main-rw-image ec-image pd-image; do
 			uri="$(cros-firmware_get_config ${image})"
