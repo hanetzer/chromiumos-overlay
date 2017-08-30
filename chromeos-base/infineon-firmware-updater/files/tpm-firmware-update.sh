@@ -94,17 +94,24 @@ wait_for_battery_to_charge() {
   done
 }
 
+# Reboot and wait to guarantee that we don't proceed further until reboot
+# actually happens.
+reboot_here() {
+  reboot
+  sleep 1d
+  exit 1
+}
+
 # Run the updater in a loop so we can perform retries in case of insufficient
 # battery charge.
 while true; do
   local status="$(run_updater)"
   case "${status}" in
     ${EXIT_CODE_SUCCESS})
-      reboot
+      reboot_here
       ;;
     ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE})
       # It's OK to continue booting.
-      exit 0
       ;;
     ${EXIT_CODE_UPDATE_FAILED})
       # Clear upgrade approval as a precautionary measure. This helps to avoid
@@ -119,8 +126,7 @@ while true; do
       # update. Show a message to the user telling them about the failed update
       # and reboot so the firmware can determine whether recovery is necessary.
       chromeos-boot-alert update_tpm_firmware_failure
-      reboot
-      exit 0
+      reboot_here
       ;;
     ${EXIT_CODE_LOW_BATTERY})
       # Show a notification while we wait for the battery to charge.
@@ -132,7 +138,6 @@ while true; do
       # wasn't approved by the user. Drop a flag file so the system can detect
       # this situation and allow the user to trigger the update flow.
       touch "/run/tpm_firmware_update_available"
-      exit 0
       ;;
     *)
       # When we see an undefined status code, we continue booting. That's
@@ -140,10 +145,9 @@ while true; do
       # driver script before it got to the point of actually attempting an
       # update, so we should be good. The alternative would be to inhibit
       # further firmware updates by updating VPD and rebooting.
-      exit 0
       ;;
   esac
 
-  # Never reached.
-  exit 1
+  # Fall through means "continue booting".
+  exit 0
 done
