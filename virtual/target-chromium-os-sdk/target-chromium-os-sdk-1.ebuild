@@ -99,6 +99,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/arc-libs
 	sys-devel/arc-llvm
 	sys-devel/arc-llvm-mesa
+	sys-devel/arc-toolchain-master
 	sys-devel/arc-toolchain-n
 	sys-devel/dex2oatds
 	"
