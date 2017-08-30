@@ -110,31 +110,4 @@ arc-build-select-gcc() {
 	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
 }
 
-# Set up the compiler settings for clang.
-arc-build-select-clang() {
-	_arc-build-select-common
-
-	ARC_CLANG_BASE="${ARC_BASE}/arc-llvm/3.8/bin"
-
-	export CC="${ARC_CLANG_BASE}/clang"
-	export CXX="${ARC_CLANG_BASE}/clang++"
-
-	local target
-	case ${ARCH} in
-	arm) target="arm-linux-androideabi" ;;
-	esac
-	CC+=" -target ${target} -B${ARC_GCC_BASE}/bin"
-	CXX+=" -target ${target} -B${ARC_GCC_BASE}/bin"
-
-	append-ldflags -L"${ARC_GCC_LIBDIR}"
-}
-
-# If your ebuild declares src_prepare, you'll need to call this directly.
-# It will set up CC/CXX for use w/gcc.
-arc-build_src_prepare() {
-	arc-build-select-gcc
-}
-
-EXPORT_FUNCTIONS src_prepare
-
 fi
