@@ -139,6 +139,7 @@ ALL_BOARDS=(
 	gru
 	guado
 	guado-accelerator
+	guado-macrophage
 	guado_moblab
 	guado_labstation
 	hana
