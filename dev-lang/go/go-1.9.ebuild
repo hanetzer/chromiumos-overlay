@@ -6,7 +6,7 @@ EAPI=5
 inherit eutils toolchain-funcs
 
 # Version used to bootstrap the build.
-BOOTSTRAP="go1.4-bootstrap-20161024"
+BOOTSTRAP="go1.4-bootstrap-20170531"
 
 DESCRIPTION="An expressive, concurrent, garbage-collected programming language"
 HOMEPAGE="http://golang.org/"
@@ -72,9 +72,7 @@ src_prepare() {
 src_compile() {
 	einfo "Building the bootstrap compiler."
 	cd "${GOROOT_BOOTSTRAP}/src"
-	# Build the bootstrap compiler with Cgo disabled.
-	#  - https://bugs.chromium.org/p/chromium/issues/detail?id=712784
-	CGO_ENABLED="0" ./make.bash || die
+	./make.bash || die
 
 	cd "${S}/src"
 	einfo "Building the cross compiler for ${CTARGET}."
