@@ -115,16 +115,23 @@ set '${EC_BOARDS[*]}'"
 board_install() {
 	local board="$1"
 	local destdir="$2"
+	local ecrw
 
 	einfo "Installing EC for ${board} into ${destdir}"
 	insinto "${destdir}"
 	pushd "build/${board}" >/dev/null || return 1
 
 	openssl dgst -sha256 -binary RO/ec.RO.flat > RO/ec.RO.hash
-	openssl dgst -sha256 -binary RW/ec.RW.flat > RW/ec.RW.hash
-
 	doins ec.bin
-	newins RW/ec.RW.flat ec.RW.bin
+	if grep -q '^CONFIG_VBOOT_EFS=y' .config; then
+		# This extracts EC_RW.bin (= RW_A region image) from ec.bin.
+		futility sign --type rwsig ec.bin || die
+		ecrw="EC_RW.bin"
+	else
+		ecrw="RW/ec.RW.flat"
+	fi
+	newins "${ecrw}" ec.RW.bin
+	openssl dgst -sha256 -binary "${ecrw}" > RW/ec.RW.hash
 	doins RW/ec.RW.hash
 	# Intermediate file for debugging.
 	doins RW/ec.RW.elf
@@ -163,7 +170,7 @@ src_install() {
 
 	# Install built firmwares in board-specific directories.
 	for board in "${EC_BOARDS[@]}"; do
-		board_install ${board} /firmware/${board}
+		board_install "${board}" "/firmware/${board}"
 
 		if [[ $? -eq 0 ]]; then
 			some_board_installed=true
