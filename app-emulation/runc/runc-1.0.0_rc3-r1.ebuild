@@ -24,9 +24,10 @@ SLOT="0"
 KEYWORDS="-* amd64 ~arm64"
 IUSE=""
 
-RESTRICT="binchecks strip"
+# The unit tests fail when run in the chroot on host.
+RESTRICT="binchecks strip test"
 
-DEPEND="dev-go/go-sys"
+DEPEND=""
 RDEPEND=""
 
 PATCHES=(
