@@ -6,13 +6,14 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="0db92ca630c08f00e3ba4b5abea93836ca04b42e"
+CROS_WORKON_COMMIT="2d19ab38faf14664c76088411c21bf4fafea960b"
 CROS_WORKON_REPO="https://go.googlesource.com"
 CROS_WORKON_PROJECT="tools"
 CROS_WORKON_DESTDIR="${S}/src/golang.org/x/tools"
 
 CROS_GO_PACKAGES=(
 	"golang.org/x/tools/go/gcimporter15"
+	"golang.org/x/tools/go/gcexportdata"
 )
 
 CROS_GO_TEST=(
