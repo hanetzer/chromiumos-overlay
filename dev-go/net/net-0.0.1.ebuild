@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="9313baa13d9262e49d07b20ed57dceafcd7240cc"
+CROS_WORKON_COMMIT="66aacef3dd8a676686c7ae3716979581e8b03c47"
 CROS_WORKON_REPO="https://go.googlesource.com"
 CROS_WORKON_PROJECT="net"
 CROS_WORKON_DESTDIR="${S}/src/golang.org/x/net"
@@ -15,7 +15,7 @@ CROS_GO_PACKAGES=(
 	"golang.org/x/net/bpf"
 	"golang.org/x/net/context"
 	"golang.org/x/net/internal/iana"
-	"golang.org/x/net/internal/netreflect"
+	"golang.org/x/net/internal/socket"
 	"golang.org/x/net/ipv4"
 )
 
