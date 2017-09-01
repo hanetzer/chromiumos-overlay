@@ -13,7 +13,8 @@ cros-binary_dead_usage() {
 }
 if [[ ${CROS_BINARY_STORE_DIR:+set} == "set" ||
       ${CROS_BINARY_SUM:+set} == "set" ||
-      ${CROS_BINARY_FETCH_REQUIRED:+set} == "set" ]]; then
+      ${CROS_BINARY_FETCH_REQUIRED:+set} == "set" ||
+      ${CROS_BINARY_INSTALL_FLAGS:+set} == "set" ]]; then
 	cros-binary_dead_usage
 fi
 
@@ -89,11 +90,6 @@ cros-binary_add_overlay_uri() {
 if [[ -n "${CROS_BINARY_URI}" ]]; then
 	cros-binary_add_uri "${CROS_BINARY_URI}"
 fi
-
-# @ECLASS-VARIABLE: CROS_BINARY_INSTALL_FLAGS
-# @DESCRIPTION:
-# Optional Flags to use while installing the binary
-: ${CROS_BINARY_INSTALL_FLAGS:=}
 
 # @ECLASS-VARIABLE: CROS_BINARY_LOCAL_URI_BASE
 # @DESCRIPTION:
