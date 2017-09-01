@@ -23,5 +23,5 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
-DEPEND="dev-go/go-tools"
+DEPEND=""
 RDEPEND=""
