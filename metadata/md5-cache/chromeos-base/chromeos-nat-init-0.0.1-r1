@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Init configuration to set up NAT and IP forwarding
+EAPI=5
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=net-firewall/iptables
+SLOT=0
+_md5_=60a7c83d4f4855302e4e65b604e643ab

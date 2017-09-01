@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile configure install prepare test
-DEPEND=dev-python/mako dev-python/numpy >=dev-lang/python-2.7 waffle? ( >=media-libs/waffle-1.2.2 ) !waffle? ( virtual/glut ) opencl? ( virtual/opencl ) opengl? ( virtual/opengl ) opengles? ( virtual/opengles ) dma_buf? ( x11-libs/libdrm ) opengl? ( x11-proto/glproto ) sys-devel/make >=dev-util/cmake-2.8.9 userland_GNU? ( >=sys-apps/findutils-4.4.0 )
+DEPEND=dev-python/mako dev-python/numpy >=dev-lang/python-2.7 waffle? ( >=media-libs/waffle-1.2.2 ) !waffle? ( virtual/glut ) opencl? ( virtual/opencl ) opengl? ( virtual/opengl ) opengles? ( virtual/opengles ) dma_buf? ( x11-libs/libdrm ) opengl? ( x11-proto/glproto ) sys-devel/make >=dev-util/cmake-2.8.12
 DESCRIPTION=A collection of automated tests for OpenGL implementations
 EAPI=5
 HOMEPAGE=http://piglit.freedesktop.org
@@ -10,5 +10,5 @@ RDEPEND=dev-python/mako dev-python/numpy >=dev-lang/python-2.7 waffle? ( >=media
 REQUIRED_USE=opengles? ( waffle )
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/piglit-2014.07.23.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cmake-utils	92319f03251f1235bc887cc84e5aef21	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
+_eclasses_=cmake-utils	9e0d156beee613940cde06d0bc00791b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=1c23140afeef2d451ad553c52f1c4dc3

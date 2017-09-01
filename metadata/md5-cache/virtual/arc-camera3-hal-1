@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=ARC++ camera3 HAL virtual package
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=bda2bf7b61afc3cc40689d0339dc97c6

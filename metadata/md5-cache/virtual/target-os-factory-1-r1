@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages that make up the factory test OS image; by default, we build a Chromium OS factory test image
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=virtual/target-chromium-os-factory
+SLOT=0
+_md5_=391af5c7b7d87005e739bee5a529e985

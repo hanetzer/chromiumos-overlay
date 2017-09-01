@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile install prepare
+DEPEND=media-libs/libpng:0=[-pnm2png(-)] app-arch/xz-utils
+DESCRIPTION=Portable Network Graphics library
+EAPI=5
+HOMEPAGE=http://www.libpng.org/
+KEYWORDS=*
+LICENSE=libpng
+RDEPEND=media-libs/libpng:0=[-pnm2png(-)]
+SLOT=0/16
+SRC_URI=mirror://sourceforge/libpng/libpng-1.6.25.tar.xz
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=97270c3138063ea32139caac485ae925

@@ -1,13 +1,15 @@
-DEFINED_PHASES=compile install postinst postrm preinst prerm pretend setup test unpack
-DEPEND=dev-embedded/nds32-binutils sys-devel/gnuconfig >=sys-apps/sed-4
+DEFINED_PHASES=compile configure install postinst postrm prepare pretend setup test unpack
+DEPEND=dev-embedded/nds32-binutils >=sys-apps/sed-4 sys-devel/gnuconfig sys-libs/zlib nls? ( virtual/libintl ) virtual/libiconv >=dev-libs/gmp-4.3.2:0 >=dev-libs/mpfr-2.4.2:0 >=dev-libs/mpc-0.8.1:0 graphite? ( >=dev-libs/cloog-0.18.0 >=dev-libs/isl-0.11.1 ) >=sys-devel/bison-1.875 >=sys-devel/flex-2.5.4 nls? ( sys-devel/gettext ) regression-test? ( >=dev-util/dejagnu-1.4.4 >=sys-devel/autogen-5.5.4 ) gcj? ( awt? ( x11-libs/libXt x11-libs/libX11 x11-libs/libXtst x11-proto/xproto x11-proto/xextproto =x11-libs/gtk+-2* virtual/pkgconfig x11-libs/pango ) >=media-libs/libart_lgpl-2.1 app-arch/zip app-arch/unzip )
 DESCRIPTION=The GNU Compiler Collection for Andes cores
 EAPI=4
-HOMEPAGE=http://gcc.gnu.org/
-IUSE=multislot nptl test altivec build fortran nls nocxx bootstrap doc gcj gtk hardened libffi multilib objc vanilla objc-gc mudflap objc++ openmp fixed-point graphite
+HOMEPAGE=https://gcc.gnu.org/
+IUSE=regression-test vanilla altivec debug doc gcj awt hardened multilib objc objc-gc libssp objc++ fixed-point go graphite cilk +vtv +nls +nptl +cxx +fortran +openmp +sanitize
 KEYWORDS=amd64 x86
 LICENSE=GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2
+PDEPEND=>=sys-devel/gcc-config-1.7
+RDEPEND=sys-libs/zlib nls? ( virtual/libintl ) virtual/libiconv >=dev-libs/gmp-4.3.2:0 >=dev-libs/mpfr-2.4.2:0 >=dev-libs/mpc-0.8.1:0 graphite? ( >=dev-libs/cloog-0.18.0 >=dev-libs/isl-0.11.1 )
 RESTRICT=strip
-SLOT=4.9
+SLOT=4.9.0-p20131028
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nds32-gcc-cf268d08.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	fixheadtails	059c47dd86229aa6382393274677acfe	flag-o-matic	5d5921a298e95441da2f85be419894c0	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain	1c3df4971e5d5d5ec3574143cb65f815	toolchain-funcs	d9301a744271fddba4c92a94717168ee	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	fixheadtails	059c47dd86229aa6382393274677acfe	flag-o-matic	5d5921a298e95441da2f85be419894c0	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	pax-utils	3551398d6ede2b572568832730cc2a45	toolchain	dfddbc4d65d64fa179b5d8fa21b95a77	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=ad382e55b854226d32a02f7fa82ef462

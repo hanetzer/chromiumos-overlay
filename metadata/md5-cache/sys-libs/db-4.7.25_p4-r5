@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile install postinst postrm preinst setup test unpack
-DEPEND=tcl? ( >=dev-lang/tcl-8.4 ) test? ( >=dev-lang/tcl-8.4 ) java? ( >=virtual/jdk-1.5 ) >=sys-devel/binutils-2.16.1 test? ( >=dev-lang/tcl-8.4 ) java? ( >=dev-java/java-config-2.1.9-r1 ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13 >=sys-devel/automake-1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+DEPEND=tcl? ( >=dev-lang/tcl-8.4 ) test? ( >=dev-lang/tcl-8.4 ) java? ( >=virtual/jdk-1.5 ) >=sys-devel/binutils-2.16.1 test? ( >=dev-lang/tcl-8.4 ) java? ( >=dev-java/java-config-2.2.0-r3 ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13 >=sys-devel/automake-1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
 DESCRIPTION=Oracle Berkeley DB
 HOMEPAGE=http://www.oracle.com/technology/software/products/berkeley-db/index.html
 IUSE=doc java nocxx tcl test doc test elibc_FreeBSD java
 KEYWORDS=*
 LICENSE=Sleepycat
-RDEPEND=tcl? ( dev-lang/tcl ) java? ( >=virtual/jre-1.5 ) java? ( >=dev-java/java-config-2.1.9-r1 )
+RDEPEND=tcl? ( dev-lang/tcl ) java? ( >=virtual/jre-1.5 ) java? ( >=dev-java/java-config-2.2.0-r3 )
 SLOT=4.7
 SRC_URI=http://download.oracle.com/berkeley-db/db-4.7.25.tar.gz
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	db	1135d23301373966b04d357a4397bc9a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	java-pkg-opt-2	f9bbbe5092225a2059aa9e6a3a2b52f1	java-utils-2	4241a8d9ed765c83041b38ac128505cd	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	6207477a739f6f25d13da27b9cc00160	db	1135d23301373966b04d357a4397bc9a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	java-pkg-opt-2	be255db325e3af8fbf3506cf63998341	java-utils-2	1971a6927fcd7ec839f7e12b28a24bdd	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=3de30c2d8cd88a237bd6975483b08455

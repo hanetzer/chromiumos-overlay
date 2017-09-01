@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Ebuild for Android Libs (libc, libcxx, etc).
+EAPI=5
+KEYWORDS=-* amd64
+LICENSE=GPL-3 LGPL-3 GPL-3
+RESTRICT=strip
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/arc-libs-2016.08.02.071310_p1.tar.gz
+_md5_=1572cf80f803b6d1fa8b171cc84843fc

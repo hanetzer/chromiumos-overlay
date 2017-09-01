@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=>=dev-embedded/libftdi-1.0
+DESCRIPTION=Linux command-line alternative to the FTProg utility for FTDI's FT-X series of USB interfaces
+EAPI=4
+HOMEPAGE=https://github.com/richardeoin/ftx-prog
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=>=dev-embedded/libftdi-1.0
+SLOT=0
+SRC_URI=https://github.com/richardeoin/ftx-prog/archive/1341d561973b87238676950140ea91bd1b456bd8.tar.gz -> ftx-prog-20160531.tar.gz
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=a761386e3562b7047ca1533c7e275b57

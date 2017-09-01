@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Install the upstart job that creates the swap and zram.
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=sys-apps/util-linux
-SLOT=0
-_md5_=1fdcd6a1bca6b726b78033be9cb03d7d

@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install prepare setup test
+DEPEND=virtual/libusb:1 !>=dev-embedded/libftdi-1.0:0 cxx? ( dev-libs/boost ) python? ( python_single_target_python2_7? ( >=dev-lang/python-2.7.5-r2:2.7 ) python_single_target_python3_4? ( dev-lang/python:3.4 ) python_single_target_python3_5? ( dev-lang/python:3.5 ) >=dev-lang/python-exec-2:=[python_targets_python2_7(-)?,python_targets_python3_4(-)?,python_targets_python3_5(-)?,-python_single_target_jython2_7(-),-python_single_target_pypy(-),-python_single_target_pypy3(-),-python_single_target_python3_3(-),-python_single_target_python3_6(-),python_single_target_python2_7(+)?,python_single_target_python3_4(+)?,python_single_target_python3_5(+)?] ) tools? ( !<dev-embedded/ftdi_eeprom-1.0 dev-libs/confuse ) python? ( dev-lang/swig ) doc? ( app-doc/doxygen ) sys-devel/make >=dev-util/cmake-2.8.12
+DESCRIPTION=Userspace access to FTDI USB interface chips
+EAPI=5
+HOMEPAGE=http://www.intra2net.com/en/developer/libftdi/
+IUSE=cxx doc examples python static-libs test tools python_targets_python2_7 python_targets_python3_4 python_targets_python3_5 python_single_target_python2_7 python_single_target_python3_4 python_single_target_python3_5
+KEYWORDS=*
+LICENSE=LGPL-2
+RDEPEND=virtual/libusb:1 !>=dev-embedded/libftdi-1.0:0 cxx? ( dev-libs/boost ) python? ( python_single_target_python2_7? ( >=dev-lang/python-2.7.5-r2:2.7 ) python_single_target_python3_4? ( dev-lang/python:3.4 ) python_single_target_python3_5? ( dev-lang/python:3.5 ) >=dev-lang/python-exec-2:=[python_targets_python2_7(-)?,python_targets_python3_4(-)?,python_targets_python3_5(-)?,-python_single_target_jython2_7(-),-python_single_target_pypy(-),-python_single_target_pypy3(-),-python_single_target_python3_3(-),-python_single_target_python3_6(-),python_single_target_python2_7(+)?,python_single_target_python3_4(+)?,python_single_target_python3_5(+)?] ) tools? ( !<dev-embedded/ftdi_eeprom-1.0 dev-libs/confuse )
+REQUIRED_USE=python? ( ^^ ( python_single_target_python2_7 python_single_target_python3_4 python_single_target_python3_5 ) python_single_target_python2_7? ( python_targets_python2_7 ) python_single_target_python3_4? ( python_targets_python3_4 ) python_single_target_python3_5? ( python_targets_python3_5 ) )
+SLOT=1
+SRC_URI=http://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.2.tar.bz2
+_eclasses_=cmake-utils	9e0d156beee613940cde06d0bc00791b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=ac95650e1ed4bb2aef12ba652885c185

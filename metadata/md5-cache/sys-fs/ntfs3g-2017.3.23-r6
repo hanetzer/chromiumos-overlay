@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install prepare setup
+DEPEND=!<sys-apps/util-linux-2.20.1-r2 !sys-fs/ntfsprogs ntfsdecrypt? ( >=dev-libs/libgcrypt-1.2.2:0 >=net-libs/gnutls-1.4.4 ) external-fuse? ( >=sys-fs/fuse-2.8.0 <sys-fs/fuse-3.0.0_pre ) sys-apps/attr virtual/pkgconfig virtual/pkgconfig
+DESCRIPTION=Open source read-write NTFS driver that runs under FUSE
+EAPI=5
+HOMEPAGE=http://www.tuxera.com/community/ntfs-3g-download/
+IUSE=acl debug +external-fuse ntfsdecrypt +ntfsprogs static-libs suid xattr
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<sys-apps/util-linux-2.20.1-r2 !sys-fs/ntfsprogs ntfsdecrypt? ( >=dev-libs/libgcrypt-1.2.2:0 >=net-libs/gnutls-1.4.4 ) external-fuse? ( >=sys-fs/fuse-2.8.0 <sys-fs/fuse-3.0.0_pre )
+SLOT=0/87
+SRC_URI=http://tuxera.com/opensource/ntfs-3g_ntfsprogs-2017.3.23.tgz
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	linux-info	a238cd46144175b5f6538caa13bdf180	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	udev	a9a8d051efb42bfe884c1db82ce161de	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=cb1fe48876b3c2559968c32c5b5ec8dc

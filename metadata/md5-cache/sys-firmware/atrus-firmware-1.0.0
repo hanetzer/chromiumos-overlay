@@ -1,0 +1,10 @@
+DEFINED_PHASES=install
+DESCRIPTION=Atrus speakerphone firmware
+EAPI=5
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/third_party/atrusctl/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/atrusctl
+SLOT=0
+SRC_URI=gs://chromeos-localmirror/distfiles/atrus-firmware-1.0.0.tgz
+_md5_=615006fb2da32e60a6b4cbcd91de1b71

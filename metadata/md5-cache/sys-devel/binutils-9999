@@ -1,4 +1,4 @@
-DEFINED_PHASES=compile configure info install postinst postrm prepare setup test unpack
+DEFINED_PHASES=compile configure info install postinst postrm setup test unpack
 DEPEND=>=sys-devel/binutils-config-1.9 test? ( dev-util/dejagnu ) nls? ( sys-devel/gettext ) sys-devel/flex sys-devel/gnuconfig dev-vcs/git
 DESCRIPTION=Tools necessary to build programs
 EAPI=4
@@ -8,7 +8,7 @@ KEYWORDS=~*
 LICENSE=|| ( GPL-3 LGPL-3 )
 RDEPEND=>=sys-devel/binutils-config-1.9
 REQUIRED_USE=next_binutils? ( !prev_binutils )
-RESTRICT=fetch strip
+RESTRICT=fetch
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=c6a0531fe15e56710d4af218e12f360d
+_eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	e8eb1129f8327b7e29c63d174c5003b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=ed72fec84ca2630762013c5ea1b94d01

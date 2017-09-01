@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=!chromeos-base/chromeos-factory
+DESCRIPTION=List of packages that are needed inside the Chromium OS factory image.
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/factory !chromeos-base/chromeos-factory
+SLOT=0
+_md5_=a9971b13836e7bf03c0a430c2575ef9d

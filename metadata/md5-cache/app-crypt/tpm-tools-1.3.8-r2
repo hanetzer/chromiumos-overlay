@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=!tpm2? ( >=app-crypt/trousers-0.3.0 ) dev-libs/openssl pkcs11? ( dev-libs/opencryptoki ) nls? ( sys-devel/gettext ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+DESCRIPTION=TrouSerS' support tools for the Trusted Platform Modules
+EAPI=4
+HOMEPAGE=http://trousers.sourceforge.net
+IUSE=nls pkcs11 debug tpm2
+KEYWORDS=*
+LICENSE=CPL-1.0
+RDEPEND=!tpm2? ( >=app-crypt/trousers-0.3.0 ) dev-libs/openssl pkcs11? ( dev-libs/opencryptoki ) nls? ( virtual/libintl )
+SLOT=0
+SRC_URI=mirror://sourceforge/trousers/tpm-tools-1.3.8.tar.gz
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=9ef2cb70fd2dab71dcfb49a47cc3059a

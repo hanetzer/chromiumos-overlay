@@ -1,0 +1,12 @@
+DEFINED_PHASES=install
+DEPEND=net-misc/gsutil
+DESCRIPTION=GN (generate ninja) meta-build system
+EAPI=5
+HOMEPAGE=https://code.google.com/p/chromium/wiki/gn
+KEYWORDS=-* amd64
+LICENSE=BSD-Google
+RDEPEND=dev-libs/libpcre dev-libs/glib
+RESTRICT=mirror
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gn-d2c9075aedbc0894ff2e573870d8ac35b37def57.bin
+_md5_=241d344ff22f00deb6f63d4acd8f466a

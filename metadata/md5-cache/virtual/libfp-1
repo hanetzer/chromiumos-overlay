@@ -1,0 +1,6 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for fingerprint support libraries
+EAPI=5
+KEYWORDS=*
+SLOT=0
+_md5_=50b098b4103abd8e7e8fcd5b03e55b61

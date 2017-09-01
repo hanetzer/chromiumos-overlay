@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual for ARC OpenGLES implementations
+EAPI=5
+KEYWORDS=*
+RDEPEND=media-libs/arc-mesa
+SLOT=0
+_md5_=23d1edeb43e2c313e892e7b3dbb39d46

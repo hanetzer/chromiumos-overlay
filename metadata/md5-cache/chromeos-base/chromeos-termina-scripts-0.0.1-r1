@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install scripts for setting up termina VMs
+EAPI=5
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-nat-init
+SLOT=0
+_md5_=5c1a086011048d981a90fe1b20162b92

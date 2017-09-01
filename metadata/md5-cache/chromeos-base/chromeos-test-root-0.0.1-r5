@@ -1,9 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Install packages that must live in the rootfs in test images
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=chromeos-base/chromeos-test-init virtual/chromeos-test-testauthkeys virtual/chromeos-bsp-test-root
-SLOT=0
-_md5_=a623f36e9c406d5f7efa4c7ff37dbfca

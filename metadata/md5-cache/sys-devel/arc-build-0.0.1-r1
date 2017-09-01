@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure install test
+DESCRIPTION=Ebuild for per-sysroot arc-build components.
+EAPI=5
+IUSE=android-container android-container-nyc android-container-master-arc-dev abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!!chromeos-base/arc-build-master !!chromeos-base/arc-build-nyc !!chromeos-base/arc-build
+REQUIRED_USE=^^ ( android-container android-container-nyc android-container-master-arc-dev )
+SLOT=0
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	multilib-build	8fe2e81aeb36cdf8a6cc5f50443879cc	multilib-minimal	0224dee31c0f98405d572e14ad6dee65	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=c84240f73273b6997c77f856b862c9d0
