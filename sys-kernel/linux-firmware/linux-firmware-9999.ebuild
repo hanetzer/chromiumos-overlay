@@ -4,8 +4,9 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_BOARDS=(eve)
 
-inherit cros-workon
+inherit cros-board cros-workon
 
 DESCRIPTION="Firmware images from the upstream linux-fimware package"
 HOMEPAGE="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/"
@@ -167,6 +168,13 @@ src_install() {
 	# ipu3-fw.bin is a symlink to irci_*.bin
 	use_fw ipu3_fw && doins intel/irci_* intel/ipu3-fw.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
+	# Install a test version of Bluetooth Fw for Eve only.
+	if use board_use_eve; then
+		(
+			insinto "${FIRMWARE_INSTALL_ROOT}/intel/"
+			use_fw ibt-hw && newins intel/eve-only-ibt-hw-37.8.10-fw-22.50.19.14.f.bseq ibt-hw-37.8.10-fw-22.50.19.14.f.bseq
+		)
+	fi
 	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
 	use_fw rtl8168g-2 && doins_subdir rtl_nic/rtl8168g-2.fw
