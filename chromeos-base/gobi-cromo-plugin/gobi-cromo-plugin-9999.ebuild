@@ -15,18 +15,14 @@ DESCRIPTION="Cromo plugin to control Qualcomm Gobi modems"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="install_tests internal"
-
+IUSE="install_tests"
 
 RDEPEND="
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/cromo
 	chromeos-base/gobi3k-sdk
-	|| (
-		!internal? ( chromeos-base/gobi3k-lib-bin )
-		chromeos-base/gobi3k-lib
-	)
+	chromeos-base/gobi3k-lib
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	install_tests? ( dev-cpp/gmock dev-cpp/gtest )
