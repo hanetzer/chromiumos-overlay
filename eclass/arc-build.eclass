@@ -91,6 +91,9 @@ _arc-build-select-common() {
 		;;
 	esac
 
+	# Add Android related utilities location to ${PATH}.
+	export PATH="${ARC_GCC_BASE}/bin:${PATH}"
+
 	# Strip out flags that are specific to our compiler wrapper.
 	filter-flags -clang-syntax
 
