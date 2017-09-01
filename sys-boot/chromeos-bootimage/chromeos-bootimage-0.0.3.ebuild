@@ -16,25 +16,19 @@ BOARDS="${BOARDS} chell coral cyan emeraldlake2 eve falco fizz fox"
 BOARDS="${BOARDS} glados jecht kahlee kblrvp kunimitsu link lumpy lumpy64 mario nasher nautilus"
 BOARDS="${BOARDS} panther parrot peppy poppy pyro rambi reef samus sand sklrvp slippy snappy"
 BOARDS="${BOARDS} soraka squawks stout strago stumpy sumo zoombini"
-IUSE="${BOARDS} +bmpblk cb_legacy_seabios cb_legacy_uboot"
-IUSE="${IUSE} cros_ec exynos fsp"
-IUSE="${IUSE} pd_sync tegra fastboot unibuild"
+IUSE="${BOARDS} cb_legacy_seabios cb_legacy_uboot"
+IUSE="${IUSE} fsp fastboot unibuild"
 
 REQUIRED_USE="
 	^^ ( ${BOARDS} arm mips )
 "
 
 DEPEND="
-	exynos? ( sys-boot/exynos-pre-boot )
-	tegra? ( virtual/tegra-bct )
-	cros_ec? ( chromeos-base/chromeos-ec )
-	pd_sync? ( chromeos-base/chromeos-ec )
-	chromeos-base/vboot_reference
-	bmpblk? ( sys-boot/chromeos-bmpblk )
-	cb_legacy_uboot? ( virtual/u-boot )
-	cb_legacy_seabios? ( sys-boot/chromeos-seabios )
 	sys-boot/coreboot
 	sys-boot/depthcharge
+	sys-boot/chromeos-bmpblk
+	cb_legacy_uboot? ( virtual/u-boot )
+	cb_legacy_seabios? ( sys-boot/chromeos-seabios )
 	unibuild? ( chromeos-base/chromeos-config )
 	"
 
