@@ -1,0 +1,25 @@
+Mark operator overload functions as const to avoid compiler errors
+when building with libc++. This is already fixed in upstream OpenCV.
+https://crbug.com/747060
+
+diff -Nuar OpenCV-2.3.0/modules/flann/include/opencv2/flann/result_set.h opencv_new/modules/flann/include/opencv2/flann/result_set.h
+--- OpenCV-2.3.0/modules/flann/include/opencv2/flann/result_set.h
++++ opencv_new/modules/flann/include/opencv2/flann/result_set.h
+@@ -51,7 +51,7 @@
+ 	T node;           /* Tree node at which search resumes */
+ 	float mindistsq;     /* Minimum distance to query for all nodes below. */
+ 
+-	bool operator<(const BranchStruct<T>& rhs)
++	bool operator<(const BranchStruct<T>& rhs) const
+ 	{
+         return mindistsq<rhs.mindistsq;
+ 	}
+@@ -208,7 +208,7 @@
+ 		int index;
+ 		float dist;
+ 
+-		bool operator<(Item rhs) {
++		bool operator<(Item rhs) const {
+ 			return dist<rhs.dist;
+ 		}
+ 	};

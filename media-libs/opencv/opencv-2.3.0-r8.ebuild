@@ -63,6 +63,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.3.0-libpng15.patch"
 	"${FILESDIR}/${PN}-2.3.0-manual-change-fps.patch"
 	"${FILESDIR}/${PN}-2.3.0-clang-error.patch"
+	"${FILESDIR}/${PN}-2.3.0-const-operator.patch"
 )
 
 CMAKE_BUILD_TYPE="Release"
