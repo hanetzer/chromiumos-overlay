@@ -28,9 +28,6 @@ cros-binary_add_uri()
 		die "cros-binary_add_uri takes exactly one argument; $# given."
 	fi
 	local uri="$1"
-	if [[ "${uri}" =~ ^ssh://([^@]+)@git.chromium.org[^/]*/(.*)$ ]]; then
-		uri="gs://chromeos-binaries/HOME/${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
-	fi
 	case "${uri}" in
 		http://*|https://*|gs://*)
 			SRC_URI+=" ${uri}"
