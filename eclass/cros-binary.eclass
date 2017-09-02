@@ -37,6 +37,14 @@ cros-binary_add_uri()
 			;;
 	esac
 	RESTRICT+=" mirror"
+
+	if [[ ${uri} =~ -r[0-9]+\.tbz2 ]]; then
+		ewarn "Tarballs should not encode ebuild rev numbers (-r#)."
+		ewarn "The ebuild revision field is only for changes to the ebuild itself."
+		ewarn "If you want to update the source tarball, update the PV instead."
+		ewarn "  bad: foo-0.0.1-r8.tbz2 or foo-0.0.1.tbz2 -> foo-0.0.1-r1.tbz2"
+		ewarn " good: foo-0.0.8.tbz2    or foo-0.0.1.tbz2 -> foo-0.0.2.tbz2"
+	fi
 }
 
 # @ECLASS-FUNCTION: cros-binary_add_gs_uri
