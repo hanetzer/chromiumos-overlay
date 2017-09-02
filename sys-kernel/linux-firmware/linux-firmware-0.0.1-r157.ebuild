@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="6ea9ba6c54b0531f8282a28386bdbaca37599140"
-CROS_WORKON_TREE="3c75612482cddb8165504150b0651585d0f1f4cc"
+CROS_WORKON_COMMIT="c47a135850e712eb6fc4e47906b3bd18bc4255d1"
+CROS_WORKON_TREE="909b05337163242a1c0981c286003ddb7cc9ba5f"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -93,7 +93,7 @@ LICENSE="
 	linux_firmware_i915_bxt? ( LICENSE.i915 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_i915_kbl? ( LICENSE.i915 )
-	linux_firmware_ipu3_fw? ( LICENSE.ipu3_fw )
+	linux_firmware_ipu3_fw? ( LICENSE.ipu3_firmware )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
@@ -166,7 +166,8 @@ src_install() {
 	use_fw i915_bxt && doins_subdir i915/bxt*
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw i915_kbl && doins_subdir i915/kbl*
-	use_fw ipu3_fw && doins ipu3-fw.bin
+	# ipu3-fw.bin is a symlink to irci_*.bin
+	use_fw ipu3_fw && doins intel/irci_* intel/ipu3-fw.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw qca-bt && doins_subdir qca/*
 	use_fw rtl8168g-1 && doins_subdir rtl_nic/rtl8168g-1.fw
