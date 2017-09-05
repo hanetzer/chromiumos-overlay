@@ -62,6 +62,7 @@ src_configure() {
 		$(use_enable udev)
 		--disable-cairo-tests
 		"--prefix=${ARC_PREFIX}/vendor"
+		"--datadir=${ARC_PREFIX}/vendor/usr/share"
 	)
 	xorg-2_src_configure
 }
