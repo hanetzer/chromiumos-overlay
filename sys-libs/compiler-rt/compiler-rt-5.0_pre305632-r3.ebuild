@@ -52,6 +52,14 @@ src_configure() {
 	setup_cross_toolchain
 	# Need libgcc for bootstrapping.
 	append-flags "-rtlib=libgcc"
+	# Compiler-rt libraries need to be built before libc++ when
+	# libc++ is default in clang.
+	# Compiler-rt builtins are C only.
+	# Even though building compiler-rt libraries does not require C++ compiler,
+	# CMake does not like a non-working C++ compiler.
+	# Avoid CMake complains about non-working C++ compiler
+	# by using libstdc++ since libc++ is built after compiler-rt in crossdev.
+	append-cxxflags "-stdlib=libstdc++"
 	append-flags "-fomit-frame-pointer"
 	if [[ ${CATEGORY} == cross-armv7a* ]] ; then
 		# Use vfpv3 to be able to target non-neon targets
