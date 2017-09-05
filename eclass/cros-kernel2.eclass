@@ -125,7 +125,6 @@ CONFIG_FRAGMENTS=(
 	usb_gadget_audio
 	usb_gadget_ncm
 	vfat
-	video_cards_amdgpu
 	vlan
 	vtconsole
 	wifi_testbed_ap
@@ -485,11 +484,6 @@ CONFIG_USB_CONFIGFS_F_UAC2=y
 usb_gadget_ncm_desc="USB NCM gadget support"
 usb_gadget_ncm_config="
 CONFIG_USB_CONFIGFS_NCM=y
-"
-
-video_cards_amdgpu_desc="AMDGPU driver"
-video_cards_amdgpu_config="
-CONFIG_DRM_AMDGPU=y
 "
 
 vlan_desc="802.1Q VLAN"
