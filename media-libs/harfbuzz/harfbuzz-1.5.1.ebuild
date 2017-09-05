@@ -9,7 +9,6 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/harfbuzz"
 PYTHON_COMPAT=( python2_7 )
 
 inherit eutils flag-o-matic libtool multilib-minimal python-any-r1
-#inherit eutils libtool multilib-minimal python-any-r1 xdg-utils
 
 DESCRIPTION="An OpenType text shaping engine"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/HarfBuzz"
@@ -20,7 +19,7 @@ SLOT="0/0.9.18" # 0.9.18 introduced the harfbuzz-icu split; bug #472416
 [[ ${PV} == 9999 ]] || \
 KEYWORDS="*"
 
-IUSE="+cairo debug fontconfig +glib +graphite icu +introspection static-libs test +truetype"
+IUSE="+cairo debug fontconfig +glib graphite icu introspection static-libs test +truetype"
 REQUIRED_USE="introspection? ( glib )"
 
 RDEPEND="
@@ -47,7 +46,6 @@ DEPEND="${RDEPEND}
 pkg_setup() {
 	use test && python-any-r1_pkg_setup
 	if ! use debug ; then
-		append-cppflags -DNDEBUG
 		append-cppflags -DHB_NDEBUG
 	fi
 }
