@@ -2,51 +2,44 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="3b8cbef069fb8cd4a55b838f4c28896d6882a748"
-CROS_WORKON_TREE="2b19ba299bd9d0a8ed984c7e623014a4158e2c6b"
+CROS_WORKON_COMMIT="6961f9315c5c907045aeedfc8744c08da7a0d7b8"
+CROS_WORKON_TREE="619ce318c0dcb264eed413ffa0a110e23bc4d119"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="Camera algorithm bridge library for 3A isolation"
+DESCRIPTION="ARC camera HAL v3 exif util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="-asan"
 
-RDEPEND=""
+RDEPEND="media-libs/libexif"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libmojo"
+	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcab
+	emake BASE_VER=${LIBCHROME_VERS} libcamera_exif
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dobin common/arc_camera_algo
-
-	dolib common/libcab.pic.a
+	dolib.so common/libcamera_exif.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/camera_algorithm.h
-	doins include/arc/camera_algorithm_bridge.h
+	doins include/arc/exif_utils.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		"common/libcab.pc.template" > "common/libcab.pc"
+		common/libcamera_exif.pc.template > common/libcamera_exif.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcab.pc
-
-	insinto /etc/init
-	doins common/init/arc-camera-algo.conf
-
-	insinto "/usr/share/policy"
-	doins common/arc-camera-algo.policy
+	doins common/libcamera_exif.pc
 }
