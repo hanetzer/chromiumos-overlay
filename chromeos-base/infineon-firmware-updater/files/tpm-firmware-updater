@@ -210,6 +210,29 @@ approve_update() {
   return 0
 }
 
+# Prepares the TPM before installing the update.
+prepare_tpm() {
+  local tpm_auth_mechanism="$1"
+  case "${tpm_auth_mechanism}" in
+    # In case of owner-authorized updates:
+    # Request another TPM reset to take place after installing the update. This
+    # is important because owner-authorized update carries over some state
+    # (notably the SRK) which we specifically don't want to happen.
+    tpm12-takeownership)
+      crossystem clear_tpm_owner_request=1
+      ;;
+
+    # In case of PP-authorized updates:
+    # The PP update still fails if the TPM is owned. Clear the TPM owner
+    # before the update. Ignore the TPM_FAILEDSELFTEST error code (28): There is
+    # no need to clear the owner in that situation, but we need to allow retries
+    # after failed updates to recover from failed selftest mode.
+    tpm12-PP)
+      tpmc clear || [ $? -eq 28 ]
+      ;;
+  esac
+}
+
 # Fires off the firmware updater to install the update. Writes progress
 # information (decimal numbers indicating completion in percentage) to stdout.
 install_update() {
@@ -316,10 +339,7 @@ main() {
     updater_options="-dry-run"
   fi
 
-  # Request another TPM reset to take place after installing the update. This is
-  # important because owner-authorized update carries over some state (notably
-  # the SRK) which we specifically don't want to happen.
-  crossystem clear_tpm_owner_request=1
+  prepare_tpm "${tpm_auth_mechanism}"
 
   # This is the point of no return. Fingers crossed!
   # We write 0 and 100 before and after the updater runs as progress indicators
