@@ -101,6 +101,7 @@ set '${EC_BOARDS[*]}'"
 
 	if use cr50_onboard; then
 		dosbin "extra/usb_updater/usb_updater"
+		dosym "usb_updater" "/usr/sbin/gsctool"
 	fi
 
 	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then

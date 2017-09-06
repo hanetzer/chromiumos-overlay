@@ -6,7 +6,7 @@
 # This script is run in the factory process, which sets the board id and
 # flags properly for cr50.
 
-UPDATER="/usr/sbin/usb_updater"
+UPDATER="/usr/sbin/gsctool"
 
 # The return codes for different failure reasons.
 ERR_GENERAL=1
