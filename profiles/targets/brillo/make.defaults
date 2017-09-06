@@ -6,3 +6,6 @@ USE=""
 
 # Enable general security hardening by default.
 USE="${USE} hardened"
+
+# Disable containers for any embedded uses.
+USE="${USE} -containers"

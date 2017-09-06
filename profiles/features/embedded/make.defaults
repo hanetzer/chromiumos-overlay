@@ -12,5 +12,8 @@ USE="${USE} -cups"
 # WiFi powersave mode.
 USE="${USE} -powerknobs"
 
+# Disable containers for embedded use cases.
+USE="${USE} -containers"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE="-*"
