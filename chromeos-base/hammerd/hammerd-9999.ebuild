@@ -39,9 +39,11 @@ pkg_preinst() {
 src_install() {
 	dobin "${OUT}/hammerd"
 
-	# Install upstart config.
+	# Install upstart configs and scripts.
 	insinto /etc/init
 	doins init/*.conf
+	exeinto /usr/share/cros/init
+	doexe init/*.sh
 
 	# Install exposed API.
 	dolib.so "${OUT}"/lib/libhammerd-api.so
