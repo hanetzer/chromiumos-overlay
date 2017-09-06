@@ -32,6 +32,7 @@ IUSE="
 	+fonts
 	gobi
 	hammerd
+	input_devices_evdev
 	intel_lpe
 	kvm_host
 	mtd
@@ -134,6 +135,7 @@ REQUIRED_USE="cellular? ( shill )"
 CROS_COMMON_RDEPEND="!chromeos-base/chromeos"
 
 CROS_COMMON_RDEPEND+="
+	input_devices_evdev? ( app-misc/evtest )
 	syslog? ( app-admin/rsyslog )
 	biod? ( chromeos-base/biod )
 	bluetooth? ( net-wireless/bluez )
