@@ -137,6 +137,19 @@ get_model_list_noroot() {
 	get_dtb | fdtget - -l "/chromeos/models" 2>/dev/null
 }
 
+# @FUNCTION: get_shared_firmware_list_noroot
+# @USAGE:
+# @DESCRIPTION:
+# Obtain a list of all of the shared firmware models known to the build DTB in
+# files/
+# @RETURN:
+# A newline-separated string representing the list of models; may be empty
+get_shared_firmware_list_noroot() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	get_dtb | fdtget - -l "/chromeos/family/firmware" 2>/dev/null
+}
+
 # @FUNCTION: get_each_model_conf_value_set
 # @USAGE: <path> <prop>
 # @RETURN:

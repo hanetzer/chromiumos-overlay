@@ -484,7 +484,15 @@ _get_source_uris_for_model() {
 cros-firmware_setup_source_unibuild() {
 	local model uri_list
 
+	# Do shared firmware first
+	for model in $(get_shared_firmware_list_noroot); do
+		uri_list+="$(_get_source_uris_for_model "${model}")"
+	done
+
 	for model in $(get_model_list_noroot); do
+		if [[ -n "$(cros-firmware_get_config shares)" ]]; then
+			continue
+		fi
 		uri_list+="$(_get_source_uris_for_model "${model}")"
 	done
 	if [[ -n "${uri_list// }" ]]; then
