@@ -109,15 +109,10 @@ get_model_list() {
 		-l /chromeos/models 2>/dev/null
 }
 
-# @FUNCTION: get_model_list_noroot
-# @USAGE:
-# @DESCRIPTION:
-# Obtain a list of all of the models known to the build DTB in files/
-# @RETURN:
-# A newline-separated string representing the list of known models; may be empty
-get_model_list_noroot() {
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
-
+# Internal function to compile the device tree file on-the-fly and output a
+# file suitable for piping into fdtget, etc.
+# TODO(crbug.com/761264): Move this to cros_config.
+get_dtb() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local filesdir="$(dirname "${EBUILD}")/files"
@@ -127,8 +122,19 @@ get_model_list_noroot() {
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
 		cat - "${filesdir}/model.dtsi" |
-		dtc -O dtb |
-		fdtget - -l "/chromeos/models" 2>/dev/null
+		dtc -O dtb
+}
+
+# @FUNCTION: get_model_list_noroot
+# @USAGE:
+# @DESCRIPTION:
+# Obtain a list of all of the models known to the build DTB in files/
+# @RETURN:
+# A newline-separated string representing the list of known models; may be empty
+get_model_list_noroot() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	get_dtb | fdtget - -l "/chromeos/models" 2>/dev/null
 }
 
 # @FUNCTION: get_each_model_conf_value_set
@@ -214,18 +220,9 @@ get_model_conf_value_noroot() {
 	local path="$2"
 	local prop="$3"
 
-	# This function is called before FILESDIR is set so figure it out from
-	# the ebuild filename.
-	local filesdir="$(dirname "${EBUILD}")/files"
-
-	# We are not allowed to access the ROOT directory here, so compile the
-	# model fragment on the fly and pull out the value we want.
 	local r
 	r=$(
-		echo "/dts-v1/; / { chromeos { family: family { }; " \
-		"models: models { }; }; };" |
-		cat - "${filesdir}/model.dtsi" |
-		dtc -O dtb |
+		get_dtb |
 		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
 		2>/dev/null
 	)
@@ -235,20 +232,12 @@ get_model_conf_value_noroot() {
 		# The value is missing; is it available at a firmware shares
 		# phandle?
 		local share
-		share=$(
-			echo "/dts-v1/; / { chromeos { family: family { }; " \
-			"models: models { }; }; };" |
-			cat - "${filesdir}/model.dtsi" |
-			dtc -O dtb |
-			fdtget - -f \
+		share=$(get_dtb | fdtget - -f \
 			"/chromeos/models/${model}/firmware" shares 2>/dev/null
 		)
 
 		if [[ $? -eq 0 ]]; then
-			echo "/dts-v1/; / { chromeos { family: family { }; " \
-			"models: models { }; }; };" |
-			cat - "${filesdir}/model.dtsi" |
-			dtc -O dtb | fdtget - \
+			get_dtb | fdtget - \
 			"${share}${path#/firmware}" "${prop}" 2>/dev/null
 			return $?
 		fi
