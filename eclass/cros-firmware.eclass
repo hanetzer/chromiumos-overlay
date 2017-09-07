@@ -452,31 +452,43 @@ _expand_list() {
 	IFS="${ifs}" read -r -a ${var} <<<"${*:3}"
 }
 
+# Get a list of files mentioned in the master configuration which needs to be
+# added to SRC_URI for a particular model.
+# Args:
+#   $1: model to look up
+_get_source_uris_for_model() {
+	local model="$1"
+	local extra_list image overlay path uri uris
+
+	overlay="$(cros-firmware_get_config bcs-overlay)"
+	if [[ -z "${overlay}" ]]; then
+		die "Please add bcs-overlay to master configuration"
+	fi
+	overlay="${overlay#overlay-}"
+	for image in main-image main-rw-image ec-image pd-image; do
+		uri="$(cros-firmware_get_config ${image})"
+		if [[ -n "${uri}" ]]; then
+			uris+=" $(_add_uri "${uri}" "${overlay}" \
+				"chromeos-firmware-${model}")"
+		fi
+	done
+	for path in $(cros-firmware_get_config extra); do
+		uris+=" $(_add_uri "${path}" "${overlay}" \
+			"chromeos-firmware-${model}")"
+	done
+	echo "${uris}"
+}
+
 # Add any files mentioned in the master configuration to SRC_URI so that they
 # will be downloaded if unibuild is enabled.
 cros-firmware_setup_source_unibuild() {
-	local extra_list image model overlay path uri uris
+	local model uri_list
 
 	for model in $(get_model_list_noroot); do
-		overlay="$(cros-firmware_get_config bcs-overlay)"
-		if [[ -z "${overlay}" ]]; then
-			die "Please add bcs-overlay to master configuration"
-		fi
-		overlay="${overlay#overlay-}"
-		for image in main-image main-rw-image ec-image pd-image; do
-			uri="$(cros-firmware_get_config ${image})"
-			if [[ -n "${uri}" ]]; then
-				uris+=" $(_add_uri "${uri}" "${overlay}" \
-					"chromeos-firmware-${model}")"
-			fi
-		done
-		for path in $(cros-firmware_get_config extra); do
-			uris+=" $(_add_uri "${path}" "${overlay}" \
-				"chromeos-firmware-${model}")"
-		done
+		uri_list+="$(_get_source_uris_for_model "${model}")"
 	done
-	if [[ -n "${uris// }" ]]; then
-		SRC_URI+="unibuild? ( ${uris} )"
+	if [[ -n "${uri_list// }" ]]; then
+		SRC_URI+="unibuild? ( ${uri_list} )"
 	fi
 }
 
