@@ -47,6 +47,10 @@ src_install() {
 	insinto /etc/init
 	doins hal_adapter/init/camera-halv3-adapter.conf
 
+	# Install seccomp policy file.
+	insinto /usr/share/policy
+	newins hal_adapter/seccomp_filter/camera-halv3-adapter-${ARCH}.policy camera-halv3-adapter.policy
+
 	if use cheets; then
 		insinto /opt/google/containers/android/vendor/etc/init
 		doins hal_adapter/init/init.camera.rc
