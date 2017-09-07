@@ -13,12 +13,7 @@ CROS_WORKON_DESTDIR="${S}/src/github.com/golang/protobuf"
 CROS_GO_PACKAGES=(
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/ptypes/any"
-	"github.com/golang/protobuf/ptypes/duration"
-	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/golang/protobuf/ptypes/..."
 )
 
 CROS_GO_BINARIES=(

@@ -6,16 +6,11 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
 CROS_GO_PACKAGES=(
-	"chromiumos/tast/common/control"
-	"chromiumos/tast/common/host"
-	"chromiumos/tast/common/runner"
-	"chromiumos/tast/common/testing"
-	"chromiumos/tast/common/testing/attr"
-	"chromiumos/tast/common/testutil"
+	"chromiumos/tast/common/..."
 )
 
 CROS_GO_TEST=(
-	"chromiumos/tast/common/..."
+	"${CROS_GO_PACKAGES[@]}"
 )
 
 inherit cros-go cros-workon

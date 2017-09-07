@@ -40,6 +40,8 @@
 #   to "/usr/lib/gopath/src/github.com/golang/glog"
 # and other Go projects can use the package with
 #   import "github.com/golang/glog"
+# If the last component of a package path is "...", it is
+# expanded to include all Go packages under the directory.
 
 # @ECLASS-VARIABLE: CROS_GO_TEST
 # @DESCRIPTION:
@@ -68,6 +70,7 @@ go_test() {
 cros-go_src_compile() {
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
+		einfo "Building \"${bin}\""
 		local name="${bin##*/}"
 		name="${name#*:}"
 		bin="${bin%:*}"
@@ -85,16 +88,21 @@ cros-go_src_install() {
 	# Install the compiled binaries.
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
+		einfo "Installing \"${bin}\""
 		local name="${bin##*/}"
 		name="${name#*:}"
 		dobin "${name}"
 	done
 
 	# Install the importable packages in /usr/lib/gopath.
+	local pkglist=()
+	if [[ ${#CROS_GO_PACKAGES[@]} != 0 ]] ; then
+		pkglist=( $(cros_go list "${CROS_GO_PACKAGES[@]}") )
+	fi
 	local pkg
-	for pkg in "${CROS_GO_PACKAGES[@]}" ; do
+	for pkg in "${pkglist[@]}" ; do
+		einfo "Installing \"${pkg}\""
 		local pkgdir="${workspace}/src/${pkg}"
-		[[ -d "${pkgdir}" ]] || die "Package not found: \"${pkg}\""
 		(
 			# Run in sub-shell so we do not modify env.
 			insinto "/usr/lib/gopath/src/${pkg}"
@@ -107,7 +115,7 @@ cros-go_src_install() {
 
 	# Check for missing dependencies of installed packages.
 	local CROS_GO_WORKSPACE="${D}/usr/lib/gopath"
-	for pkg in "${CROS_GO_PACKAGES[@]}" ; do
+	for pkg in "${pkglist[@]}" ; do
 		if [[ $(cros_go list -f "{{.Incomplete}}" "${pkg}") == "true" ]] ; then
 			cros_go list -f "{{.DepsErrors}}" "${pkg}"
 			die "Package has missing dependency: \"${pkg}\""
