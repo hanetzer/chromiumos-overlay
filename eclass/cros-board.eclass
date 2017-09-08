@@ -328,6 +328,7 @@ ALL_BOARDS=(
 	wolf
 	wooten
 	wsb
+	x30evb
 	x32-generic
 	x86-agz
 	x86-alex
