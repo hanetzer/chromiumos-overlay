@@ -348,3 +348,20 @@ gallium_enable() {
 			;;
 	esac
 }
+
+vulkan_enable() {
+	case $# in
+		# for enabling unconditionally
+		1)
+			VULKAN_DRIVERS+=",$1"
+			;;
+		*)
+			if use $1; then
+				shift
+				for i in $@; do
+					VULKAN_DRIVERS+=",${i}"
+				done
+			fi
+			;;
+	esac
+}
