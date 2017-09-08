@@ -131,7 +131,6 @@ CONFIG_FRAGMENTS=(
 	wifi_debug
 	wifi_diag
 	wireless34
-	wireless44
 	x32
 )
 
@@ -523,12 +522,6 @@ wireless34_config="
 CONFIG_ATH9K_BTCOEX=m
 CONFIG_ATH9K_BTCOEX_COMMON=m
 CONFIG_ATH9K_BTCOEX_HW=m
-"
-
-wireless44_desc="Wireless 4.4 stack"
-wireless44_config="
-CONFIG_ATH10K=m
-CONFIG_ATH10K_PCI=m
 "
 
 vtconsole_desc="VT console"
