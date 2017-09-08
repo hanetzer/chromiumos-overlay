@@ -97,6 +97,7 @@ pkg_setup() {
 }
 
 src_prepare() {
+	epatch "${FILESDIR}/${P}-fix-cve-2017-11185.patch"
 	epatch_user
 }
 
