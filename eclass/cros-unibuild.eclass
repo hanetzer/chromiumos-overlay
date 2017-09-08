@@ -115,13 +115,18 @@ get_model_list() {
 get_dtb() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
-	local filesdir="$(dirname "${EBUILD}")/files"
+	local basedir="$(dirname "${EBUILD}")/.."
+	local config="${basedir}/chromeos-config-bsp/files/model.dtsi"
 
 	# We are not allowed to access the ROOT directory here, so compile the
 	# model fragment on the fly and pull out the value we want.
+
+	# We cannot die here if ${config} does not exist as this function is
+	# called by non-unibuild boards. We just need to output an empty
+	# config.
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
-		cat - "${filesdir}/model.dtsi" |
+		cat - "${config}" |
 		dtc -O dtb
 }
 
