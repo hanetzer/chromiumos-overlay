@@ -125,20 +125,20 @@ multilib_src_configure() {
 	if use gallium; then
 	# Configurable gallium drivers
 		if use !xlib-glx; then
-			gallium_driver_enable swrast
+			gallium_enable swrast
 		fi
 
 		# Intel code
-		gallium_driver_enable video_cards_intel i915
+		gallium_enable video_cards_intel i915
 
 		# Nouveau code
-		gallium_driver_enable video_cards_nouveau nouveau
+		gallium_enable video_cards_nouveau nouveau
 
 		# ATI code
-		gallium_driver_enable video_cards_radeon r300 r600
+		gallium_enable video_cards_radeon r300 r600
 
 		# Freedreno code
-		gallium_driver_enable video_cards_freedreno freedreno
+		gallium_enable video_cards_freedreno freedreno
 	fi
 
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
@@ -332,9 +332,7 @@ driver_enable() {
 	esac
 }
 
-# $1 - VIDEO_CARDS flag
-# other args - names of DRI drivers to enable
-gallium_driver_enable() {
+gallium_enable() {
 	case $# in
 		# for enabling unconditionally
 		1)
