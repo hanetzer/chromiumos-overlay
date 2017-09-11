@@ -18,9 +18,9 @@ IUSE="
 	allow_consumer_kiosk
 	arc
 	arc_always_start_with_no_play_store
-	arc_migration_policy_check
 	arc_only_start_after_login
 	arc_oobe_optin
+	arc_transition_m_to_n
 	asan
 	background_blur
 	big_little
