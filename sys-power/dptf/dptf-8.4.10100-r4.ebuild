@@ -67,8 +67,9 @@ src_install() {
 	dobin "${ESIF_BUILD_DIR}/esif_ufd"
 	insinto "/etc/dptf"
 	doins ESIF/Packages/DSP/dsp.dv
+	doins "${FILESDIR}/get_dptf_for_board"
 	insinto "/etc/init"
-	doins "${startcmd_src_dir}/dptf.conf"
+	doins "${FILESDIR}/dptf.conf"
 
 	# Install ESIF loadable libraries
 	dolib.so "${ESIFCMP_BUILD_DIR}/esif_cmp.so"
