@@ -15,14 +15,12 @@ DESCRIPTION="Helper utilities for generic containers"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="device_jail"
+IUSE=""
 
 RDEPEND="
 	chromeos-base/libbrillo
-	device_jail? (
-		virtual/udev
-		sys-fs/fuse
-	)
+	virtual/udev
+	sys-fs/fuse
 "
 DEPEND="
 	${RDEPEND}
@@ -31,31 +29,26 @@ DEPEND="
 "
 
 pkg_setup() {
-	if use device_jail; then
-		enewuser "devicejail"
-		enewgroup "devicejail"
-	fi
+	enewuser "devicejail"
+	enewgroup "devicejail"
 	cros-workon_pkg_setup
 }
 
 src_install() {
 	cd "${OUT}"
 	dobin mount_extension_image
+	dobin device_jail_fs
 
-	if use device_jail; then
-		dobin device_jail_fs
+	fowners devicejail:devicejail /usr/bin/device_jail_fs
 
-		fowners devicejail:devicejail /usr/bin/device_jail_fs
+	into /usr/local
+	dobin device_jail_utility
 
-		into /usr/local
-		dobin device_jail_utility
+	cd "${S}"
+	insinto /etc/init
+	doins device-jail.conf
 
-		cd "${S}"
-		insinto /etc/init
-		doins device-jail.conf
-
-		udev_dorules udev/*.rules
-	fi
+	udev_dorules udev/*.rules
 }
 
 pkg_preinst() {
