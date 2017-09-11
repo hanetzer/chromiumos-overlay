@@ -19,12 +19,14 @@ KEYWORDS="*"
 IUSE="input_devices_synaptics
 	input_devices_wacom
 	input_devices_st
+	input_devices_weida
 "
 
 RDEPEND="
 	input_devices_synaptics? ( chromeos-base/rmi4utils )
 	input_devices_wacom? ( chromeos-base/wacom_fw_flash )
 	input_devices_st? ( chromeos-base/st_flash )
+	input_devices_weida? ( chromeos-base/weida_wdt_util )
 	sys-apps/mosys
 "
 
