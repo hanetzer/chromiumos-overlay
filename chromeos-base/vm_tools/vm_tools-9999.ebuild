@@ -31,6 +31,7 @@ DEPEND="${RDEPEND}"
 src_install() {
 	if use kvm_host; then
 		dobin "${OUT}"/maitred_client
+		dobin "${OUT}"/vm_launcher
 	else
 		dobin "${OUT}"/vm_syslog
 
