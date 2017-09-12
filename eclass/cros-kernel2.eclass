@@ -38,7 +38,6 @@ IUSE="
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
 	-wifi_testbed_ap
 	-boot_dts_device_tree
-	-wifi_debug
 	-nowerror
 	-ppp
 	-lxc
@@ -128,7 +127,6 @@ CONFIG_FRAGMENTS=(
 	vlan
 	vtconsole
 	wifi_testbed_ap
-	wifi_debug
 	wifi_diag
 	wireless34
 	x32
@@ -500,11 +498,6 @@ wifi_testbed_ap_config="
 CONFIG_ATH_DEFER_EEPROM_REGULATORY=y
 CONFIG_BRIDGE=y
 CONFIG_MAC80211_BEACON_FOOTER=y
-"
-
-wifi_debug_desc="Enable extra debug flags for WiFi"
-wifi_debug_config="
-CONFIG_IWL7000_XVT=m
 "
 
 wifi_diag_desc="mac80211 WiFi diagnostic support"
