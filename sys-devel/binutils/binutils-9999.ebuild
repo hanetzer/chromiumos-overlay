@@ -6,7 +6,6 @@ EAPI="4"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/binutils"
 CROS_WORKON_LOCALNAME="../aosp/toolchain/binutils"
-CROS_WORKON_BLACKLIST="1"
 
 NEXT_BINUTILS=cros/binutils-2_25-google
 
