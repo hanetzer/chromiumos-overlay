@@ -1,4 +1,4 @@
-From 31637f0ef64a963db4ef96571677e94ab63849c3 Mon Sep 17 00:00:00 2001
+From d3a6d69e9b0d765f4b0d9f9b108cb90c72417947 Mon Sep 17 00:00:00 2001
 From: Jingkui Wang <jkwang@google.com>
 Date: Wed, 6 Sep 2017 10:13:29 -0700
 Subject: [PATCH] Enable safe mode for evtest
@@ -6,11 +6,11 @@ Subject: [PATCH] Enable safe mode for evtest
 This patch enables --safe for evtest. When evtest is called with --safe,
 all the sensitive event info will be hidden.
 ---
- evtest.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
+ evtest.c | 57 +++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 55 insertions(+), 2 deletions(-)
 
 diff --git a/evtest.c b/evtest.c
-index 2cf25f0..d8f4d78 100644
+index 2cf25f0..fa9df4a 100644
 --- a/evtest.c
 +++ b/evtest.c
 @@ -98,6 +98,7 @@ static const struct query_mode {
@@ -85,8 +85,8 @@ index 2cf25f0..d8f4d78 100644
 +			break;
 +		case EV_MSC:
 +			if (ev->code == MSC_TIMESTAMP)
-+				printf(", code %d (%s), value %02x\n", ev->code,
-+				       code_str, ev->value);
++				printf(", code %d (%s), value %s\n", ev->code,
++				       code_str, ev->value ? "non-zero" : "0");
 +			else
 +				printf(", code %d (%s)\n", ev->code, code_str);
 +		default:
@@ -97,7 +97,18 @@ index 2cf25f0..d8f4d78 100644
  /**
   * Print device events as they come in.
   *
-@@ -858,6 +905,8 @@ static int print_events(int fd)
+@@ -851,13 +898,18 @@ static int print_events(int fd)
+ 		}
+ 
+ 		for (i = 0; i < rd / sizeof(struct input_event); i++) {
+-			printf("Event: time %ld.%06ld, ", ev[i].time.tv_sec, ev[i].time.tv_usec);
++			if (safe_flag)
++				printf("Event: time %ld, ", ev[i].time.tv_sec);
++			else
++				printf("Event: time %ld.%06ld, ", ev[i].time.tv_sec, ev[i].time.tv_usec);
+ 
+ 			if (ev[i].type == EV_SYN) {
+ 				if (ev[i].code == SYN_MT_REPORT)
  					printf("++++++++++++++ %s ++++++++++++\n", syns[ev[i].code]);
  				else
  					printf("-------------- %s ------------\n", syns[ev[i].code]);
@@ -106,7 +117,7 @@ index 2cf25f0..d8f4d78 100644
  			} else {
  				printf("type %d (%s), code %d (%s), ",
  					ev[i].type,
-@@ -1034,6 +1083,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
+@@ -1034,6 +1086,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
  static const struct option long_options[] = {
  	{ "grab", no_argument, &grab_flag, 1 },
  	{ "query", no_argument, NULL, MODE_QUERY },
