@@ -38,10 +38,10 @@ index 689f3cf..26f2034 100644
 +static char cups_filter_name[PATH_MAX];
 +static char cups_filter_path[PATH_MAX];
 +
-+int match_filter(const char *fpath,
-+                 const struct stat *sb,
-+                 int tflag,
-+                 struct FTW *ftwbuf)
++static int match_filter(const char *fpath,
++                        const struct stat *sb,
++                        int tflag,
++                        struct FTW *ftwbuf)
 +{
 +  char *filename;
 +  if (tflag != FTW_F) {
@@ -80,7 +80,7 @@ index 689f3cf..26f2034 100644
 + * nftw isn't thread-safe, use pthread mutex to make sure only one thread
 + * is executing it.
 + */
-+pthread_mutex_t nftw_mut = PTHREAD_MUTEX_INITIALIZER;
++static pthread_mutex_t nftw_mut = PTHREAD_MUTEX_INITIALIZER;
 +
 +int _cupsSearchFilter(const char *search_root,
 +                      const char *filter_name,
@@ -122,7 +122,7 @@ index 689f3cf..26f2034 100644
 + * Otherwise, v is not valid version.
 + */
 +
-+int checkVersion(const char *v)
++static int checkVersion(const char *v)
 +{
 +  regex_t re;
 +  if (regcomp(&re, "^[0-9]{1,7}+(\\.[0-9]{1,7}){0,3}$", REG_EXTENDED | REG_NOSUB) == 0)
@@ -144,7 +144,7 @@ index 689f3cf..26f2034 100644
 + *"3.1.4.5 -> {3, 1, 4, 5};
 + */
 +
-+void parseVersion(const char* version_string, int version[4]) {
++static void parseVersion(const char* version_string, int version[4]) {
 +  int index = sscanf(version_string, "%d.%d.%d.%d",
 +                     &version[0], &version[1], &version[2], &version[3]);
 +  while (index < 4) {
@@ -163,7 +163,7 @@ index 689f3cf..26f2034 100644
 + * 1,  If v1 is older than v2
 + */
 +
-+int compareVersion(const char *v1, const char *v2)
++static int compareVersion(const char *v1, const char *v2)
 +{
 +  int version1[4], version2[4];
 +  int i = 0;
