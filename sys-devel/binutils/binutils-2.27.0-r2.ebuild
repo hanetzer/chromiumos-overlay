@@ -3,11 +3,11 @@
 
 EAPI="4"
 
+CROS_WORKON_COMMIT="85fafaf039799ebc8053bf36ce1c6e6df7adbbec"
+CROS_WORKON_TREE="d88416491ba5dc0f87f861d0fdb6b75e1312100e"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/binutils"
 CROS_WORKON_LOCALNAME="../aosp/toolchain/binutils"
-CROS_WORKON_COMMIT="85fafaf039799ebc8053bf36ce1c6e6df7adbbec"
-CROS_WORKON_TREE="d88416491ba5dc0f87f861d0fdb6b75e1312100e"
 
 NEXT_BINUTILS=cros/binutils-2_25-google
 
