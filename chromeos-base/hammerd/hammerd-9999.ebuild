@@ -21,6 +21,7 @@ KEYWORDS="~*"
 
 DEPEND="
 	chromeos-base/libbrillo
+	chromeos-base/metrics
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/openssl
