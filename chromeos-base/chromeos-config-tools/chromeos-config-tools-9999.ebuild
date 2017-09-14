@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
-IUSE=""
+IUSE="cros_host"
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -37,6 +37,7 @@ src_install() {
 	doins "${OUT}"/libcros_config.pc
 
 	dobin "${OUT}"/cros_config
+	use cros_host && dobin "${OUT}"/cros_config_host
 }
 
 platform_pkg_test() {
@@ -44,6 +45,8 @@ platform_pkg_test() {
 		cros_config_unittest
 		cros_config_main_unittest
 	)
+
+	use cros_host && tests+=( cros_config_host_main_unittest )
 
 	local test_bin
 
