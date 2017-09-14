@@ -53,22 +53,15 @@ RDEPEND="
 	!virtual/chromeos-coreboot
 	"
 
-# Dependency shared by x86 and amd64.
-DEPEND_X86="
-	sys-power/iasl
-	intel_mrc? ( sys-boot/chromeos-mrc )
-	"
 DEPEND="
 	mtc? ( sys-boot/mtc )
-	chromeos-base/vboot_reference
 	${DEPEND_BLOCKERS}
 	virtual/coreboot-private-files
-	sys-apps/coreboot-utils
 	bmpblk? ( sys-boot/chromeos-bmpblk )
 	cros_ec? ( chromeos-base/chromeos-ec )
 	pd_sync? ( chromeos-base/chromeos-ec )
-	x86? ($DEPEND_X86)
-	amd64? ($DEPEND_X86)
+	intel_mrc? ( x86? ( sys-boot/chromeos-mrc )
+		amd64? ( sys-boot/chromeos-mrc ) )
 	qca-framework? ( sys-boot/qca-framework )
 	unibuild? ( chromeos-base/chromeos-config )
 	"
