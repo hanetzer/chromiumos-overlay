@@ -156,7 +156,7 @@ src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
-		gallium_driver_enable video_cards_llvmpipe swrast
+		gallium_driver_enable swrast
 
 		# Nouveau code
 		gallium_driver_enable video_cards_nouveau nouveau
