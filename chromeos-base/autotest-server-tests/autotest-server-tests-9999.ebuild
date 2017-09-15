@@ -123,6 +123,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_Cr50ConsoleCommands
 	+tests_firmware_Cr50DeepSleepStress
 	+tests_firmware_Cr50InvalidateRW
+	+tests_firmware_Cr50Open
 	+tests_firmware_Cr50SetBoardId
 	+tests_firmware_Cr50Uart
 	+tests_firmware_Cr50Unlock
