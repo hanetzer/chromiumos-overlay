@@ -23,7 +23,8 @@ IUSE="+device-mapper"
 # Need lvm2 for devmapper.
 RDEPEND="chromeos-base/chromeos-minijail
 	device-mapper? ( sys-fs/lvm2 )"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	chromeos-base/libbrillo"
 
 src_install() {
 	into /
