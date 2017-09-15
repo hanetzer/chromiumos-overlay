@@ -132,6 +132,14 @@ index 6556927..1607665 100644
  ADDR_E_RETURNCODE ADDR_API AddrComputeSurfaceInfo(
      ADDR_HANDLE                             hLib, ///< [in] address lib handle
      const ADDR_COMPUTE_SURFACE_INFO_INPUT*  pIn,  ///< [in] surface information
+@@ -143,6 +143,7 @@ ADDR_E_RETURNCODE ADDR_API AddrComputeSurfaceInfo(
+ *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
+ ***************************************************************************************************
+ */
++PUBLIC
+ ADDR_E_RETURNCODE ADDR_API AddrComputeSurfaceAddrFromCoord(
+     ADDR_HANDLE                                     hLib, ///< [in] address lib handle
+     const ADDR_COMPUTE_SURFACE_ADDRFROMCOORD_INPUT* pIn,  ///< [in] surface info and coordinates
 @@ -856,6 +860,7 @@ BOOL_32 ADDR_API ElemGetExportNorm(
  *       ADDR_OK if successful, otherwise an error code of ADDR_E_RETURNCODE
  ***************************************************************************************************
