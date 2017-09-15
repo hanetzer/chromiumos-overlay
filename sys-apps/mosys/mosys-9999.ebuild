@@ -43,5 +43,7 @@ src_configure() {
 
 src_install() {
 	dosbin mosys
+	# Install the optional static binary if supported.
+	nonfatal dosbin mosys_s
 	dodoc README TODO
 }

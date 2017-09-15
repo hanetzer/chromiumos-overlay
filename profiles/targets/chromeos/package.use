@@ -99,8 +99,6 @@ sys-apps/coreutils	multicall
 sys-apps/dtc		static-libs
 sys-apps/dbus		-X
 sys-apps/hwids		-net
-# mosys: crosbug.com/p/11630
-sys-apps/mosys		static
 sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
 sys-apps/util-linux     -unicode
