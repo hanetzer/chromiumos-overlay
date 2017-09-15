@@ -38,6 +38,7 @@ src_prepare() {
 		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
 	else
 		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
+		CHERRIES+=" 4854a215fc3c0b10ab57b4b9b5e4cbeb5bf0624a " #r311555
 	fi
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -46,6 +47,8 @@ src_prepare() {
 	# Apply patches
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
+	# patch to remove abort() for clear_cache builtin for ARM. https://crbug.com/761103
+	epatch "${FILESDIR}"/compiler-rt-disable-abort-cacheflush.patch
 }
 
 src_configure() {
