@@ -29,3 +29,17 @@ DEPEND="
 	dev-go/dbus
 "
 RDEPEND=""
+
+src_install() {
+	cros-go_src_install
+
+	# Install each category's data dir (with its full path within the src/
+	# directory) under /usr/share/tast/data.
+	pushd src || die "failed to pushd src"
+	local datadir
+	for datadir in chromiumos/tast/local/tests/*/data; do
+		insinto "/usr/share/tast/data/$(dirname "${datadir}")"
+		doins -r "${datadir}"
+	done
+	popd
+}
