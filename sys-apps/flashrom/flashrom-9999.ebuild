@@ -40,6 +40,7 @@ LIB_DEPEND="atahpt? ( sys-apps/pciutils[static-libs(+)] )
 	ogp_spi? ( sys-apps/pciutils[static-libs(+)] )"
 RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
 DEPEND="${RDEPEND}
+	!cros_host? ( ${LIB_DEPEND} )
 	static? ( ${LIB_DEPEND} )
 	sys-apps/diffutils"
 RDEPEND+=" internal? ( sys-apps/dmidecode )"
@@ -69,7 +70,6 @@ src_compile() {
 		raiden_debug_spi rayer_spi  satasii satamv serprog internal \
 		dummy
 	_flashrom_enable wiki PRINT_WIKI
-	_flashrom_enable static STATIC
 
 	# You have to specify at least one programmer, and if you specify more than
 	# one programmer you have to include either dummy or internal in the list.
@@ -107,7 +107,14 @@ src_compile() {
 	# FIXME(dhendrix): Actually, we want -Werror for CrOS.
 	tc-export AR CC RANLIB
 	# emake WARNERROR=no ${args}	# upstream gentoo
-	emake ${args}			# cros
+
+	# For ChromeOS AU we want static and dynamic version both generated.
+	if ! use cros_host && ! use static; then
+		emake CONFIG_STATIC=yes ${args}
+		mv flashrom flashrom_s
+	fi
+	_flashrom_enable static STATIC
+	emake ${args}
 }
 
 src_test() {
@@ -121,6 +128,7 @@ src_test() {
 
 src_install() {
 	dosbin flashrom
+	nonfatal dosbin flashrom_s
 	doman flashrom.8
 	dodoc README.chromiumos Documentation/*.txt
 }
