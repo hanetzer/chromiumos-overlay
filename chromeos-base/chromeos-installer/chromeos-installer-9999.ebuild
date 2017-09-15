@@ -1,13 +1,16 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
+
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
+CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon cros-debug libchrome systemd
+PLATFORM_SUBDIR="installer"
+
+inherit cros-workon platform systemd
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -21,10 +24,6 @@ IUSE="cros_host direncryption -mtd pam systemd test"
 DEPEND="
 	chromeos-base/verity
 	mtd? ( dev-embedded/android_mtdutils )
-	test? (
-		dev-cpp/gmock[static-libs(+)]
-		dev-cpp/gtest[static-libs(+)]
-	)
 	!cros_host? (
 		chromeos-base/vboot_reference
 	)"
@@ -38,45 +37,11 @@ RDEPEND="
 	sys-apps/which
 	sys-fs/e2fsprogs"
 
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/installer"
-}
-
-src_prepare() {
-	cros-workon_src_prepare
-}
-
-src_configure() {
-	# need this to get the verity headers working
-	append-cppflags -I"${SYSROOT}"/usr/include/verity/
-	append-cppflags -I"${SYSROOT}"/usr/include/vboot
-	append-ldflags -L"${SYSROOT}"/usr/lib/vboot32
-
-	cros-workon_src_configure
-}
-
-src_compile() {
-	# We don't need the installer in the sdk, just helper scripts.
-	use cros_host && return 0
-
-	USE_mtd=$(usev mtd) cros-workon_src_compile
-	if use mtd; then
-		USE_mtd=$(usev mtd) cw_emake -r nand_partition
-	fi
-}
-
-src_test() {
-	if ! use x86 && ! use amd64 ; then
-		einfo Skipping unit tests on non-x86 platform
-	else
-		# Needed for `cros_run_unit_tests`.
-		cros-workon_src_test
-	fi
+platform_pkg_test() {
+	platform_test "run" "${OUT}/cros_installer_unittest"
 }
 
 src_install() {
-	cros-workon_src_install
 	if use cros_host ; then
 		dosbin chromeos-install
 	else
