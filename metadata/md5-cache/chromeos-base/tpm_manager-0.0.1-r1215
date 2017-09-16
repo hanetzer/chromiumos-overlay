@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install preinst setup test unpack
+DEPEND=tpm? ( app-crypt/trousers ) tpm2? ( chromeos-base/trunks ) chromeos-base/chromeos-minijail chromeos-base/libbrillo dev-vcs/git dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] test? ( dev-cpp/gmock ) dev-cpp/gtest sys-apps/baselayout
+DESCRIPTION=Daemon to manage TPM ownership.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=tpm tpm2 cros_host cros_workon_tree_3ab381972bc6483e0444bd9a50bb203166c67d8c_3a30a2ecc8c7db0f9786d8b0291bd55ceb7d77b4 profiling cros-debug cros_host cros_workon_tree_3ab381972bc6483e0444bd9a50bb203166c67d8c_3a30a2ecc8c7db0f9786d8b0291bd55ceb7d77b4 profiling cros-debug asan cros_host test
+KEYWORDS=*
+LICENSE=Apache-2.0
+RDEPEND=tpm? ( app-crypt/trousers ) tpm2? ( chromeos-base/trunks ) chromeos-base/chromeos-minijail chromeos-base/libbrillo chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+REQUIRED_USE=tpm2? ( !tpm )
+SLOT=0
+_eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e8eb1129f8327b7e29c63d174c5003b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	81e94929328a66bd0df9faba8e46deb6	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	user	c8f947561e8797a300801d0dd3625448
+_md5_=df2c390a634ab2bfa096d46b9a5d8f93
