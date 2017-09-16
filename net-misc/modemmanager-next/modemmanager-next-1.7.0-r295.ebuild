@@ -37,7 +37,7 @@ DEPEND="${RDEPEND}
 	!net-misc/modemmanager-next-interfaces
 	!net-misc/modemmanager"
 
-DOCS="AUTHORS ChangeLog NEWS README"
+DOCS="AUTHORS NEWS README"
 
 src_prepare() {
 	# According to "Introspection Data Format" of the DBus specification,
