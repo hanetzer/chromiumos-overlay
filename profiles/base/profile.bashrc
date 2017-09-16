@@ -207,6 +207,10 @@ cros_use_gcc() {
 		export CC=${CHOST}-gcc
 		export CXX=${CHOST}-g++
 	fi
+	if [[ $(basename ${BUILD_CC:-gcc}) != *"gcc"* ]]; then
+		export BUILD_CC=${CBUILD}-gcc
+		export BUILD_CXX=${CBUILD}-g++
+	fi
 }
 
 # Enforce use of libstdc++ instead of libc++ when building with clang.
