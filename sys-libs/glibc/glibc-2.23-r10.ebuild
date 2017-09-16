@@ -214,4 +214,5 @@ eblit-src_prepare-post() {
 
 eblit-src_configure-pre() {
 	EXTRA_ECONF+=" --with-bugurl=http://crbug.com/new"
+	cros_use_gcc
 }
