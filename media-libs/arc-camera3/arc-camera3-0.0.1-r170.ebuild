@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="8b09f48c42a2295f960f27e553ebfb154efeb0b0"
-CROS_WORKON_TREE="83a99f1599289849f88099f0af32c39b26ae2cc0"
+CROS_WORKON_COMMIT="4ad348fb1b8584680e10878c4bede8b83bd803fb"
+CROS_WORKON_TREE="cc0d0ec4053f547c081b840001696d7f670998a2"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
@@ -48,6 +48,10 @@ src_install() {
 
 	insinto /etc/init
 	doins hal_adapter/init/camera-halv3-adapter.conf
+
+	# Install seccomp policy file.
+	insinto /usr/share/policy
+	newins hal_adapter/seccomp_filter/camera-halv3-adapter-${ARCH}.policy camera-halv3-adapter.policy
 
 	if use cheets; then
 		insinto /opt/google/containers/android/vendor/etc/init
