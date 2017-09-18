@@ -21,15 +21,15 @@ EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"56199e7135e10c344df07f1029b59903338e63e4" # EGIT_COMMIT r310337
+		"c1e17d7b87c5d7c9ef90801cac9d60cb1bfc940a" # EGIT_COMMIT r312894
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"b07ae8ba81c69f8b1ad896536585c66295fde4f3" # EGIT_COMMIT r310330
+		"8726d836614ded9f90da6e51875d18405d2ebbca" # EGIT_COMMIT r312872
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"e21edc4d3c662f6bfc601a4975106f4d687edd9d"  # EGIT_COMMIT r310331
+		"9b80cb1f6c92a08f352286c3360ca49594e598da"  # EGIT_COMMIT r312897
 )
 else
 EGIT_REPO_URIS=(
@@ -232,6 +232,8 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
+	CHERRIES+=" f405097e96e57344db1430039df71d7c60f43746 " #r313409
+
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -256,11 +258,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 
-	# To workaround the upstream bug
-	# https://bugs.llvm.org/show_bug.cgi?id=33804
-	if use llvm-next ; then
-		epatch "${FILESDIR}"/llvm-6.0-loop-vector.patch
-	fi
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 
