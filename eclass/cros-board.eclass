@@ -156,6 +156,7 @@ ALL_BOARDS=(
 	kefka
 	#kennet
 	kevin
+	kevin-bertha
 	kevin-tpm2
 	#kiev
 	kip
