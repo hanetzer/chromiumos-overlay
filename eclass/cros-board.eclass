@@ -249,6 +249,7 @@ ALL_BOARDS=(
 	#ricochet
 	rikku
 	rizer
+	romer
 	rotor
 	rowan
 	rush
