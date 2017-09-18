@@ -127,7 +127,7 @@ PD_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
 _get_model_build_targets() {
-	get_each_model_conf_value_set_noroot /firmware/build-targets coreboot
+	get_unique_model_conf_value_set_noroot /firmware/build-targets coreboot
 }
 
 # Output the URI associated with a file to download. This can be added to the

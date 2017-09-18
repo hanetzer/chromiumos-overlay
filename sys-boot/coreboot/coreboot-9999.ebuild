@@ -93,7 +93,7 @@ get_board() {
 }
 
 get_model_build_targets() {
-	echo $( get_each_model_conf_value_set /firmware/build-targets coreboot )
+	echo $( get_unique_model_conf_value_set /firmware/build-targets coreboot )
 }
 
 set_build_env() {
@@ -102,8 +102,8 @@ set_build_env() {
 	if use unibuild; then
 		CONFIG=".config-${BOARD}"
 		CONFIG_SERIAL=".config_serial-${BOARD}"
-		BUILD_DIR="build-${model}"
-		BUILD_DIR_SERIAL="build_serial-${model}"
+		BUILD_DIR="build-${BOARD}"
+		BUILD_DIR_SERIAL="build_serial-${BOARD}"
 	else
 		CONFIG=".config"
 		CONFIG_SERIAL=".config_serial"
@@ -213,10 +213,10 @@ src_prepare() {
 	done
 
 	if use unibuild; then
-		local model
+		local build_target
 
-		for model in $(get_model_build_targets); do
-			create_config "${model}" "$(get_board)"
+		for build_target in $(get_model_build_targets); do
+			create_config "${build_target}" "$(get_board)"
 		done
 	else
 		create_config "$(get_board)"
@@ -250,16 +250,16 @@ add_fw_blob() {
 # Build coreboot with a supplied configuration and output directory.
 #   $1: Build directory to use (e.g. "build_serial")
 #   $2: Config file to use (e.g. ".config_serial")
-#   $3: Model name to build (e.g. "pyro"), for USE=unibuild only.
+#   $3: Build target build (e.g. "pyro"), for USE=unibuild only.
 make_coreboot() {
 	local builddir="$1"
 	local config_fname="$2"
-	local model="$3"
+	local build_target="$3"
 	local froot="${SYSROOT}/firmware"
 	local fblobroot="${SYSROOT}/firmware"
 
 	if use unibuild; then
-		froot+="/${model}"
+		froot+="/${build_target}"
 	fi
 	rm -rf "${builddir}" .xcompile
 
@@ -377,13 +377,13 @@ src_compile() {
 
 	# Build a second ROM with serial support for developers.
 	if use unibuild; then
-		local model
+		local build_target
 
-		for model in $(get_model_build_targets); do
-			set_build_env "${model}"
-			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${model}"
+		for build_target in $(get_model_build_targets); do
+			set_build_env "${build_target}"
+			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${build_target}"
 			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}" \
-				"${model}"
+				"${build_target}"
 		done
 	else
 		set_build_env "$(get_board)"
@@ -393,13 +393,13 @@ src_compile() {
 }
 
 do_install() {
-	local model="$1"
+	local build_target="$1"
 	local dest_dir="/firmware"
 	local mapfile
 
-	if [[ -n "${model}" ]]; then
-		dest_dir+="/${model}"
-		einfo "Installing coreboot ${model} into ${dest_dir}"
+	if [[ -n "${build_target}" ]]; then
+		dest_dir+="/${build_target}"
+		einfo "Installing coreboot ${build_target} into ${dest_dir}"
 	fi
 	insinto "${dest_dir}"
 
@@ -440,12 +440,12 @@ do_install() {
 }
 
 src_install() {
-	local model
+	local build_target
 
 	if use unibuild; then
-		for model in $(get_model_build_targets); do
-			set_build_env "${model}" "$(get_board)"
-			do_install ${model}
+		for build_target in $(get_model_build_targets); do
+			set_build_env "${build_target}" "$(get_board)"
+			do_install ${build_target}
 		done
 	else
 		set_build_env "$(get_board)"

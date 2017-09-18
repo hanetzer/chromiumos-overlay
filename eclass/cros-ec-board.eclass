@@ -117,5 +117,5 @@ get_ec_boards()
 }
 
 get_model_build_targets() {
-	echo $(get_each_model_conf_value_set /firmware/build-targets ec)
+	echo $(get_unique_model_conf_value_set /firmware/build-targets ec)
 }

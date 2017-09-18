@@ -155,7 +155,7 @@ get_shared_firmware_list_noroot() {
 	get_dtb | fdtget - -l "/chromeos/family/firmware" 2>/dev/null
 }
 
-# @FUNCTION: get_each_model_conf_value_set
+# @FUNCTION: get_unique_model_conf_value_set
 # @USAGE: <path> <prop>
 # @RETURN:
 # IFS separated string representing unique value of the property
@@ -167,7 +167,7 @@ get_shared_firmware_list_noroot() {
 # path: path to config string, e.g. "/". Starts with "/".
 # prop: name of property to read (e.g. "wallpaper").
 # @CODE
-get_each_model_conf_value_set() {
+get_unique_model_conf_value_set() {
 	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
 
 	local path="$1"
@@ -186,7 +186,7 @@ get_each_model_conf_value_set() {
 	printf '%s\n' "${values[@]}" | sort -u
 }
 
-# @FUNCTION: get_each_model_conf_value_set_noroot
+# @FUNCTION: get_unique_model_conf_value_set_noroot
 # @USAGE: <path> <prop>
 # @RETURN:
 # IFS separated string representing unique value of the property
@@ -198,7 +198,7 @@ get_each_model_conf_value_set() {
 # path: path to config string, e.g. "/". Starts with "/".
 # prop: name of property to read (e.g. "wallpaper").
 # @CODE
-get_each_model_conf_value_set_noroot() {
+get_unique_model_conf_value_set_noroot() {
 	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
 	local path="$1"
 	local prop="$2"

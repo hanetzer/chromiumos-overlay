@@ -29,7 +29,7 @@ STRIP_MASK="*"
 inherit cros-workon cros-board toolchain-funcs cros-unibuild
 
 get_model_build_targets() {
-	echo $(get_each_model_conf_value_set /firmware/build-targets depthcharge)
+	echo $(get_unique_model_conf_value_set /firmware/build-targets depthcharge)
 }
 
 src_configure() {
@@ -121,10 +121,10 @@ src_compile() {
 	fi
 
 	if use unibuild; then
-		local model
+		local build_target
 
-		for model in $(get_model_build_targets); do
-			make_depthcharge "${model}" "${model}"
+		for build_target in $(get_model_build_targets); do
+			make_depthcharge "${build_target}" "${build_target}"
 		done
 	else
 		make_depthcharge "$(get_board)" build
@@ -136,9 +136,9 @@ do_install() {
 	local builddir="$2"
 	local dstdir="/firmware"
 
-	if [[ -n "${model}" ]]; then
-		dstdir+="/${model}"
-		einfo "Installing depthcharge ${model} into ${dest_dir}"
+	if [[ -n "${build_target}" ]]; then
+		dstdir+="/${build_target}"
+		einfo "Installing depthcharge ${build_target} into ${dest_dir}"
 	fi
 	insinto "${dstdir}"
 
@@ -161,11 +161,11 @@ do_install() {
 }
 
 src_install() {
-	local model
+	local build_target
 
 	if use unibuild; then
-		for model in $(get_model_build_targets); do
-			do_install "${model}" "${model}"
+		for build_target in $(get_model_build_targets); do
+			do_install "${build_target}" "${build_target}"
 		done
 	else
 		do_install "$(get_board)" build

@@ -62,7 +62,7 @@ prepare_legacy_image() {
 }
 
 get_model_build_targets() {
-	echo $(get_each_model_conf_value_set /firmware/build-targets coreboot)
+	echo $(get_unique_model_conf_value_set /firmware/build-targets coreboot)
 }
 
 do_cbfstool() {
@@ -181,20 +181,20 @@ build_image() {
 #       depthcharge/netboot.elf  - netboot version of depthcharge
 #       depthcharge/fastboot.elf - fastboot version of depthcharge
 #       rocbfs/*                 - fonts, images and screens for recovery mode
-#   $2: Name of model to build, used for output files (empty if no model)
+#   $2: Name of target to build, used for output files (can be empty)
 build_images() {
 	local froot="$1"
-	local model="$2"
+	local build_target="$2"
 	local outdir
 	local suffix
 
 	local coreboot_file="${froot}/coreboot.rom"
 
-	if [ -n "${model}" ]; then
-		einfo "Building firmware images for ${model}"
-		outdir="${model}/"
+	if [ -n "${build_target}" ]; then
+		einfo "Building firmware images for ${build_target}"
+		outdir="${build_target}/"
 		mkdir "${outdir}"
-		suffix="-${model}"
+		suffix="-${build_target}"
 	fi
 
 	cp ${coreboot_file} coreboot.rom
@@ -281,10 +281,10 @@ src_compile() {
 			compressed-assets/'{}' LZMA
 
 	if use unibuild; then
-		local model
+		local build_target
 
-		for model in $(get_model_build_targets); do
-			build_images "${froot}/${model}" "${model}"
+		for build_target in $(get_model_build_targets); do
+			build_images "${froot}/${build_target}" "${build_target}"
 		done
 	else
 		build_images "${froot}" ""
@@ -294,10 +294,10 @@ src_compile() {
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	if use unibuild; then
-		local model
+		local build_target
 
-		for model in $(get_model_build_targets); do
-			doins "${model}"/image-${model}*.bin
+		for build_target in $(get_model_build_targets); do
+			doins "${build_target}"/image-${build_target}*.bin
 		done
 	else
 		doins image*.bin
