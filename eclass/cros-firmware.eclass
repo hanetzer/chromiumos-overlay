@@ -313,11 +313,12 @@ cros-firmware_src_compile() {
 
 			einfo "Updater for local fw"
 			# Tell pack_firmware.py where to find the files.
-			# 'MODEL' will be replaced with the model.
+			# 'BUILD_TARGET' will be replaced with the the
+			# build-targets config from the model.dtsi file.
 			image_cmd+=(
-				-b "${root}/firmware/image-MODEL.bin"
-				-e "${root}/firmware/MODEL/ec.bin"
-				-p "${root}/firmware/MODEL/pd.bin"
+				-b "${root}/firmware/image-BUILD_TARGET.bin"
+				-e "${root}/firmware/BUILD_TARGET/ec.bin"
+				-p "${root}/firmware/BUILD_TARGET/pd.bin"
 			)
 			./pack_firmware.py -l "${image_cmd[@]}" \
 				"${ext_cmd[@]}" -o "${output_file}" ||
