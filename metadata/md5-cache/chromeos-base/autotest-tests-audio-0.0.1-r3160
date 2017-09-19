@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=!<chromeos-base/autotest-tests-0.0.3 chromeos-base/audiotest dev-vcs/git
+DESCRIPTION=Audio autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_sound_infrastructure +tests_audio_Aconnect +tests_audio_AlsaAPI +tests_audio_AlsaLoopback +tests_audio_Aplay +tests_audio_CRASFormatConversion +tests_audio_CrasLoopback +tests_audio_CrasOutputStress +tests_audio_LoopbackLatency +tests_audio_Microphone cros_host cros_workon_tree_2ee626de4489c5b68c0168864afeb639a8d01eeb profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<chromeos-base/autotest-tests-0.0.3 chromeos-base/audiotest ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	e8eb1129f8327b7e29c63d174c5003b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=4db8577043f599f907fa06bda927f0b3
