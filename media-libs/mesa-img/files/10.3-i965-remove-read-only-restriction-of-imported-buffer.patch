@@ -1,7 +1,20 @@
 From 96f341c9e8b0f58b388cabe8e27077b5cf92611e Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@google.com>
 Date: Fri, 3 Oct 2014 16:20:10 -0700
-Subject: [PATCH 18/24] i965: remove read-only restriction of imported buffers
+Subject: [PATCH 18/24] CHROMIUM: i965: remove read-only restriction of imported buffers
+
+Previously, there was a patch that already did this but there was
+collateral damage to the OES_EGL_image_external extension that turned it
+off. This change remodels the original patches to keep
+OES_EGL_image_external turned on.
+
+BUG=chromium:436842
+TEST=None
+
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
+Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 
 ---
  src/mesa/drivers/dri/i965/intel_image.h     |  3 ---

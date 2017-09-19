@@ -1,7 +1,7 @@
-From f34171d4e80cf9145044f9e57e2aec052a66ca09 Mon Sep 17 00:00:00 2001
+From 31ad3175085fde259f47f3ca9fe3b609b3aa007a Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Mon, 10 Mar 2014 12:27:03 +0000
-Subject: [PATCH 14/29] Add support for various GLES extensions
+Subject: [PATCH 08/33] Add support for various GLES extensions
 
 Add support for:
 	EXT_multisampled_render_to_texture
@@ -19,7 +19,7 @@ Add support for:
  create mode 100644 src/mesa/main/es_extension_stubs.h
 
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index f589bda..602043e 100644
+index 3f9129f..dd3c3db 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
 @@ -285,28 +285,25 @@
@@ -57,7 +57,7 @@ index f589bda..602043e 100644
      </function>
  </category>
  
-@@ -672,6 +669,31 @@
+@@ -673,6 +670,31 @@
      </enum>
  </category>
  
@@ -89,7 +89,7 @@ index f589bda..602043e 100644
  <!-- 87. GL_OES_EGL_image_external -->
  <category name="GL_OES_EGL_image_external" number="87">
      <enum name="TEXTURE_EXTERNAL_OES"                     value="0x8D65"/>
-@@ -750,6 +772,51 @@
+@@ -751,6 +773,51 @@
      </function>
  </category>
  
@@ -141,7 +141,7 @@ index f589bda..602043e 100644
  <!-- 103. GL_EXT_texture_rg -->
  <category name="GL_EXT_texture_rg" number="103">
      <enum name="RED_EXT"                                  value="0x1903"/>
-@@ -758,6 +825,23 @@
+@@ -759,6 +826,23 @@
      <enum name="RG8_EXT"                                  value="0x822B"/>
  </category>
  
@@ -166,7 +166,7 @@ index f589bda..602043e 100644
  <xi:include href="EXT_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 diff --git a/src/mapi/glapi/gen/gl_genexec.py b/src/mapi/glapi/gen/gl_genexec.py
-index 72d7b6f..c3b031f 100644
+index 57e155b..d13e2d3 100644
 --- a/src/mapi/glapi/gen/gl_genexec.py
 +++ b/src/mapi/glapi/gen/gl_genexec.py
 @@ -73,6 +73,7 @@ header = """/**
@@ -178,7 +178,7 @@ index 72d7b6f..c3b031f 100644
  #include "main/eval.h"
  #include "main/get.h"
 diff --git a/src/mesa/Makefile.sources b/src/mesa/Makefile.sources
-index 84db5a8..4c7ee8f 100644
+index 86fbf39..d3c6fb0 100644
 --- a/src/mesa/Makefile.sources
 +++ b/src/mesa/Makefile.sources
 @@ -3,7 +3,9 @@

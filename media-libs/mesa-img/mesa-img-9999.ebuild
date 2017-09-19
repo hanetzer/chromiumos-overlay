@@ -17,10 +17,6 @@ inherit base autotools multilib flag-o-matic python toolchain-funcs ${GIT_ECLASS
 
 OPENGL_DIR="xorg-x11"
 
-MY_PN="${PN/m/M}"
-MY_P="${MY_PN}-${PV/_/-}"
-MY_SRC_P="${MY_PN}Lib-${PV/_/-}"
-
 FOLDER="${PV/_rc*/}"
 [[ ${PV/_rc*/} == ${PV} ]] || FOLDER+="/RC"
 
@@ -35,15 +31,15 @@ SLOT="0"
 KEYWORDS="~*"
 
 INTEL_CARDS="intel"
-RADEON_CARDS="radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
+RADEON_CARDS="amdgpu radeon"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau powervr r128 radeonsi savage sis vmware tdfx via"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X"
+	+classic debug dri egl -gallium -gbm gles1 gles2 -llvm +nptl pic selinux
+	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 
@@ -78,15 +74,13 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	!arm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm )
 	video_cards_powervr? (
-			virtual/img-ddk
-			!<media-libs/img-ddk-1.8
-			!<media-libs/img-ddk-bin-1.8
+		virtual/img-ddk
+		!<media-libs/img-ddk-1.8
+		!<media-libs/img-ddk-bin-1.8
 	)
 "
-
-S="${WORKDIR}/${MY_P}"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
@@ -117,14 +111,14 @@ src_prepare() {
 
 	base_src_prepare
 
-	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
-	echo '#define MESA_GIT_SHA1 "git-0000000"' > src/git_sha1.h
-
 	eautoreconf
 }
 
 src_configure() {
 	tc-getPROG PKG_CONFIG pkg-config
+
+	# Needs std=gnu++11 to build with libc++. crbug.com/750831
+	append-cxxflags "-std=gnu++11"
 
 	driver_enable pvr
 
@@ -145,7 +139,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm llvm-gallium) \
+		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
@@ -159,6 +153,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
+		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		$(use egl && echo "--with-egl-platforms=surfaceless")
 }
 
@@ -197,7 +192,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
 	# install the gallium drivers we use
-	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so msm_dri.so swrast_dri.so )
+	local gallium_drivers_files=( nouveau_dri.so r300_dri.so r600_dri.so msm_dri.so swrast_dri.so )
 	for x in ${gallium_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
 			doins "${S}/$(get_libdir)/gallium/${x}"

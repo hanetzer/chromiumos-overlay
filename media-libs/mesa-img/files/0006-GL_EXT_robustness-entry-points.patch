@@ -1,7 +1,7 @@
-From 7aaf0613a53d5782c07baab6370bab84ea728e98 Mon Sep 17 00:00:00 2001
+From 2020a9de19bc9d6b1b71a028c78b65753af075bb Mon Sep 17 00:00:00 2001
 From: Brendan King <Brendan.King@imgtec.com>
 Date: Tue, 11 Mar 2014 12:08:45 +0000
-Subject: [PATCH 07/29] GL_EXT_robustness entry points
+Subject: [PATCH 06/33] GL_EXT_robustness entry points
 
 ---
  src/mapi/glapi/gen/EXT_robustness.xml | 55 +++++++++++++++++++++++++++++++++++
@@ -77,10 +77,10 @@ index 0000000..cfd0d1a
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 6886dab..0059abf 100644
+index 271f0c0..e59ce98 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -758,6 +758,9 @@
+@@ -759,6 +759,9 @@
      <enum name="RG8_EXT"                                  value="0x822B"/>
  </category>
  
@@ -104,10 +104,10 @@ index ce97cc5..756bccf 100644
 +
  #endif
 diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
-index 1cb06c7..99910b3 100644
+index 606d1e5..b2422a6 100644
 --- a/src/mesa/main/readpix.c
 +++ b/src/mesa/main/readpix.c
-@@ -1118,6 +1118,14 @@ _mesa_ReadnPixelsARB( GLint x, GLint y, GLsizei width, GLsizei height,
+@@ -1123,6 +1123,14 @@ _mesa_ReadnPixelsARB( GLint x, GLint y, GLsizei width, GLsizei height,
  }
  
  void GLAPIENTRY
@@ -137,7 +137,7 @@ index 481ad9d..d3b74d1 100644
 +
  #endif
 diff --git a/src/mesa/main/robustness.c b/src/mesa/main/robustness.c
-index f54d9f3..0b94e22 100644
+index 47402a2..4fe17d0 100644
 --- a/src/mesa/main/robustness.c
 +++ b/src/mesa/main/robustness.c
 @@ -163,3 +163,13 @@ _mesa_GetGraphicsResetStatusARB( void )
@@ -155,10 +155,10 @@ index f54d9f3..0b94e22 100644
 +   return GL_NO_ERROR;
 +}
 diff --git a/src/mesa/main/uniforms.c b/src/mesa/main/uniforms.c
-index 35b93d3..f5eb3bf 100644
+index ddfe906..1aea8f0 100644
 --- a/src/mesa/main/uniforms.c
 +++ b/src/mesa/main/uniforms.c
-@@ -844,6 +844,14 @@ _mesa_GetnUniformfvARB(GLuint program, GLint location,
+@@ -918,6 +918,14 @@ _mesa_GetnUniformfvARB(GLuint program, GLint location,
  }
  
  void GLAPIENTRY
@@ -173,7 +173,7 @@ index 35b93d3..f5eb3bf 100644
  _mesa_GetUniformfv(GLuint program, GLint location, GLfloat *params)
  {
     _mesa_GetnUniformfvARB(program, location, INT_MAX, params);
-@@ -859,6 +867,14 @@ _mesa_GetnUniformivARB(GLuint program, GLint location,
+@@ -933,6 +941,14 @@ _mesa_GetnUniformivARB(GLuint program, GLint location,
  }
  
  void GLAPIENTRY
@@ -189,10 +189,10 @@ index 35b93d3..f5eb3bf 100644
  {
     _mesa_GetnUniformivARB(program, location, INT_MAX, params);
 diff --git a/src/mesa/main/uniforms.h b/src/mesa/main/uniforms.h
-index 88fe958..caf2d99 100644
+index 9236db9..645bee7 100644
 --- a/src/mesa/main/uniforms.h
 +++ b/src/mesa/main/uniforms.h
-@@ -197,10 +197,14 @@ _mesa_ProgramUniformMatrix4x3fv(GLuint program, GLint location, GLsizei count,
+@@ -209,10 +209,14 @@ _mesa_ProgramUniformMatrix4x3fv(GLuint program, GLint location, GLsizei count,
  void GLAPIENTRY
  _mesa_GetnUniformfvARB(GLuint, GLint, GLsizei, GLfloat *);
  void GLAPIENTRY

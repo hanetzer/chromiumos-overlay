@@ -1,7 +1,7 @@
-From 30fdef624fb1a001b5359e1b73c462a54a86fce1 Mon Sep 17 00:00:00 2001
+From 0cb0df07d63fe89025c206c598db1747c24919eb Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Wed, 12 Aug 2015 09:11:51 +0100
-Subject: [PATCH 13/29] GL_EXT_sparse_texture entry points
+Subject: [PATCH 07/33] GL_EXT_sparse_texture entry points
 
 ---
  src/mapi/glapi/gen/EXT_sparse_texture.xml | 56 +++++++++++++++++++++++++++++++
@@ -74,22 +74,24 @@ index 0000000..dec09bc
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 5500729..f589bda 100644
+index e59ce98..3f9129f 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1315,4 +1315,7 @@
+@@ -1346,6 +1346,9 @@
  
  </category>
  
 +<!-- 240. EXT_sparse_texture -->
 +<xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- </OpenGLAPI>
+ <category name="GL_OES_viewport_array" number="267">
+     <function name="ViewportArrayvOES" es2="3.1" alias="ViewportArrayv">
+         <param name="first" type="GLuint"/>
 diff --git a/src/mesa/main/texobj.c b/src/mesa/main/texobj.c
-index ed630bd..1215811 100644
+index e52ad22..f4472ed 100644
 --- a/src/mesa/main/texobj.c
 +++ b/src/mesa/main/texobj.c
-@@ -2198,4 +2198,24 @@ _mesa_InvalidateTexImage(GLuint texture, GLint level)
+@@ -2192,4 +2192,24 @@ _mesa_InvalidateTexImage(GLuint texture, GLint level)
     return;
  }
  
@@ -115,10 +117,10 @@ index ed630bd..1215811 100644
 +
  /*@}*/
 diff --git a/src/mesa/main/texobj.h b/src/mesa/main/texobj.h
-index 378d87a..fd25ee9 100644
+index f106238..084cd0d 100644
 --- a/src/mesa/main/texobj.h
 +++ b/src/mesa/main/texobj.h
-@@ -235,6 +235,18 @@ _mesa_InvalidateTexSubImage(GLuint texture, GLint level, GLint xoffset,
+@@ -226,6 +226,18 @@ _mesa_InvalidateTexSubImage(GLuint texture, GLint level, GLint xoffset,
  extern void GLAPIENTRY
  _mesa_InvalidateTexImage(GLuint texture, GLint level);
  

@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="b010fa85675b98962426fe8961466fbae2d25499"
+CROS_WORKON_COMMIT="277621bbb724b0a627a0f5473bdeb82e02fdf389"
 CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -21,10 +21,6 @@ inherit base autotools multilib flag-o-matic python toolchain-funcs ${GIT_ECLASS
 
 OPENGL_DIR="xorg-x11"
 
-MY_PN="${PN/m/M}"
-MY_P="${MY_PN}-${PV/_/-}"
-MY_SRC_P="${MY_PN}Lib-${PV/_/-}"
-
 FOLDER="${PV/_rc*/}"
 [[ ${PV/_rc*/} == ${PV} ]] || FOLDER+="/RC"
 
@@ -35,7 +31,7 @@ HOMEPAGE="http://mesa3d.sourceforge.net/"
 if [[ $PV = 9999* ]] || [[ -n ${CROS_WORKON_COMMIT} ]]; then
 	SRC_URI="${SRC_PATCHES}"
 else
-	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${MY_SRC_P}.tar.bz2
+	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${P}.tar.bz2
 		${SRC_PATCHES}"
 fi
 
@@ -47,15 +43,15 @@ SLOT="0"
 KEYWORDS="*"
 
 INTEL_CARDS="intel"
-RADEON_CARDS="radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
+RADEON_CARDS="amdgpu radeon"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau powervr r128 radeonsi savage sis vmware tdfx via"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx X"
+	+classic debug dri egl -gallium -gbm gles1 gles2 -llvm +nptl pic selinux
+	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 
@@ -90,15 +86,13 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86driproto
 		x11-proto/xf86vidmodeproto
 	)
-	!arm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm )
 	video_cards_powervr? (
 		virtual/img-ddk
 		!<media-libs/img-ddk-1.8
 		!<media-libs/img-ddk-bin-1.8
 	)
 "
-
-S="${WORKDIR}/${MY_P}"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
@@ -130,13 +124,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
-	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
-	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
-	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
-	epatch "${FILESDIR}"/10.3-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
-	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
@@ -145,46 +134,34 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
-	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
-	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
-	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/11.4-pbuffer-surfaceless-hooks.patch
+	epatch "${FILESDIR}"/12.1-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
-	epatch "${FILESDIR}"/11.7-double-buffered.patch
+	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
+	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
+	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
 
 	# IMG patches
 	epatch "${FILESDIR}"/0001-dri-pvr-Introduce-PowerVR-DRI-driver.patch
-	epatch "${FILESDIR}"/0004-dri-Add-some-new-DRI-formats-and-fourccs.patch
-	epatch "${FILESDIR}"/0005-dri-Add-MT21-DRI-fourcc.patch
-	epatch "${FILESDIR}"/0006-Separate-EXT_framebuffer_object-from-ARB-version.patch
-	epatch "${FILESDIR}"/0007-GL_EXT_robustness-entry-points.patch
-	epatch "${FILESDIR}"/0008-GL_KHR_blend_equation_advanced-entry-points.patch
-	epatch "${FILESDIR}"/0009-GL_EXT_geometry_shader-entry-points.patch
-	epatch "${FILESDIR}"/0010-GL_EXT_primitive_bounding_box-entry-points.patch
-	epatch "${FILESDIR}"/0011-GL_EXT_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0012-GL_OES_tessellation_shader-entry-points.patch
-	epatch "${FILESDIR}"/0013-GL_EXT_sparse_texture-entry-points.patch
-	epatch "${FILESDIR}"/0014-Add-support-for-various-GLES-extensions.patch
-	epatch "${FILESDIR}"/0015-Add-EGL_IMG_context_priority-EGL-extension.patch
-	epatch "${FILESDIR}"/0023-GL_EXT_shader_pixel_local_storage2-entry-points.patch
-	epatch "${FILESDIR}"/0025-Add-DRI-Query-Buffers-extension.patch
-	epatch "${FILESDIR}"/0026-GL_IMG_framebuffer_downsample-entry-points.patch
-	epatch "${FILESDIR}"/0027-GL_OVR_multiview-entry-points.patch
-	epatch "${FILESDIR}"/0028-Add-OVR_multiview_multisampled_render_to_texture.patch
-	epatch "${FILESDIR}"/0032-OpenGLES3.2-BlendBarrier.patch
-	epatch "${FILESDIR}"/0033-OpenGLES3.2-PrimitiveBoundingBox.patch
+	epatch "${FILESDIR}"/0003-dri-Add-some-new-DRI-formats-and-fourccs.patch
+	epatch "${FILESDIR}"/0004-dri-Add-MT21-DRI-fourcc.patch
+	epatch "${FILESDIR}"/0005-Separate-EXT_framebuffer_object-from-ARB-version.patch
+	epatch "${FILESDIR}"/0006-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0007-GL_EXT_sparse_texture-entry-points.patch
+	epatch "${FILESDIR}"/0008-Add-support-for-various-GLES-extensions.patch
+	epatch "${FILESDIR}"/0009-Add-EGL_IMG_context_priority-EGL-extension.patch
+	epatch "${FILESDIR}"/0016-GL_EXT_shader_pixel_local_storage2-entry-points.patch
+	epatch "${FILESDIR}"/0018-GL_IMG_framebuffer_downsample-entry-points.patch
 
 	base_src_prepare
-
-	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
-	echo '#define MESA_GIT_SHA1 "git-0000000"' > src/git_sha1.h
 
 	eautoreconf
 }
 
 src_configure() {
 	tc-getPROG PKG_CONFIG pkg-config
+
+	# Needs std=gnu++11 to build with libc++. crbug.com/750831
+	append-cxxflags "-std=gnu++11"
 
 	driver_enable pvr
 
@@ -205,7 +182,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm llvm-gallium) \
+		$(use_enable llvm gallium-llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
@@ -219,6 +196,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
+		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		$(use egl && echo "--with-egl-platforms=surfaceless")
 }
 
@@ -257,7 +235,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
 	# install the gallium drivers we use
-	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so msm_dri.so swrast_dri.so )
+	local gallium_drivers_files=( nouveau_dri.so r300_dri.so r600_dri.so msm_dri.so swrast_dri.so )
 	for x in ${gallium_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
 			doins "${S}/$(get_libdir)/gallium/${x}"

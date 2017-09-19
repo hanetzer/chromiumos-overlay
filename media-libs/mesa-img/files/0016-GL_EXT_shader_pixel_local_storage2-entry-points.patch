@@ -1,14 +1,14 @@
-From 7b3446b45ffde77f39e0cfcd26be6eddfc098d06 Mon Sep 17 00:00:00 2001
+From 698786e17fc32a6bda4893f0e045c31a0bc7ede9 Mon Sep 17 00:00:00 2001
 From: Rufus Hamade <rufus.hamade@imgtec.com>
 Date: Thu, 4 Feb 2016 14:09:26 +0000
-Subject: [PATCH 23/29] GL_EXT_shader_pixel_local_storage2 entry points
+Subject: [PATCH 16/33] GL_EXT_shader_pixel_local_storage2 entry points
 
 ---
  .../glapi/gen/EXT_shader_pixel_local_storage2.xml  | 33 ++++++++++++++++++++++
  src/mapi/glapi/gen/es_EXT.xml                      |  3 ++
  src/mesa/main/pixelstore.c                         | 22 +++++++++++++++
- src/mesa/main/pixelstore.h                         |  9 +++++-
- 4 files changed, 66 insertions(+), 1 deletion(-)
+ src/mesa/main/pixelstore.h                         |  8 ++++++
+ 4 files changed, 66 insertions(+)
  create mode 100644 src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
 
 diff --git a/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml b/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
@@ -51,22 +51,24 @@ index 0000000..4223ab1
 +
 +</OpenGLAPI>
 diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
-index 602043e..f8280aa 100644
+index dd3c3db..6ad12d6 100644
 --- a/src/mapi/glapi/gen/es_EXT.xml
 +++ b/src/mapi/glapi/gen/es_EXT.xml
-@@ -1402,4 +1402,7 @@
+@@ -1433,6 +1433,9 @@
  <!-- 240. EXT_sparse_texture -->
  <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
  
 +<!-- 253. GL_EXT_shader_pixel_local_storage2 -->
 +<xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 +
- </OpenGLAPI>
+ <category name="GL_OES_viewport_array" number="267">
+     <function name="ViewportArrayvOES" es2="3.1" alias="ViewportArrayv">
+         <param name="first" type="GLuint"/>
 diff --git a/src/mesa/main/pixelstore.c b/src/mesa/main/pixelstore.c
-index fc81533..f7d6414 100644
+index 6123da9..1225271 100644
 --- a/src/mesa/main/pixelstore.c
 +++ b/src/mesa/main/pixelstore.c
-@@ -326,3 +326,25 @@ _mesa_compressed_pixel_storage_error_check(
+@@ -350,3 +350,25 @@ _mesa_compressed_pixel_storage_error_check(
  
     return true;
  }
@@ -93,14 +95,10 @@ index fc81533..f7d6414 100644
 +   _mesa_error(ctx, GL_INVALID_OPERATION, "glTexPageCommitmentEXT");
 +}
 diff --git a/src/mesa/main/pixelstore.h b/src/mesa/main/pixelstore.h
-index 6838454..4761980 100644
+index d21c6fe..04c402b 100644
 --- a/src/mesa/main/pixelstore.h
 +++ b/src/mesa/main/pixelstore.h
-@@ -44,10 +44,17 @@ _mesa_PixelStorei( GLenum pname, GLint param );
- extern void GLAPIENTRY
- _mesa_PixelStoref( GLenum pname, GLfloat param );
- 
--
+@@ -56,6 +56,14 @@ _mesa_PixelStoref_no_error(GLenum pname, GLfloat param);
  extern void
  _mesa_init_pixelstore( struct gl_context *ctx );
  
@@ -109,7 +107,7 @@ index 6838454..4761980 100644
 +
 +extern GLsizei GLAPIENTRY
 +_mesa_GetFramebufferPixelLocalStorageSizeEXT(GLuint target);
-+    
++
 +extern void GLAPIENTRY
 +_mesa_ClearPixelLocalStorageuiEXT(GLsizei offset, GLsizei n, const GLuint *values);
  
