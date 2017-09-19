@@ -46,5 +46,5 @@ src_install() {
 	doins common/init/arc-camera-algo.conf
 
 	insinto "/usr/share/policy"
-	doins common/arc-camera-algo.policy
+	newins common/arc-camera-algo-${ARCH}.policy arc-camera-algo.policy
 }
