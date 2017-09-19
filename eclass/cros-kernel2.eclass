@@ -46,6 +46,7 @@ IUSE="
 	-transparent_hugepage
 	tpm2
 	-kernel_afdo
+	test
 "
 REQUIRED_USE=""
 STRIP_MASK="
