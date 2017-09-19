@@ -14,9 +14,17 @@ CROS_WORKON_DESTDIR="${S}/src/golang.org/x/net"
 CROS_GO_PACKAGES=(
 	"golang.org/x/net/bpf"
 	"golang.org/x/net/context"
+	"golang.org/x/net/context/ctxhttp"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/hpack"
+	"golang.org/x/net/idna"
 	"golang.org/x/net/internal/iana"
 	"golang.org/x/net/internal/socket"
+	"golang.org/x/net/internal/timeseries"
 	"golang.org/x/net/ipv4"
+	"golang.org/x/net/ipv6"
+	"golang.org/x/net/lex/httplex"
+	"golang.org/x/net/trace"
 )
 
 CROS_GO_TEST=(
@@ -35,4 +43,4 @@ IUSE=""
 RESTRICT="binchecks strip"
 
 DEPEND=""
-RDEPEND=""
+RDEPEND="dev-go/text"
