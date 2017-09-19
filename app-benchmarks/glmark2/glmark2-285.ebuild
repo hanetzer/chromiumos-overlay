@@ -4,7 +4,7 @@
 
 EAPI="5"
 
-inherit toolchain-funcs waf-utils
+inherit toolchain-funcs waf-utils flag-o-matic
 
 DESCRIPTION="OpenGL (ES) 2.0 benchmark"
 HOMEPAGE="https://launchpad.net/glmark2"
@@ -49,7 +49,9 @@ PATCHES=(
 src_configure() {
 	local myconf=""
 	local flavors=()
-
+	# Remove this one after llvm upgrades.
+	append-flags -Wno-unknown-warning-option
+	append-flags -Wno-tautological-unsigned-zero-compare
 	if use X; then
 		if use opengl; then
 			flavors+=(x11-gl)
