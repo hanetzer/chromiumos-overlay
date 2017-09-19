@@ -53,4 +53,6 @@ platform_pkg_test() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}"
 	done
+
+	./test-readme.sh || die "README.md has errors"
 }
