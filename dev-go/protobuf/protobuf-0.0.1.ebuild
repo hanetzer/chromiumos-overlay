@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2.
 
 EAPI=5
@@ -13,6 +13,7 @@ CROS_WORKON_DESTDIR="${S}/src/github.com/golang/protobuf"
 CROS_GO_PACKAGES=(
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/golang/protobuf/ptypes/..."
 )
 
