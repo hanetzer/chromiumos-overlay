@@ -32,6 +32,11 @@
 # Minor version of Android that was used to generate the ARC toolchain.
 # Normally defined by the profile. e.g. 0, for Android 7.1.0
 
+# @ECLASS-VARIABLE: ARC_LLVM_VERSION
+# @DESCRIPTION:
+# Version of LLVM included in the ARC toolchain.
+# Normally defined by the profile, e.g. 3.8, for arc-toolchain-n
+
 if [[ -z ${_ARC_BUILD_ECLASS} ]]; then
 _ARC_BUILD_ECLASS=1
 
@@ -114,6 +119,17 @@ arc-build-select-gcc() {
 
 	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-gcc"
 	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
+}
+
+arc-build-select-clang() {
+	_arc-build-select-common
+
+	append-flags "--gcc-toolchain=${ARC_GCC_BASE}"
+	append-flags -target "${CHOST}"
+
+	ARC_LLVM_BASE="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}"
+	export CC="${ARC_LLVM_BASE}/bin/clang"
+	export CXX="${ARC_LLVM_BASE}/bin/clang++"
 }
 
 fi
