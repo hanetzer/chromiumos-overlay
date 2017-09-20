@@ -6,11 +6,11 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
 CROS_GO_BINARIES=(
-	"chromiumos/tast/tast"
+	"chromiumos/tast/cmd"
 )
 
 CROS_GO_TEST=(
-	"chromiumos/tast/tast/..."
+	"chromiumos/tast/cmd/..."
 )
 
 inherit cros-go cros-workon
