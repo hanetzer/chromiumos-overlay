@@ -10,4 +10,4 @@
 
 # Handle quote properly - captures both VERSION=2.22 or VERSION='2.24'
 exec sed -nEe "s/^\s*VERSION='?([.0-9]+)'?/\\1/p" \
-    "$1"/bfd/configure
+	"$(find "$1" -path '*/bfd/configure')"
