@@ -112,6 +112,7 @@ ALL_BOARDS=(
 	enguarde
 	#envoy-jerry
 	eve
+	eve-kvm
 	eve-userdebug
 	expresso
 	falco
