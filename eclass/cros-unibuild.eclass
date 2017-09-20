@@ -56,6 +56,46 @@ install_private_model_file() {
 	)
 }
 
+# Find .dtsi files in a given directory tree.
+# Args:
+#   $1: Directory to search.
+# Returns:
+#   Exports a 'files' variable containing the array of files found.
+_find_configs() {
+	local file
+
+	while read -d $'\0' -r file; do
+		files+=( "${file}" )
+	done < <(find "$1" -name '*.dtsi' -print0)
+}
+
+# @FUNCTION: install_private_model_files
+# @USAGE:
+# @DESCRIPTION:
+# Installs all .dtsi files for the current board. This is intended to be called
+# from the chromeos-config-<board> private ebuild. The files are named
+# "private-<fname>.dtsi".
+install_private_model_files() {
+	local files
+
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	_find_configs "${FILESDIR}"
+
+	einfo "Installing ${#files[@]} files to ${UNIBOARD_DTS_DIR}"
+
+	# Avoid polluting callers with our newins.
+	(
+		insinto "${UNIBOARD_DTS_DIR}"
+		for file in "${files[@]}"; do
+			local dest="private-${file##*/}"
+
+			einfo "Installing ${dest}"
+			newins "${file}" "${dest}"
+		done
+	)
+}
+
 # @FUNCTION: get_model_conf_value
 # @USAGE: <model> <path> <prop>
 # @RETURN: value of the property, or empty if not found, in which
@@ -116,19 +156,20 @@ get_dtb() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local basedir="$(dirname "${EBUILD}")/.."
-	local config="${basedir}/chromeos-config-bsp/files/model.dtsi"
+	local configdir="${basedir}/chromeos-config-bsp/files"
 	local configs=( "-" )
+	local files
 
 	# We are not allowed to access the ROOT directory here, so compile the
 	# model fragment on the fly and pull out the value we want.
 
-	# We cannot die here if ${config} does not exist as this function is
+	# We cannot die here if there are no config files as this function is
 	# called by non-unibuild boards. We just need to output an empty
 	# config.
-	[[ -e "${config}" ]] && configs+=( "${config}" )
+	_find_configs "${configdir}"
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
-		cat "${configs[@]}" |
+		cat "-" "${files[@]}" |
 		dtc -O dtb
 }
 
