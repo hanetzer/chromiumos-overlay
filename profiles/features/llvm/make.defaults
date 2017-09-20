@@ -1,0 +1,2 @@
+BUILD_CC=x86_64-pc-linux-gnu-clang
+BUILD_CXX=x86_64-pc-linux-gnu-clang++
