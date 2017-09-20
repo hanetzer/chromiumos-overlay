@@ -32,6 +32,8 @@ src_prepare() {
 	# This fixes a warning unterminated '#pragma.
 	# See crbug.com/755573
 	epatch "${FILESDIR}"/dptf-fix-unterminated-pragma.patch
+	# This fixes a warning delete-non-virtual-dtor
+	epatch "${FILESDIR}"/dptf-fix-delete-non-virtual-dtor.patch
 }
 
 src_configure() {

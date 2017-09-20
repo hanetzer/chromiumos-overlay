@@ -1,0 +1,22 @@
+This fixes the warning delete-non-virtual-dtor, see crbug.com/767227
+diff -urp DPTF/Sources/Policies/PolicyLib/ControlKnobBase.h DPTF/Sources/Policies/PolicyLib/ControlKnobBase.h
+--- DPTF/Sources/Policies/PolicyLib/ControlKnobBase.h
++++ DPTF/Sources/Policies/PolicyLib/ControlKnobBase.h
+@@ -27,7 +27,7 @@ class dptf_export ControlKnobBase
+ {
+ public:
+ 	ControlKnobBase(const PolicyServicesInterfaceContainer& policyServices, UIntN participantIndex, UIntN domainIndex);
+-	~ControlKnobBase(void);
++	virtual ~ControlKnobBase(void);
+ 
+ 	virtual void limit(UIntN target) = 0;
+ 	virtual void unlimit(UIntN target) = 0;
+diff -urp DPTF/Sources/Policies/PolicyLib/TimeInterface.h DPTF/Sources/Policies/PolicyLib/TimeInterface.h
+--- DPTF/Sources/Policies/PolicyLib/TimeInterface.h
++++ DPTF/Sources/Policies/PolicyLib/TimeInterface.h
+@@ -26,4 +26,5 @@ class dptf_export TimeInterface
+ {
+ public:
+ 	virtual TimeSpan getCurrentTime(void) = 0;
++	virtual ~TimeInterface() {}
+ };
