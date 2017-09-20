@@ -55,6 +55,8 @@ DEPEND="${RDEPEND}
 pkg_preinst() {
 	enewgroup "shill-crypto"
 	enewuser "shill-crypto"
+	enewgroup "shill-scripts"
+	enewuser "shill-scripts"
 	enewgroup "nfqueue"
 	enewuser "nfqueue"
 }
