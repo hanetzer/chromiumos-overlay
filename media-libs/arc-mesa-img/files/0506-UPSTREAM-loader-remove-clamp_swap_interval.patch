@@ -1,0 +1,112 @@
+From 9ab421dac20d9f1d51788c244523c1083afb0ef5 Mon Sep 17 00:00:00 2001
+From: Eric Engestrom <eric.engestrom@imgtec.com>
+Date: Mon, 31 Jul 2017 17:47:35 +0100
+Subject: [PATCH 34/39] UPSTREAM: loader: remove clamp_swap_interval()
+
+As of last commit, no invalid swap interval can be stored, so there's
+no need to sanitize the values when reading them anymore.
+
+Signed-off-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Reviewed-by: Tapani Plli <tapani.palli@intel.com>
+(cherry picked from commit 97eadb07e7deeb62175da972bfa7a1645798d0ba)
+
+BUG=b:63807996
+TEST=Create a story with geofence enabled in Snapchat on Eve
+
+Change-Id: I397d4819332703cdc0a7f708335cf47e6db31f4c
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/610281
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/drivers/dri2/platform_x11_dri3.c | 14 --------------
+ src/glx/dri3_glx.c                       |  7 -------
+ src/loader/loader_dri3_helper.c          |  1 -
+ src/loader/loader_dri3_helper.h          |  1 -
+ 4 files changed, 23 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_x11_dri3.c b/src/egl/drivers/dri2/platform_x11_dri3.c
+index 515be27..9548a24 100644
+--- a/src/egl/drivers/dri2/platform_x11_dri3.c
++++ b/src/egl/drivers/dri2/platform_x11_dri3.c
+@@ -53,19 +53,6 @@ egl_dri3_get_swap_interval(struct loader_dri3_drawable *draw)
+    return dri3_surf->base.SwapInterval;
+ }
+ 
+-static int
+-egl_dri3_clamp_swap_interval(struct loader_dri3_drawable *draw, int interval)
+-{
+-   struct dri3_egl_surface *dri3_surf = loader_drawable_to_egl_surface(draw);
+-
+-   if (interval > dri3_surf->base.Config->MaxSwapInterval)
+-      interval = dri3_surf->base.Config->MaxSwapInterval;
+-   else if (interval < dri3_surf->base.Config->MinSwapInterval)
+-      interval = dri3_surf->base.Config->MinSwapInterval;
+-
+-   return interval;
+-}
+-
+ static void
+ egl_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+ {
+@@ -126,7 +113,6 @@ egl_dri3_flush_drawable(struct loader_dri3_drawable *draw, unsigned flags)
+ 
+ static const struct loader_dri3_vtable egl_dri3_vtable = {
+    .get_swap_interval = egl_dri3_get_swap_interval,
+-   .clamp_swap_interval = egl_dri3_clamp_swap_interval,
+    .set_swap_interval = egl_dri3_set_swap_interval,
+    .set_drawable_size = egl_dri3_set_drawable_size,
+    .in_current_context = egl_dri3_in_current_context,
+diff --git a/src/glx/dri3_glx.c b/src/glx/dri3_glx.c
+index 5091606..cc11037 100644
+--- a/src/glx/dri3_glx.c
++++ b/src/glx/dri3_glx.c
+@@ -94,12 +94,6 @@ glx_dri3_get_swap_interval(struct loader_dri3_drawable *draw)
+    return priv->swap_interval;
+ }
+ 
+-static int
+-glx_dri3_clamp_swap_interval(struct loader_dri3_drawable *draw, int interval)
+-{
+-   return interval;
+-}
+-
+ static void
+ glx_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+ {
+@@ -180,7 +174,6 @@ glx_dri3_show_fps(struct loader_dri3_drawable *draw, uint64_t current_ust)
+ 
+ static const struct loader_dri3_vtable glx_dri3_vtable = {
+    .get_swap_interval = glx_dri3_get_swap_interval,
+-   .clamp_swap_interval = glx_dri3_clamp_swap_interval,
+    .set_swap_interval = glx_dri3_set_swap_interval,
+    .set_drawable_size = glx_dri3_set_drawable_size,
+    .in_current_context = glx_dri3_in_current_context,
+diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+index 1c93e7a..b3c36e2 100644
+--- a/src/loader/loader_dri3_helper.c
++++ b/src/loader/loader_dri3_helper.c
+@@ -77,7 +77,6 @@ dri3_update_num_back(struct loader_dri3_drawable *draw)
+ void
+ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+ {
+-   interval = draw->vtable->clamp_swap_interval(draw, interval);
+    draw->vtable->set_swap_interval(draw, interval);
+    dri3_update_num_back(draw);
+ }
+diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
+index a865e46..628b0f9 100644
+--- a/src/loader/loader_dri3_helper.h
++++ b/src/loader/loader_dri3_helper.h
+@@ -98,7 +98,6 @@ struct loader_dri3_drawable;
+ 
+ struct loader_dri3_vtable {
+    int (*get_swap_interval)(struct loader_dri3_drawable *);
+-   int (*clamp_swap_interval)(struct loader_dri3_drawable *, int);
+    void (*set_swap_interval)(struct loader_dri3_drawable *, int);
+    void (*set_drawable_size)(struct loader_dri3_drawable *, int, int);
+    bool (*in_current_context)(struct loader_dri3_drawable *);
+-- 
+2.7.4
+

@@ -1,4 +1,4 @@
-From b16e6c9861e4db4e83e4a7cc9f7ada457d98fa9c Mon Sep 17 00:00:00 2001
+From 0dd9a022a31c212066f3ab538e1779a2b29fe4da Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
 Date: Tue, 18 Apr 2017 18:45:29 +0100
 Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
@@ -9,19 +9,19 @@ Change-Id: I8d53d409c22b991c670e8e0511c931c2756613c2
  src/mesa/drivers/dri/Makefile.am            |    6 +
  src/mesa/drivers/dri/pvr/Makefile.am        |   22 +
  src/mesa/drivers/dri/pvr/Makefile.sources   |   12 +
- src/mesa/drivers/dri/pvr/mesa_context.c     |  260 ++++++
+ src/mesa/drivers/dri/pvr/mesa_context.c     |  258 ++++++
  src/mesa/drivers/dri/pvr/pvr_object_cache.c |  317 +++++++
  src/mesa/drivers/dri/pvr/pvr_object_cache.h |  137 +++
  src/mesa/drivers/dri/pvr/pvrdrawable.c      |  743 ++++++++++++++++
  src/mesa/drivers/dri/pvr/pvrdri.c           | 1214 +++++++++++++++++++++++++++
  src/mesa/drivers/dri/pvr/pvrdri.h           |  259 ++++++
  src/mesa/drivers/dri/pvr/pvrext.c           |  400 +++++++++
- src/mesa/drivers/dri/pvr/pvrimage.c         | 1042 +++++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.c         | 1045 +++++++++++++++++++++++
  src/mesa/drivers/dri/pvr/pvrimage.h         |   96 +++
  src/mesa/drivers/dri/pvr/pvrmesa.h          |   44 +
  src/mesa/drivers/dri/pvr/pvrqueue.h         |   74 ++
- src/mesa/drivers/dri/pvr/pvrutil.c          |  566 +++++++++++++
- 16 files changed, 5200 insertions(+)
+ src/mesa/drivers/dri/pvr/pvrutil.c          |  567 +++++++++++++
+ 16 files changed, 5202 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/mesa_context.c
@@ -38,20 +38,20 @@ Change-Id: I8d53d409c22b991c670e8e0511c931c2756613c2
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index c492e15..ec1e90f 100644
+index 2689fc5..67714ee 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -72,6 +72,7 @@ LIBDRM_REQUIRED=2.4.66
- LIBDRM_RADEON_REQUIRED=2.4.56
- LIBDRM_AMDGPU_REQUIRED=2.4.63
- LIBDRM_INTEL_REQUIRED=2.4.61
+@@ -76,6 +76,7 @@ LIBDRM_REQUIRED=2.4.75
+ LIBDRM_RADEON_REQUIRED=2.4.71
+ LIBDRM_AMDGPU_REQUIRED=2.4.82
+ LIBDRM_INTEL_REQUIRED=2.4.75
 +LIBDRM_PVR_REQUIRED=2.4.60
  LIBDRM_NVVIEUX_REQUIRED=2.4.66
  LIBDRM_NOUVEAU_REQUIRED=2.4.66
- LIBDRM_FREEDRENO_REQUIRED=2.4.67
-@@ -1605,6 +1606,11 @@ if test -n "$with_dri_drivers"; then
-             HAVE_R200_DRI=yes;
-             PKG_CHECK_MODULES([RADEON], [libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
+ LIBDRM_FREEDRENO_REQUIRED=2.4.74
+@@ -1867,6 +1868,11 @@ if test -n "$with_dri_drivers"; then
+             HAVE_R200_DRI=yes
+             PKG_CHECK_MODULES([RADEON], [libdrm >= $LIBDRM_RADEON_REQUIRED libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
              ;;
 +        xpvr)
 +            HAVE_PVR_DRI=yes;
@@ -59,29 +59,29 @@ index c492e15..ec1e90f 100644
 +            DRI_LIB_DEPS="$DRI_LIB_DEPS -lpvr_dri_support"
 +            ;;
          xswrast)
-             HAVE_SWRAST_DRI=yes;
+             HAVE_SWRAST_DRI=yes
              ;;
-@@ -2537,6 +2543,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
+@@ -2699,6 +2705,7 @@ AM_CONDITIONAL(HAVE_I965_DRI, test x$HAVE_I965_DRI = xyes)
  AM_CONDITIONAL(HAVE_NOUVEAU_DRI, test x$HAVE_NOUVEAU_DRI = xyes)
  AM_CONDITIONAL(HAVE_R200_DRI, test x$HAVE_R200_DRI = xyes)
  AM_CONDITIONAL(HAVE_RADEON_DRI, test x$HAVE_RADEON_DRI = xyes)
 +AM_CONDITIONAL(HAVE_PVR_DRI, test x$HAVE_PVR_DRI = xyes)
  AM_CONDITIONAL(HAVE_SWRAST_DRI, test x$HAVE_SWRAST_DRI = xyes)
  
- AM_CONDITIONAL(HAVE_INTEL_VULKAN, test "x$HAVE_INTEL_VULKAN" = xyes)
-@@ -2723,6 +2730,7 @@ AC_CONFIG_FILES([Makefile
- 		src/mesa/drivers/dri/nouveau/Makefile
- 		src/mesa/drivers/dri/r200/Makefile
- 		src/mesa/drivers/dri/radeon/Makefile
-+		src/mesa/drivers/dri/pvr/Makefile
- 		src/mesa/drivers/dri/swrast/Makefile
- 		src/mesa/drivers/osmesa/Makefile
- 		src/mesa/drivers/osmesa/osmesa.pc
+ AM_CONDITIONAL(HAVE_RADEON_VULKAN, test "x$HAVE_RADEON_VULKAN" = xyes)
+@@ -2898,6 +2905,7 @@ AC_CONFIG_FILES([Makefile
+                  src/mesa/drivers/dri/nouveau/Makefile
+                  src/mesa/drivers/dri/r200/Makefile
+                  src/mesa/drivers/dri/radeon/Makefile
++                 src/mesa/drivers/dri/pvr/Makefile
+                  src/mesa/drivers/dri/swrast/Makefile
+                  src/mesa/drivers/osmesa/Makefile
+                  src/mesa/drivers/osmesa/osmesa.pc
 diff --git a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
-index 1c6dd08..2e5dd6b 100644
+index 381c6a2..fa5cba5 100644
 --- a/src/mesa/drivers/dri/Makefile.am
 +++ b/src/mesa/drivers/dri/Makefile.am
-@@ -43,6 +43,12 @@ MEGADRIVERS_DEPS += radeon/libradeon_dri.la
+@@ -36,6 +36,12 @@ MEGADRIVERS_DEPS += radeon/libradeon_dri.la
  MEGADRIVERS += radeon_dri.so
  endif
  
@@ -142,10 +142,10 @@ index 0000000..448dc49
 + pvr_object_cache.c
 diff --git a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
 new file mode 100644
-index 0000000..5b5434e
+index 0000000..794bb03
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/mesa_context.c
-@@ -0,0 +1,260 @@
+@@ -0,0 +1,258 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/**
@@ -191,8 +191,6 @@ index 0000000..5b5434e
 +#include "pvrmesa.h"
 +
 +#include "powervr/dri_support.h"
-+
-+#include "compiler/glsl/glsl_parser_extras.h"
 +
 +/**
 + * This is the default function we plug into all dispatch table slots
@@ -3514,7 +3512,7 @@ index 0000000..490cca6
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..713f54b
+index 0000000..6c9f2fd
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
 @@ -0,0 +1,1045 @@
@@ -4797,10 +4795,10 @@ index 0000000..3fdc0a8
 +#endif /* defined(__PVRQUEUE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
 new file mode 100644
-index 0000000..8deac30
+index 0000000..b1a98d4
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,566 @@
+@@ -0,0 +1,567 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/*************************************************************************/ /*!
@@ -5189,6 +5187,7 @@ index 0000000..8deac30
 +						 uNumBackBufferModes, 
 +						 puMSAASamples,
 +						 uNumMSAASamples,
++						 GL_FALSE,
 +						 GL_FALSE);
 +
 +		ppsConfigs = driConcatConfigs(ppsConfigs, ppsNewConfigs);

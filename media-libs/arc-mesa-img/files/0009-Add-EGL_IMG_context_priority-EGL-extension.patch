@@ -1,0 +1,304 @@
+From d3283af06d49e1715441990f8bef1c6166b1f6a1 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 11 Mar 2014 11:31:26 +0000
+Subject: [PATCH 09/33] Add EGL_IMG_context_priority EGL extension
+
+Add support for the EGL_IMG_context_priority extension to EGL, and the
+DRI2 EGL driver.
+---
+ include/GL/internal/dri_interface.h    | 30 +++++++++++++++++++++++++
+ src/egl/drivers/dri2/egl_dri2.c        | 40 ++++++++++++++++++++++++++++------
+ src/egl/drivers/dri2/egl_dri2.h        |  1 +
+ src/egl/main/eglapi.c                  |  1 +
+ src/egl/main/eglcontext.c              | 18 +++++++++++++++
+ src/egl/main/eglcontext.h              |  1 +
+ src/egl/main/egldisplay.h              |  2 ++
+ src/mesa/drivers/dri/common/dri_util.c |  5 +++++
+ src/mesa/drivers/dri/common/dri_util.h | 10 +++++++++
+ 9 files changed, 101 insertions(+), 7 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 90712d3..a13dc78 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1064,6 +1064,21 @@ struct __DRIdri2LoaderExtensionRec {
+ /*@}*/
+ 
+ /**
++ * \requires __DRI_PRIORITY
++ */
++/*
++ * NOTE:
++ * The value of __DRI_CTX_ATTRIB_PRIORITY has been chosen to avoid clashes
++ * when patching. If this patch is submitted upstream, adjust the value to
++ * be properly in sequence.
++ */
++#define __DRI_CTX_ATTRIB_PRIORITY		0x7fff0004
++
++#define __DRI_CTX_PRIORITY_LOW			0
++#define __DRI_CTX_PRIORITY_MEDIUM		1
++#define __DRI_CTX_PRIORITY_HIGH		2
++
++/**
+  * \name Reasons that __DRIdri2Extension::createContextAttribs might fail
+  */
+ /*@{*/
+@@ -1821,4 +1836,19 @@ struct __DRIbackgroundCallableExtensionRec {
+    GLboolean (*isThreadSafe)(void *loaderPrivate);
+ };
+ 
++/**
++ * Context priority driver extension.
++ *
++ * Existence of this extension means the driver can accept the
++ * \c __DRI_CTX_PRIORITY attribute in
++ * \c __DRIdri2ExtensionRec::createContextAttribs.
++ */
++#define __DRI_PRIORITY "DRI_Priority"
++#define __DRI_PRIORITY_VERSION 1
++
++typedef struct __DRIpriorityExtensionRec __DRIpriorityExtension;
++struct __DRIpriorityExtensionRec {
++   __DRIextension base;
++};
++
+ #endif
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 74b73a6..07b45bc 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -435,6 +435,7 @@ static const struct dri2_extension_match optional_core_extensions[] = {
+    { __DRI2_FENCE, 1, offsetof(struct dri2_egl_display, fence) },
+    { __DRI2_RENDERER_QUERY, 1, offsetof(struct dri2_egl_display, rendererQuery) },
+    { __DRI2_INTEROP, 1, offsetof(struct dri2_egl_display, interop) },
++   { __DRI_PRIORITY, 1, offsetof(struct dri2_egl_display, priority) },
+    { NULL, 0, 0 }
+ };
+ 
+@@ -666,6 +667,9 @@ dri2_setup_screen(_EGLDisplay *disp)
+ 
+       if (dri2_dpy->robustness)
+          disp->Extensions.EXT_create_context_robustness = EGL_TRUE;
++
++      if (dri2_dpy->priority)
++         disp->Extensions.IMG_context_priority = EGL_TRUE;
+    }
+ 
+    if (dri2_dpy->no_error)
+@@ -1061,7 +1065,7 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
+ {
+    int pos = 0;
+ 
+-   assert(*num_attribs >= 8);
++   assert(*num_attribs >= 10);
+ 
+    ctx_attribs[pos++] = __DRI_CTX_ATTRIB_MAJOR_VERSION;
+    ctx_attribs[pos++] = dri2_ctx->base.ClientMajorVersion;
+@@ -1098,6 +1102,28 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
+       ctx_attribs[pos++] = __DRI_CTX_RESET_LOSE_CONTEXT;
+    }
+ 
++   if (dri2_dpy->priority) {
++      uint32_t priority;
++
++      switch(dri2_ctx->base.Priority) {
++        case EGL_CONTEXT_PRIORITY_HIGH_IMG:
++          priority = __DRI_CTX_PRIORITY_HIGH;
++          break;
++        case EGL_CONTEXT_PRIORITY_MEDIUM_IMG:
++          priority = __DRI_CTX_PRIORITY_MEDIUM;
++          break;
++        case EGL_CONTEXT_PRIORITY_LOW_IMG:
++          priority = __DRI_CTX_PRIORITY_LOW;
++          break;
++        default:
++          _eglError(EGL_BAD_ATTRIBUTE, "eglCreateContext");
++          return false;
++      }
++
++      ctx_attribs[pos++] = __DRI_CTX_ATTRIB_PRIORITY;
++      ctx_attribs[pos++] = priority;
++   }
++
+    *num_attribs = pos;
+ 
+    return true;
+@@ -1212,8 +1238,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+ 
+    if (dri2_dpy->image_driver) {
+       unsigned error;
+-      unsigned num_attribs = 8;
+-      uint32_t ctx_attribs[8];
++      unsigned num_attribs = 10;
++      uint32_t ctx_attribs[10];
+ 
+       if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+                                         &num_attribs))
+@@ -1232,8 +1258,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+    } else if (dri2_dpy->dri2) {
+       if (dri2_dpy->dri2->base.version >= 3) {
+          unsigned error;
+-         unsigned num_attribs = 8;
+-         uint32_t ctx_attribs[8];
++         unsigned num_attribs = 10;
++         uint32_t ctx_attribs[10];
+ 
+          if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+                                         &num_attribs))
+@@ -1261,8 +1287,8 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+       assert(dri2_dpy->swrast);
+       if (dri2_dpy->swrast->base.version >= 3) {
+          unsigned error;
+-         unsigned num_attribs = 8;
+-         uint32_t ctx_attribs[8];
++         unsigned num_attribs = 10;
++         uint32_t ctx_attribs[10];
+ 
+          if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+                                         &num_attribs))
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index ccfefef..a8449b8 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -179,6 +179,7 @@ struct dri2_egl_display
+    const __DRI2fenceExtension *fence;
+    const __DRI2rendererQueryExtension *rendererQuery;
+    const __DRI2interopExtension *interop;
++   const __DRIpriorityExtension   *priority;
+    int                       fd;
+ 
+    /* dri2_initialize/dri2_terminate increment/decrement this count, so does
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 000368a..afca3e7 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -527,6 +527,7 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
+    _EGL_CHECK_EXTENSION(WL_bind_wayland_display);
+    _EGL_CHECK_EXTENSION(WL_create_wayland_buffer_from_image);
+ 
++   _EGL_CHECK_EXTENSION(IMG_context_priority);
+ #undef _EGL_CHECK_EXTENSION
+ }
+ 
+diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
+index 1a8e9bd..c4db4c0 100644
+--- a/src/egl/main/eglcontext.c
++++ b/src/egl/main/eglcontext.c
+@@ -343,6 +343,20 @@ _eglParseContextAttribList(_EGLContext *ctx, _EGLDisplay *dpy,
+          ctx->NoError = !!val;
+          break;
+ 
++       case  EGL_CONTEXT_PRIORITY_LEVEL_IMG:
++         switch(val) {
++            case EGL_CONTEXT_PRIORITY_HIGH_IMG:
++            case EGL_CONTEXT_PRIORITY_MEDIUM_IMG:
++            case EGL_CONTEXT_PRIORITY_LOW_IMG:
++               if (dpy->Extensions.IMG_context_priority)
++                  ctx->Priority = val;
++               break;
++            default:
++               err = EGL_BAD_ATTRIBUTE;
++                  break;
++         }
++         break;
++
+       default:
+          err = EGL_BAD_ATTRIBUTE;
+          break;
+@@ -534,6 +548,7 @@ _eglInitContext(_EGLContext *ctx, _EGLDisplay *dpy, _EGLConfig *conf,
+    ctx->Flags = 0;
+    ctx->Profile = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
+    ctx->ResetNotificationStrategy = EGL_NO_RESET_NOTIFICATION_KHR;
++   ctx->Priority = EGL_CONTEXT_PRIORITY_MEDIUM_IMG;
+ 
+    err = _eglParseContextAttribList(ctx, dpy, attrib_list);
+    if (err == EGL_SUCCESS && ctx->Config) {
+@@ -599,6 +614,9 @@ _eglQueryContext(_EGLDriver *drv, _EGLDisplay *dpy, _EGLContext *c,
+    case EGL_RENDER_BUFFER:
+       *value = _eglQueryContextRenderBuffer(c);
+       break;
++   case EGL_CONTEXT_PRIORITY_LEVEL_IMG:
++      *value = c->Priority;
++      break;
+    default:
+       return _eglError(EGL_BAD_ATTRIBUTE, "eglQueryContext");
+    }
+diff --git a/src/egl/main/eglcontext.h b/src/egl/main/eglcontext.h
+index 0667622..b9d9f11 100644
+--- a/src/egl/main/eglcontext.h
++++ b/src/egl/main/eglcontext.h
+@@ -63,6 +63,7 @@ struct _egl_context
+    EGLint Profile;
+    EGLint ResetNotificationStrategy;
+    EGLBoolean NoError;
++   EGLint Priority;
+ 
+    /* The real render buffer when a window surface is bound */
+    EGLint WindowRenderBuffer;
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index 3d5a445..0733a39 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -134,6 +134,8 @@ struct _egl_extensions
+ 
+    EGLBoolean WL_bind_wayland_display;
+    EGLBoolean WL_create_wayland_buffer_from_image;
++
++   EGLBoolean IMG_context_priority;
+ };
+ 
+ 
+diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
+index 03e1cc7..5a40251 100644
+--- a/src/mesa/drivers/dri/common/dri_util.c
++++ b/src/mesa/drivers/dri/common/dri_util.c
+@@ -306,6 +306,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+     unsigned minor_version = 0;
+     uint32_t flags = 0;
+     bool notify_reset = false;
++    unsigned priority = __DRI_CTX_PRIORITY_MEDIUM;
+ 
+     assert((num_attribs == 0) || (attribs != NULL));
+ 
+@@ -348,6 +349,9 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+             notify_reset = (attribs[i * 2 + 1]
+                             != __DRI_CTX_RESET_NO_NOTIFICATION);
+             break;
++	case __DRI_CTX_ATTRIB_PRIORITY:
++	    priority = attribs[i * 2 + 1];
++	    break;
+ 	default:
+ 	    /* We can't create a context that satisfies the requirements of an
+ 	     * attribute that we don't understand.  Return failure.
+@@ -448,6 +452,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+     context->driScreenPriv = screen;
+     context->driDrawablePriv = NULL;
+     context->driReadablePriv = NULL;
++    context->priority = priority;
+ 
+     if (!screen->driver->CreateContext(mesa_api, modes, context,
+                                        major_version, minor_version,
+diff --git a/src/mesa/drivers/dri/common/dri_util.h b/src/mesa/drivers/dri/common/dri_util.h
+index 3e1ce62..c7718bf 100644
+--- a/src/mesa/drivers/dri/common/dri_util.h
++++ b/src/mesa/drivers/dri/common/dri_util.h
+@@ -218,6 +218,16 @@ struct __DRIcontextRec {
+ 	int draw_stamp;
+ 	int read_stamp;
+     } dri2;
++
++    /**
++     * Context priority hint.
++     * NOTE:
++     * This should probably be an argument to the DRI driver CreateContext
++     * entry point, but that would mean updating every DRI driver in Mesa.
++     * Whilst support for context priority is supplied via a patch, pass
++     * the priority as part of the DRI context structure.
++     */
++    unsigned priority;
+ };
+ 
+ /**
+-- 
+2.7.4
+

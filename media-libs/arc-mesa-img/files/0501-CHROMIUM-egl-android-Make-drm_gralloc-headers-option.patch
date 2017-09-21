@@ -1,0 +1,163 @@
+From d8490df521e8249832c2887f8b1810d0a6a86aea Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Tue, 2 Aug 2016 20:07:55 +0900
+Subject: [PATCH 28/39] CHROMIUM: egl/android: Make drm_gralloc headers
+ optional (v2)
+
+Make the code at least compile when being built without drm_gralloc
+headers.
+
+v2: Replaced #ifdefs with stubs for gralloc_drm_get_gem_handle()
+    and GRALLOC_MODULE_PERFORM_GET_DRM_FD.
+    Removed explicit render node probing code.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+(am from https://patchwork.freedesktop.org/patch/102547/)
+
+BUG=b:29036398
+TEST=No significant regressions in dEQP inside the container
+
+Reviewed-on: https://chromium-review.googlesource.com/367206
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+(cherry picked from commit a038dd14dba799fa228b7781085b61e0605da8c2)
+
+Renamed to CHROMIUM, since it is not upstreamable in its current form.
+See b:32077712 for tracking the solution for upstreaming.
+
+BUG=b:32077712
+BUG=b:33533853
+TEST=No CTS regressions on cyan and reef.
+
+Change-Id: Id7b5087aaeb001cdcd6f384e7543da3aa6956ea6
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/558137
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/Android.mk                                 |  1 +
+ src/egl/Makefile.am                                |  4 +-
+ src/egl/drivers/dri2/egl_dri2.h                    |  2 +-
+ src/egl/drivers/dri2/platform_android.c            |  6 ++-
+ .../drivers/dri2/platform_android_gralloc_drm.h    | 45 ++++++++++++++++++++++
+ 5 files changed, 55 insertions(+), 3 deletions(-)
+ create mode 100644 src/egl/drivers/dri2/platform_android_gralloc_drm.h
+
+diff --git a/src/egl/Android.mk b/src/egl/Android.mk
+index 0055322..d27bf35 100644
+--- a/src/egl/Android.mk
++++ b/src/egl/Android.mk
+@@ -41,6 +41,7 @@ LOCAL_SRC_FILES := \
+ LOCAL_CFLAGS := \
+ 	-D_EGL_NATIVE_PLATFORM=_EGL_PLATFORM_ANDROID \
+ 	-D_EGL_BUILT_IN_DRIVER_DRI2 \
++	-DHAS_GRALLOC_DRM_HEADERS \
+ 	-DHAVE_ANDROID_PLATFORM
+ 
+ LOCAL_C_INCLUDES := \
+diff --git a/src/egl/Makefile.am b/src/egl/Makefile.am
+index 7c1a492..cd033cc 100644
+--- a/src/egl/Makefile.am
++++ b/src/egl/Makefile.am
+@@ -100,7 +100,9 @@ endif
+ if HAVE_PLATFORM_ANDROID
+ AM_CFLAGS += $(ANDROID_CFLAGS)
+ libEGL_common_la_LIBADD += $(ANDROID_LIBS)
+-dri2_backend_FILES += drivers/dri2/platform_android.c
++dri2_backend_FILES += \
++	drivers/dri2/platform_android.c \
++	drivers/dri2/egl_dri2_drm_gralloc.h
+ endif
+ 
+ AM_CFLAGS += \
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index a8449b8..61aa081 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -61,7 +61,7 @@ struct zwp_linux_dmabuf_v1;
+ 
+ #include <system/window.h>
+ #include <hardware/gralloc.h>
+-#include <gralloc_drm_handle.h>
++#include "platform_android_gralloc_drm.h"
+ 
+ #endif /* HAVE_ANDROID_PLATFORM */
+ 
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index d70e848..826a922 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -37,7 +37,7 @@
+ #include "loader.h"
+ #include "egl_dri2.h"
+ #include "egl_dri2_fallbacks.h"
+-#include "gralloc_drm.h"
++#include "platform_android_gralloc_drm.h"
+ 
+ #define ALIGN(val, align)	(((val) + (align) - 1) & ~((align) - 1))
+ 
+@@ -1214,6 +1214,10 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+    }
+ 
+    dri2_dpy->is_render_node = drmGetNodeTypeFromFd(dri2_dpy->fd) == DRM_NODE_RENDER;
++   if (!dri2_dpy->is_render_node && !gralloc_supports_gem_names()) {
++      _eglLog(_EGL_WARNING, "DRI2: control nodes not supported without GEM name suport in gralloc\n");
++      goto cleanup;
++   }
+ 
+    /* render nodes cannot use Gem names, and thus do not support
+     * the __DRI_DRI2_LOADER extension */
+diff --git a/src/egl/drivers/dri2/platform_android_gralloc_drm.h b/src/egl/drivers/dri2/platform_android_gralloc_drm.h
+new file mode 100644
+index 0000000..4062401
+--- /dev/null
++++ b/src/egl/drivers/dri2/platform_android_gralloc_drm.h
+@@ -0,0 +1,45 @@
++/*
++ * Copyright 2016 Google Inc. All Rights Reserved.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ */
++
++#pragma once
++
++#ifdef HAS_GRALLOC_DRM_HEADERS
++
++#include <gralloc_drm.h>
++#include <gralloc_drm_handle.h>
++
++static inline bool gralloc_supports_gem_names(void) { return true; }
++
++#else
++
++#define GRALLOC_MODULE_PERFORM_GET_DRM_FD 0x0FD4DEAD
++
++static inline int gralloc_drm_get_gem_handle(buffer_handle_t handle)
++{
++   return 0; /* Not supported, return invalid handle. */
++}
++
++static inline bool gralloc_supports_gem_names(void) { return false; }
++
++#endif
+-- 
+2.7.4
+

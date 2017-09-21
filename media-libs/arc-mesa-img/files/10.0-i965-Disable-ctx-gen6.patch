@@ -1,21 +1,30 @@
-From 23aaf1c27a40f52e3e5e87e6356325d4e9c850e0 Mon Sep 17 00:00:00 2001
-From: James Ausmus <james.ausmus@intel.com>
+From f12a531c67e865e427f1f21c960e6c4a30ff45c8 Mon Sep 17 00:00:00 2001
+From: Stéphane Marchesin <marcheu@chromium.org>
 Date: Tue, 5 May 2015 14:26:08 -0700
-Subject: [PATCH 14/24] CHROMIUM: 10.0-i965-Disable-ctx-gen6.patch
+Subject: [PATCH 08/39] CHROMIUM: i965: Disable hardware contexts for gen6
 
-Change-Id: I7a2e5fa9fbe8d9882bedaaf4ecc7b10da414adf8
+They don't seem to work, and cause regular GPU hangs, so let's disable
+them.
+
+BUG=chromium:288818
+TEST=by hand: (along with the kernel patch) run multiple flash videos with hardware decode, no GPU hang happens
+
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
+Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
 Signed-off-by: James Ausmus <james.ausmus@intel.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/drivers/dri/i965/brw_context.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/mesa/drivers/dri/i965/brw_context.c b/src/mesa/drivers/dri/i965/brw_context.c
-index 53a3468db060..dcf961d8a3f6 100644
+index d0b22d4..50eb256 100644
 --- a/src/mesa/drivers/dri/i965/brw_context.c
 +++ b/src/mesa/drivers/dri/i965/brw_context.c
-@@ -823,7 +823,7 @@ brwCreateContext(gl_api api,
+@@ -936,7 +936,7 @@ brwCreateContext(gl_api api,
  
-    intel_batchbuffer_init(brw);
+    intel_batchbuffer_init(&brw->batch, brw->bufmgr, brw->has_llc);
  
 -   if (brw->gen >= 6) {
 +   if (brw->gen >= 7) {
@@ -23,5 +32,5 @@ index 53a3468db060..dcf961d8a3f6 100644
         * our GPU state will be saved/restored on context switch, allowing us
         * to assume that the GPU is in the same state we left it in.
 -- 
-2.5.1
+2.7.4
 

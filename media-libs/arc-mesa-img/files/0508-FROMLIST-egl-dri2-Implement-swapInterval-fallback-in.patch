@@ -1,0 +1,173 @@
+From 98c34e7432d1425524c2ee42d78521d9a6d3d798 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Thu, 10 Aug 2017 13:23:40 +0900
+Subject: [PATCH 36/39] FROMLIST: egl/dri2: Implement swapInterval fallback in
+ a conformant way (v2)
+
+dri2_fallback_swap_interval() currently used to stub out swap interval
+support in Android backend does nothing besides returning EGL_FALSE.
+This causes at least one known application (Android Snapchat) to fail
+due to an unexpected error and my loose interpretation of the EGL 1.5
+specification justifies it. Relevant quote below:
+
+    The function
+
+        EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval);
+
+    specifies the minimum number of video frame periods per buffer swap
+    for the draw surface of the current context, for the current rendering
+    API. [...]
+
+    The parameter interval specifies the minimum number of video frames
+    that are displayed before a buffer swap will occur. The interval
+    specified by the function applies to the draw surface bound to the
+    context that is current on the calling thread. [...] interval is
+    silently clamped to minimum and maximum implementation dependent
+    values before being stored; these values are defined by EGLConfig
+    attributes EGL_MIN_SWAP_INTERVAL and EGL_MAX_SWAP_INTERVAL
+    respectively.
+
+    The default swap interval is 1.
+
+Even though it does not specify the exact behavior if the platform does
+not support changing the swap interval, the default assumed state is the
+swap interval of 1, which I interpret as a value that eglSwapInterval()
+should succeed if called with, even if there is no ability to change the
+interval (but there is no change requested). Moreover, since the
+behavior is defined to clamp the requested value to minimum and maximum
+and at least the default value of 1 must be present in the range, the
+implementation might be expected to have a valid range, which in case of
+the feature being unsupported, would correspond to {1} and any request
+might be expected to be clamped to this value.
+
+Fix this by defaulting dri2_dpy's min_swap_interval, max_swap_interval
+and default_swap_interval to 1 in dri2_setup_screen() and let platforms,
+which support this functionality set their own values after this
+function returns. Thanks to patches merged earlier, we can also remove
+the dri2_fallback_swap_interval() completely, as with a singular range
+it would not be called anyway.
+
+v2: Remove dri2_fallback_swap_interval() completely thanks to higher
+    layer already clamping the requested interval and not calling the
+    driver layer if the clamped value is the same as current.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+(am from https://patchwork.freedesktop.org/patch/171240/)
+
+BUG=b:63807996
+TEST=Create a story with geofence enabled in Snapchat on Eve
+
+Change-Id: I170eb5a978328b6ee43dd8eab7f91124d1df9e19
+Reviewed-on: https://chromium-review.googlesource.com/608986
+Commit-Ready: Tomasz Figa <tfiga@chromium.org>
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/drivers/dri2/egl_dri2.c             | 12 ++++++++++++
+ src/egl/drivers/dri2/egl_dri2_fallbacks.h   |  7 -------
+ src/egl/drivers/dri2/platform_android.c     |  1 -
+ src/egl/drivers/dri2/platform_drm.c         |  1 -
+ src/egl/drivers/dri2/platform_surfaceless.c |  1 -
+ src/egl/drivers/dri2/platform_x11.c         |  2 +-
+ 6 files changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 07b45bc..00c4bb7 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -630,6 +630,18 @@ dri2_setup_screen(_EGLDisplay *disp)
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    unsigned int api_mask;
+ 
++   /*
++    * EGL 1.5 specification defines the default value to 1. Moreover,
++    * eglSwapInterval() is required to clamp requested value to the supported
++    * range. Since the default value is implicitly assumed to be supported,
++    * use it as both minimum and maximum for the platforms that do not allow
++    * changing the interval. Platforms, which allow it (e.g. x11, wayland)
++    * override these values already.
++    */
++   dri2_dpy->min_swap_interval = 1;
++   dri2_dpy->max_swap_interval = 1;
++   dri2_dpy->default_swap_interval = 1;
++
+    if (dri2_dpy->image_driver) {
+       api_mask = dri2_dpy->image_driver->getAPIMask(dri2_dpy->dri_screen);
+    } else if (dri2_dpy->dri2) {
+diff --git a/src/egl/drivers/dri2/egl_dri2_fallbacks.h b/src/egl/drivers/dri2/egl_dri2_fallbacks.h
+index 604db88..a664677 100644
+--- a/src/egl/drivers/dri2/egl_dri2_fallbacks.h
++++ b/src/egl/drivers/dri2/egl_dri2_fallbacks.h
+@@ -56,13 +56,6 @@ dri2_fallback_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
+ }
+ 
+ static inline EGLBoolean
+-dri2_fallback_swap_interval(_EGLDriver *drv, _EGLDisplay *dpy,
+-                            _EGLSurface *surf, EGLint interval)
+-{
+-   return EGL_FALSE;
+-}
+-
+-static inline EGLBoolean
+ dri2_fallback_swap_buffers_with_damage(_EGLDriver *drv, _EGLDisplay *dpy,
+                                       _EGLSurface *surf,
+                                       const EGLint *rects, EGLint n_rects)
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index d494ea3..d1fb6aa 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -1140,7 +1140,6 @@ static const struct dri2_egl_display_vtbl droid_display_vtbl = {
+    .create_pbuffer_surface = droid_create_pbuffer_surface,
+    .destroy_surface = droid_destroy_surface,
+    .create_image = droid_create_image_khr,
+-   .swap_interval = dri2_fallback_swap_interval,
+    .swap_buffers = droid_swap_buffers,
+    .swap_buffers_with_damage = dri2_fallback_swap_buffers_with_damage,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
+index d59009f..742ad10 100644
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
+@@ -644,7 +644,6 @@ static const struct dri2_egl_display_vtbl dri2_drm_display_vtbl = {
+    .create_pbuffer_surface = dri2_fallback_create_pbuffer_surface,
+    .destroy_surface = dri2_drm_destroy_surface,
+    .create_image = dri2_drm_create_image_khr,
+-   .swap_interval = dri2_fallback_swap_interval,
+    .swap_buffers = dri2_drm_swap_buffers,
+    .swap_buffers_with_damage = dri2_fallback_swap_buffers_with_damage,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+diff --git a/src/egl/drivers/dri2/platform_surfaceless.c b/src/egl/drivers/dri2/platform_surfaceless.c
+index 1091b4f..678dc88 100644
+--- a/src/egl/drivers/dri2/platform_surfaceless.c
++++ b/src/egl/drivers/dri2/platform_surfaceless.c
+@@ -234,7 +234,6 @@ static const struct dri2_egl_display_vtbl dri2_surfaceless_display_vtbl = {
+    .create_pbuffer_surface = dri2_surfaceless_create_pbuffer_surface,
+    .destroy_surface = surfaceless_destroy_surface,
+    .create_image = dri2_create_image_khr,
+-   .swap_interval = dri2_fallback_swap_interval,
+    .swap_buffers = surfaceless_swap_buffers,
+    .swap_buffers_with_damage = dri2_fallback_swap_buffers_with_damage,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+diff --git a/src/egl/drivers/dri2/platform_x11.c b/src/egl/drivers/dri2/platform_x11.c
+index 35c62a4..9068eb5 100644
+--- a/src/egl/drivers/dri2/platform_x11.c
++++ b/src/egl/drivers/dri2/platform_x11.c
+@@ -1127,7 +1127,6 @@ static const struct dri2_egl_display_vtbl dri2_x11_swrast_display_vtbl = {
+    .create_pbuffer_surface = dri2_x11_create_pbuffer_surface,
+    .destroy_surface = dri2_x11_destroy_surface,
+    .create_image = dri2_fallback_create_image_khr,
+-   .swap_interval = dri2_fallback_swap_interval,
+    .swap_buffers = dri2_x11_swap_buffers,
+    .set_damage_region = dri2_fallback_set_damage_region,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+@@ -1270,6 +1269,7 @@ dri2_x11_setup_swap_interval(struct dri2_egl_display *dri2_dpy)
+     */
+    dri2_dpy->min_swap_interval = 0;
+    dri2_dpy->max_swap_interval = 0;
++   dri2_dpy->default_swap_interval = 0;
+ 
+    if (!dri2_dpy->swap_available)
+       return;
+-- 
+2.7.4
+

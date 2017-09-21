@@ -1,0 +1,375 @@
+From a357a24ec23bd831f5ae01802d0f5fc0aa8f860f Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 10 Mar 2014 12:27:03 +0000
+Subject: [PATCH 08/33] Add support for various GLES extensions
+
+Add support for:
+	EXT_multisampled_render_to_texture
+	EXT_occlusion_query_boolean
+	IMG_multisampled_render_to_texture
+	OES_matrix_palette
+---
+ src/mapi/glapi/gen/es_EXT.xml      | 102 +++++++++++++++++++++++++++++---
+ src/mapi/glapi/gen/gl_genexec.py   |   1 +
+ src/mesa/Makefile.sources          |   4 +-
+ src/mesa/main/es_extension_stubs.c | 118 +++++++++++++++++++++++++++++++++++++
+ src/mesa/main/es_extension_stubs.h |  48 +++++++++++++++
+ 5 files changed, 263 insertions(+), 10 deletions(-)
+ create mode 100644 src/mesa/main/es_extension_stubs.c
+ create mode 100644 src/mesa/main/es_extension_stubs.h
+
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 3f9129f..dd3c3db 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -285,28 +285,25 @@
+     <enum name="WEIGHT_ARRAY_BUFFER_BINDING_OES"          value="0x889E"/>
+     <enum name="MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES"    value="0x8B9E"/>
+ 
+-    <function name="CurrentPaletteMatrixOES" alias="CurrentPaletteMatrixARB"
+-	      exec="skip">
++    <function name="CurrentPaletteMatrixOES" es1="1.0">
+         <param name="matrixpaletteindex" type="GLuint"/>
+     </function>
+ 
+-    <!-- no offset -->
+-    <function name="LoadPaletteFromModelViewMatrixOES" exec="skip">
++    <function name="LoadPaletteFromModelViewMatrixOES" es1="1.0">
+     </function>
+ 
+-    <function name="MatrixIndexPointerOES" alias="MatrixIndexPointerARB"
+-	      exec="skip">
++    <function name="MatrixIndexPointerOES" es1="1.0">
+         <param name="size" type="GLint"/>
+         <param name="type" type="GLenum"/>
+         <param name="stride" type="GLsizei"/>
+-        <param name="pointer" type="const GLvoid *"/>
++        <param name="pointer" type="GLvoid *"/>
+     </function>
+ 
+-    <function name="WeightPointerOES" alias="WeightPointerARB" exec="skip">
++    <function name="WeightPointerOES" es1="1.0">
+         <param name="size" type="GLint"/>
+         <param name="type" type="GLenum"/>
+         <param name="stride" type="GLsizei"/>
+-        <param name="pointer" type="const GLvoid *"/>
++        <param name="pointer" type="GLvoid *"/>
+     </function>
+ </category>
+ 
+@@ -673,6 +670,31 @@
+     </enum>
+ </category>
+ 
++<!-- 74. GL_IMG_multisampled_render_to_texture -->
++<category name="GL_IMG_multisampled_render_to_texture" number="74">
++    <enum name="RENDERBUFFER_SAMPLES_IMG"                   value="0x9133"/>
++    <enum name="FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG"     value="0x9134"/>
++    <enum name="MAX_SAMPLES_IMG"                            value="0x9135"/>
++    <enum name="TEXTURE_SAMPLES_IMG"                        value="0x9136"/>
++
++    <function name="RenderbufferStorageMultisampleIMG" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="samples" type="GLsizei"/>
++        <param name="internalformat" type="GLenum"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++    </function>
++
++    <function name="FramebufferTexture2DMultisampleIMG" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment" type="GLenum"/>
++        <param name="textarget" type="GLenum"/>
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="samples" type="GLsizei"/>
++    </function>
++</category>
++
+ <!-- 87. GL_OES_EGL_image_external -->
+ <category name="GL_OES_EGL_image_external" number="87">
+     <enum name="TEXTURE_EXTERNAL_OES"                     value="0x8D65"/>
+@@ -751,6 +773,51 @@
+     </function>
+ </category>
+ 
++<!-- 100. GL_EXT_occlusion_query_boolean -->
++<category name="GL_EXT_occlusion_query_boolean" number="100">
++    <enum name="ANY_SAMPLES_PASSED_EXT"                   value="0x8C2F"/>
++    <enum name="ANY_SAMPLES_PASSED_CONSERVATIVE_EXT"      value="0x8D6A"/>
++    <enum name="CURRENT_QUERY_EXT"                        value="0x8865"/>
++    <enum name="QUERY_RESULT_EXT"                         value="0x8866"/>
++    <enum name="QUERY_RESULT_AVAILABLE_EXT"               value="0x8867"/>
++
++    <function name="GenQueriesEXT" es2="2.0">
++        <param name="n" type="GLsizei"/>
++        <param name="ids" type="GLuint *"/>
++    </function>
++
++    <function name="DeleteQueriesEXT" es2="2.0">
++        <param name="n" type="GLsizei"/>
++        <param name="ids" type="const GLuint *"/>
++    </function>
++
++    <function name="IsQueryEXT" es2="2.0">
++        <param name="id" type="GLuint"/>
++        <return type="GLboolean"/>
++    </function>
++
++    <function name="BeginQueryEXT" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="id" type="GLuint"/>
++    </function>
++
++    <function name="EndQueryEXT" es2="2.0">
++        <param name="target" type="GLenum"/>
++    </function>
++
++    <function name="GetQueryivEXT" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="pname" type="GLenum"/>
++        <param name="params" type="GLint *"/>
++    </function>
++
++    <function name="GetQueryObjectuivEXT" es2="2.0">
++        <param name="id" type="GLuint"/>
++        <param name="pname" type="GLenum"/>
++        <param name="params" type="GLuint *"/>
++    </function>
++</category>
++
+ <!-- 103. GL_EXT_texture_rg -->
+ <category name="GL_EXT_texture_rg" number="103">
+     <enum name="RED_EXT"                                  value="0x1903"/>
+@@ -759,6 +826,23 @@
+     <enum name="RG8_EXT"                                  value="0x822B"/>
+ </category>
+ 
++<!-- 106. GL_EXT_multisampled_render_to_texture -->
++<category name="GL_EXT_multisampled_render_to_texture" number="106">
++    <enum name="RENDERBUFFER_SAMPLES_EXT"                   value="0x8CAB"/>
++    <enum name="FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT"     value="0x8D56"/>
++    <enum name="MAX_SAMPLES_EXT"                            value="0x8D57"/>
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_SAMPLES_EXT" value="0x8D6C"/>
++
++    <function name="FramebufferTexture2DMultisampleEXT" es2="2.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment" type="GLenum"/>
++        <param name="textarget" type="GLenum"/>
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="samples" type="GLsizei"/>
++    </function>
++</category>
++
+ <!-- 107. GL_EXT_robustness -->
+ <xi:include href="EXT_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mapi/glapi/gen/gl_genexec.py b/src/mapi/glapi/gen/gl_genexec.py
+index 57e155b..d13e2d3 100644
+--- a/src/mapi/glapi/gen/gl_genexec.py
++++ b/src/mapi/glapi/gen/gl_genexec.py
+@@ -73,6 +73,7 @@ header = """/**
+ #include "main/rastpos.h"
+ #include "main/enable.h"
+ #include "main/errors.h"
++#include "main/es_extension_stubs.h"
+ #include "main/es1_conversion.h"
+ #include "main/eval.h"
+ #include "main/get.h"
+diff --git a/src/mesa/Makefile.sources b/src/mesa/Makefile.sources
+index 86fbf39..d3c6fb0 100644
+--- a/src/mesa/Makefile.sources
++++ b/src/mesa/Makefile.sources
+@@ -3,7 +3,9 @@
+ # this is part of MAIN_FILES
+ MAIN_ES_FILES = \
+ 	main/es1_conversion.c \
+-	main/es1_conversion.h
++	main/es1_conversion.h \
++	main/es_extension_stubs.c \
++	main/es_extension_stubs.h
+ 
+ MAIN_FILES = \
+ 	main/accum.c \
+diff --git a/src/mesa/main/es_extension_stubs.c b/src/mesa/main/es_extension_stubs.c
+new file mode 100644
+index 0000000..ce074fc
+--- /dev/null
++++ b/src/mesa/main/es_extension_stubs.c
+@@ -0,0 +1,118 @@
++
++#include "glheader.h"
++#include "errors.h"
++#include "es_extension_stubs.h"
++
++void GLAPIENTRY
++_mesa_FramebufferTexture2DMultisampleEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTexture2DMultisampleEXT");
++}
++
++void GLAPIENTRY
++_mesa_GenQueriesEXT(GLsizei n, GLuint *ids)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glGenQueriesEXT");
++}
++
++void GLAPIENTRY
++_mesa_DeleteQueriesEXT(GLsizei n, const GLuint *ids)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glDeleteQueriesEXT");
++}
++
++GLboolean GLAPIENTRY
++_mesa_IsQueryEXT(GLuint id)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glIsQueryEXT");
++
++   return GL_FALSE;
++}
++
++void GLAPIENTRY
++_mesa_BeginQueryEXT(GLenum target, GLuint id)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glBeginQueryEXT");
++}
++
++void GLAPIENTRY
++_mesa_EndQueryEXT(GLenum target)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glEndQueryEXT");
++}
++
++void GLAPIENTRY
++_mesa_GetQueryivEXT(GLenum target, GLenum pname, GLint *params)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glGetQueryivEXT");
++}
++
++void GLAPIENTRY
++_mesa_GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint *params)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glGetQueryObjectuivEXT");
++}
++
++void GLAPIENTRY
++_mesa_RenderbufferStorageMultisampleIMG(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glRenderbufferStorageMultisampleIMG");
++}
++
++void GLAPIENTRY
++_mesa_FramebufferTexture2DMultisampleIMG(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTexture2DMultisampleIMG");
++}
++
++void GLAPIENTRY
++_mesa_CurrentPaletteMatrixOES(GLuint index)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glCurrentPaletteMatrixOES");
++}
++
++void GLAPIENTRY
++_mesa_LoadPaletteFromModelViewMatrixOES(void)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glLoadPaletteFromModelViewMatrixOES");
++}
++
++void GLAPIENTRY
++_mesa_MatrixIndexPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glMatrixIndexPointerOES");
++}
++
++void GLAPIENTRY
++_mesa_WeightPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glWeightPointerOES");
++}
+diff --git a/src/mesa/main/es_extension_stubs.h b/src/mesa/main/es_extension_stubs.h
+new file mode 100644
+index 0000000..385b20f
+--- /dev/null
++++ b/src/mesa/main/es_extension_stubs.h
+@@ -0,0 +1,48 @@
++#ifndef ES_EXTENSION_STUBS_H
++#define ES_EXTENSION_STUBS_H
++
++#include "mtypes.h"
++
++void GLAPIENTRY
++_mesa_FramebufferTexture2DMultisampleEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples);
++
++void GLAPIENTRY
++_mesa_GenQueriesEXT(GLsizei n, GLuint *ids);
++
++void GLAPIENTRY
++_mesa_DeleteQueriesEXT(GLsizei n, const GLuint *ids);
++
++GLboolean GLAPIENTRY
++_mesa_IsQueryEXT(GLuint id);
++
++void GLAPIENTRY
++_mesa_BeginQueryEXT(GLenum target, GLuint id);
++
++void GLAPIENTRY
++_mesa_EndQueryEXT(GLenum target);
++
++void GLAPIENTRY
++_mesa_GetQueryivEXT(GLenum target, GLenum pname, GLint *params);
++
++void GLAPIENTRY
++_mesa_GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint *params);
++
++void GLAPIENTRY
++_mesa_RenderbufferStorageMultisampleIMG(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
++
++void GLAPIENTRY
++_mesa_FramebufferTexture2DMultisampleIMG(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples);
++
++void GLAPIENTRY
++_mesa_CurrentPaletteMatrixOES(GLuint index);
++
++void GLAPIENTRY
++_mesa_LoadPaletteFromModelViewMatrixOES(void);
++
++void GLAPIENTRY
++_mesa_MatrixIndexPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
++
++void GLAPIENTRY
++_mesa_WeightPointerOES(GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
++
++#endif
+-- 
+2.7.4
+

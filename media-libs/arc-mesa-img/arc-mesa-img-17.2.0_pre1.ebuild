@@ -4,6 +4,10 @@
 
 EAPI=4
 
+CROS_WORKON_COMMIT="6874b953f6f9762fd8e7abf959aed09ab15693c5"
+CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
+
+EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa-img"
 CROS_WORKON_LOCALNAME="mesa-img"
 CROS_WORKON_BLACKLIST="1"
@@ -28,7 +32,7 @@ HOMEPAGE="http://mesa3d.sourceforge.net/"
 # GLES[2]/gl[2]{,ext,platform}.h are SGI-B-2.0
 LICENSE="MIT LGPL-3 SGI-B-2.0"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="radeon"
@@ -83,6 +87,50 @@ src_prepare() {
 			-e "s/-DHAVE_POSIX_MEMALIGN//" \
 			configure.ac || die
 	fi
+
+	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
+	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
+	epatch "${FILESDIR}"/8.1-array-overflow.patch
+	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
+	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
+	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
+	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
+	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
+	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
+	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
+	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
+	epatch "${FILESDIR}"/12.1-radeonsi-sampler_view_destroy.patch
+	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
+	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
+
+	# IMG patches
+	epatch "${FILESDIR}"/0001-dri-pvr-Introduce-PowerVR-DRI-driver.patch
+	epatch "${FILESDIR}"/0003-dri-Add-some-new-DRI-formats-and-fourccs.patch
+	epatch "${FILESDIR}"/0004-dri-Add-MT21-DRI-fourcc.patch
+	epatch "${FILESDIR}"/0005-Separate-EXT_framebuffer_object-from-ARB-version.patch
+	epatch "${FILESDIR}"/0006-GL_EXT_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0007-GL_EXT_sparse_texture-entry-points.patch
+	epatch "${FILESDIR}"/0008-Add-support-for-various-GLES-extensions.patch
+	epatch "${FILESDIR}"/0009-Add-EGL_IMG_context_priority-EGL-extension.patch
+	epatch "${FILESDIR}"/0016-GL_EXT_shader_pixel_local_storage2-entry-points.patch
+	epatch "${FILESDIR}"/0018-GL_IMG_framebuffer_downsample-entry-points.patch
+
+	# Android specific patches
+	epatch "${FILESDIR}"/0500-CHROMIUM-egl-android-Add-fallback-to-kms_swrast-driv.patch
+	epatch "${FILESDIR}"/0501-CHROMIUM-egl-android-Make-drm_gralloc-headers-option.patch
+	epatch "${FILESDIR}"/0502-CHROMIUM-egl-android-Support-opening-render-nodes-fr.patch
+	epatch "${FILESDIR}"/0503-FROMLIST-egl-android-remove-HAL_PIXEL_FORMAT_BGRA_88.patch
+	epatch "${FILESDIR}"/0504-HACK-egl-android-Partially-handle-HAL_PIXEL_FORMAT_I.patch
+	epatch "${FILESDIR}"/0505-UPSTREAM-egl-deduplicate-swap-interval-clamping-logi.patch
+	epatch "${FILESDIR}"/0506-UPSTREAM-loader-remove-clamp_swap_interval.patch
+	epatch "${FILESDIR}"/0507-UPSTREAM-egl-make-platform-s-SwapInterval-optional.patch
+	epatch "${FILESDIR}"/0508-FROMLIST-egl-dri2-Implement-swapInterval-fallback-in.patch
+	epatch "${FILESDIR}"/0509-UPSTREAM-i965-miptree-Set-supports_fast_clear-false-.patch
+	epatch "${FILESDIR}"/0510-UPSTREAM-i965-Only-call-create_for_planar_image-for-.patch
+
+	# Android/IMG patches
+	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch
 
 	base_src_prepare
 

@@ -1,0 +1,63 @@
+From 88f2a640af29af6c386c9f206010386587f32956 Mon Sep 17 00:00:00 2001
+From: Emil Velikov <emil.velikov@collabora.com>
+Date: Tue, 11 Jul 2017 14:27:43 +0100
+Subject: [PATCH 30/39] FROMLIST: egl/android: remove
+ HAL_PIXEL_FORMAT_BGRA_8888 support
+
+As said in the EGL_KHR_platform_android extensions
+
+    For each EGLConfig that belongs to the Android platform, the
+    EGL_NATIVE_VISUAL_ID attribute is an Android window format, such as
+    WINDOW_FORMAT_RGBA_8888.
+
+Although it should be applicable overall.
+
+Even though we use HAL_PIXEL_FORMAT here, those are numerically
+identical to the  WINDOW_FORMAT_ and AHARDWAREBUFFER_FORMAT_ ones.
+
+Barring the said format of course. That one is only listed in HAL.
+
+Keep in mind that even if we try to use the said format, you'll get
+caught by droid_create_surface(). The function compares the format of
+the underlying window, against the NATIVE_VISUAL_ID of the config.
+
+Unfortunatelly it only prints a warning, rather than error out, likely
+leading to visual corruption.
+
+While SDL will even call ANativeWindow_setBuffersGeometry() with the
+wrong format, and conviniently ignore the [expected] failure.
+
+Cc: mesa-stable@lists.freedesktop.org
+Cc: Chad Versace <chadversary@google.com>
+Cc: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Emil Velikov <emil.velikov@collabora.com>
+Acked-by: Tomasz Figa <tfiga@chromium.org>
+(am from https://patchwork.freedesktop.org/patch/166176/)
+(tfiga: Remove only respective EGL config, leave EGL image as is.)
+
+BUG=b:33533853
+TEST=dEQP-EGL.functional.*.rgba8888_window tests pass on eve
+
+Change-Id: I8eacfe852ede88b24c1a45bff1445aacd86f6992
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/582263
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 949ed2b..f8b3da3 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -1024,7 +1024,6 @@ droid_add_configs_for_visuals(_EGLDriver *drv, _EGLDisplay *dpy)
+       { HAL_PIXEL_FORMAT_RGBA_8888, { 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 } },
+       { HAL_PIXEL_FORMAT_RGBX_8888, { 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 } },
+       { HAL_PIXEL_FORMAT_RGB_565,   { 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 } },
+-      { HAL_PIXEL_FORMAT_BGRA_8888, { 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 } },
+    };
+ 
+    unsigned int format_count[ARRAY_SIZE(visuals)] = { 0 };
+-- 
+2.7.4
+

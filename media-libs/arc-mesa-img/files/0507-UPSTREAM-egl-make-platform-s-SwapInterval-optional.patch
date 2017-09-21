@@ -1,0 +1,75 @@
+From 1cfab1f9bdea44a35f1b88b6ac20a44576ec1cf0 Mon Sep 17 00:00:00 2001
+From: Eric Engestrom <eric.engestrom@imgtec.com>
+Date: Mon, 31 Jul 2017 18:03:16 +0100
+Subject: [PATCH 35/39] UPSTREAM: egl: make platform's SwapInterval() optional
+
+Signed-off-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Reviewed-by: Tapani Plli <tapani.palli@intel.com>
+(cherry picked from commit 991ec1b81a76de24fd013d2fd6b803408c97ab64)
+
+BUG=b:63807996
+TEST=Create a story with geofence enabled in Snapchat on Eve
+
+Change-Id: I223d2e4694e4f6fd91b25f351d888ef9b9877cab
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/610282
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/drivers/dri2/platform_wayland.c | 11 -----------
+ src/egl/main/eglapi.c                   |  2 +-
+ 2 files changed, 1 insertion(+), 12 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index a5d0a27..e5a1562 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -1121,15 +1121,6 @@ static const struct wl_registry_listener registry_listener_drm = {
+    .global_remove = registry_handle_global_remove
+ };
+ 
+-static EGLBoolean
+-dri2_wl_swap_interval(_EGLDriver *drv,
+-                   _EGLDisplay *disp,
+-                   _EGLSurface *surf,
+-                   EGLint interval)
+-{
+-   return EGL_TRUE;
+-}
+-
+ static void
+ dri2_wl_setup_swap_interval(struct dri2_egl_display *dri2_dpy)
+ {
+@@ -1175,7 +1166,6 @@ static const struct dri2_egl_display_vtbl dri2_wl_display_vtbl = {
+    .create_pbuffer_surface = dri2_fallback_create_pbuffer_surface,
+    .destroy_surface = dri2_wl_destroy_surface,
+    .create_image = dri2_create_image_khr,
+-   .swap_interval = dri2_wl_swap_interval,
+    .swap_buffers = dri2_wl_swap_buffers,
+    .swap_buffers_with_damage = dri2_wl_swap_buffers_with_damage,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+@@ -1876,7 +1866,6 @@ static const struct dri2_egl_display_vtbl dri2_wl_swrast_display_vtbl = {
+    .create_pbuffer_surface = dri2_fallback_create_pbuffer_surface,
+    .destroy_surface = dri2_wl_destroy_surface,
+    .create_image = dri2_fallback_create_image_khr,
+-   .swap_interval = dri2_wl_swap_interval,
+    .swap_buffers = dri2_wl_swrast_swap_buffers,
+    .swap_buffers_with_damage = dri2_fallback_swap_buffers_with_damage,
+    .swap_buffers_region = dri2_fallback_swap_buffers_region,
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 5ee7b1f..0375a33 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1206,7 +1206,7 @@ eglSwapInterval(EGLDisplay dpy, EGLint interval)
+                     surf->Config->MinSwapInterval,
+                     surf->Config->MaxSwapInterval);
+ 
+-   if (surf->SwapInterval != interval)
++   if (surf->SwapInterval != interval && drv->API.SwapInterval)
+       ret = drv->API.SwapInterval(drv, disp, surf, interval);
+    else
+       ret = EGL_TRUE;
+-- 
+2.7.4
+

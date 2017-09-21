@@ -1,0 +1,58 @@
+From f2e61dfabde8ce6afa7102953aa388c84e52b1ae Mon Sep 17 00:00:00 2001
+From: Jason Ekstrand <jason.ekstrand@intel.com>
+Date: Mon, 31 Jul 2017 13:33:45 -0700
+Subject: [PATCH 38/39] UPSTREAM: i965: Only call create_for_planar_image for
+ multiple planes
+
+Before, we ended up always calling miptree_create_for_planar_image in
+almost all cases because most images have image->planar_format != NULL.
+This commit makes us only take that path if we have a multi-planar
+format.
+
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+(chadversary: cherry pick to branch cros/arc-17.2.0-pre1)
+(cherry picked from commit be0e13e49f0709b59cdf0f8618bac156bd8f3efd)
+
+Fixes the following assertion failure when arc-mesa is built in debug
+mode. The assertion happens very early, preventing any apps from
+starting.
+
+  assert(colorspace == ISL_COLORSPACE_NONE ||
+         colorspace == ISL_COLORSPACE_YUV);
+
+BUG=None
+TEST=Sanity-check any ARC++ app.
+
+Change-Id: I618f2527f390450bb1e3ad2e8dcfdc06cacb151f
+Reviewed-on: https://chromium-review.googlesource.com/648546
+Commit-Ready: Chad Versace <chadversary@chromium.org>
+Tested-by: Chad Versace <chadversary@chromium.org>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+---
+ src/mesa/drivers/dri/i965/intel_mipmap_tree.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/intel_mipmap_tree.c b/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
+index c1f18a7..ad0e8b7 100644
+--- a/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
++++ b/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
+@@ -898,12 +898,15 @@ intel_miptree_create_for_dri_image(struct brw_context *brw,
+                                    enum isl_colorspace colorspace,
+                                    bool is_winsys_image)
+ {
+-   if (image->planar_format && image->planar_format->nplanes > 0) {
++   if (image->planar_format && image->planar_format->nplanes > 1) {
+       assert(colorspace == ISL_COLORSPACE_NONE ||
+              colorspace == ISL_COLORSPACE_YUV);
+       return miptree_create_for_planar_image(brw, image, target);
+    }
+ 
++   if (image->planar_format)
++      assert(image->planar_format->planes[0].dri_format == image->dri_format);
++
+    mesa_format format = image->format;
+    switch (colorspace) {
+    case ISL_COLORSPACE_NONE:
+-- 
+2.7.4
+

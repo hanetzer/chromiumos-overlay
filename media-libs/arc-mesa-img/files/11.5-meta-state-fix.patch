@@ -1,7 +1,8 @@
-From 0b90ffd534ff592b71190f4a6f779e32be4b534e Mon Sep 17 00:00:00 2001
+From 960d4d87e3116e1bf9c37644cf03b989c465dbdb Mon Sep 17 00:00:00 2001
 From: Gurchetan Singh <gurchetansingh@chromium.org>
 Date: Fri, 22 Apr 2016 10:29:56 -0700
-Subject: [PATCH] media-libs/mesa: Removed code that returns a desktop GL enum
+Subject: [PATCH 13/39] CHROMIUM: mesa: Remove code that returns a desktop GL
+ enum
 
 When the draw_buffer_enum_to_bitmask function
 is called while Mesa is in it's meta state,
@@ -19,15 +20,17 @@ BUG=b/27656575
 TEST=Ran dEQP-GLES2.functional.clipping.line.line_attrib_clip
 with the pbuffer option with on Cyan.  Verified it
 fails without the patch.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
 ---
  src/mesa/main/buffers.c | 39 ++++++++++++++++++---------------------
  1 file changed, 18 insertions(+), 21 deletions(-)
 
 diff --git a/src/mesa/main/buffers.c b/src/mesa/main/buffers.c
-index a28c583..36dbc8c 100644
+index 6359e1b..d35f5c1 100644
 --- a/src/mesa/main/buffers.c
 +++ b/src/mesa/main/buffers.c
-@@ -97,27 +97,24 @@ draw_buffer_enum_to_bitmask(const struct gl_context *ctx, GLenum buffer)
+@@ -98,27 +98,24 @@ draw_buffer_enum_to_bitmask(const struct gl_context *ctx, GLenum buffer)
        case GL_FRONT:
           return BUFFER_BIT_FRONT_LEFT | BUFFER_BIT_FRONT_RIGHT;
        case GL_BACK:
@@ -74,5 +77,5 @@ index a28c583..36dbc8c 100644
           return BUFFER_BIT_FRONT_RIGHT | BUFFER_BIT_BACK_RIGHT;
        case GL_FRONT_RIGHT:
 -- 
-2.1.2
+2.7.4
 

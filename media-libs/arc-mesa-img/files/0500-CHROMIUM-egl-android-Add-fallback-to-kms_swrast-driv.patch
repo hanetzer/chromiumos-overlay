@@ -1,0 +1,114 @@
+From b430393c4a9f28bda157cd9d20cf6a9d6b578c75 Mon Sep 17 00:00:00 2001
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Fri, 15 Jul 2016 16:53:56 +0900
+Subject: [PATCH 27/39] CHROMIUM: egl/android: Add fallback to kms_swrast
+ driver
+
+If no hardware driver is present, it is possible to fall back to
+the kms_swrast driver with any DRI node that supports dumb GEM create
+and mmap IOCTLs with softpipe/llvmpipe drivers. This patch makes the
+Android EGL platform code retry probe with kms_swrast if hardware-only
+probe fails.
+
+BUG=b:28803368
+TEST=Boot cyan-cheets in qemu and see the container working
+
+Upstreaming effort tracked by:
+BUG=b:32077881
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/374309
+Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
+(reapplied manually from commit c652588e1b2cbe53ddb7adc25ea8a5817f0f023e)
+
+BUG=b:33533853
+TEST=No CTS regressions on cyan and reef
+
+Change-Id: Ida864d90a715d563090c0eb5caa8557684a8cb26
+Reviewed-on: https://chromium-review.googlesource.com/558136
+Tested-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+Commit-Queue: Tomasz Figa <tfiga@chromium.org>
+---
+ src/egl/drivers/dri2/platform_android.c | 52 ++++++++++++++++++++++++---------
+ 1 file changed, 38 insertions(+), 14 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index 300e2d9..d70e848 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -1153,6 +1153,37 @@ static const __DRIextension *droid_image_loader_extensions[] = {
+    NULL,
+ };
+ 
++static bool
++droid_load_driver(_EGLDisplay *dpy, bool swrast, bool dri3)
++{
++   struct dri2_egl_display *dri2_dpy = dpy->DriverData;
++   bool loaded;
++
++   if (swrast)
++      dri2_dpy->driver_name = strdup("kms_swrast");
++   else
++      dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
++
++   if (dri2_dpy->driver_name == NULL) {
++      _eglLog(_EGL_WARNING, "DRI2: failed to get driver name");
++      return false;
++   }
++
++   if (dri3)
++      loaded = dri2_load_driver_dri3(dpy);
++   else
++	   loaded = dri2_load_driver(dpy);
++
++   if (!loaded) {
++      _eglLog(_EGL_WARNING, "DRI2: failed to load driver");
++      free(dri2_dpy->driver_name);
++      dri2_dpy->driver_name = NULL;
++      return false;
++   }
++
++   return true;
++}
++
+ EGLBoolean
+ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+ {
+@@ -1182,26 +1213,19 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+       goto cleanup;
+    }
+ 
+-   dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
+-   if (dri2_dpy->driver_name == NULL) {
+-      err = "DRI2: failed to get driver name";
+-      goto cleanup;
+-   }
+-
+    dri2_dpy->is_render_node = drmGetNodeTypeFromFd(dri2_dpy->fd) == DRM_NODE_RENDER;
+ 
+    /* render nodes cannot use Gem names, and thus do not support
+     * the __DRI_DRI2_LOADER extension */
+-   if (!dri2_dpy->is_render_node) {
++   if (!dri2_dpy->is_render_node)
+       dri2_dpy->loader_extensions = droid_dri2_loader_extensions;
+-      if (!dri2_load_driver(dpy)) {
+-         err = "DRI2: failed to load driver";
+-         goto cleanup;
+-      }
+-   } else {
++   else
+       dri2_dpy->loader_extensions = droid_image_loader_extensions;
+-      if (!dri2_load_driver_dri3(dpy)) {
+-         err = "DRI3: failed to load driver";
++
++   if (!droid_load_driver(dpy, false, dri2_dpy->is_render_node)) {
++      _eglLog(_EGL_WARNING, "DRI2: Failed to load hardware driver, trying software...");
++      if (!droid_load_driver(dpy, true, dri2_dpy->is_render_node)) {
++         err = "DRI2: failed to load driver";
+          goto cleanup;
+       }
+    }
+-- 
+2.7.4
+

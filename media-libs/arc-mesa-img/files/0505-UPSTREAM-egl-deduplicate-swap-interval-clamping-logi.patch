@@ -1,0 +1,155 @@
+From 7b45a8ba05bfbecd5a20db5954f02e2bf8ebe52f Mon Sep 17 00:00:00 2001
+From: Eric Engestrom <eric.engestrom@imgtec.com>
+Date: Mon, 31 Jul 2017 14:49:31 +0100
+Subject: [PATCH 33/39] UPSTREAM: egl: deduplicate swap interval clamping logic
+
+Signed-off-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+Reviewed-by: Tapani Plli <tapani.palli@intel.com>
+(cherry picked from commit 2714a8f3e95139d2c473f99e913562929ae3f5d7)
+
+BUG=b:63807996
+TEST=Create a story with geofence enabled in Snapchat on Eve
+
+Change-Id: I6c63db019e5f078b0f654f31548126797f519772
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/610280
+Reviewed-by: Chad Versace <chadversary@chromium.org>
+---
+ src/egl/drivers/dri2/platform_wayland.c | 14 +-------------
+ src/egl/drivers/dri2/platform_x11.c     |  9 +--------
+ src/egl/main/eglapi.c                   | 12 +++++++++++-
+ src/egl/main/eglsurface.c               | 19 +------------------
+ 4 files changed, 14 insertions(+), 40 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 211036f..a5d0a27 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -62,10 +62,6 @@ enum wl_drm_format_flags {
+    HAS_RGB565 = 4,
+ };
+ 
+-static EGLBoolean
+-dri2_wl_swap_interval(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *surf,
+-                      EGLint interval);
+-
+ static int
+ roundtrip(struct dri2_egl_display *dri2_dpy)
+ {
+@@ -216,8 +212,7 @@ dri2_wl_create_window_surface(_EGLDriver *drv, _EGLDisplay *disp,
+        goto cleanup_surf;
+     }
+ 
+-   dri2_wl_swap_interval(drv, disp, &dri2_surf->base,
+-                         dri2_dpy->default_swap_interval);
++   dri2_surf->base.SwapInterval = dri2_dpy->default_swap_interval;
+ 
+    return &dri2_surf->base;
+ 
+@@ -1132,13 +1127,6 @@ dri2_wl_swap_interval(_EGLDriver *drv,
+                    _EGLSurface *surf,
+                    EGLint interval)
+ {
+-   if (interval > surf->Config->MaxSwapInterval)
+-      interval = surf->Config->MaxSwapInterval;
+-   else if (interval < surf->Config->MinSwapInterval)
+-      interval = surf->Config->MinSwapInterval;
+-
+-   surf->SwapInterval = interval;
+-
+    return EGL_TRUE;
+ }
+ 
+diff --git a/src/egl/drivers/dri2/platform_x11.c b/src/egl/drivers/dri2/platform_x11.c
+index b01f739..35c62a4 100644
+--- a/src/egl/drivers/dri2/platform_x11.c
++++ b/src/egl/drivers/dri2/platform_x11.c
+@@ -956,16 +956,9 @@ dri2_x11_swap_interval(_EGLDriver *drv, _EGLDisplay *disp, _EGLSurface *surf,
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    struct dri2_egl_surface *dri2_surf = dri2_egl_surface(surf);
+ 
+-   if (interval > surf->Config->MaxSwapInterval)
+-      interval = surf->Config->MaxSwapInterval;
+-   else if (interval < surf->Config->MinSwapInterval)
+-      interval = surf->Config->MinSwapInterval;
+-
+-   if (interval != surf->SwapInterval && dri2_dpy->swap_available)
++   if (dri2_dpy->swap_available)
+       xcb_dri2_swap_interval(dri2_dpy->conn, dri2_surf->drawable, interval);
+ 
+-   surf->SwapInterval = interval;
+-
+    return EGL_TRUE;
+ }
+ 
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index afca3e7..5ee7b1f 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1202,7 +1202,17 @@ eglSwapInterval(EGLDisplay dpy, EGLint interval)
+    if (_eglGetSurfaceHandle(surf) == EGL_NO_SURFACE)
+       RETURN_EGL_ERROR(disp, EGL_BAD_SURFACE, EGL_FALSE);
+ 
+-   ret = drv->API.SwapInterval(drv, disp, surf, interval);
++   interval = CLAMP(interval,
++                    surf->Config->MinSwapInterval,
++                    surf->Config->MaxSwapInterval);
++
++   if (surf->SwapInterval != interval)
++      ret = drv->API.SwapInterval(drv, disp, surf, interval);
++   else
++      ret = EGL_TRUE;
++
++   if (ret)
++      surf->SwapInterval = interval;
+ 
+    RETURN_EGL_EVAL(disp, ret);
+ }
+diff --git a/src/egl/main/eglsurface.c b/src/egl/main/eglsurface.c
+index f6e41f1..3bd14a8 100644
+--- a/src/egl/main/eglsurface.c
++++ b/src/egl/main/eglsurface.c
+@@ -45,22 +45,6 @@
+ #include "eglsurface.h"
+ 
+ 
+-static void
+-_eglClampSwapInterval(_EGLSurface *surf, EGLint interval)
+-{
+-   EGLint bound = surf->Config->MaxSwapInterval;
+-   if (interval >= bound) {
+-      interval = bound;
+-   }
+-   else {
+-      bound = surf->Config->MinSwapInterval;
+-      if (interval < bound)
+-         interval = bound;
+-   }
+-   surf->SwapInterval = interval;
+-}
+-
+-
+ /**
+  * Parse the list of surface attributes and return the proper error code.
+  */
+@@ -319,7 +303,7 @@ _eglInitSurface(_EGLSurface *surf, _EGLDisplay *dpy, EGLint type,
+    surf->BufferAgeRead = EGL_FALSE;
+ 
+    /* the default swap interval is 1 */
+-   _eglClampSwapInterval(surf, 1);
++   surf->SwapInterval = 1;
+ 
+    err = _eglParseSurfaceAttribList(surf, attrib_list);
+    if (err != EGL_SUCCESS)
+@@ -565,6 +549,5 @@ EGLBoolean
+ _eglSwapInterval(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSurface *surf,
+                  EGLint interval)
+ {
+-   _eglClampSwapInterval(surf, interval);
+    return EGL_TRUE;
+ }
+-- 
+2.7.4
+

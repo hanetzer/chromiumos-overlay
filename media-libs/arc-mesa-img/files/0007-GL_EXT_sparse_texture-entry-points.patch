@@ -1,0 +1,144 @@
+From 21f4d0bfb98ee7ee433d2bbc70865b75c3e8b43f Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Wed, 12 Aug 2015 09:11:51 +0100
+Subject: [PATCH 07/33] GL_EXT_sparse_texture entry points
+
+---
+ src/mapi/glapi/gen/EXT_sparse_texture.xml | 56 +++++++++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml             |  3 ++
+ src/mesa/main/texobj.c                    | 20 +++++++++++
+ src/mesa/main/texobj.h                    | 12 +++++++
+ 4 files changed, 91 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_sparse_texture.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_sparse_texture.xml b/src/mapi/glapi/gen/EXT_sparse_texture.xml
+new file mode 100644
+index 0000000..dec09bc
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_sparse_texture.xml
+@@ -0,0 +1,56 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="EXT_sparse_texture" number="240">
++
++    <enum name="TEXTURE_SPARSE_EXT"                         value="0x91A6"/>
++    <enum name="VIRTUAL_PAGE_SIZE_INDEX_EXT"                value="0x91A7"/>
++
++    <enum name="NUM_SPARSE_LEVELS_EXT"                      value="0x91AA"/>
++
++    <enum name="NUM_VIRTUAL_PAGE_SIZES_EXT"                 value="0x91A8"/>
++
++    <enum name="VIRTUAL_PAGE_SIZE_X_EXT"                    value="0x9195"/>
++    <enum name="VIRTUAL_PAGE_SIZE_Y_EXT"                    value="0x9196"/>
++    <enum name="VIRTUAL_PAGE_SIZE_Z_EXT"                    value="0x9197"/>
++
++    <enum name="TEXTURE_2D"                                 value="0x0DE1"/>
++    <enum name="TEXTURE_2D_ARRAY"                           value="0x8C1A"/>
++    <enum name="TEXTURE_CUBE_MAP"                           value="0x8513"/>
++    <enum name="TEXTURE_CUBE_MAP_ARRAY_OES"                 value="0x9009"/>
++    <enum name="TEXTURE_3D"                                 value="0x806F"/>
++
++    <enum name="MAX_SPARSE_TEXTURE_SIZE_EXT"                value="0x9198"/>
++    <enum name="MAX_SPARSE_3D_TEXTURE_SIZE_EXT"             value="0x9199"/>
++    <enum name="MAX_SPARSE_ARRAY_TEXTURE_LAYERS_EXT"        value="0x919A"/>
++    <enum name="SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_EXT" value="0x91A9"/>
++  
++    <function name="TexPageCommitmentEXT" es2="3.1">
++        <param name="target" type="GLenum"/>
++        <param name="level" type="GLint"/>
++        <param name="xoffset" type="GLint"/>
++        <param name="yoffset" type="GLint"/>
++        <param name="zoffset" type="GLint"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++        <param name="depth" type="GLsizei"/>
++        <param name="commit" type="GLboolean"/>
++    </function>
++
++    <function name="TexturePageCommitmentEXT" es2="3.1">
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="xoffset" type="GLint"/>
++        <param name="yoffset" type="GLint"/>
++        <param name="zoffset" type="GLint"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++        <param name="depth" type="GLsizei"/>
++        <param name="commit" type="GLboolean"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index e59ce98..3f9129f 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1346,6 +1346,9 @@
+ 
+ </category>
+ 
++<!-- 240. EXT_sparse_texture -->
++<xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <category name="GL_OES_viewport_array" number="267">
+     <function name="ViewportArrayvOES" es2="3.1" alias="ViewportArrayv">
+         <param name="first" type="GLuint"/>
+diff --git a/src/mesa/main/texobj.c b/src/mesa/main/texobj.c
+index e52ad22..f4472ed 100644
+--- a/src/mesa/main/texobj.c
++++ b/src/mesa/main/texobj.c
+@@ -2192,4 +2192,24 @@ _mesa_InvalidateTexImage(GLuint texture, GLint level)
+    return;
+ }
+ 
++void GLAPIENTRY
++_mesa_TexPageCommitmentEXT(GLenum target, GLint level,
++                           GLint xoffset, GLint yoffset, GLint zoffset,
++                           GLsizei width, GLsizei height, GLsizei depth,
++                           GLboolean commit)
++{
++    GET_CURRENT_CONTEXT(ctx);
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glTexPageCommitmentEXT");
++}
++
++void GLAPIENTRY
++_mesa_TexturePageCommitmentEXT(GLuint texture, GLint level,
++                               GLint xoffset, GLint yoffset, GLint zoffset,
++                               GLsizei width, GLsizei height, GLsizei depth,
++                               GLboolean commit)
++{
++    GET_CURRENT_CONTEXT(ctx);
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glTexturePageCommitmentEXT");
++}
++
+ /*@}*/
+diff --git a/src/mesa/main/texobj.h b/src/mesa/main/texobj.h
+index f106238..084cd0d 100644
+--- a/src/mesa/main/texobj.h
++++ b/src/mesa/main/texobj.h
+@@ -226,6 +226,18 @@ _mesa_InvalidateTexSubImage(GLuint texture, GLint level, GLint xoffset,
+ extern void GLAPIENTRY
+ _mesa_InvalidateTexImage(GLuint texture, GLint level);
+ 
++extern void GLAPIENTRY
++_mesa_TexPageCommitmentEXT(GLenum target, GLint level,
++                           GLint xoffset, GLint yoffset, GLint zoffset,
++                           GLsizei width, GLsizei height, GLsizei depth,
++                           GLboolean commit);
++
++extern void GLAPIENTRY
++_mesa_TexturePageCommitmentEXT(GLuint texture, GLint level,
++                               GLint xoffset, GLint yoffset, GLint zoffset,
++                               GLsizei width, GLsizei height, GLsizei depth,
++                               GLboolean commit);
++
+ /*@}*/
+ 
+ 
+-- 
+2.7.4
+
