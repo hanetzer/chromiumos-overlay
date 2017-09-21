@@ -88,6 +88,7 @@ CONFIG_FRAGMENTS=(
 	dm_snapshot
 	dwc2_dual_role
 	dyndebug
+	eve_bt_hacks
 	fbconsole
 	factory_netboot_ramfs
 	factory_shim_ramfs
@@ -188,6 +189,11 @@ CONFIG_USB_DWC2_DUAL_ROLE=y
 dyndebug_desc="Enable Dynamic Debug"
 dyndebug_config="
 CONFIG_DYNAMIC_DEBUG=y
+"
+
+eve_bt_hacks_desc="Enable Bluetooth Hacks for Eve"
+eve_bt_hacks_config="
+CONFIG_BT_EVE_HACKS=y
 "
 
 fbconsole_desc="framebuffer console"
