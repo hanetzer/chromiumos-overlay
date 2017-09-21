@@ -37,6 +37,7 @@ WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 IUSE="
 	apply_patches
 	-asan
+	buildtest
 	clang
 	-device_tree
 	firmware_install
@@ -1029,6 +1030,20 @@ cros-kernel2_src_configure() {
 	local config
 	local cfgarch="$(get_build_arch)"
 
+	if use buildtest; then
+		local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+		kmake allmodconfig
+		case ${kernel_arch} in
+			arm)
+				# Big endian builds fail with endianness mismatch errors.
+				# See crbug.com/772028 for details.
+				sed -i -e 's/CONFIG_CPU_BIG_ENDIAN=y/# CONFIG_CPU_BIG_ENDIAN is not set/' "$(get_build_cfg)"
+				;;
+		esac
+		kmake oldnoconfig
+		return 0
+	fi
+
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		case ${CHROMEOS_KERNEL_CONFIG} in
 			/*)
@@ -1197,6 +1212,11 @@ cros-kernel2_src_compile() {
 }
 
 cros-kernel2_src_test() {
+	if use buildtest ; then
+		ewarn "Skipping unit tests for buildtest"
+		return 0
+	fi
+
 	[[ -e ${SMATCH_ERROR_FILE} ]] || \
 		die "smatch whitelist file ${SMATCH_ERROR_FILE} not found!"
 	[[ -e ${SMATCH_LOG_FILE} ]] || \
@@ -1236,6 +1256,11 @@ cros-kernel2_src_test() {
 }
 
 cros-kernel2_src_install() {
+	if use buildtest ; then
+		ewarn "Skipping install for buildtest"
+		return 0
+	fi
+
 	local build_targets=(
 		install
 		$(usev firmware_install)
