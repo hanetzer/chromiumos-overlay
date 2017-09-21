@@ -46,6 +46,9 @@ src_install() {
 
 	insinto /etc/init
 	doins init/atrusd.conf
+	
+	insinto /etc/dbus-1/system.d
+	doins dbus_permissions/org.chromium.Atrusctl.conf
 }
 
 pkg_preinst() {
