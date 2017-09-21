@@ -24,7 +24,7 @@ fi
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="8726d836614ded9f90da6e51875d18405d2ebbca" #r312858
+		EGIT_COMMIT="b07ae8ba81c69f8b1ad896536585c66295fde4f3" #r310330
 	else
 		EGIT_COMMIT="f0d7258f4a2f5e6443011f7be011b5e9999c33f2" #r305593
 	fi
@@ -35,7 +35,7 @@ src_prepare() {
 	# Cherry-picks
 	local CHERRIES=""
 	if use llvm-next; then
-		true
+		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
 	else
 		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
 		CHERRIES+=" 4854a215fc3c0b10ab57b4b9b5e4cbeb5bf0624a " #r311555
