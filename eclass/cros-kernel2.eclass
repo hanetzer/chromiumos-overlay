@@ -32,7 +32,7 @@ IUSE="
 	-asan
 	clang
 	-device_tree
-	+firmware_install
+	firmware_install
 	-kernel_sources
 	nfc
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
