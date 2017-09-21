@@ -166,6 +166,7 @@ ALL_BOARDS=(
 	lakitu-gpu
 	lakitu-st
 	lakitu_mobbuild
+	lakitu-nc
 	lakitu_next
 	lars
 	laser
