@@ -49,6 +49,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/ec-utils
 	chromeos-base/factory-deps
 	chromeos-base/recover-duts
+	chromeos-base/tast-local-tests
 	chromeos-base/verity
 	chromeos-base/vpd
 	cros_ec? (
