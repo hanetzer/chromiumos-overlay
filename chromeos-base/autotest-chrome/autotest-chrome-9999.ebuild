@@ -75,6 +75,7 @@ IUSE_TESTS=(
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_CFM_USBPeripheralDetect
 	+tests_enterprise_CFM_VolumeChangeClient
+	+tests_enterprise_FakeEnrollment
 	+tests_enterprise_KioskEnrollment
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
