@@ -272,7 +272,7 @@ pkg_pretend() {
 }
 
 pkg_setup() {
-	enewgroup kvm 78
+	enewgroup kvm
 }
 
 # Sanity check to make sure target lists are kept up-to-date.
