@@ -195,6 +195,7 @@ ALL_BOARDS=(
 	monroe
 	moose
 	nasher
+	nautilus
 	nefario
 	newbie
 	ninja
