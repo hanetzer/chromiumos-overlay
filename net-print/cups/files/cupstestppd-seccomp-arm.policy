@@ -22,6 +22,7 @@ lstat64: 1
 # allow bit negation, so we are using a negated mask as a
 # constant.
 mmap2: arg2 in 0xfffffffb
+mremap: 1
 munmap: 1
 # Restrict open flags.  O_DIRECTORY (0x4000), O_LARGEFILE (0x20000),
 # and O_CLOEXEC (0x80000) aren't symbols minijail knows, so are

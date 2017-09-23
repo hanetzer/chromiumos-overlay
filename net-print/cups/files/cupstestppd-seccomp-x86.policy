@@ -21,6 +21,7 @@ lstat: 1
 # constant.
 mmap2: arg2 in 0xfffffffb
 mprotect: 1
+mremap: 1
 munmap: 1
 newfstatat: 1
 # Restrict open flags.  O_DIRECTORY (0x10000), O_LARGEFILE (0x8000),

@@ -15,9 +15,10 @@ geteuid: 1
 getgid: 1
 getuid: 1
 lstat: 1
-# Disallow mmap with PROT_EXEC set.  The syntax here doesn't allow bit
-# negation, thus the manually negated mask constant.
+# Disallow mmap with PROT_EXEC set.  The syntax here doesn't allow
+# bit negation, thus the manually negated mask constant.
 mmap: arg2 in 0xfffffffb
+mremap: 1
 munmap: 1
 newfstatat: 1
 # Restrict open flags.  O_DIRECTORY (0x10000) and O_CLOEXEC (0x80000)
