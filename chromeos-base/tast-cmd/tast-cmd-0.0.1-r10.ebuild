@@ -8,7 +8,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
 CROS_GO_BINARIES=(
-	"chromiumos/tast/cmd"
+	"chromiumos/tast/cmd:tast"
 )
 
 CROS_GO_TEST=(
