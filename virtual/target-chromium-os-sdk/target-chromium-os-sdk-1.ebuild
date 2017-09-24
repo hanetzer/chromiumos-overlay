@@ -431,6 +431,11 @@ RDEPEND="${RDEPEND}
 	www-servers/nginx
 	"
 
+# Host dependencies for running integration tests
+RDEPEND="${RDEPEND}
+	chromeos-base/tast-cmd
+	"
+
 # Host dependencies for building harfbuzz
 RDEPEND="${RDEPEND}
 	dev-util/ragel
