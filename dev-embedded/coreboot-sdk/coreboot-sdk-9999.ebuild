@@ -52,17 +52,33 @@ src_compile() {
 	export PATH="${S}"/gnat-gpl-2017-x86_64-linux-bin/bin:"${PATH}"
 	export CC=gcc CXX=g++
 
-	# make calls into buildgcc, which then uses CPUS to parallelize its
-	# make(1) children. Therefore only -j1 on the top-level.
-	emake -j1 all_without_gdb \
-		-C util/crossgcc \
-		SKIP_CLANG=1 \
-		CPUS=$(makeopts_jobs) \
-		BUILD_LANGUAGES=c,ada \
-		KEEP_SOURCES=1 \
-		DEST=/opt/coreboot-sdk \
-		BUILDGCC_OPTIONS='-D "${S}"/out -b' \
-		|| die "building the toolchain failed"
+	local buildgcc_opts=(-j "$(makeopts_jobs)" -l c,ada -t)
+
+	cd util/crossgcc
+	# Build bootstrap compiler to get a reliable compiler base no matter how
+	# versions diverged, but keep it separately, since we only need it
+	# during this build and not in the chroot.
+	./buildgcc -B -d "${S}"/bootstrap "${buildgcc_opts[@]}" \
+		|| die "building the bootstrap compiler failed"
+	export PATH="${S}/bootstrap/bin:${PATH}"
+
+	local architectures=(
+		i386-elf
+		x86_64-elf
+		arm-eabi
+		aarch64-elf
+		mipsel-elf
+		nds32le-elf
+	)
+
+	local arch
+	for arch in "${architectures[@]}"; do
+		./buildgcc -d /opt/coreboot-sdk -D "${S}/out" -p "${arch}" \
+			"${buildgcc_opts[@]}" \
+		|| die "building the compiler for ${arch} failed"
+	done
+
+	rm -f "${S}"/out/opt/coreboot-sdk/lib/lib*.{la,a}
 }
 
 src_install() {
