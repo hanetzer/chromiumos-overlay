@@ -10,7 +10,9 @@
 # Please report bugs via http://crbug.com/new (with label Build)
 # @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/eclass/@ECLASS@
 # @BLURB: Eclass for setting up HWID_OVERRIDE in /etc/lsb-release
-#
+
+IUSE="hwid_override"
+
 # @FUNCTION: dohwid
 # @USAGE: <hwid>
 # @DESCRIPTION:
