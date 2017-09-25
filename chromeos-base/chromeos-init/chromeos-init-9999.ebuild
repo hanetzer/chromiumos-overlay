@@ -7,6 +7,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 
+PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="init"
 
 inherit cros-workon platform user
@@ -45,6 +46,7 @@ RDEPEND="${DEPEND}
 		chromeos-base/swap-init
 		sys-apps/chvt
 		sys-apps/smartmontools
+		sys-fs/e2fsprogs
 	)
 	frecon? (
 		sys-apps/frecon
@@ -52,20 +54,16 @@ RDEPEND="${DEPEND}
 "
 
 platform_pkg_test() {
-	local tests=( periodic_scheduler_unittest killers_unittest )
+	local tests=(
+		periodic_scheduler_unittest
+		killers_unittest
+		tests/send-kernel-errors-test.sh
+	)
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "./${test_bin}"
 	done
-}
-
-src_test() {
-	if use x86 || use amd64; then
-		cros-workon_src_test
-	else
-		einfo "Skipping unit tests on non-x86 platform"
-	fi
 }
 
 src_install_upstart() {
@@ -96,6 +94,7 @@ src_install_upstart() {
 	else
 		doins upstart/*.conf
 
+		dosbin chromeos-send-kernel-errors
 		dosbin display_low_battery_alert
 	fi
 	if use midi; then
