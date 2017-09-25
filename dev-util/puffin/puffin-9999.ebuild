@@ -46,6 +46,9 @@ src_install() {
 
 	insinto /usr/include
 	doins -r src/include/puffin/
+
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins libpuffdiff.pc libpuffpatch.pc
 }
 
 platform_pkg_test() {
