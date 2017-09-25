@@ -37,7 +37,6 @@ dohwid() {
 
 	dodir /etc
 	local lsb="${D}/etc/lsb-release"
-	[[ ! -e "${lsb}" ]] && die "/etc/lsb file missing. Run doappid first."
 	cat <<-EOF >> "${lsb}"
 	HWID_OVERRIDE=${hwid}
 	EOF
