@@ -2,51 +2,56 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="489bb2d0fe4013aba4400c993faedf539859aff5"
-CROS_WORKON_TREE="bb36dc50b4daa65ed0b07115775e639fe66cf5f4"
+CROS_WORKON_COMMIT="79e0a4be29f0a7cdd0e913b4dfe0a959257b6036"
+CROS_WORKON_TREE="f130a4e008d3473f1eca7df823203fcd6b8b69e3"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="Camera algorithm bridge library for 3A isolation"
+DESCRIPTION="ARC camera HAL v3 buffer mapper."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="-asan"
 
-RDEPEND=""
+RDEPEND="
+	media-libs/minigbm
+	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libmojo"
+	media-libs/arc-camera3-android-headers
+	virtual/pkgconfig"
 
 src_compile() {
+	asan-setup-env
 	tc-export CC CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcab
+	emake BASE_VER=${LIBCHROME_VERS} libcbm
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dobin common/arc_camera_algo
-
-	dolib common/libcab.pic.a
+	dolib common/libcbm.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/camera_algorithm.h
-	doins include/arc/camera_algorithm_bridge.h
+	doins include/arc/camera_buffer_mapper.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		"common/libcab.pc.template" > "common/libcab.pc"
+		common/libcbm.pc.template > common/libcbm.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcab.pc
+	doins common/libcbm.pc
+}
 
-	insinto /etc/init
-	doins common/init/arc-camera-algo.conf
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
 
-	insinto "/usr/share/policy"
-	newins common/arc-camera-algo-${ARCH}.policy arc-camera-algo.policy
+	if use x86 || use amd64; then
+		./common/camera_buffer_mapper_unittest || \
+			die "camera_buffer_mapper unit tests failed!"
+	fi
 }
