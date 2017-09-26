@@ -120,12 +120,12 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_CorruptKernelA
 	+tests_firmware_CorruptKernelB
 	+tests_firmware_Cr50BID
+	+tests_firmware_Cr50CCDServoCap
 	+tests_firmware_Cr50ConsoleCommands
 	+tests_firmware_Cr50DeepSleepStress
 	+tests_firmware_Cr50InvalidateRW
 	+tests_firmware_Cr50Open
 	+tests_firmware_Cr50SetBoardId
-	+tests_firmware_Cr50Uart
 	+tests_firmware_Cr50Unlock
 	+tests_firmware_Cr50Update
 	+tests_firmware_Cr50UpdateScriptStress
