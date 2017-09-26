@@ -50,6 +50,7 @@ DEPEND="
 	chromeos-base/update_engine-client
 	mtd? ( dev-embedded/android_mtdutils )
 	sys-fs/e2fsprogs
+	test? ( sys-fs/squashfs-tools )
 	${COMMON_DEPEND}"
 
 DELTA_GENERATOR_RDEPEND="
@@ -59,6 +60,7 @@ DELTA_GENERATOR_RDEPEND="
 	brillo-base/libsparse
 	dev-util/shflags
 	sys-fs/e2fsprogs
+	sys-fs/squashfs-tools
 "
 
 RDEPEND="

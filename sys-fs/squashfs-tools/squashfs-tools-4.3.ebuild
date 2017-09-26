@@ -66,7 +66,4 @@ src_install() {
 	cd ..
 	dodoc CHANGES PERFORMANCE.README pseudo-file.example README* OLD-READMEs/*
 	doman "${WORKDIR}"/debian/manpages/*.[0-9]
-
-	insinto /usr/include/squashfs
-	doins "${S}"/squashfs_fs.h
 }
