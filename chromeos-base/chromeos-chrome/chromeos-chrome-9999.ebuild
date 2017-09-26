@@ -50,6 +50,7 @@ IUSE="
 	hardfp
 	+highdpi
 	internal_gles_conform
+	libcxx
 	mojo
 	+nacl
 	neon
@@ -66,6 +67,7 @@ IUSE="
 	"
 REQUIRED_USE="
 	asan? ( clang )
+	libcxx? ( clang )
 	thinlto? ( clang gold )
 	"
 
@@ -785,6 +787,10 @@ setup_compile_flags() {
 		append-flags -Wno-unknown-warning-option
 		export CXXFLAGS_host+=" -Wno-unknown-warning-option"
 		export CFLAGS_host+=" -Wno-unknown-warning-option"
+		if use libcxx; then
+			append-cxxflags "-stdlib=libc++"
+			append-ldflags "-stdlib=libc++"
+		fi
 	fi
 
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
