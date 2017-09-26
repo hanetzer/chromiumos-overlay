@@ -54,7 +54,7 @@ cros-binary_add_uri()
 # backwards compatibility).
 cros-binary_add_gs_uri() {
 	if [[ $# -ne 3 ]]; then
-		die "cros-binary_add_bcs_uri needs 3 arguments; $# given."
+		die "cros-binary_add_gs_uri needs 3 arguments; $# given."
 	fi
 	# Strip leading bcs://...
 	[[ "${3:0:6}" == "bcs://" ]] && set -- "${1}" "${2}" "${3#bcs://}"
@@ -63,12 +63,12 @@ cros-binary_add_gs_uri() {
 
 # @ECLASS-FUNCTION: cros-binary_add_overlay_uri
 # @DESCRIPTION:
-# Wrapper around cros-binary_add_bcs_uri.  Invoked with 2 arguments;
+# Wrapper around cros-binary_add_gs_uri.  Invoked with 2 arguments;
 # the basic board target (x86-alex for example), and the filename; that filename
 # is automatically prefixed with "${CATEGORY}/${PN}/" .
 cros-binary_add_overlay_uri() {
 	if [[ $# -ne 2 ]]; then
-		die "cros-binary_add_bcs_uri_simple needs 2 arguments; $# given."
+		die "cros-binary_add_overlay_uri needs 2 arguments; $# given."
 	fi
 	cros-binary_add_gs_uri bcs-"$1" overlay-"$1" "${CATEGORY}/${PN}/$2"
 }
