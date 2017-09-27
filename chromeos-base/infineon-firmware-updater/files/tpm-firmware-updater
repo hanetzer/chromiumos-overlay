@@ -224,11 +224,20 @@ prepare_tpm() {
 
     # In case of PP-authorized updates:
     # The PP update still fails if the TPM is owned. Clear the TPM owner
-    # before the update. Ignore the TPM_FAILEDSELFTEST error code (28): There is
-    # no need to clear the owner in that situation, but we need to allow retries
-    # after failed updates to recover from failed selftest mode.
+    # before the update. Do it on a "best effort" basis, ignoring any errors. If
+    # the TPM is in failed selftest mode, the commands will actually fail, but
+    # the firmware update can still be installed. If anything else fails and the
+    # TPM is left in non-updatable state, infineon-firmware-updater will detect
+    # the problem and report an error, which causes an error screen to be shown
+    # to the user.
     tpm12-PP)
-      tpmc clear || [ $? -eq 28 ]
+      (
+        set +e
+        tpmc ppon
+        tpmc clear
+        tpmc enable
+        tpmc activate
+      ) || :
       ;;
   esac
 }
