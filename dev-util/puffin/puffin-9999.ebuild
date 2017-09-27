@@ -24,6 +24,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 RDEPEND="
+	chromeos-base/libbrillo
 	dev-libs/protobuf:=
 	dev-util/bsdiff
 "
