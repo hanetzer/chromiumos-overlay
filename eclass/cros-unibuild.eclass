@@ -307,3 +307,26 @@ get_model_conf_value_noroot() {
 	echo "${r}"
 	return ${ret}
 }
+
+# @FUNCTION: install_thermal_files
+# @USAGE:
+# @DESCRIPTION:
+# Install files related to thermal operation. Currently this is only the DPTF
+# (Dynamic Platform and Thermal Framework) datavaults, typically called dptf.dv
+install_thermal_files() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	local models=( $(get_model_list) )
+	local model
+	local dptf
+
+	einfo "unibuild: Installing thermal files"
+	for model in "${models[@]}"; do
+		dptf="$(get_model_conf_value "${model}" "/thermal" "dptf-dv")"
+		if [[ -n "${dptf}" ]]; then
+			einfo "   - ${dptf}"
+			insinto "$(dirname /etc/dptf/${dptf})"
+			doins "${FILESDIR}/${dptf}"
+		fi
+	done
+}
