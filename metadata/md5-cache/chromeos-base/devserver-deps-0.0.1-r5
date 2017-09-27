@@ -1,8 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=ChromiumOS Devserver Dependencies.
-EAPI=4
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=dev-lang/python dev-python/protobuf-python dev-python/lockfile dev-python/cherrypy net-misc/gsutil dev-python/rtslib-fb
-SLOT=0
-_md5_=ba79ca11c4cda83dbcca7d8e83c9263a
