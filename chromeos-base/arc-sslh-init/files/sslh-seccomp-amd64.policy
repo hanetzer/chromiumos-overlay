@@ -37,3 +37,5 @@ execve: 1
 wait4: 1
 bind: 1
 uname: 1
+# When we catch a SIGTERM, we kill children with SIGTERM too.
+kill: 1
