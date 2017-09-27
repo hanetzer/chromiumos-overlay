@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 RDEPEND="
-	>chromeos-base/autotest-server-0.0.1-r1260
+	!<=chromeos-base/autotest-server-0.0.1-r1260
 "
 
 DEPEND=""
