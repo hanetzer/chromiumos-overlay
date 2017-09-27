@@ -261,9 +261,9 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-imageburner
 	kvm_host? (
 		chromeos-base/chromeos-termina-scripts
+		chromeos-base/crosvm-bin
 		chromeos-base/vm_tools[kvm_host]
 		net-fs/nfs-ganesha
-		sys-kernel/kvmtool
 	)
 	chromeos-base/crosh
 	chromeos-base/crosh-extension
