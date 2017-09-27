@@ -13,7 +13,7 @@ SRC_URI="https://github.com/01org/dptf/archive/${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="Apache-2.0 GPL-2 BSD"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="debug"
+IUSE="debug unibuild"
 
 # Makefile for DPTF policies
 CMAKE_USE_DIR="${S}/DPTF/Linux"
@@ -24,7 +24,9 @@ ESIFCMP_BUILD_DIR="ESIF/Products/ESIF_CMP/Linux"
 # Makefile for ESIF web server
 ESIFWS_BUILD_DIR="ESIF/Products/ESIF_WS/Linux"
 
-DEPEND="sys-apps/dbus
+DEPEND="unibuild? ( chromeos-base/chromeos-config )
+	chromeos-base/chromeos-config-tools
+	sys-apps/dbus
 	sys-libs/ncurses sys-libs/readline"
 RDEPEND="${DEPEND}"
 
@@ -67,7 +69,6 @@ src_install() {
 	dobin "${ESIF_BUILD_DIR}/esif_ufd"
 	insinto "/etc/dptf"
 	doins ESIF/Packages/DSP/dsp.dv
-	doins "${FILESDIR}/get_dptf_for_board"
 	insinto "/etc/init"
 	doins "${FILESDIR}/dptf.conf"
 
