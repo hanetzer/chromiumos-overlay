@@ -42,7 +42,7 @@ chromeos-base/chromeos-chrome   build_tests
 >=chromeos-base/chromeos-chrome-42.0.2297.0_rc-r1		v4l2_codec
 # crbug.com/611631: mDNS resolution conflicts with non-standard .local TLD usage
 chromeos-base/nsswitch	-zeroconf
-media-gfx/imagemagick	png
+media-gfx/imagemagick	png svg
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
 media-libs/freeimage	png
 # TODO(derat): Unset glib for harfbuzz if/when pango is no longer needed:
