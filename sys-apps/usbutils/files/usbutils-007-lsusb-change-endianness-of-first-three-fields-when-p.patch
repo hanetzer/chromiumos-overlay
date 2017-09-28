@@ -1,0 +1,35 @@
+From 2aa26a367dcc37bead28213011b9f97cd6851246 Mon Sep 17 00:00:00 2001
+From: Torleiv Sundre <torleiv@kubicam.com>
+Date: Sat, 14 May 2016 17:07:37 +0200
+Subject: [PATCH 5/7] lsusb: change endianness of first three fields when
+ printing UUID/GUIDs.
+
+This makes the output consistent with the format printed in the USB
+documentation.
+
+Signed-off-by: Torleiv Sundre <torleiv@kubicam.com>
+(cherry picked from commit cbac1faa06559c9d8c7de13edd8c8303e4ab036b)
+---
+ lsusb.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lsusb.c b/lsusb.c
+index 7055540..7a9758e 100644
+--- a/lsusb.c
++++ b/lsusb.c
+@@ -240,9 +240,9 @@ static const char *get_guid(const unsigned char *buf)
+ 			"-%02x%02x"
+ 			"-%02x%02x"
+ 			"-%02x%02x%02x%02x%02x%02x}",
+-	       buf[0], buf[1], buf[2], buf[3],
+-	       buf[4], buf[5],
+-	       buf[6], buf[7],
++	       buf[3], buf[2], buf[1], buf[0],
++	       buf[5], buf[4],
++	       buf[7], buf[6],
+ 	       buf[8], buf[9],
+ 	       buf[10], buf[11], buf[12], buf[13], buf[14], buf[15]);
+ 	return guid;
+-- 
+2.12.2
+

@@ -1,0 +1,30 @@
+From be91f947e23f436c498d0576d58bb161439ce096 Mon Sep 17 00:00:00 2001
+From: Stephan Linz <linz@li-pro.net>
+Date: Tue, 29 Nov 2016 18:12:21 +0100
+Subject: [PATCH 6/7] lsusb: remove unused variable procbususb
+
+The corresponding source code was removed in 2012 with
+commit aeefb00cecdd1d5892ba038933aa39ebfb8c8c83
+"remove devtree logic".
+
+Signed-off-by: Stephan Linz <linz@li-pro.net>
+(cherry picked from commit 3abb0380a355f207c058f1251254e1068b2167da)
+---
+ lsusb.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lsusb.c b/lsusb.c
+index 7a9758e..2b638b4 100644
+--- a/lsusb.c
++++ b/lsusb.c
+@@ -112,7 +112,6 @@
+ 
+ #define BILLBOARD_MAX_NUM_ALT_MODE	(0x34)
+ 
+-static const char procbususb[] = "/proc/bus/usb";
+ static unsigned int verblevel = VERBLEVEL_DEFAULT;
+ static int do_report_desc = 1;
+ static const char * const encryption_type[] = {
+-- 
+2.12.2
+

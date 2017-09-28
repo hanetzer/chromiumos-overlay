@@ -1,0 +1,39 @@
+From 020485dd172feb63b541907e69061c2a3aecf331 Mon Sep 17 00:00:00 2001
+From: Emmanuele Bassi <ebassi@gnome.org>
+Date: Fri, 29 Apr 2016 19:00:52 +0100
+Subject: [PATCH 4/7] Don't use C99-ism
+
+Declare the loop iterator before using it.
+
+Fixes #40
+
+Signed-off-by: Emmanuele Bassi <ebassi@gnome.org>
+(cherry picked from commit a0845301f7795162c849bd7d32a940e883aadbae)
+---
+ lsusb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lsusb.c b/lsusb.c
+index 98808e6..7055540 100644
+--- a/lsusb.c
++++ b/lsusb.c
+@@ -3780,6 +3780,7 @@ static void dump_platform_device_capability_desc(unsigned char *buf)
+ {
+ 	unsigned char desc_len = buf[0];
+ 	unsigned char cap_data_len = desc_len - 20;
++	unsigned char i;
+ 	if (desc_len < 20) {
+ 		fprintf(stderr, "  Bad Platform Device Capability descriptor.\n");
+ 		return;
+@@ -3792,7 +3793,7 @@ static void dump_platform_device_capability_desc(unsigned char *buf)
+ 			buf[0], buf[1], buf[2], buf[3]);
+ 	printf("    PlatformCapabilityUUID    %s\n",
+ 			get_guid(&buf[4]));
+-	for (unsigned char i = 0; i < cap_data_len; i++) {
++	for (i = 0; i < cap_data_len; i++) {
+ 		printf("    CapabilityData[%u]    0x%02x\n", i, buf[20 + i]);
+ 	}
+ }
+-- 
+2.12.2
+

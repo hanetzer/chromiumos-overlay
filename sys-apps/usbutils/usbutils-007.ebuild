@@ -29,6 +29,13 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-006-stdint.patch
 	"${FILESDIR}"/${PN}-007-ignore-invalid-string-descriptors.patch
 	"${FILESDIR}"/${P}-decode-CDC-MBIM-extended-functional-descriptor.patch
+	"${FILESDIR}"/${PN}-007-lsusb-Add-support-for-the-USB-3.1-SuperSpeedPlus-dev.patch
+	"${FILESDIR}"/${PN}-007-lsusb-Added-support-for-Billboard-Capability-descrip.patch
+	"${FILESDIR}"/${PN}-007-Added-support-for-Platform-Device-Capability-descrip.patch
+	"${FILESDIR}"/${PN}-007-Don-t-use-C99-ism.patch
+	"${FILESDIR}"/${PN}-007-lsusb-change-endianness-of-first-three-fields-when-p.patch
+	"${FILESDIR}"/${PN}-007-lsusb-remove-unused-variable-procbususb.patch
+	"${FILESDIR}"/${PN}-007-lsusb-print-WebUSB-platform-descriptor.patch
 )
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
