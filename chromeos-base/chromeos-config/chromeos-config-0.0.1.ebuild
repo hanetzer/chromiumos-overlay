@@ -36,8 +36,7 @@ src_compile() {
 	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi; do
 		if [[ ! -f "${dtsi}" ]]; then
 			die "No .dtsi files found in \
-${SYSROOT}${UNIBOARD_DTS_DIR}: please check that you have a \
-chromeos-config-model virtual ebuild"
+${SYSROOT}${UNIBOARD_DTS_DIR}: please check your chromeos-config-bsp ebuild"
 		fi
 		einfo "Adding ${dtsi}"
 		cp "${dtsi}" "${WORKDIR}"
