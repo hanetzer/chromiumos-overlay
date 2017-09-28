@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure install prepare
+DESCRIPTION=U2F reference code and test tools
+EAPI=5
+HOMEPAGE=https://github.com/google/u2f-ref-code
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-libs/hidapi virtual/libudev
+SLOT=0
+SRC_URI=http://github.com/google/u2f-ref-code/archive/2efd344c23ac3ce57731ecd57ae57e8c26af6485.tar.gz -> u2f-ref-code-2efd344.tar.gz https://android.googlesource.com/platform/system/core/+archive/lollipop-release.tar.gz -> android-system-core-lollipop-release.tar.gz
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=e881641bf08301ffef65a6dcf523b0d9
