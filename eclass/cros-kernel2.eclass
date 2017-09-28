@@ -111,6 +111,7 @@ CONFIG_FRAGMENTS=(
 	nfs
 	nowerror
 	pcserial
+	plan9
 	ppp
 	qmi
 	realtekpstor
@@ -420,6 +421,15 @@ CONFIG_SERIAL_8250_PCI=y
 CONFIG_PARPORT=y
 CONFIG_PARPORT_PC=y
 CONFIG_PARPORT_SERIAL=y
+"
+
+plan9_desc="Plan 9 protocol support"
+plan9_config="
+CONFIG_NET_9P=y
+CONFIG_NET_9P_VIRTIO=y
+CONFIG_9P_FS=y
+CONFIG_9P_FS_POSIX_ACL=y
+CONFIG_9P_FS_SECURITY=y
 "
 
 ppp_desc="PPPoE and ppp support"
