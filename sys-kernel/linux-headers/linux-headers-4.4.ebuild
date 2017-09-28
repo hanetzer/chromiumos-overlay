@@ -49,6 +49,8 @@ src_prepare() {
 	epatch "${FILESDIR}/0020-BACKPORT-media-v4l-Add-metadata-buffer-type-and-form.patch"
 	epatch "${FILESDIR}/0021-BACKPORT-FROMLIST-v4l-Add-support-for-V4L2_BUF_TYPE_.patch"
 	epatch "${FILESDIR}/0022-BACKPORT-Use-upstream-USBDEVFS_DROP_PRIVILEGES.patch"
+	epatch "${FILESDIR}/0023-FROMLIST-media-rkisp1-Add-user-space-ABI-definitions.patch"
+	epatch "${FILESDIR}/0024-FROMLIST-media-videodev2.h-v4l2-ioctl-add-rkisp1-met.patch"
 }
 
 src_install() {
