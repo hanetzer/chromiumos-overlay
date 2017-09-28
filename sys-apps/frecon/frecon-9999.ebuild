@@ -21,12 +21,12 @@ IUSE="-asan"
 RDEPEND="virtual/udev
 	sys-apps/dbus
 	media-libs/libpng:0=
-	sys-apps/libtsm"
+	sys-apps/libtsm
+	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
 	media-sound/adhd
-	virtual/pkgconfig
-	x11-libs/libdrm"
+	virtual/pkgconfig"
 
 src_prepare() {
 	cros-workon_src_prepare
