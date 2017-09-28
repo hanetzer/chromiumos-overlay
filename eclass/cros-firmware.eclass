@@ -210,6 +210,13 @@ cros-firmware_get_config() {
 	echo "$(get_model_conf_value_noroot "${model}" /firmware "${leaf}")"
 }
 
+cros-firmware_get_build_config() {
+	local leaf="$1"
+	local path="/firmware/build-targets"
+
+	echo "$(get_model_conf_value_noroot "${model}" "${path}" "${leaf}")"
+}
+
 cros-firmware_src_unpack() {
 	case "${EAPI:-0}" in
 	1|2|3|4)
@@ -465,17 +472,18 @@ _get_source_uris_for_model() {
 	if [[ -z "${overlay}" ]]; then
 		die "Please add bcs-overlay to master configuration"
 	fi
+	target="$(cros-firmware_get_build_config coreboot)"
 	overlay="${overlay#overlay-}"
 	for image in main-image main-rw-image ec-image pd-image; do
 		uri="$(cros-firmware_get_config ${image})"
 		if [[ -n "${uri}" ]]; then
 			uris+=" $(_add_uri "${uri}" "${overlay}" \
-				"chromeos-firmware-${model}")"
+				"chromeos-firmware-${target}")"
 		fi
 	done
 	for path in $(cros-firmware_get_config extra); do
 		uris+=" $(_add_uri "${path}" "${overlay}" \
-			"chromeos-firmware-${model}")"
+			"chromeos-firmware-${target}")"
 	done
 	echo "${uris}"
 }
