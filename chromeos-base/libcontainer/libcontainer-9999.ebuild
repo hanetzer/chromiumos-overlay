@@ -38,6 +38,6 @@ src_install() {
 	doins libcontainer.h
 }
 
-src_test() {
-	platform_test "run" "${OUT}"/container_cgroup_unittest
+platform_pkg_test() {
+	platform_test "run" "${OUT}"/libcontainer_test
 }
