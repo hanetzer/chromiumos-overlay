@@ -37,11 +37,11 @@ RDEPEND="
 	!cros_host? ( chromeos-base/libchromeos-use-flags )
 	chromeos-base/chromeos-ca-certificates
 	!chromeos-base/libchromeos
-	chromeos-base/system_api
 "
 DEPEND="
 	${COMMON_DEPEND}
 	chromeos-base/protofiles
+	chromeos-base/system_api
 	dev-libs/modp_b64
 "
 
