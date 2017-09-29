@@ -116,6 +116,7 @@ sys-kernel/chromeos-kernel-3_10	firmware_install
 sys-kernel/chromeos-kernel-3_14	firmware_install
 sys-kernel/chromeos-kernel-3_18	firmware_install
 sys-kernel/chromeos-kernel-3_8	firmware_install
+sys-kernel/chromeos-kernel-4_4	firmware_install
 sys-libs/gdbm		-berkdb
 sys-libs/ldb		-python
 sys-libs/ncurses	-cxx -unicode minimal
