@@ -54,10 +54,21 @@ STRIP_MASK="
 	/usr/src/*
 "
 
+# SRC_URI requires RESTRICT="mirror". We specify AutoFDO profiles in SRC_URI
+# so that ebuild can fetch it for us.
+RESTRICT="mirror"
+SRC_URI=""
+
+KERNEL_VERSION="${PN#chromeos-kernel-}"
+KERNEL_VERSION="${KERNEL_VERSION/_/.}"
+
+# Specifying AutoFDO profiles in SRC_URI and let ebuild fetch it for us.
 if [[ -n "${AFDO_PROFILE_VERSION}" ]]; then
-	AFDO_BASENAME="autofdo-${PN}-${AFDO_PROFILE_VERSION}"
-	AFDO_LOCATION="gs://chromeos-localmirror/distfiles/"
-	SRC_URI="kernel_afdo? ( ${AFDO_LOCATION}${AFDO_BASENAME}.afdo.xz )"
+	AFDO_LOCATION="gs://chromeos-prebuilt/afdo-job/cwp/kernel/${KERNEL_VERSION}"
+	AFDO_GCOV="${PN}-${AFDO_PROFILE_VERSION}.gcov"
+	SRC_URI+="
+		kernel_afdo? ( ${AFDO_LOCATION}/${AFDO_PROFILE_VERSION}.gcov.xz -> ${AFDO_GCOV}.xz )
+	"
 fi
 
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
@@ -916,7 +927,7 @@ kmake() {
 		CXX="${CXX} -B${binutils_path}" \
 		"$@"
 
-	local AFDO_FILENAME="${WORKDIR}/${AFDO_BASENAME}.afdo"
+	local AFDO_FILENAME="${WORKDIR}/${AFDO_GCOV}"
 	local kcflags="${KCFLAGS}"
 	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
 
@@ -936,7 +947,7 @@ cros-kernel2_src_unpack() {
 		die
 	fi
 	pushd "${WORKDIR}" > /dev/null
-	use kernel_afdo && unpack "${AFDO_BASENAME}.afdo.xz"
+	use kernel_afdo && unpack "${AFDO_GCOV}.xz"
 	popd > /dev/null
 }
 
