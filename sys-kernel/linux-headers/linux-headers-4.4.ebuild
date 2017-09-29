@@ -46,6 +46,8 @@ src_prepare() {
 	epatch "${FILESDIR}/0017-BACKPORT-net-diag-Add-the-ability-to-destroy-a-socke.patch"
 	epatch "${FILESDIR}/0018-BACKPORT-net-core-add-UID-to-flows-rules-and-routes.patch"
 	epatch "${FILESDIR}/0019-virtwl-add-virtwl-driver.patch"
+	epatch "${FILESDIR}/0020-BACKPORT-media-v4l-Add-metadata-buffer-type-and-form.patch"
+	epatch "${FILESDIR}/0021-BACKPORT-FROMLIST-v4l-Add-support-for-V4L2_BUF_TYPE_.patch"
 }
 
 src_install() {
