@@ -172,6 +172,7 @@ ALL_BOARDS=(
 	laser
 	lasilla-ground
 	lasilla-sky
+	lassen
 	#lemmings
 	#lemmings_external
 	leon
