@@ -61,9 +61,7 @@ src_install() {
 	fperms 4750 /usr/bin/powerd_setuid_helper
 
 	# Binaries for testing and debugging
-	dobin "${OUT}"/backlight_dbus_tool
 	dobin "${OUT}"/check_powerd_config
-	dobin "${OUT}"/get_powerd_initial_backlight_level
 	dobin "${OUT}"/memory_suspend_test
 	dobin "${OUT}"/powerd_dbus_suspend
 	dobin "${OUT}"/send_debug_power_status
