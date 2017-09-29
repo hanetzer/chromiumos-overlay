@@ -26,7 +26,8 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="chromeos-base/libbrillo
-	dev-libs/openssl"
+	dev-libs/openssl
+	sys-fs/lvm2"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
