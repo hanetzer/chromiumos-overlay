@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-inherit cros-workon autotest
+inherit cros-workon autotest libchrome
 
 DESCRIPTION="Security autotests"
 HOMEPAGE="http://www.chromium.org/"
@@ -21,6 +21,12 @@ IUSE="+autotest -chromeless_tests -chromeless_tty containers +seccomp"
 RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
 	tests_security_Minijail0? ( sys-apps/keyutils )
+	containers? (
+		tests_security_Libcontainer? (
+			chromeos-base/chromeos-minijail
+			chromeos-base/libcontainer
+		)
+	)
 "
 DEPEND="${RDEPEND}"
 
@@ -49,6 +55,7 @@ IUSE_TESTS="
 	)
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
+	containers? ( +tests_security_Libcontainer )
 	+tests_security_Minijail0
 	+tests_security_ModuleLocking
 	+tests_security_mprotect
