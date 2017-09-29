@@ -226,8 +226,7 @@ def get_relocatable_root():
 
 def main():
   # Flags specifically to be used wtih the GCC compiler.
-  gcc_flags = ['-frecord-gcc-switches',
-               '-fno-reorder-blocks-and-partition',
+  gcc_flags = ['-fno-reorder-blocks-and-partition',
                '-Wno-unused-local-typedefs',
                '-Wno-maybe-uninitialized',
               ]
