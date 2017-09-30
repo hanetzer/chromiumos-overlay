@@ -2,22 +2,22 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="1b6e1b5c08e0103ee451501abc1c64d7c8dfe76a"
-CROS_WORKON_TREE="592f19229b38cb3b7cb6f00818522455fcff4a33"
+CROS_WORKON_COMMIT="857e5e6d09ec94d8e3b40e468cfcf0aa68bec6c3"
+CROS_WORKON_TREE="c7e04a1db9abd86cbdc7a987866a74914f871494"
 CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
-CROS_GO_BINARIES=(
-	"chromiumos/tast/cmd:tast"
+CROS_GO_PACKAGES=(
+	"chromiumos/tast/common/..."
 )
 
 CROS_GO_TEST=(
-	"chromiumos/tast/cmd/..."
+	"${CROS_GO_PACKAGES[@]}"
 )
 
 inherit cros-go cros-workon
 
-DESCRIPTION="Host executable for running integration tests"
+DESCRIPTION="Shared packages for integration testing"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/tast/"
 
 LICENSE="BSD-Google"
@@ -25,8 +25,5 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-DEPEND="
-	chromeos-base/tast-common
-	dev-go/subcommands
-"
-RDEPEND=""
+DEPEND=""
+RDEPEND="dev-go/crypto"
