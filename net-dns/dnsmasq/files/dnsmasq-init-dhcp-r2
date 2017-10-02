@@ -24,6 +24,6 @@ start_pre() {
 
 reload() {
 	ebegin "Reloading ${RC_SVCNAME}"
-	kill -HUP "$(cat "${pidfile}")"
+	start-stop-daemon --signal HUP --pidfile "${pidfile}"
 	eend $?
 }

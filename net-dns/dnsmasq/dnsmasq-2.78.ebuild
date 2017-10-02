@@ -12,31 +12,34 @@ SRC_URI="http://www.thekelleys.org.uk/dnsmasq/${P}.tar.xz"
 LICENSE="|| ( GPL-2 GPL-3 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="auth-dns conntrack dbus +dhcp dhcp-options dhcp-tools dnssec idn +inotify ipv6 lua nls script selinux static tftp"
-DM_LINGUAS="de es fi fr id it no pl pt_BR ro"
-for dm_lingua in ${DM_LINGUAS}; do
+IUSE="auth-dns conntrack dbus +dhcp dhcp-tools dnssec +id idn libidn2 +inotify"
+IUSE+=" ipv6 lua nls script selinux static tftp"
+IUSE+=" dhcp-options"
+
+DM_LINGUAS=(de es fi fr id it no pl pt_BR ro)
+
+for dm_lingua in "${DM_LINGUAS[@]}"; do
 	IUSE+=" linguas_${dm_lingua}"
 done
 
 CDEPEND="dbus? ( sys-apps/dbus )
-	idn? ( net-dns/libidn )
+	idn? (
+		!libidn2? ( net-dns/libidn )
+		libidn2? ( >=net-dns/libidn2-2.0 )
+	)
 	lua? ( dev-lang/lua:* )
 	conntrack? ( net-libs/libnetfilter_conntrack )
-	nls? (
-		sys-devel/gettext
-		net-dns/libidn
-	)
+	nls? ( sys-devel/gettext )
 "
 
 DEPEND="${CDEPEND}
 	app-arch/xz-utils
 	dnssec? (
 		dev-libs/nettle[gmp]
-		static? (
-			dev-libs/nettle[static-libs(+)]
-		)
+		static? ( dev-libs/nettle[static-libs(+)] )
 	)
-	virtual/pkgconfig"
+	virtual/pkgconfig
+"
 
 RDEPEND="${CDEPEND}
 	dnssec? (
@@ -48,7 +51,8 @@ RDEPEND="${CDEPEND}
 "
 
 REQUIRED_USE="dhcp-tools? ( dhcp )
-	lua? ( script )"
+	lua? ( script )
+	libidn2? ( idn )"
 
 use_have() {
 	local useflag no_only uword
@@ -102,10 +106,12 @@ src_configure() {
 	COPTS="$(use_have -n auth-dns auth)"
 	COPTS+="$(use_have conntrack)"
 	COPTS+="$(use_have dbus)"
-	COPTS+="$(use_have idn)"
+	COPTS+="$(use libidn2 || use_have idn)"
+	COPTS+="$(use_have libidn2)"
 	COPTS+="$(use_have -n inotify)"
 	COPTS+="$(use_have -n dhcp dhcp dhcp6)"
 	COPTS+="$(use_have -n ipv6 ipv6 dhcp6)"
+	COPTS+="$(use_have -n id id)"
 	COPTS+="$(use_have lua luascript)"
 	COPTS+="$(use_have -n script)"
 	COPTS+="$(use_have -n tftp)"
@@ -144,7 +150,7 @@ src_install() {
 		DESTDIR="${D}" \
 		install$(use nls && echo "-i18n")
 
-	for lingua in ${DM_LINGUAS}; do
+	for lingua in "${DM_LINGUAS[@]}"; do
 		use linguas_${lingua} || rm -rf "${D}"/usr/share/locale/${lingua}
 	done
 	[[ -d "${D}"/usr/share/locale/ ]] && rmdir --ignore-fail-on-non-empty "${D}"/usr/share/locale/
@@ -155,7 +161,7 @@ src_install() {
 	docinto html/
 	dodoc *.html
 
-	newinitd "${FILESDIR}"/dnsmasq-init-r2 ${PN}
+	newinitd "${FILESDIR}"/dnsmasq-init-r3 ${PN}
 	newconfd "${FILESDIR}"/dnsmasq.confd-r1 ${PN}
 
 	insinto /etc
@@ -166,7 +172,7 @@ src_install() {
 
 	if use dhcp; then
 		dodir /var/lib/misc
-		newinitd "${FILESDIR}"/dnsmasq-init-dhcp-r1 ${PN}
+		newinitd "${FILESDIR}"/dnsmasq-init-dhcp-r2 ${PN}
 	fi
 	if use dbus; then
 		insinto /etc/dbus-1/system.d
