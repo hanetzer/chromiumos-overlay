@@ -11,7 +11,7 @@ the chroot."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="+chaos_lab"
 
 # These packages are meant to supply the dependencies to run Autotest.
 RDEPEND="
@@ -50,7 +50,7 @@ RDEPEND="
 	dev-python/paramiko
 	dev-python/python-gflags
 	dev-python/python-uinput
-	dev-python/pyshark
+	chaos_lab? ( dev-python/pyshark )
 	dev-python/pyudev
 	dev-python/requests
 	dev-util/hdctools
