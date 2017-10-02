@@ -931,6 +931,20 @@ kmake() {
 	local kcflags="${KCFLAGS}"
 	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
 
+	# The kernel doesn't use CFLAGS and doesn't expect it to be passed
+	# in.  Let's be explicit that it won't do anything by unsetting CFLAGS.
+	#
+	# In general the kernel manages its own tools flags and doesn't expect
+	# someone external to pass flags in unless those flags have been
+	# very specifically tailored to interact well with the kernel Makefiles.
+	# In that case we pass in flags with KCFLAGS which is documented to be
+	# not a full set of flags but as "additional" flags. In general the
+	# kernel Makefiles carefully adjust their flags in various
+	# sub-directories to get the needed result.  The kernel has CONFIG_
+	# options for adjusting compiler flags and self-adjusts itself
+	# depending on whether it detects clang or not.
+	unset CFLAGS
+
 	ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}-" \
