@@ -19,11 +19,13 @@ RDEPEND="virtual/jpeg:0"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-src_compile() {
+src_configure() {
 	asan-setup-env
-	tc-export CC CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
 }
 
 src_install() {

@@ -19,12 +19,14 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	media-libs/arc-camera3-android-headers"
 
-src_compile() {
+src_configure() {
 	asan-setup-env
-	tc-export CC CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
+	cros-workon_src_configure
+}
+
+src_compile() {
 	cd android
-	emake libcamera_client
+	cw_emake libcamera_client
 }
 
 src_install() {

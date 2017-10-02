@@ -31,11 +31,13 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	x11-libs/libdrm"
 
-src_compile() {
+src_configure() {
 	asan-setup-env
-	tc-export CC CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} hal_adapter
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cw_emake BASE_VER=${LIBCHROME_VERS} hal_adapter
 }
 
 src_install() {

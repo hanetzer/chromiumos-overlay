@@ -29,11 +29,13 @@ DEPEND="${RDEPEND}
 	media-libs/libyuv
 	virtual/pkgconfig"
 
-src_compile() {
+src_configure() {
 	asan-setup-env
-	tc-export CC CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} camera_hal_usb
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cw_emake BASE_VER=${LIBCHROME_VERS} camera_hal_usb
 	use test && emake BASE_VER=${LIBCHROME_VERS} hal_usb_test
 }
 

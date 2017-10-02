@@ -18,10 +18,13 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	chromeos-base/libmojo"
 
+src_configure() {
+	asan-setup-env
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CC CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake BASE_VER=${LIBCHROME_VERS} libcab
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcab
 }
 
 src_install() {
