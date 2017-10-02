@@ -946,10 +946,15 @@ kmake() {
 	# sub-directories to get the needed result.  The kernel has CONFIG_
 	# options for adjusting compiler flags and self-adjusts itself
 	# depending on whether it detects clang or not.
+	#
+	# In the same spirit, let's also unset LDFLAGS.  While (in some cases)
+	# the kernel will build upon LDFLAGS passed in from the environment it
+	# makes sense to just let the kernel be like we do for the rest of the
+	# flags.
 	unset CFLAGS
+	unset LDFLAGS
 
 	ARCH=${kernel_arch} \
-		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}-" \
 		KCFLAGS="${kcflags}" \
 		cw_emake \
