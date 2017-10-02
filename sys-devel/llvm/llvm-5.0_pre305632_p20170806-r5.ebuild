@@ -576,6 +576,7 @@ multilib_src_install() {
 		"${FILESDIR}/clang_host_wrapper.body" > \
 		"${D}/usr/bin/${wrapper_script}" || die
 	chmod 755 "${D}/usr/bin/${wrapper_script}" || die
+	dobin "${FILESDIR}/bisect_driver.py"
 	exeinto "/usr/bin"
 	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang"
 	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang++"

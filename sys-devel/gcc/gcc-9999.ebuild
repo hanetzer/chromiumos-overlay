@@ -370,8 +370,8 @@ EOF
 				"${FILESDIR}/sysroot_wrapper.hardened.body" > \
 				"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
 			chmod 755 "${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
-			insinto "$(get_bin_dir)"
-			doins "${FILESDIR}/bisect_driver.py" || die
+			cat "${FILESDIR}/bisect_driver.py" > \
+				"${D}$(get_bin_dir)/bisect_driver.py" || die
 		else
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi

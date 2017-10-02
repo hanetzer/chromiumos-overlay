@@ -121,11 +121,11 @@ def exec_and_bisect(execargs, bisect_stage, argv0, use_ccache):
 
   bisect_dir = os.environ.get('BISECT_DIR', '/tmp/sysroot_bisect')
   try:
-    bisect_driver.bisect_driver(bisect_stage, bisect_dir, execargs)
+    ret = bisect_driver.bisect_driver(bisect_stage, bisect_dir, execargs)
   except OSError as e:
     handle_exec_exception(e, argv0, use_ccache, execargs)
 
-  sys.exit(0)
+  sys.exit(ret)
 
 
 # Log 'time' like resource usage, along with corresponding command line, to

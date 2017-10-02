@@ -5,6 +5,19 @@ FLAGS_TO_ADD = set((
 ))
 
 
+def exec_and_bisect(execargs, bisect_stage, argv0):
+  """Execute compiler, return and invoke bisection driver."""
+  import bisect_driver
+
+  bisect_dir = os.environ.get('BISECT_DIR', '/tmp/sysroot_bisect')
+  try:
+    ret = bisect_driver.bisect_driver(bisect_stage, bisect_dir, execargs)
+  except OSError as e:
+    handle_exec_exception(e, argv0, execargs)
+
+  sys.exit(ret)
+
+
 def main(argv):
   """Main function for clang wrapper script."""
 
@@ -15,6 +28,8 @@ def main(argv):
   ]
 
   myargs = argv[1:]
+
+  bisect_stage = os.environ.get('BISECT_STAGE')
 
   print_cmdline = '-print-cmdline' in myargs
   clang_cmdline = clang_flags + list(FLAGS_TO_ADD)
@@ -55,12 +70,14 @@ def main(argv):
 
   sys.stdout.flush()
 
-  try:
-    os.execv(argv0, execargs)
-  except OSError as e:
-    handle_exec_exception(e, argv0, False, execargs)
+  if not bisect_stage:
+    try:
+      os.execv(argv0, execargs)
+    except OSError as e:
+      handle_exec_exception(e, argv0, False, execargs)
 
-  return 0
+  # Only comes here if doing bisection.
+  exec_and_bisect(execargs, bisect_stage, argv0)
 
 
 if __name__ == '__main__':
