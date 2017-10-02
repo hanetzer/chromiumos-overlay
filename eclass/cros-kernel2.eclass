@@ -922,7 +922,7 @@ kmake() {
 	local binutils_path=$(LD=${cross}-ld get_binutils_path_ld)
 
 	set -- \
-		LD="${binutils_path}/ld $(usex x32 '-m elf_x86_64' '')" \
+		LD="${binutils_path}/ld" \
 		CC="${CC} -B${binutils_path}" \
 		CXX="${CXX} -B${binutils_path}" \
 		"$@"
