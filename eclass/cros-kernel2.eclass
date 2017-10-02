@@ -915,6 +915,7 @@ kmake() {
 		unset CC CXX LD STRIP OBJCOPY
 	fi
 
+	tc-export_build_env BUILD_{CC,CXX}
 	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
 	if use clang; then
 		CHOST=${cross} clang-setup-env
@@ -925,6 +926,8 @@ kmake() {
 		LD="${binutils_path}/ld" \
 		CC="${CC} -B${binutils_path}" \
 		CXX="${CXX} -B${binutils_path}" \
+		HOSTCC="${BUILD_CC}" \
+		HOSTCXX="${BUILD_CXX}" \
 		"$@"
 
 	local AFDO_FILENAME="${WORKDIR}/${AFDO_GCOV}"
