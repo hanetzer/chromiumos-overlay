@@ -2,54 +2,46 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="6d6cc53f075f58e978ffad4bc05d720823e83e82"
-CROS_WORKON_TREE="1e7c6c24966198b762f022d26edf47a629faeb9e"
+CROS_WORKON_COMMIT="f7441d69280e4dc4fb4d7213afb77d71b074d944"
+CROS_WORKON_TREE="1a4afcc24d379537077b0d7a420dbfe7b1272b18"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="Camera algorithm bridge library for 3A isolation"
+DESCRIPTION="ARC camera HAL v3 Time zone util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="-asan"
 
 RDEPEND=""
 
 DEPEND="${RDEPEND}
-	chromeos-base/libmojo"
+	virtual/pkgconfig"
 
 src_configure() {
-	asan-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcab
+	asan-setup-env
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_timezone
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dobin common/arc_camera_algo
-
-	dolib common/libcab.pic.a
+	dolib.a common/libcamera_timezone.pic.a
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/camera_algorithm.h
-	doins include/arc/camera_algorithm_bridge.h
+	doins include/arc/timezone.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		"common/libcab.pc.template" > "common/libcab.pc"
+		common/libcamera_timezone.pc.template > common/libcamera_timezone.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcab.pc
-
-	insinto /etc/init
-	doins common/init/arc-camera-algo.conf
-
-	insinto "/usr/share/policy"
-	newins common/arc-camera-algo-${ARCH}.policy arc-camera-algo.policy
+	doins common/libcamera_timezone.pc
 }
