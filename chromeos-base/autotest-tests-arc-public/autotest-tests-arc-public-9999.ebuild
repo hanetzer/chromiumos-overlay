@@ -7,7 +7,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-inherit arc-build autotest cros-workon flag-o-matic
+inherit autotest cros-workon flag-o-matic
 
 DESCRIPTION="Public ARC autotests"
 
@@ -44,20 +44,4 @@ src_prepare() {
 	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
 	export PYTHONPATH="${TMP_DIR}/telemetry/src/third_party/catapult/telemetry"
 	autotest_src_prepare
-}
-
-src_configure() {
-	# Use arc-build base class to select the right compiler for native Android code.
-	arc-build-select-gcc
-
-	# The ARC sysroot only has prebuilt 32-bit libraries at this point
-	case ${ARCH} in
-	arm)
-		# Nothing to do in this case
-		;;
-	amd64)
-		append-flags -m32
-		append-ldflags -m32
-		;;
-	esac
 }

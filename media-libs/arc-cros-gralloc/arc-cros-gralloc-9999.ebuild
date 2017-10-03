@@ -54,11 +54,13 @@ src_configure() {
 
 multilib_src_compile() {
 	export TARGET_DIR="${BUILD_DIR}/"
-	cd "${S}/cros_gralloc/"
-	emake
+	emake -C "${S}/cros_gralloc"
+	emake -C "${S}/cros_gralloc/gralloc0/tests/"
 }
 
 multilib_src_install() {
 	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/hw/"
 	doexe "${BUILD_DIR}"/gralloc.cros.so
+	into "/usr/local/"
+	newbin "${BUILD_DIR}"/gralloctest "gralloctest_${ABI}"
 }
