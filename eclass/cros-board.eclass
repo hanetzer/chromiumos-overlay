@@ -112,6 +112,7 @@ ALL_BOARDS=(
 	enguarde
 	#envoy-jerry
 	eve
+	eve-bertha
 	eve-kvm
 	eve-userdebug
 	expresso
