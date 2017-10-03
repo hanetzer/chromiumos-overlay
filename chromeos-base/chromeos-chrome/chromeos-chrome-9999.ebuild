@@ -28,6 +28,8 @@ fi
 SLOT="0"
 KEYWORDS="~*"
 IUSE="
+	afdo_chrome_exp1
+	afdo_chrome_exp2
 	afdo_use
 	+accessibility
 	app_shell
@@ -132,13 +134,19 @@ BUILD_OUT_SYM="c"
 AFDO_BZ_SUFFIX=".bz2"
 AFDO_GCOV_SUFFIX=".gcov"
 AFDO_PROF_SUFFIX=".prof"
+AFDO_EXP1_SUFFIX=".exp1"
+AFDO_EXP2_SUFFIX=".exp2"
 AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"}
 AFDO_LOCATION_LLVM=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/llvm/"}
+AFDO_LOCATION_EXP1=${AFDO_GS_DIRECTORY:-"gs://chromeos-localmirror/distfiles/afdo/experimental/cwp/"}
+AFDO_LOCATION_EXP2=${AFDO_GS_DIRECTORY:-"gs://chromeos-localmirror/distfiles/afdo/experimental/approximation/"}
 
 # These dictionaries contain one entry per architecture. The value for each
 # entry is the appropriate AFDO profile for the current version of Chrome.
 declare -A AFDO_FILE
 declare -A AFDO_FILE_LLVM
+declare -A AFDO_FILE_EXP1
+declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
@@ -149,6 +157,14 @@ AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
 AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
 AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+
+AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+
+AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP2["arm"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -173,6 +189,18 @@ add_afdo_files() {
 		f=${AFDO_FILE_LLVM[${a}]}
 		if [[ -n ${f} ]]; then
 			SRC_URI+=" afdo_use? ( ${a}? ( clang? ( ${AFDO_LOCATION_LLVM}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_PROF_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
+		fi
+	done
+	for a in "${!AFDO_FILE_EXP1[@]}" ; do
+		f=${AFDO_FILE_EXP1[${a}]}
+		if [[ -n ${f} ]]; then
+			SRC_URI+=" afdo_use? ( ${a}? ( clang? ( ${AFDO_LOCATION_EXP1}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP1_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
+		fi
+	done
+	for a in "${!AFDO_FILE_EXP2[@]}" ; do
+		f=${AFDO_FILE_EXP2[${a}]}
+		if [[ -n ${f} ]]; then
+			SRC_URI+=" afdo_use? ( ${a}? ( clang? ( ${AFDO_LOCATION_EXP2}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP2_SUFFIX}${AFDO_BZ_SUFFIX} ) ) )"
 		fi
 	done
 	for a in "${!AFDO_FROZEN_FILE[@]}" ; do
@@ -634,6 +662,18 @@ src_unpack() {
 		if use clang; then
 			PROFILE_FILE=${AFDO_FILE_LLVM[${ARCH}]}
 			PROFILE_SUFFIX=${AFDO_PROF_SUFFIX}
+		fi
+
+		if use afdo_chrome_exp1; then
+			PROFILE_STATE="EXPERIMENT 1"
+			PROFILE_FILE=${AFDO_FILE_EXP1[${ARCH}]}
+			PROFILE_SUFFIX=${AFDO_EXP1_SUFFIX}
+		fi
+
+		if use afdo_chrome_exp2; then
+			PROFILE_STATE="EXPERIMENT 2"
+			PROFILE_FILE=${AFDO_FILE_EXP2[${ARCH}]}
+			PROFILE_SUFFIX=${AFDO_EXP2_SUFFIX}
 		fi
 
 		if [[ -n ${AFDO_FROZEN_FILE[${ARCH}]} ]]; then
