@@ -59,3 +59,7 @@ $(basename "$(dirname "$(dirname "$(dirname "${EBUILD}")")")")}
 # @DESCRIPTION:
 # Real name for current board. Example: pit
 : ${CROS_CPFE_BOARD_NAME:=${CROS_CPFE_USER_NAME%%-*}}
+
+# Force archive fetching from the CPFE GS buckets instead of the common CrOS mirror buckets.
+# By default, emerge will only fetch archives from our mirrors regardless of SRC_URI settings.
+RESTRICT+=" mirror"
