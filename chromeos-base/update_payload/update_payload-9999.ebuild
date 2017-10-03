@@ -27,7 +27,11 @@ DEPEND=""
 src_install() {
 	# Install update_payload scripts.
 	install_update_payload() {
-		insinto "$(python_get_sitedir)/update_payload"
+		# TODO(crbug.com/771085): Clear the SYSROOT var as python will use
+		# that to define the sitedir which means we end up installing into
+		# a path like /build/$BOARD/build/$BOARD/xxx.  This is a bug in the
+		# core python logic, but this is breaking moblab, so hack it for now.
+		insinto "$(SYSROOT= python_get_sitedir)/update_payload"
 		doins $(printf '%s\n' scripts/update_payload/*.py | grep -v unittest)
 		doins scripts/update_payload/update-payload-key.pub.pem
 	}
