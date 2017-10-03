@@ -139,6 +139,7 @@ ALL_BOARDS=(
 	gnawty
 	gonzo
 	gru
+	grunt
 	guado
 	guado-accelerator
 	guado-macrophage

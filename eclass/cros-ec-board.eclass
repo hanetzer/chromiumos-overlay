@@ -47,6 +47,7 @@ EC_BOARD_NAMES=(
 	glados_pd
 	glkrvp
 	gru
+	grunt
 	hadoken
 	hammer
 	hoho
