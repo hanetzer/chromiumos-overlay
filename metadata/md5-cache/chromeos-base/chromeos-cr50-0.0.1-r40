@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Ebuild to support the Chrome OS CR50 device.
-EAPI=4
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=chromeos-base/chromeos-cr50-scripts
-SLOT=0
-SRC_URI=gs://chromeos-localmirror/distfiles/cr50.r0.0.10.w0.0.22.tbz2
-_md5_=fafc8cb8df40ba8359df6d603fc33d31
