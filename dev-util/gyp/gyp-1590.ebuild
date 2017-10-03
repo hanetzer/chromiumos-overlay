@@ -1,26 +1,21 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
-inherit python eutils
+PYTHON_COMPAT=( python2_7 )
+inherit distutils-r1
 
-DESCRIPTION="GYP, a tool to generates native build files."
-HOMEPAGE="http://code.google.com/p/gyp/"
+DESCRIPTION="GYP, a tool to generates native build files"
+HOMEPAGE="https://gyp.gsrc.io/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="*"
 IUSE=""
 
-src_prepare() {
-	epatch "${FILESDIR}"/${P}-shlex-split-fix.patch
-	epatch "${FILESDIR}"/${P}-Avoid-gypd-infinite-recursion.patch
-}
-
-src_install() {
-	dobin gyp
-	insinto "/usr/$(get_libdir)/python$(python_get_version)/site-packages"
-	doins -r pylib/gyp
-}
+PATCHES=(
+	"${FILESDIR}"/${P}-shlex-split-fix.patch
+	"${FILESDIR}"/${P}-Avoid-gypd-infinite-recursion.patch
+)
