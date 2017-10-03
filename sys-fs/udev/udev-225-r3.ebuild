@@ -141,6 +141,7 @@ src_prepare() {
 	fi
 
 	epatch "${FILESDIR}"/udev-225-50-udev-default.rules-set-default-group-for-mediaX.patch
+	epatch "${FILESDIR}"/udev-225-60-persistent-storage.rules-add-nvme-symlinks.patch
 }
 
 src_configure() {
