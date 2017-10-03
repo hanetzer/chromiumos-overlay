@@ -54,11 +54,5 @@ platform_pkg_test() {
 		platform_test "run" "${OUT}/${test_bin}"
 	done
 
-	./test-readme.sh || die "README.md has errors"
-
-	local pytest
-	for pytest in *test.py; do
-		einfo "Running tests in ${pytest}"
-		"./${pytest}" || die "Tests failed at ${pytest}"
-	done
+	./run_tests.sh || die "cros_config unit tests have errors"
 }
