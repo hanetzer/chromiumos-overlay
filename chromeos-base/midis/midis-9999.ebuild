@@ -16,6 +16,7 @@ HOMEPAGE=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="+seccomp"
 
 src_install() {
 	dobin "${OUT}"/midis
@@ -36,6 +37,10 @@ src_install() {
 	# Install midis DBUS configuration file
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.Midis.conf
+
+	# Install seccomp policy file.
+	insinto /usr/share/policy
+	use seccomp && newins "seccomp/midis-seccomp-${ARCH}.policy" midis-seccomp.policy
 }
 
 pkg_preinst() {
