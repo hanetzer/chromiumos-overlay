@@ -303,10 +303,9 @@ local_copy_cp() {
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
 		if [[ -d "${src}/${sl}" ]]; then
-			mkdir -p "${dst}/${sl}"
 			rsync -a --safe-links \
-				"${blacklist[@]}" "${src}/${sl}"/* "${dst}/${sl}" || \
-				die "rsync -a ${blacklist[@]} ${src}/${sl}/* ${dst}/${sl}"
+				"${blacklist[@]}" "${src}/${sl}/" "${dst}/${sl}/" || \
+				die "rsync -a ${blacklist[*]} ${src}/${sl}/ ${dst}/${sl}/"
 		fi
 	done
 }
