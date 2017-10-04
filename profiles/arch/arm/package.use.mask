@@ -2,6 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/profiles/arch/arm/package.use.mask,v 1.12 2009/09/27 13:26:40 maekke Exp $
 
+# Allen Vicencio <allenvic@chromium.org> (30 Oct 2017)
+# smbprovider depends on Samba, which doesn't compile for arm yet.
+chromeos-base/chromeos-chrome smbprovider
+
 # Lutz Justen <ljusten@chromium.org> (16 Feb 2017)
 # authpolicy lacks arm-specific seccomp filters and depends on Samba, which
 # doesn't compile for arm yet.

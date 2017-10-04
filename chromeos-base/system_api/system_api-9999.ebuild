@@ -66,6 +66,7 @@ src_install() {
 		permission_broker
 		power_manager
 		shill
+		smbprovider
 		update_engine
 	)
 	for dir in "${dirs[@]}"; do
@@ -73,7 +74,7 @@ src_install() {
 		doins dbus/"${dir}"/dbus-constants.h
 	done
 
-	dirs=( authpolicy biod chaps cryptohome login_manager power_manager system_api )
+	dirs=( authpolicy biod chaps cryptohome login_manager power_manager smbprovider system_api )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h

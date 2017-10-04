@@ -60,6 +60,7 @@ IUSE="
 	opengl
 	opengles
 	+runhooks
+	smbprovider
 	thinlto
 	+v4l2_codec
 	v4lplugin
@@ -247,6 +248,7 @@ RDEPEND="${RDEPEND}
 		sys-libs/libcxxabi
 		sys-libs/libcxx
 	)
+	smbprovider? ( chromeos-base/smbprovider )
 	"
 
 DEPEND="${DEPEND}
