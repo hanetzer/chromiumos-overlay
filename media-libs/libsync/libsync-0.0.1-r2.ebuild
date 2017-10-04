@@ -21,6 +21,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
+RDEPEND="!media-libs/arc-camera3-libsync"
+
 src_prepare() {
 	cp "${FILESDIR}/Makefile" "${S}" || die "Copying Makefile"
 	cp "${FILESDIR}/strlcpy.c" "${S}" || die "Copying strlcpy.c"
