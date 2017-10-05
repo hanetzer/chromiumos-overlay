@@ -2,18 +2,21 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="c5270107379b6f43fbab370e60719b147c04a04a"
-CROS_WORKON_TREE="b7732775e7ff58f635d452e82d7ba411202597e5"
+CROS_WORKON_COMMIT="5bde4cfd72ceddf39eeb4fc7208f7ea70756c30d"
+CROS_WORKON_TREE="e627d80119d7de396e89093e95f3c51b208597d0"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v3.10"
+CROS_WORKON_LOCALNAME="kernel/v3.8"
+
+# AFDO_PROFILE_VERSION is the build on which the profile is collected.
+# This is required by kernel_afdo.
+AFDO_PROFILE_VERSION="R63-9901.21-1506573737"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 3.10"
+DESCRIPTION="Chrome OS Linux Kernel 3.8"
 KEYWORDS="*"
-RDEPEND="!sys-kernel/kernel-freon"
 
 # Change the following (commented out) number to the next prime number
 # when you change "cros-kernel2.eclass" to work around http://crbug.com/220902
@@ -24,4 +27,4 @@ RDEPEND="!sys-kernel/kernel-freon"
 # Don't forget to update the comment in _all_ chromeos-kernel-x_x-9999.ebuild
 # files (!!!)
 #
-# The coolest prime number is: 5
+# The coolest prime number is: 11
