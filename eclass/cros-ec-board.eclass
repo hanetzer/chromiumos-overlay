@@ -57,6 +57,7 @@ EC_BOARD_NAMES=(
 	kevin
 	llama
 	minimuffin
+	nautilus
 	nefario
 	oak
 	oak_pd
