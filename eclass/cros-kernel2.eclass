@@ -975,7 +975,7 @@ cros-kernel2_src_unpack() {
 }
 
 cros-kernel2_src_prepare() {
-	cros_use_gcc
+	use clang || cros_use_gcc
 	cros-workon_src_prepare
 }
 
