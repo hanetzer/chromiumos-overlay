@@ -9,8 +9,8 @@ DESCRIPTION="Ebuild for per-sysroot arc-build components."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="android-container android-container-nyc android-container-master-arc-dev"
-REQUIRED_USE="^^ ( android-container android-container-nyc android-container-master-arc-dev )"
+IUSE="android-container-nyc android-container-master-arc-dev"
+REQUIRED_USE="^^ ( android-container-nyc android-container-master-arc-dev )"
 
 # The RDEPEND setting reflects what is installed into the SYSROOT.
 RDEPEND="!!chromeos-base/arc-build-master
@@ -23,14 +23,6 @@ INSTALL_DIR="/opt/google/containers/android"
 BIN_DIR="${INSTALL_DIR}/build/bin"
 PREBUILT_DIR="${INSTALL_DIR}/usr"
 PREBUILT_SRC="${ARC_BASE}/${ARCH}/usr"
-
-if use android-container; then
-	PC_SRC_DIR="${FILESDIR}/mnc"
-elif use android-container-nyc; then
-	PC_SRC_DIR="${FILESDIR}/nyc"
-elif use android-container-master-arc-dev; then
-	PC_SRC_DIR="${FILESDIR}/master"
-fi
 
 multilib_src_compile() {
 	cat > pkg-config <<EOF
@@ -67,6 +59,12 @@ install_pc_file() {
 }
 
 multilib_src_install() {
+	if use android-container-nyc; then
+		PC_SRC_DIR="${FILESDIR}/nyc"
+	elif use android-container-master-arc-dev; then
+		PC_SRC_DIR="${FILESDIR}/master"
+	fi
+
 	insinto "${INSTALL_DIR}/vendor/$(get_libdir)/pkgconfig"
 	install_pc_file cutils.pc
 	install_pc_file expat.pc
