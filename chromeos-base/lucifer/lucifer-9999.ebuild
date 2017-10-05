@@ -8,6 +8,7 @@ CROS_WORKON_LOCALNAME="../../infra/lucifer"
 
 CROS_GO_BINARIES=(
 	"chromiumos/infra/lucifer/job_shepherd"
+	"chromiumos/infra/lucifer/lucifer_watcher"
 )
 
 inherit cros-workon cros-go
