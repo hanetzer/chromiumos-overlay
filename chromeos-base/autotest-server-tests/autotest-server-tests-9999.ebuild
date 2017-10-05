@@ -62,10 +62,6 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_AdapterSuspendResume
 	+tests_brillo_gTests
 	cellular? ( +tests_cellular_StaleModemReboot )
-	android-container? (
-		+tests_cheets_CTS
-		+tests_cheets_GTS
-	)
 	android-container-nyc? (
 		+tests_cheets_CTS_N
 		+tests_cheets_GTS
