@@ -95,10 +95,6 @@ RDEPEND="${RDEPEND}
 
 # Needed to build Android/ARC userland code.
 RDEPEND="${RDEPEND}
-	sys-devel/arc-gcc
-	sys-devel/arc-libs
-	sys-devel/arc-llvm
-	sys-devel/arc-llvm-mesa
 	sys-devel/arc-toolchain-master
 	sys-devel/arc-toolchain-n
 	sys-devel/dex2oatds
