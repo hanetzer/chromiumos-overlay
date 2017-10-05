@@ -1,0 +1,12 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if [[ $(cros_target) == "target_image" ]]; then
+	nfs_ganesha_mask="
+		/usr/include/ntirpc/*/*.x
+	"
+	PKG_INSTALL_MASK+=" ${nfs_ganesha_mask}"
+	INSTALL_MASK+=" ${nfs_ganesha_mask}"
+	unset nfs_ganesha_mask
+fi
