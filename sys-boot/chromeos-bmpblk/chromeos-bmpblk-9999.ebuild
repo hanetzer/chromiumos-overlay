@@ -47,6 +47,7 @@ CROS_BOARDS=(
 	lumpy
 	mccloud
 	monroe
+	nautilus
 	ninja
 	nyan
 	nyan_big
