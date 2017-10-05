@@ -23,7 +23,9 @@ IUSE=""
 RDEPEND="
 	sys-apps/rootdev
 	"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	chromeos-base/libbrillo
+"
 
 src_install() {
 	dosbin "${OUT}"/bootstat
