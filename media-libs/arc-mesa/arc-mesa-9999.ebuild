@@ -29,8 +29,8 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	android-container-nyc cheets +classic debug dri egl +gallium -gbm gles1
-	gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
+	cheets +classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic
+	selinux shared-glapi vulkan X xlib-glx"
 
 REQUIRED_USE="
 	cheets? (
@@ -44,14 +44,7 @@ DEPEND="cheets? (
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
 # (b/33072485, b/28802929).
 RDEPEND="cheets? (
-		llvm? (
-			!android-container-nyc? (
-				chromeos-base/android-container[-cheets_user]
-			)
-			android-container-nyc? (
-				chromeos-base/android-container-nyc[-cheets_user]
-			)
-		)
+		llvm? ( chromeos-base/android-container-nyc[-cheets_user] )
 	)
 	${DEPEND}"
 
@@ -159,12 +152,8 @@ multilib_src_configure() {
 		#
 
 		# Use llvm-config coming from ARC++ build.
-		if use android-container-nyc; then
-			export LLVM_CONFIG="${ARC_BASE}/arc-llvm/3.8/bin/llvm-config"
-		else
-			# Path for MNC.
-			export LLVM_CONFIG="${ARC_BASE}/arc-llvm-mesa/bin/llvm-config"
-		fi
+		# TODO(b/65414758): Switch to locally built LLVM when it's ready.
+		export LLVM_CONFIG="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}/bin/llvm-config"
 
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
