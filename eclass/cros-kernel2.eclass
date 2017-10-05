@@ -932,7 +932,8 @@ kmake() {
 
 	local AFDO_FILENAME="${WORKDIR}/${AFDO_GCOV}"
 	local kcflags="${KCFLAGS}"
-	use kernel_afdo && kcflags+=" -fauto-profile=${AFDO_FILENAME}"
+	local afto_option=$(usex clang 'profile-sample-use' 'auto-profile')
+	use kernel_afdo && kcflags+=" -f${afto_option}=${AFDO_FILENAME}"
 
 	# The kernel doesn't use CFLAGS and doesn't expect it to be passed
 	# in.  Let's be explicit that it won't do anything by unsetting CFLAGS.
