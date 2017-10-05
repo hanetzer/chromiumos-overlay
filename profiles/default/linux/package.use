@@ -62,6 +62,7 @@ virtual/libusb		static-libs
 x11-libs/pixman		static-libs
 
 cross-armv7a-cros-linux-gnueabi/gcc   hardfp
+cross-armv7a-cros-linux-gnueabihf/gcc   hardfp
 cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
 sys-devel/clang		multitarget
 sys-devel/llvm		multitarget
