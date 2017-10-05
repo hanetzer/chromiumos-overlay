@@ -15,7 +15,14 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="chromeos-base/chromeos-config-bsp:="
+RDEPEND="
+	chromeos-base/chromeos-config-bsp:=
+	virtual/chromeos-config-models
+"
+DEPEND="
+	chromeos-base/chromeos-config-tools
+	virtual/chromeos-config-models
+"
 
 # This ebuild creates the Chrome OS master configuration file stored in
 # ${UNIBOARD_DTB}. See go/cros-unified-builds-design for more information.
@@ -64,4 +71,6 @@ src_install() {
 	# Get the directory name only, and use that as the install directory.
 	insinto "${UNIBOARD_DTB_INSTALL_PATH%/*}"
 	doins config.dtb
+
+	unibuild_install_touch_files
 }

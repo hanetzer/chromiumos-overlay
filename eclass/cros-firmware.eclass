@@ -275,7 +275,7 @@ cros-firmware_src_compile() {
 		local model
 
 		image_cmd+=(
-			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
+			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH#/}"
 			-i "${DISTDIR}"
 		)
 		for model in $(get_model_list_noroot); do
