@@ -1,0 +1,38 @@
+From 1ab834bd90e6f7f1947a8e145db6aa80565c890e Mon Sep 17 00:00:00 2001
+From: Gurchetan Singh <gurchetansingh@chromium.org>
+Date: Fri, 6 Oct 2017 09:06:21 -0700
+Subject: [PATCH] Lower correlation threshold in flush-finish tests again
+
+This test expects predictability from glFlush/glFinish timing.
+In particular,  the code from FlushFinishCase::analyzeResults()
+checks that the result falls within specific timing thresholds.
+
+Notice that in the GLES3 specification, there is no requirement for
+timing, just a guarantee that "commands [...] complete in finite time".
+This is a problem because it makes the test very flaky, for example
+if the CPU/GPU clocks are not ramping up fast enough.
+
+BUG=b:67331095
+TEST=Ran dEQP-GLES3.functional.flush_finish.finish on Elm for over 3+ hours
+     Observed 1.5% --> 2% flakiness without this patch. Observed no flakiness
+     with this patch.
+---
+ modules/gles3/functional/es3fFlushFinishTests.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/gles3/functional/es3fFlushFinishTests.cpp b/modules/gles3/functional/es3fFlushFinishTests.cpp
+index ee947919..05802a13 100644
+--- a/modules/gles3/functional/es3fFlushFinishTests.cpp
++++ b/modules/gles3/functional/es3fFlushFinishTests.cpp
+@@ -79,7 +79,7 @@ DE_STATIC_ASSERT(MAX_SAMPLE_DURATION_US < 1000*WAIT_TIME_MS);
+ 
+ const float		NO_CORR_COEF_THRESHOLD				= 0.1f;
+ const float		FLUSH_COEF_THRESHOLD				= 0.2f;
+-const float		CORRELATED_COEF_THRESHOLD			= 0.5f;
++const float		CORRELATED_COEF_THRESHOLD			= 0.3f;
+ const float		CALIBRATION_VERIFICATION_THRESHOLD	= 0.10f;	// Rendering time needs to be within 10% of MAX_SAMPLE_DURATION_US
+ 
+ static void busyWait (int milliseconds)
+-- 
+2.13.5
+

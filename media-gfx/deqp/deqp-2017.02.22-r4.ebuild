@@ -53,6 +53,7 @@ PATCHES=(
 	"${FILESDIR}"/0004-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
 	"${FILESDIR}"/0005-platform-surfaceless-Add-Vulkan-support.patch
 	"${FILESDIR}"/0006-Update-list-of-KHR-extensions.patch
+	"${FILESDIR}"/0007-Lower-correlation-threshold-in-flush-finish-tests-ag.patch
 )
 
 src_unpack() {
