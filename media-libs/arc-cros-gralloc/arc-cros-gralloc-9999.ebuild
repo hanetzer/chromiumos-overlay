@@ -15,11 +15,12 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-VIDEO_CARDS="exynos intel marvell mediatek rockchip tegra"
+VIDEO_CARDS="amdgpu exynos intel marvell mediatek rockchip tegra"
 IUSE="$(printf 'video_cards_%s ' ${VIDEO_CARDS})"
 
 RDEPEND="
 	x11-libs/arc-libdrm[${MULTILIB_USEDEP}]
+	video_cards_amdgpu? ( media-libs/arc-amdgpu-addrlib )
 "
 DEPEND="${RDEPEND}"
 
@@ -45,6 +46,11 @@ src_configure() {
 	if use video_cards_mediatek; then
 		export DRV_MEDIATEK=1
 		append-cppflags -DDRV_MEDIATEK
+	fi
+
+	if use video_cards_amdgpu; then
+		export DRV_AMDGPU=1
+		append-cppflags -DDRV_AMDGPU
 	fi
 
 	multilib-minimal_src_configure
