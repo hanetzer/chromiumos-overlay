@@ -39,7 +39,6 @@ src_install() {
 	else
 		local host_tools
 		host_tools=(
-			blockdiff.py
 			cros_choose_profile
 			cros_chrome_make
 			cros_sign_bootstub
