@@ -46,7 +46,7 @@ case "${EAPI:-0}" in
 *) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
-inherit multilib-build
+inherit multilib-build flag-o-matic
 
 DEPEND="sys-devel/arc-build[${MULTILIB_USEDEP}]"
 
