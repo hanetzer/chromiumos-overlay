@@ -157,7 +157,6 @@ get_dtb() {
 	# the ebuild filename.
 	local basedir="$(dirname "${EBUILD}")/.."
 	local configdir="${basedir}/chromeos-config-bsp/files"
-	local configs=( "-" )
 	local files
 
 	# We are not allowed to access the ROOT directory here, so compile the
@@ -165,8 +164,10 @@ get_dtb() {
 
 	# We cannot die here if there are no config files as this function is
 	# called by non-unibuild boards. We just need to output an empty
-	# config.
-	_find_configs "${configdir}"
+	# config. But do skip this if there is no config BSP directory at all.
+	if [[ -d "${configdir}" ]]; then
+		_find_configs "${configdir}"
+	fi
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
 		cat "-" "${files[@]}" |
