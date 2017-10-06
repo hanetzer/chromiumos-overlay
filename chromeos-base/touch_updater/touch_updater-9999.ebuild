@@ -29,9 +29,6 @@ RDEPEND="
 "
 
 src_install() {
-	insinto "/etc/init"
-	doins "scripts/chromeos-touch-update.conf"
-
 	exeinto "/opt/google/touch/scripts"
 	doexe scripts/*.sh
 
