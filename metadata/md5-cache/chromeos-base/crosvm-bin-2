@@ -7,5 +7,5 @@ LICENSE=BSD-Google
 RDEPEND=!chromeos-base/crosvm chromeos-base/chromeos-minijail
 RESTRICT=strip
 SLOT=0
-SRC_URI=gs://chromeos-localmirror/distfiles/crosvm-amd64-1.tbz2
+SRC_URI=gs://chromeos-localmirror/distfiles/crosvm-amd64-2.tbz2
 _md5_=89f1ecc7c69c69d01d6ae97216aa91f8
