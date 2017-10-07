@@ -6,5 +6,5 @@ KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=chromeos-base/chromeos-config-bsp:=
 SLOT=0
-_eclasses_=cros-unibuild	8073e0ba3fc46762845d67169b8a9156	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=cros-unibuild	c41b244b8354945f1613ed096a72c774	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
 _md5_=77ce3310dbea405525f36c5340474c82
