@@ -74,20 +74,33 @@ locate_firmware() {
   read_key_value_pairs tpmc_ifxfui " " "$(tpmc ifxfieldupgradeinfo)"
 
   # Determine firmware package ID and current build number.
-  local pattern
+  local package_id
+  local build_number
   if [ "${tpmc_ifxfui_fw0_stale_version}" != "ffffeeee" ]; then
-    pattern="${tpmc_ifxfui_fw0_package_id}_${tpmc_ifxfui_fw0_version}_"
+    package_id="${tpmc_ifxfui_fw0_package_id}"
+    build_number="${tpmc_ifxfui_fw0_version}"
   else
-    pattern="${tpmc_ifxfui_fw1_package_id}_${tpmc_ifxfui_fw1_version}_"
+    package_id="${tpmc_ifxfui_fw1_package_id}"
+    build_number="${tpmc_ifxfui_fw1_version}"
   fi
 
-  # Append the target build number if applicable.
+  local pattern
   if [ "${tpmc_ifxfui_status}" = "5a3c" ]; then
-    pattern="${pattern}${tpmc_ifxfui_process_fw_version}"
+    # For bootloader mode, append the target build number.
+    pattern="${package_id}_${build_number}_${tpmc_ifxfui_process_fw_version}"
+  else
+    # For non-bootloader mode, attempt to get the current build number
+    # from 'tpmc getver' instead. 'getver' provides more reliable information
+    # about the current version than 'ifxfui'.
+    read_key_value_pairs tpmc_version " " "$(tpmc getversion)"
+    if [ "${tpmc_version_vendor_specific}" != "" ]; then
+      build_number="0000$(echo "${tpmc_version_vendor_specific}" | cut -c5-8)"
+    fi
+    pattern="${package_id}_${build_number}_*"
   fi
 
   # Pick the latest matching firmware image.
-  local path="$(ls "${TPM_FIRMWARE_DIR}/ifx/${pattern}"*".bin" |
+  local path="$(ls ${TPM_FIRMWARE_DIR}/ifx/${pattern}.bin |
                 sort -r | head -n 1)"
 
   if [ -n "${path}" -a -f "${path}" ]; then
