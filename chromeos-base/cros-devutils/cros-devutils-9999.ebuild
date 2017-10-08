@@ -43,8 +43,6 @@ src_install() {
 			cros_chrome_make
 			cros_sign_bootstub
 			cros_workon_make
-			dump_i2c
-			dump_tpm
 			gdb_remote
 			gdb_x86_local
 			gmergefs
