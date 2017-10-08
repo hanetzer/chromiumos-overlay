@@ -41,7 +41,6 @@ src_install() {
 		host_tools=(
 			cros_choose_profile
 			cros_chrome_make
-			cros_sign_bootstub
 			cros_workon_make
 			gdb_remote
 			gdb_x86_local
