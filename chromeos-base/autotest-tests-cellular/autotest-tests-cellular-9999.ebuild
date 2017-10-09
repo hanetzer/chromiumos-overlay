@@ -30,10 +30,8 @@ IUSE_TESTS="
 	+tests_cellular_ModemControl
 	+tests_cellular_OutOfCreditsSubscriptionState
 	+tests_cellular_ServiceName
-	+tests_cellular_Signal
 	+tests_cellular_Smoke
 	+tests_cellular_Throughput
-	+tests_cellular_ZeroSignal
 	+tests_network_3GDisableWhileConnecting
 	+tests_network_3GDisableGobiWhileConnecting
 	+tests_network_3GDisconnectFailure
