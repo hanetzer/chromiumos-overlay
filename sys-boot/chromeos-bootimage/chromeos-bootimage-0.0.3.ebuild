@@ -180,7 +180,11 @@ build_image() {
 #       depthcharge/dev.elf      - developer version of depthcharge
 #       depthcharge/netboot.elf  - netboot version of depthcharge
 #       depthcharge/fastboot.elf - fastboot version of depthcharge
-#       rocbfs/*                 - fonts, images and screens for recovery mode
+#       compressed-assets/*      - fonts, images and screens for recovery mode
+#                                  originally from rocbfs/*, pre-compressed
+#                                  in src_compile
+#       cbfs/*                   - files to add to all three CBFS regions,
+#                                  uncompressed
 #   $2: Name of target to build, used for output files (can be empty)
 build_images() {
 	local froot="$1"
@@ -207,6 +211,15 @@ build_images() {
 				-r COREBOOT \
 				-f $file -n $(basename $file) -t raw \
 				-c precompression
+		done
+	done
+
+	# files from cbfs/ are installed in all CBFS regions, uncompressed
+	for file in $(find "${CROS_FIRMWARE_ROOT}/cbfs" -type f 2>/dev/null); do
+		for rom in ${coreboot_file}{,.serial}; do
+			do_cbfstool ${rom} add \
+				-r COREBOOT,FW_MAIN_A,FW_MAIN_B \
+				-f $file -n $(basename $file) -t raw
 		done
 	done
 
@@ -273,7 +286,7 @@ src_compile() {
 	local froot="${CROS_FIRMWARE_ROOT}"
 
 	einfo "Compressing static assets"
-	# files from rocbfs/ are installed in all images' RO CBFS
+	# files from rocbfs/ are installed in all images' RO CBFS, compressed
 	mkdir compressed-assets
 	find ${froot}/rocbfs -mindepth 1 -maxdepth 1 -printf "%P\0" 2>/dev/null | \
 		xargs -0 -n 1 -P $(nproc) -I '{}' \
