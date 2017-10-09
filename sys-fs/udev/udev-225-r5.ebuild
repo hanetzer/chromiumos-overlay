@@ -67,6 +67,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-225-libudev-util-change-util_replace_whitespace.patch
 	"${FILESDIR}"/${PN}-225-udev-event-add-replace_whitespace-param.patch
 	"${FILESDIR}"/${PN}-225-udev-rules-perform-whitespace-replacement.patch
+	"${FILESDIR}"/${PN}-225-60-persistent-storage.rules-add-nvme-id-model.patch
 )
 
 check_default_rules() {
