@@ -155,7 +155,7 @@ get_model_list() {
 
 # Internal function to compile the device tree file on-the-fly and output a
 # file suitable for piping into fdtget, etc.
-# TODO(crbug.com/761264): Move this to cros_config.
+# TODO(crbug.com/771187): Move this to cros_config.
 get_dtb_data() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
