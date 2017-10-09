@@ -96,6 +96,11 @@ install_private_model_files() {
 	)
 }
 
+# Simple function to return the path to the master configuration file.
+get_dtb_path() {
+	echo "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}"
+}
+
 # @FUNCTION: get_model_conf_value
 # @USAGE: <model> <path> <prop>
 # @RETURN: value of the property, or empty if not found, in which
@@ -114,7 +119,7 @@ get_model_conf_value() {
 	local path="$2"
 	local prop="$3"
 	local r
-	r=$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+	r=$(fdtget "$(get_dtb_path)" \
 		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null)
 	local ret=$?
 
@@ -122,11 +127,11 @@ get_model_conf_value() {
 		# The value is missing; is it available at a firmware shares
 		# phandle?
 		local share
-		share=$(fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" -f \
+		share=$(fdtget "$(get_dtb_path)" -f \
 			"/chromeos/models/${model}/firmware" shares 2>/dev/null)
 
 		if [[ $? -eq 0 ]]; then
-			fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
+			fdtget "$(get_dtb_path)" \
 			"${share}${path#/firmware}" "${prop}" 2>/dev/null
 			return $?
 		fi
@@ -145,14 +150,13 @@ get_model_conf_value() {
 get_model_list() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	fdtget "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
-		-l /chromeos/models 2>/dev/null
+	fdtget "$(get_dtb_path)" -l /chromeos/models 2>/dev/null
 }
 
 # Internal function to compile the device tree file on-the-fly and output a
 # file suitable for piping into fdtget, etc.
 # TODO(crbug.com/761264): Move this to cros_config.
-get_dtb() {
+get_dtb_data() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local basedir="$(dirname "${EBUILD}")/.."
@@ -183,7 +187,7 @@ get_dtb() {
 get_model_list_noroot() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	get_dtb | fdtget - -l "/chromeos/models" 2>/dev/null
+	get_dtb_data | fdtget - -l "/chromeos/models" 2>/dev/null
 }
 
 # @FUNCTION: get_shared_firmware_list_noroot
@@ -196,7 +200,7 @@ get_model_list_noroot() {
 get_shared_firmware_list_noroot() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	get_dtb | fdtget - -l "/chromeos/family/firmware" 2>/dev/null
+	get_dtb_data | fdtget - -l "/chromeos/family/firmware" 2>/dev/null
 }
 
 # @FUNCTION: get_unique_model_conf_value_set
@@ -284,7 +288,7 @@ get_model_conf_value_noroot() {
 
 	local r
 	r=$(
-		get_dtb |
+		get_dtb_data |
 		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
 		2>/dev/null
 	)
@@ -294,12 +298,12 @@ get_model_conf_value_noroot() {
 		# The value is missing; is it available at a firmware shares
 		# phandle?
 		local share
-		share=$(get_dtb | fdtget - -f \
+		share=$(get_dtb_data | fdtget - -f \
 			"/chromeos/models/${model}/firmware" shares 2>/dev/null
 		)
 
 		if [[ $? -eq 0 ]]; then
-			get_dtb | fdtget - \
+			get_dtb_data | fdtget - \
 			"${share}${path#/firmware}" "${prop}" 2>/dev/null
 			return $?
 		fi
