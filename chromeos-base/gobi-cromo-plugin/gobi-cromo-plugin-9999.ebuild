@@ -27,8 +27,9 @@ RDEPEND="
 	chromeos-base/metrics
 	install_tests? ( dev-cpp/gmock dev-cpp/gtest )
 "
+# gtest is needed by non-test builds for gtest_prod.h.
 DEPEND="${RDEPEND}
-	dev-cpp/gmock
+	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	virtual/modemmanager
 "
@@ -52,7 +53,8 @@ src_configure() {
 src_compile() {
 	tc-export CXX LD CC
 	cros-debug-add-NDEBUG
-	cr_make
+	cr_make plugin
+	use test && cr_make tests
 }
 
 mkqcqmirules() {
