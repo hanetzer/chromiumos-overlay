@@ -21,8 +21,10 @@ RDEPEND=""
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
 DEPEND="${RDEPEND}
-	dev-cpp/gtest
-	dev-cpp/gmock
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)
 	valgrind? ( dev-util/valgrind )"
 
 src_prepare() {
