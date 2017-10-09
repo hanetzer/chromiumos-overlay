@@ -61,6 +61,14 @@ PDEPEND=">=sys-apps/hwids-20140304[udev]
 
 S=${WORKDIR}/systemd-${PV}
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-225-50-udev-default.rules-set-default-group-for-mediaX.patch
+	"${FILESDIR}"/${PN}-225-60-persistent-storage.rules-add-nvme-symlinks.patch
+	"${FILESDIR}"/${PN}-225-libudev-util-change-util_replace_whitespace.patch
+	"${FILESDIR}"/${PN}-225-udev-event-add-replace_whitespace-param.patch
+	"${FILESDIR}"/${PN}-225-udev-rules-perform-whitespace-replacement.patch
+)
+
 check_default_rules() {
 	# Make sure there are no sudden changes to upstream rules file
 	# (more for my own needs than anything else ...)
@@ -140,8 +148,7 @@ src_prepare() {
 		sed -i -e '/error.*secure_getenv/s:.*:#define secure_getenv(x) NULL:' src/shared/missing.h || die
 	fi
 
-	epatch "${FILESDIR}"/udev-225-50-udev-default.rules-set-default-group-for-mediaX.patch
-	epatch "${FILESDIR}"/udev-225-60-persistent-storage.rules-add-nvme-symlinks.patch
+	epatch "${PATCHES[@]}"
 }
 
 src_configure() {
