@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject dev-python/pyusb dev-vcs/git
+DESCRIPTION=Cellular autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_cellular_DeferredRegistration +tests_cellular_ModemControl +tests_cellular_OutOfCreditsSubscriptionState +tests_cellular_ServiceName +tests_cellular_Smoke +tests_cellular_Throughput +tests_network_3GDisableWhileConnecting +tests_network_3GDisableGobiWhileConnecting +tests_network_3GDisconnectFailure +tests_network_3GDormancyDance +tests_network_3GFailedConnect +tests_network_3GGobiPorts +tests_network_3GIdentifiers +tests_network_3GModemControl +tests_network_3GModemPresent +tests_network_3GNoGobi +tests_network_3GRecoverFromGobiDesync +tests_network_3GSafetyDance +tests_network_3GScanningProperty +tests_network_3GSmokeTest +tests_network_3GStressEnable +tests_network_BasicProfileProperties +tests_network_CDMAActivate +tests_network_GobiUncleanDisconnect +tests_network_LTEActivate +tests_network_ModemManagerSMS +tests_network_ModemManagerSMSSignal +tests_network_SIMLocking +tests_network_SwitchCarrier +tests_cellular_MbimComplianceControlCommand +tests_cellular_MbimComplianceControlRequest +tests_cellular_MbimComplianceDataTransfer +tests_cellular_MbimComplianceDescriptor +tests_cellular_MbimComplianceError cros_host cros_workon_tree_c9af711876c0dbbf6b4ff8dd80bb5ee2967292a9 profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject dev-python/pyusb ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	e8eb1129f8327b7e29c63d174c5003b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=316dd6be7169d557f3d5758ea827bd3d
