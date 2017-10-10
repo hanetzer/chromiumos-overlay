@@ -50,6 +50,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
 	epatch "${FILESDIR}"/Don-t-check-the-stride-in-the-y-direction-for-a-sing.patch
 	epatch "${FILESDIR}"/Change-the-vertical-alignment-for-linear-surface.patch
+	epatch "${FILESDIR}"/Revert-Use-Media-Read-message-if-possible-on-Gen8.patch
 
 	sed -e 's/intel-gen4asm/\0diSaBlEd/g' -i configure.ac || die
 	autotools-multilib_src_prepare
