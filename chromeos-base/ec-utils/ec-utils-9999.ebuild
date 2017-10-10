@@ -43,11 +43,14 @@ src_compile() {
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="${CC} $(usex static '-static' '')"
 
-	# Do not set BOARD yet, as usb_updater is built for cr50.
+	# Do not set BOARD yet, as gsctool is built for cr50.
 	if use cr50_onboard; then
-		# Make sure to override environment setting for BOARD, if any.
+		# Get rid of the local compilation products in case they are
+		# present.
 		emake -C extra/usb_updater clean
-		BOARD=cr50 emake -C extra/usb_updater usb_updater
+
+		# Make sure to override environment setting for BOARD, if any.
+		BOARD=cr50 emake -C extra/usb_updater gsctool
 	fi
 
 	get_ec_boards
@@ -100,8 +103,8 @@ set '${EC_BOARDS[*]}'"
 	fi
 
 	if use cr50_onboard; then
-		dosbin "extra/usb_updater/usb_updater"
-		dosym "usb_updater" "/usr/sbin/gsctool"
+		dosbin "extra/usb_updater/gsctool"
+		dosym "gsctool" "/usr/sbin/usb_updater"
 	fi
 
 	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then
