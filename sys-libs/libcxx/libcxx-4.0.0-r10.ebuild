@@ -32,7 +32,8 @@ REQUIRED_USE="libunwind? ( || ( libcxxabi libcxxrt ) )
 RDEPEND="
 	libcxxabi? ( ${CATEGORY}/libcxxabi[libunwind=,static-libs?,${MULTILIB_USEDEP}] )
 	libcxxrt? ( ${CATEGORY}/libcxxrt[libunwind=,static-libs?,${MULTILIB_USEDEP}] )
-	!libcxxabi? ( !libcxxrt? ( >=sys-devel/gcc-4.7:=[cxx] ) )"
+	!libcxxabi? ( !libcxxrt? ( >=sys-devel/gcc-4.7:=[cxx] ) )
+	!cros_host? ( sys-libs/gcc-libs )"
 # clang-3.9.0 installs necessary target symlinks unconditionally
 # which removes the need for MULTILIB_USEDEP
 DEPEND="${RDEPEND}

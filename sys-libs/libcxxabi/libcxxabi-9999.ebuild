@@ -39,7 +39,8 @@ RDEPEND="
 				>=${CATEGORY}/libunwind-1[static-libs?,${MULTILIB_USEDEP}]
 				>=${CATEGORY}/llvm-libunwind-3.9.0-r1[static-libs?,${MULTILIB_USEDEP}]
 			)
-	)"
+	)
+	!cros_host? ( sys-libs/gcc-libs )"
 
 DEPEND="${RDEPEND}
 	cros_host? ( sys-devel/llvm )
