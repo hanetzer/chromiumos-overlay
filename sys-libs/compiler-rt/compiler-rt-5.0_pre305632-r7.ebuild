@@ -83,6 +83,12 @@ src_configure() {
 }
 
 src_install() {
+	# There is install conflict between cross-armv7a-cros-linux-gnueabihf
+	# and cross-armv7a-cros-linux-gnueabi. Remove this once we are ready to
+	# move to cross-armv7a-cros-linux-gnueabihf.
+	if [[ ${CATEGORY} == cross-armv7a-cros-linux-gnueabihf ]] ; then
+		return
+	fi
 	cmake-utils_src_install
 
 	# includes and docs are installed for all sanitizers and xray
