@@ -14,9 +14,13 @@ EXIT_CODE_UPDATE_FAILED=4
 EXIT_CODE_LOW_BATTERY=5
 EXIT_CODE_NOT_UPDATABLE=6
 EXIT_CODE_MISSING_APPROVAL=7
+EXIT_CODE_SUCCESS_COLD_REBOOT=8
 
 # Minimum battery charge level at which to retry running the updater.
 MIN_BATTERY_CHARGE_PERCENT=10
+
+# Directory containing tpm firmware images and behavior flags.
+TPM_FIRMWARE_DIR=/lib/firmware/tpm
 
 # Executes the updater, collects its status and prints the status to stdout.
 run_updater() {
@@ -97,7 +101,16 @@ wait_for_battery_to_charge() {
 # Reboot and wait to guarantee that we don't proceed further until reboot
 # actually happens.
 reboot_here() {
-  reboot
+  local reboot_type="$1"
+  if [ "${reboot_type}" = "cold" ]; then
+    # Try to request auto-booting after shutting down, but don't abort if it
+    # doesn't work. Worst case, the user will need to manually press Power to
+    # boot.
+    ectool reboot_ec cold at-shutdown || :
+    shutdown -h now
+  else
+    reboot
+  fi
   sleep 1d
   exit 1
 }
@@ -108,7 +121,10 @@ while true; do
   local status="$(run_updater)"
   case "${status}" in
     ${EXIT_CODE_SUCCESS})
-      reboot_here
+      reboot_here "warm"
+      ;;
+    ${EXIT_CODE_SUCCESS_COLD_REBOOT})
+      reboot_here "cold"
       ;;
     ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE})
       # It's OK to continue booting.
@@ -126,7 +142,7 @@ while true; do
       # update. Show a message to the user telling them about the failed update
       # and reboot so the firmware can determine whether recovery is necessary.
       chromeos-boot-alert update_tpm_firmware_failure
-      reboot_here
+      reboot_here "warm"
       ;;
     ${EXIT_CODE_LOW_BATTERY})
       # Show a notification while we wait for the battery to charge.

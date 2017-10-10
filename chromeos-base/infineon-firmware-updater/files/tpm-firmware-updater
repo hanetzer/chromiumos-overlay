@@ -23,6 +23,7 @@ EXIT_CODE_UPDATE_FAILED=4
 EXIT_CODE_LOW_BATTERY=5
 EXIT_CODE_NOT_UPDATABLE=6
 EXIT_CODE_MISSING_APPROVAL=7
+EXIT_CODE_SUCCESS_COLD_REBOOT=8
 
 # Log a diagnostic message to stderr.
 dlog() {
@@ -355,10 +356,15 @@ main() {
     exit "${EXIT_CODE_LOW_BATTERY}"
   fi
 
+  local success_code="${EXIT_CODE_SUCCESS}"
   local updater_options
   read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
   if [ "${vpd_param_dryrun}" = "1" ]; then
     updater_options="-dry-run"
+  fi
+  if [ -e "${TPM_FIRMWARE_DIR}/ifx/.ignore_error_on_complete" ]; then
+    updater_options="${updater_options} -ignore-error-on-complete"
+    success_code="${EXIT_CODE_SUCCESS_COLD_REBOOT}"
   fi
 
   prepare_tpm "${tpm_auth_mechanism}"
@@ -382,7 +388,7 @@ main() {
   vpd_params="$(update_vpd_params "${vpd_params}" 'mode' 'complete')"
   vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
 
-  exit "${EXIT_CODE_SUCCESS}"
+  exit "${success_code}"
 }
 
 if [ "$(basename "$0")" = "tpm-firmware-updater" ]; then
