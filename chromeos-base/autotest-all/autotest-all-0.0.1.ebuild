@@ -26,6 +26,7 @@ RDEPEND="
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-security
 	chromeos-base/autotest-private-all
+	chromeos-base/ci-results-archiver
 	cellular? (
 		chromeos-base/autotest-tests-cellular
 	)
