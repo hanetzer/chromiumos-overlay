@@ -312,3 +312,21 @@ unibuild_install_touch_files() {
 		_install_fw "${fwfile}" "${symlink}"
 	done < <(cros_config_host_py "$(get_dtb_path)" get-touch-firmware-files)
 }
+
+# @FUNCTION: unibuild_install_audio_files
+# @USAGE:
+# @DESCRIPTION:
+# Install files related to audio. This includes cras, alsa and hotwording
+# topology firmware.
+unibuild_install_audio_files() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	local source dest
+	einfo "unibuild: Installing audio files"
+	while read -r source; do
+		read -r dest
+		einfo "   - ${source}"
+		insinto "$(dirname "${dest}")"
+		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
+	done < <(cros_config_host_py "$(get_dtb_path)" get-audio-files)
+}
