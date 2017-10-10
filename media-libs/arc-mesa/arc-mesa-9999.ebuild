@@ -192,7 +192,7 @@ multilib_src_configure() {
 		--disable-dri3 \
 		$(use_enable llvm llvm-shared-libs) \
 		$(use_enable X glx) \
-		$(use_enable llvm gallium-llvm) \
+		$(use_enable llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
@@ -206,7 +206,7 @@ multilib_src_configure() {
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
-		$(use egl && echo "--with-egl-platforms=${EGL_PLATFORM}")
+		$(use egl && echo "--with-platforms=${EGL_PLATFORM}")
 }
 
 multilib_src_install_cheets() {
