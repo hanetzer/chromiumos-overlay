@@ -44,7 +44,6 @@ RDEPEND="${DEPEND}
 	!cros_embedded? (
 		chromeos-base/common-assets
 		chromeos-base/swap-init
-		sys-apps/chvt
 		sys-apps/smartmontools
 		sys-fs/e2fsprogs
 	)
