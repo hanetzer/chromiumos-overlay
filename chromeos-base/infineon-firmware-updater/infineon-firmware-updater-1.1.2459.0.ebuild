@@ -27,6 +27,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/dry-run-option.patch
 	epatch "${FILESDIR}"/change_default_password.patch
 	epatch "${FILESDIR}"/retry-send-on-ebusy.patch
+	epatch "${FILESDIR}"/ignore-error-on-complete-option.patch
 }
 
 src_configure() {
