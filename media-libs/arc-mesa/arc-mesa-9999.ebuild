@@ -22,7 +22,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 INTEL_CARDS="intel"
-RADEON_CARDS="radeon"
+RADEON_CARDS="amdgpu radeon"
 VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
@@ -35,10 +35,15 @@ IUSE="${IUSE_VIDEO_CARDS}
 REQUIRED_USE="
 	cheets? (
 		vulkan? ( video_cards_intel )
+		video_cards_amdgpu? ( llvm )
 	)"
 
 DEPEND="cheets? (
-		x11-libs/arc-libdrm[${MULTILIB_USEDEP}]
+		>=x11-libs/arc-libdrm-2.4.82[${MULTILIB_USEDEP}]
+		llvm? ( sys-devel/arc-llvm:4[${MULTILIB_USEDEP}] )
+		video_cards_amdgpu? (
+			dev-libs/arc-elfutils[${MULTILIB_USEDEP}]
+		)
 	)"
 
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
@@ -133,6 +138,7 @@ multilib_src_configure() {
 
 		# ATI code
 		gallium_enable video_cards_radeon r300 r600
+		gallium_enable video_cards_amdgpu radeonsi
 
 		# Freedreno code
 		gallium_enable video_cards_freedreno freedreno
@@ -151,8 +157,7 @@ multilib_src_configure() {
 		#
 
 		# Use llvm-config coming from ARC++ build.
-		# TODO(b/65414758): Switch to locally built LLVM when it's ready.
-		export LLVM_CONFIG="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}/bin/llvm-config"
+		export LLVM_CONFIG="${ARC_SYSROOT}/build/bin/llvm-config-host"
 
 		# FIXME(tfiga): It should be possible to make at least some of these be autodetected.
 		EXTRA_ARGS="
@@ -227,6 +232,9 @@ multilib_src_install_cheets() {
 	fi
 	if use gallium; then
 		newexe $(get_libdir)/gallium/kms_swrast_dri.so kms_swrast_dri.so
+		if use video_cards_amdgpu; then
+			newexe $(get_libdir)/gallium/radeonsi_dri.so radeonsi_dri.so
+		fi
 	fi
 
 	if use vulkan; then
