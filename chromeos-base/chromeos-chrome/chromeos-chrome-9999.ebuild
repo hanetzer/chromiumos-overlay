@@ -161,13 +161,13 @@ AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 
-AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
-AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
-AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-62.0.3202.43_rc-r1.afdo"
+AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-62.0.3202.43_rc-r1.afdo"
+AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-62.0.3202.43_rc-r1.afdo"
 
-AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
-AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
-AFDO_FILE_EXP2["arm"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
+AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
+AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
+AFDO_FILE_EXP2["arm"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
