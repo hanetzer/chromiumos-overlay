@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cellular iwlwifi_dump wimax"
 
-RDEPEND="
+COMMON_DEPEND="
 	chromeos-base/chromeos-login
 	chromeos-base/minijail
 	chromeos-base/chromeos-ssh-testkeys
@@ -40,7 +40,10 @@ RDEPEND="
 	sys-apps/smartmontools
 	cellular? ( virtual/modemmanager )
 "
-DEPEND="${RDEPEND}
+RDEPEND="${COMMON_DEPEND}
+	iwlwifi_dump? ( chromeos-base/intel-wifi-fw-dump )
+"
+DEPEND="${COMMON_DEPEND}
 	chromeos-base/chromeos-login
 	chromeos-base/debugd-client
 	sys-apps/dbus
