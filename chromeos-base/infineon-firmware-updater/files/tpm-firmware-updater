@@ -71,12 +71,13 @@ probe_tpm() {
 
 # Figure out whether we have a newer firmware image and print its path.
 locate_firmware() {
-  # Read firmware upgrade info.
-  read_key_value_pairs tpmc_ifxfui " " "$(tpmc ifxfieldupgradeinfo)"
+  local tpmc_version_data="$1"
+  local tpmc_ifxfui_data="$2"
 
   # Determine firmware package ID and current build number.
   local package_id
   local build_number
+  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
   if [ "${tpmc_ifxfui_fw0_stale_version}" != "ffffeeee" ]; then
     package_id="${tpmc_ifxfui_fw0_package_id}"
     build_number="${tpmc_ifxfui_fw0_version}"
@@ -93,7 +94,7 @@ locate_firmware() {
     # For non-bootloader mode, attempt to get the current build number
     # from 'tpmc getver' instead. 'getver' provides more reliable information
     # about the current version than 'ifxfui'.
-    read_key_value_pairs tpmc_version " " "$(tpmc getversion)"
+    read_key_value_pairs tpmc_version " " "${tpmc_version_data}"
     if [ "${tpmc_version_vendor_specific}" != "" ]; then
       build_number="0000$(echo "${tpmc_version_vendor_specific}" | cut -c5-8)"
     fi
@@ -112,6 +113,8 @@ locate_firmware() {
 # Checks whether the TPM is in a state that allows updating and prints the
 # TPM auth mechanism (physical presence or owner auth) to use to stdout.
 verify_tpm_state() {
+  local tpmc_ifxfui_data="$1"
+
   local mainfw_type=$(crossystem mainfw_type)
   case "${mainfw_type}" in
     recovery)
@@ -139,7 +142,7 @@ verify_tpm_state() {
 
   # The TPM enforces a maximum number of 64 of updates before it doesn't allow
   # further updates. Enforce an artificial safety margin.
-  read_key_value_pairs tpmc_ifxfui " " "$(tpmc ifxfieldupgradeinfo)"
+  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
   if [ "${tpmc_ifxfui_field_upgrade_counter}" -le \
        "${TPM_FIRMWARE_UPDATE_MIN_REMAINING}" ]; then
     dlog "Out of update attempts!"
@@ -155,10 +158,11 @@ verify_tpm_state() {
 approve_update() {
   local vpd_params=$1
   local fw_image_hash="$2"
+  local tpmc_ifxfui_data="$3"
 
   # Determine whether a previous update attempt failed.
   local previous_failed_update
-  read_key_value_pairs tpmc_ifxfui " " "$(tpmc ifxfieldupgradeinfo)"
+  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
   if [ "${tpmc_ifxfui_status}" = "5a3c" ]; then
     previous_failed_update=1
   fi
@@ -325,26 +329,34 @@ main() {
     exit "${EXIT_CODE_ERROR}"
   fi
 
-  read_key_value_pairs tpmc_version " " "$(tpmc getversion)"
+  # Cache tpm version info.
+  local tpmc_version_data="$(tpmc getversion)"
+
+  read_key_value_pairs tpmc_version " " "${tpmc_version_data}"
   if [ "${tpmc_version_vendor}" != "49465800" ]; then
     dlog "This tool can only update Infineon hardware."
     exit "${EXIT_CODE_NO_UPDATE}"
   fi
 
-  local firmware_file="$(locate_firmware)"
+  # Cache vendor-specific field updgrade info.
+  local tpmc_ifxfui_data="$(tpmc ifxfieldupgradeinfo)"
+
+  local firmware_file="$(locate_firmware "${tpmc_version_data}" \
+                                         "${tpmc_ifxfui_data}")"
   if [ -z "${firmware_file}" ]; then
     exit "${EXIT_CODE_NO_UPDATE}"
   fi
 
   local tpm_auth_mechanism
-  if ! tpm_auth_mechanism="$(verify_tpm_state)"; then
+  if ! tpm_auth_mechanism="$(verify_tpm_state "${tpmc_ifxfui_data}")"; then
     exit "${EXIT_CODE_NOT_UPDATABLE}"
   fi
 
   # Read R/W VPD. This is slow hence should happen as late as possible.
   local vpd_params="$(vpd -i RW_VPD -g tpm_firmware_update_params)"
   local fw_image_hash="$(sha256sum "${firmware_file}" | cut -d ' ' -f 1)"
-  if ! attempts="$(approve_update "${vpd_params}" "${fw_image_hash}")"; then
+  if ! attempts="$(approve_update "${vpd_params}" "${fw_image_hash}" \
+                                  "${tpmc_ifxfui_data}")"; then
     exit "${EXIT_CODE_MISSING_APPROVAL}"
   fi
 
