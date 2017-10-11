@@ -272,6 +272,9 @@ make_coreboot() {
 	yes "" | emake oldconfig "${CB_OPTS[@]}" obj="${builddir}" >${REDIR}
 	emake "${CB_OPTS[@]}" obj="${builddir}"
 
+	# Expand FW_MAIN_* since we might add some files
+	cbfstool "${builddir}/coreboot.rom" expand -r FW_MAIN_A,FW_MAIN_B
+
 	# Record the config that we used.
 	cp "${config_fname}" "${builddir}/${config_fname}"
 
