@@ -806,6 +806,10 @@ setup_compile_flags() {
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
 	fi
 
+	# LLVM needs this when parsing profiles.
+	# See README on https://github.com/google/autofdo
+	use clang && append-flags -fdebug-info-for-profiling
+
 	# The .dwp file for x86 and arm exceeds 4GB limit. Adding this flag as a
 	# workaround. The generated symbol files are the same with/without this
 	# flag. See https://crbug.com/641188
