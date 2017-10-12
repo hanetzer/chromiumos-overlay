@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
 CROS_WORKON_COMMIT="99becbd5afb60e69b4943b9f293427a421178482"
 CROS_WORKON_TREE="b81888fee5275815bba08192bb8eb37fbb593799"
@@ -9,12 +9,11 @@ CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
 CROS_WORKON_REPO="https://android.googlesource.com"
-CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-debug cros-workon toolchain-funcs
 
-DESCRIPTION="Chrome OS helper binary for restricting privs of services."
-HOMEPAGE="http://www.chromium.org/"
+DESCRIPTION="helper binary and library for sandboxing & restricting privs of services"
+HOMEPAGE="https://android.googlesource.com/platform/external/minijail"
 SRC_URI=""
 
 LICENSE="BSD-Google"
