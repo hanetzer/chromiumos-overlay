@@ -98,7 +98,9 @@ install_private_model_files() {
 
 # Simple function to return the path to the master configuration file.
 get_dtb_path() {
-	echo "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}"
+	local f="${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}"
+	[[ -e "${f}" ]] || die "${f} missing. Do you have the right DEPEND='s?"
+	echo "${f}"
 }
 
 # @FUNCTION: get_model_conf_value
