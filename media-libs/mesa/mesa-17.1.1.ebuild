@@ -49,7 +49,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
+	+classic debug dri egl +gallium -gbm gles1 gles2 llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
