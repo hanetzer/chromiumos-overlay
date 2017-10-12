@@ -31,7 +31,7 @@ RDEPEND="
 	tpm2? (
 		chromeos-base/trunks[test?]
 	)
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/system_api

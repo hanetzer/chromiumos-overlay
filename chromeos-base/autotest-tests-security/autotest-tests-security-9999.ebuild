@@ -23,7 +23,7 @@ RDEPEND="
 	tests_security_Minijail0? ( sys-apps/keyutils )
 	containers? (
 		tests_security_Libcontainer? (
-			chromeos-base/chromeos-minijail
+			chromeos-base/minijail
 			chromeos-base/libcontainer
 		)
 	)

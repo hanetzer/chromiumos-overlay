@@ -21,7 +21,7 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	>=dev-libs/glib-2.0

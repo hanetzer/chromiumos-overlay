@@ -22,7 +22,7 @@ KEYWORDS="~*"
 IUSE="cr50_onboard ftdi_tpm test tpm2_simulator"
 
 COMMON_DEPEND="
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/power_manager-client
 	ftdi_tpm? ( dev-embedded/libftdi )

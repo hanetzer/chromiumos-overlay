@@ -20,7 +20,7 @@ IUSE="cellular wimax"
 
 RDEPEND="
 	chromeos-base/chromeos-login
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/chromeos-ssh-testkeys
 	chromeos-base/chromeos-sshd-init
 	chromeos-base/libbrillo

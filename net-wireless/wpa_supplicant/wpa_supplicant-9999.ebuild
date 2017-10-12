@@ -21,7 +21,7 @@ IUSE="ap dbus debug gnutls eap-sim fasteap +hs2-0 libressl madwifi p2p ps3 qt4 q
 REQUIRED_USE="fasteap? ( !gnutls !ssl ) smartcard? ( ssl )"
 
 CDEPEND="
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )

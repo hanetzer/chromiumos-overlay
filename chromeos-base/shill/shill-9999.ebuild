@@ -23,7 +23,7 @@ IUSE="cellular dhcpv6 json_store kernel-3_8 kernel-3_10 pppoe +seccomp systemd +
 RDEPEND="
 	chromeos-base/bootstat
 	tpm? ( chromeos-base/chaps )
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/nsswitch

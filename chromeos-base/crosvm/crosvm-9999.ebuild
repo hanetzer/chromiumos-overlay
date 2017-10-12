@@ -24,7 +24,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="debug"
 
-RDEPEND="chromeos-base/chromeos-minijail"
+RDEPEND="chromeos-base/minijail"
 DEPEND="${RDEPEND}"
 
 src_unpack() {

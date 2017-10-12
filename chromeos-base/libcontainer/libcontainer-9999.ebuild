@@ -21,7 +21,7 @@ KEYWORDS="~*"
 IUSE="+device-mapper"
 
 # Need lvm2 for devmapper.
-RDEPEND="chromeos-base/chromeos-minijail
+RDEPEND="chromeos-base/minijail
 	device-mapper? ( sys-fs/lvm2 )"
 DEPEND="${RDEPEND}
 	chromeos-base/libbrillo"

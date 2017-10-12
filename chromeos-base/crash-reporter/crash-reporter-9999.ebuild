@@ -26,7 +26,7 @@ REQUIRED_USE="!cros_host"
 
 RDEPEND="
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/google-breakpad[cros_i686?]
 	chromeos-base/libbrillo
 	chromeos-base/metrics

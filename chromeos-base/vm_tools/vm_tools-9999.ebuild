@@ -20,7 +20,7 @@ KEYWORDS="~*"
 IUSE="kvm_host"
 
 RDEPEND="
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	dev-libs/grpc
 	dev-libs/protobuf:=
 	kvm_host? ( chromeos-base/libbrillo )

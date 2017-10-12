@@ -24,7 +24,7 @@ KEYWORDS="~*"
 IUSE="cros_host +dbus"
 
 COMMON_DEPEND="
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	dbus? ( dev-libs/dbus-glib )
 	dev-libs/openssl
 	dev-libs/protobuf:=

@@ -24,7 +24,7 @@ IUSE="cheets systemd unibuild android-container-master-arc-dev"
 RDEPEND="chromeos-base/bootstat
 	unibuild? ( chromeos-base/chromeos-config )
 	chromeos-base/chromeos-config-tools
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/cryptohome
 	chromeos-base/libbrillo
 	chromeos-base/libchromeos-ui

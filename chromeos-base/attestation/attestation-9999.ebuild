@@ -30,7 +30,7 @@ RDEPEND="
 		chromeos-base/trunks[test?]
 	)
 	chromeos-base/chaps
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/tpm_manager
 	"
