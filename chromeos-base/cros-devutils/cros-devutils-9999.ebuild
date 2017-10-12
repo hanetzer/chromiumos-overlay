@@ -48,7 +48,6 @@ src_install() {
 			image_to_live.sh
 			netboot_firmware_settings.py
 			strip_package
-			ssh_no_update
 			willis
 		)
 
