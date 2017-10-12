@@ -335,3 +335,16 @@ install_thermal_files() {
 		fi
 	done
 }
+
+# @FUNCTION: unibuild_install_touch_files
+# @USAGE:
+# @DESCRIPTION:
+# Install files related to touch firmware. This includes firmware for the
+# touchscreen, touchpad and stylus.
+unibuild_install_touch_files() {
+	einfo "unibuild: Installing touch files"
+	while read -r fwfile; do
+		read -r symlink
+		install_fw "${fwfile}" "${symlink}"
+	done < <(cros_config_host_py "$(get_dtb_path)" get-touch-firmware-files)
+}
