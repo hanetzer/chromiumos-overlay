@@ -1,6 +1,5 @@
 # Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=5
 PYTHON_COMPAT=( python3_{3,4,5,6} )
@@ -14,24 +13,20 @@ else
 	S="${WORKDIR}/Vulkan-LoaderAndValidationLayers-sdk-${PV}"
 fi
 
-inherit cmake-utils python-any-r1
+inherit python-any-r1 cmake-multilib
 
 DESCRIPTION="Vulkan Installable Client Driver (ICD) Loader"
-HOMEPAGE="https://www.khronos.org/vulkan/"
+HOMEPAGE="https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-IUSE=""
+IUSE="wayland X"
 
-DEPEND=""
 RDEPEND=""
+DEPEND="wayland? ( dev-libs/wayland:=[${MULTILIB_USEDEP}] )
+	X? ( x11-libs/libX11:=[${MULTILIB_USEDEP}] )"
 
-DOCS=( README.md LICENSE.txt )
-
-src_configure() {
-
-	# The tarball provides much stuff we don't care about on Chromium OS.
-	# All we currently want is the ICD loader.
+multilib_src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_SKIP_RPATH=True
 		-DBUILD_TESTS=False
@@ -40,24 +35,15 @@ src_configure() {
 		-DBUILD_VKJSON=False
 		-DBUILD_LOADER=True
 		-DBUILD_WSI_MIR_SUPPORT=False
-		-DBUILD_WSI_XCB_SUPPORT=False
-		-DBUILD_WSI_XLIB_SUPPORT=False
-		-DBUILD_WSI_WAYLAND_SUPPORT=False
+		-DBUILD_WSI_WAYLAND_SUPPORT=$(usex wayland)
+		-DBUILD_WSI_XCB_SUPPORT=$(usex X)
+		-DBUILD_WSI_XLIB_SUPPORT=$(usex X)
 	)
-
 	cmake-utils_src_configure
 }
 
-src_install() {
+multilib_src_install() {
 	keepdir /etc/vulkan/icd.d
 
-	cd "${BUILD_DIR}/loader"
-	dolib libvulkan.so.1.*
-	dosym libvulkan.so.1.* /usr/$(get_libdir)/libvulkan.so.1
-	dosym libvulkan.so.1.* /usr/$(get_libdir)/libvulkan.so
-
-	cd "${S}"
-	insinto /usr/include/vulkan
-	doins include/vulkan/*.h
-	einstalldocs
+	default
 }
