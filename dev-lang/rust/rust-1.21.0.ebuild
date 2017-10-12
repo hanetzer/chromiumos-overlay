@@ -25,7 +25,7 @@ fi
 
 STAGE0_VERSION="1.$(($(get_version_component_range 2) - 1)).0"
 STAGE0_VERSION_CARGO="0.$(($(get_version_component_range 2))).0"
-STAGE0_DATE="2017-06-08"
+STAGE0_DATE="2017-08-31"
 RUST_STAGE0_amd64="rustc-${STAGE0_VERSION}-x86_64-unknown-linux-gnu"
 
 DESCRIPTION="Systems programming language from Mozilla"
@@ -54,24 +54,10 @@ PATCHES=(
 	"${FILESDIR}"/0005-add-unknown-vendor-to-filesearch.patch
 	"${FILESDIR}"/0006-fix-DIExpression-warnings.patch
 
-	# This series of patches was pulled from this upstream pull request to make
-	# Rust compatible LLVM 5.0:
-	# https://github.com/rust-lang/rust/pull/43387/commits
-	# This is part of a larger tracking issue that can be found at
-	# https://github.com/rust-lang/rust/issues/43370
-	# These changes are all on master and are slated to become part of stable
-	# Rust at verstion 1.21, at which point they can be removed.
-	"${FILESDIR}"/0007-rustllvm-define-LLVM_VERSION_LT.patch
-	"${FILESDIR}"/0008-rustllvm-use-LLVMMetadataRef.patch
-	"${FILESDIR}"/0009-rustllvm-adjust-usage-of-createPointerType.patch
-	"${FILESDIR}"/0010-rustllvm-adjust-usage-of-createNameSpace.patch
-	# This change is to make rustllvm work with LLVM 5.0 master but Chrome OS's
-	# LLVM seems to be lagging behind the change this patch is for. Revive this
-	# patch if the SyncScope name change happens in LLVM.
-	#"${FILESDIR}"/0011-rustllvm-update-to-SyncScope-ID.patch
-	"${FILESDIR}"/0012-rustllvm-split-DebugLoc-in-UnpackOptimizationDiagnos.patch
-	"${FILESDIR}"/0013-update-attributes-API-usage.patch
-	"${FILESDIR}"/0014-Fix-archive-member-names-on-5.0.patch
+	# The reverted change was to make rustllvm work with LLVM 5.0 master but
+	# Chrome OS's LLVM seems to be lagging behind the change this patch is for.
+	# Remove this revert if the SyncScope name change happens in LLVM.
+	"${FILESDIR}"/0007-Revert-rustllvm-update-to-SyncScope-ID.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"

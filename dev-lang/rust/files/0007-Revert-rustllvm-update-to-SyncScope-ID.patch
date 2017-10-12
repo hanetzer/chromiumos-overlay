@@ -1,0 +1,44 @@
+From dc5590b10419899c3088232c4ab8c8b49e171caa Mon Sep 17 00:00:00 2001
+From: Zach Reizner <zachr@google.com>
+Date: Thu, 12 Oct 2017 10:58:31 -0700
+Subject: [PATCH] Revert "rustllvm: update to SyncScope::ID"
+
+This reverts commit a53676762bbe492154926393b187f0ee49df6e98.
+---
+ src/rustllvm/RustWrapper.cpp | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/src/rustllvm/RustWrapper.cpp b/src/rustllvm/RustWrapper.cpp
+index 15a04ba00e..df576d8544 100644
+--- a/src/rustllvm/RustWrapper.cpp
++++ b/src/rustllvm/RustWrapper.cpp
+@@ -292,18 +292,6 @@ enum class LLVMRustSynchronizationScope {
+   CrossThread,
+ };
+ 
+-#if LLVM_VERSION_GE(5, 0)
+-static SyncScope::ID fromRust(LLVMRustSynchronizationScope Scope) {
+-  switch (Scope) {
+-  case LLVMRustSynchronizationScope::SingleThread:
+-    return SyncScope::SingleThread;
+-  case LLVMRustSynchronizationScope::CrossThread:
+-    return SyncScope::System;
+-  default:
+-    llvm_unreachable("bad SynchronizationScope.");
+-  }
+-}
+-#else
+ static SynchronizationScope fromRust(LLVMRustSynchronizationScope Scope) {
+   switch (Scope) {
+   case LLVMRustSynchronizationScope::SingleThread:
+@@ -314,7 +302,6 @@ static SynchronizationScope fromRust(LLVMRustSynchronizationScope Scope) {
+     llvm_unreachable("bad SynchronizationScope.");
+   }
+ }
+-#endif
+ 
+ extern "C" LLVMValueRef
+ LLVMRustBuildAtomicFence(LLVMBuilderRef B, LLVMAtomicOrdering Order,
+-- 
+2.15.0.rc0.271.g36b669edcc-goog
+
