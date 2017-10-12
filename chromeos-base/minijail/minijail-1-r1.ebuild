@@ -3,6 +3,8 @@
 
 EAPI="5"
 
+CROS_WORKON_COMMIT="99becbd5afb60e69b4943b9f293427a421178482"
+CROS_WORKON_TREE="b81888fee5275815bba08192bb8eb37fbb593799"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
@@ -16,10 +18,11 @@ SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 IUSE="+seccomp test"
 
-RDEPEND="sys-libs/libcap"
+RDEPEND="sys-libs/libcap
+	!<chromeos-base/chromeos-minijail-1"
 DEPEND="test? ( dev-cpp/gtest )
 	test? ( dev-cpp/gmock )
 	${RDEPEND}"
