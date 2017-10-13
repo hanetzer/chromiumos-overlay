@@ -8,5 +8,5 @@ KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=>=dev-libs/glib-2.36 >=sys-apps/dbus-1.2 dev-libs/dbus-glib net-dialup/ppp mbim? ( net-libs/libmbim ) qmi? ( net-libs/libqmi ) !net-misc/modemmanager sys-apps/baselayout
 SLOT=0
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	e8eb1129f8327b7e29c63d174c5003b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	udev	a9a8d051efb42bfe884c1db82ce161de	user	c8f947561e8797a300801d0dd3625448
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	5a4fd4ce053e564749612ea580b41622	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	udev	a9a8d051efb42bfe884c1db82ce161de	user	c8f947561e8797a300801d0dd3625448
 _md5_=a3ffbcf8baa543f81409df103f14ebbe
