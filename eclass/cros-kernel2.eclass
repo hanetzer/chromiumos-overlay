@@ -138,6 +138,7 @@ CONFIG_FRAGMENTS=(
 	usb_gadget_audio
 	usb_gadget_ncm
 	vfat
+	virtio_balloon
 	vlan
 	vtconsole
 	wifi_testbed_ap
@@ -509,6 +510,13 @@ CONFIG_USB_CONFIGFS_F_UAC2=y
 usb_gadget_ncm_desc="USB NCM gadget support"
 usb_gadget_ncm_config="
 CONFIG_USB_CONFIGFS_NCM=y
+"
+
+virtio_balloon_desc="Balloon driver support kvm guests"
+virtio_balloon_config="
+CONFIG_MEMORY_BALLOON=y
+CONFIG_BALLOON_COMPACTION=y
+CONFIG_VIRTIO_BALLOON=m
 "
 
 vlan_desc="802.1Q VLAN"
