@@ -103,10 +103,10 @@ get_dtb_path() {
 
 # @FUNCTION: get_model_conf_value
 # @USAGE: <model> <path> <prop>
-# @RETURN: value of the property, or empty if not found, in which
-# case the return code indicates failure.
+# @RETURN: value of the property, or empty if not found
 # @DESCRIPTION:
-# Obtain a configuration value for a given model.
+# Obtain a configuration value for a given model. Will only follow phandles for
+# /firmware.
 # @CODE
 # model: name of model to lookup.
 # path: path to config string, e.g. "/". Starts with "/".
@@ -118,27 +118,8 @@ get_model_conf_value() {
 	local model="$1"
 	local path="$2"
 	local prop="$3"
-	local r
-	r=$(fdtget "$(get_dtb_path)" \
-		"/chromeos/models/${model}${path}" "${prop}" 2>/dev/null)
-	local ret=$?
-
-	if [[ ${ret} -ne 0 && "${path}" =~ ^/firmware ]]; then
-		# The value is missing; is it available at a firmware shares
-		# phandle?
-		local share
-		share=$(fdtget "$(get_dtb_path)" -f \
-			"/chromeos/models/${model}/firmware" shares 2>/dev/null)
-
-		if [[ $? -eq 0 ]]; then
-			fdtget "$(get_dtb_path)" \
-			"${share}${path#/firmware}" "${prop}" 2>/dev/null
-			return $?
-		fi
-	fi
-
-	echo "${r}"
-	return ${ret}
+	cros_config_host_py "$(get_dtb_path)" --model "${model}" get "${path}" \
+		"${prop}"
 }
 
 # @FUNCTION: get_model_list
@@ -271,9 +252,9 @@ get_unique_model_conf_value_set_noroot() {
 # access to the root directory, so it is suitable for getting information for
 # use # in SRC_URI, for example.
 # It requires a symlink in the calling ebuild from ${FILESDIR}/model.dtsi to
-# the board's configuration file. It also requires a subslot dependency.
-# @RETURN: value of the property, or empty if not found, in which
-# case the return code indicates failure.
+# the board's configuration file. It also requires a subslot dependency. Will
+# only follow phandles for /firmware.
+# @RETURN: value of the property, or empty if not found
 # @CODE
 # model: name of model to lookup.
 # path: path to config string, e.g. "/". Starts with "/".
@@ -286,31 +267,8 @@ get_model_conf_value_noroot() {
 	local path="$2"
 	local prop="$3"
 
-	local r
-	r=$(
-		get_dtb_data |
-		fdtget - "/chromeos/models/${model}${path}" "${prop}" \
-		2>/dev/null
-	)
-	local ret=$?
-
-	if [[ ${ret} -ne 0 && "${path}" =~ ^/firmware ]]; then
-		# The value is missing; is it available at a firmware shares
-		# phandle?
-		local share
-		share=$(get_dtb_data | fdtget - -f \
-			"/chromeos/models/${model}/firmware" shares 2>/dev/null
-		)
-
-		if [[ $? -eq 0 ]]; then
-			get_dtb_data | fdtget - \
-			"${share}${path#/firmware}" "${prop}" 2>/dev/null
-			return $?
-		fi
-	fi
-
-	echo "${r}"
-	return ${ret}
+	get_dtb_data | cros_config_host_py - --model "${model}" get "${path}" \
+		"${prop}"
 }
 
 # @FUNCTION: install_thermal_files
