@@ -288,9 +288,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	!systemd? ( sys-apps/upstart )
 	systemd? ( sys-apps/systemd )
 	sys-fs/e2fsprogs
-	virtual/udev
 	touchview? ( chromeos-base/chromeos-accelerometer-init )
 	virtual/assets
+	virtual/cheets
+	virtual/udev
 "
 
 # Build time dependencies
