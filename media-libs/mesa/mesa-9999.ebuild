@@ -40,7 +40,7 @@ KEYWORDS="~*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="amdgpu radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau r128 radeonsi savage sis vmware tdfx via"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau r128 radeonsi savage sis tdfx via virgl vmware"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -127,6 +127,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
 	epatch "${FILESDIR}"/17.1-CHROMIUM-Use-KMS-swrast-fallback.patch
+	epatch "${FILESDIR}"/17.1-VIRGL-surfaces-samplers-virtual-context-refcount.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
@@ -165,6 +166,8 @@ src_configure() {
 
 		# Freedreno code
 		gallium_driver_enable video_cards_freedreno freedreno
+
+		gallium_driver_enable video_cards_virgl virgl
 	fi
 
 	if use vulkan; then
