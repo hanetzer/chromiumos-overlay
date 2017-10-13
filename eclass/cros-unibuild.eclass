@@ -150,7 +150,7 @@ get_model_conf_value() {
 get_model_list() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	fdtget "$(get_dtb_path)" -l /chromeos/models 2>/dev/null
+	cros_config_host_py "$(get_dtb_path)" list-models
 }
 
 # Internal function to compile the device tree file on-the-fly and output a
@@ -187,7 +187,7 @@ get_dtb_data() {
 get_model_list_noroot() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	get_dtb_data | fdtget - -l "/chromeos/models" 2>/dev/null
+	get_dtb_data | cros_config_host_py - list-models
 }
 
 # @FUNCTION: get_shared_firmware_list_noroot
