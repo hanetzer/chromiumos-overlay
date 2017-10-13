@@ -196,6 +196,7 @@ ALL_BOARDS=(
 	mipsel-n32-generic
 	mipsel-n64-generic
 	mipsel-o32-generic
+	moblab-generic-vm
 	monroe
 	moose
 	nasher
