@@ -37,7 +37,8 @@ def main(argv):
 
   cmdline = [x for x in myargs if x not in WRAPPER_ONLY_OPTIONS]
 
-  if re.match(r'i.86|x86_64', os.path.basename(argv[0])):
+  prog_base = os.path.basename(sys.argv[0])
+  if prog_base.startswith('x86_64') or startswith_i86(prog_base):
     cmdline.extend(X86_DISABLE_FLAGS)
 
   sysroot = os.environ.get('SYSROOT', '/')

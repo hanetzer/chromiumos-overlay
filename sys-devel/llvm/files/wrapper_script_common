@@ -5,7 +5,6 @@ from __future__ import print_function
 # compiler invocation.
 
 import os
-import re
 import sys
 
 WRAPPER_ONLY_OPTIONS = set(('-print-cmdline', '-nopie', '-noccache'))
@@ -58,3 +57,8 @@ def handle_exec_exception(exc, argv0, use_ccache, execargs):
       'error: execution of (%s, %s) failed' % (argv0, execargs),
       file=sys.stderr)
   raise
+
+
+def startswith_i86(s):
+  """Returns true if s starts with i.86."""
+  return s[0] + s[2:4] == 'i86'

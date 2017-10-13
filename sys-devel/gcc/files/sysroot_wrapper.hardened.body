@@ -43,6 +43,8 @@ def get_proc_cmdline(pid):
 
 
 def get_proc_status(pid, item):
+  import re
+
   with open('/proc/%i/status' % pid) as fp:
     for line in fp:
       m = re.match(r'%s:\s*(.*)' % re.escape(item), line)
@@ -274,7 +276,7 @@ def main():
 
   cmdline = [x for x in myargs if x not in WRAPPER_ONLY_OPTIONS]
 
-  if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
+  if gcc_comp.startswith('x86_64') or startswith_i86(gcc_comp):
     cmdline.extend(X86_DISABLE_FLAGS)
 
   if not invoke_clang:
@@ -366,7 +368,7 @@ def main():
     linker = arch + '-ld'
     linker_path = get_linker_path(linker)
     clang_cmdline += ['-B' + linker_path]
-    if re.match(r'i.86', arch):
+    if startswith_i86(arch):
       # TODO: -target i686-pc-linux-gnu causes clang to search for
       # libclang_rt.asan-i686.a which doesn't exist because it's packaged
       # as libclang_rt.asan-i386.a. We can't use -target i386-pc-linux-gnu
