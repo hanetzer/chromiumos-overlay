@@ -204,19 +204,6 @@ _unpack_archive() {
 	eval ${var}="'${folder}/${contents}'"
 }
 
-cros-firmware_get_config() {
-	local leaf="$1"
-
-	echo "$(get_model_conf_value_noroot "${model}" /firmware "${leaf}")"
-}
-
-cros-firmware_get_build_config() {
-	local leaf="$1"
-	local path="/firmware/build-targets"
-
-	echo "$(get_model_conf_value_noroot "${model}" "${path}" "${leaf}")"
-}
-
 cros-firmware_src_unpack() {
 	case "${EAPI:-0}" in
 	1|2|3|4)
@@ -460,50 +447,13 @@ _expand_list() {
 	IFS="${ifs}" read -r -a ${var} <<<"${*:3}"
 }
 
-# Get a list of files mentioned in the master configuration which needs to be
-# added to SRC_URI for a particular model.
-# Args:
-#   $1: model to look up
-_get_source_uris_for_model() {
-	local model="$1"
-	local extra_list image overlay path uri uris
-
-	overlay="$(cros-firmware_get_config bcs-overlay)"
-	if [[ -z "${overlay}" ]]; then
-		die "Please add bcs-overlay to master configuration"
-	fi
-	target="$(cros-firmware_get_build_config coreboot)"
-	overlay="${overlay#overlay-}"
-	for image in main-image main-rw-image ec-image pd-image; do
-		uri="$(cros-firmware_get_config ${image})"
-		if [[ -n "${uri}" ]]; then
-			uris+=" $(_add_uri "${uri}" "${overlay}" \
-				"chromeos-firmware-${target}")"
-		fi
-	done
-	for path in $(cros-firmware_get_config extra); do
-		uris+=" $(_add_uri "${path}" "${overlay}" \
-			"chromeos-firmware-${target}")"
-	done
-	echo "${uris}"
-}
-
 # Add any files mentioned in the master configuration to SRC_URI so that they
 # will be downloaded if unibuild is enabled.
 cros-firmware_setup_source_unibuild() {
-	local model uri_list
+	local uri_list
 
-	# Do shared firmware first
-	for model in $(get_shared_firmware_list_noroot); do
-		uri_list+="$(_get_source_uris_for_model "${model}")"
-	done
-
-	for model in $(get_model_list_noroot); do
-		if [[ -n "$(cros-firmware_get_config shares)" ]]; then
-			continue
-		fi
-		uri_list+="$(_get_source_uris_for_model "${model}")"
-	done
+	uri_list=$(get_dtb_data | cros_config_host_py - --all-models \
+		get-firmware-uris)
 	if [[ -n "${uri_list// }" ]]; then
 		SRC_URI+="unibuild? ( ${uri_list} )"
 	fi
