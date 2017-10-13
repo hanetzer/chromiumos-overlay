@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("e26635ae85c54c3465dd256444b6316ae2bcbe0a" "749dbc8d7d1d646ab560c21e8ab3a1709d2e3021")
-CROS_WORKON_TREE=("f0d9f507509b84276fab5983caad4e0872c4c9da" "2b91ab3c0fc113c0ab28d1861d58caf0d64e8ae7")
+CROS_WORKON_COMMIT=("e26635ae85c54c3465dd256444b6316ae2bcbe0a" "d51ec9b3476dbe1cc6eb988ed20fb7de86153196")
+CROS_WORKON_TREE=("f0d9f507509b84276fab5983caad4e0872c4c9da" "c1347cdd10561332071ca99cd7a0ea00afeb272e")
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/connectivity/shill")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/shill")
