@@ -252,6 +252,10 @@ RDEPEND="${RDEPEND}
 		chromeos-base/libevdev
 	)
 	accessibility? ( app-accessibility/brltty )
+	libcxx? (
+		sys-libs/libcxxabi
+		sys-libs/libcxx
+	)
 	"
 
 DEPEND="${DEPEND}
