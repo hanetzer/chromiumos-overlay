@@ -1,6 +1,10 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Change this version number when any change is made to patches/files under
+# edk2 and an auto-revbump is required.
+# VERSION=REVBUMP-0.0.1
+
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/edk2"
 CROS_WORKON_LOCALNAME="edk2"
@@ -19,6 +23,16 @@ RDEPEND=""
 DEPEND="
 	sys-boot/coreboot
 "
+
+PATCHES=(
+	"${FILESDIR}/00_BaseTools_Scripts.patch"
+	"${FILESDIR}/01_CorebootPayloadPkg_pcinoenum.patch"
+	"${FILESDIR}/02_CorebootPayloadPkg_bds.patch"
+	"${FILESDIR}/03_Library_EndofDXE.patch"
+	"${FILESDIR}/04_CorebootPayloadPkg_addps2.patch"
+	"${FILESDIR}/05_CorebootPayloadPkg_noserial.patch"
+	"${FILESDIR}/06_CorebootPayloadPkg_keep_cb_table.patch"
+)
 
 TOOLCHAIN=GCC48 # most recent GCCxy that isn't newer than our toolchain
 BUILDTYPE=DEBUG # DEBUG or RELEASE
@@ -45,6 +59,10 @@ create_cbfs() {
 	fi
 	# Print CBFS inventory
 	_cbfstool ${cbfs} print
+}
+
+src_prepare() {
+	epatch "${PATCHES[@]}"
 }
 
 src_compile() {
