@@ -20,7 +20,6 @@ DEPEND="
 	sys-boot/coreboot
 "
 
-ARCHITECTURE=X64 # IA32 or X86
 TOOLCHAIN=GCC48 # most recent GCCxy that isn't newer than our toolchain
 BUILDTYPE=DEBUG # DEBUG or RELEASE
 
@@ -38,10 +37,12 @@ create_cbfs() {
 	_cbfstool ${cbfs} create -s ${cbfs_size} -m x86
 	# Add tianocore binary to CBFS. FIXME needs newer cbfstool
 	_cbfstool ${cbfs} add-payload \
-			-f Build/Ovmf${ARCHITECTURE}/${BUILDTYPE}_${TOOLCHAIN}/FV/OVMF.fd \
+			-f Build/CorebootPayloadPkgX64/${BUILDTYPE}_${TOOLCHAIN}/FV/UEFIPAYLOAD.fd \
 			-n payload -c lzma
 	# Add VGA option rom to CBFS
-	_cbfstool ${cbfs} add -f "${oprom}" -n $(basename "${oprom}") -t optionrom
+	if [ -r "${oprom}" ]; then
+		_cbfstool ${cbfs} add -f "${oprom}" -n $(basename "${oprom}") -t optionrom
+	fi
 	# Print CBFS inventory
 	_cbfstool ${cbfs} print
 }
@@ -49,7 +50,8 @@ create_cbfs() {
 src_compile() {
 	. ./edksetup.sh
 	(cd BaseTools/Source/C && ARCH=${ARCHITECTURE} emake -j1)
-	build -t ${TOOLCHAIN} -a ${ARCHITECTURE} -b ${BUILDTYPE} -p OvmfPkg/OvmfPkg${ARCHITECTURE}.dsc
+	build -t ${TOOLCHAIN} -a IA32 -a X64 -b ${BUILDTYPE} \
+			-p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 	create_cbfs
 }
 
