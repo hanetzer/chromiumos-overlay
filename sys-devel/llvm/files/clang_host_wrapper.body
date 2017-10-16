@@ -43,7 +43,9 @@ def main(argv):
 
   sysroot = os.environ.get('SYSROOT', '/')
 
-  clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
+  # Get the clang binary location relative to the wrapper.
+  clang_bin = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clang')
+  clang_comp = os.environ.get('CLANG', clang_bin)
 
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
