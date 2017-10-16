@@ -34,6 +34,7 @@ src_install() {
 		dobin "${OUT}"/vm_launcher
 		dobin "${OUT}"/vmlog_forwarder
 	else
+		dobin "${OUT}"/virtwl_guest_proxy
 		dobin "${OUT}"/vm_syslog
 
 		into /
