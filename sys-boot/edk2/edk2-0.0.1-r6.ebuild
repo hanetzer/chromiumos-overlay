@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="b22b0eecf138f42b1dbdc0c34103b2e867b4726d"
-CROS_WORKON_TREE="e396af36ecb41150b7b23c2392dd1f274e7a8bd1"
+CROS_WORKON_COMMIT="ab586ccd21556108662fbd80ab5a429143eac264"
+CROS_WORKON_TREE="6d074f3cc9c357a209d3f0d42994cfa0579f1bbc"
 CROS_WORKON_PROJECT="chromiumos/third_party/edk2"
 CROS_WORKON_LOCALNAME="edk2"
 
