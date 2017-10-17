@@ -23,12 +23,6 @@ DEPEND="sys-apps/debianutils
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 	builtin_fw_t210_bpmp? ( sys-kernel/tegra_bpmp-t210 )
-	kernel-3_8? ( sys-kernel/chromeos-kernel-patches-3_8 )
-	kernel-3_10? ( sys-kernel/chromeos-kernel-patches-3_10 )
-	kernel-3_14? ( sys-kernel/chromeos-kernel-patches-3_14 )
-	kernel-3_18? ( sys-kernel/chromeos-kernel-patches-3_18 )
-	kernel-4_4? ( sys-kernel/chromeos-kernel-patches-4_4 )
-	kernel-4_12? ( sys-kernel/chromeos-kernel-patches-4_12 )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.18 4.2 )
@@ -42,12 +36,6 @@ IUSE="
 	-device_tree
 	firmware_install
 	-kernel_sources
-	kernel-3_8
-	kernel-3_10
-	kernel-3_14
-	kernel-3_18
-	kernel-4_4
-	kernel-4_12
 	nfc
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
 	-wifi_testbed_ap
@@ -88,13 +76,10 @@ if [[ -n "${AFDO_PROFILE_VERSION}" ]]; then
 fi
 
 apply_private_patches() {
-	local PATCHDIR="${ROOT}"/usr/share/chromeos-kernel-patches
-	if [[ ! -d "${PATCHDIR}" ]]; then
-		return
-	fi
-	for p in "${PATCHDIR}"/[0-9][0-9][0-9][0-9]-*.patch; do
-		epatch "${p}"
-	done
+	eshopts_push -s nullglob
+	local patches=( "${FILESDIR}"/*.patch )
+	eshopts_pop
+	[[ ${#patches[@]} -gt 0 ]] && epatch "${patches[@]}"
 }
 
 # Ignore files under /lib/modules/ as we like to install vdso objects in there.
