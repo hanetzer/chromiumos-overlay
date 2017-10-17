@@ -19,14 +19,14 @@ KEYWORDS="~*"
 # Needs to be synced with changes in the coreboot repo,
 # then pruned to the minimum required set (eg. no gdb, python, expat, llvm)
 CROSSGCC_URIS="
-http://ftpmirror.gnu.org/gmp/gmp-6.1.2.tar.xz
-http://ftpmirror.gnu.org/mpfr/mpfr-3.1.5.tar.xz
-http://ftpmirror.gnu.org/mpc/mpc-1.0.3.tar.gz
-http://www.mr511.de/software/libelf-0.8.13.tar.gz
-http://ftpmirror.gnu.org/gcc/gcc-6.3.0/gcc-6.3.0.tar.bz2
-http://ftpmirror.gnu.org/binutils/binutils-2.28.tar.bz2
+https://ftpmirror.gnu.org/gmp/gmp-6.1.2.tar.xz
+https://ftpmirror.gnu.org/mpfr/mpfr-3.1.5.tar.xz
+https://ftpmirror.gnu.org/mpc/mpc-1.0.3.tar.gz
+https://sourceware.org/elfutils/ftp/0.170/elfutils-0.170.tar.bz2
+https://ftpmirror.gnu.org/gcc/gcc-6.3.0/gcc-6.3.0.tar.bz2
+https://ftpmirror.gnu.org/binutils/binutils-2.29.1.tar.xz
 https://acpica.org/sites/acpica/files/acpica-unix2-20161222.tar.gz
-http://ftpmirror.gnu.org/make/make-4.2.1.tar.bz2
+https://ftpmirror.gnu.org/make/make-4.2.1.tar.bz2
 "
 
 SRC_URI="
