@@ -19,6 +19,7 @@ RDEPEND="sys-fs/e2fsprogs
 	dev-lang/perl
 	sys-apps/attr
 	sys-apps/diffutils
+	sys-apps/gawk
 	sys-apps/util-linux
 	sys-devel/bc
 	sys-fs/xfsprogs
