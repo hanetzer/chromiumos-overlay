@@ -63,7 +63,9 @@ IUSE="
 "
 REQUIRED_USE=""
 STRIP_MASK="
+	/lib/modules/*
 	/usr/lib/debug/boot/vmlinux
+	/usr/lib/debug/lib/modules/*
 	/usr/src/*
 "
 
@@ -1242,7 +1244,12 @@ cros-kernel2_src_install() {
 
 	dodir /boot
 	kmake INSTALL_PATH="${D}/boot" INSTALL_MOD_PATH="${D}" \
-		"${build_targets[@]}"
+		INSTALL_MOD_STRIP=1 "${build_targets[@]}"
+
+	# Install modules w/out debug stripping.
+	if cros_chkconfig_present MODULES; then
+		kmake INSTALL_MOD_PATH="${D}/usr/lib/debug" modules_install
+	fi
 
 	local version=$(kernelrelease)
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
