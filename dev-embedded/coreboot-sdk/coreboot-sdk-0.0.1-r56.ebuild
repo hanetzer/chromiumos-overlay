@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="04dd68a02e3c1078edb7f911f65388238b74d2c9"
-CROS_WORKON_TREE="241a04513778506130327bca16bdbf4bc2081a24"
+CROS_WORKON_COMMIT="2129c7e2425f4da3aa468e4ea21d014c9b2fef13"
+CROS_WORKON_TREE="339271e85efde0e5e325adca3e61253e019613bf"
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 CROS_WORKON_SUBDIRS_TO_COPY="util/crossgcc"
 CROS_WORKON_SUBDIRS_TO_REV="util/crossgcc"
@@ -54,17 +54,33 @@ src_compile() {
 	export PATH="${S}"/gnat-gpl-2017-x86_64-linux-bin/bin:"${PATH}"
 	export CC=gcc CXX=g++
 
-	# make calls into buildgcc, which then uses CPUS to parallelize its
-	# make(1) children. Therefore only -j1 on the top-level.
-	emake -j1 all_without_gdb \
-		-C util/crossgcc \
-		SKIP_CLANG=1 \
-		CPUS=$(makeopts_jobs) \
-		BUILD_LANGUAGES=c,ada \
-		KEEP_SOURCES=1 \
-		DEST=/opt/coreboot-sdk \
-		BUILDGCC_OPTIONS='-D "${S}"/out -b' \
-		|| die "building the toolchain failed"
+	local buildgcc_opts=(-j "$(makeopts_jobs)" -l c,ada -t)
+
+	cd util/crossgcc
+	# Build bootstrap compiler to get a reliable compiler base no matter how
+	# versions diverged, but keep it separately, since we only need it
+	# during this build and not in the chroot.
+	./buildgcc -B -d "${S}"/bootstrap "${buildgcc_opts[@]}" \
+		|| die "building the bootstrap compiler failed"
+	export PATH="${S}/bootstrap/bin:${PATH}"
+
+	local architectures=(
+		i386-elf
+		x86_64-elf
+		arm-eabi
+		aarch64-elf
+		mipsel-elf
+		nds32le-elf
+	)
+
+	local arch
+	for arch in "${architectures[@]}"; do
+		./buildgcc -d /opt/coreboot-sdk -D "${S}/out" -p "${arch}" \
+			"${buildgcc_opts[@]}" \
+		|| die "building the compiler for ${arch} failed"
+	done
+
+	rm -f "${S}"/out/opt/coreboot-sdk/lib/lib*.{la,a}
 }
 
 src_install() {
