@@ -283,6 +283,23 @@ install_thermal_files() {
 	done
 }
 
+# Install touch firmware and create a symlink for 'request firmware' hotplug.
+#   $1: Filename of firmware in ${FILESDIR}
+#   $2: Full path to symlink in /lib/firmware
+_install_fw() {
+	local firmware="$1"
+	local symlink="$2"
+
+	# TODO(crbug.com/769575): Remove this hard-coded path.
+	local touchfw_dir="/opt/google/touch/firmware"
+
+	elog "Installing ${firmware} with symlink from ${symlink}"
+	local dest="${touchfw_dir}/${firmware}"
+	insinto "$(dirname "${dest}")"
+	doins "${FILESDIR}/${firmware}"
+	dosym "${dest}" "/lib/firmware/${symlink}"
+}
+
 # @FUNCTION: unibuild_install_touch_files
 # @USAGE:
 # @DESCRIPTION:
@@ -292,6 +309,6 @@ unibuild_install_touch_files() {
 	einfo "unibuild: Installing touch files"
 	while read -r fwfile; do
 		read -r symlink
-		install_fw "${fwfile}" "${symlink}"
+		_install_fw "${fwfile}" "${symlink}"
 	done < <(cros_config_host_py "$(get_dtb_path)" get-touch-firmware-files)
 }
