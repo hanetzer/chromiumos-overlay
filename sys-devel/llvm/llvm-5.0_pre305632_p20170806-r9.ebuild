@@ -194,6 +194,7 @@ pick_cherries() {
 	CHERRIES+=" 9330fda9a0ef108d03334f20319508e409bb356d " # r307051
 	CHERRIES+=" 37cdc82da7d49a9fe3991eca89f44cd05d86fc55 " # r308997
 	CHERRIES+=" c9c456edbdc7004d08581528219ee59362e59e8e " # r309263
+	CHERRIES+=" 73c1500cc3b3a4cd39a7c59753a7d0e63887a839 " # r315951
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -224,6 +225,7 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
+	CHERRIES+=" 73c1500cc3b3a4cd39a7c59753a7d0e63887a839 " # r315951
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
