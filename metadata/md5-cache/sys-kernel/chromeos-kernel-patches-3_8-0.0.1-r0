@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Linux Kernel 3.8 patches
+EAPI=5
+HOMEPAGE=https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel
+KEYWORDS=*
+SLOT=0
+_md5_=11d2cc8b544202a11f80e355a7a670c6
