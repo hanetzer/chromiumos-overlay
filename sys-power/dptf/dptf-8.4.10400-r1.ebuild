@@ -30,14 +30,6 @@ DEPEND="unibuild? ( chromeos-base/chromeos-config )
 	sys-libs/ncurses sys-libs/readline"
 RDEPEND="${DEPEND}"
 
-src_prepare() {
-	# This fixes a warning unterminated '#pragma.
-	# See crbug.com/755573
-	epatch "${FILESDIR}"/dptf-fix-unterminated-pragma.patch
-	# This fixes a warning delete-non-virtual-dtor
-	epatch "${FILESDIR}"/dptf-fix-delete-non-virtual-dtor.patch
-}
-
 src_configure() {
 	# cmake configuration for DPTF policy shared libraries
 	local mycmakeargs=( -DCHROMIUM_BUILD=YES )
@@ -70,7 +62,7 @@ src_install() {
 	insinto "/etc/dptf"
 	doins ESIF/Packages/DSP/dsp.dv
 	insinto "/etc/init"
-	doins "${FILESDIR}/dptf.conf"
+	doins "${startcmd_src_dir}/dptf.conf"
 
 	# Install ESIF loadable libraries
 	dolib.so "${ESIFCMP_BUILD_DIR}/esif_cmp.so"
