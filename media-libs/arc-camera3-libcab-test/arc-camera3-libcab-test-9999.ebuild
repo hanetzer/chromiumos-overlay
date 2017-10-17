@@ -19,7 +19,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	asan-setup-env
 	cros-workon_src_configure
 }
 
