@@ -92,10 +92,6 @@ get_board() {
 	echo "${board}"
 }
 
-get_model_build_targets() {
-	echo $( get_unique_model_conf_value_set /firmware/build-targets coreboot )
-}
-
 set_build_env() {
 	BOARD="$1"
 
@@ -215,7 +211,8 @@ src_prepare() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(get_model_build_targets); do
+		for build_target in $(cros_config_host_py \
+			get-firmware-build-targets coreboot); do
 			create_config "${build_target}" "$(get_board)"
 		done
 	else
@@ -382,7 +379,8 @@ src_compile() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(get_model_build_targets); do
+		for build_target in $(cros_config_host_py \
+			get-firmware-build-targets coreboot); do
 			set_build_env "${build_target}"
 			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${build_target}"
 			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}" \
@@ -446,7 +444,8 @@ src_install() {
 	local build_target
 
 	if use unibuild; then
-		for build_target in $(get_model_build_targets); do
+		for build_target in $(cros_config_host_py \
+			get-firmware-build-targets coreboot); do
 			set_build_env "${build_target}" "$(get_board)"
 			do_install ${build_target}
 		done
