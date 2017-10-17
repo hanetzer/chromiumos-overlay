@@ -220,6 +220,7 @@ src_install() {
 
 	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/egl"
 	newexe $(get_libdir)/libEGL.so libEGL_mesa.so
+	newexe $(get_libdir)/libGLESv1_CM.so libGLESv1_CM_mesa.so
 	newexe $(get_libdir)/libGLESv2.so libGLESv2_mesa.so
 
 	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/dri"
