@@ -310,9 +310,12 @@ def main():
           continue
         elif flag in GCC_TO_CLANG.keys():
           clang_cmdline.append(GCC_TO_CLANG[flag])
-        elif (not (arch == 'armv7a-cros-linux-gnueabi' and
-                   flag in CLANG_ARM_OPTIONS_TO_BE_DISCARDED)):
+        elif flag not in CLANG_ARM_OPTIONS_TO_BE_DISCARDED:
           clang_cmdline.append(flag)
+        else:
+          tuple = arch.split('-')
+          if not (tuple[0] == 'armv7a' and tuple[2] == 'linux'):
+            clang_cmdline.append(flag)
       gcc_cmdline.append(flag)
 
   sysroot = os.environ.get('SYSROOT', '')
@@ -384,7 +387,8 @@ def main():
     # "-mfloat-abi" baked in compiler binaries in configuration phase, for
     # clang,  we share the same binary for all backends, so here we enforce
     # hardfp via command line.
-    if arch == "armv7a-cros-linux-gnueabi":
+    tuple = arch.split('-')
+    if tuple[0] == 'armv7a' and tuple[2] == 'linux':
       clang_cmdline += ['-mfloat-abi=hard']
 
     if not clang_codegen:
