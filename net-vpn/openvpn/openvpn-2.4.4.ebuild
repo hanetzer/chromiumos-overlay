@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="down-root examples inotify iproute2 libressl lz4 +lzo mbedtls pam"
-IUSE+=" pkcs11 +plugins polarssl selinux +ssl static systemd test userland_BSD"
+IUSE+=" pkcs11 +plugins selinux +ssl static systemd test userland_BSD"
 
 REQUIRED_USE="static? ( !plugins !pkcs11 )
 	mbedtls? ( ssl !libressl )
@@ -24,10 +24,9 @@ REQUIRED_USE="static? ( !plugins !pkcs11 )
 	inotify? ( plugins )"
 
 CDEPEND="
-	!net-misc/openvpn
 	kernel_linux? (
 		iproute2? ( sys-apps/iproute2[-minimal] )
-		!iproute2? ( sys-apps/net-tools )
+		!iproute2? ( >=sys-apps/net-tools-1.60_p20160215155418 )
 	)
 	pam? ( virtual/pam )
 	ssl? (
@@ -69,6 +68,10 @@ src_prepare() {
 
 src_configure() {
 	use static && append-ldflags -Xcompiler -static
+	SYSTEMD_UNIT_DIR=$(systemd_get_systemunitdir) \
+	TMPFILES_DIR="/usr/lib/tmpfiles.d" \
+	IFCONFIG=/bin/ifconfig \
+	ROUTE=/bin/route \
 	econf \
 		$(usex mbedtls '--with-crypto-library=mbedtls' '') \
 		$(use_enable inotify async-push) \
@@ -113,10 +116,6 @@ src_install() {
 		insinto /usr/share/doc/${PF}/examples
 		doins -r sample contrib
 	fi
-
-	systemd_newtmpfilesd "${FILESDIR}"/${PN}.tmpfile ${PN}.conf
-	use systemd && systemd_newunit distro/systemd/openvpn-client@.service openvpn-client@.service
-	use systemd && systemd_newunit distro/systemd/openvpn-server@.service openvpn-server@.service
 }
 
 pkg_postinst() {
@@ -126,9 +125,14 @@ pkg_postinst() {
 	enewgroup openvpn
 	enewuser openvpn "" "" "" openvpn
 
-	if [ path_exists -o "${ROOT}/etc/openvpn/*/local.conf" ] ; then
+	if path_exists -o "${EROOT%/}"/etc/openvpn/*/local.conf ; then
 		ewarn "WARNING: The openvpn init script has changed"
 		ewarn ""
+	fi
+
+	if use x64-macos; then
+		elog "You might want to install tuntaposx for TAP interface support:"
+		elog "http://tuntaposx.sourceforge.net"
 	fi
 
 	elog "The openvpn init script expects to find the configuration file"
