@@ -10,7 +10,14 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+shill tpm2"
+IUSE="
+	tpm_slb9645
+	tpm_slb9655
+	tpm_slb9655_v4_31
+	tpm_slb9670
+	internal
+	+shill
+	tpm2"
 
 X86_DEPEND="
 	sys-boot/syslinux
@@ -31,6 +38,12 @@ RDEPEND="
 	chromeos-base/chromeos-init
 	chromeos-base/dev-install
 	chromeos-base/factory_installer
+	internal? (
+		tpm_slb9645? ( chromeos-base/infineon-firmware )
+		tpm_slb9655? ( chromeos-base/infineon-firmware )
+		tpm_slb9655_v4_31? ( chromeos-base/infineon-firmware )
+		tpm_slb9670? ( chromeos-base/infineon-firmware )
+	)
 	chromeos-base/power_manager
 	shill? ( chromeos-base/shill )
 	!shill? ( net-misc/dhcpcd )
