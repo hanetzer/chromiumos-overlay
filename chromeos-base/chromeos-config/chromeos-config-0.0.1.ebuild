@@ -53,6 +53,11 @@ ${SYSROOT}${UNIBOARD_DTS_DIR}: please check your chromeos-config-bsp ebuild"
 	# Compile it to produce the requird output file.
 	dtc -I dts -O dtb -o "${dtb}" "${dts}.tmp" \
 		|| die "Device-tree compilation failed"
+
+	# Validate the config.
+	einfo "Validating config:"
+	validate_config "${dtb}" || die "Validation failed"
+	einfo "- OK"
 }
 
 src_install() {
