@@ -1,0 +1,68 @@
+commit a312801e78a7627965158838eae1fb9a10487af7
+Author: Ivan A. Kosarev <ikosarev@accesssoftek.com>
+Date:   Fri Oct 20 12:35:17 2017 +0000
+
+    [CodeGen] Fix generation of TBAA info for array-to-pointer conversions
+    
+    Resolves:
+    Fatal error: Offset not zero at the point of scalar access.
+    http://llvm.org/PR34992
+    
+    Differential Revision: https://reviews.llvm.org/D39083
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@316211 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/CodeGen/CGExpr.cpp b/lib/CodeGen/CGExpr.cpp
+index 158baf7586..2eb6d0a0c0 100644
+--- a/lib/CodeGen/CGExpr.cpp
++++ b/lib/CodeGen/CGExpr.cpp
+@@ -3072,8 +3072,6 @@ Address CodeGenFunction::EmitArrayToPointerDecay(const Expr *E,
+   // Expressions of array type can't be bitfields or vector elements.
+   LValue LV = EmitLValue(E);
+   Address Addr = LV.getAddress();
+-  if (BaseInfo) *BaseInfo = LV.getBaseInfo();
+-  if (TBAAInfo) *TBAAInfo = LV.getTBAAInfo();
+ 
+   // If the array type was an incomplete type, we need to make sure
+   // the decay ends up being the right type.
+@@ -3088,7 +3086,15 @@ Address CodeGenFunction::EmitArrayToPointerDecay(const Expr *E,
+     Addr = Builder.CreateStructGEP(Addr, 0, CharUnits::Zero(), "arraydecay");
+   }
+ 
++  // The result of this decay conversion points to an array element within the
++  // base lvalue. However, since TBAA currently does not support representing
++  // accesses to elements of member arrays, we conservatively represent accesses
++  // to the pointee object as if it had no any base lvalue specified.
++  // TODO: Support TBAA for member arrays.
+   QualType EltType = E->getType()->castAsArrayTypeUnsafe()->getElementType();
++  if (BaseInfo) *BaseInfo = LV.getBaseInfo();
++  if (TBAAInfo) *TBAAInfo = CGM.getTBAAAccessInfo(EltType);
++
+   return Builder.CreateElementBitCast(Addr, ConvertTypeForMem(EltType));
+ }
+ 
+diff --git a/test/CodeGen/tbaa-array.cpp b/test/CodeGen/tbaa-array.cpp
+new file mode 100644
+index 0000000000..86ca5ccb40
+--- /dev/null
++++ b/test/CodeGen/tbaa-array.cpp
+@@ -0,0 +1,18 @@
++// RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s \
++// RUN:     -emit-llvm -o - | FileCheck %s
++//
++// Check that we generate correct TBAA information for accesses to array
++// elements.
++
++struct A { int i; };
++struct B { A a[1]; };
++
++int foo(B *b) {
++// CHECK-LABEL: _Z3fooP1B
++// CHECK: load i32, {{.*}}, !tbaa [[TAG_A_i:!.*]]
++  return b->a->i;
++}
++
++// CHECK-DAG: [[TAG_A_i]] = !{[[TYPE_A:!.*]], [[TYPE_int:!.*]], i64 0}
++// CHECK-DAG: [[TYPE_A]] = !{!"_ZTS1A", !{{.*}}, i64 0}
++// CHECK-DAG: [[TYPE_int]] = !{!"int", !{{.*}}, i64 0}

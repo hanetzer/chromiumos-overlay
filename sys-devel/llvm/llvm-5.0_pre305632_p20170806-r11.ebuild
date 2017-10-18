@@ -15,21 +15,24 @@ HOMEPAGE="http://llvm.org/"
 SRC_URI=""
 EGIT_REPO_URI="http://llvm.org/git/llvm.git
 	https://github.com/llvm-mirror/llvm.git"
+LICENSE="UoI-NCSA"
 
 if use llvm-next; then
+
+# llvm:r316199 https://critique.corp.google.com/#review/173104684
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"c1e17d7b87c5d7c9ef90801cac9d60cb1bfc940a" # EGIT_COMMIT r312894
+		"f56176dd98a9f4f7a3c59e1309bf8201d4529f76" # EGIT_COMMIT r316199
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"8726d836614ded9f90da6e51875d18405d2ebbca" # EGIT_COMMIT r312872
+		"98adaa2097783c0fe3a4c948397e3f2182dcc5d2" # EGIT_COMMIT r316195
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"9b80cb1f6c92a08f352286c3360ca49594e598da"  # EGIT_COMMIT r312897
+		"53df1a5045c5c9471b0b4b00f8d64433d862699d"  # EGIT_COMMIT r315678
 )
 else
 EGIT_REPO_URIS=(
@@ -225,7 +228,7 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 73c1500cc3b3a4cd39a7c59753a7d0e63887a839 " # r315951
+	CHERRIES+=" a312801e78a7627965158838eae1fb9a10487af7 " # r316211
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -234,8 +237,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" f405097e96e57344db1430039df71d7c60f43746 " #r313409
-
+	CHERRIES+=" b1bfcf247fd22246ea224ad2df241f25c63ea22e " # r316703
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -256,7 +258,8 @@ src_prepare() {
 		use llvm-next || pick_cherries
 		use llvm-next && pick_next_cherries
 	fi
-	epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
+	use llvm-next && epatch "${FILESDIR}"/llvm-6.0-gnueabihf.patch
+	use llvm-next || epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 

@@ -24,7 +24,8 @@ fi
 
 src_unpack() {
 	if use llvm-next; then
-		EGIT_COMMIT="b07ae8ba81c69f8b1ad896536585c66295fde4f3" #r310330
+		# llvm:r316199 https://critique.corp.google.com/#review/17310468
+		EGIT_COMMIT="98adaa2097783c0fe3a4c948397e3f2182dcc5d2" #r316048
 	else
 		EGIT_COMMIT="f0d7258f4a2f5e6443011f7be011b5e9999c33f2" #r305593
 	fi
@@ -35,7 +36,7 @@ src_prepare() {
 	# Cherry-picks
 	local CHERRIES=""
 	if use llvm-next; then
-		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
+		CHERRIES+=""
 	else
 		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
 		CHERRIES+=" 4854a215fc3c0b10ab57b4b9b5e4cbeb5bf0624a " #r311555
@@ -47,8 +48,11 @@ src_prepare() {
 	# Apply patches
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
-	# patch to remove abort() for clear_cache builtin for ARM. https://crbug.com/761103
-	epatch "${FILESDIR}"/compiler-rt-disable-abort-cacheflush.patch
+
+	if ! use llvm-next; then
+		# patch to remove abort() for clear_cache builtin for ARM. https://crbug.com/761103
+		epatch "${FILESDIR}"/compiler-rt-disable-abort-cacheflush.patch
+	fi
 }
 
 src_configure() {
@@ -96,12 +100,10 @@ src_install() {
 	local libdir=$(llvm-config --libdir)
 	rm -rf "${ED}"usr/share || die
 	rm -rf "${ED}"${libdir}/clang/*/include || die
-	rm -f "${ED}"${libdir}/clang/*/asan_blacklist.txt || die
-	rm -f "${ED}"${libdir}/clang/*/msan_blacklist.txt || die
+	rm -f "${ED}"${libdir}/clang/*/*_blacklist.txt || die
 	rm -f "${ED}"${libdir}/clang/*/dfsan_abilist.txt || die
-	rm -f "${ED}"${libdir}/clang/*/dfsan_blacklist.txt || die
 
-	if use llvm-next ; then
+	if use llvm-next; then
 		local llvm_version=$(llvm-config --version)
 		local clang_version=${llvm_version%svn*}
 		clang_version=${clang_version%git*}
