@@ -84,12 +84,13 @@ src_install() {
 		else
 			einfo "Manually installing for now"
 			exeinto /usr/lib/python2.7/site-packages
-			for fname in cros_config_host_py/*.py; do
+			for fname in cros_config_host_py/*.py validate/*.py; do
 				einfo "install ${fname}"
 				doexe "${fname}"
 			done
 			exeinto /usr/bin
 			doexe cros_config_host_py/cros_config_host_py
+			doexe validate/validate_config
 		fi
 	fi
 }
