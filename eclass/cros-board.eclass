@@ -73,6 +73,7 @@ ALL_BOARDS=(
 	candy
 	caroline
 	caroline-arc64
+	caroline-arcnext
 	caroline-bertha
 	caroline-ndktranslation
 	caroline-userdebug
@@ -112,6 +113,7 @@ ALL_BOARDS=(
 	enguarde
 	#envoy-jerry
 	eve
+	eve-arcnext
 	eve-bertha
 	eve-kvm
 	eve-userdebug
@@ -158,6 +160,7 @@ ALL_BOARDS=(
 	kefka
 	#kennet
 	kevin
+	kevin-arcnext
 	kevin-bertha
 	kevin-tpm2
 	#kiev
