@@ -41,7 +41,7 @@ src_unpack() {
 
 src_configure() {
 	local mycmakeargs=(
-		-DBUILD_SHARED_LIBS=ON
+		#-DBUILD_SHARED_LIBS=ON
 		# TODO: fix detecting pthread upstream in stand-alone build
 		-DPTHREAD_LIB='-lpthread'
 	)
