@@ -1,0 +1,14 @@
+DEFINED_PHASES=configure install postinst prepare setup test
+DEPEND=kernel_linux? ( iproute2? ( sys-apps/iproute2[-minimal] ) !iproute2? ( >=sys-apps/net-tools-1.60_p20160215155418 ) ) pam? ( virtual/pam ) ssl? ( !mbedtls? ( !libressl? ( >=dev-libs/openssl-0.9.8:* ) libressl? ( dev-libs/libressl ) ) mbedtls? ( net-libs/mbedtls ) ) lz4? ( app-arch/lz4 ) lzo? ( >=dev-libs/lzo-1.07 ) pkcs11? ( >=dev-libs/pkcs11-helper-1.11 ) systemd? ( sys-apps/systemd ) test? ( dev-util/cmocka ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 sys-apps/baselayout virtual/pkgconfig
+DESCRIPTION=Robust and highly flexible tunneling application compatible with many OSes
+EAPI=5
+HOMEPAGE=http://openvpn.net/
+IUSE=down-root examples inotify iproute2 libressl lz4 +lzo mbedtls pam pkcs11 +plugins selinux +ssl static systemd test userland_BSD
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=kernel_linux? ( iproute2? ( sys-apps/iproute2[-minimal] ) !iproute2? ( >=sys-apps/net-tools-1.60_p20160215155418 ) ) pam? ( virtual/pam ) ssl? ( !mbedtls? ( !libressl? ( >=dev-libs/openssl-0.9.8:* ) libressl? ( dev-libs/libressl ) ) mbedtls? ( net-libs/mbedtls ) ) lz4? ( app-arch/lz4 ) lzo? ( >=dev-libs/lzo-1.07 ) pkcs11? ( >=dev-libs/pkcs11-helper-1.11 ) systemd? ( sys-apps/systemd ) selinux? ( sec-policy/selinux-openvpn ) sys-apps/baselayout
+REQUIRED_USE=static? ( !plugins !pkcs11 ) mbedtls? ( ssl !libressl ) pkcs11? ( ssl ) !plugins? ( !pam !down-root ) inotify? ( plugins )
+SLOT=0
+SRC_URI=http://swupdate.openvpn.net/community/releases/openvpn-2.4.4.tar.gz test? ( https://raw.githubusercontent.com/OpenVPN/openvpn/v2.4.4/tests/unit_tests/openvpn/mock_msg.h )
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	linux-info	a238cd46144175b5f6538caa13bdf180	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	user	c8f947561e8797a300801d0dd3625448	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=0375bbe38e2c7d26533d1cb684d1a59c
