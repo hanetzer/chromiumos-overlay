@@ -8,5 +8,5 @@ KEYWORDS=~*
 LICENSE=GPL-2
 RDEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject dev-python/pyusb ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
-_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	3f4d2cf3215bf5c0b5f5426d322b055a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	409f9f49d756b00694cc04981b2b2ae8	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
 _md5_=0450f6fb494b426441b812b6f8e49feb
