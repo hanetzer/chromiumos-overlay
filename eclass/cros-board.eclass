@@ -277,6 +277,7 @@ ALL_BOARDS=(
 	soraka
 	#space
 	squawks
+	stelvio
 	storm
 	storm_nand
 	stout
