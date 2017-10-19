@@ -58,6 +58,10 @@ src_compile() {
 	cros-workon_src_compile
 	platform_src_compile
 	if use python; then
+
+		einfo "Validating master configuration binding"
+		python validate_config.py README.md || die "Validation failed"
+
 		if [[ -n "${fixme}" ]]; then
 			distutils-r1_src_compile
 		fi
