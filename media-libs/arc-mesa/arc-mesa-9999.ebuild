@@ -91,8 +91,7 @@ src_configure() {
 		# cheets-specific overrides
 		#
 
-		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
-		arc-build-select-gcc
+		arc-build-select-clang
 	fi
 
 	multilib-minimal_src_configure
@@ -207,6 +206,10 @@ multilib_src_configure() {
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		$(use egl && echo "--with-platforms=${EGL_PLATFORM}")
+}
+
+multilib_src_compile() {
+	emake CCLD="${CCLD}"
 }
 
 multilib_src_install_cheets() {
