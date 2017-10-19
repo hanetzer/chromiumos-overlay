@@ -79,16 +79,14 @@ _find_configs() {
 	done < <(find "$1" -name '*.dtsi' -print0)
 }
 
-# @FUNCTION: install_private_model_files
-# @USAGE:
-# @DESCRIPTION:
-# Installs all .dtsi files for the current board. This is intended to be called
-# from the chromeos-config-<board> private ebuild. The files are named
-# "private-<fname>.dtsi".
-install_private_model_files() {
-	local files
+# Install model files with a given prefix:
+# Args:
+#   $1: Prefix to use
+_install_model_files() {
+	[[ $# -eq 1 ]] || die "${FUNCNAME}: takes one arguments"
 
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+	local prefix="$1"
+	local files
 
 	_find_configs "${FILESDIR}"
 
@@ -101,12 +99,36 @@ install_private_model_files() {
 	(
 		insinto "${UNIBOARD_DTS_DIR}"
 		for file in "${files[@]}"; do
-			local dest="private-${file##*/}"
+			local dest="${prefix}${file##*/}"
 
 			einfo "Installing ${dest}"
 			newins "${file}" "${dest}"
 		done
 	)
+}
+
+# @FUNCTION: install_private_model_files
+# @USAGE:
+# @DESCRIPTION:
+# Installs all .dtsi files for the current board. This is intended to be called
+# from the chromeos-config-<board> private ebuild. The files are named
+# "private-<fname>.dtsi".
+install_private_model_files() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	_install_model_files "private-"
+}
+
+# @FUNCTION: install_model_files
+# @USAGE:
+# @DESCRIPTION:
+# Installs all .dtsi files for the current board. This is intended to be called
+# from the chromeos-config-<board> public ebuild. The files are named
+# "<fname>.dtsi".
+install_model_files() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	_install_model_files ""
 }
 
 # Simple function to return the path to the master configuration file.
