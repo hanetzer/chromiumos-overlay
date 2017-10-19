@@ -75,6 +75,8 @@ REQUIRED_USE="
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
+	afdo_chrome_exp1? ( afdo_use )
+	afdo_chrome_exp2? ( afdo_use )
 	"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
@@ -185,13 +187,13 @@ add_afdo_files() {
 	for a in "${!AFDO_FILE_EXP1[@]}" ; do
 		f=${AFDO_FILE_EXP1[${a}]}
 		if [[ -n ${f} ]]; then
-			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION_EXP1}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP1_SUFFIX}${AFDO_BZ_SUFFIX} ) )"
+			SRC_URI+=" afdo_chrome_exp1? ( ${a}? ( ${AFDO_LOCATION_EXP1}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP1_SUFFIX}${AFDO_BZ_SUFFIX} ) )"
 		fi
 	done
 	for a in "${!AFDO_FILE_EXP2[@]}" ; do
 		f=${AFDO_FILE_EXP2[${a}]}
 		if [[ -n ${f} ]]; then
-			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION_EXP2}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP2_SUFFIX}${AFDO_BZ_SUFFIX} ) )"
+			SRC_URI+=" afdo_chrome_exp2? ( ${a}? ( ${AFDO_LOCATION_EXP2}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP2_SUFFIX}${AFDO_BZ_SUFFIX} ) )"
 		fi
 	done
 	for a in "${!AFDO_FROZEN_FILE[@]}" ; do
