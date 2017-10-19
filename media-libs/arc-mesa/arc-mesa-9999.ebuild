@@ -193,7 +193,7 @@ multilib_src_configure() {
 		--with-driver=dri \
 		--disable-glu \
 		--disable-glut \
-		--disable-omx \
+		--disable-omx-bellagio \
 		--disable-va \
 		--disable-vdpau \
 		--disable-xvmc \
