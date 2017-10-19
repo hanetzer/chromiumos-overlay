@@ -12,9 +12,11 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tar.gz"
 LICENSE="BSD-Infineon LICENSE.infineon-firmware-updater-TCG"
 SLOT="0"
 KEYWORDS="*"
+IUSE="tpm_slb9655_v4_31"
 
 RDEPEND="
 	dev-libs/openssl
+	tpm_slb9655_v4_31? ( chromeos-base/ec-utils )
 "
 
 DEPEND="${RDEPEND}"
