@@ -70,7 +70,8 @@ IUSE="
 	"
 REQUIRED_USE="
 	asan? ( clang )
-	?? ( gold lld )
+	gold? ( !lld )
+	lld? ( !gold )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	"
