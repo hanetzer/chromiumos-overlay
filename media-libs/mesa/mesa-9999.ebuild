@@ -174,6 +174,9 @@ src_configure() {
 		if use video_cards_intel; then
 			VULKAN_DRIVERS+=",intel"
 		fi
+		if use video_cards_amdgpu; then
+			VULKAN_DRIVERS+=",radeon"
+		fi
 	fi
 
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
