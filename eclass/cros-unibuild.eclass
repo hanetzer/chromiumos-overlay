@@ -92,6 +92,9 @@ install_private_model_files() {
 
 	_find_configs "${FILESDIR}"
 
+	einfo "Validating ${#files[@]} files:"
+	validate_config -p "${files[@]}" || die "Validation failed"
+
 	einfo "Installing ${#files[@]} files to ${UNIBOARD_DTS_DIR}"
 
 	# Avoid polluting callers with our newins.
