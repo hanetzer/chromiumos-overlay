@@ -53,6 +53,7 @@ IUSE="
 	+highdpi
 	internal_gles_conform
 	libcxx
+	lld
 	mojo
 	+nacl
 	neon
@@ -69,8 +70,10 @@ IUSE="
 	"
 REQUIRED_USE="
 	asan? ( clang )
+	gold? ( !lld )
+	lld? ( !gold )
 	libcxx? ( clang )
-	thinlto? ( clang gold )
+	thinlto? ( clang || ( gold lld ) )
 	"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
@@ -154,9 +157,9 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-60.0.3077.0_rc-r1.afdo"
 
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-64.0.3243.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-64.0.3243.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-64.0.3243.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-64.0.3244.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-64.0.3244.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-64.0.3244.0_rc-r1.afdo"
 
 AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
 AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3223.0_rc-r1.afdo"
@@ -335,6 +338,7 @@ set_build_args() {
 		cros_host_is_clang=$(usetf clang)
 		clang_use_chrome_plugins=false
 		use_thin_lto=$(usetf thinlto)
+		use_lld=$(usetf lld)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.
@@ -865,8 +869,11 @@ src_configure() {
 			export CC="${CC} -B$(get_binutils_path_gold)"
 			export CXX="${CXX} -B$(get_binutils_path_gold)"
 		fi
+	elif use lld ; then
+		export CC="${CC} -fuse-ld=lld"
+		export CXX="${CXX} -fuse-ld=lld"
 	else
-		ewarn "gold disabled. Using GNU ld."
+		ewarn "gold and lld disabled. Using GNU ld."
 	fi
 
 	# Use g++ as the linker driver.
