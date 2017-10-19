@@ -187,27 +187,39 @@ unibuild_get_dtb_data() {
 		dtc -O dtb
 }
 
-# @FUNCTION: install_thermal_files
+# @FUNCTION: _unibuild_install_fw
+# @USAGE: [command]
+# @INTERNAL
+# @DESCRIPTION:
+# Common installation function.
+# Install files from a relative path in FILESDIR to an absolute path in the
+# root.
+# Args:
+#   $1: Command to pass to cros_config_host_py to get the files
+_unibuild_common_install() {
+	[[ $# -eq 1 ]] || die "${FUNCNAME}: takes one argument"
+
+	local cmd="$1"
+	local source dest
+	(cros_config_host_py "${cmd}" || die) |
+	while read -r source; do
+		read -r dest
+		einfo "   - ${source}"
+		insinto "$(dirname "${dest}")"
+		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
+	done
+}
+
+# @FUNCTION: unibuild_install_thermal_files
 # @USAGE:
 # @DESCRIPTION:
 # Install files related to thermal operation. Currently this is only the DPTF
 # (Dynamic Platform and Thermal Framework) datavaults, typically called dptf.dv
-install_thermal_files() {
+unibuild_install_thermal_files() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	local models=( $(get_model_list) )
-	local model
-	local dptf
-
 	einfo "unibuild: Installing thermal files"
-	for model in "${models[@]}"; do
-		dptf="$(get_model_conf_value "${model}" "/thermal" "dptf-dv")"
-		if [[ -n "${dptf}" ]]; then
-			einfo "   - ${dptf}"
-			insinto "$(dirname /etc/dptf/${dptf})"
-			doins "${FILESDIR}/${dptf}"
-		fi
-	done
+	_unibuild_common_install get-thermal-files
 }
 
 # @FUNCTION: _unibuild_install_fw
@@ -224,7 +236,7 @@ _unibuild_install_fw() {
 	# TODO(crbug.com/769575): Remove this hard-coded path.
 	local touchfw_dir="/opt/google/touch/firmware"
 
-	elog "Installing ${firmware} with symlink from ${symlink}"
+	elog "   - ${firmware} with symlink from ${symlink}"
 	local dest="${touchfw_dir}/${firmware}"
 	insinto "$(dirname "${dest}")"
 	doins "${FILESDIR}/${firmware}"
@@ -254,14 +266,6 @@ unibuild_install_touch_files() {
 unibuild_install_audio_files() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	local source dest
 	einfo "unibuild: Installing audio files"
-	set -o pipefail
-	cros_config_host_py get-audio-files |
-	( while read -r source; do
-		read -r dest
-		einfo "   - ${source}"
-		insinto "$(dirname "${dest}")"
-		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
-	done ) || die "Failed to read config"
+	_unibuild_common_install get-audio-files
 }
