@@ -14,7 +14,7 @@ RESTRICT="strip"
 
 RDEPEND="
 	!chromeos-base/crosvm
-	chromeos-base/chromeos-minijail
+	chromeos-base/minijail
 "
 DEPEND="${RDEPEND}"
 
