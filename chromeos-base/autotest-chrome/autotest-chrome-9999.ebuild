@@ -59,6 +59,7 @@ IUSE_TESTS=(
 	+tests_bluetooth_AdapterSanity
 	+tests_bluetooth_IDCheck
 	+tests_bluetooth_RegressionClient
+	+tests_cfm_AutotestSmokeTest
 	+tests_desktopui_AudioFeedback
 	tests_desktopui_CameraApp
 	+tests_desktopui_ChromeSanity
