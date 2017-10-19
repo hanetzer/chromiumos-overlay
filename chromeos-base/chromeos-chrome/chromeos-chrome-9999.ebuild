@@ -52,7 +52,7 @@ IUSE="
 	hardfp
 	+highdpi
 	internal_gles_conform
-	libcxx
+	+libcxx
 	lld
 	mojo
 	+nacl
