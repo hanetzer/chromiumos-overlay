@@ -298,7 +298,15 @@ local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
 	einfo "Copying sources from ${src}"
-	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" "--exclude=*.pyc" )
+	local blacklist=(
+		"${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}"
+		# Python compiled objects are a pain.
+		"--exclude=*.py[co]"
+		# Assume any dir named ".git" is an actual git dir.  We don't copy them
+		# as the ones created by `repo` are full of symlinks which are skipped
+		# due to --safe-links below which makes the git dir useless.
+		"--exclude=.git/"
+	)
 
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
