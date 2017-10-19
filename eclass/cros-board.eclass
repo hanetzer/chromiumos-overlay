@@ -244,6 +244,7 @@ ALL_BOARDS=(
 	purin
 	pyro
 	quawks
+	rainier
 	rambi
 	raspberrypi
 	reef
