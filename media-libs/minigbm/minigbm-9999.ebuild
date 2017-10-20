@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-VIDEO_CARDS="amdgpu exynos intel marvell mediatek radeon radeonsi rockchip tegra"
+VIDEO_CARDS="amdgpu exynos intel marvell mediatek radeon radeonsi rockchip tegra virgl"
 IUSE="-asan"
 for card in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${card}"
@@ -46,6 +46,7 @@ src_configure() {
 	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
 	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
 	use video_cards_amdgpu && append-cppflags -DDRV_AMDGPU && export DRV_AMDGPU=1
+	use video_cards_virgl && append-cppflags -DDRV_VIRGL && export DRV_VIRGL=1
 	cros-workon_src_configure
 }
 
