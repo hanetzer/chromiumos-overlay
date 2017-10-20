@@ -96,13 +96,6 @@ install_private_model_files() {
 	)
 }
 
-# Simple function to return the path to the master configuration file.
-get_dtb_path() {
-	local f="${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}"
-	[[ -e "${f}" ]] || die "${f} missing. Do you have the right DEPEND='s?"
-	echo "${f}"
-}
-
 # @FUNCTION: get_model_conf_value
 # @USAGE: <model> <path> <prop>
 # @RETURN: value of the property, or empty if not found
@@ -120,8 +113,7 @@ get_model_conf_value() {
 	local model="$1"
 	local path="$2"
 	local prop="$3"
-	cros_config_host_py "$(get_dtb_path)" --model "${model}" get "${path}" \
-		"${prop}"
+	cros_config_host_py --model "${model}" get "${path}" "${prop}"
 }
 
 # @FUNCTION: get_model_list
@@ -133,7 +125,7 @@ get_model_conf_value() {
 get_model_list() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	cros_config_host_py "$(get_dtb_path)" list-models
+	cros_config_host_py list-models
 }
 
 # Internal function to compile the device tree file on-the-fly and output a
@@ -170,7 +162,7 @@ get_dtb_data() {
 get_model_list_noroot() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	get_dtb_data | cros_config_host_py - list-models
+	get_dtb_data | cros_config_host_py -c - list-models
 }
 
 # @FUNCTION: get_unique_model_conf_value_set
@@ -256,7 +248,7 @@ get_model_conf_value_noroot() {
 	local path="$2"
 	local prop="$3"
 
-	get_dtb_data | cros_config_host_py - --model "${model}" get "${path}" \
+	get_dtb_data | cros_config_host_py -c - --model "${model}" get "${path}" \
 		"${prop}"
 }
 
@@ -310,7 +302,7 @@ unibuild_install_touch_files() {
 	while read -r fwfile; do
 		read -r symlink
 		_install_fw "${fwfile}" "${symlink}"
-	done < <(cros_config_host_py "$(get_dtb_path)" get-touch-firmware-files)
+	done < <(cros_config_host_py get-touch-firmware-files)
 }
 
 # @FUNCTION: unibuild_install_audio_files
@@ -328,5 +320,5 @@ unibuild_install_audio_files() {
 		einfo "   - ${source}"
 		insinto "$(dirname "${dest}")"
 		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
-	done < <(cros_config_host_py "$(get_dtb_path)" get-audio-files)
+	done < <(cros_config_host_py get-audio-files)
 }
