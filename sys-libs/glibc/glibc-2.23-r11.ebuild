@@ -189,7 +189,9 @@ eblit-src_prepare-post() {
 		cp "${FILESDIR}"/2.20/glibc-2.20-gentoo-stack_chk_fail.c debug/stack_chk_fail.c || die
 		cp "${FILESDIR}"/2.20/glibc-2.20-gentoo-chk_fail.c debug/chk_fail.c || die
 
-		if use debug ; then
+		# Use SIGABRT instead of SIGKILL for check handler for all cases.
+		# https://crbug.com/389360 https://crbug.com/776972
+		if true ; then
 			# Allow SIGABRT to dump core on non-hardened systems, or when debug is requested.
 			sed -i \
 				-e '/^CFLAGS-backtrace.c/ iCPPFLAGS-stack_chk_fail.c = -DSSP_SMASH_DUMPS_CORE' \
