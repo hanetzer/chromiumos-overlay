@@ -14,7 +14,7 @@
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
 # to gclient path.
 
-EAPI="4"
+EAPI="5"
 inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -70,8 +70,7 @@ IUSE="
 	"
 REQUIRED_USE="
 	asan? ( clang )
-	gold? ( !lld )
-	lld? ( !gold )
+	?? ( gold lld )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
