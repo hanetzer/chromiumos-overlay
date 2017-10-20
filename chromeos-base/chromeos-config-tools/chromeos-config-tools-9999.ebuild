@@ -72,7 +72,6 @@ src_install() {
 	doins "${OUT}"/libcros_config.pc
 
 	dobin "${OUT}"/cros_config
-	use cros_host && dobin "${OUT}"/cros_config_host
 
 	if use python; then
 		if [[ -n "${fixme}" ]]; then
@@ -100,8 +99,6 @@ platform_pkg_test() {
 		cros_config_unittest
 		cros_config_main_unittest
 	)
-
-	use cros_host && tests+=( cros_config_host_main_unittest )
 
 	local test_bin
 
