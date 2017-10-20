@@ -51,6 +51,16 @@ src_prepare() {
 	epatch "${FILESDIR}"/Don-t-check-the-stride-in-the-y-direction-for-a-sing.patch
 	epatch "${FILESDIR}"/Change-the-vertical-alignment-for-linear-surface.patch
 	epatch "${FILESDIR}"/Revert-Use-Media-Read-message-if-possible-on-Gen8.patch
+# next seven patches are a specific backport for cyan h.264 encoder.  They are adapted
+# to work only on this 1.8.3 build. When moving to libva-2.0 all seven patches can be
+# safely removed
+	epatch "${FILESDIR}"/make-gpe-utils-compatible-with-gen8.patch
+	epatch "${FILESDIR}"/change-prefix-of-function-name-from-gen9-to-i965-in-.patch
+	epatch "${FILESDIR}"/add-gen8-avc-encoder-kernel.patch
+	epatch "${FILESDIR}"/add-structures-and-const-tables-related-with-gen8-av.patch
+	epatch "${FILESDIR}"/add-init-kernel-set-curbe-send-surface-for-gen8-avc-.patch
+	epatch "${FILESDIR}"/update-gen8-avc-encoder-code-path.patch
+	epatch "${FILESDIR}"/change-file-name-prefix-from-gen9-to-i965-for-avc-en.patch
 
 	sed -e 's/intel-gen4asm/\0diSaBlEd/g' -i configure.ac || die
 	autotools-multilib_src_prepare
