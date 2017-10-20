@@ -53,11 +53,6 @@ PATCHES=(
 	"${FILESDIR}"/0004-fix-rpath.patch
 	"${FILESDIR}"/0005-add-unknown-vendor-to-filesearch.patch
 	"${FILESDIR}"/0006-fix-DIExpression-warnings.patch
-
-	# The reverted change was to make rustllvm work with LLVM 5.0 master but
-	# Chrome OS's LLVM seems to be lagging behind the change this patch is for.
-	# Remove this revert if the SyncScope name change happens in LLVM.
-	"${FILESDIR}"/0007-Revert-rustllvm-update-to-SyncScope-ID.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -98,6 +93,17 @@ src_prepare() {
 	# ./configure.
 	sed -e 's:#include <stdlib.h>:void abort(void);:g' \
 	    -i "${ECONF_SOURCE:-.}"/src/libcompiler_builtins/compiler-rt/lib/builtins/int_util.c || die
+
+	if has_version --host-root 'sys-devel/llvm[llvm-next]' ||
+			has_version --host-root ">sys-devel/llvm-5.0_pre305632"; then
+		PATCHES+=("${FILESDIR}"/0008-Remove-default-CodeModel-enum-variants.patch)
+		PATCHES+=("${FILESDIR}"/0009-Update-writeArchive-handnling-for-std-error_code.patch)
+	else
+		# The reverted change was to make rustllvm work with LLVM 5.0 master but
+		# Chrome OS's LLVM seems to be lagging behind the change this patch is for.
+		# Remove this revert if the SyncScope name change happens in LLVM.
+		PATCHES+=("${FILESDIR}"/0007-Revert-rustllvm-update-to-SyncScope-ID.patch)
+	fi
 
 	epatch "${PATCHES[@]}"
 
