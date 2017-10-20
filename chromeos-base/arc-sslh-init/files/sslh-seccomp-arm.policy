@@ -29,7 +29,6 @@ rt_sigreturn: 1
 setgid32: 1
 setuid32: 1
 access: 1
-set_tls: 1
 getpid: 1
 listen: 1
 setgroups32: 1
@@ -41,3 +40,4 @@ uname: 1
 ioctl: arg1 == 0x8910
 # When we catch a SIGTERM, we kill children with SIGTERM too.
 kill: 1
+sigreturn: 1
