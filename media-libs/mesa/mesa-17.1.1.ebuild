@@ -193,7 +193,7 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm gallium-llvm) \
+		$(use_enable llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
@@ -208,7 +208,7 @@ src_configure() {
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
-		$(use egl && echo "--with-egl-platforms=surfaceless")
+		$(use egl && echo "--with-platforms=surfaceless")
 }
 
 src_install() {
