@@ -1,1 +1,0 @@
-chromeos-config-models-1.ebuild

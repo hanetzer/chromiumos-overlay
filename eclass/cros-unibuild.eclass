@@ -99,7 +99,8 @@ _install_model_files() {
 	(
 		insinto "${UNIBOARD_DTS_DIR}"
 		for file in "${files[@]}"; do
-			local dest="${prefix}${file##*/}"
+			local dest="${file%/*}"
+			dest="${prefix}${dest##*/}.dtsi"
 
 			einfo "Installing ${dest}"
 			newins "${file}" "${dest}"
@@ -129,22 +130,6 @@ install_model_files() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
 	_install_model_files ""
-}
-
-# Simple function to return the path to the master configuration file.
-get_dtb_path() {
-	local f="${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}"
-	if [[ -e "${f}" ]]; then
-		echo "${f}"
-	else
-		# just for cros-config case
-		f="${D}${UNIBOARD_DTB_INSTALL_PATH}"
-		if [[ -e "${f}" ]]; then
-			echo "${f}"
-		else
-			die "${f} missing. Do you have the right DEPEND='s?"
-		fi
-	fi
 }
 
 # @FUNCTION: get_model_conf_value
@@ -183,29 +168,34 @@ get_model_list() {
 # file suitable for piping into fdtget, etc.
 # TODO(crbug.com/771187): Move this to cros_config.
 get_dtb_data() {
-	if [[ -f ${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH} ]]; then
-		cat ${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}
-	else
-		# This function is called before FILESDIR is set so figure it out from
-		# the ebuild filename.
-		local basedir="$(dirname "${EBUILD}")/.."
-		local configdir="${basedir}/chromeos-config-bsp/files"
-		local files
+	# This function is called before FILESDIR is set so figure it out from
+	# the ebuild filename.
+	local basedir="$(dirname "${EBUILD}")/.."
+	local configdir="${basedir}/chromeos-config-bsp/files"
+	local files
 
-		# We are not allowed to access the ROOT directory here, so compile the
-		# model fragment on the fly and pull out the value we want.
+	# We are not allowed to access the ROOT directory here, so compile the
+	# model fragment on the fly and pull out the value we want.
 
-		# We cannot die here if there are no config files as this function is
-		# called by non-unibuild boards. We just need to output an empty
-		# config. But do skip this if there is no config BSP directory at all.
-		if [[ -d "${configdir}" ]]; then
-			_find_configs "${configdir}"
-		fi
-		echo "/dts-v1/; / { chromeos { family: family { }; " \
-			"models: models { }; }; };" |
-			cat "-" "${files[@]}" |
-			dtc -O dtb
+	# We cannot die here if there are no config files as this function is
+	# called by non-unibuild boards. We just need to output an empty
+	# config. But do skip this if there is no config BSP directory at all.
+	if [[ -d "${configdir}" ]]; then
+		_find_configs "${configdir}"
 	fi
+
+	# TODO(sjg): remove the workaround once there is no longer the need to
+	#            have coral as the first model so we don't end up with a
+	#            large shellball with bios in each model.
+	local cat_workaround_arg=""
+	if [[ -e "${configdir}/coral/model.dtsi" ]]; then
+		cat_workaround_arg="${configdir}/coral/model.dtsi"
+	fi
+
+	echo "/dts-v1/; / { chromeos { family: family { }; " \
+		"models: models { }; }; };" |
+		cat "-" "${cat_workaround_arg}" "${files[@]}" |
+		dtc -O dtb
 }
 
 # @FUNCTION: get_model_list_noroot
@@ -340,27 +330,11 @@ _install_fw() {
 	# TODO(crbug.com/769575): Remove this hard-coded path.
 	local touchfw_dir="/opt/google/touch/firmware"
 
-	local src=''
-	if [[ -e "${FILESDIR}/${firmware}" ]]; then
-		src="${FILESDIR}/${firmware}"
-	elif [[ -e "${SYSROOT}${UNIBOARD_CROS_CONFIG_FILES_DIR}/${firmware}" ]]; then
-		src="${SYSROOT}${UNIBOARD_CROS_CONFIG_FILES_DIR}/${firmware}"
-	else
-		# TODO(sjg): can be enabled once reef-uni's
-		# chromeos-touch-firmware-baseboard-reef is adjusted to copy files in place
-		# for chromeos-config and virtual/chromeos-bsp is added to deps of it.
-		# die "${firmware} is missing and cannot be installed"
-		:
-	fi
-
-	if [[ -n "${src}" ]]; then
-		elog "Installing ${firmware} with symlink from ${symlink}"
-		local dest="${touchfw_dir}/${firmware}"
-
-		insinto "$(dirname "${dest}")"
-		doins "${src}"
-		dosym "${dest}" "/lib/firmware/${symlink}"
-	fi
+	elog "Installing ${firmware} with symlink from ${symlink}"
+	local dest="${touchfw_dir}/${firmware}"
+	insinto "$(dirname "${dest}")"
+	doins "${FILESDIR}/${firmware}"
+	dosym "${dest}" "/lib/firmware/${symlink}"
 }
 
 # @FUNCTION: unibuild_install_touch_files

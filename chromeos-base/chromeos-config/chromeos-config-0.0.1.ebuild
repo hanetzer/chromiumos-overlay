@@ -17,11 +17,6 @@ KEYWORDS="*"
 
 RDEPEND="
 	chromeos-base/chromeos-config-bsp:=
-	virtual/chromeos-config-models
-"
-DEPEND="
-	chromeos-base/chromeos-config-tools
-	virtual/chromeos-config-models
 "
 
 # This ebuild creates the Chrome OS master configuration file stored in
@@ -76,6 +71,4 @@ src_install() {
 	# Get the directory name only, and use that as the install directory.
 	insinto "${UNIBOARD_DTB_INSTALL_PATH%/*}"
 	doins config.dtb
-
-	unibuild_install_touch_files
 }

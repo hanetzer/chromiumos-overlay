@@ -32,6 +32,7 @@ cros-model_src_install_parent_config() {
 	if [[ -n "${parent_model}" ]]; then
 		# Avoid polluting callers with our newins.
 		(
+			einfo "Installing parent ${parent_model} config files"
 			insinto "${CROS_MODELS_DIR}/${model}"
 			doins -r "${D}${CROS_MODELS_DIR}/${parent_model}"/*
 		)
@@ -50,16 +51,13 @@ cros-model_src_install_model_config() {
 
 	# Avoid polluting callers with our newins.
 	(
+		einfo "Installing ${model} config files"
 		insinto "${CROS_MODELS_DIR}/${model}"
-		doins -r "${FILESDIR}/${model}"/*
+		[[ -d "${FILESDIR}/${model}" ]] && doins -r "${FILESDIR}/${model}"/*
 
 		# Could remove the file, but leaving it for now, so it's obvious in diff
 		# if a different parent was used
 		# rm "${D}${CROS_MODELS_DIR}/${model}/parent"
-
-		# For the benefit of cros-config, put the model file where it expects it
-		insinto "${UNIBOARD_DTS_DIR}"
-		newins "${FILESDIR}/${model}/model.dtsi" "private-${model}.dtsi"
 	)
 }
 
@@ -67,8 +65,10 @@ cros-model_src_install_model_config() {
 # @DESCRIPTION:
 # Copies all model configuration files to where they need to be.
 cros-model_src_install() {
-	local models=( $("${FILESDIR}/createInheritanceList.py" "${FILESDIR}") )
+	local models=( $("${FILESDIR}/createInheritanceList.py" \
+		"${SYSROOT%/}${CROS_MODELS_DIR}") )
 
+	einfo $models
 	local it
 	for it in "${!models[@]}"; do
 		local model="${models[it]#*/}"
