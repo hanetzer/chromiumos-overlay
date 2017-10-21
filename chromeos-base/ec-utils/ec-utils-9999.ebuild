@@ -9,7 +9,7 @@
 # available to build. The logic in this ebuild succeeds so long as one
 # of the many models successfully builds.
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
