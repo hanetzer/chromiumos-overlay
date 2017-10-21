@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages that are needed inside the SDK, but after we've built all the toolchain packages that we install separately via binpkgs. This avoids circular dependencies when bootstrapping.
+EAPI=5
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-lang/rust dev-util/cargo
+SLOT=0
+_md5_=7c719e45a3d514cd2ec1def27a8f538e
