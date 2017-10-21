@@ -9,7 +9,7 @@
 # available to build. The logic in this ebuild succeeds so long as one
 # of the many models successfully builds.
 
-EAPI=4
+EAPI=5
 CROS_WORKON_COMMIT="8d639f58ea58c851eb226af9fe676693fbc901f8"
 CROS_WORKON_TREE="e5647e83f6c425927a1a391db9cab90aec27efd2"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
