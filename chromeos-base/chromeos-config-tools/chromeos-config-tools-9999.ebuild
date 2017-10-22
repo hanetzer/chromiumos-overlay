@@ -82,14 +82,16 @@ src_install() {
 			distutils-r1_src_install
 		else
 			einfo "Manually installing for now"
-			exeinto /usr/lib/python2.7/site-packages
-			for fname in cros_config_host_py/*.py validate/*.py; do
+			for fname in cros_config_host.py cros_config_schema.py \
+				validate_config.py validate_schema.py \
+				libcros_config_host/*.py; do
+				exeinto "$(dirname /usr/lib/python2.7/site-packages/${fname})"
 				einfo "install ${fname}"
 				doexe "${fname}"
 			done
 			exeinto /usr/bin
-			doexe cros_config_host_py/cros_config_host_py
-			doexe validate/validate_config
+			doexe cros_config_host_py
+			doexe validate_config
 		fi
 	fi
 }
