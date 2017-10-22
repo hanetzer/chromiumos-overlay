@@ -95,7 +95,7 @@ src_prepare() {
 	    -i "${ECONF_SOURCE:-.}"/src/libcompiler_builtins/compiler-rt/lib/builtins/int_util.c || die
 
 	if has_version --host-root 'sys-devel/llvm[llvm-next]' ||
-			has_version --host-root ">sys-devel/llvm-5.0_pre305632"; then
+			has_version --host-root ">sys-devel/llvm-5.0_pre308632"; then
 		PATCHES+=("${FILESDIR}"/0008-Remove-default-CodeModel-enum-variants.patch)
 		PATCHES+=("${FILESDIR}"/0009-Update-writeArchive-handnling-for-std-error_code.patch)
 	else
