@@ -299,6 +299,10 @@ multilib_src_install_all_cheets() {
 	if use vulkan; then
 		doins "${FILESDIR}/vulkan.rc"
 	fi
+
+	# Install permission file to declare opengles aep support.
+	insinto "${ARC_PREFIX}/vendor/etc/permissions"
+	doins "${FILESDIR}/android.hardware.opengles.aep.xml"
 }
 
 multilib_src_install_all() {
