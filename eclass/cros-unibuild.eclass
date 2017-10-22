@@ -344,10 +344,12 @@ _install_fw() {
 # touchscreen, touchpad and stylus.
 unibuild_install_touch_files() {
 	einfo "unibuild: Installing touch files"
-	while read -r fwfile; do
+	set -o pipefail
+	cros_config_host_py get-touch-firmware-files |
+	( while read -r fwfile; do
 		read -r symlink
 		_install_fw "${fwfile}" "${symlink}"
-	done < <(cros_config_host_py get-touch-firmware-files)
+	done ) || die "Failed to read config"
 }
 
 # @FUNCTION: unibuild_install_audio_files
@@ -360,10 +362,12 @@ unibuild_install_audio_files() {
 
 	local source dest
 	einfo "unibuild: Installing audio files"
-	while read -r source; do
+	set -o pipefail
+	cros_config_host_py get-audio-files |
+	( while read -r source; do
 		read -r dest
 		einfo "   - ${source}"
 		insinto "$(dirname "${dest}")"
 		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
-	done < <(cros_config_host_py get-audio-files)
+	done ) || die "Failed to read config"
 }
