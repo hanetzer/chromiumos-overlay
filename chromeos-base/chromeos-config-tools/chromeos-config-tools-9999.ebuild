@@ -100,6 +100,7 @@ platform_pkg_test() {
 	local tests=(
 		cros_config_unittest
 		cros_config_main_unittest
+		fake_cros_config_unittest
 	)
 
 	local test_bin
