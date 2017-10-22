@@ -37,16 +37,21 @@ src_compile() {
 	local dtb="${WORKDIR}/config.dtb"
 	local added=0
 	local dtsi
+	local files=( "${SYSROOT}${UNIBOARD_DTS_DIR}/"*.dtsi )
+	local target_dirs="${WORKDIR}/_dir_targets.dtsi"
+
+	if [[ "${#files[@]}" -eq 0 ]]; then
+		die "No .dtsi files found in ${SYSROOT}${UNIBOARD_DTS_DIR}: \
+please check your chromeos-config-bsp ebuild"
+	fi
 
 	# Create a .dts file with all the includes.
 	cat "${FILESDIR}/skeleton.dts" >"${dts}"
-	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi; do
-		if [[ ! -f "${dtsi}" ]]; then
-			die "No .dtsi files found in \
-${SYSROOT}${UNIBOARD_DTS_DIR}: please check your chromeos-config-bsp ebuild"
-		fi
+	cros_config_host_py write-target-dirs >"${target_dirs}" \
+		|| die "Failed to write directory targets file"
+	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${target_dirs}"; do
 		einfo "Adding ${dtsi}"
-		cp "${dtsi}" "${WORKDIR}"
+		[[ "${dtsi}" != "${target_dirs}" ]] && cp "${dtsi}" "${WORKDIR}"
 		# Drop the directory path from ${dtsi} in the #include.
 		echo "#include \"${dtsi##*/}\"" >> "${dts}"
 		: $((added++))
