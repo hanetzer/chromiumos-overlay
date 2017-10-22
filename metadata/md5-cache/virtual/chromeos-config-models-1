@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS models virtual package
+EAPI=5
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=c7ecd713aaaae01a562a2e47a4ef876d
