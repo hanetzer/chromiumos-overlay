@@ -24,7 +24,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="debug"
 
-RDEPEND="chromeos-base/minijail"
+RDEPEND="chromeos-base/minijail
+	!chromeos-base/crosvm-bin"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
