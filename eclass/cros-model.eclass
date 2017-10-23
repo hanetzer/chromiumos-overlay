@@ -99,6 +99,7 @@ cros-model_audio_configs_install() {
 
 	local alsa_conf="${audio_config_dir}/alsa-module-config/alsa.conf"
 	if [[ -f "${alsa_conf}" ]] ; then
+		einfo "Installing ALSA config for ${model}"
 		local modprobe_dir="${install_dir}etc/modprobe.d"
 		mkdir -p "${modprobe_dir}"
 		# This should never fail, since this models' config shouldn't be there.
@@ -108,6 +109,7 @@ cros-model_audio_configs_install() {
 	# Install alsa patch files.
 	local alsa_patch="${audio_config_dir}/alsa-module-config/alsa.fw"
 	if [[ -f "${alsa_patch}" ]] ; then
+		einfo "Installing ALSA patch file for ${model}"
 		local libfw_dir="${install_dir}lib/firmware"
 		mkdir -p "${libfw_dir}"
 		cp "${alsa_patch}" "${libfw_dir}/${model}_alsa.fw" || die
@@ -116,6 +118,7 @@ cros-model_audio_configs_install() {
 	# Install ucm config files.
 	local ucm_config="${audio_config_dir}/ucm-config"
 	if [[ -d "${ucm_config}" ]] ; then
+		einfo "Installing ucm config for model ${model}"
 		local ucm_config_dir="${install_dir}usr/share/alsa/ucm"
 		mkdir -p "${ucm_config_dir}"
 		# there should only be one conf ever. TODO assert if that's not true
@@ -131,6 +134,18 @@ cros-model_audio_configs_install() {
 			mv "${ucm_config_dir}/${audio_card_name}.${model}/${conf_file##*/}" \
 				"${ucm_config_dir}/${audio_card_name}.${model}/${audio_card_name}.${model}.conf"
 			break
+		done
+
+		# Fix up the submodels
+		for sub in "${ucm_config}"/*; do
+			if [[ -d "${sub}" ]]; then
+				local submodel=${sub##*/}
+				einfo "Installing ucm config for sku ${submodel}"
+				cp -r "${ucm_config}/${submodel}" \
+					"${ucm_config_dir}/${audio_card_name}.${model}.${submodel}" || die
+				mv "${ucm_config_dir}/${audio_card_name}.${model}.${submodel}/${conf_file##*/}" \
+				"${ucm_config_dir}/${audio_card_name}.${model}.${submodel}/${audio_card_name}.${model}.${submodel}.conf"
+			fi
 		done
 	fi
 
