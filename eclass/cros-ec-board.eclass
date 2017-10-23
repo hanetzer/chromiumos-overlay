@@ -109,8 +109,7 @@ get_ec_boards()
 	# Add board names requested by ec_firmware_* USE flags
 	local ec_board
 	if use unibuild; then
-		# At present USE=unibuild is optional for all boards.
-		EC_BOARDS+=($(get_model_build_targets) ${EC_FIRMWARE_EXTRA})
+		EC_BOARDS+=($(cros_config_host_py get-firmware-build-targets ec))
 	else
 		for ec_board in ${IUSE_FIRMWARES}; do
 			use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
@@ -126,8 +125,4 @@ get_ec_boards()
 		EC_BOARDS=(bds)
 	fi
 	einfo "Building for boards: ${EC_BOARDS[*]}"
-}
-
-get_model_build_targets() {
-	echo $(get_unique_model_conf_value_set /firmware/build-targets ec)
 }

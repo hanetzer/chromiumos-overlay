@@ -80,39 +80,20 @@ set_build_env() {
 src_compile() {
 	set_build_env
 
-	local board
-	local some_board_built=false
-	for board in "${EC_BOARDS[@]}"; do
+	local target
+	einfo "Building targets: ${TARGETS[@]}"
+	for target in "${EC_BOARDS[@]}"; do
 		# Always pass TOUCHPAD_FW parameter: boards that do not require
 		# it will simply ignore the parameter, even if the touchpad FW
 		# file does not exist.
 		local ec_opts_all=(
-			TOUCHPAD_FW="${SYSROOT}/firmware/${board}/touchpad.bin"
+			TOUCHPAD_FW="${SYSROOT}/firmware/${target}/touchpad.bin"
 		)
 
-		# We need to test whether the board make target
-		# exists. For Unified Build EC_BOARDS, the engineer or
-		# the firmware builder might be checked out on a
-		# firmware branch where only one of the many models in
-		# a family are actually available to build at the
-		# moment. make fails with exit code 2 when the target
-		# doesn't resolve due to error. For non-unibuilds, all
-		# EC_BOARDS targets should exist and build.
-		BOARD=${board} make -q "${EC_OPTS[@]}" clean
-
-		if [[ $? -ne 2 ]]; then
-			some_board_built=true
-			BOARD=${board} emake "${EC_OPTS[@]}" clean
-			BOARD=${board} emake \
-				"${EC_OPTS[@]}" "${ec_opts_all[@]}" all
-			BOARD=${board} emake "${EC_OPTS[@]}" tests
-		fi
+		BOARD=${target} emake "${EC_OPTS[@]}" clean
+		BOARD=${target} emake "${EC_OPTS[@]}" "${ec_opts_all[@]}" all
+		BOARD=${target} emake "${EC_OPTS[@]}" tests
 	done
-
-	if [[ ${some_board_built} == false ]]; then
-		die "We were not able to find a board target to build from the \
-set '${EC_BOARDS[*]}'"
-	fi
 }
 
 #
@@ -128,7 +109,7 @@ board_install() {
 
 	einfo "Installing EC for ${board} into ${destdir}"
 	insinto "${destdir}"
-	pushd "build/${board}" >/dev/null || return 1
+	pushd "build/${board}" >/dev/null || die
 
 	openssl dgst -sha256 -binary RO/ec.RO.flat > RO/ec.RO.hash
 	doins ec.bin
@@ -174,47 +155,16 @@ board_install() {
 
 src_install() {
 	set_build_env
-	local board
-	local some_board_installed=false
 
-	# Install built firmwares in board-specific directories.
-	for board in "${EC_BOARDS[@]}"; do
-		board_install "${board}" "/firmware/${board}"
+	local target
 
-		if [[ $? -eq 0 ]]; then
-			some_board_installed=true
-		fi
+	einfo "Installing targets: ${TARGETS[@]}"
+	for target in "${EC_BOARDS[@]}"; do
+		board_install "${target}" "/firmware/${target}"  \
+			|| die  "Couldn't install ${target}"
 	done
-
-	if [[ ${some_board_installed} == false ]]; then
-		die "We were not able to install at least one board from the \
-set '${EC_BOARDS[*]}'"
-	fi
-
-	if ! use unibuild; then
-		# The first board should be the main EC. Install this
-		# as the main EC firmware binary.
-		board_install "${EC_BOARDS[0]}" /firmware || die \
-			"Couldn't install main firmware"
-	else
-		# Walk through all models and additionally install
-		# their build target if not already installed above.
-		local model
-		local ec
-
-		for model in $(get_model_list); do
-			if [[ ! -d "/firmware/${model}" ]]; then
-				ec=$(
-					get_model_conf_value "${model}" \
-					/firmware/build-targets ec
-				)
-
-				# This is just nice-to-have so we don't fail
-				# if this doesn't install.
-				board_install "${ec}" "/firmware/${model}"
-			fi
-		done
-	fi
+	board_install "${EC_BOARDS[0]}" /firmware || die \
+		"Couldn't install main firmware"
 }
 
 src_test() {
