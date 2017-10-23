@@ -41,8 +41,6 @@ x11-libs/cairo		X
 # Remove dependency on libmix which is deprecated and unsupported.
 net-analyzer/netcat -crypt
 net-dns/avahi		dbus
-# Build emulation statically so that we can execute it within a chroot and
-# still find the shared libraries.
 net-misc/dhcpcd -crash
 
 # Build qemu's userland helpers statically so we can copy them into sysroots
