@@ -13,7 +13,7 @@ libc-0.2.29
 gcc-0.3.54
 "
 
-inherit cargo cros-workon
+inherit cargo cros-workon user
 
 DESCRIPTION="Utility for running Linux VMs on Chrome OS"
 
@@ -51,4 +51,9 @@ src_install() {
 		insinto /usr/share/policy/crosvm
 		doins "${seccomp_path}"/*.policy
 	fi
+}
+
+pkg_preinst() {
+	enewuser "crosvm"
+	enewgroup "crosvm"
 }
