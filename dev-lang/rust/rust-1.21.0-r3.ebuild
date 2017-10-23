@@ -52,7 +52,6 @@ PATCHES=(
 	"${FILESDIR}"/0003-fix-unknown-vendors.patch
 	"${FILESDIR}"/0004-fix-rpath.patch
 	"${FILESDIR}"/0005-add-unknown-vendor-to-filesearch.patch
-	"${FILESDIR}"/0006-fix-DIExpression-warnings.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -80,10 +79,6 @@ src_prepare() {
 		.cargo-checksum.json
 	popd
 
-	# This is needed because LLVM requires libffi symbols but `llvm-config
-	# --system-libs` does not list any libraries to link against. See:
-	# https://github.com/rust-lang/rust/issues/34486
-	echo '#[link(name = "ffi")] extern {}' >>src/librustc_llvm/lib.rs || die
 
 	# Tsk. Tsk. The rust makefile for LLVM's compiler-rt uses -ffreestanding
 	# but one of the files includes <stdlib.h> causing occasional problems
@@ -93,17 +88,6 @@ src_prepare() {
 	# ./configure.
 	sed -e 's:#include <stdlib.h>:void abort(void);:g' \
 	    -i "${ECONF_SOURCE:-.}"/src/libcompiler_builtins/compiler-rt/lib/builtins/int_util.c || die
-
-	if has_version --host-root 'sys-devel/llvm[llvm-next]' ||
-			has_version --host-root ">sys-devel/llvm-5.0_pre308632"; then
-		PATCHES+=("${FILESDIR}"/0008-Remove-default-CodeModel-enum-variants.patch)
-		PATCHES+=("${FILESDIR}"/0009-Update-writeArchive-handnling-for-std-error_code.patch)
-	else
-		# The reverted change was to make rustllvm work with LLVM 5.0 master but
-		# Chrome OS's LLVM seems to be lagging behind the change this patch is for.
-		# Remove this revert if the SyncScope name change happens in LLVM.
-		PATCHES+=("${FILESDIR}"/0007-Revert-rustllvm-update-to-SyncScope-ID.patch)
-	fi
 
 	epatch "${PATCHES[@]}"
 
@@ -124,6 +108,9 @@ submodules = false
 python = "${EPYTHON}"
 vendor = true
 
+[llvm]
+ninja = true
+
 [install]
 prefix = "${ED}usr"
 libdir = "$(get_libdir)/rust"
@@ -139,17 +126,14 @@ codegen-units = 0
 [target.x86_64-unknown-linux-gnu]
 cc = "x86_64-cros-linux-gnu-clang"
 cxx = "x86_64-cros-linux-gnu-clang++"
-llvm-config = "/usr/bin/llvm-config"
 
 [target.armv7a-cros-linux-gnueabi]
 cc = "armv7a-cros-linux-gnueabi-clang"
 cxx = "armv7a-cros-linux-gnueabi-clang++"
-llvm-config = "/usr/bin/llvm-config"
 
 [target.aarch64-unknown-linux-gnu]
 cc = "aarch64-cros-linux-gnu-clang"
 cxx = "aarch64-cros-linux-gnu-clang++"
-llvm-config = "/usr/bin/llvm-config"
 EOF
 
 }
