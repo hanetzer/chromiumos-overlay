@@ -24,6 +24,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
+	chromeos-base/imageloader-client
 	chromeos-base/session_manager-client
 	chromeos-base/system_api
 "
