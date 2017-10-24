@@ -2,10 +2,10 @@ DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=media-libs/arc-camera3-libcab dev-vcs/git chromeos-base/libchrome:395517[cros-debug=]
 DESCRIPTION=Test for camera algorithm bridge library
 EAPI=5
-IUSE=cros-debug cros_host cros_workon_tree_a18afeb7b130c8f1e2442abb79747d74ec1f3e32 profiling cros-debug
+IUSE=cros-debug cros_host cros_workon_tree_1f0e8a432663164181203d2244c5e35e6ae326e4 profiling cros-debug
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=media-libs/arc-camera3-libcab chromeos-base/libchrome:395517[cros-debug=]
 SLOT=0
 _eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=430c77921ffdcd4a7bb05859e4a70916
+_md5_=4f769fef066ab96f8ab4ca2f2f947ec5
