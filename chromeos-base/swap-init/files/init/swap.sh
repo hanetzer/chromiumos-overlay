@@ -251,11 +251,11 @@ status() {
 enable() {
   local size="$1"
 
-  # Size of 0 is special for enable.  We interpret this to be automatic.
+  # Sizes of 0 or -1 mean restore factory default.
   # Don't confuse this with setting 0 in the file in the disable code path.
-  if [ "${size}" = "0" ]; then
+  if [ "${size}" = "0" -o  "${size}" = "-1" ]; then
     size=""
-    logger -t "${JOB}" "enabling swap via config with automatic size"
+    logger -t "${JOB}" "enabling swap with default size"
   elif [ "${size}" -lt 100 -o "${size}" -gt 20000 ]; then
     echo "${JOB}: error: size ${size} is not between 100 and 20000" >&2
     exit 1
@@ -295,17 +295,18 @@ set_parameter() {
     return 0
   fi
 
-  # User units (always MiB) may differ from system units (sometimes KiB).
-  local system_value=$(( value * conversion ))
-
   if [ "${value}" -gt "${max}" ]; then
     echo "${JOB}: invalid set ${param} to ${value} (MiB), max is ${max}" >&2
     exit 1
   fi
-  if [ "${value}" = "0" ]; then
+
+  local system_value
+  if [ "${value}" = "-1" ]; then
     rm -f "${override_file}"
-    system_value=$(${default_generator})
+    system_value=$(get_target_value "${param}")
   else
+    # User units (always MiB) may differ from system units (sometimes KiB).
+    system_value=$(( value * conversion ))
     create_write_file "${override_file}" "${system_value}"
   fi
   echo "${system_value}" > "${special_file}"
@@ -322,12 +323,16 @@ Usage: $0 <start|stop|status|enable <size>|disable|
 Start or stop the use of the compressed swap file, or persistently set
 various memory manager tunable parameters, or get their chosen values.
 
+A value of -1 for "enable" or "set_parameter <p>" results in removing any local
+persistent setting of the parameter, thus reverting to its factory default.
+
 The start phase is normally invoked by init during boot, but we never run the
 stop phase when shutting down (since there's no point).  The stop phase is used
 by developers via debugd to restart things on the fly.
 
 Disabling changes the config, but doesn't actually turn on/off swap.
 That will happen at the next reboot.
+
 EOF
   exit $1
 }
