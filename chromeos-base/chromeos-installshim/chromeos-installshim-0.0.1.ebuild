@@ -11,6 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="
+	cr50_onboard
 	tpm_slb9645
 	tpm_slb9655
 	tpm_slb9655_v4_31
@@ -48,6 +49,7 @@ RDEPEND="
 	shill? ( chromeos-base/shill )
 	!shill? ( net-misc/dhcpcd )
 	chromeos-base/vboot_reference
+	cr50_onboard? ( media-gfx/qrencode )
 	net-firewall/iptables
 	net-misc/tlsdate
 	>=sys-apps/baselayout-2.0.0
