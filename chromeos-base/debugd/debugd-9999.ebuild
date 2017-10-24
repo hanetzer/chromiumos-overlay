@@ -16,7 +16,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cellular wimax"
+IUSE="cellular iwlwifi_dump wimax"
 
 RDEPEND="
 	chromeos-base/chromeos-login
