@@ -1,7 +1,8 @@
-From 96f341c9e8b0f58b388cabe8e27077b5cf92611e Mon Sep 17 00:00:00 2001
+From 1934e72a908e948e9b6b5e58d6fa108f0b1dab23 Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@google.com>
 Date: Fri, 3 Oct 2014 16:20:10 -0700
-Subject: [PATCH 18/24] CHROMIUM: i965: remove read-only restriction of imported buffers
+Subject: [PATCH] CHROMIUM: i965: remove read-only restriction of imported
+ buffers
 
 Previously, there was a patch that already did this but there was
 collateral damage to the OES_EGL_image_external extension that turned it
@@ -11,36 +12,44 @@ OES_EGL_image_external turned on.
 BUG=chromium:436842
 TEST=None
 
+Change-Id: I114d71109de8f320b6faf381311383ddbb1585ba
 Signed-off-by: Prince Agyeman <prince.agyeman@intel.com>
 Signed-off-by: Dhinakaran Pandiyan <dhinakaran.pandiyan@intel.com>
 Signed-off-by: James Ausmus <james.ausmus@intel.com>
 Signed-off-by: Tomasz Figa <tfiga@chromium.org>
-
+Signed-off-by: Deepak Sharma <deepak.sharma@amd.com>
 ---
- src/mesa/drivers/dri/i965/intel_image.h     |  3 ---
+ src/mesa/drivers/dri/i965/intel_image.h     |  2 --
  src/mesa/drivers/dri/i965/intel_screen.c    |  1 -
  src/mesa/drivers/dri/i965/intel_tex_image.c | 10 ----------
- 3 files changed, 14 deletions(-)
+ 3 files changed, 13 deletions(-)
 
 diff --git a/src/mesa/drivers/dri/i965/intel_image.h b/src/mesa/drivers/dri/i965/intel_image.h
-index a82cf3b3bd1a..df8997a3254c 100644
+index 78d689a11a..5f5666cc77 100644
 --- a/src/mesa/drivers/dri/i965/intel_image.h
 +++ b/src/mesa/drivers/dri/i965/intel_image.h
-@@ -89,9 +89,6 @@ struct __DRIimageRec {
+@@ -89,8 +89,6 @@ struct __DRIimageRec {
     GLuint tile_y;
     bool has_depthstencil;
  
 -   /** The image was created with EGL_EXT_image_dma_buf_import. */
 -   bool dma_buf_imported;
--
-    /**
-     * Provided by EGL_EXT_image_dma_buf_import.
-     * \{
+
+    /** Offset of the auxiliary compression surface in the bo. */
+    uint32_t aux_offset;
 diff --git a/src/mesa/drivers/dri/i965/intel_screen.c b/src/mesa/drivers/dri/i965/intel_screen.c
-index 85863a0827ef..cc8f2b6332ed 100644
+index ea04a72e86..52089294c3 100644
 --- a/src/mesa/drivers/dri/i965/intel_screen.c
 +++ b/src/mesa/drivers/dri/i965/intel_screen.c
-@@ -755,7 +755,6 @@ intel_create_image_from_dma_bufs(__DRIscreen *screen,
+@@ -866,7 +866,6 @@ intel_dup_image(__DRIimage *orig_image, void *loaderPrivate)
+    image->tile_y          = orig_image->tile_y;
+    image->has_depthstencil = orig_image->has_depthstencil;
+    image->data            = loaderPrivate;
+-   image->dma_buf_imported = orig_image->dma_buf_imported;
+    image->aux_offset      = orig_image->aux_offset;
+    image->aux_pitch       = orig_image->aux_pitch;
+
+@@ -1130,7 +1130,6 @@ intel_create_image_from_dma_bufs2(__DRIscreen *dri_screen,
        return NULL;
     }
  
@@ -49,10 +58,10 @@ index 85863a0827ef..cc8f2b6332ed 100644
     image->sample_range = sample_range;
     image->horizontal_siting = horizontal_siting;
 diff --git a/src/mesa/drivers/dri/i965/intel_tex_image.c b/src/mesa/drivers/dri/i965/intel_tex_image.c
-index 93a8cdee0cba..9a2e13420ca9 100644
+index 37c8e24f03..17947983ae 100644
 --- a/src/mesa/drivers/dri/i965/intel_tex_image.c
 +++ b/src/mesa/drivers/dri/i965/intel_tex_image.c
-@@ -317,16 +317,6 @@ intel_image_target_texture_2d(struct gl_context *ctx, GLenum target,
+@@ -552,16 +552,6 @@ intel_image_target_texture_2d(struct gl_context *ctx, GLenum target,
     if (image == NULL)
        return;
  
@@ -70,5 +79,5 @@ index 93a8cdee0cba..9a2e13420ca9 100644
      * separate stencil miptree of a GL_DEPTH_STENCIL texture through.
      */
 -- 
-2.5.1
+2.14.2
 
