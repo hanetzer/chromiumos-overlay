@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 buffer mapper."
+DESCRIPTION="ARC camera HAL v3 buffer manager."
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -38,7 +38,7 @@ src_install() {
 	dolib common/libcbm.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/camera_buffer_mapper.h
+	doins include/arc/camera_buffer_manager.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
@@ -51,7 +51,7 @@ src_test() {
 	emake BASE_VER=${LIBCHROME_VERS} tests
 
 	if use x86 || use amd64; then
-		./common/camera_buffer_mapper_unittest || \
-			die "camera_buffer_mapper unit tests failed!"
+		./common/camera_buffer_manager_unittest || \
+			die "camera_buffer_manager unit tests failed!"
 	fi
 }
