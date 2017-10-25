@@ -389,7 +389,7 @@ def main():
     # hardfp via command line.
     tuple = arch.split('-')
     if tuple[0] == 'armv7a' and tuple[2] == 'linux':
-      clang_cmdline += ['-mfloat-abi=hard']
+      clang_cmdline.insert(0, '-mfloat-abi=hard')
 
     if not clang_codegen:
       clang_cmdline.append('-fsyntax-only')
