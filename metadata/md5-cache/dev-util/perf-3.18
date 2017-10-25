@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) slang? ( dev-libs/newt ) unwind? ( sys-libs/libunwind ) gtk? ( x11-libs/gtk+:2 ) dev-libs/elfutils
 SLOT=0
 SRC_URI=mirror://kernel/linux/kernel/v3.x/linux-3.18.tar.xz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	linux-info	a238cd46144175b5f6538caa13bdf180	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=bb41434139c261c8f70848cb6ff437f7
