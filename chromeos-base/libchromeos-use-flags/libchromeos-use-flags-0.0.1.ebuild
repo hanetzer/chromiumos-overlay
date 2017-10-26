@@ -59,6 +59,7 @@ IUSE="
 	screenshare_sw_codec
 	stylus
 	test
+	touchscreen_wakeup
 	touchview
 	veyron_mickey
 	veyron_minnie
