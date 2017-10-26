@@ -32,11 +32,14 @@
 	<flag name='linux_firmware_i915_bxt'>
 		Install BXT firmware files for i915 driver
 	</flag>
-	<flag name='linux_firmware_i915_skl'>
-		Install SKL firmware files for i915 driver
+	<flag name='linux_firmware_i915_cnl'>
+		Install CNL firmware files for i915 driver
 	</flag>
 	<flag name='linux_firmware_i915_kbl'>
 		Install KBL firmware files for i915 driver
+	</flag>
+	<flag name='linux_firmware_i915_skl'>
+		Install SKL firmware files for i915 driver
 	</flag>
 	<flag name='linux_firmware_ipu3_fw'>
 		Install KBL IPU3 firmware to enable MIPI camera
