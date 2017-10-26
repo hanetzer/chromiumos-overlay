@@ -1,0 +1,35 @@
+From c105a6fc4aea7ec90722ef91ac48c1f3739e69e0 Mon Sep 17 00:00:00 2001
+From: Michael Sweet <michael.r.sweet@gmail.com>
+Date: Wed, 14 Dec 2016 10:02:17 -0500
+Subject: [PATCH 3/3] Only list supported PDLs (Issue #4923)
+
+---
+ cups/ppd-cache.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/cups/ppd-cache.c b/cups/ppd-cache.c
+index 981026397..927a2afe3 100644
+--- a/cups/ppd-cache.c
++++ b/cups/ppd-cache.c
+@@ -3027,14 +3027,16 @@ _ppdCreateFromIPP(char   *buffer,	/* I - Filename buffer */
+       const char *format = ippGetString(attr, i, NULL);
+ 					/* PDL */
+ 
++     /*
++      * Write cupsFilter2 lines for supported formats...
++      */
++
+       if (!_cups_strcasecmp(format, "application/pdf"))
+         cupsFilePuts(fp, "*cupsFilter2: \"application/vnd.cups-pdf application/pdf 10 -\"\n");
+       else if (!_cups_strcasecmp(format, "image/jpeg") || !_cups_strcasecmp(format, "image/png"))
+         cupsFilePrintf(fp, "*cupsFilter2: \"%s %s 0 -\"\n", format, format);
+       else if (!_cups_strcasecmp(format, "image/pwg-raster"))
+         cupsFilePrintf(fp, "*cupsFilter2: \"%s %s 100 -\"\n", format, format);
+-      else if (_cups_strcasecmp(format, "application/octet-stream") && _cups_strcasecmp(format, "application/postscript") && _cups_strncasecmp(format, "application/vnd.", 16) && _cups_strncasecmp(format, "image/vnd.", 10) && _cups_strcasecmp(format, "image/tiff") && _cups_strncasecmp(format, "text/", 5))
+-        cupsFilePrintf(fp, "*cupsFilter2: \"%s %s 10 -\"\n", format, format);
+     }
+   }
+ 
+-- 
+2.15.0.rc2.357.g7e34df9404-goog
+

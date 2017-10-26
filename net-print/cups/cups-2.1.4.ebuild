@@ -111,6 +111,8 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.1.4-raise-log-level-for-desired-features.patch"
 	"${FILESDIR}/${PN}-2.1.4-search-filter.patch"
 	"${FILESDIR}/${PN}-2.1.4-limit-PSVersion-sscanf.patch"
+	"${FILESDIR}/${PN}-2.2.2-Tweak-the-PDL-priority-Issue-4932.patch"
+	"${FILESDIR}/${PN}-2.2.2-Only-list-supported-PDLs-Issue-4923.patch"
 )
 
 MULTILIB_CHOST_TOOLS=(
