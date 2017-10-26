@@ -1,1 +1,0 @@
-arc-toolchain-master-2017.08.23.ebuild

@@ -217,6 +217,8 @@ for (( a = 0; a < ${len}; ++a )); do
 		"frameworks/native/libs/nativewindow/include/android"
 		"frameworks/native/libs/nativewindow/include/system"
 		"frameworks/native/libs/nativewindow/include/vndk"
+		"frameworks/native/vulkan/include/hardware"
+		"frameworks/native/vulkan/include/vulkan"
 		"hardware/libhardware/include/hardware"
 		"system/core/include/cutils"
 		"system/core/include/log"
