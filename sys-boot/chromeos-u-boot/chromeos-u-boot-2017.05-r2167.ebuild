@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("64c4ffa9fa223f7ae8640f9c8f3044bfa0e3bfda" "befe2e8f2a9ca3144bccebbf4bf4c930d8dc27c1")
-CROS_WORKON_TREE=("32ba5a6d2f107ad55c7d264bacbee60fa1749599" "3f09c29cc07d7e11e6e25b5a937e123a81a55846")
+CROS_WORKON_COMMIT=("64c4ffa9fa223f7ae8640f9c8f3044bfa0e3bfda" "2aa3dd0f6dfbe68474b2db3dec8c53a7ad66fb6d")
+CROS_WORKON_TREE=("32ba5a6d2f107ad55c7d264bacbee60fa1749599" "92881b1dfff1c84b965a4e29541691bef7c18343")
 CROS_WORKON_PROJECT=("chromiumos/third_party/u-boot" "chromiumos/platform/vboot_reference")
 CROS_WORKON_LOCALNAME=("u-boot" "../platform/vboot_reference")
 CROS_WORKON_SUBDIR=("files" "")
