@@ -29,6 +29,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/session_manager-client
 	chromeos-base/vboot_reference
 	"
 
