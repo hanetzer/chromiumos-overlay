@@ -27,6 +27,7 @@ IUSE="
 RDEPEND="
 	!chromeos-base/autotest-telemetry
 	!<chromeos-base/autotest-tests-0.0.4
+	chromeos-base/autotest-deps-glbench
 	chromeos-base/autotest-deps-graphics
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
@@ -34,6 +35,7 @@ RDEPEND="
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/telemetry
 	vaapi? ( x11-libs/libva )
+	tests_graphics_Sanity? ( x11-libs/libdrm )
 "
 
 DEPEND="${RDEPEND}"
@@ -81,11 +83,12 @@ IUSE_TESTS=(
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
 	+tests_graphics_Idle
+	+tests_graphics_Sanity
+	+tests_graphics_Stress
+	+tests_graphics_VTSwitch
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
-	+tests_graphics_Stress
-	+tests_graphics_VTSwitch
 	 tests_logging_AsanCrash
 	+tests_logging_CrashServices
 	+tests_logging_FeedbackReport
