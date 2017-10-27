@@ -38,6 +38,7 @@ src_install() {
 	# Install built tools
 	pushd "${OUT}" >/dev/null
 	dobin src/alsa_api_test
+	dobin src/alsa_helpers
 	dobin src/audiofuntest
 	dobin src/cras_api_test
 	dobin src/loopback_latency
