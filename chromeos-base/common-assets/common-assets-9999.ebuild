@@ -12,7 +12,10 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+fonts"
+IUSE="
+	+fonts
+	+tts
+"
 
 DEPEND=""
 
@@ -167,30 +170,34 @@ src_install() {
 	# Speech synthesis
 	#
 
-	insinto /usr/share/chromeos-assets/speech_synthesis/patts
+	if use tts ; then
 
-	# Speech synthesis component extension code
-	doins "${S}"/speech_synthesis/patts/manifest.json
-	doins "${S}"/speech_synthesis/patts/manifest_guest.json
-	doins "${S}"/speech_synthesis/patts/tts_main.js
-	doins "${S}"/speech_synthesis/patts/tts_controller.js
-	doins "${S}"/speech_synthesis/patts/tts_service.nmf
+		insinto /usr/share/chromeos-assets/speech_synthesis/patts
 
-	# Speech synthesis voice data
-	for i in ${TTS_LANGUAGES}; do
-		doins "${S}"/speech_synthesis/patts/voice_*${i}.js
-		doins "${S}"/speech_synthesis/patts/voice_*${i}.zvoice
-	done
+		# Speech synthesis component extension code
+		doins "${S}"/speech_synthesis/patts/manifest.json
+		doins "${S}"/speech_synthesis/patts/manifest_guest.json
+		doins "${S}"/speech_synthesis/patts/tts_main.js
+		doins "${S}"/speech_synthesis/patts/tts_controller.js
+		doins "${S}"/speech_synthesis/patts/tts_service.nmf
 
-	# Speech synthesis engine (platform-specific native client module)
-	if use arm ; then
-		unzip "${S}"/speech_synthesis/patts/tts_service_arm.nexe.zip
-		doins "${S}"/tts_service_arm.nexe
-	elif use x86 ; then
-		unzip "${S}"/speech_synthesis/patts/tts_service_x86-32.nexe.zip
-		doins "${S}"/tts_service_x86-32.nexe
-	elif use amd64 ; then
-		unzip "${S}"/speech_synthesis/patts/tts_service_x86-64.nexe.zip
-		doins "${S}"/tts_service_x86-64.nexe
+		# Speech synthesis voice data
+		for i in ${TTS_LANGUAGES}; do
+			doins "${S}"/speech_synthesis/patts/voice_*${i}.js
+			doins "${S}"/speech_synthesis/patts/voice_*${i}.zvoice
+		done
+
+		# Speech synthesis engine (platform-specific native client module)
+		if use arm ; then
+			unzip "${S}"/speech_synthesis/patts/tts_service_arm.nexe.zip
+			doins "${S}"/tts_service_arm.nexe
+		elif use x86 ; then
+			unzip "${S}"/speech_synthesis/patts/tts_service_x86-32.nexe.zip
+			doins "${S}"/tts_service_x86-32.nexe
+		elif use amd64 ; then
+			unzip "${S}"/speech_synthesis/patts/tts_service_x86-64.nexe.zip
+			doins "${S}"/tts_service_x86-64.nexe
+		fi
+
 	fi
 }
