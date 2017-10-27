@@ -41,5 +41,8 @@ USE="${USE} -firmware_install"
 # Don't turn on printing; among the reasons: some cups filters require bash.
 USE="${USE} -cups"
 
+# No need for input-methods and app-i18n.
+USE="${USE} -ime"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""

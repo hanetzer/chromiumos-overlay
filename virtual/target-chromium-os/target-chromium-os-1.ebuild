@@ -32,6 +32,7 @@ IUSE="
 	+fonts
 	gobi
 	hammerd
+	ime
 	input_devices_evdev
 	intel_lpe
 	kvm_host
@@ -192,6 +193,12 @@ CROS_COMMON_RDEPEND+="
 	virtual/modutils
 	virtual/service-manager
 	cr50_onboard? ( chromeos-base/chromeos-cr50 )
+	ime? (
+		app-i18n/chinese-input
+		app-i18n/keyboard-input
+		app-i18n/japanese-input
+		app-i18n/hangul-input
+	)
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
@@ -251,10 +258,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	!tpm2? ( app-crypt/trousers )
 	tpm2? ( chromeos-base/trunks )
 	app-editors/vim
-	app-i18n/chinese-input
-	app-i18n/keyboard-input
-	app-i18n/japanese-input
-	app-i18n/hangul-input
 	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
 	chromeos-base/common-assets

@@ -16,6 +16,7 @@ USE="${USE} tpm"
 USE="${USE} compupdates"
 USE="${USE} containers"
 USE="${USE} cellular mbim"
+USE="${USE} ime"
 
 # Enable general security hardening by default.
 USE="${USE} hardened"
