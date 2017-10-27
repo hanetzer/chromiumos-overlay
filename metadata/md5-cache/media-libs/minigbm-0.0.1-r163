@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare setup unpack
+DEPEND=x11-libs/libdrm !media-libs/mesa[gbm] video_cards_amdgpu? ( media-libs/amdgpu-addrlib ) virtual/pkgconfig dev-vcs/git
+DESCRIPTION=Mini GBM implementation
+EAPI=4
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/minigbm
+IUSE=-asan video_cards_amdgpu video_cards_exynos video_cards_intel video_cards_marvell video_cards_mediatek video_cards_radeon video_cards_radeonsi video_cards_rockchip video_cards_tegra video_cards_virgl cros_host cros_workon_tree_fc421547eca995acd5db7b2af88a5b0d5e122457 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=x11-libs/libdrm !media-libs/mesa[gbm] video_cards_amdgpu? ( media-libs/amdgpu-addrlib )
+SLOT=0
+_eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=7ced0268faf60a4aac6fc9586eec1f3d

@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Ebuild for Android toolchain (compilers, linker, libraries, headers).
+EAPI=5
+KEYWORDS=-* amd64
+LICENSE=GPL-3 LGPL-3 GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 FDL-1.2 UoI-NCSA
+RESTRICT=strip
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/arc-toolchain-master-2017.10.26.tar.gz
+_md5_=0f258718e06b2b51309fdb923eb83d8a
