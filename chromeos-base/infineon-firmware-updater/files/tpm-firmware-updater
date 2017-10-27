@@ -192,9 +192,13 @@ approve_update() {
       fi
       ;;
     normal|developer)
-      if [ "${vpd_param_mode}" != "first_boot" ]; then
-        dlog "Update mode '${vpd_param_mode}' not allowed in normal/dev mode."
-        return 1
+      if [ -z "${FACTORY_SHIM_CONSENT}" ]; then
+        if [ "${vpd_param_mode}" != "first_boot" ]; then
+          dlog "Update mode '${vpd_param_mode}' not allowed in normal/dev mode."
+          return 1
+        fi
+      else
+        dlog "Proceeding based on FACTORY_SHIM_CONSENT, w/o checking vpd."
       fi
       ;;
     *)

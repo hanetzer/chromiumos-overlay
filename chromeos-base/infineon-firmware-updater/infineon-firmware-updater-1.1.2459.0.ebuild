@@ -49,4 +49,5 @@ src_install() {
 	doins "${FILESDIR}"/send-tpm-firmware-update-metrics.conf
 	exeinto /usr/share/cros/init
 	doexe "${FILESDIR}"/tpm-firmware-update.sh
+	doexe "${FILESDIR}"/tpm-firmware-update-factory.sh
 }
