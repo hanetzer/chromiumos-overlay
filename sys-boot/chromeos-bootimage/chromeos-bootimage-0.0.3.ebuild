@@ -58,10 +58,6 @@ prepare_legacy_image() {
 	fi
 }
 
-get_model_build_targets() {
-	echo $(get_unique_model_conf_value_set /firmware/build-targets coreboot)
-}
-
 do_cbfstool() {
 	local output
 	output=$(cbfstool "$@" 2>&1)
@@ -291,9 +287,12 @@ src_compile() {
 			compressed-assets/'{}' LZMA
 
 	if use unibuild; then
+		local build_targets=( $(cros_config_host_py \
+			get-firmware-build-targets coreboot) )
 		local build_target
 
-		for build_target in $(get_model_build_targets); do
+		einfo "Building ${#build_targets[@]} target(s): ${build_targets[@]}"
+		for build_target in "${build_targets[@]}"; do
 			build_images "${froot}/${build_target}" "${build_target}"
 		done
 	else
@@ -306,7 +305,8 @@ src_install() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(get_model_build_targets); do
+		for build_target in $(cros_config_host_py \
+			get-firmware-build-targets coreboot); do
 			doins "${build_target}"/image-${build_target}*.bin
 		done
 	else
