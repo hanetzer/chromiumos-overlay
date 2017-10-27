@@ -15,7 +15,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="
+DEPEND="
 	chromeos-base/chromeos-config-bsp:=
 "
 
