@@ -1,7 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Chrome OS Linux Kernel 4.4 patches
-EAPI=5
-HOMEPAGE=https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel
-KEYWORDS=*
-SLOT=0
-_md5_=a83cc1d0e2166b8e32f9816695e0a192

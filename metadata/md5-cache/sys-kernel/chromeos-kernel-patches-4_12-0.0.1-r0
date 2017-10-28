@@ -1,7 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Chrome OS Linux Kernel 4.12 patches
-EAPI=5
-HOMEPAGE=https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel
-KEYWORDS=*
-SLOT=0
-_md5_=01736f7a226db68565381513f21f3130
