@@ -30,7 +30,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}/util/nvidia/cbootimage"
 )
 
-inherit cros-board cros-workon toolchain-funcs cros-unibuild
+inherit cros-board cros-workon toolchain-funcs cros-unibuild coreboot-sdk
 
 DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
@@ -362,17 +362,15 @@ src_compile() {
 		# on what the default profile is for exporting a compiler. The
 		# reasoning is that the firmware may need more than one to build
 		# and boot.
-		export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
-		# For coreboot.org upstream architecture naming.
 		export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
 		export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
-		# aarch64: used on chromeos-2013.04
-		export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
-		# arm64: used on coreboot upstream
 		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
 		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
 	else
-		export XGCCPATH=/opt/coreboot-sdk/bin/
+		export CROSS_COMPILE_x86=${COREBOOT_SDK_PREFIX_x86_32}
+		export CROSS_COMPILE_mipsel=${COREBOOT_SDK_PREFIX_mips}
+		export CROSS_COMPILE_arm64=${COREBOOT_SDK_PREFIX_arm64}
+		export CROSS_COMPILE_arm=${COREBOOT_SDK_PREFIX_arm}
 	fi
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"

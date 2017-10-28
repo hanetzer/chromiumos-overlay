@@ -7,13 +7,14 @@ CROS_WORKON_TREE="86739723f748584f03ca50902660cae0adbc1cbf"
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
 CROS_WORKON_LOCALNAME="seabios"
 
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-workon coreboot-sdk
 
 DESCRIPTION="Open Source implementation of X86 BIOS"
 HOMEPAGE="http://www.coreboot.org/SeaBIOS"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
+IUSE="coreboot-sdk"
 
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
@@ -58,12 +59,20 @@ create_seabios_cbfs() {
 }
 
 _emake() {
+	if ! use coreboot-sdk; then
+		local LD="$(tc-getLD).bfd"
+		local CC="$(tc-getCC)"
+	else
+		local CC=${COREBOOT_SDK_PREFIX_x86_32}gcc
+		local LD=${COREBOOT_SDK_PREFIX_x86_32}ld
+	fi
+
 	emake \
 		CROSS_PREFIX="${CHOST}-" \
 		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 		HOSTCC="$(tc-getBUILD_CC)" \
-		LD="$(tc-getLD).bfd" \
-		CC="$(tc-getCC) -fuse-ld=bfd" \
+		LD="${LD}" \
+		CC="${CC} -fuse-ld=bfd" \
 		"$@"
 }
 
