@@ -55,6 +55,11 @@ src_compile() {
 	local buildgcc_opts=(-j "$(makeopts_jobs)" -l c,ada -t)
 
 	cd util/crossgcc
+
+	./buildgcc -d /opt/coreboot-sdk -D "${S}/out" -P iasl \
+		"${buildgcc_opts[@]}" \
+	|| die "building the compiler for ${arch} failed"
+
 	# Build bootstrap compiler to get a reliable compiler base no matter how
 	# versions diverged, but keep it separately, since we only need it
 	# during this build and not in the chroot.
