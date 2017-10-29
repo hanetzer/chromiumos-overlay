@@ -1,16 +1,16 @@
 # Copyright 2014 The Chromium OS Authors.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
-CROS_WORKON_COMMIT="4073e03ad5e89daa85ada8a9d92d2f74f6b10fb5"
-CROS_WORKON_TREE="adc227f2ebb3391b2f3762b5fb32986a65424868"
+EAPI=5
+CROS_WORKON_COMMIT="e2bd22c55709abe815650f16ebd17cfe66a10347"
+CROS_WORKON_TREE="ed20ef0c92badfdf4ceaab9e67014b1aeba8c538"
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 
 DESCRIPTION="lp0 resume blob for Tegra"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="-* arm arm64"
 IUSE=""
 
 RDEPEND=""
@@ -21,12 +21,16 @@ CROS_WORKON_LOCALNAME="coreboot"
 inherit cros-workon
 
 src_compile() {
-	emake -C src/soc/nvidia/tegra124/lp0 \
+	emake -C src/soc/nvidia/tegra210/lp0 \
 		GCC_PREFIX="${CHOST}-" || \
 		die "tegra_lp0_resume build failed"
 }
 
 src_install() {
-	insinto /lib/firmware/tegra12x/
-	doins src/soc/nvidia/tegra124/lp0/tegra_lp0_resume.fw
+	insinto /lib/firmware/nvidia/tegra210/
+	doins src/soc/nvidia/tegra210/lp0/tegra_lp0_resume.fw
+
+	# Also install into /firmware so it can be picked up for signing
+	insinto /firmware
+	doins src/soc/nvidia/tegra210/lp0/tegra_lp0_resume.fw
 }
