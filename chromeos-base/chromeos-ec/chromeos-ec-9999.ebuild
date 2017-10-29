@@ -30,7 +30,7 @@ CROS_WORKON_DESTDIR=(
 	"${WORKDIR}/third_party/cryptoc"
 )
 
-inherit toolchain-funcs cros-ec-board cros-workon cros-unibuild
+inherit toolchain-funcs cros-ec-board cros-workon cros-unibuild coreboot-sdk
 
 DESCRIPTION="Embedded Controller firmware code"
 HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
@@ -62,9 +62,9 @@ set_build_env() {
 		export CROSS_COMPILE_i386=i686-pc-linux-gnu-
 		export CROSS_COMPILE_nds=nds32le-cros-elf-
 	else
-		export CROSS_COMPILE_arm=/opt/coreboot-sdk/bin/arm-eabi-
-		export CROSS_COMPILE_i386=/opt/coreboot-sdk/bin/i386-elf-
-		export CROSS_COMPILE_nds=/opt/coreboot-sdk/bin/nds32le-elf-
+		export CROSS_COMPILE_arm=${COREBOOT_SDK_PREFIX_arm}
+		export CROSS_COMPILE_i386=${COREBOOT_SDK_PREFIX_x86_32}
+		export CROSS_COMPILE_nds=${COREBOOT_SDK_PREFIX_nds}
 	fi
 	tc-export CC BUILD_CC
 	export HOSTCC=${CC}
