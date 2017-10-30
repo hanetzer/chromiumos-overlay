@@ -2,46 +2,58 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="a33db79eb5ae0e89896d2ed743cbf8bfd2b1b8c8"
-CROS_WORKON_TREE="973f9398d620b781ff1b3289954b96693b8662b1"
+CROS_WORKON_COMMIT="1eacb386f71c5ff760c815d528979deb971fb78b"
+CROS_WORKON_TREE="5a0fed9a330d1787663641c9192673dcf627f35d"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Time zone util."
+DESCRIPTION="ARC camera HAL v3 buffer manager."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND=""
+RDEPEND="
+	media-libs/minigbm
+	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
+	media-libs/arc-camera3-android-headers
 	virtual/pkgconfig"
 
 src_configure() {
+	asan-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	asan-setup-env
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_timezone
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcbm
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_timezone.pic.a
+	dolib common/libcbm.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/timezone.h
+	doins include/arc/camera_buffer_manager.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_timezone.pc.template > common/libcamera_timezone.pc
+		common/libcbm.pc.template > common/libcbm.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_timezone.pc
+	doins common/libcbm.pc
+}
+
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
+
+	if use x86 || use amd64; then
+		./common/camera_buffer_manager_unittest || \
+			die "camera_buffer_manager unit tests failed!"
+	fi
 }
