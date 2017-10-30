@@ -132,40 +132,8 @@ install_model_files() {
 	_install_model_files ""
 }
 
-# @FUNCTION: get_model_conf_value
-# @USAGE: <model> <path> <prop>
-# @RETURN: value of the property, or empty if not found
-# @DESCRIPTION:
-# Obtain a configuration value for a given model. Will only follow phandles for
-# /firmware.
-# @CODE
-# model: name of model to lookup.
-# path: path to config string, e.g. "/". Starts with "/".
-# prop: name of property to read (e.g. "wallpaper").
-# @CODE
-get_model_conf_value() {
-	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
-
-	local model="$1"
-	local path="$2"
-	local prop="$3"
-	cros_config_host_py --model "${model}" get "${path}" "${prop}"
-}
-
-# @FUNCTION: get_model_list
-# @USAGE:
-# @DESCRIPTION:
-# Obtain a list of all of the models known to the build root DTB
-# @RETURN:
-# A newline-separated string representing the list of known models; may be empty
-get_model_list() {
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
-
-	cros_config_host_py list-models
-}
-
 # Internal function to compile the device tree file on-the-fly and output a
-# file suitable for piping into fdtget, etc.
+# file suitable for piping into "cros_config -c -".
 # TODO(crbug.com/771187): Move this to cros_config.
 get_dtb_data() {
 	# This function is called before FILESDIR is set so figure it out from
@@ -196,105 +164,6 @@ get_dtb_data() {
 		"models: models { }; }; };" |
 		cat "-" "${cat_workaround_arg}" "${files[@]}" |
 		dtc -O dtb
-}
-
-# @FUNCTION: get_model_list_noroot
-# @USAGE:
-# @DESCRIPTION:
-# Obtain a list of all of the models known to the build DTB in files/
-# @RETURN:
-# A newline-separated string representing the list of known models; may be empty
-get_model_list_noroot() {
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
-
-	get_dtb_data | cros_config_host_py -c - list-models
-}
-
-# @FUNCTION: get_unique_model_conf_value_set
-# @USAGE: <path> <prop>
-# @RETURN:
-# IFS separated string representing unique value of the property
-# across all models or empty if not found.
-# @DESCRIPTION:
-# Obtain a set of configuration values across all models. As a set,
-# contains only unique values.
-# @CODE
-# path: path to config string, e.g. "/". Starts with "/".
-# prop: name of property to read (e.g. "wallpaper").
-# @CODE
-get_unique_model_conf_value_set() {
-	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
-
-	local path="$1"
-	local prop="$2"
-	local models=( $(get_model_list) )
-	local model
-	local values=()
-
-	for model in "${models[@]}"; do
-		values+=(
-			$(get_model_conf_value "${model}" "${path}" "${prop}" \
-			2>/dev/null)
-		)
-	done
-
-	printf '%s\n' "${values[@]}" | sort -u
-}
-
-# @FUNCTION: get_unique_model_conf_value_set_noroot
-# @USAGE: <path> <prop>
-# @RETURN:
-# IFS separated string representing unique value of the property
-# across all models in the files/ directory or empty if not found.
-# @DESCRIPTION:
-# Obtain a set of configuration values across all models. As a set,
-# contains only unique values.
-# @CODE
-# path: path to config string, e.g. "/". Starts with "/".
-# prop: name of property to read (e.g. "wallpaper").
-# @CODE
-get_unique_model_conf_value_set_noroot() {
-	[[ $# -eq 2 ]] || die "${FUNCNAME}: takes 2 arguments"
-	local path="$1"
-	local prop="$2"
-	local models=( $(get_model_list_noroot) )
-	local model
-	local values=()
-
-	for model in "${models[@]}"; do
-		values+=(
-			$(get_model_conf_value_noroot "${model}" "${path}" \
-			"${prop}" 2>/dev/null)
-		)
-	done
-
-	printf '%s\n' "${values[@]}" | sort -u
-}
-
-# @FUNCTION: get_model_conf_value_noroot
-# @USAGE: <model> <path> <prop>
-# @DESCRIPTION:
-# Obtain a configuration value for a given model. This works without needing
-# access to the root directory, so it is suitable for getting information for
-# use # in SRC_URI, for example.
-# It requires a symlink in the calling ebuild from ${FILESDIR}/model.dtsi to
-# the board's configuration file. It also requires a subslot dependency. Will
-# only follow phandles for /firmware.
-# @RETURN: value of the property, or empty if not found
-# @CODE
-# model: name of model to lookup.
-# path: path to config string, e.g. "/". Starts with "/".
-# prop: name of property to read (e.g. "wallpaper").
-# @CODE
-get_model_conf_value_noroot() {
-	[[ $# -eq 3 ]] || die "${FUNCNAME}: takes 3 arguments"
-
-	local model="$1"
-	local path="$2"
-	local prop="$3"
-
-	get_dtb_data | cros_config_host_py -c - --model "${model}" get "${path}" \
-		"${prop}"
 }
 
 # @FUNCTION: install_thermal_files
