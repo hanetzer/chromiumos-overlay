@@ -105,9 +105,17 @@ platform_pkg_test() {
 
 	local test_bin
 
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
-	done
+	# We could run the C++ tests without Python except that the test setup
+	# script needs to generate the list of target directories, which needs
+	# Python. This does not seem to be available on the target:
+	# File "../chromeos-config/libcros_config_host/fdt.py"
+	# import libfdt
+	# ImportError: No module named libfdt
+	if use python; then
+		for test_bin in "${tests[@]}"; do
+			platform_test "run" "${OUT}/${test_bin}"
+		done
 
-	./run_tests.sh || die "cros_config unit tests have errors"
+		./run_tests.sh || die "cros_config unit tests have errors"
+	fi
 }
