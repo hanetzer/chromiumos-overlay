@@ -1,0 +1,167 @@
+From 64739414020c077271a9e2955035e890bf12c293 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 16 Mar 2017 16:11:09 +0000
+Subject: [PATCH 26/33] GL_IMG_bindless_texture entry points
+
+---
+ src/mapi/glapi/gen/IMG_bindless_texture.xml | 45 ++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml               |  3 ++
+ src/mesa/main/es_extension_stubs.c          | 53 +++++++++++++++++++++++++++++
+ src/mesa/main/es_extension_stubs.h          | 18 ++++++++++
+ 4 files changed, 119 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/IMG_bindless_texture.xml
+
+diff --git a/src/mapi/glapi/gen/IMG_bindless_texture.xml b/src/mapi/glapi/gen/IMG_bindless_texture.xml
+new file mode 100644
+index 0000000..dc57480
+--- /dev/null
++++ b/src/mapi/glapi/gen/IMG_bindless_texture.xml
+@@ -0,0 +1,45 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_IMG_bindless_texture" number="270">
++
++    <function name="GetTextureHandleIMG" es2="3.1">
++        <param name="texture" type="GLuint"/>
++	<return type="GLuint64"/>
++    </function>
++
++    <function name="GetTextureSamplerHandleIMG" es2="3.1">
++        <param name="texture" type="GLuint"/>
++        <param name="sampler" type="GLuint"/>
++	<return type="GLuint64"/>
++    </function>
++
++    <function name="UniformHandleui64IMG" es2="3.1">
++        <param name="location" type="GLint"/>
++        <param name="value" type="GLuint64"/>
++    </function>
++
++    <function name="UniformHandleui64vIMG" es2="3.1">
++        <param name="location" type="GLint"/>
++        <param name="count" type="GLsizei"/>
++        <param name="value" type="const GLuint64 *"/>
++    </function>
++
++    <function name="ProgramUniformHandleui64IMG" es2="3.1">
++        <param name="program" type="GLuint"/>
++        <param name="location" type="GLint"/>
++        <param name="value" type="GLuint64"/>
++    </function>
++
++    <function name="ProgramUniformHandleui64vIMG" es2="3.1">
++        <param name="program" type="GLuint"/>
++        <param name="location" type="GLint"/>
++        <param name="count" type="GLsizei"/>
++        <param name="value" type="const GLuint64 *"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 825bf38..a8c9600 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1492,4 +1492,7 @@
+     </function>
+ </category>
+ 
++<!-- 270. GL_IMG_bindless_texture -->
++<xi:include href="IMG_bindless_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/es_extension_stubs.c b/src/mesa/main/es_extension_stubs.c
+index 5a85b01..12ddb85 100644
+--- a/src/mesa/main/es_extension_stubs.c
++++ b/src/mesa/main/es_extension_stubs.c
+@@ -140,3 +140,56 @@ _mesa_FramebufferTextureMultisampleMultiviewOVR(GLenum target, GLenum attachment
+ 
+     _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTextureMultisampleMultiviewOVR");
+ }
++
++GLuint64 GLAPIENTRY
++_mesa_GetTextureHandleIMG(GLuint texture)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glGetTextureHandleIMG");
++
++    return 0;
++}
++
++GLuint64 GLAPIENTRY
++_mesa_GetTextureSamplerHandleIMG(GLuint texture, GLuint sampler)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glGetTextureSamplerHandleIMG");
++
++    return 0;
++}
++
++void GLAPIENTRY
++_mesa_UniformHandleui64IMG(GLint location, GLuint64 value)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glUniformHandleui64IMG");
++}
++
++void GLAPIENTRY
++_mesa_UniformHandleui64vIMG(GLint location, GLsizei count, const GLuint64 *value)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glUniformHandleui64vIMG");
++}
++
++
++void GLAPIENTRY
++_mesa_ProgramUniformHandleui64IMG(GLuint program, GLint location, GLuint64 value)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glProgramUniformHandleui64IMG");
++}
++
++void GLAPIENTRY
++_mesa_ProgramUniformHandleui64vIMG(GLuint program, GLint location, GLsizei count, const GLuint64 *values)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glProgramUniformHandleui64vIMG");
++}
+diff --git a/src/mesa/main/es_extension_stubs.h b/src/mesa/main/es_extension_stubs.h
+index d6d6790..d21ce00 100644
+--- a/src/mesa/main/es_extension_stubs.h
++++ b/src/mesa/main/es_extension_stubs.h
+@@ -54,4 +54,22 @@ _mesa_FramebufferTextureLayerDownsampleIMG(GLenum target, GLenum attachment, GLu
+ void GLAPIENTRY
+ _mesa_FramebufferTextureMultisampleMultiviewOVR(GLenum target, GLenum attachment, GLuint texture, GLint level, GLsizei samples, GLint baseViewIndex, GLsizei numViews);
+ 
++GLuint64 GLAPIENTRY
++_mesa_GetTextureHandleIMG(GLuint texture);
++
++GLuint64 GLAPIENTRY
++_mesa_GetTextureSamplerHandleIMG(GLuint texture, GLuint sampler);
++
++void GLAPIENTRY
++_mesa_UniformHandleui64IMG(GLint location, GLuint64 value);
++
++void GLAPIENTRY
++_mesa_UniformHandleui64vIMG(GLint location, GLsizei count, const GLuint64 *value);
++
++void GLAPIENTRY
++_mesa_ProgramUniformHandleui64IMG(GLuint program, GLint location, GLuint64 value);
++
++void GLAPIENTRY
++_mesa_ProgramUniformHandleui64vIMG(GLuint program, GLint location, GLsizei count, const GLuint64 *values);
++
+ #endif
+-- 
+2.7.4
+

@@ -1,32 +1,28 @@
-From 0dd9a022a31c212066f3ab538e1779a2b29fe4da Mon Sep 17 00:00:00 2001
+From d32913e3bb9ade8dbb739002bb239dd4e67546e2 Mon Sep 17 00:00:00 2001
 From: Frank Binns <frank.binns@imgtec.com>
-Date: Tue, 18 Apr 2017 18:45:29 +0100
+Date: Mon, 30 Oct 2017 11:40:29 +0000
 Subject: [PATCH] dri/pvr: Introduce PowerVR DRI driver.
 
-Change-Id: I8d53d409c22b991c670e8e0511c931c2756613c2
+Change-Id: Iab222336df40939dbc61807640f2fc8f26aca9b8
 ---
- configure.ac                                |    8 +
- src/mesa/drivers/dri/Makefile.am            |    6 +
- src/mesa/drivers/dri/pvr/Makefile.am        |   22 +
- src/mesa/drivers/dri/pvr/Makefile.sources   |   12 +
- src/mesa/drivers/dri/pvr/mesa_context.c     |  258 ++++++
- src/mesa/drivers/dri/pvr/pvr_object_cache.c |  317 +++++++
- src/mesa/drivers/dri/pvr/pvr_object_cache.h |  137 +++
- src/mesa/drivers/dri/pvr/pvrdrawable.c      |  743 ++++++++++++++++
- src/mesa/drivers/dri/pvr/pvrdri.c           | 1214 +++++++++++++++++++++++++++
- src/mesa/drivers/dri/pvr/pvrdri.h           |  259 ++++++
- src/mesa/drivers/dri/pvr/pvrext.c           |  400 +++++++++
- src/mesa/drivers/dri/pvr/pvrimage.c         | 1045 +++++++++++++++++++++++
- src/mesa/drivers/dri/pvr/pvrimage.h         |   96 +++
- src/mesa/drivers/dri/pvr/pvrmesa.h          |   44 +
- src/mesa/drivers/dri/pvr/pvrqueue.h         |   74 ++
- src/mesa/drivers/dri/pvr/pvrutil.c          |  567 +++++++++++++
- 16 files changed, 5202 insertions(+)
+ configure.ac                              |    8 +
+ src/mesa/drivers/dri/Makefile.am          |    6 +
+ src/mesa/drivers/dri/pvr/Makefile.am      |   49 ++
+ src/mesa/drivers/dri/pvr/Makefile.sources |   35 +
+ src/mesa/drivers/dri/pvr/mesa_context.c   |  259 +++++++
+ src/mesa/drivers/dri/pvr/pvrdrawable.c    |  660 +++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.c         | 1134 +++++++++++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrdri.h         |  293 ++++++++
+ src/mesa/drivers/dri/pvr/pvrext.c         |  388 ++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.c       | 1042 ++++++++++++++++++++++++++
+ src/mesa/drivers/dri/pvr/pvrimage.h       |   93 +++
+ src/mesa/drivers/dri/pvr/pvrmesa.h        |   41 ++
+ src/mesa/drivers/dri/pvr/pvrqueue.h       |   74 ++
+ src/mesa/drivers/dri/pvr/pvrutil.c        |  589 +++++++++++++++
+ 14 files changed, 4671 insertions(+)
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.am
  create mode 100644 src/mesa/drivers/dri/pvr/Makefile.sources
  create mode 100644 src/mesa/drivers/dri/pvr/mesa_context.c
- create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.c
- create mode 100644 src/mesa/drivers/dri/pvr/pvr_object_cache.h
  create mode 100644 src/mesa/drivers/dri/pvr/pvrdrawable.c
  create mode 100644 src/mesa/drivers/dri/pvr/pvrdri.c
  create mode 100644 src/mesa/drivers/dri/pvr/pvrdri.h
@@ -38,7 +34,7 @@ Change-Id: I8d53d409c22b991c670e8e0511c931c2756613c2
  create mode 100644 src/mesa/drivers/dri/pvr/pvrutil.c
 
 diff --git a/configure.ac b/configure.ac
-index 2689fc5..67714ee 100644
+index 7fade23..1117fbc 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -76,6 +76,7 @@ LIBDRM_REQUIRED=2.4.75
@@ -96,10 +92,33 @@ index 381c6a2..fa5cba5 100644
  MEGADRIVERS_DEPS += swrast/libswrast_dri.la
 diff --git a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
 new file mode 100644
-index 0000000..a684bdf
+index 0000000..23db505
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/Makefile.am
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,45 @@
++#
++# Copyright (c) Imagination Technologies Ltd.
++#
++# The contents of this file are subject to the MIT license as set out below.
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++# THE SOFTWARE.
++#
 +
 +include Makefile.sources
 +
@@ -114,20 +133,44 @@ index 0000000..a684bdf
 +	-I$(top_builddir)/src/mesa/main \
 +	$(DEFINES) \
 +	$(VISIBILITY_CFLAGS) \
-+	$(PVR_CFLAGS)
++	$(PVR_CFLAGS) \
++	$(LIBDLOG_CFLAGS)
 +
 +AM_CXXFLAGS = $(AM_CFLAGS)
 +
 +noinst_LTLIBRARIES = libpvr_dri.la
 +libpvr_dri_la_SOURCES = $(pvr_FILES)
-+libpvr_dri_la_LIBADD = $(INTEL_LIBS)
-+
++libpvr_dri_la_LIBADD = $(PVR_LIBS) $(LIBDLOG_LIBS)
 diff --git a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pvr/Makefile.sources
 new file mode 100644
-index 0000000..448dc49
+index 0000000..c907dc0
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/Makefile.sources
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,35 @@
++#
++# Copyright (c) Imagination Technologies Ltd.
++#
++# The contents of this file are subject to the MIT license as set out below.
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++# THE SOFTWARE.
++#
++
 +pvr_INCLUDES = \
 +	$(MESA_TOP)/src \
 +	$(MESA_TOP)/src/mesa/drivers/dri/pvr
@@ -138,14 +181,13 @@ index 0000000..448dc49
 + pvrdri.c \
 + pvrext.c \
 + pvrimage.c \
-+ pvrutil.c \
-+ pvr_object_cache.c
++ pvrutil.c
 diff --git a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
 new file mode 100644
-index 0000000..794bb03
+index 0000000..bce441f
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/mesa_context.c
-@@ -0,0 +1,258 @@
+@@ -0,0 +1,259 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
 +/**
@@ -160,22 +202,23 @@ index 0000000..794bb03
 + *
 + * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
 + *
-+ * Permission is hereby granted, free of charge, to any person obtaining a
-+ * copy of this software and associated documentation files (the "Software"),
-+ * to deal in the Software without restriction, including without limitation
-+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-+ * and/or sell copies of the Software, and to permit persons to whom the
-+ * Software is furnished to do so, subject to the following conditions:
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
 + *
-+ * The above copyright notice and this permission notice shall be included
-+ * in all copies or substantial portions of the Software.
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
 + *
 + * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 + * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-+ * BRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
 + */
 +
 +#include <stdlib.h>
@@ -404,506 +447,37 @@ index 0000000..794bb03
 +
 +	_glapi_set_dispatch(psTable);
 +}
-diff --git a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
-new file mode 100644
-index 0000000..1e0df31
---- /dev/null
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
-@@ -0,0 +1,317 @@
-+/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
-+/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File           pvr_object_cache.c
-+@Title          Cache for objects.
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#include <stdlib.h>
-+#include <search.h>
-+
-+#include "pvrqueue.h"
-+#include "pvr_object_cache.h"
-+
-+#define	FOR_QELEM_QOBJ(psCache, psQElem, psObj)				\
-+	for ((psQElem) = (psCache)->sQHead.pvForw;			\
-+	     (psQElem) != &(psCache)->sQHead &&				\
-+		     ((psObj) = PVRQ_CONTAINER_OF((psQElem),		\
-+						  struct PVRCachedObject, sQElem))->bValid; \
-+	     (psQElem) = (psQElem)->pvForw)
-+
-+struct PVRCachedObject
-+{
-+	PVRQElem sQElem;
-+
-+	void *pvObjectData;
-+
-+	bool bValid;
-+	unsigned uAge;
-+};
-+
-+struct _PVRObjectCache
-+{
-+	/* LRU queue of objects in cache */
-+	PVRQHead sQHead;
-+
-+	unsigned uNumObj;
-+	unsigned uMaxAge;
-+
-+	void *pvCreateData;
-+
-+	PVRObjectCacheInsertCB pfnInsertCB;
-+	PVRObjectCachePurgeCB pfnPurgeCB;
-+	PVRObjectCacheCompareCB pfnCompareCB;
-+};
-+
-+static inline void
-+PVRQueueRemove(struct PVRCachedObject *psObj)
-+{
-+	remque(&psObj->sQElem);
-+}
-+
-+static inline void
-+PVRQueueAddFront(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
-+{
-+	insque(&psObj->sQElem, &psCache->sQHead);
-+}
-+
-+static inline void
-+PVRQueueAddBack(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
-+{
-+	insque(&psObj->sQElem, psCache->sQHead.pvBack);
-+}
-+
-+static inline bool
-+PVRObjectInsert(struct _PVRObjectCache *psCache,
-+		struct PVRCachedObject *psObj,
-+		void *pvInsertData)
-+{
-+	psObj->pvObjectData = psCache->pfnInsertCB(psCache->pvCreateData,
-+						  pvInsertData);
-+
-+	return (psObj->pvObjectData != NULL);
-+}
-+
-+static inline void
-+PVRObjectPurge(struct _PVRObjectCache *psCache,
-+	       struct PVRCachedObject *psObj,
-+	       bool bRetired)
-+{
-+	if (psCache->pfnPurgeCB != NULL)
-+	{
-+		psCache->pfnPurgeCB(psCache->pvCreateData,
-+				    psObj->pvObjectData,
-+				    bRetired);
-+	}
-+}
-+
-+static inline bool
-+PVRObjectInCache(struct _PVRObjectCache *psCache,
-+		 struct PVRCachedObject *psObj,
-+		 void *pvInsertData)
-+{
-+	if (psCache->pfnCompareCB != NULL)
-+	{
-+		return psCache->pfnCompareCB(psCache->pvCreateData,
-+					     psObj->pvObjectData,
-+					     pvInsertData);
-+	}
-+
-+	return false;
-+}
-+
-+IMG_INTERNAL void
-+PVRObjectCachePurge(PVRObjectCache hObjectCache)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	PVRQElem *psQElem;
-+	struct PVRCachedObject *psObj;
-+
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		PVRObjectPurge(psCache, psObj, false);
-+
-+		psObj->bValid = false;
-+	}
-+}
-+
-+
-+IMG_INTERNAL bool
-+PVRObjectCacheInsert(PVRObjectCache hObjectCache,
-+		     void *pvInsertData)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	struct PVRCachedObject *psObj;
-+	bool bInserted = false;
-+	PVRQElem *psQElem;
-+
-+	/* Is the object already in the cache ? */
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		/* Cache hit? */
-+		if (PVRObjectInCache(psCache, psObj, pvInsertData))
-+		{
-+			/* Cache hit on first element? */
-+			if (psQElem == psCache->sQHead.pvForw)
-+			{
-+				return true;
-+			}
-+
-+			/* The old object purge will bump the age to 1 */
-+			psObj->uAge = 0;
-+			bInserted = true;
-+
-+			/* Move the object to the front of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddFront(psCache, psObj);
-+
-+			break;
-+		}
-+	}
-+
-+	/* Purge old objects */
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		/* Age the object */
-+		psObj->uAge++;
-+
-+		/* Has the object been in the cache too long? */
-+		if (psCache->uMaxAge != 0 && psObj->uAge > psCache->uMaxAge)
-+		{
-+			PVRObjectPurge(psCache, psObj, true);
-+
-+			psObj->bValid = false;
-+
-+			/* Move the object to the back of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddBack(psCache, psObj);
-+		}
-+	}
-+
-+	/*
-+	 * If the object wasn't added to the cache above, add it using the
-+	 * last entry in the queue.
-+	 */
-+	if (!bInserted)
-+	{
-+		PVRQElem *psQElem = psCache->sQHead.pvBack;
-+		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psQElem,
-+								  struct PVRCachedObject,
-+								  sQElem);
-+
-+		if (psObj->bValid)
-+		{
-+			PVRObjectPurge(psCache, psObj, true);
-+
-+			psObj->bValid = false;
-+		}
-+
-+		psObj->uAge = 1;
-+
-+		if (PVRObjectInsert(psCache, psObj, pvInsertData))
-+		{
-+			psObj->bValid = true;
-+
-+			/* Move the object to the front of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddFront(psCache, psObj);
-+
-+			bInserted = true;
-+		}
-+	}
-+
-+	return bInserted;
-+}
-+
-+IMG_INTERNAL void *
-+PVRObjectCacheGetObject(PVRObjectCache hObjectCache, unsigned uObj)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	unsigned uCount = uObj;
-+	PVRQElem *psQElem;
-+	struct PVRCachedObject *psObj;
-+
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		if ((uCount--) == 0)
-+		{
-+			return psObj->pvObjectData;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+IMG_INTERNAL void
-+PVRObjectCacheDestroy(PVRObjectCache hObjectCache)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+
-+	PVRObjectCachePurge(psCache);
-+
-+	while (psCache->sQHead.pvForw != &psCache->sQHead)
-+	{
-+		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psCache->sQHead.pvForw,
-+								  struct PVRCachedObject,
-+								  sQElem);
-+
-+		PVRQueueRemove(psObj);
-+		free(psObj);
-+	}
-+
-+	free(psCache);
-+}
-+
-+IMG_INTERNAL PVRObjectCache
-+PVRObjectCacheCreate(unsigned uNumObj,
-+		     unsigned uMaxAge,
-+		     void *pvCreateData,
-+		     PVRObjectCacheInsertCB pfnInsertCB,
-+		     PVRObjectCachePurgeCB pfnPurgeCB,
-+		     PVRObjectCacheCompareCB pfnCompareCB)
-+{
-+	struct _PVRObjectCache *psCache;
-+	unsigned i;
-+
-+	if (uNumObj == 0 || pfnInsertCB == NULL)
-+	{
-+		return NULL;
-+	}
-+
-+	psCache = calloc(1, sizeof(*psCache));
-+	if (psCache == NULL)
-+	{
-+		return NULL;
-+	}
-+
-+	psCache->uNumObj = uNumObj;
-+	psCache->uMaxAge = uMaxAge;
-+	psCache->pvCreateData = pvCreateData;
-+	psCache->pfnInsertCB = pfnInsertCB;
-+	psCache->pfnPurgeCB = pfnPurgeCB;
-+	psCache->pfnCompareCB = pfnCompareCB;
-+
-+	INITIALISE_PVRQ_HEAD(&psCache->sQHead);
-+
-+	for (i = 0; i < uNumObj; i++)
-+	{
-+		struct PVRCachedObject *psObj;
-+
-+		psObj = calloc(1, sizeof(*psObj));
-+		if (psObj == NULL)
-+		{
-+			goto ExitError;
-+		}
-+
-+		PVRQueueAddBack(psCache, psObj);
-+	}
-+
-+	return psCache;
-+
-+ExitError:
-+	PVRObjectCacheDestroy(psCache);
-+
-+	return NULL;
-+}
-diff --git a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
-new file mode 100644
-index 0000000..6aaa361
---- /dev/null
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
-@@ -0,0 +1,137 @@
-+/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
-+/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File           pvr_object_cache.h
-+@Title          Cache for objects.
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(__PVR_OBJECT_CACHE_H__)
-+#define __PVR_OBJECT_CACHE_H__
-+
-+#include "stdbool.h"
-+#ifndef IMG_INTERNAL
-+#define IMG_INTERNAL	__attribute__((visibility("hidden")))
-+#endif
-+
-+typedef struct _PVRObjectCache *PVRObjectCache;
-+
-+/* Cache insert callback. Returns object data on success or NULL otherwise. */
-+typedef void *(*PVRObjectCacheInsertCB)(void *pvCreateData,
-+					void *pvInsertData);
-+
-+/*
-+ * Cache purge callback. The object data is the data returned by the insert
-+ * callback. The bRetired flag indicates an object has been retired due to
-+ * age, or lack of space in the cache, rather than an explicit purge.
-+ */
-+typedef void (*PVRObjectCachePurgeCB)(void *pvCreateData,
-+				      void *pvObjectData,
-+				      bool bRetired);
-+/*
-+ * Cache compare callback. The object data is the data returned by the insert
-+ * callback.
-+ */
-+typedef bool (*PVRObjectCacheCompareCB)(void *pvCreateData,
-+                                        void *pvObjectData,
-+                                        void *pvInsertData);
-+
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheCreate
-+@Description    Creates an object cache.
-+@Input          uNumObj             The maximum number of objects that can be
-+                                    stored in the cache.
-+@Input          uMaxAge             The maximum age of an object before it gets
-+                                    purged from the cache. If 0 then age related
-+                                    purging is disabled.
-+@Input          pvCreateData        Optional data to be passed to the provided
-+                                    callback functions.
-+@Input          pfnInsertCB         Callback used when data is inserted into
-+                                    the cache.
-+@Input          pfnPurgeCB          Optional callback used when an object is
-+                                    purged from the cache.
-+@Input          pfnCompareCB        Optional callback used when inserting a new
-+                                    object into the cache to determine whether
-+                                    or not the object already exists within the
-+                                    cache.
-+@Return         PVRObjectCache      Returns a handle to the newly created object
-+                                    cache on success or NULL otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL PVRObjectCache PVRObjectCacheCreate(unsigned uNumObj,
-+						 unsigned uMaxAge,
-+						 void *pvCreateData,
-+						 PVRObjectCacheInsertCB pfnInsertCB,
-+						 PVRObjectCachePurgeCB pfnPurgeCB,
-+						 PVRObjectCacheCompareCB pfnCompareCB);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheInsert
-+@Description    Insert an object into the cache, giving it a starting age of
-+                one. If the object was already contained within the cache then
-+                the insert callback will not be called and the existing cache
-+                object will have its age reset to one. All other objects in the
-+                cache will have their age increased by one. This may result in
-+                an object being purged from the cache if its age exceeds the
-+                maximum age specified when creating the cache or the cache is
-+                already full.
-+@Input          hObjectCache        Handle to an object cache.
-+@Input          pvInsertData        Data passed to the insert callback.
-+@Return         IMG_BOOL            Returns IMG_TRUE on success or IMG_FALSE
-+                                    otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL bool PVRObjectCacheInsert(PVRObjectCache hObjectCache,
-+                                       void *pvInsertData);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheGetObject
-+@Description    Returns object data from the cache based on the given object
-+                number, whereby the youngest object corresponds to zero.
-+@Input          hObjectCache        Handle to an object cache.
-+@Input          uObj                Number of the object to return.
-+@Return         void *              Returns object data (as returned by the
-+                                    insert callback) on success or NULL
-+                                    otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL void *PVRObjectCacheGetObject(PVRObjectCache hObjectCache,
-+					   unsigned uObj);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCachePurge
-+@Description    Purges the given cache of all objects.
-+@Input          hObjectCache        Handle to an object cache.
-+@Return         void
-+*/ /***************************************************************************/
-+IMG_INTERNAL void PVRObjectCachePurge(PVRObjectCache hObjectCache);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheDestroy
-+@Description    Destroy the given object cache, purging all remaining objects
-+                in the cache.
-+@Input          hObjectCache        Handle to an object cache.
-+@Return         void
-+*/ /***************************************************************************/
-+IMG_INTERNAL void PVRObjectCacheDestroy(PVRObjectCache hObjectCache);
-+
-+#endif /* defined(__PVR_OBJECT_CACHE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
 new file mode 100644
-index 0000000..7dfc278
+index 0000000..044097e
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c
-@@ -0,0 +1,743 @@
+@@ -0,0 +1,660 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI Surface/Drawable code
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#include <assert.h>
 +
@@ -912,23 +486,18 @@ index 0000000..7dfc278
 +#include "pvrdri.h"
 +#include "pvrimage.h"
 +
-+static PVRDRIBufferImpl *PVRGetBackingBuffer(PVRDRIBuffer *psPVRBuffer)
++static PVRDRIBufferImpl *PVRGetBackingBuffer(PVRDRIDrawable *psPVRDrawable)
 +{
-+	if (psPVRBuffer)
-+	{
-+		switch (psPVRBuffer->eBackingType)
-+		{
-+			case PVRDRI_BUFFER_BACKING_DRI2:
-+				return psPVRBuffer->uBacking.sDRI2.psBuffer;
-+			case PVRDRI_BUFFER_BACKING_IMAGE:
-+				return PVRDRIImageGetSharedBuffer(psPVRBuffer->uBacking.sImage.psImage);
-+			default:
-+				assert(0);
-+				return NULL;
-+		}
-+	}
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
 +
-+	return NULL;
++	if (psPVRDrawable->psPVRScreen->psDRIScreen->image.loader)
++	{
++		return PVRDRIImageGetSharedBuffer(psPVRBuffer->uBacking.sImage.psImage);
++	}
++	else
++	{
++		return psPVRBuffer->uBacking.sDRI2.psBuffer;
++	}
 +}
 +
 +static inline void PVRDRIMarkAllRenderSurfacesAsInvalid(PVRDRIDrawable *psPVRDrawable)
@@ -944,13 +513,40 @@ index 0000000..7dfc278
 +		psQElem = psPVRContext->sQElem.pvForw;
 +	}
 +
-+	/* No need to flush surfaces evicted from the cache */
-+	INITIALISE_PVRQ_HEAD(&psPVRDrawable->sCacheFlushHead);
 +}
 +
 +/*************************************************************************/ /*!
 + PVR drawable local functions (image driver loader)
 +*/ /**************************************************************************/
++
++static inline void PVRDrawableImageDestroy(PVRDRIDrawable *psPVRDrawable)
++{
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
++
++	if (psPVRBuffer->uBacking.sImage.psImage)
++	{
++		PVRDRIUnrefImage(psPVRBuffer->uBacking.sImage.psImage);
++		psPVRBuffer->uBacking.sImage.psImage = NULL;
++	}
++}
++
++static void PVRDrawableImageUpdate(PVRDRIDrawable *psPVRDrawable)
++{
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
++	__DRIimage *psImage = psPVRDrawable->uDRI.sImage.psDRI;
++
++	if (psPVRBuffer->uBacking.sImage.psImage != psImage)
++	{
++		assert(PVRDRIImageGetSharedBuffer(psImage) != NULL);
++
++		PVRDRIRefImage(psImage);
++
++		PVRDrawableImageDestroy(psPVRDrawable);
++
++		psPVRBuffer->uBacking.sImage.psImage = psImage;
++
++	}
++}
 +
 +/*************************************************************************/ /*!
 + Function Name		: PVRImageDrawableGetNativeInfo
@@ -1026,12 +622,7 @@ index 0000000..7dfc278
 +	psPVRDrawable->uStride = sBufferAttribs.uiStrideInBytes;
 +	psPVRDrawable->uBytesPerPixel = uBytesPerPixel;
 +
-+	if (!PVRObjectCacheInsert(psPVRDrawable->hBufferCache,
-+					psPVRDrawable->uDRI.sImage.psDRI))
-+	{
-+		errorMessage("%s: Couldn't insert buffer into cache\n", __func__);
-+		return false;
-+	}
++	PVRDrawableImageUpdate(psPVRDrawable);
 +
 +	if (!PVREGLDrawableCreate(psPVRDrawable->psPVRScreen->psImpl,
 +				  psPVRDrawable->psImpl))
@@ -1044,28 +635,26 @@ index 0000000..7dfc278
 +}
 +
 +/*************************************************************************/ /*!
-+ Function Name		: PVRImageDrawableRecreate
++ Function Name		: PVRImageDrawableUpdate
 + Inputs			: psPVRDrawable
 + Returns		: Boolean
-+ Description		: Recreate drawable, if necessary.
++ Description		: Update drawable
 +*/ /**************************************************************************/
-+static bool PVRImageDrawableRecreate(PVRDRIDrawable *psPVRDrawable)
++static bool PVRImageDrawableUpdate(PVRDRIDrawable *psPVRDrawable,
++				   bool bAllowRecreate)
 +{
 +	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
-+	PVRDRIBuffer *psPVRBuffer;
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
 +	uint32_t uBytesPerPixel;
 +	PVRDRIBufferAttribs sBufferAttribs;
 +	bool bRecreate;
-+
-+	psPVRBuffer = (psPVRDrawable->bDoubleBuffered) ? NULL :
-+			PVRObjectCacheGetObject(psPVRDrawable->hBufferCache, 0);
 +
 +	PVRDRIEGLImageGetAttribs(
 +		PVRDRIImageGetEGLImage(psPVRDrawable->uDRI.sImage.psDRI),
 +					&sBufferAttribs);
 +	uBytesPerPixel = PVRDRIPixFmtGetBlockSize(sBufferAttribs.ePixFormat);
 +
-+	bRecreate = (psPVRBuffer &&
++	bRecreate = (!psPVRDrawable->bDoubleBuffered &&
 +			psPVRBuffer->uBacking.sImage.psImage !=
 +				psPVRDrawable->uDRI.sImage.psDRI) ||
 +			(psDRIDrawable->w != sBufferAttribs.uiWidth) ||
@@ -1076,28 +665,30 @@ index 0000000..7dfc278
 +
 +	if (bRecreate)
 +	{
-+		PVRDRIMarkAllRenderSurfacesAsInvalid(psPVRDrawable);
-+		PVRObjectCachePurge(psPVRDrawable->hBufferCache);
++		if (bAllowRecreate)
++		{
++			PVRDRIMarkAllRenderSurfacesAsInvalid(psPVRDrawable);
 +
-+		psDRIDrawable->w = sBufferAttribs.uiWidth;
-+		psDRIDrawable->h = sBufferAttribs.uiHeight;
-+		psPVRDrawable->uStride = sBufferAttribs.uiStrideInBytes;
-+		psPVRDrawable->uBytesPerPixel = uBytesPerPixel;
++			psDRIDrawable->w = sBufferAttribs.uiWidth;
++			psDRIDrawable->h = sBufferAttribs.uiHeight;
++			psPVRDrawable->uStride = sBufferAttribs.uiStrideInBytes;
++			psPVRDrawable->uBytesPerPixel = uBytesPerPixel;
++		}
++		else
++		{
++			return false;
++		}
 +	}
 +
-+	if (!PVRObjectCacheInsert(psPVRDrawable->hBufferCache,
-+					psPVRDrawable->uDRI.sImage.psDRI))
-+	{
-+		errorMessage("%s: Couldn't insert buffer into cache\n", __func__);
-+		return false;
-+	}
++	PVRDrawableImageUpdate(psPVRDrawable);
 +
 +	if (bRecreate)
 +	{
 +		if (!PVREGLDrawableRecreate(psPVRDrawable->psPVRScreen->psImpl,
 +		                            psPVRDrawable->psImpl))
 +		{
-+			errorMessage("%s: Couldn't recreate EGL drawable\n", __func__);
++			errorMessage("%s: Couldn't recreate EGL drawable\n",
++				     __func__);
 +			return false;
 +		}
 +	}
@@ -1105,67 +696,59 @@ index 0000000..7dfc278
 +	return true;
 +}
 +
-+static void *PVRImageObjectCacheInsert(void *pvCreateData, void *pvInsertData)
-+{
-+	__DRIimage *psImage = pvInsertData;
-+	PVRDRIBuffer *psPVRBuffer;
-+	(void)pvCreateData;
-+
-+	assert(PVRDRIImageGetSharedBuffer(psImage) != NULL);
-+
-+	psPVRBuffer = calloc(1, sizeof(*psPVRBuffer));
-+	if (psPVRBuffer == NULL)
-+	{
-+		errorMessage("%s: Failed to create PVR DRI buffer", __func__);
-+		return NULL;
-+	}
-+
-+	psPVRBuffer->eBackingType = PVRDRI_BUFFER_BACKING_IMAGE;
-+	psPVRBuffer->uBacking.sImage.psImage = psImage;
-+
-+	/* As a precaution, take a reference on the image so it doesn't disappear unexpectedly */
-+	PVRDRIRefImage(psImage);
-+
-+	return psPVRBuffer;
-+}
-+
-+static void PVRImageObjectCachePurge(void *pvCreateData,
-+                                     void *pvObjectData,
-+                                     bool bRetired)
-+{
-+	PVRDRIDrawable *psPVRDrawable = pvCreateData;
-+	PVRDRIBuffer *psPVRBuffer = pvObjectData;
-+
-+	if (bRetired)
-+	{
-+		/*
-+		 * Delay flush until later, as it may not be safe
-+		 * to do the flush within GetDrawableInfo.
-+		 */
-+		PVRQQueue(&psPVRDrawable->sCacheFlushHead, &psPVRBuffer->sCacheFlushElem);
-+	}
-+	else
-+	{
-+		PVRDRIUnrefImage(psPVRBuffer->uBacking.sImage.psImage);
-+		free(psPVRBuffer);
-+	}
-+}
-+
-+static bool PVRImageObjectCacheCompare(void *pvCreateData,
-+                                       void *pvObjectData,
-+                                       void *pvInsertData)
-+{
-+	__DRIimage *psImage = pvInsertData;
-+	PVRDRIBuffer *psPVRBuffer = pvObjectData;
-+	(void)pvCreateData;
-+
-+	return psPVRBuffer->uBacking.sImage.psImage == psImage;
-+}
-+
-+
 +/*************************************************************************/ /*!
 + PVR drawable local functions (DRI2 loader)
 +*/ /**************************************************************************/
++
++static inline void PVRDrawableDRI2BufferDestroy(PVRDRIDrawable *psPVRDrawable)
++{
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
++
++	if (psPVRBuffer->uBacking.sDRI2.psBuffer)
++	{
++		PVRDRIBufferDestroy(psPVRBuffer->uBacking.sDRI2.psBuffer);
++		psPVRBuffer->uBacking.sDRI2.psBuffer = NULL;
++	}
++}
++
++static bool PVRDrawableDRI2BufferUpdate(PVRDRIDrawable *psPVRDrawable)
++{
++	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
++	PVRDRIScreen *psPVRScreen = psPVRDrawable->psPVRScreen;
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
++	__DRIbuffer *psDRIBuffer = &psPVRDrawable->uDRI.sBuffer.sDRI;
++
++	if (psPVRBuffer->uBacking.sDRI2.uiName != psDRIBuffer->name)
++	{
++		PVRDRIBufferImpl *psBuffer;
++
++		if (PVRDRIPixFmtGetBlockSize(psPVRDrawable->ePixelFormat) !=
++		    psDRIBuffer->cpp)
++		{
++			errorMessage("%s: DRI buffer format doesn't match drawable format\n", __func__);
++			return false;
++		}
++
++		psBuffer = PVRDRIBufferCreateFromName(psPVRScreen->psImpl,
++						      psDRIBuffer->name,
++						      psDRIDrawable->w,
++						      psDRIDrawable->h,
++						      psDRIBuffer->pitch,
++						      0);
++		if (!psBuffer)
++		{
++			errorMessage("%s: Failed to create buffer\n", __func__);
++			return false;
++		}
++
++		PVRDrawableDRI2BufferDestroy(psPVRDrawable);
++
++		psPVRBuffer->uBacking.sDRI2.psBuffer = psBuffer;
++		psPVRBuffer->uBacking.sDRI2.uiName = psDRIBuffer->name;
++	}
++
++	return true;
++}
 +
 +/***********************************************************************************
 + Function Name		: PVRDRI2DrawableGetNativeInfo
@@ -1254,9 +837,9 @@ index 0000000..7dfc278
 +	psPVRDrawable->uStride = psPVRDrawable->uDRI.sBuffer.sDRI.pitch;
 +	psPVRDrawable->uBytesPerPixel = psPVRDrawable->uDRI.sBuffer.sDRI.cpp;
 +
-+	if (!PVRObjectCacheInsert(psPVRDrawable->hBufferCache, &psPVRDrawable->uDRI.sBuffer.sDRI))
++	if (!PVRDrawableDRI2BufferUpdate(psPVRDrawable))
 +	{
-+		errorMessage("%s: Couldn't insert buffer into cache\n", __func__);
++		errorMessage("%s: Couldn't set drawable buffer\n", __func__);
 +		return false;
 +	}
 +
@@ -1271,28 +854,25 @@ index 0000000..7dfc278
 +}
 +
 +/***********************************************************************************
-+ Function Name		: PVRDRI2DrawableRecreate
++ Function Name		: PVRDRI2DrawableUpdate
 + Inputs			: psPVRDrawable
 + Returns		: Boolean
-+ Description		: Recreate a drawable, if necessary.
++ Description		: Update drawable
 +************************************************************************************/
-+static bool PVRDRI2DrawableRecreate(PVRDRIDrawable *psPVRDrawable)
++static bool PVRDRI2DrawableUpdate(PVRDRIDrawable *psPVRDrawable,
++				  bool bAllowRecreate)
 +{
 +	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
-+	PVRDRIBuffer *psPVRBuffer;
++	PVRDRIBuffer *psPVRBuffer = &psPVRDrawable->sPVRBuffer;
 +	bool bRecreate;
 +
 +	/*
-+	 * If we're single buffered, check the name of the first buffer
-+	 * in the cache (there should only be one) against the new name of
-+	 * the new DRI buffer. Otherwise don't, as the name will change as
++	 * If we're single buffered, check the current buffer name against
++	 * the new buffer name, otherwise don't, as the name will change as
 +	 * part of swap buffers.
 +	 */
-+	psPVRBuffer = (psPVRDrawable->bDoubleBuffered) ? NULL :
-+			PVRObjectCacheGetObject(psPVRDrawable->hBufferCache, 0);
 +
-+
-+	bRecreate = (psPVRBuffer &&
++	bRecreate = (!psPVRDrawable->bDoubleBuffered &&
 +			psPVRBuffer->uBacking.sDRI2.uiName !=
 +				psPVRDrawable->uDRI.sBuffer.sDRI.name) ||
 +		(psDRIDrawable->w != psPVRDrawable->uDRI.sBuffer.w) ||
@@ -1304,22 +884,27 @@ index 0000000..7dfc278
 +
 +	if (bRecreate)
 +	{
-+		PVRDRIMarkAllRenderSurfacesAsInvalid(psPVRDrawable);
-+		PVRObjectCachePurge(psPVRDrawable->hBufferCache);
++		if (bAllowRecreate)
++		{
++			PVRDRIMarkAllRenderSurfacesAsInvalid(psPVRDrawable);
 +
-+		psDRIDrawable->w = psPVRDrawable->uDRI.sBuffer.w;
-+		psDRIDrawable->h = psPVRDrawable->uDRI.sBuffer.h;
-+		psPVRDrawable->uStride =
-+			psPVRDrawable->uDRI.sBuffer.sDRI.pitch;
-+		psPVRDrawable->uBytesPerPixel =
-+			psPVRDrawable->uDRI.sBuffer.sDRI.cpp;
++			psDRIDrawable->w = psPVRDrawable->uDRI.sBuffer.w;
++			psDRIDrawable->h = psPVRDrawable->uDRI.sBuffer.h;
++			psPVRDrawable->uStride =
++				psPVRDrawable->uDRI.sBuffer.sDRI.pitch;
++			psPVRDrawable->uBytesPerPixel =
++				psPVRDrawable->uDRI.sBuffer.sDRI.cpp;
++		}
++		else
++		{
++			return false;
++		}
 +	}
 +
-+	if (!PVRObjectCacheInsert(psPVRDrawable->hBufferCache,
-+					&psPVRDrawable->uDRI.sBuffer.sDRI))
++	if (!PVRDrawableDRI2BufferUpdate(psPVRDrawable))
 +	{
-+		errorMessage("%s: Couldn't insert buffer into cache\n",
-+								__func__);
++		errorMessage("%s: Couldn't update drawable buffer\n",
++			     __func__);
 +		return false;
 +	}
 +
@@ -1329,86 +914,13 @@ index 0000000..7dfc278
 +		                            psPVRDrawable->psImpl))
 +		{
 +			errorMessage("%s: Couldn't recreate EGL drawable\n",
-+								__func__);
++				     __func__);
 +			return false;
 +		}
 +	}
 +
 +	return true;
 +}
-+
-+static void *PVRDRI2ObjectCacheInsert(void *pvCreateData, void *pvInsertData)
-+{
-+	PVRDRIDrawable *psPVRDrawable = pvCreateData;
-+	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
-+	PVRDRIScreen *psPVRScreen = psPVRDrawable->psPVRScreen;
-+	PVRDRIBuffer *psPVRBuffer;
-+	__DRIbuffer *psDRIBuffer = pvInsertData;
-+
-+	if (PVRDRIPixFmtGetBlockSize(psPVRDrawable->ePixelFormat) != psDRIBuffer->cpp)
-+	{
-+		errorMessage("%s: DRI buffer format doesn't match drawable format\n", __func__);
-+		return NULL;
-+	}
-+
-+	psPVRBuffer = calloc(1, sizeof(*psPVRBuffer));
-+	if (psPVRBuffer == NULL)
-+	{
-+		errorMessage("%s: Failed to create PVR DRI buffer", __func__);
-+		return NULL;
-+	}
-+
-+	psPVRBuffer->eBackingType = PVRDRI_BUFFER_BACKING_DRI2;
-+	psPVRBuffer->uBacking.sDRI2.uiName = psDRIBuffer->name;
-+	psPVRBuffer->uBacking.sDRI2.psBuffer =
-+		PVRDRIBufferCreateFromName(psPVRScreen->psImpl,
-+					   psDRIBuffer->name,
-+					   psDRIDrawable->w,
-+					   psDRIDrawable->h,
-+					   psDRIBuffer->pitch,
-+					   0);
-+	if (!psPVRBuffer->uBacking.sDRI2.psBuffer)
-+	{
-+		free(psPVRBuffer);																					
-+		return NULL;
-+	}
-+
-+	return psPVRBuffer;
-+}
-+
-+static void PVRDRI2ObjectCachePurge(void *pvCreateData,
-+                                    void *pvObjectData,
-+                                    bool bRetired)
-+{
-+	PVRDRIDrawable *psPVRDrawable = pvCreateData;
-+	PVRDRIBuffer *psPVRBuffer = pvObjectData;
-+
-+	if (bRetired)
-+	{
-+		/*
-+		 * Delay flush until later, as it may not be safe
-+		 * to do the flush within GetDrawableInfo.
-+		 */
-+		PVRQQueue(&psPVRDrawable->sCacheFlushHead, &psPVRBuffer->sCacheFlushElem);
-+	}
-+	else
-+	{
-+		PVRDRIBufferDestroy(psPVRBuffer->uBacking.sDRI2.psBuffer);
-+		free(psPVRBuffer);
-+	}
-+}
-+
-+static bool PVRDRI2ObjectCacheCompare(void *pvCreateData,
-+                                      void *pvObjectData,
-+                                      void *pvInsertData)
-+{
-+	__DRIbuffer *psDRIBuffer = pvInsertData;
-+	PVRDRIBuffer *psPVRBuffer = pvObjectData;
-+	(void)pvCreateData;
-+
-+	return psDRIBuffer->name == psPVRBuffer->uBacking.sDRI2.uiName;
-+}
-+
 +
 +/*************************************************************************/ /*!
 + PVR drawable local functions
@@ -1427,22 +939,30 @@ index 0000000..7dfc278
 +}
 +
 +/*************************************************************************/ /*!
-+ Function Name	: PVRDRIDrawableRecreate
++ Function Name	: PVRDRIDrawableUpdate
 + Inputs		: psPVRDrawable
-+ Description	: Create drawable
++ Description	: Update drawable
 +*/ /**************************************************************************/
-+bool PVRDRIDrawableRecreate(PVRDRIDrawable *psPVRDrawable)
++static bool PVRDRIDrawableUpdate(PVRDRIDrawable *psPVRDrawable,
++				 bool bAllowRecreate)
 +{
-+	bool bRes;
++	bool bRes = true;
 +
 +	PVRDRIDrawableLock(psPVRDrawable);
++
++	if (psPVRDrawable->bDrawableUpdating)
++	{
++		bRes = false;
++		goto Exit;
++	}
++	psPVRDrawable->bDrawableUpdating = true;
 +
 +	if (psPVRDrawable->psPVRScreen->bUseInvalidate)
 +	{
 +		if (!psPVRDrawable->bDrawableInfoInvalid)
 +		{
-+			PVRDRIDrawableUnlock(psPVRDrawable);
-+			return true;
++			bRes = true;
++			goto ExitNotUpdating;
 +		}
 +	}
 +
@@ -1450,18 +970,19 @@ index 0000000..7dfc278
 +	{
 +		if (!PVRDRIDrawableUpdateNativeInfo(psPVRDrawable))
 +		{
-+			PVRDRIDrawableUnlock(psPVRDrawable);
-+			return false;
++			bRes = false;
++			goto ExitNotUpdating;
 +		}
++		psPVRDrawable->bDrawableInfoUpdated = true;
 +	}
 +
 +	if (psPVRDrawable->psPVRScreen->psDRIScreen->image.loader)
 +	{
-+		bRes = PVRImageDrawableRecreate(psPVRDrawable);
++		bRes = PVRImageDrawableUpdate(psPVRDrawable, bAllowRecreate);
 +	}
 +	else
 +	{
-+		bRes = PVRDRI2DrawableRecreate(psPVRDrawable);
++		bRes = PVRDRI2DrawableUpdate(psPVRDrawable, bAllowRecreate);
 +	}
 +
 +	if (bRes)
@@ -1470,9 +991,22 @@ index 0000000..7dfc278
 +		psPVRDrawable->bDrawableInfoInvalid = false;
 +	}
 +
++ExitNotUpdating:
++	psPVRDrawable->bDrawableUpdating = false;
++Exit:
 +	PVRDRIDrawableUnlock(psPVRDrawable);
 +
 +	return bRes;
++}
++
++/*************************************************************************/ /*!
++ Function Name	: PVRDRIDrawableRecreate
++ Inputs		: psPVRDrawable
++ Description	: Recreate drawable
++*/ /**************************************************************************/
++bool PVRDRIDrawableRecreate(PVRDRIDrawable *psPVRDrawable)
++{
++	return PVRDRIDrawableUpdate(psPVRDrawable, true);
 +}
 +
 +/*************************************************************************/ /*!
@@ -1501,48 +1035,13 @@ index 0000000..7dfc278
 +*/ /**************************************************************************/
 +bool PVRDRIDrawableInit(PVRDRIDrawable *psPVRDrawable)
 +{
-+	unsigned uNumBufs = psPVRDrawable->bDoubleBuffered ? DRI2_BUFFERS_MAX : 1;
-+	PVRObjectCacheInsertCB pfnInsert;
-+	PVRObjectCachePurgeCB pfnPurge;
-+	PVRObjectCacheCompareCB pfnCompare;
-+
 +	if (psPVRDrawable->bInitialised)
 +	{
 +		return true;
 +	}
 +
-+	if (psPVRDrawable->psPVRScreen->psDRIScreen->image.loader)
-+	{
-+		pfnInsert = PVRImageObjectCacheInsert;
-+		pfnPurge = PVRImageObjectCachePurge;
-+		pfnCompare = PVRImageObjectCacheCompare;
-+	}
-+	else
-+	{
-+		assert(psPVRDrawable->psPVRScreen->psDRIScreen->dri2.loader);
-+
-+		pfnInsert = PVRDRI2ObjectCacheInsert;
-+		pfnPurge = PVRDRI2ObjectCachePurge;
-+		pfnCompare = PVRDRI2ObjectCacheCompare;
-+	}
-+
-+	psPVRDrawable->hBufferCache = PVRObjectCacheCreate(uNumBufs,
-+	                                                   uNumBufs,
-+	                                                   psPVRDrawable,
-+	                                                   pfnInsert,
-+	                                                   pfnPurge,
-+	                                                   pfnCompare);
-+	if (psPVRDrawable->hBufferCache == NULL)
-+	{
-+		errorMessage("%s: Failed to create buffer cache\n", __func__);
-+		return false;
-+	}
-+
 +	if (!PVRDRIDrawableCreate(psPVRDrawable))
 +	{
-+		PVRObjectCacheDestroy(psPVRDrawable->hBufferCache);
-+		psPVRDrawable->hBufferCache = NULL;
-+
 +		return false;
 +	}
 +
@@ -1556,10 +1055,13 @@ index 0000000..7dfc278
 +	(void) PVREGLDrawableDestroy(psPVRDrawable->psPVRScreen->psImpl,
 +	                             psPVRDrawable->psImpl);
 +
-+	if (psPVRDrawable->hBufferCache != NULL)
++	if (psPVRDrawable->psPVRScreen->psDRIScreen->image.loader)
 +	{
-+		PVRObjectCacheDestroy(psPVRDrawable->hBufferCache);
-+		psPVRDrawable->hBufferCache = NULL;
++		PVRDrawableImageDestroy(psPVRDrawable);
++	}
++	else
++	{
++		PVRDrawableDRI2BufferDestroy(psPVRDrawable);
 +	}
 +
 +	psPVRDrawable->bInitialised = false;
@@ -1572,33 +1074,25 @@ index 0000000..7dfc278
 +                                 bool *pbDoubleBuffered)
 +{
 +	__DRIdrawable *psDRIDrawable = psPVRDrawable->psDRIDrawable;
-+	PVRDRIBuffer *psPVRBuffer;
-+	PVRDRIBufferImpl *psDstBuffer;
-+
 +
 +	if (ppsDstBuffer || ppsAccumBuffer)
 +	{
-+		psPVRBuffer = PVRObjectCacheGetObject(psPVRDrawable->hBufferCache, 0);
++		PVRDRIBufferImpl *psDstBuffer;
 +
-+		psDstBuffer = PVRGetBackingBuffer(psPVRBuffer);
++		psDstBuffer = PVRGetBackingBuffer(psPVRDrawable);
 +		if (!psDstBuffer)
 +		{
-+			errorMessage("%s: Couldn't get render buffer from cache\n", __func__);
++			errorMessage("%s: Couldn't get backing buffer\n",
++				     __func__);
 +			return false;
 +		}
-+	}
 +
-+	if (ppsDstBuffer)
-+	{
-+		*ppsDstBuffer = psDstBuffer;
-+	}
++		if (ppsDstBuffer)
++		{
++			*ppsDstBuffer = psDstBuffer;
++		}
 +
-+	if (ppsAccumBuffer)
-+	{
-+		psPVRBuffer = PVRObjectCacheGetObject(psPVRDrawable->hBufferCache, 1);
-+
-+		*ppsAccumBuffer = PVRGetBackingBuffer(psPVRBuffer);
-+		if (!*ppsAccumBuffer)
++		if (ppsAccumBuffer)
 +		{
 +			*ppsAccumBuffer = psDstBuffer;
 +		}
@@ -1621,38 +1115,35 @@ index 0000000..7dfc278
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
 new file mode 100644
-index 0000000..9c69518
+index 0000000..9ac7e45
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.c
-@@ -0,0 +1,1214 @@
+@@ -0,0 +1,1134 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI Mesa Driver
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#include <assert.h>
 +#include <pthread.h>
@@ -1812,87 +1303,16 @@ index 0000000..9c69518
 +	                             uiFlags & PVRDRI_FLUSH_WAIT_FOR_HW);
 +}
 +
-+static void
-+PVRDRIFlushDrawable(PVRDRIDrawable *psPVRDrawable,
-+                    bool bSwapBuffers,
-+                    PVRDRIContext *psPVRSwapContext,
-+                    bool bWaitForHW)
-+{
-+	PVRQElem *psQElem = psPVRDrawable->sPVRContextHead.pvForw;
-+
-+	while (psQElem != &psPVRDrawable->sPVRContextHead)
-+	{
-+		PVRDRIContext *psPVRContext = PVRQ_CONTAINER_OF(psQElem, PVRDRIContext, sQElem);
-+		uint32_t uiFlags = PVRDRI_FLUSH_ALL_SURFACES;
-+
-+		if (bWaitForHW)
-+		{
-+			uiFlags |= PVRDRI_FLUSH_WAIT_FOR_HW;
-+		}
-+
-+		if (bSwapBuffers && (psPVRContext == psPVRSwapContext || psPVRSwapContext == NULL))
-+		{
-+			uiFlags |= PVRDRI_FLUSH_NEW_EXTERNAL_FRAME;
-+		}
-+
-+		(void) PVRDRIFlushBuffers(psPVRContext, NULL, uiFlags);
-+
-+		psQElem = psPVRContext->sQElem.pvForw;
-+	}
-+}
-+
-+static bool
-+PVRDRICacheFlushSurfaces(bool bSwapBuffers,
-+                         PVRDRIContext *psPVRSwapContext,
-+                         PVRDRIDrawable *psPVRDrawable,
-+                         bool bWaitForHW)
-+{
-+	if (PVRQIsEmpty(&psPVRDrawable->sCacheFlushHead))
-+	{
-+		return false;
-+	}
-+
-+	PVRDRIFlushDrawable(psPVRDrawable, bSwapBuffers, psPVRSwapContext, bWaitForHW);
-+
-+	while (!PVRQIsEmpty(&psPVRDrawable->sCacheFlushHead))
-+	{
-+		PVRDRIBuffer *psPVRBuffer = PVRQ_CONTAINER_OF(psPVRDrawable->sCacheFlushHead.pvForw,
-+		                                              PVRDRIBuffer,
-+		                                              sCacheFlushElem);
-+
-+		PVRQDequeue(&psPVRBuffer->sCacheFlushElem);
-+
-+		switch (psPVRBuffer->eBackingType)
-+		{
-+			case PVRDRI_BUFFER_BACKING_DRI2:
-+				PVRDRIBufferDestroy(psPVRBuffer->uBacking.sDRI2.psBuffer);
-+				break;
-+			case PVRDRI_BUFFER_BACKING_IMAGE:
-+				PVRDRIUnrefImage(psPVRBuffer->uBacking.sImage.psImage);
-+				break;
-+			default:
-+				assert(0);
-+				continue;
-+		}
-+
-+		free(psPVRBuffer);
-+	}
-+
-+	return true;
-+}
-+
 +bool
 +PVRDRIFlushBuffersForSwap(PVRDRIContext *psPVRContext,
 +                          PVRDRIDrawable *psPVRDrawable)
 +{
++	PVRDRIContext *psPVRFlushContext;
++	uint32_t uiFlushFlags;
++	uint32_t uiFlags = 0;
 +	PVRQElem *psQElem;
 +
-+	if (PVRDRICacheFlushSurfaces(true, psPVRContext, psPVRDrawable, false))
-+	{
-+		return true;
-+	}
-+
-+	if (psPVRContext != NULL)
++	if (psPVRContext)
 +	{
 +		return PVRDRIFlushBuffers(psPVRContext, psPVRDrawable,
 +					  PVRDRI_FLUSH_NEW_EXTERNAL_FRAME);
@@ -1900,13 +1320,19 @@ index 0000000..9c69518
 +
 +	for (psQElem = psPVRDrawable->sPVRContextHead.pvForw;
 +	     psQElem != &psPVRDrawable->sPVRContextHead;
-+	     psQElem = psPVRContext->sQElem.pvForw)
++	     psQElem = psPVRFlushContext->sQElem.pvForw)
 +	{
-+		psPVRContext =
++		psPVRFlushContext =
 +			PVRQ_CONTAINER_OF(psQElem, PVRDRIContext, sQElem);
++		uiFlushFlags = uiFlags;
 +
-+		(void) PVRDRIFlushBuffers(psPVRContext, psPVRDrawable,
-+					  PVRDRI_FLUSH_NEW_EXTERNAL_FRAME);
++		if (!psPVRContext || psPVRContext == psPVRFlushContext)
++		{
++			uiFlushFlags |= PVRDRI_FLUSH_NEW_EXTERNAL_FRAME;
++		}
++
++		(void) PVRDRIFlushBuffers(psPVRFlushContext, psPVRDrawable,
++					  uiFlushFlags);
 +	}
 +
 +	return true;
@@ -1915,17 +1341,9 @@ index 0000000..9c69518
 +static bool
 +PVRDRIFlushBuffersGC(PVRDRIContext *psPVRContext)
 +{
-+	if (psPVRContext->psPVRDrawable != NULL)
-+	{
-+		if (PVRDRICacheFlushSurfaces(false, NULL, psPVRContext->psPVRDrawable, true))
-+		{
-+			return true;
-+		}
-+	}
-+
-+	return PVRDRIFlushBuffers(psPVRContext, NULL,
-+				  PVRDRI_FLUSH_WAIT_FOR_HW |
-+				  PVRDRI_FLUSH_ALL_SURFACES);
++		return PVRDRIFlushBuffers(psPVRContext, NULL,
++					  PVRDRI_FLUSH_WAIT_FOR_HW |
++					  PVRDRI_FLUSH_ALL_SURFACES);
 +}
 +
 +static void PVRDRIDisplayFrontBuffer(PVRDRIDrawable *psPVRDrawable)
@@ -1934,9 +1352,6 @@ index 0000000..9c69518
 +	{
 +		PVRDRIScreen *psPVRScreen = psPVRDrawable->psPVRScreen;
 +		__DRIscreen *psDRIScreen = psPVRScreen->psDRIScreen;
-+
-+		/* Only double buffered drawables should need flushing */
-+		assert(PVRQIsEmpty(&psPVRDrawable->sCacheFlushHead));
 +
 +		if (psDRIScreen->image.loader && psDRIScreen->image.loader->flushFrontBuffer)
 +		{
@@ -2487,7 +1902,6 @@ index 0000000..9c69518
 +	psDRIDrawable->driverPrivate = (void *)psPVRDrawable;
 +
 +	INITIALISE_PVRQ_HEAD(&psPVRDrawable->sPVRContextHead);
-+	INITIALISE_PVRQ_HEAD(&psPVRDrawable->sCacheFlushHead);
 +
 +	psPVRDrawable->psDRIDrawable = psDRIDrawable;
 +	psPVRDrawable->psPVRScreen = psPVRScreen;
@@ -2841,38 +2255,35 @@ index 0000000..9c69518
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
 new file mode 100644
-index 0000000..c09c8ec
+index 0000000..ea02291
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrdri.h
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,293 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI Mesa Driver
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#if !defined(__PVRDRI2_H__)
 +#define __PVRDRI2_H__
@@ -2885,7 +2296,6 @@ index 0000000..c09c8ec
 +
 +#include "powervr/dri_support.h"
 +#include "pvrqueue.h"
-+#include "pvr_object_cache.h"
 +
 +/* This should match EGL_MAX_PLANES */
 +#define DRI_PLANES_MAX 3
@@ -2934,6 +2344,24 @@ index 0000000..c09c8ec
 +	PVRDRIContextImpl         *psImpl;
 +} PVRDRIContext;
 +
++typedef struct PVRDRIBuffer_TAG
++{
++	union
++	{
++		struct
++		{
++			uint32_t uiName;
++			PVRDRIBufferImpl *psBuffer;
++
++		} sDRI2;
++
++		struct
++		{
++			__DRIimage *psImage;
++		} sImage;
++	} uBacking;
++} PVRDRIBuffer;
++
 +/** Our PVR related drawable data */
 +typedef struct PVRDRIDrawable_TAG
 +{
@@ -2970,11 +2398,11 @@ index 0000000..c09c8ec
 +	/* Indicates updated drawable info is available */
 +	bool                bDrawableInfoUpdated;
 +
-+	/* Buffer cache handle */
-+	PVRObjectCache      hBufferCache;
++	/* Indicates the drawable is currently being updated */
++	bool                bDrawableUpdating;
 +
-+	/* Queue of buffers evicted from cache, waiting for flush */
-+	PVRQHead            sCacheFlushHead;
++	/* Indicates a flush is in progress */
++	bool                bFlushInProgress;
 +
 +	union {
 +		struct {
@@ -2986,50 +2414,70 @@ index 0000000..c09c8ec
 +			__DRIimage	*psDRI;
 +		} sImage;
 +	} uDRI;
++	PVRDRIBuffer	   sPVRBuffer;
++
 +	PVRDRIDrawableImpl *psImpl;
 +} PVRDRIDrawable;
 +
-+typedef enum PVRDRIBufferBackingType_TAG
-+{
-+	PVRDRI_BUFFER_BACKING_INVALID = 0,
-+	PVRDRI_BUFFER_BACKING_DRI2,
-+	PVRDRI_BUFFER_BACKING_IMAGE,
-+} PVRDRIBufferBackingType;
-+
-+typedef struct PVRDRIBuffer_TAG
-+{
-+	PVRDRIBufferBackingType eBackingType;
-+
-+	union
-+	{
-+		struct
-+		{
-+			uint32_t uiName;
-+			PVRDRIBufferImpl *psBuffer;
-+
-+		} sDRI2;
-+
-+		struct
-+		{
-+			__DRIimage *psImage;
-+		} sImage;
-+	} uBacking;
-+
-+	PVRQElem sCacheFlushElem;
-+} PVRDRIBuffer;
-+
 +typedef struct PVRDRIImageFormat_TAG
 +{
++	/*
++	 * IMG pixel format for the entire/overall image, e.g.
++	 * IMG_PIXFMT_B8G8R8A8_UNORM or IMG_PIXFMT_YUV420_2PLANE.
++	 */
 +	IMG_PIXFMT eIMGPixelFormat;
++
++	/*
++	 * DRI fourcc for the entire/overall image (defined by dri_interface.h),
++	 * e.g. __DRI_IMAGE_FOURCC_ARGB8888 or __DRI_IMAGE_FOURCC_NV12.
++	 */
 +	int iDRIFourCC;
++
++	/*
++	 * DRI format for the entire/overall image (defined by dri_interface.h),
++	 * e.g. __DRI_IMAGE_FORMAT_ARGB8888. This isn't applicable for YUV
++	 * formats and should be set to __DRI_IMAGE_FORMAT_NONE.
++	 */
 +	int iDRIFormat;
++
++	/*
++	 * DRI components for the entire/overall image (defined by
++	 * dri_interface.h), e.g. __DRI_IMAGE_COMPONENTS_RGBA or
++	 * __DRI_IMAGE_COMPONENTS_Y_UV.
++	 *
++	 * This specifies the image components and their groupings, in terms of
++	 * sub-images/planes, but not the order in which they appear.
++	 *
++	 * For example:
++	 * - any combination of BGRA channels would correspond to
++	 *   __DRI_IMAGE_COMPONENTS_RGBA
++	 * - any combination of BGR or BGRX would correspond to
++	 *   __DRI_IMAGE_COMPONENTS_RGB
++	 * - any combination of YUV with 2 planes would correspond to
++	 *   __DRI_IMAGE_COMPONENTS_Y_UV
++	 */
 +	int iDRIComponents;
++
++	/* The number of sub-images/planes that make up the overall image */
 +	unsigned uiNumPlanes;
++
++	/* Per-plane information */
 +	struct
 +	{
-+		IMG_PIXFMT eIMGPixelFormat;
-+		int iDRIFormat;
++		/*
++		 * This is the amount that the image width should be bit-shifted
++		 * in order to give the plane width. This value can be determined
++		 * from the YUV sub-sampling ratios and should either be 0 (full
++		 * width), 1 (half width) or 2 (quarter width).
++		 */
 +		unsigned int uiWidthShift;
++
++		/*
++		 * This is the amount that the image height should be bit-shifted
++		 * in order to give the plane height. This value can be determined
++		 * from the YUV sub-sampling ratios and should either be 0 (full
++		 * height) or 1 (half height).
++		 */
 +		unsigned int uiHeightShift;
 +	} sPlanes[DRI_PLANES_MAX];
 +} PVRDRIImageFormat;
@@ -3106,38 +2554,35 @@ index 0000000..c09c8ec
 +#endif /* defined(__PVRDRI2_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
 new file mode 100644
-index 0000000..490cca6
+index 0000000..877e23f
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrext.c
-@@ -0,0 +1,400 @@
+@@ -0,0 +1,388 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File           
-+@Title          PVR DRI driver extension support
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +/*
 + * EXTENSION SUPPORT
@@ -3192,14 +2637,40 @@ index 0000000..490cca6
 +#define PVR_DRI_PRIORITY_VERSION	1
 +#define PVR_DRI2_FENCE_VERSION		1
 +
-+/* IMG extension */
-+#define PVR_DRI_QUERY_BUFFERS_VERSION	1
++/*
++ * The bFlushInProgress flag is intended to prevent new buffers being fetched
++ * whilst a flush is in progress, which may corrupt the state maintained by
++ * the Mesa platform code.
++ */
++static void inline
++PVRDRILockBeforeFlush(PVRDRIDrawable *psPVRDrawable)
++{
++	PVRDRIDrawableLock(psPVRDrawable);
++	psPVRDrawable->bFlushInProgress = true;
++}
++
++static void inline
++PVRDRIUnlockAfterFlush(PVRDRIDrawable *psPVRDrawable)
++{
++	psPVRDrawable->bFlushInProgress = false;
++	PVRDRIDrawableUnlock(psPVRDrawable);
++}
++
++static void inline
++PVRDRIInvalidateAndUnlockAfterFlush(PVRDRIDrawable *psPVRDrawable)
++{
++	/* Force a query for new buffers */
++	psPVRDrawable->bDrawableInfoInvalid = true;
++	psPVRDrawable->bDrawableInfoUpdated = false;
++
++	PVRDRIUnlockAfterFlush(psPVRDrawable);
++}
 +
 +static void PVRDRIFlushAllContexts(PVRDRIDrawable *psPVRDrawable)
 +{
 +	PVRQElem *psQElem;
 +
-+	PVRDRIDrawableLock(psPVRDrawable);
++	PVRDRILockBeforeFlush(psPVRDrawable);
 +	psQElem = psPVRDrawable->sPVRContextHead.pvForw;
 +
 +	while (psQElem != &psPVRDrawable->sPVRContextHead)
@@ -3215,7 +2686,7 @@ index 0000000..490cca6
 +		psQElem = psPVRContext->sQElem.pvForw;
 +	}
 +
-+	PVRDRIDrawableUnlock(psPVRDrawable);
++	PVRDRIUnlockAfterFlush(psPVRDrawable);
 +}
 +
 +static void PVRDRIExtSetTexBuffer(__DRIcontext  *psDRIContext,
@@ -3273,16 +2744,11 @@ index 0000000..490cca6
 +{
 +	PVRDRIDrawable *psPVRDrawable = (PVRDRIDrawable *)psDRIDrawable->driverPrivate;
 +
-+	PVRDRIDrawableLock(psPVRDrawable);
++	PVRDRILockBeforeFlush(psPVRDrawable);
 +
 +	(void) PVRDRIFlushBuffersForSwap(NULL, psPVRDrawable);
-+	/*
-+	 * Work around for missing X Server invalidate events. Mark
-+	 * the drawable as invalid, to force a query for new buffers.
-+	 */
-+	psPVRDrawable->bDrawableInfoInvalid = true;
 +
-+	PVRDRIDrawableUnlock(psPVRDrawable);
++	PVRDRIInvalidateAndUnlockAfterFlush(psPVRDrawable);
 +}
 +
 +static void PVRDRI2Invalidate(__DRIdrawable *psDRIDrawable)
@@ -3311,16 +2777,11 @@ index 0000000..490cca6
 +	{
 +		PVRDRIDrawable *psPVRDrawable = (PVRDRIDrawable *) psDRIDrawable->driverPrivate;
 +
-+		PVRDRIDrawableLock(psPVRDrawable);
++		PVRDRILockBeforeFlush(psPVRDrawable);
 +
 +		(void) PVRDRIFlushBuffersForSwap(psPVRContext, psPVRDrawable);
-+		/*
-+		 * Work around for missing X Server invalidate events. Mark
-+		 * the drawable as invalid, to force a query for new buffers.
-+		 */
-+		psPVRDrawable->bDrawableInfoInvalid = true;
 +
-+		PVRDRIDrawableUnlock(psPVRDrawable);
++		PVRDRIInvalidateAndUnlockAfterFlush(psPVRDrawable);
 +	}
 +	else if ((uFlags & __DRI2_FLUSH_CONTEXT) != 0)
 +	{
@@ -3450,25 +2911,6 @@ index 0000000..490cca6
 +};
 +#endif /* defined(__DRI2_FENCE) */
 +
-+
-+#if defined(__DRI_QUERY_BUFFERS)
-+static void PVRDRIQueryBuffersEXT(__DRIdrawable *psDRIDrawable)
-+{
-+	PVRDRIDrawable *psPVRDrawable = (PVRDRIDrawable *)psDRIDrawable->driverPrivate;
-+
-+	PVRDRIDrawableLock(psPVRDrawable);
-+	psPVRDrawable->bDrawableInfoUpdated =
-+		 PVRDRIDrawableUpdateNativeInfo(psPVRDrawable);
-+	PVRDRIDrawableUnlock(psPVRDrawable);
-+}
-+
-+static __DRIqueryBuffersExtension pvrDRIQueryBuffers =
-+{
-+	.base		= { .name = __DRI_QUERY_BUFFERS, .version = PVR_DRI_QUERY_BUFFERS_VERSION },
-+	.query_buffers = PVRDRIQueryBuffersEXT
-+};
-+#endif /* defined(__DRI_QUERY_BUFFERS) */
-+
 +/*
 + * Extension lists
 + *
@@ -3487,9 +2929,6 @@ index 0000000..490cca6
 +#if defined(__DRI2_FENCE)
 +	&pvrDRIFenceExtension.base,
 +#endif
-+#if defined(__DRI_QUERY_BUFFERS)
-+	&pvrDRIQueryBuffers.base,
-+#endif
 +	NULL
 +};
 +
@@ -3505,45 +2944,39 @@ index 0000000..490cca6
 +#if defined(__DRI2_FENCE)
 +	{ .name = __DRI2_FENCE, .version = __DRI2_FENCE_VERSION },
 +#endif
-+#if defined(__DRI_QUERY_BUFFERS)
-+	{ .name = __DRI_QUERY_BUFFERS, .version = __DRI_QUERY_BUFFERS_VERSION },
-+#endif
 +	{ .name = NULL, .version = 0 },
 +};
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
 new file mode 100644
-index 0000000..6c9f2fd
+index 0000000..8bd8057
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.c
-@@ -0,0 +1,1045 @@
+@@ -0,0 +1,1042 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          DRI IMAGE extension
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#include <assert.h>
 +#include <xf86drm.h>
@@ -4563,38 +3996,35 @@ index 0000000..6c9f2fd
 +}
 diff --git a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvrimage.h
 new file mode 100644
-index 0000000..039a915
+index 0000000..2524eca
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrimage.h
-@@ -0,0 +1,96 @@
+@@ -0,0 +1,93 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File           
-+@Title          DRI IMAGE support
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#if !defined(__PVRIMAGE_H__)
 +#define __PVRIMAGE_H__
@@ -4665,38 +4095,35 @@ index 0000000..039a915
 +#endif /* !defined(__PVRIMAGE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrmesa.h
 new file mode 100644
-index 0000000..f9a0a7f
+index 0000000..6e0fd8d
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrmesa.h
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,41 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File           
-+@Title          Mesa dispatch table handling
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#if !defined(__PVRMESA_H__)
 +#define __PVRMESA_H__
@@ -4795,38 +4222,35 @@ index 0000000..3fdc0a8
 +#endif /* defined(__PVRQUEUE_H__) */
 diff --git a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
 new file mode 100644
-index 0000000..b1a98d4
+index 0000000..53d4fd4
 --- /dev/null
 +++ b/src/mesa/drivers/dri/pvr/pvrutil.c
-@@ -0,0 +1,567 @@
+@@ -0,0 +1,589 @@
 +/* -*- mode: c; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 +/* vi: set ts=8 sw=8 sts=8: */
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI utility functions
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
 +
 +#include <assert.h>
 +#include <stdarg.h>
@@ -4837,13 +4261,25 @@ index 0000000..b1a98d4
 +
 +#include "pvrdri.h"
 +
-+#ifdef HAVE_ANDROID_PLATFORM
++#define MESSAGE_LENGTH_MAX 1024
++
++/*
++ * define before including android/log.h and dlog.h as this is used by these
++ * headers
++ */
++#define LOG_TAG "PVR-MESA"
++
++#if defined(HAVE_ANDROID_PLATFORM)
 +#include <android/log.h>
-+#define err_vprintf(f, args) ((void)__android_log_vprint(ANDROID_LOG_ERROR, "PVR-MESA", f, args))
-+#define dbg_vprintf(f, args) ((void)__android_log_vprint(ANDROID_LOG_DEBUG, "PVR-MESA", f, args))
++#define err_printf(f, args...) ((void)__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, f, ##args))
++#define dbg_printf(f, args...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, f, ##args))
++#elif defined(HAVE_TIZEN_PLATFORM)
++#include <dlog.h>
++#define err_printf(f, args...) LOGE(f, ##args)
++#define dbg_printf(f, args...) LOGD(f, ##args)
 +#else
-+#define err_vprintf(f, args) vfprintf(stderr, f, args)
-+#define dbg_vprintf(f, args) vfprintf(stderr, f, args)
++#define err_printf(f, args...) fprintf(stderr, f, ##args)
++#define dbg_printf(f, args...) fprintf(stderr, "LibGL: " f "\n", ##args)
 +#endif /* HAVE_ANDROID_PLATFORM */
 +
 +#define	PVRDRIMesaFormatEntry(f) {f, PVRDRI_ ## f }
@@ -4862,6 +4298,7 @@ index 0000000..b1a98d4
 +	PVRDRIMesaFormatEntry(MESA_FORMAT_B5G6R5_UNORM),
 +};
 +
++/* See pvrdri.h for documentation on PVRDRIImageFormat */
 +static const PVRDRIImageFormat g_asFormats[] =
 +{
 +	{
@@ -4872,8 +4309,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_B8G8R8A8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_ARGB8888,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4886,8 +4321,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8B8A8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_ABGR8888,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4900,8 +4333,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_B8G8R8X8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_XRGB8888,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4914,8 +4345,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8B8X8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_XBGR8888,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4928,8 +4357,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_B5G6R5_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_RGB565,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4942,8 +4369,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4956,8 +4381,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4970,8 +4393,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_L8A8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4984,8 +4405,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -4998,8 +4417,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_D32_FLOAT,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -5012,8 +4429,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_S8_UINT,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -5028,8 +4443,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_B4G4R4A4_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_ARGB4444,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -5045,8 +4458,6 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 1,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_B5G5R5A1_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_ARGB1555,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
@@ -5062,15 +4473,11 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 2,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
 +		.sPlanes[1] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
 +				.uiWidthShift = 1,
 +				.uiHeightShift = 1
 +		},
@@ -5084,20 +4491,56 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 2,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
 +		.sPlanes[1] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8G8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_GR88,
 +				.uiWidthShift = 1,
 +				.uiHeightShift = 1
 +		},
 +	},
-+#if defined(__DRI_IMAGE_FOURCC_YVU420)
++#if defined(__DRI_IMAGE_FOURCC_NV21)
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_YVU420_2PLANE,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_NV21,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_Y_UV,
++		.uiNumPlanes = 2,
++		.sPlanes[0] =
++		{
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++		.sPlanes[1] =
++		{
++				.uiWidthShift = 1,
++				.uiHeightShift = 1
++		},
++	},
++#endif
++	{
++		.eIMGPixelFormat = IMG_PIXFMT_YUV420_3PLANE,
++		.iDRIFourCC = __DRI_IMAGE_FOURCC_YUV420,
++		.iDRIFormat = __DRI_IMAGE_FORMAT_NONE,
++		.iDRIComponents = __DRI_IMAGE_COMPONENTS_Y_U_V,
++		.uiNumPlanes = 3,
++		.sPlanes[0] =
++		{
++				.uiWidthShift = 0,
++				.uiHeightShift = 0
++		},
++		.sPlanes[1] =
++		{
++				.uiWidthShift = 1,
++				.uiHeightShift = 1
++		},
++		.sPlanes[2] =
++		{
++				.uiWidthShift = 1,
++				.uiHeightShift = 1
++		},
++	},
 +	{
 +		.eIMGPixelFormat = IMG_PIXFMT_YVU420_3PLANE,
 +		.iDRIFourCC = __DRI_IMAGE_FOURCC_YVU420,
@@ -5106,64 +4549,57 @@ index 0000000..b1a98d4
 +		.uiNumPlanes = 3,
 +		.sPlanes[0] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 0,
 +				.uiHeightShift = 0
 +		},
 +		.sPlanes[1] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 1,
 +				.uiHeightShift = 1
 +		},
 +		.sPlanes[2] =
 +		{
-+				.eIMGPixelFormat = IMG_PIXFMT_R8_UNORM,
-+				.iDRIFormat = __DRI_IMAGE_FORMAT_R8,
 +				.uiWidthShift = 1,
 +				.uiHeightShift = 1
 +		},
 +	},
-+#endif
 +};
 +
 +/* Standard error message */
 +void __attribute__((format(printf, 1, 2))) errorMessage(const char *f, ...)
 +{
++	char message[MESSAGE_LENGTH_MAX];
 +	va_list args;
 +
 +	va_start(args, f);
-+	err_vprintf(f, args);
++	vsnprintf(message, sizeof message, f, args);
 +	va_end(args);
++
++	err_printf("%s", message);
 +}
 +
 +void __attribute__((format(printf, 1, 2))) __driUtilMessage(const char *f, ...)
 +{
-+	va_list args;
-+	char *ev;
++#if defined(HAVE_ANDROID_PLATFORM) || defined(HAVE_TIZEN_PLATFORM)
++	char *ev = getenv("LIBGL_DEBUG");
 +
-+#ifdef HAVE_ANDROID_PLATFORM
-+	va_start(args, f);
-+	dbg_vprintf(f, args);
-+	va_end(args);
-+#else
-+	ev = getenv("LIBGL_DEBUG");
 +	if (ev != NULL && (strcmp(ev, "verbose") == 0))
-+	{
-+		fputs("LibGL: ", stderr);
-+		va_start(args, f);
-+		dbg_vprintf(f, args);
-+		va_end(args);
-+		fputc('\n', stderr);
-+	}
 +#endif
++	{
++		char message[MESSAGE_LENGTH_MAX];
++		va_list args;
++
++		va_start(args, f);
++		vsnprintf(message, sizeof message, f, args);
++		va_end(args);
++
++		dbg_printf("%s", message);
++	}
 +}
 +
 +const __DRIconfig **PVRDRICreateConfigs(void)
 +{
-+	static const GLenum asBackBufferModes[]	= { GLX_NONE, GLX_SWAP_COPY_OML };
++	static const GLenum asBackBufferModes[]	= { GLX_NONE, GLX_SWAP_UNDEFINED_OML };
 +	const uint8_t *puDepthBits = PVRDRIDepthBitsArray();
 +	const uint8_t *puStencilBits = PVRDRIStencilBitsArray();
 +	const uint8_t *puMSAASamples = PVRDRIMSAABitsArray();
@@ -5309,7 +4745,6 @@ index 0000000..b1a98d4
 +					return IMG_COLORSPACE_UNDEFINED;
 +			}
 +		case __DRI_YUV_COLOR_SPACE_ITU_REC709:
-+		case __DRI_YUV_COLOR_SPACE_ITU_REC2020:
 +			switch (eDRISampleRange)
 +			{
 +				case __DRI_YUV_RANGE_UNDEFINED:
@@ -5317,6 +4752,20 @@ index 0000000..b1a98d4
 +					return IMG_COLORSPACE_BT709_CONFORMANT_RANGE;
 +				case __DRI_YUV_FULL_RANGE:
 +					return IMG_COLORSPACE_BT709_FULL_RANGE;
++				default:
++					errorMessage("Unrecognised DRI sample range (sample range = 0x%X)\n",
++						     eDRISampleRange);
++					assert(0);
++					return IMG_COLORSPACE_UNDEFINED;
++			}
++		case __DRI_YUV_COLOR_SPACE_ITU_REC2020:
++			switch (eDRISampleRange)
++			{
++				case __DRI_YUV_RANGE_UNDEFINED:
++				case __DRI_YUV_NARROW_RANGE:
++					return IMG_COLORSPACE_BT2020_CONFORMANT_RANGE;
++				case __DRI_YUV_FULL_RANGE:
++					return IMG_COLORSPACE_BT2020_FULL_RANGE;
 +				default:
 +					errorMessage("Unrecognised DRI sample range (sample range = 0x%X)\n",
 +						     eDRISampleRange);

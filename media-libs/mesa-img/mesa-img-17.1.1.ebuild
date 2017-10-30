@@ -89,8 +89,8 @@ DEPEND="${RDEPEND}
 	llvm? ( sys-devel/llvm )
 	video_cards_powervr? (
 		virtual/img-ddk
-		!<media-libs/img-ddk-1.8
-		!<media-libs/img-ddk-bin-1.8
+		!<media-libs/img-ddk-1.9
+		!<media-libs/img-ddk-bin-1.9
 	)
 "
 
@@ -151,6 +151,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/0009-Add-EGL_IMG_context_priority-EGL-extension.patch
 	epatch "${FILESDIR}"/0016-GL_EXT_shader_pixel_local_storage2-entry-points.patch
 	epatch "${FILESDIR}"/0018-GL_IMG_framebuffer_downsample-entry-points.patch
+	epatch "${FILESDIR}"/0019-GL_OVR_multiview-entry-points.patch
+	epatch "${FILESDIR}"/0020-Add-OVR_multiview_multisampled_render_to_texture.patch
+	epatch "${FILESDIR}"/0026-GL_IMG_bindless_texture-entry-points.patch
+	epatch "${FILESDIR}"/0028-egl-automatically-call-eglReleaseThread-on-thread-te.patch
 
 	base_src_prepare
 

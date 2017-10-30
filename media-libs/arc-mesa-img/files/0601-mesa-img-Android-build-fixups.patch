@@ -26,14 +26,14 @@ diff --git a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Mak
 index a684bdf..fafcb41 100644
 --- a/src/mesa/drivers/dri/pvr/Makefile.am
 +++ b/src/mesa/drivers/dri/pvr/Makefile.am
-@@ -12,6 +12,7 @@ AM_CFLAGS = \
+@@ -35,6 +35,7 @@ AM_CFLAGS = \
  	-I$(top_builddir)/src/mesa/main \
  	$(DEFINES) \
  	$(VISIBILITY_CFLAGS) \
 +	$(LIBDRM_CFLAGS) \
- 	$(PVR_CFLAGS)
+ 	$(PVR_CFLAGS) \
+ 	$(LIBDLOG_CFLAGS)
  
- AM_CXXFLAGS = $(AM_CFLAGS)
 -- 
 2.7.4
 

@@ -48,7 +48,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 
 DEPEND="video_cards_powervr? (
 		media-libs/arc-img-ddk
-		!<media-libs/arc-img-ddk-1.8
+		!<media-libs/arc-img-ddk-1.9
 	)
 	cheets? (
 		x11-libs/arc-libdrm
@@ -115,6 +115,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/0009-Add-EGL_IMG_context_priority-EGL-extension.patch
 	epatch "${FILESDIR}"/0016-GL_EXT_shader_pixel_local_storage2-entry-points.patch
 	epatch "${FILESDIR}"/0018-GL_IMG_framebuffer_downsample-entry-points.patch
+	epatch "${FILESDIR}"/0019-GL_OVR_multiview-entry-points.patch
+	epatch "${FILESDIR}"/0020-Add-OVR_multiview_multisampled_render_to_texture.patch
+	epatch "${FILESDIR}"/0026-GL_IMG_bindless_texture-entry-points.patch
+	epatch "${FILESDIR}"/0028-egl-automatically-call-eglReleaseThread-on-thread-te.patch
 
 	# Android specific patches
 	epatch "${FILESDIR}"/0500-CHROMIUM-egl-android-Add-fallback-to-kms_swrast-driv.patch

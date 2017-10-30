@@ -1,0 +1,73 @@
+From 3fc3d9df5be1a05c44427e0a048666c8c8cc4a4e Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 11 Jul 2016 12:45:30 +0100
+Subject: [PATCH 19/33] GL_OVR_multiview entry points
+
+---
+ src/mapi/glapi/gen/gl_API.xml | 17 +++++++++++++++++
+ src/mesa/main/fbobject.c      | 11 +++++++++++
+ src/mesa/main/fbobject.h      |  3 +++
+ 3 files changed, 31 insertions(+)
+
+diff --git a/src/mapi/glapi/gen/gl_API.xml b/src/mapi/glapi/gen/gl_API.xml
+index 18839ec..7875d06 100644
+--- a/src/mapi/glapi/gen/gl_API.xml
++++ b/src/mapi/glapi/gen/gl_API.xml
+@@ -12880,6 +12880,23 @@
+     </function>
+ </category>
+ 
++<category name="GL_OVR_multiview" number="478">
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR" value="0x9630" />
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR" value="0x9632" />
++    <enum name="MAX_VIEWS_OVR" value="0x9631">
++        <size name="Get" mode="get"/>
++    </enum>
++    <enum name="FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR" value="0x9633" />
++    <function name="FramebufferTextureMultiviewOVR" es2="3.0">
++        <param name="target" type="GLenum"/>
++        <param name="attachment"  type="GLenum"/>
++        <param name="texture"  type="GLuint"/>
++        <param name="level"  type="GLint"/>
++        <param name="baseViewIndex"  type="GLint"/>
++        <param name="numViews"  type="GLsizei"/>
++    </function>
++</category>
++
+ <xi:include href="EXT_window_rectangles.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+ <!-- Unnumbered extensions sorted by name. -->
+diff --git a/src/mesa/main/fbobject.c b/src/mesa/main/fbobject.c
+index 4db337d..a262b1a 100644
+--- a/src/mesa/main/fbobject.c
++++ b/src/mesa/main/fbobject.c
+@@ -4586,3 +4586,14 @@ invalid_enum:
+                "glDiscardFramebufferEXT(attachment %s)",
+               _mesa_enum_to_string(attachments[i]));
+ }
++
++
++void GLAPIENTRY
++_mesa_FramebufferTextureMultiviewOVR(GLenum target, GLenum attachment,
++				     GLuint texture, GLint level,
++				     GLint baseViewIndex, GLsizei numViews)
++{
++    GET_CURRENT_CONTEXT(ctx);
++
++    _mesa_error(ctx, GL_INVALID_OPERATION, "glFramebufferTextureMultiviewOVR");
++}
+diff --git a/src/mesa/main/fbobject.h b/src/mesa/main/fbobject.h
+index c417f0a..01f3c1a 100644
+--- a/src/mesa/main/fbobject.h
++++ b/src/mesa/main/fbobject.h
+@@ -391,4 +391,7 @@ _mesa_FramebufferParameteri(GLenum target, GLenum pname, GLint param);
+ extern void GLAPIENTRY
+ _mesa_GetFramebufferParameteriv(GLenum target, GLenum pname, GLint *params);
+ 
++extern void GLAPIENTRY
++_mesa_FramebufferTextureMultiviewOVR(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint baseViewIndex, GLsizei numViews);
++
+ #endif /* FBOBJECT_H */
+-- 
+2.7.4
+

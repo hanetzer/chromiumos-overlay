@@ -77,8 +77,8 @@ DEPEND="${RDEPEND}
 	llvm? ( sys-devel/llvm )
 	video_cards_powervr? (
 		virtual/img-ddk
-		!<media-libs/img-ddk-1.8
-		!<media-libs/img-ddk-bin-1.8
+		!<media-libs/img-ddk-1.9
+		!<media-libs/img-ddk-bin-1.9
 	)
 "
 
