@@ -272,15 +272,10 @@ cros-firmware_src_compile() {
 		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
 	_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
 	if use unibuild; then
-		local model
-
 		image_cmd+=(
 			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
 			-i "${DISTDIR}"
 		)
-		for model in $(get_model_list_noroot); do
-			image_cmd+=( -m "${model}" )
-		done
 		einfo "Build ${BOARD_USE} firmware updater:" \
 			"${image_cmd[*]} ${ext_cmd[*]}"
 		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
