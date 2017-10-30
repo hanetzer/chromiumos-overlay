@@ -319,7 +319,7 @@ cros-firmware_src_compile() {
 				die "Cannot pack local firmware."
 		fi
 	else
-		# Prepare images
+		# Prepare images for legacy mode (not unified builds)
 		_add_param image_cmd -b "${FW_IMAGE_LOCATION}"
 		_add_param image_cmd -e "${EC_IMAGE_LOCATION}"
 		_add_param image_cmd -p "${PD_IMAGE_LOCATION}"
@@ -339,6 +339,7 @@ cros-firmware_src_compile() {
 
 		# Pack firmware update script!
 		if [ ${#image_cmd[@]} -ne 0 ]; then
+			image_cmd+=( --legacy )
 			einfo "Build ${BOARD_USE} firmware updater:" \
 				"${image_cmd[*]} ${ext_cmd[*]}"
 			./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
