@@ -288,18 +288,6 @@ cros-firmware_src_compile() {
 				-i "${DISTDIR}"
 			)
 
-			for model in $(get_model_list_noroot); do
-				# If we're building unibuild bootimage at ToT,
-				# we won't have a relevant ec.bin/pd.bin target
-				# for every model because those are only
-				# available on a firmware branch. Make sure at
-				# least one succeeds.
-				if [[ -e "${root}/firmware/${model}/ec.bin" ]]
-				then
-					image_cmd+=( -m "${model}" )
-				fi
-			done
-
 			einfo "Updater for local fw"
 			# Tell pack_firmware.py where to find the files.
 			# 'BUILD_TARGET' will be replaced with the the
