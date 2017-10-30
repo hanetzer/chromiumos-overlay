@@ -33,7 +33,7 @@ pkg_setup() {
 src_unpack() {
 	EGIT_COMMIT="b0147d1baf5593dcae1b25f4f6ee565bc5d3f438"
 	if use llvm-next; then
-		EGIT_COMMIT="5dbf72407db3cd24edce3fbf108022fcbf6734ba" #312823
+		EGIT_COMMIT="c9e633dcb3997ab998bcedcf11d4e36d5af44a6c" #316180
 	fi
 	git-r3_fetch
 	git-r3_checkout
