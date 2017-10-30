@@ -23,12 +23,20 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host mma +pci"
+IUSE="cros_host mma +pci static"
 
-RDEPEND="pci? ( sys-apps/pciutils )"
-DEPEND="${RDEPEND}"
+LIB_DEPEND="sys-apps/pciutils[static-libs(+)]"
+RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
+DEPEND="${RDEPEND}
+	static? ( ${LIB_DEPEND} )
+"
+
+_emake() {
+	emake TOOLLDFLAGS="${LDFLAGS}" "$@"
+}
 
 src_configure() {
+	use static && append-ldflags -static
 	cros-workon_src_configure
 }
 
@@ -38,20 +46,20 @@ is_x86() {
 
 src_compile() {
 	tc-export CC
-	emake -C util/cbfstool obj="${PWD}/util/cbfstool"
+	_emake -C util/cbfstool obj="${PWD}/util/cbfstool"
 	if use cros_host; then
-		emake -C util/archive CC="${CC}"
+		_emake -C util/archive CC="${CC}"
 	else
-		emake -C util/cbmem CC="${CC}"
+		_emake -C util/cbmem CC="${CC}"
 	fi
 	if is_x86; then
 		if use cros_host; then
-			emake -C util/ifdtool
+			_emake -C util/ifdtool
 		else
-			emake -C util/superiotool CC="${CC}" \
+			_emake -C util/superiotool CC="${CC}" \
 				CONFIG_PCI=$(usex pci)
-			emake -C util/inteltool CC="${CC}"
-			emake -C util/nvramtool CC="${CC}"
+			_emake -C util/inteltool CC="${CC}"
+			_emake -C util/nvramtool CC="${CC}"
 		fi
 	fi
 }
