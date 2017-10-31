@@ -27,6 +27,7 @@ RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
 	udev? ( virtual/udev )
+	video_cards_amdgpu? ( dev-util/cunit )
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )
 	!<x11-libs/libdrm-tests-2.4.58-r3
 "
