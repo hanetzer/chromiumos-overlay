@@ -10,17 +10,19 @@ Note 2. This is an ugly hack/workaround, but I can't create a better patch
 at the moment, due to the difficulties in reproducing the issue.  This is
 to fix https://bugs.chromium.org/p/chromium/issues/detail?id=630015
 
-index f09a06e..ab9a331 100644
---- a/gdb/remote.c
-+++ b/gdb/remote.c
-@@ -7181,8 +7181,10 @@ process_g_packet (struct regcache *regcache)
+index a667b0c7..696da6c6 100644
+--- a/gdb-8.0.1/gdb/remote.c
++++ b/gdb-8.0.1/gdb/remote.c
+@@ -7582,10 +7582,12 @@ process_g_packet (struct regcache *regcache)
    buf_len = strlen (rs->buf);
  
    /* Further sanity checks, with knowledge of the architecture.  */
 +  /*
    if (buf_len > 2 * rsa->sizeof_g_packet)
-     error (_("Remote 'g' packet reply is too long: %s"), rs->buf);
-+  */
+     error (_("Remote 'g' packet reply is too long (expected %ld bytes, got %d "
+ 	     "bytes): %s"), rsa->sizeof_g_packet, buf_len / 2, rs->buf);
  
++  */
    /* Save the size of the packet sent to us by the target.  It is used
       as a heuristic when determining the max size of packets that the
+      target can safely receive.  */

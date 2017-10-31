@@ -1,13 +1,12 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
-EAPI="5"
-PYTHON_COMPAT=( python{2_7,3_3,3_4} )
+EAPI=5
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
 inherit flag-o-matic eutils python-single-r1 versionator
 
-GIT_SHAI="43bcff9192b20e538b093d80fdb3bbb68b325a5d"
+GIT_SHAI="3b4e21d2318bc1b6547e45f3393514e7b0be7df2"
 SRC_URI="https://android.googlesource.com/toolchain/gdb/+archive/${GIT_SHAI}.tar.gz -> ${P}.tar.gz"
 
 export CTARGET=${CTARGET:-${CHOST}}
@@ -20,15 +19,14 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
 RPM=
 MY_PV=${PV}
+
 DESCRIPTION="GNU debugger"
-HOMEPAGE="http://sourceware.org/gdb/"
+HOMEPAGE="https://sourceware.org/gdb/"
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"
-if [[ ${PV} != 9999* ]] ; then
-	KEYWORDS="*"
-fi
-IUSE="+client expat lzma multitarget -mounted_sources nls +python +server test vanilla zlib"
+KEYWORDS="*"
+IUSE="+client lzma mounted_sources multitarget nls +python +server test vanilla xml"
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
 	|| ( client server )
@@ -36,21 +34,21 @@ REQUIRED_USE="
 
 RDEPEND="server? ( !dev-util/gdbserver )
 	client? (
-		>=sys-libs/ncurses-5.2-r2
+		>=sys-libs/ncurses-5.2-r2:0=
 		sys-libs/readline:0=
-		expat? ( dev-libs/expat )
 		lzma? ( app-arch/xz-utils )
 		python? ( ${PYTHON_DEPS} )
-		zlib? ( sys-libs/zlib )
+		xml? ( dev-libs/expat )
+		sys-libs/zlib
 	)"
 DEPEND="${RDEPEND}
 	app-arch/xz-utils
+	sys-apps/texinfo
 	client? (
 		virtual/yacc
 		test? ( dev-util/dejagnu )
 		nls? ( sys-devel/gettext )
 	)"
-
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
@@ -66,14 +64,17 @@ src_unpack() {
 		cp -r "${GDBDIR}"/* "${S}"
 	else
 		default
-		S="${WORKDIR}/${PN}-$(get_version_component_range 1-2)"
+		S="${WORKDIR}/${PN}-$(get_version_component_range 1-3)"
 	fi
 }
 
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
-	epatch_user
-	epatch "${FILESDIR}"/gdb-7.11-remote-arm64.patch
+	! use vanilla && [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
+	epatch "${FILESDIR}"/gdb-8.0.1-remote-arm64.patch
+
+	default
+
 	strip-linguas -u bfd/po opcodes/po
 }
 
@@ -131,14 +132,22 @@ src_configure() {
 			# For gdb itself, it'll use the system version.
 			--disable-readline
 			--with-system-readline
+			# This only disables building in the zlib subdir.
+			# For gdb itself, it'll use the system version.
+			--without-zlib
+			--with-system-zlib
 			--with-separate-debug-dir="${EPREFIX}"/usr/lib/debug
-			$(use_with expat)
+			$(use_with xml expat)
 			$(use_with lzma)
 			$(use_enable nls)
 			$(use multitarget && echo --enable-targets=all)
 			$(use_with python python "${EPYTHON}")
-			$(use_with zlib)
 		)
+	fi
+	if use sparc-solaris || use x86-solaris ; then
+		# disable largefile support
+		# https://sourceware.org/ml/gdb-patches/2014-12/msg00058.html
+		myconf+=( --disable-largefile )
 	fi
 
 	econf "${myconf[@]}"
@@ -149,22 +158,26 @@ src_test() {
 }
 
 src_install() {
-	use server && ! use client && cd gdb/gdbserver
+	if use server && ! use client; then
+		cd gdb/gdbserver || die
+	fi
 	default
-	use client && find "${ED}"/usr -name libiberty.a -delete
-	cd "${S}"
+	if use client; then
+		find "${ED}"/usr -name libiberty.a -delete || die
+	fi
+	cd "${S}" || die
 
 	# Delete translations that conflict with binutils-libs. #528088
 	# Note: Should figure out how to store these in an internal gdb dir.
 	if use nls ; then
 		find "${ED}" \
 			-regextype posix-extended -regex '.*/(bfd|opcodes)[.]g?mo$' \
-			-delete
+			-delete || die
 	fi
 
 	# Don't install docs when building a cross-gdb
 	if [[ ${CTARGET} != ${CHOST} ]] ; then
-		rm -r "${ED}"/usr/share/{doc,info,locale}
+		rm -rf "${ED}"/usr/share/{doc,info,locale} || die
 		local f
 		for f in "${ED}"/usr/share/man/*/* ; do
 			if [[ ${f##*/} != ${CTARGET}-* ]] ; then
@@ -174,7 +187,7 @@ src_install() {
 		return 0
 	fi
 	# Install it by hand for now:
-	# http://sourceware.org/ml/gdb-patches/2011-12/msg00915.html
+	# https://sourceware.org/ml/gdb-patches/2011-12/msg00915.html
 	# Only install if it exists due to the twisted behavior (see
 	# notes in src_configure above).
 	[[ -e gdb/gdbserver/gdbreplay ]] && dobin gdb/gdbserver/gdbreplay
