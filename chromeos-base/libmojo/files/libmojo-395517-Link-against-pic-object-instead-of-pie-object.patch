@@ -1,0 +1,24 @@
+From 1b12d24a35a8dcc2f8495569f89bc413944a28e8 Mon Sep 17 00:00:00 2001
+From: Ricky Liang <jcliang@chromium.org>
+Date: Tue, 31 Oct 2017 16:18:01 +0800
+Subject: [PATCH] Link against pic object instead of pie object.
+
+---
+ libmojo.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libmojo.pc.in b/libmojo.pc.in
+index cceadd4..a750bdd 100644
+--- a/libmojo.pc.in
++++ b/libmojo.pc.in
+@@ -8,6 +8,6 @@ Name: libmojo
+ Description: Chrome Mojo IPC library
+ Requires.private:
+ Version: ${bslot}
+-Libs: -lmojo-${bslot}.pie
++Libs: -lmojo-${bslot}.pic
+ Libs.private:
+ Cflags: -I${includedir}/libmojo-${bslot} -Wno-cast-qual -Wno-cast-align
+-- 
+2.13.5
+

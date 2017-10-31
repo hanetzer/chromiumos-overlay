@@ -19,6 +19,10 @@ REQUIRED_USE="asan? ( clang )"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
+src_prepare() {
+	epatch "${FILESDIR}/libmojo-395517-Link-against-pic-object-instead-of-pie-object.patch"
+}
+
 src_compile() {
 	if [[ "${PV}" != "${LIBCHROME_VERS}" ]]; then
 		die "Version mismatch"
