@@ -1,7 +1,12 @@
 
+# Temporarily disable tautological-*-compare chromium:778316.
+# Temporarily add no-unknown-warning-option to deal with old clang versions.
 FLAGS_TO_ADD = set((
     '-Wno-unused-local-typedefs',
     '-Wno-deprecated-declarations',
+    '-Wno-tautological-constant-compare',
+    '-Wno-tautological-unsigned-enum-zero-compare',
+    '-Wno-unknown-warning-option',
 ))
 
 
