@@ -837,10 +837,6 @@ src_configure() {
 	export CC_host=$(usex clang "${CBUILD}-clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "${CBUILD}-clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
-	if use thinlto; then
-		export RANLIB="llvm-ranlib"
-		export AR="llvm-ar"
-	fi
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
 			export GOLD_SET="yes"
@@ -861,11 +857,24 @@ src_configure() {
 
 	# USE=thinlto affects host build, we need to make changes below
 	# to make sure host package builds with thinlto.
-	# crosbug.com/731335
+	# crbug.com/731335
 	if use thinlto; then
+		export RANLIB="llvm-ranlib"
+		export AR="llvm-ar"
 		export AR_host="llvm-ar"
 		export LD_host="${CXX_host}"
 		LD_host+=" -B$(get_binutils_path "${LD_host}")"
+		# We need to change the default value of import-instr-limit in
+		# LLVM to limit the text size increase. The default value is
+		# 100, and we change it to 30 to reduce the text size increase
+		# from 25% to 10%. The performance number of page_cycler is the
+		# same on two of the thinLTO configurations, we got 1% slowdown
+		# on speedometer when changing import-instr-limit from 100 to 30.
+		if use gold; then
+			append-ldflags "-Wl,-plugin-opt,-import-instr-limit=30"
+		elif use lld; then
+			append-ldflags "-Wl,-mllvm,-import-instr-limit=30"
+		fi
 	fi
 
 	# Set binutils path for goma.
