@@ -1,0 +1,21 @@
+Get rid of warning about unused variable.
+However, this points to a bug that is fixed in the most recent version of
+grpc.
+"init_lib" is using the wrong type.
+See: crosbug/780327
+
+--- grpc-1.3.0_old/src/cpp/client/create_channel.cc	2017-10-31 16:45:43.625032322 -0700
++++ grpc-1.3.0/src/cpp/client/create_channel.cc	2017-10-31 16:51:40.070314363 -0700
+@@ -53,8 +53,10 @@
+     const grpc::string& target,
+     const std::shared_ptr<ChannelCredentials>& creds,
+     const ChannelArguments& args) {
+-  internal::GrpcLibrary
+-      init_lib;  // We need to call init in case of a bad creds.
++  // This variable has no side effects and it is unused.
++  // There is a fix for this in the most current version of grpc.
++  // internal::GrpcLibrary
++  //    init_lib;  // We need to call init in case of a bad creds.
+   return creds
+              ? creds->CreateChannel(target, args)
+              : CreateChannelInternal("", grpc_lame_client_channel_create(

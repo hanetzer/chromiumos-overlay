@@ -31,6 +31,7 @@ PATCHES=(
 	"${FILESDIR}/0003-${P}-Fix-unsecure-.pc-files.patch"
 	"${FILESDIR}/0004-${P}-Support-vsock.patch"
 	"${FILESDIR}/0005-${P}-Don-t-run-ldconfig.patch"
+	"${FILESDIR}/0006-${P}-unused-variable.patch"
 )
 
 src_prepare() {
