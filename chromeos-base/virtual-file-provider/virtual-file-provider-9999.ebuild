@@ -46,3 +46,7 @@ pkg_preinst() {
 	enewuser "virtual-file-provider"
 	enewgroup "virtual-file-provider"
 }
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}/virtual-file-provider_testrunner"
+}
