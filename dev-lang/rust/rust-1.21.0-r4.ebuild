@@ -52,6 +52,10 @@ PATCHES=(
 	"${FILESDIR}"/0003-fix-unknown-vendors.patch
 	"${FILESDIR}"/0004-fix-rpath.patch
 	"${FILESDIR}"/0005-add-unknown-vendor-to-filesearch.patch
+	# TODO(zachr): The linker build option is backported from master. According to the schedule,
+	# these commits will be promoted to beta Nov 23rd, 2017, then released with 1.23 on Jan 4, 2018.
+	"${FILESDIR}"/0006-rustbuild-Support-specifying-archiver-and-linker-exp.patch
+	"${FILESDIR}"/0007-Don-t-use-target-s-linker-when-linking-build-scripts.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -91,6 +95,14 @@ src_prepare() {
 
 	epatch "${PATCHES[@]}"
 
+	# For the librustc_llvm module, the build will link with -nodefaultlibs and manually choose the
+	# std C++ library. For x86_64 Linux, the build script always chooses libstdc++ which will not
+	# work if LLVM was built with USE="default-libcxx". This snippet changes that choice to libc++
+	# in the case that clang++ defaults to libc++.
+	if "${CXX}" -### -x c++ - < /dev/null 2>&1 | grep -q -e '-lc++'; then
+		sed -i 's:"stdc++":"c++":g' src/librustc_llvm/build.rs || die
+	fi
+
 	default
 }
 
@@ -126,14 +138,17 @@ codegen-units = 0
 [target.x86_64-unknown-linux-gnu]
 cc = "x86_64-cros-linux-gnu-clang"
 cxx = "x86_64-cros-linux-gnu-clang++"
+linker = "x86_64-cros-linux-gnu-clang++"
 
 [target.armv7a-cros-linux-gnueabi]
 cc = "armv7a-cros-linux-gnueabi-clang"
 cxx = "armv7a-cros-linux-gnueabi-clang++"
+linker = "armv7a-cros-linux-gnueabi-clang++"
 
 [target.aarch64-unknown-linux-gnu]
 cc = "aarch64-cros-linux-gnu-clang"
 cxx = "aarch64-cros-linux-gnu-clang++"
+linker = "aarch64-cros-linux-gnu-clang++"
 EOF
 
 }
