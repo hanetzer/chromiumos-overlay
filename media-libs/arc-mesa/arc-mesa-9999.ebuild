@@ -29,10 +29,11 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	cheets +classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic
-	selinux shared-glapi vulkan X xlib-glx"
+	android_aep -android_gles30 +android_gles31 -android_gles32 cheets +classic debug dri egl +gallium
+	-gbm gles1 gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
 
 REQUIRED_USE="
+	^^ ( android_gles30 android_gles31 android_gles32 )
 	cheets? (
 		vulkan? ( video_cards_intel )
 		video_cards_amdgpu? ( llvm )
@@ -83,6 +84,15 @@ src_prepare() {
 		sed -i \
 			-e "s/-DHAVE_POSIX_MEMALIGN//" \
 			configure.ac || die
+	fi
+
+	# Restrict gles version based on USE flag. (See crbug.com/30202361, b/30202371, b/31041422, b:68023287)
+	if use android_gles32; then
+		epatch "${FILESDIR}/gles32/0001-limit-gles-version.patch"
+	elif use android_gles31; then
+		epatch "${FILESDIR}/gles31/0001-limit-gles-version.patch"
+	elif use android_gles30; then
+		epatch "${FILESDIR}/gles30/0001-limit-gles-version.patch"
 	fi
 
 	base_src_prepare
@@ -304,14 +314,22 @@ multilib_src_install_all_cheets() {
 
 	# Install init files to advertise supported API versions.
 	insinto "${ARC_PREFIX}/vendor/etc/init"
-	doins "${FILESDIR}/init.gpu.rc"
+	if use android_gles32; then
+		doins "${FILESDIR}/gles32/init.gpu.rc"
+	elif use android_gles31; then
+		doins "${FILESDIR}/gles31/init.gpu.rc"
+	elif use android_gles30; then
+		doins "${FILESDIR}/gles30/init.gpu.rc"
+	fi
 	if use vulkan; then
 		doins "${FILESDIR}/vulkan.rc"
 	fi
 
 	# Install permission file to declare opengles aep support.
-	insinto "${ARC_PREFIX}/vendor/etc/permissions"
-	doins "${FILESDIR}/android.hardware.opengles.aep.xml"
+	if use android_aep; then
+		insinto "${ARC_PREFIX}/vendor/etc/permissions"
+		doins "${FILESDIR}/android.hardware.opengles.aep.xml"
+	fi
 }
 
 multilib_src_install_all() {
