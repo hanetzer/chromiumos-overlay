@@ -199,6 +199,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/autofdo
 	sys-devel/bc
 	sys-devel/clang
+	sys-devel/lld
 	sys-libs/libcxxabi
 	sys-libs/libcxx
 	sys-fs/sshfs-fuse
