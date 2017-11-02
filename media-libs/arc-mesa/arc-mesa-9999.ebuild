@@ -29,11 +29,11 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	android_aep -android_gles30 +android_gles31 -android_gles32 cheets +classic debug dri egl +gallium
+	android_aep -android_gles2 -android_gles30 +android_gles31 -android_gles32 cheets +classic debug dri egl +gallium
 	-gbm gles1 gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
 
 REQUIRED_USE="
-	^^ ( android_gles30 android_gles31 android_gles32 )
+	^^ ( android_gles2 android_gles30 android_gles31 android_gles32 )
 	cheets? (
 		vulkan? ( video_cards_intel )
 		video_cards_amdgpu? ( llvm )
@@ -93,6 +93,8 @@ src_prepare() {
 		epatch "${FILESDIR}/gles31/0001-limit-gles-version.patch"
 	elif use android_gles30; then
 		epatch "${FILESDIR}/gles30/0001-limit-gles-version.patch"
+	elif use android_gles2; then
+		epatch "${FILESDIR}/gles2/0001-limit-gles-version.patch"
 	fi
 
 	base_src_prepare
@@ -320,6 +322,8 @@ multilib_src_install_all_cheets() {
 		doins "${FILESDIR}/gles31/init.gpu.rc"
 	elif use android_gles30; then
 		doins "${FILESDIR}/gles30/init.gpu.rc"
+	elif use android_gles2; then
+		doins "${FILESDIR}/gles2/init.gpu.rc"
 	fi
 	if use vulkan; then
 		doins "${FILESDIR}/vulkan.rc"
