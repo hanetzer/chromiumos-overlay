@@ -34,6 +34,13 @@ ${CROSSGCC_URIS}
 http://mirrors.cdn.adacore.com/art/591c6d80c7a447af2deed1d7 -> gnat-gpl-2017-x86_64-linux-bin.tar.gz
 "
 
+buildgcc_failed() {
+	local arch="$1"
+
+	cat $(ls */.failed | sed "s,\.failed,build.log,")
+	die "building the compiler for ${arch} failed"
+}
+
 src_prepare() {
 	mkdir util/crossgcc/tarballs
 	ln -s "${DISTDIR}"/* util/crossgcc/tarballs/
@@ -58,13 +65,13 @@ src_compile() {
 
 	./buildgcc -d /opt/coreboot-sdk -D "${S}/out" -P iasl \
 		"${buildgcc_opts[@]}" \
-	|| die "building the compiler for ${arch} failed"
+	|| buildgcc_failed "${arch}"
 
 	# Build bootstrap compiler to get a reliable compiler base no matter how
 	# versions diverged, but keep it separately, since we only need it
 	# during this build and not in the chroot.
 	./buildgcc -B -d "${S}"/bootstrap "${buildgcc_opts[@]}" \
-		|| die "building the bootstrap compiler failed"
+		|| buildgcc_failed "cros_sdk (bootstrap)"
 	export PATH="${S}/bootstrap/bin:${PATH}"
 
 	local architectures=(
@@ -80,7 +87,7 @@ src_compile() {
 	for arch in "${architectures[@]}"; do
 		./buildgcc -d /opt/coreboot-sdk -D "${S}/out" -p "${arch}" \
 			"${buildgcc_opts[@]}" \
-		|| die "building the compiler for ${arch} failed"
+		|| buildgcc_failed "${arch}"
 	done
 
 	rm -f "${S}"/out/opt/coreboot-sdk/lib/lib*.{la,a}
