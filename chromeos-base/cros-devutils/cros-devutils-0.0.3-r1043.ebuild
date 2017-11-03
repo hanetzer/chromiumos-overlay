@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="2fcb012a235f0473c1cf737afc2a3c9a15f14e9d"
-CROS_WORKON_TREE="91eb197f6b15c2ece80437a86b3e1f50de60e310"
+CROS_WORKON_COMMIT="0655bab655dff65ec2f0ffe225f1d77399383ae7"
+CROS_WORKON_TREE="e94e2eccf0809a605ef5627b9a348ec1994fcab6"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
 # Avoid copying any devserver data created outside the chroot.
