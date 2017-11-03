@@ -95,7 +95,7 @@ cros-model_audio_configs_install() {
 	local src_dir=$2
 	local install_dir=$2
 
-	local audio_config_dir="${src_dir}${CROS_MODELS_DIR}/${model}/Audio"
+	local audio_config_dir="${src_dir}${CROS_MODELS_DIR}/${model}/audio"
 
 	local alsa_conf="${audio_config_dir}/alsa-module-config/alsa.conf"
 	if [[ -f "${alsa_conf}" ]] ; then
