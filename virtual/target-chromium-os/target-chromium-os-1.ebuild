@@ -36,6 +36,7 @@ IUSE="
 	input_devices_evdev
 	intel_lpe
 	kvm_host
+	modemfwd
 	mtd
 	+network_time
 	nfc
@@ -60,7 +61,10 @@ IUSE="
 	wimax
 "
 
-REQUIRED_USE="cellular? ( shill )"
+REQUIRED_USE="
+	cellular? ( shill )
+	modemfwd? ( cellular )
+"
 
 ################################################################################
 #
@@ -150,6 +154,7 @@ CROS_COMMON_RDEPEND+="
 		gobi? ( chromeos-base/cromo )
 		chromeos-base/mist
 	)
+	modemfwd? ( chromeos-base/modemfwd )
 	buffet? ( chromeos-base/buffet )
 	containers? (
 		chromeos-base/container_utils
