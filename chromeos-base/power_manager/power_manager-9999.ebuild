@@ -100,9 +100,9 @@ src_install() {
 	udev_dorules udev/*.rules
 
 	if use powerknobs; then
-		udev/gen_autosuspend_rules.py > "${T}"/99-autosuspend.rules || die
-		udev_dorules "${T}"/99-autosuspend.rules
-		udev_dorules udev/optional/99-powerknobs.rules
+		udev/gen_autosuspend_rules.py > "${T}"/98-autosuspend.rules || die
+		udev_dorules "${T}"/98-autosuspend.rules
+		udev_dorules udev/optional/98-powerknobs.rules
 	fi
 	if use keyboard_includes_side_buttons; then
 		udev_dorules udev/optional/92-powerd-tags-keyboard-side-buttons.rules
