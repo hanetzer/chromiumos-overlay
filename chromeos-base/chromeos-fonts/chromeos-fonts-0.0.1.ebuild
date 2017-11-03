@@ -33,12 +33,9 @@ DEPEND="
 	media-fonts/noto-cjk
 	media-fonts/notofonts
 	media-fonts/dejavu
-	media-fonts/droidfonts-cros
 	media-fonts/ko-nanumfonts
 	media-fonts/lohitfonts-cros
-	media-fonts/ml-anjalioldlipi
 	media-fonts/robotofonts
-	media-fonts/sil-abyssinica
 	media-fonts/tibt-jomolhari
 	media-libs/fontconfig
 	!cros_host? ( sys-libs/gcc-libs )

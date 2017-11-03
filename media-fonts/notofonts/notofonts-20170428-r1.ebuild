@@ -1,1 +1,0 @@
-notofonts-20170428.ebuild

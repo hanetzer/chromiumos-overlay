@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-FONT_SUFFIX="ttc ttf"
+FONT_SUFFIX="ttf"
 FONT_S="${S}"
 FONTDIR="/usr/share/fonts/noto"
 
