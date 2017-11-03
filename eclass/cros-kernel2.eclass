@@ -959,6 +959,10 @@ kmake() {
 	local afto_option=$(usex clang 'profile-sample-use' 'auto-profile')
 	use kernel_afdo && kcflags+=" -f${afto_option}=${AFDO_FILENAME}"
 
+	# LLVM needs this to parse perf.data.
+	# See AutoFDO README for details: https://github.com/google/autofdo
+	use clang && kcflags+=" -fdebug-info-for-profiling "
+
 	# The kernel doesn't use CFLAGS and doesn't expect it to be passed
 	# in.  Let's be explicit that it won't do anything by unsetting CFLAGS.
 	#
