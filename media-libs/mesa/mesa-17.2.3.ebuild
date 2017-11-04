@@ -118,7 +118,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
-	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
