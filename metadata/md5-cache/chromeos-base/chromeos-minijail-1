@@ -1,9 +1,0 @@
-DEFINED_PHASES=-
-DEPEND=chromeos-base/minijail
-DESCRIPTION=stub ebuild for packages not yet updated to chromeos-base/minijail
-EAPI=5
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=chromeos-base/minijail
-SLOT=0
-_md5_=5066c9614bd651004dafc8bc5aac31fe
