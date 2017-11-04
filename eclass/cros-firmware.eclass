@@ -359,7 +359,7 @@ cros-firmware_src_compile() {
 			fi
 
 			einfo "Updater for local fw"
-			./pack_firmware.py -o "${output_file}" \
+			./pack_firmware.py -o "${output_file}" --legacy \
 				"${local_image_cmd[@]}" "${ext_cmd[@]}" ||
 				die "Cannot pack local firmware."
 			if [[ ${#image_cmd[@]} -eq 0 ]]; then
