@@ -96,6 +96,8 @@ RDEPEND="${RDEPEND}
 	dev-util/mem
 	dev-util/strace
 	net-dialup/lrzsz
+	net-misc/curl
+	net-misc/wget
 	sys-apps/coreboot-utils
 	sys-apps/coreutils
 	sys-apps/diffutils
