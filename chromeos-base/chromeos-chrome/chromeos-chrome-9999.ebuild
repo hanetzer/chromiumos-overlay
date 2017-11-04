@@ -224,7 +224,6 @@ RDEPEND="${RDEPEND}
 	media-libs/libpng
 	v4lplugin? ( media-libs/libv4lplugins )
 	>=media-sound/adhd-0.0.1-r310
-	net-misc/wget
 	cups? ( net-print/cups )
 	opengl? ( virtual/opengl )
 	opengles? ( virtual/opengles )
