@@ -32,9 +32,12 @@ pkg_setup() {
 
 src_unpack() {
 	EGIT_COMMIT="b0147d1baf5593dcae1b25f4f6ee565bc5d3f438"
-	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]' ; then
+
+	# Need this condition until new prebuilds are regenerated.
+	if has_version --host-root '>=sys-devel/llvm-6.0_pre316199' ; then
 		EGIT_COMMIT="c9e633dcb3997ab998bcedcf11d4e36d5af44a6c" #316180
 	fi
+
 	git-r3_fetch
 	git-r3_checkout
 }

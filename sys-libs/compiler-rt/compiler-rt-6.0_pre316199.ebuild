@@ -23,11 +23,14 @@ if [[ ${CATEGORY} == cross-* ]] ; then
 fi
 
 src_unpack() {
+	# For this version of the ebuild, llvm and llvm-next are the same until we roll
+	# a new version of llvm-next.
 	if use llvm-next; then
 		# llvm:r316199 https://critique.corp.google.com/#review/17310468
 		EGIT_COMMIT="98adaa2097783c0fe3a4c948397e3f2182dcc5d2" #r316048
 	else
-		EGIT_COMMIT="f0d7258f4a2f5e6443011f7be011b5e9999c33f2" #r305593
+		# llvm:r316199 https://critique.corp.google.com/#review/17310468
+		EGIT_COMMIT="98adaa2097783c0fe3a4c948397e3f2182dcc5d2" #r316048
 	fi
 	git-2_src_unpack
 }
@@ -38,8 +41,7 @@ src_prepare() {
 	if use llvm-next; then
 		CHERRIES+=""
 	else
-		CHERRIES+=" 1a32c939c5eece22f3ca6cf70bd05a1527bc0970 " #r311394
-		CHERRIES+=" 4854a215fc3c0b10ab57b4b9b5e4cbeb5bf0624a " #r311555
+		CHERRIES+=""
 	fi
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -48,11 +50,6 @@ src_prepare() {
 	# Apply patches
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
-
-	if ! use llvm-next; then
-		# patch to remove abort() for clear_cache builtin for ARM. https://crbug.com/761103
-		epatch "${FILESDIR}"/compiler-rt-disable-abort-cacheflush.patch
-	fi
 }
 
 src_configure() {
@@ -103,15 +100,16 @@ src_install() {
 	rm -f "${ED}"${libdir}/clang/*/*_blacklist.txt || die
 	rm -f "${ED}"${libdir}/clang/*/dfsan_abilist.txt || die
 
-	if use llvm-next; then
-		local llvm_version=$(llvm-config --version)
-		local clang_version=${llvm_version%svn*}
-		clang_version=${clang_version%git*}
-		if [[ ${clang_version} == "5.0.0" ]] ; then
-			new_version="6.0.0"
-		else
-			new_version="5.0.0"
-		fi
-		cp -r  "${D}${libdir}/clang/${clang_version}" "${D}${libdir}/clang/${new_version}"
+	# This section can be removed once prebuilds for 316199 have been created. 
+	local llvm_version=$(llvm-config --version)
+	local clang_version=${llvm_version%svn*}
+	clang_version=${clang_version%git*}
+	if [[ ${clang_version} == "5.0.0" ]] ; then
+		new_version="6.0.0"
+	else
+		new_version="5.0.0"
 	fi
+	#
+
+	cp -r  "${D}${libdir}/clang/${clang_version}" "${D}${libdir}/clang/${new_version}"
 }

@@ -17,6 +17,8 @@ EGIT_REPO_URI="http://llvm.org/git/llvm.git
 	https://github.com/llvm-mirror/llvm.git"
 LICENSE="UoI-NCSA"
 
+# For this version of the ebuild, llvm and llvm-next are the same. We need to roll
+# a new llvm-next.
 if use llvm-next; then
 
 # llvm:r316199 https://critique.corp.google.com/#review/173104684
@@ -28,26 +30,27 @@ EGIT_REPO_URIS=(
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"98adaa2097783c0fe3a4c948397e3f2182dcc5d2" # EGIT_COMMIT r316195
+		"98adaa2097783c0fe3a4c948397e3f2182dcc5d2" # EGIT_COMMIT r316048
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"53df1a5045c5c9471b0b4b00f8d64433d862699d"  # EGIT_COMMIT r315678
+		"53df1a5045c5c9471b0b4b00f8d64433d862699d"  # EGIT_COMMIT r316195
 )
 else
+# llvm:r316199 https://critique.corp.google.com/#review/173104684
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"b903fddc562ccc622cabc4f08f5df2af90ceb251" # EGIT_COMMIT r305632
+		"f56176dd98a9f4f7a3c59e1309bf8201d4529f76" # EGIT_COMMIT r316199
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"f0d7258f4a2f5e6443011f7be011b5e9999c33f2" # EGIT_COMMIT r305593
+		"98adaa2097783c0fe3a4c948397e3f2182dcc5d2" # EGIT_COMMIT r316048
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"30060bff5b4cb49e17c27672d1aa60e6bc7a95e8"  # EGIT_COMMIT r305619
+		"53df1a5045c5c9471b0b4b00f8d64433d862699d"  # EGIT_COMMIT r316195
 )
 fi
 
@@ -192,12 +195,7 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" b8c6e47bedeba554a913c71653d6ce778f398155 " # r305728
-	CHERRIES+=" 74dbb6c51a6706c959ed323673a7d1a9269720e0 " # r306346
-	CHERRIES+=" 9330fda9a0ef108d03334f20319508e409bb356d " # r307051
-	CHERRIES+=" 37cdc82da7d49a9fe3991eca89f44cd05d86fc55 " # r308997
-	CHERRIES+=" c9c456edbdc7004d08581528219ee59362e59e8e " # r309263
-	CHERRIES+=" 73c1500cc3b3a4cd39a7c59753a7d0e63887a839 " # r315951
+	CHERRIES+=" a312801e78a7627965158838eae1fb9a10487af7 " # r316211
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -206,10 +204,9 @@ pick_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 5773fa6550fa9b33017d8d1e4ebdb96cf5eaf626 " # r305853
-	CHERRIES+=" f6fecfacea8ecde288b680a68823aaf1d08b5beb " # r309694
-	CHERRIES+=" 7313cf88d8717af101e89811a410faf4591f2864 " # r309353
-	CHERRIES+=" bc62a9f5d4a276a5f023e3ebd957b6915f101a3e " # r309355
+	CHERRIES+=" d7958d5ac0c1e979dec35ea26a981532e094b5b2 " # r316374, r316377
+	CHERRIES+=" b1bfcf247fd22246ea224ad2df241f25c63ea22e " # r316703
+	CHERRIES+=" 697969187cd6d8ed03eabbe1198ee7892d872953 " # r317092
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -260,8 +257,7 @@ src_prepare() {
 		use llvm-next || pick_cherries
 		use llvm-next && pick_next_cherries
 	fi
-	use llvm-next && epatch "${FILESDIR}"/llvm-6.0-gnueabihf.patch
-	use llvm-next || epatch "${FILESDIR}"/clang-4.0-gnueabihf.patch
+	epatch "${FILESDIR}"/llvm-6.0-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 
