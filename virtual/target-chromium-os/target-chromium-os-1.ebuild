@@ -143,9 +143,14 @@ CROS_COMMON_RDEPEND+="
 	input_devices_evdev? ( app-misc/evtest )
 	syslog? ( app-admin/rsyslog )
 	biod? ( chromeos-base/biod )
+	compupdates? ( chromeos-base/imageloader )
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
-	tpm? ( chromeos-base/chaps )
+	tpm? (
+		!tpm2? ( app-crypt/trousers )
+		chromeos-base/chaps
+	)
+	tpm2? ( chromeos-base/trunks )
 	pam? ( virtual/chromeos-auth-config )
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-installer
@@ -185,8 +190,17 @@ CROS_COMMON_RDEPEND+="
 		net-print/cups
 		postscript? ( net-print/hplip )
 	)
+	touchview? ( chromeos-base/chromeos-accelerometer-init )
+	system_locales? ( chromeos-base/system-locales )
 	eclog? ( chromeos-base/timberslide )
 	chromeos-base/chromeos-machine-id-regen
+	systemd? ( sys-apps/systemd )
+	kvm_host? (
+		chromeos-base/chromeos-termina-scripts
+		chromeos-base/crosvm
+		chromeos-base/vm_tools[kvm_host]
+		net-fs/nfs-ganesha
+	)
 	sys-kernel/linux-firmware
 	virtual/chromeos-bsp
 	virtual/chromeos-firewall
@@ -256,27 +270,17 @@ CROS_RDEPEND="
 
 CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/tar
-	!tpm2? ( app-crypt/trousers )
-	tpm2? ( chromeos-base/trunks )
 	app-editors/vim
 	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
-	kvm_host? (
-		chromeos-base/chromeos-termina-scripts
-		chromeos-base/crosvm
-		chromeos-base/vm_tools[kvm_host]
-		net-fs/nfs-ganesha
-	)
 	chromeos-base/crosh
 	chromeos-base/crosh-extension
 	chromeos-base/dev-install
-	compupdates? ( chromeos-base/imageloader )
 	chromeos-base/inputcontrol
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
-	system_locales? ( chromeos-base/system-locales )
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
@@ -290,9 +294,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/pv
 	sys-apps/rootdev
 	!systemd? ( sys-apps/upstart )
-	systemd? ( sys-apps/systemd )
 	sys-fs/e2fsprogs
-	touchview? ( chromeos-base/chromeos-accelerometer-init )
 	virtual/assets
 	virtual/cheets
 	virtual/udev
