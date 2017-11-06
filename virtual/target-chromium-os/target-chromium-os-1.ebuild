@@ -248,14 +248,10 @@ CROS_X86_RDEPEND="
 	dptf? ( virtual/dptf )
 	intel_lpe? ( virtual/lpe-support )
 "
-CROS_ARM_RDEPEND="
-	chromeos-base/u-boot-scripts
-"
 
 CROS_RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
-	arm? ( ${CROS_ARM_RDEPEND} )
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}

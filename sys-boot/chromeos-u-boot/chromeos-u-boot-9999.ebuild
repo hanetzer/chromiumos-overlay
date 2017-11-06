@@ -25,6 +25,7 @@ DEPEND="!sys-boot/x86-firmware-fdts
 	"
 
 RDEPEND="${DEPEND}
+	chromeos-base/u-boot-scripts
 	"
 
 UB_BUILD_DIR="${WORKDIR}/build"
