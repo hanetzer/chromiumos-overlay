@@ -60,12 +60,14 @@ set_build_env() {
 	if ! use coreboot-sdk; then
 		export CROSS_COMPILE_arm=arm-none-eabi-
 		export CROSS_COMPILE_i386=i686-pc-linux-gnu-
-		export CROSS_COMPILE_nds=nds32le-cros-elf-
 	else
 		export CROSS_COMPILE_arm=${COREBOOT_SDK_PREFIX_arm}
 		export CROSS_COMPILE_i386=${COREBOOT_SDK_PREFIX_x86_32}
-		export CROSS_COMPILE_nds=${COREBOOT_SDK_PREFIX_nds}
 	fi
+
+	# nds32 always uses coreboot-sdk
+	export CROSS_COMPILE_nds32=${COREBOOT_SDK_PREFIX_nds32}
+
 	tc-export CC BUILD_CC
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
