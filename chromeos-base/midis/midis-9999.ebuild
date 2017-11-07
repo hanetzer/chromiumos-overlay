@@ -24,16 +24,6 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 
-	# Install libraries
-	./platform2_preinstall.sh "${OUT}"
-	dolib.a "${OUT}"/libmidis.a
-	insinto "/usr/$(get_libdir)/pkgconfig"
-	doins "${OUT}"/obj/midis/libmidis.pc
-
-	# Install headers
-	insinto /usr/include/midis/
-	doins libmidis/clientlib.h
-
 	# Install midis DBUS configuration file
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.Midis.conf
