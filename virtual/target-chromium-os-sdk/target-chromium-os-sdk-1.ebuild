@@ -129,7 +129,7 @@ RDEPEND="${RDEPEND}
 	app-text/texi2html
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-base
-	chromeos-base/chromeos-config-tools[cros_host]
+	chromeos-base/chromeos-config-host
 	chromeos-base/chromeos-installer
 	chromeos-base/cros-devutils[cros_host]
 	chromeos-base/cros-testutils
