@@ -37,6 +37,7 @@ samba_mask="
   /usr/lib*/samba/idmap
   /usr/lib*/samba/libidmap-samba4.so
   /usr/lib*/samba/nss_info
+  /usr/libexec/cups/backend/smb
 "
 PKG_INSTALL_MASK+=" ${samba_mask}"
 INSTALL_MASK+=" ${samba_mask}"
