@@ -54,6 +54,14 @@ src_prepare() {
 			|| die "unable to disable option $1"
 	}
 
+	disable_module() {
+		sed -r -i -e "/^(FONT|AUX|HINTING|RASTER)_MODULES \+= $1/ s/^/#/" \
+			modules.cfg || die "unable to disable module $1"
+	}
+
+	epatch "${FILESDIR}"/${PN}-2.8.1-94f6d57a4.patch
+	epatch "${FILESDIR}"/${PN}-2.4.11-sizeof-types.patch # 459966
+
 	# Enable stem-darkening for CFF font
 	# TODO(jshin): Evaluate the impact of disabling stem-darkening.
 	epatch "${FILESDIR}"/${PN}-2.6.2-enable-cff-stem-darkening.patch
@@ -69,11 +77,18 @@ src_prepare() {
 		enable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  2"
 	fi
 
+	# TODO(jshin): Consider disabling SUBPIXEL_RENDERING and using
+	# Harmony (new default in 2.8.1 when FT_CONFIG_OPTION_SUBPIXEL_RENDERING
+	# is undefined), instead. See
+	# https://bugs.chromium.org/p/chromium/issues/detail?id=654563#c3 .
 	if ! use bindist; then
 		# See http://freetype.org/patents.html
 		# ClearType is covered by several Microsoft patents in the US
 		enable_option FT_CONFIG_OPTION_SUBPIXEL_RENDERING
 	fi
+
+	disable_option "FT_CONFIG_OPTION_MAC_FONTS"
+	disable_option "TT_CONFIG_OPTION_BDF"
 
 	if ! use adobe-cff; then
 		enable_option CFF_CONFIG_OPTION_OLD_ENGINE
@@ -84,7 +99,18 @@ src_prepare() {
 		enable_option FT_DEBUG_MEMORY
 	fi
 
-	epatch "${FILESDIR}"/${PN}-2.4.11-sizeof-types.patch # 459966
+	disable_module pcr
+	disable_module winfonts
+	disable_module pcf
+	disable_module bdf
+	disable_module lzw
+	# TODO(jshin): Check if ghostscript needs type42. (crbug.com/784767)
+	# disable_module type42
+
+	if ! use bzip2; then
+		disable_module bzip2
+	fi
+
 
 	if use utils; then
 		cd "${WORKDIR}/ft2demos-${PV}" || die
