@@ -252,7 +252,9 @@ src_install() {
 	done
 
 	# install the CMaps from poppler-data properly, bug #409361
-	dosym /usr/share/poppler/cMaps /usr/share/ghostscript/${PVM}/Resource/CMap
+	if ! use crosfonts; then
+		dosym /usr/share/poppler/cMaps /usr/share/ghostscript/${PVM}/Resource/CMap
+	fi
 
 	use static-libs || prune_libtool_files --all
 
