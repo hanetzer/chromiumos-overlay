@@ -22,7 +22,7 @@ SRC_URI=""
 LICENSE="|| ( MIT X )"
 SLOT="0"
 KEYWORDS="~*"
-VIDEO_CARDS="amdgpu exynos freedreno intel nouveau omap radeon vc4 vmware"
+VIDEO_CARDS="amdgpu exynos freedreno nouveau omap radeon vc4 vmware"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -30,10 +30,7 @@ done
 IUSE="${IUSE_VIDEO_CARDS} libkms manpages +udev"
 RESTRICT="test" # see bug #236845
 
-RDEPEND="
-	video_cards_intel? ( >=x11-libs/arc-libpciaccess-0.10[${MULTILIB_USEDEP}] )
-"
-
+RDEPEND=""
 DEPEND="${RDEPEND}"
 
 XORG_EAUTORECONF=yes
@@ -51,7 +48,6 @@ src_configure() {
 		$(use_enable video_cards_amdgpu amdgpu)
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno)
-		$(use_enable video_cards_intel intel)
 		$(use_enable video_cards_nouveau nouveau)
 		$(use_enable video_cards_omap omap-experimental-api)
 		$(use_enable video_cards_radeon radeon)
@@ -61,6 +57,7 @@ src_configure() {
 		$(use_enable manpages)
 		$(use_enable udev)
 		--disable-cairo-tests
+		--disable-intel
 		"--prefix=${ARC_PREFIX}/vendor"
 		"--datadir=${ARC_PREFIX}/vendor/usr/share"
 	)
