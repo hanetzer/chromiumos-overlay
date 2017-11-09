@@ -37,7 +37,8 @@ src_unpack() {
 src_compile() {
 	distutils-r1_src_compile
 	einfo "Validating master configuration binding"
-	python validate_config.py README.md || die "Validation failed"
+	python -m cros_config_host.validate_config README.md ||
+		die "Validation failed"
 }
 
 src_test() {
