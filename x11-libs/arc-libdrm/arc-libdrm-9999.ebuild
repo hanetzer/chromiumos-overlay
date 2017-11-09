@@ -47,7 +47,7 @@ src_configure() {
 	arc-build-select-gcc
 
 	XORG_CONFIGURE_OPTIONS=(
-		--enable-install-test-programs
+		--disable-install-test-programs
 		$(use_enable video_cards_amdgpu amdgpu)
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno)
