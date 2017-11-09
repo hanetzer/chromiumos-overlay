@@ -127,7 +127,7 @@ multilib_src_configure() {
 		driver_enable swrast
 
 		# Intel code
-		driver_enable video_cards_intel i915 i965
+		driver_enable video_cards_intel i965
 
 		# Nouveau code
 		driver_enable video_cards_nouveau nouveau
@@ -141,9 +141,6 @@ multilib_src_configure() {
 		if use !xlib-glx; then
 			gallium_enable swrast
 		fi
-
-		# Intel code
-		gallium_enable video_cards_intel i915
 
 		# Nouveau code
 		gallium_enable video_cards_nouveau nouveau
