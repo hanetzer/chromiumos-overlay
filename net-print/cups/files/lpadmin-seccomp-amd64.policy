@@ -22,6 +22,7 @@ ioctl: 1
 lseek: 1
 mmap: 1
 mprotect: 1
+mremap: 1
 munmap: 1
 open: 1
 poll: 1

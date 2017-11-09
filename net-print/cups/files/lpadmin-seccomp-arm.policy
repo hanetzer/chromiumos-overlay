@@ -22,6 +22,7 @@ getuid32: 1
 ioctl: 1
 mmap2: 1
 mprotect: 1
+mremap: 1
 munmap: 1
 open: 1
 poll: 1
