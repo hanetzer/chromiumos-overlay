@@ -17,6 +17,7 @@ IUSE="-asan"
 RDEPEND="virtual/jpeg:0"
 
 DEPEND="${RDEPEND}
+	media-libs/libyuv
 	virtual/pkgconfig"
 
 src_configure() {
