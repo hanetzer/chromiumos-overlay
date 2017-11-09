@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="modemfwd"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Modem firmware updater daemon"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/modemfwd"
@@ -32,6 +32,11 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dobin "${OUT}/modemfwd"
+}
+
+pkg_preinst() {
+	enewuser "modem-updater"
+	enewgroup "modem-updater"
 }
 
 platform_pkg_test() {
