@@ -13,7 +13,7 @@ libc-0.2.32
 gcc-0.3.54
 "
 
-inherit cargo cros-workon user
+inherit cargo cros-workon toolchain-funcs user
 
 DESCRIPTION="Utility for running Linux VMs on Chrome OS"
 
@@ -32,6 +32,23 @@ src_unpack() {
 	# Unpack both the project and dependency source code
 	cargo_src_unpack
 	cros-workon_src_unpack
+}
+
+src_test() {
+	export CARGO_HOME="${ECARGO_HOME}"
+	export TARGET_CC="$(tc-getCC)"
+	export CARGO_TARGET_DIR="${WORKDIR}"
+
+	if ! use x86 && ! use amd64 ; then
+		elog "Skipping unit tests on non-x86 platform"
+	else
+		cargo test --all \
+			--exclude kvm \
+			--exclude kvm_sys \
+			--exclude net_util -v \
+			--target="${CHOST}" -- --test-threads=1 \
+			|| die "cargo test failed"
+	fi
 }
 
 src_install() {
