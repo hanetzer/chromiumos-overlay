@@ -72,6 +72,7 @@ ALL_BOARDS=(
 	bwtm2
 	#bxt-rvp
 	candy
+	capri
 	caroline
 	caroline-arc64
 	caroline-arcnext
