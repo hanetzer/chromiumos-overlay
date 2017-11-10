@@ -1,0 +1,16 @@
+Compiler-rt does not provide a default unwinder.
+This patch links libgcc_eh when rtlib=compiler-rt.
+-https://llvm.org/bugs/show_bug.cgi?id=28681
+diff --git a/lib/Driver/ToolChains/CommonArgs.cpp b/lib/Driver/ToolChains/CommonArgs.cpp
+index 5e360f62e2..2b53bde32f 100644
+--- a/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
++++ b/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
+@@ -1028,6 +1028,8 @@ void tools::AddRunTimeLibs(const ToolChain &TC, const Driver &D,
+   switch (RLT) {
+   case ToolChain::RLT_CompilerRT:
+     CmdArgs.push_back(TC.getCompilerRTArgString(Args, "builtins"));
++    if (TC.getTriple().getOS() == llvm::Triple::Linux)
++      CmdArgs.push_back("-lgcc_eh");
+     break;
+   case ToolChain::RLT_Libgcc:
+     // Make sure libgcc is not used under MSVC environment by default
