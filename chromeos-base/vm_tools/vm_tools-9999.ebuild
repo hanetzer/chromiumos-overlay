@@ -33,6 +33,9 @@ src_install() {
 		dobin "${OUT}"/maitred_client
 		dobin "${OUT}"/vm_launcher
 		dobin "${OUT}"/vmlog_forwarder
+
+		insinto /etc/init
+		doins init/vmlog_forwarder.conf
 	else
 		dobin "${OUT}"/virtwl_guest_proxy
 		dobin "${OUT}"/vm_syslog
