@@ -37,7 +37,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk cros_ec +intel_mrc pd_sync qca-framework quiet unibuild verbose"
-IUSE="${IUSE} coreboot-sdk"
+IUSE="${IUSE} amd_cpu coreboot-sdk"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco
@@ -62,6 +62,7 @@ DEPEND="
 	pd_sync? ( chromeos-base/chromeos-ec )
 	intel_mrc? ( x86? ( sys-boot/chromeos-mrc )
 		amd64? ( sys-boot/chromeos-mrc ) )
+	amd_cpu? ( sys-boot/amd-firmware )
 	qca-framework? ( sys-boot/qca-framework )
 	unibuild? ( chromeos-base/chromeos-config )
 	"
