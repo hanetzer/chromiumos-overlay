@@ -127,6 +127,7 @@ RDEPEND="${RDEPEND}
 	app-text/docbook-xml-dtd:4.5
 	app-text/docbook-xsl-stylesheets
 	app-text/texi2html
+	app-text/xmlto
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-config-host
