@@ -193,6 +193,7 @@ ALL_BOARDS=(
 	mappy_flashstation
 	marble
 	mccloud
+	meowth
 	minnowboard
 	mipseb-n32-generic
 	mipseb-n64-generic
