@@ -1,6 +1,9 @@
 # Copyright 2017 The Chromium OS Authors.  All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Change this version number when making a change to the upstart config
+# or the seccomp file: 2
+
 EAPI=5
 CROS_WORKON_PROJECT=("chromiumos/third_party/nfs-ganesha" "chromiumos/third_party/ntirpc")
 CROS_WORKON_LOCALNAME=("nfs-ganesha" "ntirpc")
