@@ -23,7 +23,7 @@ KEYWORDS="~*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="amdgpu radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} llvmpipe mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -138,9 +138,7 @@ multilib_src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
-		if use !xlib-glx; then
-			gallium_enable swrast
-		fi
+		gallium_enable video_cards_llvmpipe swrast
 
 		# Nouveau code
 		gallium_enable video_cards_nouveau nouveau
@@ -240,7 +238,9 @@ multilib_src_install_cheets() {
 		newexe $(get_libdir)/i965_dri.so i965_dri.so
 	fi
 	if use gallium; then
-		newexe $(get_libdir)/gallium/kms_swrast_dri.so kms_swrast_dri.so
+		if use video_cards_llvmpipe; then
+			newexe $(get_libdir)/gallium/kms_swrast_dri.so kms_swrast_dri.so
+		fi
 		if use video_cards_amdgpu; then
 			newexe $(get_libdir)/gallium/radeonsi_dri.so radeonsi_dri.so
 		fi
