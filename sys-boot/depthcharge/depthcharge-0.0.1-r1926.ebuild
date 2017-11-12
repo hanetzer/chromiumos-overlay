@@ -17,6 +17,7 @@ KEYWORDS="*"
 IUSE="detachable_ui fastboot fwconsole mocktpm pd_sync unibuild"
 
 DEPEND="
+	chromeos-base/vboot_reference
 	sys-boot/libpayload
 	unibuild? ( chromeos-base/chromeos-config )
 "
