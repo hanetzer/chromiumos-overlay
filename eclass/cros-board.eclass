@@ -75,7 +75,7 @@ ALL_BOARDS=(
 	caroline
 	caroline-arc64
 	caroline-arcnext
-	caroline-bertha
+	#caroline-bertha
 	caroline-ndktranslation
 	caroline-userdebug
 	cardhu
@@ -115,7 +115,7 @@ ALL_BOARDS=(
 	#envoy-jerry
 	eve
 	eve-arcnext
-	eve-bertha
+	#eve-bertha
 	eve-kvm
 	eve-userdebug
 	expresso
@@ -162,7 +162,7 @@ ALL_BOARDS=(
 	#kennet
 	kevin
 	kevin-arcnext
-	kevin-bertha
+	#kevin-bertha
 	kevin-tpm2
 	#kiev
 	kip
