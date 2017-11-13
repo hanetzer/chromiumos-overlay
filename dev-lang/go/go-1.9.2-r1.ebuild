@@ -67,6 +67,7 @@ src_configure() {
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-parse-old-tar.patch"
+	epatch "${FILESDIR}/${P}-dwarf-info.patch"
 }
 
 src_compile() {
