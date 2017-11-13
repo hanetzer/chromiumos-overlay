@@ -47,6 +47,7 @@ CROS_BOARDS=(
 	lulu
 	lumpy
 	mccloud
+	meowth
 	monroe
 	nami
 	nautilus
