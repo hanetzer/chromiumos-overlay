@@ -110,6 +110,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_CompareInstalledToShellBall
 	+tests_firmware_ConsecutiveBoot
 	+tests_firmware_ConsecutiveBootPowerButton
+	+tests_firmware_ConsecutiveLidSwitch
 	+tests_firmware_CorruptBothFwBodyAB
 	+tests_firmware_CorruptBothFwSigAB
 	+tests_firmware_CorruptBothKernelAB
