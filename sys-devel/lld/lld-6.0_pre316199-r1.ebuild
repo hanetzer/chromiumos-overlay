@@ -42,6 +42,9 @@ src_unpack() {
 	git-r3_checkout
 }
 
+src_prepare() {
+	epatch "${FILESDIR}/$PN-invoke-name.patch"
+}
 src_configure() {
 	local mycmakeargs=(
 		#-DBUILD_SHARED_LIBS=ON

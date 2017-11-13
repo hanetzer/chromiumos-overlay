@@ -1,0 +1,17 @@
+LLD uses the argv[0] to get the host system information.
+We created a wrapper of LLD and the real lld becomes
+lld.elf, so the LLD cannot get the host system informaction
+and dies. see crbug.com/701659
+diff --git a/tools/lld/lld.cpp b/tools/lld/lld.cpp
+index a819c20de..e45a542b9 100644
+--- a/tools/lld/lld.cpp
++++ b/tools/lld/lld.cpp
+@@ -43,7 +43,7 @@ LLVM_ATTRIBUTE_NORETURN static void die(const Twine &S) {
+ 
+ static Flavor getFlavor(StringRef S) {
+   return StringSwitch<Flavor>(S)
+-      .CasesLower("ld", "ld.lld", "gnu", Gnu)
++      .CasesLower("ld", "ld.lld", "gnu", "lld.elf", Gnu)
+       .CaseLower("link", WinLink)
+       .CasesLower("ld64", "ld64.lld", "darwin", Darwin)
+       .Default(Invalid);
