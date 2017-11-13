@@ -7,8 +7,8 @@ EAPI="5"
 inherit cros-constants
 
 # cros-workon expects the repo to be in src/third_party, but is in src/aosp.
-CROS_WORKON_COMMIT=("6db81d0dc74ac5915b0c448a2aecf84b3140c8bc" "4ac53f28ec5554dd32c70298312a10078d5ce02c")
-CROS_WORKON_TREE=("38c97cc18704c2206ba4bc7c9289575bf11b6cad" "cbd4b12b39bf34e652f7aeb96b7858e1e6cf779b")
+CROS_WORKON_COMMIT=("adc061dfc05334e933e55076b4af99e2b7b70f97" "a8ff454126ed6c2f60fe4c9ae4d8e3e1806791a6")
+CROS_WORKON_TREE=("292103495024e122585832ec16e29d701adad844" "fa35c01d19e4ae5d5c18a47cc825f20b786b077d")
 CROS_WORKON_LOCALNAME=("../platform2" "../aosp/external/bsdiff")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/bsdiff")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/bsdiff")
@@ -30,6 +30,7 @@ KEYWORDS="*"
 IUSE="cros_host"
 
 RDEPEND="
+	app-arch/brotli
 	app-arch/bzip2
 	dev-libs/libdivsufsort
 "

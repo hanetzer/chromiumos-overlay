@@ -28,6 +28,7 @@ KEYWORDS="~*"
 IUSE="cros_host"
 
 RDEPEND="
+	app-arch/brotli
 	app-arch/bzip2
 	dev-libs/libdivsufsort
 "
