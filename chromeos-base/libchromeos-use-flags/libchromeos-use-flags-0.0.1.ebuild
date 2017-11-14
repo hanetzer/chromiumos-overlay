@@ -28,6 +28,7 @@ IUSE="
 	caroline
 	cheets
 	cfm_enabled_device
+	compupdates
 	cros-debug
 	disable_flash_hw_video_decode
 	disable_low_latency_audio
