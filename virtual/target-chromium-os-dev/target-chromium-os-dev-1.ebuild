@@ -103,6 +103,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/diffutils
 	sys-apps/file
 	sys-apps/findutils
+	sys-apps/gawk
 	sys-apps/i2c-tools
 	sys-apps/iotools
 	sys-apps/kbd
