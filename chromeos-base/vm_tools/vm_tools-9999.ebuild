@@ -26,7 +26,10 @@ RDEPEND="
 	kvm_host? ( chromeos-base/libbrillo )
 	!kvm_host? ( !!sys-apps/upstart )
 "
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	>=sys-kernel/linux-headers-4.4-r10
+"
 
 src_install() {
 	if use kvm_host; then
