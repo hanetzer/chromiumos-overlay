@@ -111,6 +111,7 @@ CONFIG_FRAGMENTS=(
 	ca0132
 	cifs
 	cros_ec_mec
+	devdebug
 	dm_snapshot
 	dwc2_dual_role
 	dyndebug
@@ -202,6 +203,13 @@ cros_ec_mec_desc="LPC Support for Microchip Embedded Controller"
 cros_ec_mec_config="
 CONFIG_MFD_CROS_EC_LPC_MEC=y
 CONFIG_CROS_EC_LPC_MEC=y
+"
+
+# devdebug configuration options should impose no or little runtime
+# overhead while providing useful information for developers.
+devdebug_desc="Miscellaneous developer debugging options"
+devdebug_config="
+CONFIG_BLK_DEBUG_FS=y
 "
 
 dm_snapshot_desc="Snapshot device mapper target"
