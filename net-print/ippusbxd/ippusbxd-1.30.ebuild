@@ -21,6 +21,10 @@ DEPEND="
 
 S="${WORKDIR}/${P}/src"
 
+PATCHES=(
+	"${FILESDIR}/unix-socket.patch"
+)
+
 src_install() {
 	dobin "${BUILD_DIR}/ippusbxd"
 }

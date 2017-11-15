@@ -1,0 +1,790 @@
+# Adds support for unix sockets to the ippusbxd program. Ippusbxd is used for
+# ipp-over-usb printing, but the released version only supports network sockets.
+# Support for unix domain sockets has been added so that ipp-over-usb printing
+# on Chrome OS will be more secure by settings the correct file permissions on
+# the sockets used for communication during printing.
+#
+# Since this change required some Chrome OS specific changes in order for it to
+# work properly, the author has decided that they would rather not upstream any
+# of these changes.
+#
+# Here is a link to the pull request from the original patch:
+# https://github.com/tillkamppeter/ippusbxd/pull/12
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index e6809b5..b59f3da 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -37,6 +37,7 @@ usb.c
+ logging.c
+ options.c
+ dnssd.c
++uds.c
+ )
+ target_link_libraries(ippusbxd ${CMAKE_THREAD_LIBS_INIT})
+ target_link_libraries(ippusbxd ${LIBUSB_LIBRARIES})
+diff --git a/src/http.c b/src/http.c
+index a2c897b..f49054a 100644
+--- a/src/http.c
++++ b/src/http.c
+@@ -25,7 +25,9 @@
+ #include "http.h"
+ #include "logging.h"
+ 
+-#define BUFFER_STEP (1 << 12)
++// Changing maximum buffer size to 65535 as some printers will send larger
++// packets than expected which can result in a buffer overflow.
++#define BUFFER_STEP (1 << 16)
+ 
+ struct http_message_t *http_message_new()
+ {
+diff --git a/src/ippusbxd.c b/src/ippusbxd.c
+index 580e42d..d1d4f4c 100644
+--- a/src/ippusbxd.c
++++ b/src/ippusbxd.c
+@@ -19,6 +19,7 @@
+ #include <string.h>
+ #include <signal.h>
+ 
++#include <sys/time.h>
+ #include <unistd.h>
+ #include <getopt.h>
+ #include <pthread.h>
+@@ -29,9 +30,11 @@
+ #include "tcp.h"
+ #include "usb.h"
+ #include "dnssd.h"
++#include "uds.h"
+ 
+ struct service_thread_param {
+   struct tcp_conn_t *tcp;
++  struct uds_conn_t *uds;
+   struct usb_sock_t *usb_sock;
+   pthread_t thread_handle;
+   int thread_num;
+@@ -41,6 +44,8 @@ static pthread_mutex_t thread_register_mutex;
+ static struct service_thread_param **service_threads = NULL;
+ static int num_service_threads = 0;
+ 
++static struct timeval start_time;
++
+ static void sigterm_handler(int sig)
+ {
+   /* Flag that we should stop and return... */
+@@ -129,6 +134,37 @@ cleanup_handler(void *arg_void)
+   pthread_mutex_unlock(&thread_register_mutex);
+ }
+ 
++static void check_timeout(void)
++{
++  if (num_service_threads == 0 && !g_options.measuring_timeout) {
++    if (gettimeofday(&start_time, NULL) < 0) {
++      ERR("Failed to get time");
++      g_options.terminate = 1;
++      return;
++    }
++    g_options.measuring_timeout = 1;
++  } else if (num_service_threads > 0) {
++    g_options.measuring_timeout = 0;
++  }
++
++  if (g_options.measuring_timeout) {
++    struct timeval current_time;
++    if (gettimeofday(&current_time, NULL)) {
++      ERR("Failed to get time");
++      g_options.terminate = 1;
++      return;
++    }
++
++    time_t seconds = current_time.tv_sec - start_time.tv_sec;
++
++    NOTE("Elapsed time: %lld seconds", (long long)seconds);
++    if (seconds > 10) {
++      NOTE("Timeout has been reached - shutting down");
++      g_options.terminate = 1;
++    }
++  }
++}
++
+ static void *service_connection(void *arg_void)
+ {
+   struct service_thread_param *arg =
+@@ -151,7 +187,9 @@ static void *service_connection(void *arg_void)
+   /* classify priority */
+   struct usb_conn_t *usb = NULL;
+   int usb_failed = 0;
+-  while (!arg->tcp->is_closed && usb_failed == 0 && !g_options.terminate) {
++  while (((g_options.unix_socket_mode && !arg->uds->is_closed) ||
++          (!g_options.unix_socket_mode && !arg->tcp->is_closed)) &&
++         usb_failed == 0 && !g_options.terminate) {
+     struct http_message_t *server_msg = NULL;
+     struct http_message_t *client_msg = NULL;
+ 
+@@ -166,17 +204,22 @@ static void *service_connection(void *arg_void)
+ 
+     while (!client_msg->is_completed && !g_options.terminate) {
+       struct http_packet_t *pkt;
+-      pkt = tcp_packet_get(arg->tcp, client_msg);
++
++      pkt = g_options.unix_socket_mode ? uds_packet_get(arg->uds, client_msg)
++                                       : tcp_packet_get(arg->tcp, client_msg);
++
+       if (pkt == NULL) {
+-	if (arg->tcp->is_closed) {
+-	  NOTE("Thread #%d: M %p: Client closed connection",
+-	       thread_num, client_msg);
+-	  goto cleanup_subconn;
+-	}
+-	ERR("Thread #%d: M %p: Got null packet from tcp",
+-	    thread_num, client_msg);
+-	goto cleanup_subconn;
++        if ((g_options.unix_socket_mode && arg->uds->is_closed) ||
++            (!g_options.unix_socket_mode && arg->tcp->is_closed)) {
++          NOTE("Thread #%d: M %p: Client closed connection", thread_num,
++               client_msg);
++          goto cleanup_subconn;
++        }
++        ERR("Thread #%d: M %p: Got null packet from %s", thread_num,
++            client_msg, g_options.unix_socket_mode ? "uds" : "tcp");
++        goto cleanup_subconn;
+       }
++
+       if (usb == NULL && arg->usb_sock != NULL) {
+ 	usb = usb_conn_acquire(arg->usb_sock);
+ 	if (usb == NULL) {
+@@ -195,8 +238,9 @@ static void *service_connection(void *arg_void)
+       if (g_options.terminate)
+ 	goto cleanup_subconn;
+ 
+-      NOTE("Thread #%d: M %p P %p: Pkt from tcp (buffer size: %d)\n===\n%s===",
++      NOTE("Thread #%d: M %p P %p: Pkt from %s (buffer size: %d)\n===\n%s===",
+ 	   thread_num, client_msg, pkt,
++           g_options.unix_socket_mode ? "uds" : "tcp",
+ 	   pkt->filled_size,
+ 	   hexdump(pkt->buffer, (int)pkt->filled_size));
+       /* In no-printer mode we simply ignore passing the
+@@ -263,7 +307,10 @@ static void *service_connection(void *arg_void)
+ 	/* End the TCP connection, so that a
+ 	   web browser does not wait for more data */
+ 	server_msg->is_completed = 1;
+-	arg->tcp->is_closed = 1;
++        if (g_options.unix_socket_mode)
++          arg->uds->is_closed = 1;
++        else
++          arg->tcp->is_closed = 1;
+       }
+ 
+       if (g_options.terminate)
+@@ -272,12 +319,14 @@ static void *service_connection(void *arg_void)
+       NOTE("Thread #%d: M %p P %p: Pkt from usb (buffer size: %d)\n===\n%s===",
+ 	   thread_num, server_msg, pkt, pkt->filled_size,
+ 	   hexdump(pkt->buffer, (int)pkt->filled_size));
+-      if (tcp_packet_send(arg->tcp, pkt) != 0) {
+-	ERR("Thread #%d: M %p P %p: Unable to send client package via TCP",
+-	    thread_num,
+-	    client_msg, pkt);
+-	packet_free(pkt);
+-	goto cleanup_subconn;
++
++      if ((g_options.unix_socket_mode && uds_packet_send(arg->uds, pkt) != 0) ||
++          (!g_options.unix_socket_mode && tcp_packet_send(arg->tcp, pkt)) != 0) {
++        ERR("Thread #%d: M %p P %p: Unable to send client package via %s",
++            thread_num, client_msg, pkt,
++            g_options.unix_socket_mode ? "uds" : "tcp");
++        packet_free(pkt);
++        goto cleanup_subconn;
+       }
+       if (usb != NULL)
+ 	NOTE("Thread #%d: M %p P %p: Interface #%d: Server pkt done",
+@@ -297,9 +346,11 @@ static void *service_connection(void *arg_void)
+ 	   thread_num, server_msg);
+ 
+   cleanup_subconn:
+-    if (usb != NULL && (arg->tcp->is_closed || usb_failed == 1)) {
+-      NOTE("Thread #%d: M %p: Interface #%d: releasing usb conn",
+-	   thread_num, server_msg, usb->interface_index);
++    if (usb != NULL && ((g_options.unix_socket_mode && arg->uds->is_closed) ||
++                        (!g_options.unix_socket_mode && arg->tcp->is_closed) ||
++                        usb_failed == 1)) {
++      NOTE("Thread #%d: M %p: Interface #%d: releasing usb conn", thread_num,
++           server_msg, usb->interface_index);
+       usb_conn_release(usb);
+       usb = NULL;
+     }
+@@ -311,7 +362,10 @@ static void *service_connection(void *arg_void)
+ 
+   NOTE("Thread #%d: Closing, %s", thread_num,
+        g_options.terminate ? "shutdown requested" : "communication thread terminated");
+-  tcp_conn_close(arg->tcp);
++  if (g_options.unix_socket_mode)
++    uds_conn_close(arg->uds);
++  else
++    tcp_conn_close(arg->tcp);
+   free(arg);
+ 
+   /* Execute clean-up handler */
+@@ -320,6 +374,31 @@ static void *service_connection(void *arg_void)
+   pthread_exit(NULL);
+ }
+ 
++static uint16_t open_tcp_socket(void)
++{
++  uint16_t desired_port = g_options.desired_port;
++  g_options.tcp_socket = NULL;
++  g_options.tcp6_socket = NULL;
++
++  for (;;) {
++    g_options.tcp_socket = tcp_open(desired_port, g_options.interface);
++    g_options.tcp6_socket = tcp6_open(desired_port, g_options.interface);
++    if (g_options.tcp_socket || g_options.tcp6_socket ||
++        g_options.only_desired_port)
++      break;
++    /* Search for a free port. */
++    desired_port ++;
++    /* We failed with 0 as port number or we reached the max port number. */
++    if (desired_port == 1 || desired_port == 0)
++      /* IANA recommendation of 49152 to 65535 for ephemeral ports. */
++      desired_port = 49152;
++    NOTE("Access to desired port failed, trying alternative port %d",
++         desired_port);
++  }
++
++  return desired_port;
++}
++
+ static void start_daemon()
+ {
+   /* Capture USB device if not in no-printer mode */
+@@ -332,47 +411,39 @@ static void start_daemon()
+     usb_sock = usb_open();
+     if (usb_sock == NULL)
+       goto cleanup_usb;
+-  } else
++  } else {
+     usb_sock = NULL;
+-
+-  /* Capture a socket */
+-  uint16_t desired_port = g_options.desired_port;
+-  g_options.tcp_socket = NULL;
+-  g_options.tcp6_socket = NULL;
+-  for (;;) {
+-    g_options.tcp_socket = tcp_open(desired_port, g_options.interface);
+-    g_options.tcp6_socket = tcp6_open(desired_port, g_options.interface);
+-    if (g_options.tcp_socket || g_options.tcp6_socket || g_options.only_desired_port)
+-      break;
+-    /* Search for a free port */
+-    desired_port ++;
+-    /* We failed with 0 as port number or we reached the max
+-       port number */
+-    if (desired_port == 1 || desired_port == 0)
+-      /* IANA recommendation of 49152 to 65535 for ephemeral
+-	 ports
+-	 https://en.wikipedia.org/wiki/Ephemeral_port */
+-      desired_port = 49152;
+-    NOTE("Access to desired port failed, trying alternative port %d", desired_port);
+   }
+-  if (g_options.tcp_socket == NULL && g_options.tcp6_socket == NULL)
+-    goto cleanup_tcp;
+ 
+-  if (g_options.tcp_socket)
+-    g_options.real_port = tcp_port_number_get(g_options.tcp_socket);
+-  else
+-    g_options.real_port = tcp_port_number_get(g_options.tcp6_socket);
+-  if (desired_port != 0 && g_options.only_desired_port == 1 &&
+-      desired_port != g_options.real_port) {
+-    ERR("Received port number did not match requested port number."
+-	" The requested port number may be too high.");
+-    goto cleanup_tcp;
+-  }
+-  printf("%u|", g_options.real_port);
+-  fflush(stdout);
++  if (g_options.unix_socket_mode) {
++    g_options.uds_socket = uds_open(g_options.unix_socket_path);
++    if (g_options.uds_socket == NULL)
++      goto cleanup_connections;
++    NOTE("Opened unix socket %s", g_options.unix_socket_path);
++  } else {
++    /* Capture a socket */
++    uint16_t desired_port = open_tcp_socket();
++    if (g_options.tcp_socket == NULL && g_options.tcp6_socket == NULL)
++      goto cleanup_connections;
++
++    if (g_options.tcp_socket)
++      g_options.real_port = tcp_port_number_get(g_options.tcp_socket);
++    else
++      g_options.real_port = tcp_port_number_get(g_options.tcp6_socket);
++
++    if (desired_port != 0 && g_options.only_desired_port == 1 &&
++        desired_port != g_options.real_port) {
++      ERR("Received port number did not match requested port number."
++          " The requested port number may be too high.");
++      goto cleanup_connections;
++    }
++    printf("%u|", g_options.real_port);
++    fflush(stdout);
+ 
+-  NOTE("Port: %d, IPv4 %savailable, IPv6 %savailable",
+-       g_options.real_port, g_options.tcp_socket ? "" : "not ", g_options.tcp6_socket ? "" : "not ");
++    NOTE("Port: %d, IPv4 %savailable, IPv6 %savailable", g_options.real_port,
++         g_options.tcp_socket ? "" : "not ",
++         g_options.tcp6_socket ? "" : "not ");
++  }
+ 
+   /* Lose connection to caller */
+   uint16_t pid;
+@@ -413,7 +484,7 @@ static void start_daemon()
+      that cups-browsed and ippfind will discover it */
+   if (usb_sock && g_options.nobroadcast == 0) {
+     if (dnssd_init() == -1)
+-      goto cleanup_tcp;
++      goto cleanup_connections;
+   }
+ 
+   /* Main loop */
+@@ -428,17 +499,33 @@ static void start_daemon()
+       goto cleanup_thread;
+     }
+ 
++    if (g_options.unix_socket_mode) {
++      args->uds = calloc(1, sizeof(*args->uds));
++      if (args->uds == NULL) {
++        ERR("Preparing thread #%d: Failed to allocate space for uds socket", i);
++      }
++    } else {
++      args->tcp = calloc(1, sizeof(*args->tcp));
++      if (args->tcp == NULL) {
++        ERR("Preparing thread #%d: Failed to allocate space for tcp socket", i);
++      }
++    }
++
+     args->thread_num = i;
+     args->usb_sock = usb_sock;
+ 
+-    /* For each request/response round we use the socket (IPv4 or
+-       IPv6) which receives data first */
+-    args->tcp = tcp_conn_select(g_options.tcp_socket, g_options.tcp6_socket);
+-    if (g_options.terminate)
+-      goto cleanup_thread;
+-    if (args->tcp == NULL) {
+-      ERR("Preparing thread #%d: Failed to open tcp connection", i);
+-      goto cleanup_thread;
++    if (g_options.unix_socket_mode) {
++      int poll_status = 0;
++      while (!g_options.terminate && poll_status == 0) {
++        check_timeout();
++        poll_status = uds_connect(g_options.uds_socket, args->uds);
++      }
++      if (g_options.terminate || poll_status < 0)
++        goto cleanup_thread;
++    } else {
++      args->tcp = tcp_conn_select(g_options.tcp_socket, g_options.tcp6_socket);
++      if (g_options.terminate || args->tcp == NULL)
++        goto cleanup_thread;
+     }
+ 
+     pthread_mutex_lock(&thread_register_mutex);
+@@ -463,12 +550,14 @@ static void start_daemon()
+     if (args != NULL) {
+       if (args->tcp != NULL)
+ 	tcp_conn_close(args->tcp);
++      if (args->uds != NULL)
++        uds_conn_close(args->uds);
+       free(args);
+     }
+     break;
+   }
+ 
+- cleanup_tcp:
++ cleanup_connections:
+   /* Stop DNS-SD advertising of the printer */
+   if (g_options.dnssd_data != NULL)
+     dnssd_shutdown();
+@@ -494,6 +583,10 @@ static void start_daemon()
+   if (g_options.tcp6_socket!= NULL)
+     tcp_close(g_options.tcp6_socket);
+ 
++  /* UDS clean-up */
++  if (g_options.uds_socket != NULL)
++    uds_close(g_options.uds_socket);
++
+  cleanup_usb:
+   /* USB clean-up and final reset of the printer */
+   if (usb_sock != NULL)
+@@ -531,6 +624,7 @@ int main(int argc, char *argv[])
+     {"from-port",    required_argument, 0,  'P' },
+     {"only-port",    required_argument, 0,  'p' },
+     {"interface",    required_argument, 0,  'i' },
++    {"uds-path",     required_argument, 0,  'U' },
+     {"logging",      no_argument,       0,  'l' },
+     {"debug",        no_argument,       0,  'd' },
+     {"verbose",      no_argument,       0,  'q' },
+@@ -548,6 +642,7 @@ int main(int argc, char *argv[])
+   g_options.product_id = 0;
+   g_options.bus = 0;
+   g_options.device = 0;
++  g_options.measuring_timeout = 0;
+ 
+   while ((c = getopt_long(argc, argv, "qnhdp:P:i:s:lv:m:NB",
+ 			  long_options, &option_index)) != -1) {
+@@ -628,6 +723,10 @@ int main(int argc, char *argv[])
+     case 'B':
+       g_options.nobroadcast = 1;
+       break;
++    case 'U':
++      g_options.unix_socket_mode = 1;
++      g_options.unix_socket_path = strdup(optarg);
++      break;
+     }
+   }
+ 
+diff --git a/src/logging.h b/src/logging.h
+index 1f584ca..d6a2db5 100644
+--- a/src/logging.h
++++ b/src/logging.h
+@@ -16,6 +16,7 @@
+ #include <pthread.h> /* For pthread_self() */
+ #include "options.h"
+ #include "dnssd.h"
++#include "uds.h"
+ #define TID() (pthread_self())
+ 
+ enum log_level {
+@@ -49,7 +50,13 @@ enum log_level {
+ #define CONF_1(msg) BASE_LOG(LOGGING_CONFORMANCE, "<%d>Standard Conformance Failure: " msg "\n", TID())
+ #define CONF_2(msg, ...) BASE_LOG(LOGGING_CONFORMANCE, "<%d>Standard Conformance Failure: " msg "\n", TID(), __VA_ARGS__)
+ 
+-#define ERR_AND_EXIT(...) do { ERR(__VA_ARGS__); if (g_options.dnssd_data != NULL) dnssd_shutdown(g_options.dnssd_data); exit(-1);} while (0)
++#define ERR_AND_EXIT(...)                                                   \
++  do {                                                                      \
++    ERR(__VA_ARGS__);                                                       \
++    if (g_options.dnssd_data != NULL) dnssd_shutdown(g_options.dnssd_data); \
++    if (g_options.uds_socket != NULL) uds_close(g_options.uds_socket);      \
++    exit(-1);                                                               \
++  } while (0)
+ 
+ void BASE_LOG(enum log_level, const char *, ...);
+ char* hexdump (void *addr, int len);
+diff --git a/src/options.h b/src/options.h
+index 2de31a2..cc7b93e 100644
+--- a/src/options.h
++++ b/src/options.h
+@@ -29,6 +29,7 @@ struct options {
+   int only_desired_port;
+   uint16_t real_port;
+   char *interface;
++  char *unix_socket_path;
+   enum log_target log_destination;
+ 
+   /* Behavior */
+@@ -37,6 +38,7 @@ struct options {
+   int nofork_mode;
+   int noprinter_mode;
+   int nobroadcast;
++  int unix_socket_mode;
+ 
+   /* Printer identity */
+   unsigned char *serial_num;
+@@ -48,10 +50,12 @@ struct options {
+ 
+   /* Global variables */
+   int terminate;
++  int measuring_timeout;
+   dnssd_t *dnssd_data;
+   pthread_t usb_event_thread_handle;
+   struct tcp_sock_t *tcp_socket;
+   struct tcp_sock_t *tcp6_socket;
++  struct uds_sock_t *uds_socket;
+ };
+ 
+ extern struct options g_options;
+diff --git a/src/uds.c b/src/uds.c
+new file mode 100644
+index 0000000..b146b48
+--- /dev/null
++++ b/src/uds.c
+@@ -0,0 +1,219 @@
++// Copyright 2017 The Chromium OS Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include <errno.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++#include "http.h"
++#include "logging.h"
++#include "options.h"
++#include "uds.h"
++
++struct uds_sock_t *uds_open(const char *path)
++{
++  struct uds_sock_t *sock = calloc(1, sizeof(*sock));
++  if (sock == NULL) {
++    ERR("UDS: Allocating memory for socket failed");
++    goto error;
++  }
++
++  if ((sock->fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0)) < 0) {
++    ERR("UDS: Opening socket failed");
++    goto error;
++  }
++
++  int val = 1;
++  if (setsockopt(sock->fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) < 0) {
++    ERR("UDS: Setting socket options failed");
++    goto error;
++  }
++
++  // Configure socket parameters.
++  struct sockaddr_un addr;
++  memset(&addr, 0, sizeof(addr));
++
++  addr.sun_family = AF_UNIX;
++
++  // Check that the length of the socket path is not too long. The maximum size
++  // of a path in a sockaddr_un is 108 characters.
++  if (strlen(path) >= sizeof(addr.sun_path)) {
++    ERR("UDS: Provided socket path %s is too long", path);
++    goto error;
++  }
++
++  strcpy(addr.sun_path, path);
++
++  NOTE("UDS: Binding to %s", path);
++
++  if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr))) {
++    ERR("UDS: Binding to socket failed - %s", strerror(errno));
++    goto error;
++  }
++
++  if (listen(sock->fd, UDS_MAX_PENDING_CONNS)) {
++    ERR("UDS: Listen on socket failed");
++    goto error;
++  }
++
++  sock->addr = addr;
++
++  return sock;
++
++error:
++  if (sock != NULL) {
++    if (sock->fd != -1) {
++      close(sock->fd);
++      unlink(sock->addr.sun_path);
++    }
++    free(sock);
++  }
++  return NULL;
++}
++
++void uds_close(struct uds_sock_t *sock)
++{
++  close(sock->fd);
++  unlink(sock->addr.sun_path);
++  free(sock);
++}
++
++int uds_connect(struct uds_sock_t *sock, struct uds_conn_t *conn)
++{
++  if (sock == NULL) {
++    ERR("UDS: No valid unix socket provided");
++    return -1;
++  }
++
++  struct pollfd poll_fd;
++  poll_fd.fd = sock->fd;
++  poll_fd.events = POLLIN;
++  int timeout = 1000;
++
++  int retval = poll(&poll_fd, 1, timeout);
++
++  if (g_options.terminate)
++    return -1;
++
++  if (retval < 0) {
++    ERR("Something went wrong when polling the uds socket");
++    return -1;
++  }
++
++  if (retval == 0) {
++    return 0;
++  }
++
++  if ((conn->fd = accept(sock->fd, NULL, NULL)) < 0) {
++    ERR("Failed to connect to uds socket");
++    return -1;
++  }
++
++  NOTE("Successfully connected to socket");
++
++  return 1;
++}
++
++void uds_conn_close(struct uds_conn_t *conn)
++{
++  shutdown(conn->fd, SHUT_RDWR);
++  close(conn->fd);
++  free(conn);
++}
++
++struct http_packet_t *uds_packet_get(struct uds_conn_t *conn,
++                                     struct http_message_t *msg)
++{
++  struct http_packet_t *pkt = packet_new(msg);
++  if (pkt == NULL) {
++    ERR("UDS: Allocating memory for incoming uds message failed");
++    goto error;
++  }
++
++  size_t want_size = packet_pending_bytes(pkt);
++  if (want_size == 0) {
++    NOTE("UDS: Got %zu from spare buffer", pkt->filled_size);
++    return pkt;
++  }
++
++  struct timeval tv;
++  tv.tv_sec = 3;
++  tv.tv_usec = 0;
++  if (setsockopt(conn->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
++    ERR("UDS: Setting options for connection socket failed");
++    goto error;
++  }
++
++  while (want_size != 0 && !msg->is_completed && !g_options.terminate) {
++    NOTE("UDS: Getting %zu bytes", want_size);
++    uint8_t *subbuffer = pkt->buffer + pkt->filled_size;
++    ssize_t gotten_size = recv(conn->fd, subbuffer, want_size, 0);
++
++    if (gotten_size < 0) {
++      int errno_saved = errno;
++      ERR("UDS: recv failed with err %d:%s", errno_saved,
++          strerror(errno_saved));
++      conn->is_closed = 1;
++      goto error;
++    }
++
++    NOTE("UDS: Got %zd bytes", gotten_size);
++    if (gotten_size == 0) {
++      conn->is_closed = 1;
++      if (pkt->filled_size == 0) {
++        // Client closed connection.
++        goto error;
++      } else {
++        break;
++      }
++    }
++
++    packet_mark_received(pkt, (unsigned)gotten_size);
++    want_size = packet_pending_bytes(pkt);
++    NOTE("UDS: Want %zu more bytes; Message %scompleted", want_size,
++         msg->is_completed ? "" : "not ");
++  }
++
++  NOTE("UDS: Received %zu bytes", pkt->filled_size);
++  return pkt;
++
++error:
++  if (pkt != NULL) packet_free(pkt);
++  return NULL;
++}
++
++int uds_packet_send(struct uds_conn_t *conn, struct http_packet_t *pkt)
++{
++  size_t remaining = pkt->filled_size;
++  size_t total = 0;
++
++  while (remaining > 0 && !g_options.terminate) {
++    ssize_t sent = send(conn->fd, pkt->buffer + total, remaining, MSG_NOSIGNAL);
++
++    if (sent < 0) {
++      if (errno == EPIPE) {
++        conn->is_closed = 1;
++        return 0;
++      }
++      int errno_saved = errno;
++      ERR("UDS: send failed with error %d:%s", errno_saved,
++          strerror(errno_saved));
++      return -1;
++    }
++
++    total += sent;
++    if (sent >= remaining)
++      remaining = 0;
++    else
++      remaining -= sent;
++  }
++
++  NOTE("UDS: sent %zu bytes", total);
++  return 0;
++}
+diff --git a/src/uds.h b/src/uds.h
+new file mode 100644
+index 0000000..15be0c6
+--- /dev/null
++++ b/src/uds.h
+@@ -0,0 +1,45 @@
++// Copyright 2017 The Chromium OS Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#pragma once
++#include <stdint.h>
++
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <sys/un.h>
++
++#include "http.h"
++
++// In order for CUPS to determine whether or not the socket is ready it first
++// attempts to open a dummy connection. By the time CUPS attempts to establish
++// the real connection the dummy connection has still not been fully removed by
++// the system, so we must allow for some pending connections.
++#define UDS_MAX_PENDING_CONNS 4
++
++struct uds_sock_t {
++  int fd;
++  struct sockaddr_un addr;
++  socklen_t info_size;
++};
++
++struct uds_conn_t {
++  int fd;
++  int is_closed;
++};
++
++struct uds_sock_t *uds_open(const char *path);
++void uds_close(struct uds_sock_t *sock);
++
++// Polls the unix socket described by |sock| to see if there is data to be read.
++// If there is then it opens a new connection and stores it in |conn|. This
++// function returns 1 if the connection opens sucessfuly, 0 if the socket is not
++// currently ready, and -1 if there was an error.
++int uds_connect(struct uds_sock_t *sock, struct uds_conn_t *conn);
++
++void uds_conn_close(struct uds_conn_t *conn);
++
++struct http_packet_t *uds_packet_get(struct uds_conn_t *conn,
++                                     struct http_message_t *msg);
++
++int uds_packet_send(struct uds_conn_t *conn, struct http_packet_t *pkt);
+diff --git a/src/usb.c b/src/usb.c
+index f746039..0c0a09d 100644
+--- a/src/usb.c
++++ b/src/usb.c
+@@ -498,6 +498,10 @@ static int LIBUSB_CALL usb_exit_on_unplug(libusb_context *context,
+     if (g_options.tcp6_socket!= NULL)
+       tcp_close(g_options.tcp6_socket);
+ 
++    /* UDS clean-up */
++    if (g_options.uds_socket != NULL)
++      uds_close(g_options.uds_socket);
++
+     exit(0);
+   }
+ 
