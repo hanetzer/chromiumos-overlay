@@ -111,7 +111,6 @@ CONFIG_FRAGMENTS=(
 	ca0132
 	cifs
 	cros_ec_mec
-	debug
 	dm_snapshot
 	dwc2_dual_role
 	dyndebug
@@ -140,6 +139,7 @@ CONFIG_FRAGMENTS=(
 	pcserial
 	plan9
 	ppp
+	pvrdebug
 	qmi
 	realtekpstor
 	recovery_ramfs
@@ -275,11 +275,6 @@ CONFIG_TCM_FILEIO=m
 CONFIG_TCM_PSCSI=m
 "
 
-debug_desc="Miscellaneous debug extensions"
-debug_config="
-CONFIG_DRM_POWERVR_ROGUE_DEBUG=y
-"
-
 kasan_desc="Enable KASAN"
 kasan_config="
 CONFIG_KASAN=y
@@ -335,6 +330,11 @@ CONFIG_NFC_PN533=m
 CONFIG_NFC_PN544=m
 CONFIG_NFC_PN544_I2C=m
 CONFIG_NFC_SHDLC=y
+"
+
+pvrdebug_desc="PowerVR Rogue debugging"
+pvrdebug_config="
+CONFIG_DRM_POWERVR_ROGUE_DEBUG=y
 "
 
 tpm_desc="TPM support"
