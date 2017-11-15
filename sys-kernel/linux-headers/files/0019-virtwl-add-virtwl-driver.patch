@@ -1,4 +1,4 @@
-From b4dc03af9a8a63fc9f12eb5c321523d227502c59 Mon Sep 17 00:00:00 2001
+From c2a7a92356bf970a408aeacb798a0482f1ebfb46 Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@google.com>
 Date: Mon, 14 Aug 2017 17:16:55 -0700
 Subject: [PATCH] virtwl: add virtwl driver
@@ -15,8 +15,8 @@ Reviewed-by: Zach Reizner <zachr@chromium.org>
  include/uapi/linux/Kbuild       |  2 +
  include/uapi/linux/virtio_ids.h |  1 +
  include/uapi/linux/virtio_wl.h  | 86 +++++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/virtwl.h     | 45 +++++++++++++++++++++
- 4 files changed, 134 insertions(+)
+ include/uapi/linux/virtwl.h     | 39 +++++++++++++++++++
+ 4 files changed, 128 insertions(+)
  create mode 100644 include/uapi/linux/virtio_wl.h
  create mode 100644 include/uapi/linux/virtwl.h
 
@@ -138,16 +138,17 @@ index 000000000000..b3cdadc0409e
 +#endif /* _LINUX_VIRTIO_WL_H */
 diff --git a/include/uapi/linux/virtwl.h b/include/uapi/linux/virtwl.h
 new file mode 100644
-index 000000000000..7a43ce2639a7
+index 000000000000..e65264a78afd
 --- /dev/null
 +++ b/include/uapi/linux/virtwl.h
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,39 @@
 +#ifndef _LINUX_VIRTWL_H
 +#define _LINUX_VIRTWL_H
 +
 +#include <asm/ioctl.h>
++#include <linux/types.h>
 +
-+#define VIRTWL_SEND_MAX_ALLOCS 16
++#define VIRTWL_SEND_MAX_ALLOCS 28
 +
 +#define VIRTWL_IOCTL_BASE 'w'
 +#define VIRTWL_IO(nr) 		_IO(VIRTWL_IOCTL_BASE,nr)
@@ -156,36 +157,30 @@ index 000000000000..7a43ce2639a7
 +#define VIRTWL_IOWR(nr,type)	_IOWR(VIRTWL_IOCTL_BASE,nr,type)
 +
 +enum virtwl_ioctl_new_type {
-+	VIRTWL_IOCTL_NEW_CTX, // struct virtwl_ioctl_new
-+	VIRTWL_IOCTL_NEW_ALLOC, // struct virtwl_ioctl_new_alloc
++	VIRTWL_IOCTL_NEW_CTX, /* open a new wayland connection context */
++	VIRTWL_IOCTL_NEW_ALLOC, /* create a new virtwl shm allocation */
 +};
 +
 +struct virtwl_ioctl_new {
-+	uint32_t type; // always 0
-+	int fd; // return fd
-+	uint32_t flags; // always 0
-+	size_t size; // only for VIRTWL_IOCTL_NEW_ALLOC
++	__u32 type; /* VIRTWL_IOCTL_NEW_* */
++	int fd; /* return fd */
++	__u32 flags; /* currently always 0 */
++	__u32 size; /* size of allocation if type == VIRTWL_IOCTL_NEW_ALLOC */
 +};
 +
-+struct virtwl_ioctl_send {
++struct virtwl_ioctl_txn {
 +	int fds[VIRTWL_SEND_MAX_ALLOCS];
-+	uint32_t len;
-+	uint8_t data[0];
-+};
-+
-+struct virtwl_ioctl_recv {
-+	int fds[VIRTWL_SEND_MAX_ALLOCS];
-+	uint32_t len;
-+	uint8_t data[0];
++	__u32 len;
++	__u8 data[0];
 +};
 +
 +#define VIRTWL_IOCTL_NEW VIRTWL_IOWR(0x00, struct virtwl_ioctl_new)
-+#define VIRTWL_IOCTL_SEND VIRTWL_IOR(0x01, struct virtwl_ioctl_send)
-+#define VIRTWL_IOCTL_RECV VIRTWL_IOW(0x02, struct virtwl_ioctl_recv)
++#define VIRTWL_IOCTL_SEND VIRTWL_IOR(0x01, struct virtwl_ioctl_txn)
++#define VIRTWL_IOCTL_RECV VIRTWL_IOW(0x02, struct virtwl_ioctl_txn)
 +#define VIRTWL_IOCTL_MAXNR 3
 +
 +
 +#endif /* _LINUX_VIRTWL_H */
-+
 -- 
-2.14.1.581.gf28d330327-goog
+2.13.5
+
