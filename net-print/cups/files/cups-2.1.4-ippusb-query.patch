@@ -1,0 +1,432 @@
+From 2648d4aee3aa7d473fad9b20c4a944cf865e4d80 Mon Sep 17 00:00:00 2001
+From: David Valleau <valleau@chromium.org>
+Date: Wed, 8 Nov 2017 11:22:05 -0800
+Subject: [PATCH] Adding ippusb query path to cups
+
+---
+ backend/ipp.c         |  26 +++++++
+ cups/Makefile         |   6 +-
+ cups/ippusb-private.h |  34 ++++++++
+ cups/ippusb.c         | 211 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ systemv/lpadmin.c     |  57 ++++++++++++--
+ 5 files changed, 327 insertions(+), 7 deletions(-)
+ create mode 100644 cups/ippusb-private.h
+ create mode 100644 cups/ippusb.c
+
+diff --git a/backend/ipp.c b/backend/ipp.c
+index 69970a2..47e5faf 100644
+--- a/backend/ipp.c
++++ b/backend/ipp.c
+@@ -21,6 +21,7 @@
+ 
+ #include "backend-private.h"
+ #include <cups/array-private.h>
++#include <cups/ippusb-private.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <sys/wait.h>
+@@ -666,6 +667,31 @@ main(int  argc,				/* I - Number of command-line args */
+   update_reasons(NULL, "+connecting-to-device");
+   fprintf(stderr, "DEBUG: Looking up \"%s\"...\n", hostname);
+ 
++  // If the scheme is ippusb then a query is sent to the ippusb_manager service
++  // to check if the printer is currently connected and get the name of the
++  // socket used for communication with the printer.
++  if (!strcmp(scheme, "ippusb")) {
++    int sock = open_ippusb_manager_socket();
++    char* response = query_ippusb_manager(sock, hostname);
++
++    close(sock);
++
++    int ret = snprintf(hostname, sizeof(hostname), "/run/ippusb/%s", response);
++    if (ret < 0 || ret >= sizeof(hostname)) {
++      fprintf(stderr, "ERROR: Failed to overwrite hostname");
++      _exit(1);
++    }
++
++    free(response);
++
++    // Change the scheme back to ipp so that communications will be understood
++    // by the printer.
++    strcpy(scheme, "ipp");
++
++    // Wait a maximum of 3 seconds for the socket to be created.
++    wait_for_socket(hostname, 3);
++  }
++
+   while ((addrlist = httpAddrGetList(hostname, AF_UNSPEC, portname)) == NULL)
+   {
+     _cupsLangPrintFilter(stderr, "INFO",
+diff --git a/cups/Makefile b/cups/Makefile
+index 7b65214..b9f1133 100644
+--- a/cups/Makefile
++++ b/cups/Makefile
+@@ -79,7 +79,8 @@ LIBOBJS	=	\
+ 		tls.o \
+ 		transcode.o \
+ 		usersys.o \
+-		util.o
++		util.o \
++		ippusb.o
+ TESTOBJS	= \
+ 		testadmin.o \
+ 		testarray.o \
+@@ -137,7 +138,8 @@ HEADERSPRIV =	\
+ 		raster-private.h \
+ 		snmp-private.h \
+ 		string-private.h \
+-		thread-private.h
++		thread-private.h \
++		ippusb-private.h
+ 
+ 
+ #
+diff --git a/cups/ippusb-private.h b/cups/ippusb-private.h
+new file mode 100644
+index 0000000..3eb890c
+--- /dev/null
++++ b/cups/ippusb-private.h
+@@ -0,0 +1,34 @@
++// Copyright 2017 The Chromium OS Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef _CUPS_IPPUSB_H_
++#define _CUPS_IPPUSB_H_
++
++// Attempts to open the socket used to communicate with ippusb_manager, and if
++// successful returns a file descriptor of the socket.
++int open_ippusb_manager_socket(void);
++
++// Sends the provided message through the stream socket referred to by |fd|.
++void send_message(int fd, const char* msg);
++
++// Attempts to receive a message from the stream socket referred to by |fd|.
++char* get_message(int fd);
++
++// Sends a query message to the ippusb_manager through the socket |fd|, and
++// returns the response from ippusb_manager.
++char* query_ippusb_manager(int fd, const char* msg);
++
++// Verifies that the response string is not null and does not contain any
++// invalid characters.
++int valid_response(const char* response);
++
++// Returns a new a new uri based on the given |uri| that replaces the scheme
++// prefix with the given |scheme|.
++char* change_scheme(const char* uri, const char* scheme);
++
++// Waits for a maximum time of |timeout| until the socket at |filename| is ready
++// to accept connections.
++void wait_for_socket(const char* filename, long timeout);
++
++#endif /* _CUPS_IPPUSB_H_ */
+diff --git a/cups/ippusb.c b/cups/ippusb.c
+new file mode 100644
+index 0000000..380f666
+--- /dev/null
++++ b/cups/ippusb.c
+@@ -0,0 +1,211 @@
++// Copyright 2017 The Chromium OS Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "ippusb-private.h"
++#include "language-private.h"
++
++#include <ctype.h>
++#include <errno.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++#include <strings.h>
++#include <time.h>
++
++#include <poll.h>
++#include <sys/socket.h>
++#include <sys/types.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++int open_ippusb_manager_socket(void) {
++  int fd;
++
++  _cupsLangPrintf(stderr, _("Attempting to open socket"));
++
++  fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
++  if (fd < 0) {
++    _cupsLangPrintf(stderr, _("Failed to open stream socket: %s"),
++                    strerror(errno));
++    _exit(1);
++  }
++
++  _cupsLangPrintf(stderr, _("Attempting to connect to socket"));
++
++  struct sockaddr_un addr;
++  memset(&addr, 0, sizeof(addr));
++  addr.sun_family = AF_UNIX;
++  strcpy(addr.sun_path, "/run/ippusb/ippusb_manager.sock");
++
++  if (connect(fd, &addr, sizeof(struct sockaddr_un)) != 0) {
++    close(fd);
++    _cupsLangPrintf(stderr, _("Failed to connect to socket: %s"),
++                    strerror(errno));
++    _exit(1);
++  }
++
++  return fd;
++}
++
++// Writes a message to the socket described by |fd| as a stream of bytes. The
++// first byte represents the length of the message, and the following bytes are
++// filled using |msg|.
++void send_message(int fd, const char* msg) {
++  size_t remaining = strlen(msg) + 1;
++  if (remaining > UINT8_MAX) {
++    _cupsLangPrintf(stderr, _("The message to be sent is too large"));
++    _exit(1);
++  }
++
++  // Send the length of the message.
++  uint8_t message_length = (uint8_t) remaining;
++  if (send(fd, &message_length, 1, 0) < 0) {
++    _cupsLangPrintf(stderr, _("Failed to send message length"));
++    _exit(1);
++  }
++
++  size_t total = 0;
++
++  while (remaining > 0) {
++    ssize_t sent = send(fd, msg + total, remaining, MSG_NOSIGNAL);
++
++    if (sent < 0) {
++      _cupsLangPrintf(stderr, _("Failed to send message"));
++      _exit(1);
++    }
++
++    total += sent;
++    if (sent >= remaining)
++      remaining = 0;
++    else
++      remaining -= sent;
++  }
++}
++
++char* get_message(int fd) {
++  // Poll the file descriptor first before trying to read. In the event that
++  // ippusb_manager exited unexpectedly before responding on the socket we want
++  // to be able to exit before blocking on read.
++  struct pollfd poll_fd;
++  poll_fd.fd = fd;
++  poll_fd.events = POLLIN;
++  int timeout = 1000;
++  if (poll(&poll_fd, 1, timeout) <= 0) {
++    _cupsLangPrintf(stderr, _("Failed to receive response"));
++    _exit(1);
++  }
++
++  // Get the first byte out of the stream which contains the length of the
++  // message.
++  uint8_t message_length;
++  if (recv(fd, &message_length, 1, 0) < 0) {
++    _cupsLangPrintf(stderr, _("Failed to get message length"));
++    _exit(1);
++  }
++
++  char* buf = (char*) malloc(sizeof(*buf) * message_length);
++  ssize_t gotten_size;
++  size_t total_size = 0;
++
++  while (total_size < message_length) {
++    gotten_size =
++        recv(fd, buf + total_size, message_length - total_size, 0);
++
++    if (gotten_size < 0) {
++      _cupsLangPrintf(stderr, _("Failed to receive message"));
++      _exit(1);
++    }
++
++    total_size += gotten_size;
++  }
++
++  return buf;
++}
++
++char* query_ippusb_manager(int fd, const char* msg) {
++  _cupsLangPrintf(stderr, _("Attempting to write to socket"));
++  send_message(fd, msg);
++
++  _cupsLangPrintf(stderr, _("Attempting to read response"));
++  char* response = get_message(fd);
++  _cupsLangPrintf(stderr, _("Finished reading response"));
++
++  if (!valid_response(response)) {
++    _cupsLangPrintf(stderr, _("Invalid response"));
++    _exit(1);
++  }
++
++  if (!strcasecmp(response, "device not found")) {
++    _cupsLangPrintf(stderr, _("Device not found"));
++    _exit(1);
++  }
++
++  return response;
++}
++
++int valid_response(const char* response) {
++  if (!response)
++    return 0;
++
++  const char* p = response;
++  while (*p) {
++    if (!isalpha(*p) && !isdigit(*p) && *p != '_' && *p != '.' && *p != ' ')
++      return 0;
++    ++p;
++  }
++
++  return 1;
++}
++
++char* change_scheme(const char* uri, const char* scheme) {
++  char* p = strchr(uri, ':');
++  if (!p)
++    return NULL;
++
++  char* updated_uri;
++  if (asprintf(&updated_uri, "%s%s", scheme, p) == -1)
++    return NULL;
++
++  return updated_uri;
++}
++
++void wait_for_socket(const char* filename, long timeout) {
++  int fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
++  if (fd < 0) {
++    _cupsLangPrintf(stderr, _("Failed to create socket"));
++    _exit(1);
++  }
++
++  struct sockaddr_un addr;
++  memset(&addr, 0, sizeof(addr));
++  addr.sun_family = AF_UNIX;
++  strcpy(addr.sun_path, filename);
++
++  _cupsLangPrintf(stderr, _("Waiting for %s to be ready for connections"),
++                  filename);
++
++  struct timespec start;
++  if (clock_gettime(CLOCK_MONOTONIC, &start) < 0) {
++    _cupsLangPrintf(stderr, _("Failed to get clock time"));
++    _exit(1);
++  }
++
++  while (connect(fd, (struct sockaddr*) &addr, sizeof(addr)) < 0) {
++    struct timespec current;
++    if (clock_gettime(CLOCK_MONOTONIC, &current) < 0) {
++      _cupsLangPrintf(stderr, _("Failed to get clock time"));
++      _exit(1);
++    }
++
++    if (current.tv_sec - start.tv_sec >= timeout) {
++      _cupsLangPrintf(stderr, _("Timed out waiting for socket %s"), filename);
++      _exit(1);
++    }
++    usleep(100);
++  }
++
++  _cupsLangPrintf(stderr, _("%s is now ready for connections"), filename);
++
++  close(fd);
++}
+diff --git a/systemv/lpadmin.c b/systemv/lpadmin.c
+index c181d2b..f0f9e33 100644
+--- a/systemv/lpadmin.c
++++ b/systemv/lpadmin.c
+@@ -20,6 +20,7 @@
+ #define _CUPS_NO_DEPRECATED
+ #define _PPD_DEPRECATED
+ #include <cups/cups-private.h>
++#include <cups/ippusb-private.h>
+ 
+ 
+ /*
+@@ -1217,10 +1218,35 @@ get_printer_ppd(const char *uri,	/* I - Printer URI */
+     return (NULL);
+   }
+ 
+-  http = httpConnect2(host, port, NULL, AF_UNSPEC, !strcmp(scheme, "ipps") ? HTTP_ENCRYPTION_ALWAYS : HTTP_ENCRYPTION_IF_REQUESTED, 1, 30000, NULL);
+-  if (!http)
+-  {
+-    _cupsLangPrintf(stderr, _("%s: Unable to connect to \"%s:%d\": %s"), "lpadmin", host, port, cupsLastErrorString());
++  // If the scheme is ippusb then a query is sent to the ippusb_manager service
++  // to check if the printer is currently connected and get the name of the
++  // socket used for communication with the printer.
++  if (!strcmp(scheme, "ippusb")) {
++    int sock = open_ippusb_manager_socket();
++    char* response = query_ippusb_manager(sock, host);
++    _cupsLangPrintf(stderr, _("lpadmin: received response \"%s\""), response);
++
++    close(sock);
++
++    int ret = snprintf(host, sizeof(host), "/run/ippusb/%s", response);
++    if (ret < 0 || ret >= sizeof(host)) {
++      _cupsLangPrintf(stderr, _("lpadmin: Failed to overwrite host"));
++      _exit(1);
++    }
++
++    free(response);
++
++    // Wait a maximum of 3 seconds for the socket to be created.
++    wait_for_socket(host, 3);
++  }
++
++  http = httpConnect2(host, port, NULL, AF_UNSPEC,
++                      !strcmp(scheme, "ipps") ? HTTP_ENCRYPTION_ALWAYS
++                                              : HTTP_ENCRYPTION_IF_REQUESTED,
++                      1, 30000, NULL);
++  if (!http) {
++    _cupsLangPrintf(stderr, _("%s: Unable to connect to \"%s:%d\": %s"),
++                    "lpadmin", host, port, cupsLastErrorString());
+     return (NULL);
+   }
+ 
+@@ -1229,7 +1255,26 @@ get_printer_ppd(const char *uri,	/* I - Printer URI */
+   */
+ 
+   request = ippNewRequest(IPP_OP_GET_PRINTER_ATTRIBUTES);
+-  ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri", NULL, uri);
++  if (!strcmp(scheme, "ippusb")) {
++    // Change the uri back to use the ipp scheme for communicating with the cups
++    // server and so that communications will be understood by the printer.
++    // We can't simply change the existing uri because we want lpadmin to save
++    // the printer in the system as "ippusb", but need the "ipp" scheme in
++    // |fixed_uri| in order to communicate with the printer.
++    char* fixed_uri = change_scheme(uri, "ipp");
++    if (!fixed_uri) {
++      _cupsLangPrintf(stderr, _("%s: Failed to change uri to %s"), "lpadmin",
++                      "ipp");
++      _exit(1);
++    }
++    ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri", NULL,
++                 fixed_uri);
++    free(fixed_uri);
++  } else {
++    ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri", NULL,
++                 uri);
++  }
++
+   response = cupsDoRequest(http, request, resource);
+ 
+   if (!_ppdCreateFromIPP(buffer, bufsize, response))
+@@ -1357,6 +1402,8 @@ set_printer_options(
+   else
+     request = ippNewRequest(IPP_OP_CUPS_ADD_MODIFY_PRINTER);
+ 
++  _cupsLangPrintf(stderr, _("lpadmin: printer uri %s"), uri);
++
+   ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri", NULL, uri);
+   ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name", NULL, cupsUser());
+ 
+-- 
+2.16.0.rc0.223.g4a4ac83678-goog
+

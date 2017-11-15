@@ -111,6 +111,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.1.4-raise-log-level-for-desired-features.patch"
 	"${FILESDIR}/${PN}-2.1.4-search-filter.patch"
 	"${FILESDIR}/${PN}-2.1.4-limit-PSVersion-sscanf.patch"
+	"${FILESDIR}/${PN}-2.1.4-ippusb-query.patch"
 	"${FILESDIR}/${PN}-2.2.2-Tweak-the-PDL-priority-Issue-4932.patch"
 	"${FILESDIR}/${PN}-2.2.2-Only-list-supported-PDLs-Issue-4923.patch"
 )
@@ -121,9 +122,9 @@ MULTILIB_CHOST_TOOLS=(
 
 pkg_setup() {
 	enewgroup lp
-	enewuser lp -1 -1 -1 lp
+	enewuser lp -1 -1 -1 "lp,ippusb"
 	enewgroup lpadmin
-        enewuser lpadmin -1 -1 -1 lpadmin
+	enewuser lpadmin -1 -1 -1 "lpadmin,ippusb"
 	enewgroup cups
 	enewuser cups -1 -1 -1 cups
 
@@ -344,8 +345,11 @@ multilib_src_install_all() {
 	# http://www.cups.org/pipermail/cups/2016-February/027499.html
 	chmod 0755 "${ED}"/usr/libexec/cups/backend/{dnssd,ipp,lpd}
 
-	insinto /etc/cups
+	# Create a symbolic link from "ippusb' to the ipp backend.
+	dosym ipp /usr/libexec/cups/backend/ippusb
+
 	# Install our own conf files
+	insinto /etc/cups
 	doins "${FILESDIR}"/{cupsd,cups-files}.conf
 	if use upstart; then
 		insinto /etc/init
