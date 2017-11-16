@@ -20,7 +20,7 @@ RDEPEND="chromeos-base/chromeos-cr50-scripts"
 # Some boards can be using their custom Cr50 images, for those board the image
 # name is overridden in the board's overlay chromeos-cr50 ebuild.
 PROD_IMAGE="cr50.r0.0.10.w0.0.24"
-PRE_PVT_IMAGE="cr50.r0.0.10.w0.0.25_ffff_00000000_00000010"
+PRE_PVT_IMAGE="cr50.r0.0.10.w0.0.26_FFFF_00000000_00000010"
 
 # Let's make sure that both are pulled in and included in the manifest.
 CR50_BASE_NAMES=( "${PROD_IMAGE}" "${PRE_PVT_IMAGE}" )
