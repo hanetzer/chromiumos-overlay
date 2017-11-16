@@ -9,7 +9,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/edk2"
 CROS_WORKON_LOCALNAME="edk2"
 
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-workon coreboot-sdk
 
 DESCRIPTION="EDK II firmware development environment for the UEFI and PI specifications."
 HOMEPAGE="https://github.com/tianocore/edk2"
@@ -34,7 +34,6 @@ PATCHES=(
 	"${FILESDIR}/06_CorebootPayloadPkg_keep_cb_table.patch"
 )
 
-TOOLCHAIN=GCC48 # most recent GCCxy that isn't newer than our toolchain
 BUILDTYPE=DEBUG # DEBUG or RELEASE
 
 create_cbfs() {
@@ -51,7 +50,7 @@ create_cbfs() {
 	_cbfstool ${cbfs} create -s ${cbfs_size} -m x86
 	# Add tianocore binary to CBFS. FIXME needs newer cbfstool
 	_cbfstool ${cbfs} add-payload \
-			-f Build/CorebootPayloadPkgX64/${BUILDTYPE}_${TOOLCHAIN}/FV/UEFIPAYLOAD.fd \
+			-f Build/CorebootPayloadPkgX64/${BUILDTYPE}_CBSDK/FV/UEFIPAYLOAD.fd \
 			-n payload -c lzma
 	# Add VGA option rom to CBFS
 	if [ -r "${oprom}" ]; then
@@ -67,8 +66,10 @@ src_prepare() {
 
 src_compile() {
 	. ./edksetup.sh
+	cat ${FILESDIR}/tools-add.txt >> Conf/tools_def.txt
 	(cd BaseTools/Source/C && ARCH=${ARCHITECTURE} emake -j1)
-	build -t ${TOOLCHAIN} -a IA32 -a X64 -b ${BUILDTYPE} \
+	export COREBOOT_SDK_PREFIX_arm COREBOOT_SDK_PREFIX_arm64 COREBOOT_SDK_PREFIX_x86_32 COREBOOT_SDK_PREFIX_x86_64
+	build -t CBSDK -a IA32 -a X64 -b ${BUILDTYPE} \
 			-p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 	create_cbfs
 }
