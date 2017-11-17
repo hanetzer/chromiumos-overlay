@@ -120,6 +120,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
 	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
+	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
 	epatch "${FILESDIR}"/17.1-VIRGL-surfaces-samplers-virtual-context-refcount.patch
