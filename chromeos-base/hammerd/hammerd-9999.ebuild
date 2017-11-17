@@ -9,10 +9,8 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="hammerd"
-DISTUTILS_OPTIONAL=1
-PYTHON_COMPAT=( python2_7 )
 
-inherit cros-workon platform user distutils-r1
+inherit cros-workon platform user
 
 DESCRIPTION="A daemon to update EC firmware of hammer, the base of the detachable."
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/hammerd/"
@@ -20,32 +18,23 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/hammer
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
-IUSE="python"
+IUSE="-hammerd_api"
 
-DEPEND="
+RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/openssl
-	python? (
-		${PYTHON_DEPS}
-		dev-python/setuptools[${PYTHON_USEDEP}]
-	)
 	sys-apps/flashmap
 	virtual/libusb:1
 "
-RDEPEND="${DEPEND}"
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
+DEPEND="${RDEPEND}"
 
 pkg_preinst() {
 	# Create user and group for hammerd
 	enewuser "hammerd"
 	enewgroup "hammerd"
-}
-
-src_prepare() {
-	use python && distutils-r1_src_prepare
 }
 
 src_install() {
@@ -56,14 +45,6 @@ src_install() {
 	doins init/*.conf
 	exeinto /usr/share/cros/init
 	doexe init/*.sh
-
-	# Install exposed API.
-	if use python; then
-		dolib.so "${OUT}"/lib/libhammerd-api.so
-		insinto /usr/include/hammerd/
-		doins hammerd_api.h
-		distutils-r1_src_install
-	fi
 
 	# Install DBus config.
 	insinto /etc/dbus-1/system.d

@@ -11,8 +11,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-chromeless_tests chromeless_tty cr50_onboard cros_ec cros_embedded opengl
-	opengles ozone p2p peerd +shill +tpm vaapi"
+IUSE="-chromeless_tests chromeless_tty cr50_onboard cros_ec cros_embedded
+	hammerd opengl opengles ozone p2p peerd +shill +tpm vaapi"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -48,6 +48,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-test-root
 	chromeos-base/ec-utils
 	chromeos-base/factory-deps
+	hammerd? ( chromeos-base/hammerd-test-utils )
 	chromeos-base/recover-duts
 	chromeos-base/tast-local-tests
 	chromeos-base/verity
