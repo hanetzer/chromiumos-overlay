@@ -17,7 +17,7 @@ root="$1"
 
 logit() {
   # TODO(vbendeb): use proper logger invocation once logger is fixed.
-  logger -t "${script_name}" --id="${pid}" "$@"
+  logger -t "${script_name}" --id="${pid}" -- "$@"
 }
 
 logit "Starting"
@@ -28,35 +28,48 @@ if [ ! -f "${CR50_IMAGE}" ]; then
   exit 1
 fi
 
-UPDATER="/usr/sbin/trunks_send"
-if [ ! -x "${UPDATER}" ]; then
-  logit "${UPDATER} not found, quitting."
+GSCTOOL="/usr/sbin/gsctool"
+# Let's determine the best way to communicate with the Cr50.
+if "${GSCTOOL}" -f > /dev/null 2>&1; then
+  logit "Will use USB interface"
+  UPDATER="${GSCTOOL}"
+elif "${GSCTOOL}" -f -s > /dev/null 2>&1; then
+  logit "Will use /dev/tpm0"
+  UPDATER="${GSCTOOL} -s"
+elif "${GSCTOOL}" -f -t > /dev/null 2>&1; then
+  logit "Will use trunks_send"
+  UPDATER="${GSCTOOL} -t"
+else
+  logit "Could not communicate with Cr50"
   exit 1
 fi
-
-if ! "${UPDATER}" --help | grep -q '\--update'; then
-  logit "${UPDATER} does not support cr50 updates, quitting."
-  exit 1
-fi
-
-logit "using ${UPDATER} for update"
 
 retries=0
-while [ "${retries}" -ne 3 ]; do
-  output="$("${UPDATER}" --update "${CR50_IMAGE}" 2>&1)"
+while true; do
+  output="$(${UPDATER} -p "${CR50_IMAGE}" 2>&1)"
   exit_status="$?"
-  if [ "${exit_status}" -eq 0 ]; then
-    logit "success"
-    break
-  fi
-  if [ "${exit_status}" -eq 2 ]; then
-    logit "Cr50 running old version, quitting"
+  if [ "${exit_status}" -le 2 ]; then
+    # Exit status values 2 or below indicate successful update, nonzero
+    # values mean that reboot is required for the new version to kick in.
+    logit "success (${exit_status})"
+
+    # Callers of this script do not care about the details and consider any
+    # non-zero value an error.
+    exit_status=0
     break
   fi
 
   : $(( retries += 1 ))
   logit "${UPDATER} attempt ${retries} error ${exit_status}"
-  logit "${output}"
+  # Log output text one line at a time, otherwise they are all concatenated
+  # into a single long entry with messed up line breaks.
+  echo "${output}" | while read -r line; do
+    logit "${line}"
+  done
+
+  if [ "${retries}" -gt 2 ]; then
+    break
+  fi
 
   # Need to sleep for at least a minute to get around cr50 update throttling:
   # it rejects repeat update attempts happening sooner than 60 seconds after
