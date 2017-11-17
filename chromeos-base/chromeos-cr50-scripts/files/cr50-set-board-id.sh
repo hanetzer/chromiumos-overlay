@@ -36,7 +36,8 @@ cr50_check_board_id_and_flag() {
   local new_board_id="$(char_to_hex $1)"
   local new_flag="$2"
 
-  local output="$("${UPDATER}" -s -i)"
+  local output
+  output="$("${UPDATER}" -s -i)"
   if [ $? != 0 ]; then
     die "Failed to execute ${UPDATER} -s -i"
   fi
@@ -45,7 +46,7 @@ cr50_check_board_id_and_flag() {
   output="${output##* }"
 
   if [ "${output}" = "ffffffff:ffffffff:ffffffff" ]; then
-    # Board ID is cleaered, it's ok to go ahead and set it.
+    # Board ID is cleared, it's ok to go ahead and set it.
     return 0
   fi
 
