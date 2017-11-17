@@ -63,6 +63,7 @@ src_install() {
 	# Binaries for testing and debugging
 	dobin "${OUT}"/check_powerd_config
 	use amd64 && dobin "${OUT}"/dump_intel_rapl_consumption
+	dobin "${OUT}"/inject_powerd_input_event
 	dobin "${OUT}"/memory_suspend_test
 	dobin "${OUT}"/powerd_dbus_suspend
 	dobin "${OUT}"/send_debug_power_status
