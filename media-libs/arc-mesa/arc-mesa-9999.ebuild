@@ -322,8 +322,15 @@ multilib_src_install_all_cheets() {
 	elif use android_gles2; then
 		doins "${FILESDIR}/gles2/init.gpu.rc"
 	fi
+
+	# Install vulkan related files.
 	if use vulkan; then
+		insinto "${ARC_PREFIX}/vendor/etc/init"
 		doins "${FILESDIR}/vulkan.rc"
+
+		insinto "${ARC_PREFIX}/vendor/etc/permissions"
+		doins "${FILESDIR}/android.hardware.vulkan.level-1.xml"
+		doins "${FILESDIR}/android.hardware.vulkan.version-1_0_3.xml"
 	fi
 
 	# Install permission file to declare opengles aep support.
