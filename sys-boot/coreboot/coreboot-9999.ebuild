@@ -41,7 +41,7 @@ IUSE="${IUSE} amd_cpu coreboot-sdk"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy eve falco
-	fizz fox glados kahlee kunimitsu link lumpy nyan panther
+	fizz fox glados grunt kahlee kunimitsu link lumpy nyan panther
 	parrot peppy poppy rambi samus sklrvp slippy stout stout32
 	strago stumpy urara variant-peach-pit
 )
