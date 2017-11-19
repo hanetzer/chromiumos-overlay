@@ -35,6 +35,7 @@ CROS_BOARDS=(
 	glados
 	glimmer
 	gnawty
+	grunt
 	guado
 	kahlee
 	kblrvp
