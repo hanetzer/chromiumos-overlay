@@ -9,7 +9,7 @@ CROS_WORKON_LOCALNAME="kernel/v3.8"
 
 # AFDO_PROFILE_VERSION is the build on which the profile is collected.
 # This is required by kernel_afdo.
-AFDO_PROFILE_VERSION="R64-10106.0-1510572995"
+AFDO_PROFILE_VERSION="R64-10134.0-1511177538"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
