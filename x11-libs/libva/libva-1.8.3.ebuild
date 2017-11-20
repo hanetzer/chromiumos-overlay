@@ -32,7 +32,7 @@ fi
 IUSE="+drm egl opengl vdpau wayland X utils"
 REQUIRED_USE="|| ( drm wayland X )"
 
-VIDEO_CARDS="nvidia intel i965 fglrx nouveau"
+VIDEO_CARDS="amdgpu fglrx intel i965 nouveau nvidia"
 for x in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${x}"
 done
@@ -55,6 +55,7 @@ DEPEND="${RDEPEND}
 # as this library is not present in Chromium OS.
 PDEPEND="video_cards_nvidia? ( >=x11-libs/libva-vdpau-driver-0.7.4-r1 )
 	vdpau? ( >=x11-libs/libva-vdpau-driver-0.7.4-r1 )
+	video_cards_amdgpu? ( >=media-libs/libva-amdgpu-driver-17.2.3-r1 )
 	video_cards_fglrx? (
 		|| ( >=x11-drivers/ati-drivers-14.12-r3
 			>=x11-libs/xvba-video-0.8.0-r1 )
