@@ -7,8 +7,8 @@ EAPI="5"
 inherit cros-constants
 
 # cros-workon expects the repo to be in src/third_party, but is in src/aosp.
-CROS_WORKON_COMMIT=("adc061dfc05334e933e55076b4af99e2b7b70f97" "a8ff454126ed6c2f60fe4c9ae4d8e3e1806791a6")
-CROS_WORKON_TREE=("292103495024e122585832ec16e29d701adad844" "fa35c01d19e4ae5d5c18a47cc825f20b786b077d")
+CROS_WORKON_COMMIT=("adc061dfc05334e933e55076b4af99e2b7b70f97" "e22128bb9349635f47c7407a67c2bb566100473c")
+CROS_WORKON_TREE=("292103495024e122585832ec16e29d701adad844" "ec48cc852bd6266ae6c29fc855df3aab4ec09b27")
 CROS_WORKON_LOCALNAME=("../platform2" "../aosp/external/bsdiff")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/bsdiff")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/bsdiff")
