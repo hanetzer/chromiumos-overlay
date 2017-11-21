@@ -15,6 +15,7 @@ USE="${USE} cups crosfonts -postscript"
 USE="${USE} tpm"
 USE="${USE} compupdates"
 USE="${USE} containers"
+USE="${USE} mist"
 USE="${USE} cellular mbim"
 USE="${USE} ime"
 
