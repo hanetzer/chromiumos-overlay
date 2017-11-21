@@ -36,6 +36,7 @@ IUSE="
 	input_devices_evdev
 	intel_lpe
 	kvm_host
+	mist
 	modemfwd
 	mtd
 	+network_time
@@ -157,8 +158,8 @@ CROS_COMMON_RDEPEND+="
 	crash_reporting? ( chromeos-base/crash-reporter )
 	cellular? (
 		gobi? ( chromeos-base/cromo )
-		chromeos-base/mist
 	)
+	mist? ( chromeos-base/mist )
 	modemfwd? ( chromeos-base/modemfwd )
 	buffet? ( chromeos-base/buffet )
 	containers? (
