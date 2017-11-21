@@ -32,14 +32,18 @@ IUSE="${IUSE_VIDEO_CARDS}
 	android_aep -android_gles2 -android_gles30 +android_gles31 -android_gles32
 	-android_vulkan_compute_0
 	cheets +classic debug dri egl +gallium
-	-gbm gles1 gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
+	-gbm gles1 gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx
+	cheets_user cheets_user_64"
 
+# llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
+# (b/33072485, b/28802929).
 REQUIRED_USE="
 	^^ ( android_gles2 android_gles30 android_gles31 android_gles32 )
 	android_vulkan_compute_0? ( vulkan )
 	cheets? (
 		vulkan? ( video_cards_intel )
 		video_cards_amdgpu? ( llvm )
+		video_cards_llvmpipe? ( !cheets_user !cheets_user_64 )
 	)"
 
 DEPEND="cheets? (
@@ -50,12 +54,7 @@ DEPEND="cheets? (
 		)
 	)"
 
-# llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
-# (b/33072485, b/28802929).
-RDEPEND="cheets? (
-		llvm? ( chromeos-base/android-container-nyc[-cheets_user] )
-	)
-	${DEPEND}"
+RDEPEND="${DEPEND}"
 
 # It is slow without texrels, if someone wants slow
 # mesa without texrels +pic use is worth the shot
