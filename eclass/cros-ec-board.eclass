@@ -68,6 +68,7 @@ EC_BOARD_NAMES=(
 	llama
 	meowth
 	minimuffin
+	nami
 	nautilus
 	nefario
 	oak

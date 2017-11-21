@@ -205,7 +205,7 @@ ALL_BOARDS=(
 	moblab-generic-vm
 	monroe
 	moose
-	nasher
+	nami
 	nautilus
 	nefario
 	newbie
