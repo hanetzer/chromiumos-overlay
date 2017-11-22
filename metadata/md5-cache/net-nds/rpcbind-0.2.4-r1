@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=>=net-libs/libtirpc-1.0:= systemd? ( sys-apps/systemd:= ) tcpd? ( sys-apps/tcp-wrappers ) virtual/pkgconfig virtual/pkgconfig
+DESCRIPTION=portmap replacement which supports RPC over various protocols
+EAPI=5
+HOMEPAGE=https://sourceforge.net/projects/rpcbind/
+IUSE=debug selinux systemd tcpd warmstarts
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=>=net-libs/libtirpc-1.0:= systemd? ( sys-apps/systemd:= ) tcpd? ( sys-apps/tcp-wrappers ) selinux? ( sec-policy/selinux-rpcbind )
+SLOT=0
+SRC_URI=mirror://sourceforge/rpcbind/rpcbind-0.2.4.tar.bz2
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=d6adcf1e1bc28dbae894f9e8fab9947a
