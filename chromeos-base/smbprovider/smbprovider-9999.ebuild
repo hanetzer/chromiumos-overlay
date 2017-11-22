@@ -35,9 +35,13 @@ pkg_preinst() {
 
 src_install() {
 	dosbin "${OUT}"/smbproviderd
+	newbin smbproviderd-jailed.sh smbproviderd-jailed
 
 	insinto /etc/dbus-1/system.d
 	doins etc/dbus-1/org.chromium.SmbProvider.conf
+
+	insinto /usr/share/dbus-1/system-services
+	doins org.chromium.SmbProvider.service
 }
 
 platform_pkg_test() {
