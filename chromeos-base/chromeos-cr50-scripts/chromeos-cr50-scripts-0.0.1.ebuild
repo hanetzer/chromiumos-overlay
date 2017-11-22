@@ -24,4 +24,5 @@ src_install() {
 	exeinto /usr/share/cros
 	doexe "${FILESDIR}"/cr50-update.sh
 	doexe "${FILESDIR}"/cr50-set-board-id.sh
+	doexe "${FILESDIR}"/cr50-reset.sh
 }
