@@ -27,7 +27,6 @@ RDEPEND="
 	chromeos-base/vboot_reference
 	dev-libs/openssl
 	sys-apps/flashmap
-	virtual/libusb:1
 "
 DEPEND="${RDEPEND}"
 
