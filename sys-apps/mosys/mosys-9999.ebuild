@@ -29,11 +29,6 @@ src_configure() {
 	einfo "using default configuration for $(tc-arch)"
 	ARCH=$(tc-arch) emake defconfig
 	tc-export AR CC LD PKG_CONFIG
-
-	if use static; then
-		append-ldflags "-static"
-	fi
-
 	export LDFLAGS="$(raw-ldflags)"
 
 	if use unibuild; then
@@ -54,7 +49,9 @@ src_test() {
 
 src_install() {
 	dosbin mosys
+
 	# Install the optional static binary if supported.
-	nonfatal dosbin mosys_s
+	use static && dosbin mosys_s
+
 	dodoc README TODO
 }
