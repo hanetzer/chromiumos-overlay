@@ -76,6 +76,7 @@ RDEPEND="${RDEPEND}
 	app-arch/lz4
 	app-arch/lzop
 	app-arch/pigz
+	app-arch/pixz
 	app-admin/sudo
 	dev-embedded/cbootimage
 	dev-embedded/tegrarcm
