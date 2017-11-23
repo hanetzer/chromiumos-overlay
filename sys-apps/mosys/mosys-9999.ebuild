@@ -25,24 +25,17 @@ RDEPEND="unibuild? (
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	# Generate a default .config for our target architecture. This will
-	# likely become more sophisticated as we broaden board support.
+	# Generate a default .config for our target architecture.
 	einfo "using default configuration for $(tc-arch)"
 	ARCH=$(tc-arch) emake defconfig
-
 	tc-export AR CC LD PKG_CONFIG
-	export FMAP_LINKOPT="$(${PKG_CONFIG} --libs-only-l fmap)"
-	append-ldflags "$(${PKG_CONFIG} --libs-only-L fmap)"
-	export LDFLAGS="$(raw-ldflags)"
-	append-flags "$(${PKG_CONFIG} --cflags fmap)"
-	export CFLAGS
 
 	if use static; then
-		#  We can't use append-ldflags because the build system doesn't
-		#  handle LDFLAGS correctly:
-		#  http://code.google.com/p/mosys/issues/detail?id=3
-		append-flags "-static"
+		append-ldflags "-static"
 	fi
+
+	export LDFLAGS="$(raw-ldflags)"
+
 	if use unibuild; then
 		cp "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
 			lib/cros_config/config.dtb
