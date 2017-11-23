@@ -3,10 +3,10 @@ DEPEND=dev-vcs/git
 DESCRIPTION=vboot tests
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +tests_firmware_VbootCrypto cros_host cros_workon_tree_8d397ece754a56ddfb89c0d969eff4eee72eec3f profiling +buildcheck autotest opengles
+IUSE=+autotest +tests_firmware_VbootCrypto cros_host cros_workon_tree_96502df78125cf5e2aa885b9563243511c3a710d profiling +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=0c0628295a61e011d8c7eb7846648f25
+_md5_=f690f352e46ea5995a9c9561587c8b2f
