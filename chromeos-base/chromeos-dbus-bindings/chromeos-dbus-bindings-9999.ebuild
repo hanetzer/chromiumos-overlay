@@ -1,22 +1,20 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/dbus-binding-generator")
-CROS_WORKON_LOCALNAME=("platform2" "aosp/external/dbus-binding-generator")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/external/dbus-binding-generator")
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-PLATFORM_SUBDIR="dbus-binding-generator/chromeos-dbus-bindings"
-PLATFORM_GYP_FILE="chromeos-dbus-bindings.gyp"
+PLATFORM_SUBDIR="${PN}"
 PLATFORM_NATIVE_TEST="yes"
 
 inherit cros-workon platform
 
 DESCRIPTION="Utility for building Chrome D-Bus bindings from an XML description"
-HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
-SRC_URI=""
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/chromeos-dbus-bindings"
 
 LICENSE="BSD-Google"
 SLOT="0"
