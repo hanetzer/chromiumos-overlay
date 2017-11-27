@@ -3,10 +3,10 @@ DEPEND=unibuild? ( chromeos-base/chromeos-config sys-apps/dtc ) sys-apps/util-li
 DESCRIPTION=Utility for obtaining various bits of low-level system info
 EAPI=4
 HOMEPAGE=http://mosys.googlecode.com/
-IUSE=static unibuild cros_host cros_workon_tree_1a14e63a7cab674474c6d852f1e7571f12a32b78 profiling
+IUSE=static unibuild cros_host cros_workon_tree_21feb69989c2a5a95bc688d44828d2d6d48540fc profiling
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=unibuild? ( chromeos-base/chromeos-config sys-apps/dtc ) sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
 SLOT=0
 _eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-unibuild	ab18d27b5e4480764df827c118f6efa8	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=617eb5e648b62fe8daddf82333a934e2
+_md5_=d182f1a9c3afcf4a6c5f01eb1c5ba9d8
