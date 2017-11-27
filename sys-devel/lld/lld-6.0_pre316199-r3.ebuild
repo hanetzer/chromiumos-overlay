@@ -22,6 +22,24 @@ IUSE="llvm-next"
 RDEPEND="sys-devel/llvm"
 DEPEND="${RDEPEND}"
 
+pick_cherries() {
+	CHERRIES=""
+	pushd "${S}" >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+}
+
+pick_next_cherries() {
+	CHERRIES="0c9a338de181a4c5f4905a455ffb424a774d8a3e" #r319020
+	pushd "${S}" >/dev/null || die
+	for cherry in ${CHERRIES}; do
+		epatch "${FILESDIR}/cherry/${cherry}.patch"
+	done
+	popd >/dev/null || die
+}
+
 python_check_deps() {
 	has_version "dev-python/lit[${PYTHON_USEDEP}]"
 }
@@ -42,6 +60,11 @@ src_unpack() {
 }
 
 src_prepare() {
+	if use llvm-next; then
+		pick_next_cherries
+	else
+		pick_cherries
+	fi
 	epatch "${FILESDIR}/$PN-invoke-name.patch"
 }
 src_configure() {
