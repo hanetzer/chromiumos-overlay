@@ -269,3 +269,14 @@ unibuild_install_audio_files() {
 	einfo "unibuild: Installing audio files"
 	_unibuild_common_install get-audio-files
 }
+
+# @FUNCTION: cros-unibuild-setup_bsp_source
+# @USAGE:
+# @DESCRIPTION:
+# Set up SRC_URI to include all BCS files required by the BSP ebuild.
+cros-unibuild-setup_bsp_source() {
+	local uri_list
+
+	uri_list="$(unibuild_get_dtb_data | cros_config_host -c - get-bsp-uris)"
+	SRC_URI+=" ${uri_list}"
+}
