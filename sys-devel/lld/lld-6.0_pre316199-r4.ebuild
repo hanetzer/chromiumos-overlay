@@ -60,7 +60,7 @@ src_unpack() {
 }
 
 src_prepare() {
-	if use llvm-next; then
+	if use llvm-next  && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
 		pick_next_cherries
 	else
 		pick_cherries
