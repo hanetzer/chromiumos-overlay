@@ -13,6 +13,7 @@ HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
 SERVO_MICRO_NAME="servo_micro-R57-9040.0.0"
 SERVO_V4_NAME="servo_v4-R57-9040.0.0"
+UPDATER_PATH="/usr/share/servo_updater/firmware"
 
 MIRROR_PATH="gs://chromeos-localmirror/distfiles/"
 
@@ -72,7 +73,10 @@ src_install() {
 
 	distutils-r1_src_install
 
-	insinto "/usr/share/servo_updater/firmware"
+	insinto "${UPDATER_PATH}"
 	doins "${WORKDIR}/${SERVO_MICRO_NAME}.bin"
+	dosym "${SERVO_MICRO_NAME}.bin" "${UPDATER_PATH}/servo_micro.bin"
+
 	doins "${WORKDIR}/${SERVO_V4_NAME}.bin"
+	dosym "${SERVO_V4_NAME}.bin" "${UPDATER_PATH}/servo_v4.bin"
 }
