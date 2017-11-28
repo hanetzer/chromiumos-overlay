@@ -9,7 +9,8 @@
 # number for said repo.
 
 # Matching regexp for all known kernel release tags to date.
-PATTERN="v[234].*"
+GLOB="v[2-9].*[0-9]"
+PATTERN="^v[2-9](\.[0-9]+)+(-rc[0-9]+)?$"
 
 if [ ! -d "$1" ] ; then
     exit
@@ -27,7 +28,7 @@ if [[ "${OVERLAY_NAME}" != "chromiumos" ]]; then
     suffix="_p1"
 fi
 
-version=$(git describe --match "${PATTERN}" --abbrev=0 HEAD | egrep "${PATTERN}" |
+version=$(git describe --match "${GLOB}" --abbrev=0 HEAD | egrep "${PATTERN}" |
   sed s/v\\.*//g | sed s/-/_/g)
 
 if [[ -n "${version}" ]]; then
