@@ -78,6 +78,11 @@ build_host_tool() {
 	cmake -DLLVM_LIBDIR_SUFFIX=${libdir#lib} \
 		-DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}" \
 		-G "Unix Makefiles" ${S}
+	# We don't build shared libraries on the host, but we want
+	# llvm-config's output to match the target behavior, so override
+	# the config embedded into the binary.
+	sed -i -E '/LLVM_(LINK|ENABLE)_DYLIB 0/s:0:1:' \
+		"${HOST_DIR}/${tool}/BuildVariables.inc"
 	cd "${HOST_DIR}/${tool}" || die
 	emake
 }
