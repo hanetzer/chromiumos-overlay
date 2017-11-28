@@ -46,6 +46,7 @@ RDEPEND="${RDEPEND}
 	tests_platform_SecureEraseFile? ( chromeos-base/secure-erase-file )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
+	tests_hardware_MemoryZRAMThroughput? ( app-benchmarks/microbenchmarks )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
 	tests_security_SMMLocked? ( sys-apps/pciutils )
 	arc-camera3? (
@@ -120,6 +121,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_MemoryLatency
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
+	+tests_hardware_MemoryZRAMThroughput
 	+tests_hardware_Memtester
 	+tests_hardware_MultiReader
 	+tests_hardware_PerfCallgraphVerification
