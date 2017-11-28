@@ -1,0 +1,369 @@
+From: Kenny Root <kroot@google.com>
+Date: Tue, 29 Nov 2017 10:37:09 +0900
+Subject: squashfs-tools: Allow setting selinux xattrs through
+ file_context
+
+ Add a context-file flag that allows passing an selinux security context
+ file to set security.selinux xattrs rather than reading xattrs from
+ filesystem's source directory.
+
+ Based on the original change to allow the use of SELinux file_contexts
+ directly from the source file which was committed to Android's copy
+ of squashfs-tools and written by Mohamad Ayyash <mkayyash@google.com>
+ ---
+diff -urN squashfs-tools/Makefile squashfs-tools/Makefile
+--- Makefile	2014-05-12 03:56:00.000000000 +0900
++++ Makefile	2017-11-28 13:14:30.191652478 +0900
+@@ -102,6 +102,22 @@
+ # default.  Users can enable xattrs by using the -xattrs option.
+ XATTR_DEFAULT = 1
+ 
++###############################################
++#  SELinux labelling support build options    #
++###############################################
++#
++# Building SELinux labelling support for Mksquashfs. This provides an
++# alternative to reading SELinux labels from the filesystem with XATTR
++# support. It is possible to label the files in the Squashfs filesystem
++# differently than the source filesystem with this option.
++#
++# Note that SELinux labelling support requries that XATTR is also
++# supported.
++#
++# If your build/target environment does not have support for SELinux then
++# comment out the next line to build Mksquashfs without SELinux labelling
++# support.
++SELINUX_SUPPORT = 1
+ 
+ ###############################################
+ #        End of BUILD options section         #
+@@ -117,7 +133,7 @@
+ UNSQUASHFS_OBJS = unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o \
+ 	unsquash-4.o swap.o compressor.o unsquashfs_info.o
+ 
+-CFLAGS ?= -O2
++CFLAGS ?= -O2 -ggdb
+ CFLAGS += $(EXTRA_CFLAGS) $(INCLUDEDIR) -D_FILE_OFFSET_BITS=64 \
+ 	-D_LARGEFILE_SOURCE -D_GNU_SOURCE -DCOMP_DEFAULT=\"$(COMP_DEFAULT)\" \
+ 	-Wall
+@@ -185,6 +201,14 @@
+ endif
+ MKSQUASHFS_OBJS += xattr.o read_xattrs.o
+ UNSQUASHFS_OBJS += read_xattrs.o unsquashfs_xattr.o
++
++# SELinux support is only available if XATTR support is available
++ifeq ($(SELINUX_SUPPORT),1)
++CFLAGS += -DSELINUX_SUPPORT
++MKSQUASHFS_OBJS += selinux.o
++LIBS += -lselinux
++endif
++
+ endif
+ 
+ #
+diff -urN squashfs-tools/mksquashfs.c squashfs-tools/mksquashfs.c
+--- mksquashfs.c	2017-11-27 15:30:41.637111340 +0900
++++ mksquashfs.c	2017-11-28 12:49:33.721693512 +0900
+@@ -77,6 +77,7 @@
+ #include "read_fs.h"
+ #include "restore.h"
+ #include "process_fragments.h"
++#include "selinux.h"
+ 
+ int delete = FALSE;
+ int fd;
+@@ -284,6 +285,11 @@
+ int append_fragments = 0;
+ struct append_file **file_mapping;
+ 
++/* selinux label */
++squashfs_selinux_handle *sehnd = NULL;
++char *context_file = NULL;
++char *mount_point = NULL;
++
+ static char *read_from_disk(long long start, unsigned int avail_bytes);
+ void add_old_root_entry(char *name, squashfs_inode inode, int inode_number,
+ 	int type);
+@@ -5332,6 +5338,15 @@
+ 		else if(strcmp(argv[i], "-xattrs") == 0)
+ 			no_xattrs = FALSE;
+ 
++		else if(strcmp(argv[i], "-context-file") == 0) {
++			if(++i == argc) {
++				ERROR("%s: -context-file: missing filename\n",
++					argv[0]);
++				exit(1);
++			}
++			context_file = argv[i];
++		}
++
+ 		else if(strcmp(argv[i], "-nopad") == 0)
+ 			nopad = TRUE;
+ 
+@@ -5347,6 +5362,15 @@
+ 		else if(strcmp(argv[i], "-keep-as-directory") == 0)
+ 			keep_as_directory = TRUE;
+ 
++		else if(strcmp(argv[i], "-mount-point") == 0) {
++			if(++i == argc) {
++				ERROR("%s: -mount-point: missing mount point name\n",
++					argv[0]);
++				exit(1);
++			}
++			mount_point = argv[i];
++		}
++
+ 		else if(strcmp(argv[i], "-exit-on-error") == 0)
+ 			exit_on_error = TRUE;
+ 
+@@ -5382,6 +5406,9 @@
+ 				NOXOPT_STR "\n");
+ 			ERROR("-xattrs\t\t\tstore extended attributes" XOPT_STR
+ 				"\n");
++			ERROR("-context-file <file>\tApply SELinux context "
++				"xattr from <file> instead\n\t\t\t"
++				"of reading xattr from filesystem\n");
+ 			ERROR("-noI\t\t\tdo not compress inode table\n");
+ 			ERROR("-noD\t\t\tdo not compress data blocks\n");
+ 			ERROR("-noF\t\t\tdo not compress fragment blocks\n");
+@@ -5402,6 +5429,9 @@
+ 			ERROR("\t\t\tdirectory containing that directory, "
+ 				"rather than the\n");
+ 			ERROR("\t\t\tcontents of the directory\n");
++			ERROR("-mount-point <name>\tWhen applying attributes such "
++				"as SELinux context, treat\n\t\t\t"
++				"the filesystem as mounted at <name>\n");
+ 			ERROR("-4k-align\t\tenables 4k alignment of all files\n");
+ 			ERROR("\nFilesystem filter options:\n");
+ 			ERROR("-p <pseudo-definition>\tAdd pseudo file "
+diff -urN squashfs-tools/selinux.c squashfs-tools/selinux.c
+--- selinux.c	1970-01-01 09:00:00.000000000 +0900
++++ selinux.c	2017-11-28 12:54:18.679027810 +0900
+@@ -0,0 +1,66 @@
++/* Copyright 2015 The Android Open Source Project */
++
++#include <errno.h>
++#include <stdlib.h>
++#include <string.h>
++#include <selinux/label.h>
++
++#include "error.h"
++#include "selinux.h"
++#include "xattr.h"
++
++
++#define ARRAY_SIZE(a)	(sizeof(a) / sizeof((a)[0]))
++
++
++squashfs_selinux_handle *get_sehnd(const char *context_file) {
++	struct selinux_opt seopts[] = {
++		{
++			.type = SELABEL_OPT_PATH,
++			.value = context_file
++		}
++	};
++	struct selabel_handle *sehnd =
++		selabel_open(SELABEL_CTX_FILE, seopts, ARRAY_SIZE(seopts));
++
++	if(sehnd == NULL)
++		BAD_ERROR("Failure calling selabel_open: %s\n", strerror(errno));
++
++	return sehnd;
++}
++
++static char *set_selabel(const char *path, unsigned int mode, struct selabel_handle *sehnd) {
++	char *secontext;
++	if(sehnd == NULL)
++		BAD_ERROR("selabel handle is NULL\n");
++
++	int full_name_size = strlen(path) + 2;
++	char* full_name = (char*) malloc(full_name_size);
++	if(full_name == NULL)
++		MEM_ERROR();
++
++	full_name[0] = '/';
++	strncpy(full_name + 1, path, full_name_size - 1);
++
++	if(selabel_lookup(sehnd, &secontext, full_name, mode))
++		secontext = strdup("u:object_r:unlabeled:s0");
++
++	free(full_name);
++	return secontext;
++}
++
++int read_xattrs_from_context_file(char *filename, int mode,
++	squashfs_selinux_handle *sehnd, struct xattr_list **xattrs) {
++	char *attr_val;
++	struct xattr_list *x = malloc(sizeof(*x));
++	if(x == NULL)
++		MEM_ERROR();
++ 
++	x->type = get_prefix(x, "security.selinux");
++	attr_val = set_selabel(filename, mode, sehnd);
++	x->value = (void *)attr_val;
++	x->vsize = strlen(attr_val);
++	*xattrs = x;
++	return 1;
++}
++
+diff -urN squashfs-tools/selinux.h squashfs-tools/selinux.h
+--- selinux.h	1970-01-01 09:00:00.000000000 +0900
++++ selinux.h	2017-11-28 12:26:21.178711536 +0900
+@@ -0,0 +1,28 @@
++/* Copyright 2015 The Android Open Source Project */
++
++#ifndef SELINUX_H
++#define SELINUX_H
++
++#include "xattr.h"
++
++#ifdef SELINUX_SUPPORT
++typedef struct selabel_handle squashfs_selinux_handle;
++extern squashfs_selinux_handle *get_sehnd(const char *context_file);
++extern int read_xattrs_from_context_file(char *filename, int mode,
++	struct selabel_handle *sehnd, struct xattr_list **xattrs);
++#else
++typedef void squashfs_selinux_handle;
++
++
++static squashfs_selinux_handle *get_sehnd(const char *context_file) {
++	return NULL;
++}
++
++
++static int read_xattrs_from_context_file(char *filename, int mode,
++	squashfs_selinux_handle *sehnd, struct xattr_list **xattrs) {
++	return 0;
++}
++#endif
++
++#endif
+diff -urN squashfs-tools/xattr.c squashfs-tools/xattr.c
+--- xattr.c	2014-05-10 13:54:13.000000000 +0900
++++ xattr.c	2017-11-28 13:16:25.206566220 +0900
+@@ -33,6 +33,7 @@
+ #include <errno.h>
+ #include <dirent.h>
+ #include <string.h>
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <sys/xattr.h>
+ 
+@@ -40,6 +41,7 @@
+ #include "squashfs_swap.h"
+ #include "mksquashfs.h"
+ #include "xattr.h"
++#include "selinux.h"
+ #include "error.h"
+ #include "progressbar.h"
+ 
+@@ -76,6 +78,8 @@
+ extern long long bytes;
+ extern int fd;
+ extern unsigned int xattr_bytes, total_xattr_bytes;
++extern char *context_file;
++extern char *mount_point;
+ 
+ /* helper functions from mksquashfs.c */
+ extern unsigned short get_checksum(char *, int, unsigned short);
+@@ -83,14 +87,35 @@
+ extern long long generic_write_table(int, void *, int, void *, int);
+ extern int mangle(char *, char *, int, int, int, int);
+ extern char *pathname(struct dir_ent *);
++extern char *subpathname(struct dir_ent *);
+ 
+ /* helper functions and definitions from read_xattrs.c */
+ extern int read_xattrs_from_disk(int, struct squashfs_super_block *);
+ extern struct xattr_list *get_xattr(int, unsigned int *, int);
+ extern struct prefix prefix_table[];
+ 
++/* selinux label */
++extern squashfs_selinux_handle *sehnd;
+ 
+-static int get_prefix(struct xattr_list *xattr, char *name)
++
++void alloc_mounted_path(const char *mount_point, const char *subpath, char **new_path) {
++	size_t mount_point_len = strlen(mount_point);
++	size_t subpath_len = strlen(subpath);
++	size_t new_path_len = mount_point_len + subpath_len + 1;
++
++	if(new_path_len < mount_point_len || new_path_len < subpath_len)
++		BAD_ERROR("Cannot allocate mounted path length; it is over %d\n",
++			SIZE_MAX);
++
++	*new_path = malloc(new_path_len);
++	if (*new_path == NULL)
++		MEM_ERROR();
++
++	strcpy(*new_path, mount_point);
++	strcat(*new_path, subpath);
++}
++
++int get_prefix(struct xattr_list *xattr, char *name)
+ {
+ 	int i;
+ 
+@@ -110,7 +135,7 @@
+ 	return prefix_table[i].type;
+ }
+ 
+-	
++
+ static int read_xattrs_from_system(char *filename, struct xattr_list **xattrs)
+ {
+ 	ssize_t size, vsize;
+@@ -614,7 +639,20 @@
+ 	if(no_xattrs || IS_PSEUDO(inode) || inode->root_entry)
+ 		return SQUASHFS_INVALID_XATTR;
+ 
+-	xattrs = read_xattrs_from_system(filename, &xattr_list);
++	if(context_file) {
++		if(sehnd == NULL)
++			sehnd = get_sehnd(context_file);
++		if(mount_point) {
++			char *mounted_path;
++			alloc_mounted_path(mount_point, subpathname(dir_ent), &mounted_path);
++			xattrs = read_xattrs_from_context_file(mounted_path, inode->buf.st_mode,
++					sehnd, &xattr_list);
++		} else
++			xattrs = read_xattrs_from_context_file(filename, inode->buf.st_mode,
++					sehnd, &xattr_list);
++	} else
++		xattrs = read_xattrs_from_system(filename, &xattr_list);
++
+ 	if(xattrs == 0)
+ 		return SQUASHFS_INVALID_XATTR;
+ 
+diff -urN squashfs-tools/xattr.h squashfs-tools/xattr.h
+--- xattr.h	2014-05-10 13:54:13.000000000 +0900
++++ xattr.h	2017-11-28 12:26:08.034834468 +0900
+@@ -24,6 +24,8 @@
+  * xattr.h
+  */
+ 
++#include "squashfs_fs.h"
++
+ #define XATTR_VALUE_OOL		SQUASHFS_XATTR_VALUE_OOL
+ #define XATTR_PREFIX_MASK	SQUASHFS_XATTR_PREFIX_MASK
+ 
+@@ -66,6 +68,7 @@
+ extern int generate_xattrs(int, struct xattr_list *);
+ 
+ #ifdef XATTR_SUPPORT
++extern int get_prefix(struct xattr_list *xattr, char *name);
+ extern int get_xattrs(int, struct squashfs_super_block *);
+ extern int read_xattrs(void *);
+ extern long long write_xattrs();
+@@ -77,6 +80,12 @@
+ extern struct xattr_list *get_xattr(int, unsigned int *, int);
+ extern void free_xattr(struct xattr_list *, int);
+ #else
++static inline int get_prefix(struct xattr_list *xattr, char *name)
++{
++	return -1;
++}
++
++
+ static inline int get_xattrs(int fd, struct squashfs_super_block *sBlk)
+ {
+ 	if(sBlk->xattr_id_table_start != SQUASHFS_INVALID_BLK) {

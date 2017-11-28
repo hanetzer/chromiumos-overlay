@@ -15,7 +15,8 @@ SRC_URI="mirror://sourceforge/squashfs/squashfs${PV}.tar.gz
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="lz4 lzma lzo xattr +xz"
+IUSE="lz4 lzma lzo selinux xattr +xz"
+REQUIRED_USE="selinux? ( xattr )"
 
 RDEPEND="
 	sys-libs/zlib
@@ -23,7 +24,10 @@ RDEPEND="
 	lz4? ( app-arch/lz4 )
 	lzma? ( app-arch/xz-utils )
 	lzo? ( dev-libs/lzo )
-	xattr? ( sys-apps/attr )
+	xattr? (
+		selinux? ( sys-libs/libselinux )
+		sys-apps/attr
+	)
 	xz? ( app-arch/xz-utils )
 "
 DEPEND="${RDEPEND}"
@@ -40,6 +44,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-xattrs.patch
 	epatch "${FILESDIR}"/${P}-file-map.patch
 	epatch "${FILESDIR}"/${P}-4k-align.patch
+	epatch "${FILESDIR}"/${P}-selinux.patch
 }
 
 use10() { usex $1 1 0 ; }
@@ -50,6 +55,7 @@ src_configure() {
 		LZMA_XZ_SUPPORT=$(use10 lzma)
 		LZO_SUPPORT=$(use10 lzo)
 		LZ4_SUPPORT=$(use10 lz4)
+		SELINUX_SUPPORT=$(use10 selinux)
 		XATTR_SUPPORT=$(use10 xattr)
 		XZ_SUPPORT=$(use10 xz)
 	)
