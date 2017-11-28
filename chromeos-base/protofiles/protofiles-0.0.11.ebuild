@@ -4,8 +4,7 @@
 # This project checks out the proto files from the read only repositories
 # linked to the following directories of the Chromium project:
 
-#   - src/components/policy/proto
-#   - src/chrome/browser/chromeos/policy/proto
+#   - src/components/policy
 
 # This project is not cros-work-able: if changes to the protobufs are needed
 # then they should be done in the Chromium repository, and the commits below
@@ -22,7 +21,7 @@ inherit cros-constants git-2
 EGIT_REPO_URIS=(
 	"cloud/policy"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy.git"
-	"6c661b5a41e49667bf8abffb9e473fbbec397a3e"
+	"f9a8b61835687b541643445b9733fa96c167f8f6"
 
 	# If you uprev these repos, please also:
 	# - Update files/VERSION to the corresponding revision of
@@ -37,10 +36,6 @@ EGIT_REPO_URIS=(
 	#   User policy is generated and doesn't have to be updated manually.
 	# - Bump the package version:
 	#     git mv protofiles-0.0.N.ebuild protofiles-0.0.N+1.ebuild
-
-	"chromeos/policy/proto"
-	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
-	"cc44113a94933c78151ddb98a129b81e2e71a894"
 )
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
@@ -66,7 +61,7 @@ src_unpack() {
 
 src_install() {
 	insinto /usr/include/proto
-	doins "${S}"/{chromeos,cloud}/policy/proto/*.proto
+	doins "${S}"/cloud/policy/proto/*.proto
 	insinto /usr/share/protofiles
 	doins "${S}"/cloud/policy/proto/chrome_device_policy.proto
 	doins "${S}"/cloud/policy/proto/device_management_backend.proto
