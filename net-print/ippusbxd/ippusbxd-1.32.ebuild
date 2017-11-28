@@ -27,4 +27,8 @@ PATCHES=(
 
 src_install() {
 	dobin "${BUILD_DIR}/ippusbxd"
+
+	# Install seccomp policy files.
+	insinto /usr/share/policy
+	newins "${FILESDIR}/ippusbxd-seccomp-${ARCH}.policy" ippusbxd-seccomp.policy
 }
