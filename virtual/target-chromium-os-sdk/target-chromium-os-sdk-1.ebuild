@@ -466,3 +466,8 @@ RDEPEND="${RDEPEND}
 # Host dependencies that are needed for chromite/bin/cros_generate_android_breakpad_symbols
 RDEPEND="${RDEPEND}
 	chromeos-base/android-relocation-packer"
+
+# Dependencies for testing Puppet
+RDEPEND="${RDEPEND}
+	app-admin/puppet
+	dev-lang/ruby"
