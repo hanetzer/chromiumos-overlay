@@ -28,7 +28,8 @@ sys-apps/attr static-libs
 
 # mksquashfs used in build_image requires lzo support.
 # Also include lz4 and lzma compressors, for flexibility.
-sys-fs/squashfs-tools lzo lz4 lzma
+# For SELinux context labeling it also needs selinux.
+sys-fs/squashfs-tools lzo lz4 lzma selinux
 
 # some prebuilt binaries created on Ubuntu like to link against libtinfo.
 sys-libs/ncurses tinfo
