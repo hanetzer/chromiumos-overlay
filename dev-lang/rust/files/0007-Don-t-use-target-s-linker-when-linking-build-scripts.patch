@@ -1,7 +1,7 @@
-From 5e5771076b38c1a628022953cb3a7c7d55b9ef3a Mon Sep 17 00:00:00 2001
+From 172dfd626c80eefa7311bcebbbae5922b19d118e Mon Sep 17 00:00:00 2001
 From: Vadim Petrochenkov <vadim.petrochenkov@gmail.com>
 Date: Sun, 15 Oct 2017 21:39:16 +0300
-Subject: [PATCH 8/8] Don't use target's linker when linking build scripts
+Subject: [PATCH 7/7] Don't use target's linker when linking build scripts
 
 (cherry picked from commit 89d9ce4ec3c134ab62e9eea18a9620face8f88b7)
 ---
@@ -14,7 +14,7 @@ Subject: [PATCH 8/8] Don't use target's linker when linking build scripts
  6 files changed, 36 insertions(+), 41 deletions(-)
 
 diff --git a/src/bootstrap/bin/rustc.rs b/src/bootstrap/bin/rustc.rs
-index e94712159c..8ee9d6da49 100644
+index cdf43cf184..68356f1eec 100644
 --- a/src/bootstrap/bin/rustc.rs
 +++ b/src/bootstrap/bin/rustc.rs
 @@ -122,6 +122,11 @@ fn main() {
@@ -29,7 +29,7 @@ index e94712159c..8ee9d6da49 100644
          // Pass down incremental directory, if any.
          if let Ok(dir) = env::var("RUSTC_INCREMENTAL") {
              cmd.arg(format!("-Zincremental={}", dir));
-@@ -246,13 +251,11 @@ fn main() {
+@@ -252,13 +257,11 @@ fn main() {
          if env::var_os("RUSTC_FORCE_UNSTABLE").is_some() {
              cmd.arg("-Z").arg("force-unstable-if-unmarked");
          }
@@ -62,25 +62,25 @@ index e9d1a6d668..ccbf98520a 100644
      }
  
 diff --git a/src/bootstrap/builder.rs b/src/bootstrap/builder.rs
-index e697c2ef54..3986a8e42c 100644
+index b83da6546a..3266762206 100644
 --- a/src/bootstrap/builder.rs
 +++ b/src/bootstrap/builder.rs
 @@ -419,7 +419,7 @@ impl<'a> Builder<'a> {
-             .env("CFG_RELEASE_CHANNEL", &self.build.config.channel)
-             .env("RUSTDOC_REAL", self.rustdoc(host));
+            .env("CFG_RELEASE_CHANNEL", &self.build.config.channel)
+            .env("RUSTDOC_REAL", self.rustdoc(host));
          if let Some(linker) = self.build.linker(host) {
 -            cmd.env("RUSTDOC_LINKER", linker);
 +            cmd.env("RUSTC_TARGET_LINKER", linker);
          }
          cmd
      }
-@@ -477,11 +477,13 @@ impl<'a> Builder<'a> {
-                  self.rustdoc(compiler.host)
+@@ -483,11 +483,13 @@ impl<'a> Builder<'a> {
               } else {
                   PathBuf::from("/path/to/nowhere/rustdoc/not/required")
--             })
+              })
+-             .env("TEST_MIRI", self.config.test_miri.to_string())
 -             .env("RUSTC_FLAGS", self.rustc_flags(target).join(" "));
-+             });
++             .env("TEST_MIRI", self.config.test_miri.to_string());
  
 -        if let Some(linker) = self.build.linker(target) {
 -            cargo.env("RUSTDOC_LINKER", linker);
@@ -93,10 +93,10 @@ index e697c2ef54..3986a8e42c 100644
  
          if mode != Mode::Tool {
 diff --git a/src/bootstrap/check.rs b/src/bootstrap/check.rs
-index d50c9ed34f..5a1d000f92 100644
+index 667ac3d3ab..64fde87a19 100644
 --- a/src/bootstrap/check.rs
 +++ b/src/bootstrap/check.rs
-@@ -566,9 +566,6 @@ impl Step for Compiletest {
+@@ -718,9 +718,6 @@ impl Step for Compiletest {
          // Avoid depending on rustdoc when we don't need it.
          if mode == "rustdoc" || mode == "run-make" {
              cmd.arg("--rustdoc-path").arg(builder.rustdoc(compiler.host));
@@ -106,7 +106,7 @@ index d50c9ed34f..5a1d000f92 100644
          }
  
          cmd.arg("--src-base").arg(build.src.join("src/test").join(suite));
-@@ -591,12 +588,14 @@ impl Step for Compiletest {
+@@ -743,12 +740,14 @@ impl Step for Compiletest {
              flags.push("-g".to_string());
          }
  
@@ -126,10 +126,10 @@ index d50c9ed34f..5a1d000f92 100644
                                   build.test_helpers_out(target).display()));
          cmd.arg("--target-rustcflags").arg(targetflags.join(" "));
 diff --git a/src/bootstrap/lib.rs b/src/bootstrap/lib.rs
-index 5a285dcda9..6c8f655252 100644
+index 7c599f9183..63dc17910f 100644
 --- a/src/bootstrap/lib.rs
 +++ b/src/bootstrap/lib.rs
-@@ -630,10 +630,6 @@ impl Build {
+@@ -649,10 +649,6 @@ impl Build {
          self.ar.get(&target).map(|p| &**p)
      }
  
@@ -140,7 +140,7 @@ index 5a285dcda9..6c8f655252 100644
      /// Returns the path to the C++ compiler for the target specified.
      fn cxx(&self, target: Interned<String>) -> Result<&Path, String> {
          match self.cxx.get(&target) {
-@@ -644,24 +640,16 @@ impl Build {
+@@ -663,24 +659,16 @@ impl Build {
          }
      }
  
@@ -175,7 +175,7 @@ index 5a285dcda9..6c8f655252 100644
  
      /// Returns if this target should statically link the C runtime, if specified
 diff --git a/src/tools/compiletest/src/runtest.rs b/src/tools/compiletest/src/runtest.rs
-index c22020c3be..ca3f0ef919 100644
+index 07cac38999..88a74380ff 100644
 --- a/src/tools/compiletest/src/runtest.rs
 +++ b/src/tools/compiletest/src/runtest.rs
 @@ -1453,6 +1453,9 @@ actual:\n\
@@ -189,5 +189,5 @@ index c22020c3be..ca3f0ef919 100644
          rustc.args(&self.props.compile_flags);
  
 -- 
-2.15.0.403.gc27cc4dac6-goog
+2.15.0.417.g466bffb3ac-goog
 

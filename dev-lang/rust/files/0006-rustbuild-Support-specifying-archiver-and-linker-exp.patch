@@ -1,16 +1,17 @@
-From 9960b16b83a266a06c730093e3b8a298f3571408 Mon Sep 17 00:00:00 2001
+From f8bf4344db36269fb1ad6ebe9d89c8fc7023aded Mon Sep 17 00:00:00 2001
 From: Vadim Petrochenkov <vadim.petrochenkov@gmail.com>
 Date: Tue, 10 Oct 2017 23:06:22 +0300
-Subject: [PATCH 7/8] rustbuild: Support specifying archiver and linker
+Subject: [PATCH 6/7] rustbuild: Support specifying archiver and linker
  explicitly
 
 (cherry picked from commit 9e0fc5ccd050201e77483b1efb2e6c76f47496f6)
 ---
+ config.toml.example                                | 11 ++++-
  src/Cargo.lock                                     |  1 -
  src/bootstrap/bin/rustc.rs                         | 13 +++---
  src/bootstrap/bin/rustdoc.rs                       |  3 ++
- src/bootstrap/builder.rs                           | 37 ++++++++++++---
- src/bootstrap/cc.rs                                | 52 +++++++++++++++++++---
+ src/bootstrap/builder.rs                           | 48 +++++++++++++++-----
+ src/bootstrap/cc_detect.rs                         | 52 +++++++++++++++++++---
  src/bootstrap/check.rs                             |  8 +++-
  src/bootstrap/config.rs                            |  8 +++-
  src/bootstrap/lib.rs                               | 23 +++++++---
@@ -34,22 +35,51 @@ Subject: [PATCH 7/8] rustbuild: Support specifying archiver and linker
  src/tools/compiletest/src/common.rs                |  2 +
  src/tools/compiletest/src/main.rs                  |  6 +++
  src/tools/compiletest/src/runtest.rs               | 10 ++++-
- 28 files changed, 184 insertions(+), 100 deletions(-)
+ 29 files changed, 199 insertions(+), 107 deletions(-)
 
+diff --git a/config.toml.example b/config.toml.example
+index a3790c8d20..a9648bd779 100644
+--- a/config.toml.example
++++ b/config.toml.example
+@@ -303,7 +303,7 @@
+ # =============================================================================
+ [target.x86_64-unknown-linux-gnu]
+ 
+-# C compiler to be used to compiler C code and link Rust code. Note that the
++# C compiler to be used to compiler C code. Note that the
+ # default value is platform specific, and if not specified it may also depend on
+ # what platform is crossing to what platform.
+ #cc = "cc"
+@@ -312,6 +312,15 @@
+ # This is only used for host targets.
+ #cxx = "c++"
+ 
++# Archiver to be used to assemble static libraries compiled from C/C++ code.
++# Note: an absolute path should be used, otherwise LLVM build will break.
++#ar = "ar"
++
++# Linker to be used to link Rust code. Note that the
++# default value is platform specific, and if not specified it may also depend on
++# what platform is crossing to what platform.
++#linker = "cc"
++
+ # Path to the `llvm-config` binary of the installation of a custom LLVM to link
+ # against. Note that if this is specifed we don't compile LLVM at all for this
+ # target.
 diff --git a/src/Cargo.lock b/src/Cargo.lock
-index 19f3042c70..425cc0fc09 100644
+index bc1fdf40b0..dd58da365d 100644
 --- a/src/Cargo.lock
 +++ b/src/Cargo.lock
-@@ -1778,7 +1778,6 @@ dependencies = [
+@@ -2017,7 +2017,6 @@ dependencies = [
+  "alloc_jemalloc 0.0.0",
+  "alloc_system 0.0.0",
+  "build_helper 0.1.0",
+- "cc 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
   "collections 0.0.0",
   "compiler_builtins 0.0.0",
   "core 0.0.0",
-- "gcc 0.3.51 (registry+https://github.com/rust-lang/crates.io-index)",
-  "libc 0.0.0",
-  "panic_abort 0.0.0",
-  "panic_unwind 0.0.0",
 diff --git a/src/bootstrap/bin/rustc.rs b/src/bootstrap/bin/rustc.rs
-index 0baca9e58f..e94712159c 100644
+index 848b10d312..cdf43cf184 100644
 --- a/src/bootstrap/bin/rustc.rs
 +++ b/src/bootstrap/bin/rustc.rs
 @@ -122,12 +122,6 @@ fn main() {
@@ -65,7 +95,7 @@ index 0baca9e58f..e94712159c 100644
          // Pass down incremental directory, if any.
          if let Ok(dir) = env::var("RUSTC_INCREMENTAL") {
              cmd.arg(format!("-Zincremental={}", dir));
-@@ -254,6 +248,13 @@ fn main() {
+@@ -260,6 +254,13 @@ fn main() {
          }
      }
  
@@ -94,21 +124,32 @@ index d7d72d5dd5..e9d1a6d668 100644
      std::process::exit(match cmd.status() {
          Ok(s) => s.code().unwrap_or(1),
 diff --git a/src/bootstrap/builder.rs b/src/bootstrap/builder.rs
-index 298f6a004a..e697c2ef54 100644
+index e7a5196178..b83da6546a 100644
 --- a/src/bootstrap/builder.rs
 +++ b/src/bootstrap/builder.rs
-@@ -418,6 +418,9 @@ impl<'a> Builder<'a> {
-             .env("RUSTC_LIBDIR", self.sysroot_libdir(compiler, self.build.build))
-             .env("CFG_RELEASE_CHANNEL", &self.build.config.channel)
-             .env("RUSTDOC_REAL", self.rustdoc(host));
+@@ -413,12 +413,14 @@ impl<'a> Builder<'a> {
+     pub fn rustdoc_cmd(&self, host: Interned<String>) -> Command {
+         let mut cmd = Command::new(&self.out.join("bootstrap/debug/rustdoc"));
+         let compiler = self.compiler(self.top_stage, host);
+-        cmd
+-            .env("RUSTC_STAGE", compiler.stage.to_string())
+-            .env("RUSTC_SYSROOT", self.sysroot(compiler))
+-            .env("RUSTC_LIBDIR", self.sysroot_libdir(compiler, self.build.build))
+-            .env("CFG_RELEASE_CHANNEL", &self.build.config.channel)
+-            .env("RUSTDOC_REAL", self.rustdoc(host));
++        cmd.env("RUSTC_STAGE", compiler.stage.to_string())
++           .env("RUSTC_SYSROOT", self.sysroot(compiler))
++           .env("RUSTC_LIBDIR", self.sysroot_libdir(compiler, self.build.build))
++           .env("CFG_RELEASE_CHANNEL", &self.build.config.channel)
++           .env("RUSTDOC_REAL", self.rustdoc(host));
 +        if let Some(linker) = self.build.linker(host) {
 +            cmd.env("RUSTDOC_LINKER", linker);
 +        }
          cmd
      }
  
-@@ -477,6 +480,10 @@ impl<'a> Builder<'a> {
-              })
+@@ -484,6 +486,10 @@ impl<'a> Builder<'a> {
+              .env("TEST_MIRI", self.config.test_miri.to_string())
               .env("RUSTC_FLAGS", self.rustc_flags(target).join(" "));
  
 +        if let Some(linker) = self.build.linker(target) {
@@ -118,7 +159,7 @@ index 298f6a004a..e697c2ef54 100644
          if mode != Mode::Tool {
              // Tools don't get debuginfo right now, e.g. cargo and rls don't
              // get compiled with debuginfo.
-@@ -546,17 +553,35 @@ impl<'a> Builder<'a> {
+@@ -556,17 +562,35 @@ impl<'a> Builder<'a> {
  
          cargo.env("RUSTC_VERBOSE", format!("{}", self.verbosity));
  
@@ -160,10 +201,10 @@ index 298f6a004a..e697c2ef54 100644
              }
          }
  
-diff --git a/src/bootstrap/cc.rs b/src/bootstrap/cc.rs
-index 0f25da8a23..e07d6879d6 100644
---- a/src/bootstrap/cc.rs
-+++ b/src/bootstrap/cc.rs
+diff --git a/src/bootstrap/cc_detect.rs b/src/bootstrap/cc_detect.rs
+index 76bb7ccbc1..e531fdaf29 100644
+--- a/src/bootstrap/cc_detect.rs
++++ b/src/bootstrap/cc_detect.rs
 @@ -31,20 +31,51 @@
  //! ever be probed for. Instead the compilers found here will be used for
  //! everything.
@@ -176,7 +217,7 @@ index 0f25da8a23..e07d6879d6 100644
  
 -use build_helper::{cc2ar, output};
 +use build_helper::output;
- use gcc;
+ use cc;
  
  use Build;
  use config::Target;
@@ -216,8 +257,8 @@ index 0f25da8a23..e07d6879d6 100644
 +    let targets = build.targets.iter().chain(&build.hosts).cloned().chain(iter::once(build.build))
 +                               .collect::<HashSet<_>>();
 +    for target in targets.into_iter() {
-         let mut cfg = gcc::Config::new();
-         cfg.cargo_metadata(false).opt_level(0).debug(false)
+         let mut cfg = cc::Build::new();
+         cfg.cargo_metadata(false).opt_level(0).warnings(false).debug(false)
             .target(&target).host(&build.build);
 @@ -57,16 +88,23 @@ pub fn find(build: &mut Build) {
          }
@@ -244,14 +285,14 @@ index 0f25da8a23..e07d6879d6 100644
 -    for host in build.hosts.iter().cloned().chain(iter::once(build.build)) {
 +    let hosts = build.hosts.iter().cloned().chain(iter::once(build.build)).collect::<HashSet<_>>();
 +    for host in hosts.into_iter() {
-         let mut cfg = gcc::Config::new();
-         cfg.cargo_metadata(false).opt_level(0).debug(false).cpp(true)
+         let mut cfg = cc::Build::new();
+         cfg.cargo_metadata(false).opt_level(0).warnings(false).debug(false).cpp(true)
             .target(&host).host(&build.build);
 diff --git a/src/bootstrap/check.rs b/src/bootstrap/check.rs
-index 92fb2105b7..d50c9ed34f 100644
+index bd9d29be96..667ac3d3ab 100644
 --- a/src/bootstrap/check.rs
 +++ b/src/bootstrap/check.rs
-@@ -566,6 +566,9 @@ impl Step for Compiletest {
+@@ -718,6 +718,9 @@ impl Step for Compiletest {
          // Avoid depending on rustdoc when we don't need it.
          if mode == "rustdoc" || mode == "run-make" {
              cmd.arg("--rustdoc-path").arg(builder.rustdoc(compiler.host));
@@ -261,7 +302,7 @@ index 92fb2105b7..d50c9ed34f 100644
          }
  
          cmd.arg("--src-base").arg(build.src.join("src/test").join(suite));
-@@ -647,6 +650,9 @@ impl Step for Compiletest {
+@@ -799,6 +802,9 @@ impl Step for Compiletest {
                  .arg("--cflags").arg(build.cflags(target).join(" "))
                  .arg("--llvm-components").arg(llvm_components.trim())
                  .arg("--llvm-cxxflags").arg(llvm_cxxflags.trim());
@@ -271,7 +312,7 @@ index 92fb2105b7..d50c9ed34f 100644
              }
          }
          if suite == "run-make" && !build.config.llvm_enabled {
-@@ -672,7 +678,7 @@ impl Step for Compiletest {
+@@ -824,7 +830,7 @@ impl Step for Compiletest {
          // Note that if we encounter `PATH` we make sure to append to our own `PATH`
          // rather than stomp over it.
          if target.contains("msvc") {
@@ -281,10 +322,10 @@ index 92fb2105b7..d50c9ed34f 100644
                      cmd.env(k, v);
                  }
 diff --git a/src/bootstrap/config.rs b/src/bootstrap/config.rs
-index f43035fbfe..db4ba0e1ed 100644
+index c8b2ed042c..b8ec5867c1 100644
 --- a/src/bootstrap/config.rs
 +++ b/src/bootstrap/config.rs
-@@ -142,6 +142,8 @@ pub struct Target {
+@@ -144,6 +144,8 @@ pub struct Target {
      pub jemalloc: Option<PathBuf>,
      pub cc: Option<PathBuf>,
      pub cxx: Option<PathBuf>,
@@ -293,7 +334,7 @@ index f43035fbfe..db4ba0e1ed 100644
      pub ndk: Option<PathBuf>,
      pub crt_static: Option<bool>,
      pub musl_root: Option<PathBuf>,
-@@ -275,6 +277,8 @@ struct TomlTarget {
+@@ -284,6 +286,8 @@ struct TomlTarget {
      jemalloc: Option<String>,
      cc: Option<String>,
      cxx: Option<String>,
@@ -302,7 +343,7 @@ index f43035fbfe..db4ba0e1ed 100644
      android_ndk: Option<String>,
      crt_static: Option<bool>,
      musl_root: Option<String>,
-@@ -446,8 +450,10 @@ impl Config {
+@@ -487,8 +491,10 @@ impl Config {
                  if let Some(ref s) = cfg.android_ndk {
                      target.ndk = Some(env::current_dir().unwrap().join(s));
                  }
@@ -315,25 +356,25 @@ index f43035fbfe..db4ba0e1ed 100644
                  target.musl_root = cfg.musl_root.clone().map(PathBuf::from);
                  target.qemu_rootfs = cfg.qemu_rootfs.clone().map(PathBuf::from);
 diff --git a/src/bootstrap/lib.rs b/src/bootstrap/lib.rs
-index 84a9e56b64..5a285dcda9 100644
+index 2d721f4557..7c599f9183 100644
 --- a/src/bootstrap/lib.rs
 +++ b/src/bootstrap/lib.rs
-@@ -238,10 +238,11 @@ pub struct Build {
+@@ -240,10 +240,11 @@ pub struct Build {
      lldb_python_dir: Option<String>,
  
      // Runtime state filled in later on
 -    // target -> (cc, ar)
--    cc: HashMap<Interned<String>, (gcc::Tool, Option<PathBuf>)>,
+-    cc: HashMap<Interned<String>, (cc::Tool, Option<PathBuf>)>,
 -    // host -> (cc, ar)
 +    // C/C++ compilers and archiver for all targets
-+    cc: HashMap<Interned<String>, gcc::Tool>,
-     cxx: HashMap<Interned<String>, gcc::Tool>,
++    cc: HashMap<Interned<String>, cc::Tool>,
+     cxx: HashMap<Interned<String>, cc::Tool>,
 +    ar: HashMap<Interned<String>, PathBuf>,
 +    // Misc
      crates: HashMap<Interned<String>, Crate>,
      is_sudo: bool,
      ci_env: CiEnv,
-@@ -322,6 +323,7 @@ impl Build {
+@@ -324,6 +325,7 @@ impl Build {
              rls_info,
              cc: HashMap::new(),
              cxx: HashMap::new(),
@@ -341,7 +382,7 @@ index 84a9e56b64..5a285dcda9 100644
              crates: HashMap::new(),
              lldb_version: None,
              lldb_python_dir: None,
-@@ -593,7 +595,7 @@ impl Build {
+@@ -612,7 +614,7 @@ impl Build {
  
      /// Returns the path to the C compiler for the target specified.
      fn cc(&self, target: Interned<String>) -> &Path {
@@ -350,16 +391,16 @@ index 84a9e56b64..5a285dcda9 100644
      }
  
      /// Returns a list of flags to pass to the C compiler for the target
-@@ -601,7 +603,7 @@ impl Build {
+@@ -620,7 +622,7 @@ impl Build {
      fn cflags(&self, target: Interned<String>) -> Vec<String> {
          // Filter out -O and /O (the optimization flags) that we picked up from
-         // gcc-rs because the build scripts will determine that for themselves.
+         // cc-rs because the build scripts will determine that for themselves.
 -        let mut base = self.cc[&target].0.args().iter()
 +        let mut base = self.cc[&target].args().iter()
                             .map(|s| s.to_string_lossy().into_owned())
                             .filter(|s| !s.starts_with("-O") && !s.starts_with("/O"))
                             .collect::<Vec<_>>();
-@@ -625,7 +627,11 @@ impl Build {
+@@ -644,7 +646,11 @@ impl Build {
  
      /// Returns the path to the `ar` archive utility for the target specified.
      fn ar(&self, target: Interned<String>) -> Option<&Path> {
@@ -372,7 +413,7 @@ index 84a9e56b64..5a285dcda9 100644
      }
  
      /// Returns the path to the C++ compiler for the target specified.
-@@ -648,7 +654,10 @@ impl Build {
+@@ -667,7 +673,10 @@ impl Build {
          // than an entry here.
  
          let mut base = Vec::new();
@@ -385,7 +426,7 @@ index 84a9e56b64..5a285dcda9 100644
              base.push(format!("-Clinker={}", self.cc(target).display()));
          }
 diff --git a/src/bootstrap/native.rs b/src/bootstrap/native.rs
-index 8429b64513..23d33c381c 100644
+index c4e8063031..da3d787af2 100644
 --- a/src/bootstrap/native.rs
 +++ b/src/bootstrap/native.rs
 @@ -227,6 +227,13 @@ impl Step for Llvm {
@@ -403,10 +444,10 @@ index 8429b64513..23d33c381c 100644
  
          configure_compilers(&mut cfg);
 diff --git a/src/bootstrap/tool.rs b/src/bootstrap/tool.rs
-index e759f1a3e6..d4c65db66d 100644
+index a05e58e6a2..7bc3c5b16c 100644
 --- a/src/bootstrap/tool.rs
 +++ b/src/bootstrap/tool.rs
-@@ -409,7 +409,7 @@ impl<'a> Builder<'a> {
+@@ -561,7 +561,7 @@ impl<'a> Builder<'a> {
          if compiler.host.contains("msvc") {
              let curpaths = env::var_os("PATH").unwrap_or_default();
              let curpaths = env::split_paths(&curpaths).collect::<Vec<_>>();
@@ -416,10 +457,10 @@ index e759f1a3e6..d4c65db66d 100644
                      continue
                  }
 diff --git a/src/build_helper/lib.rs b/src/build_helper/lib.rs
-index 8b4c7f2ac3..f984ce0d87 100644
+index e81dab70b4..97723e260f 100644
 --- a/src/build_helper/lib.rs
 +++ b/src/build_helper/lib.rs
-@@ -96,27 +96,6 @@ pub fn gnu_target(target: &str) -> String {
+@@ -138,27 +138,6 @@ pub fn gnu_target(target: &str) -> String {
      }
  }
  
@@ -448,14 +489,14 @@ index 8b4c7f2ac3..f984ce0d87 100644
      if host.contains("bitrig") || host.contains("dragonfly") ||
          host.contains("freebsd") || host.contains("netbsd") ||
 diff --git a/src/liballoc_jemalloc/build.rs b/src/liballoc_jemalloc/build.rs
-index 41193f6a41..8006580ebc 100644
+index 7dd85ddcc7..65e035d4ff 100644
 --- a/src/liballoc_jemalloc/build.rs
 +++ b/src/liballoc_jemalloc/build.rs
 @@ -63,15 +63,6 @@ fn main() {
          _ => return,
      };
  
--    let compiler = gcc::Config::new().get_compiler();
+-    let compiler = cc::Build::new().get_compiler();
 -    // only msvc returns None for ar so unwrap is okay
 -    let ar = build_helper::cc2ar(compiler.path(), &target).unwrap();
 -    let cflags = compiler.args()
@@ -488,10 +529,10 @@ index 41193f6a41..8006580ebc 100644
      if target.contains("ios") {
          cmd.arg("--disable-tls");
 diff --git a/src/librustdoc/lib.rs b/src/librustdoc/lib.rs
-index 61a8165d26..8c5b02cad5 100644
+index 9563ccfcc6..3fe0e38775 100644
 --- a/src/librustdoc/lib.rs
 +++ b/src/librustdoc/lib.rs
-@@ -241,6 +241,9 @@ pub fn opts() -> Vec<RustcOptGroup> {
+@@ -243,6 +243,9 @@ pub fn opts() -> Vec<RustcOptGroup> {
          unstable("display-warnings", |o| {
              o.optflag("", "display-warnings", "to print code warnings when testing doc")
          }),
@@ -501,7 +542,7 @@ index 61a8165d26..8c5b02cad5 100644
      ]
  }
  
-@@ -352,15 +355,16 @@ pub fn main_args(args: &[String]) -> isize {
+@@ -354,15 +357,16 @@ pub fn main_args(args: &[String]) -> isize {
      let playground_url = matches.opt_str("playground-url");
      let maybe_sysroot = matches.opt_str("sysroot").map(PathBuf::from);
      let display_warnings = matches.opt_present("display-warnings");
@@ -543,10 +584,10 @@ index 57e8e88cd1..e140f01595 100644
          old_find_testable_code(&input_str, &mut collector, DUMMY_SP);
          find_testable_code(&input_str, &mut collector, DUMMY_SP);
 diff --git a/src/librustdoc/test.rs b/src/librustdoc/test.rs
-index 47e8d63f80..e9a3ee5464 100644
+index 5ce73d38fd..2d4e02fcf0 100644
 --- a/src/librustdoc/test.rs
 +++ b/src/librustdoc/test.rs
-@@ -62,7 +62,8 @@ pub fn run(input: &str,
+@@ -61,7 +61,8 @@ pub fn run(input: &str,
             crate_name: Option<String>,
             maybe_sysroot: Option<PathBuf>,
             render_type: RenderType,
@@ -556,7 +597,7 @@ index 47e8d63f80..e9a3ee5464 100644
             -> isize {
      let input_path = PathBuf::from(input);
      let input = config::Input::File(input_path.clone());
-@@ -117,7 +118,8 @@ pub fn run(input: &str,
+@@ -121,7 +122,8 @@ pub fn run(input: &str,
                                         maybe_sysroot,
                                         Some(codemap),
                                         None,
@@ -565,8 +606,8 @@ index 47e8d63f80..e9a3ee5464 100644
 +                                       linker);
  
      {
-         let dep_graph = DepGraph::new(false);
-@@ -178,7 +180,8 @@ fn run_test(test: &str, cratename: &str, filename: &str, cfgs: Vec<String>, libs
+         let map = hir::map::map_crate(&sess, &*cstore, &mut hir_forest, &defs);
+@@ -180,7 +182,8 @@ fn run_test(test: &str, cratename: &str, filename: &str, cfgs: Vec<String>, libs
              externs: Externs,
              should_panic: bool, no_run: bool, as_test_harness: bool,
              compile_fail: bool, mut error_codes: Vec<String>, opts: &TestOptions,
@@ -576,7 +617,7 @@ index 47e8d63f80..e9a3ee5464 100644
      // the test harness wants its own `main` & top level functions, so
      // never wrap the test in `fn main() { ... }`
      let test = make_test(test, Some(cratename), as_test_harness, opts);
-@@ -197,6 +200,7 @@ fn run_test(test: &str, cratename: &str, filename: &str, cfgs: Vec<String>, libs
+@@ -201,6 +204,7 @@ fn run_test(test: &str, cratename: &str, filename: &str, cfgs: Vec<String>, libs
          externs,
          cg: config::CodegenOptions {
              prefer_dynamic: true,
@@ -584,7 +625,7 @@ index 47e8d63f80..e9a3ee5464 100644
              .. config::basic_codegen_options()
          },
          test: as_test_harness,
-@@ -405,13 +409,14 @@ pub struct Collector {
+@@ -422,13 +426,14 @@ pub struct Collector {
      filename: Option<String>,
      // to be removed when hoedown will be removed as well
      pub render_type: RenderType,
@@ -600,7 +641,7 @@ index 47e8d63f80..e9a3ee5464 100644
          Collector {
              tests: Vec::new(),
              old_tests: HashMap::new(),
-@@ -429,6 +434,7 @@ impl Collector {
+@@ -446,6 +451,7 @@ impl Collector {
              codemap,
              filename,
              render_type,
@@ -608,7 +649,7 @@ index 47e8d63f80..e9a3ee5464 100644
          }
      }
  
-@@ -492,6 +498,7 @@ impl Collector {
+@@ -509,6 +515,7 @@ impl Collector {
          let cratename = self.cratename.to_string();
          let opts = self.opts.clone();
          let maybe_sysroot = self.maybe_sysroot.clone();
@@ -616,7 +657,7 @@ index 47e8d63f80..e9a3ee5464 100644
          debug!("Creating test {}: {}", name, test);
          self.tests.push(testing::TestDescAndFn {
              desc: testing::TestDesc {
-@@ -520,7 +527,8 @@ impl Collector {
+@@ -537,7 +544,8 @@ impl Collector {
                                   compile_fail,
                                   error_codes,
                                   &opts,
@@ -627,26 +668,26 @@ index 47e8d63f80..e9a3ee5464 100644
                  } {
                      Ok(()) => (),
 diff --git a/src/libstd/Cargo.toml b/src/libstd/Cargo.toml
-index 09c1681693..866c0038a7 100644
+index fb276448ff..866c0038a7 100644
 --- a/src/libstd/Cargo.toml
 +++ b/src/libstd/Cargo.toml
 @@ -36,7 +36,6 @@ rustc_tsan = { path = "../librustc_tsan" }
  
  [build-dependencies]
  build_helper = { path = "../build_helper" }
--gcc = "0.3.50"
+-cc = "1.0"
  
  [features]
  backtrace = []
 diff --git a/src/libstd/build.rs b/src/libstd/build.rs
-index f57dec98b7..2511f0f9b8 100644
+index 7ca762c801..0e6214ea04 100644
 --- a/src/libstd/build.rs
 +++ b/src/libstd/build.rs
 @@ -11,7 +11,6 @@
  #![deny(warnings)]
  
  extern crate build_helper;
--extern crate gcc;
+-extern crate cc;
  
  use std::env;
  use std::process::Command;
@@ -654,7 +695,7 @@ index f57dec98b7..2511f0f9b8 100644
  fn build_libbacktrace(host: &str, target: &str) -> Result<(), ()> {
      let native = native_lib_boilerplate("libbacktrace", "libbacktrace", "backtrace", ".libs")?;
  
--    let compiler = gcc::Config::new().get_compiler();
+-    let compiler = cc::Build::new().get_compiler();
 -    // only msvc returns None for ar so unwrap is okay
 -    let ar = build_helper::cc2ar(compiler.path(), target).unwrap();
 -    let mut cflags = compiler.args().iter().map(|s| s.to_str().unwrap())
@@ -670,11 +711,11 @@ index f57dec98b7..2511f0f9b8 100644
 -                .env("CC", compiler.path())
 -                .env("AR", &ar)
 -                .env("RANLIB", format!("{} s", ar.display()))
--                .env("CFLAGS", cflags));
-+                .env("CFLAGS", env::var("CFLAGS").unwrap_or_default() + " -fvisibility=hidden"));
+-                .env("CFLAGS", cflags),
++                .env("CFLAGS", env::var("CFLAGS").unwrap_or_default() + " -fvisibility=hidden"),
+         BuildExpectation::None);
  
      run(Command::new(build_helper::make(host))
-                 .current_dir(&native.out_dir)
 diff --git a/src/test/run-make/archive-duplicate-names/Makefile b/src/test/run-make/archive-duplicate-names/Makefile
 index 5202e6dea5..93711c41d7 100644
 --- a/src/test/run-make/archive-duplicate-names/Makefile
@@ -715,7 +756,7 @@ index 0dbe655b77..5c9cc99350 100644
 +	$(AR) crus $(TMPDIR)/libfoo-ffffffff-1.0.rlib $(TMPDIR)/rust.metadata.bin
  	$(RUSTC) foo.rs 2>&1 | grep "can't find crate for"
 diff --git a/src/test/run-make/issue-19371/foo.rs b/src/test/run-make/issue-19371/foo.rs
-index e96588c6e5..20abe3073a 100644
+index 461df49b46..4db027aaee 100644
 --- a/src/test/run-make/issue-19371/foo.rs
 +++ b/src/test/run-make/issue-19371/foo.rs
 @@ -18,7 +18,6 @@ extern crate rustc_errors;
@@ -735,8 +776,8 @@ index e96588c6e5..20abe3073a 100644
 +    }
  
      let descriptions = Registry::new(&rustc::DIAGNOSTICS);
-     let dep_graph = DepGraph::new(opts.build_dep_graph());
-@@ -68,8 +70,7 @@ fn basic_sess(sysroot: PathBuf) -> (Session, Rc<CStore>) {
+     let cstore = Rc::new(CStore::new(Box::new(rustc_trans::LlvmMetadataLoader)));
+@@ -67,8 +69,7 @@ fn basic_sess(sysroot: PathBuf) -> (Session, Rc<CStore>) {
  
  fn compile(code: String, output: PathBuf, sysroot: PathBuf) {
      let (sess, cstore) = basic_sess(sysroot);
@@ -782,12 +823,12 @@ index 5878eec66b..92a278825c 100644
 +	$(AR) d $(TMPDIR)/libfoo.a foo.rs
  	$(RUSTC) foo.rs
 diff --git a/src/test/run-make/tools.mk b/src/test/run-make/tools.mk
-index d13ba11e96..00f8b61d00 100644
+index 27f235d54d..c5d5626bf7 100644
 --- a/src/test/run-make/tools.mk
 +++ b/src/test/run-make/tools.mk
-@@ -6,7 +6,13 @@ TARGET_RPATH_ENV = \
-     $(LD_LIB_PATH_ENVVAR)="$(TMPDIR):$(TARGET_RPATH_DIR):$($(LD_LIB_PATH_ENVVAR))"
+@@ -7,7 +7,13 @@ TARGET_RPATH_ENV = \
  
+ RUSTC_ORIGINAL := $(RUSTC)
  BARE_RUSTC := $(HOST_RPATH_ENV) '$(RUSTC)'
 +BARE_RUSTDOC := $(HOST_RPATH_ENV) '$(RUSTDOC)'
  RUSTC := $(BARE_RUSTC) --out-dir $(TMPDIR) -L $(TMPDIR) $(RUSTFLAGS)
@@ -799,7 +840,7 @@ index d13ba11e96..00f8b61d00 100644
  #CC := $(CC) -L $(TMPDIR)
  HTMLDOCCK := $(PYTHON) $(S)/src/etc/htmldocck.py
  
-@@ -101,13 +107,13 @@ REMOVE_DYLIBS     = rm $(TMPDIR)/$(call DYLIB_GLOB,$(1))
+@@ -102,13 +108,13 @@ REMOVE_DYLIBS     = rm $(TMPDIR)/$(call DYLIB_GLOB,$(1))
  REMOVE_RLIBS      = rm $(TMPDIR)/$(call RLIB_GLOB,$(1))
  
  %.a: %.o
@@ -816,7 +857,7 @@ index d13ba11e96..00f8b61d00 100644
  %.dylib: %.o
  	$(CC) -dynamiclib -Wl,-dylib -o $@ $<
 diff --git a/src/tools/compiletest/src/common.rs b/src/tools/compiletest/src/common.rs
-index 0d6b350a1d..346dfc6923 100644
+index cee7e52c7f..aa98f818f4 100644
 --- a/src/tools/compiletest/src/common.rs
 +++ b/src/tools/compiletest/src/common.rs
 @@ -201,6 +201,8 @@ pub struct Config {
@@ -829,7 +870,7 @@ index 0d6b350a1d..346dfc6923 100644
      pub llvm_cxxflags: String,
      pub nodejs: Option<String>,
 diff --git a/src/tools/compiletest/src/main.rs b/src/tools/compiletest/src/main.rs
-index 15216f52d9..51cbfe238b 100644
+index 26c447d01d..1983bb7a5c 100644
 --- a/src/tools/compiletest/src/main.rs
 +++ b/src/tools/compiletest/src/main.rs
 @@ -102,6 +102,8 @@ pub fn parse_config(args: Vec<String> ) -> Config {
@@ -860,7 +901,7 @@ index 15216f52d9..51cbfe238b 100644
      logv(c, format!("quiet: {}", config.quiet));
      logv(c, "\n".to_string());
 diff --git a/src/tools/compiletest/src/runtest.rs b/src/tools/compiletest/src/runtest.rs
-index d2a0c776b3..c22020c3be 100644
+index 10ef326d9d..07cac38999 100644
 --- a/src/tools/compiletest/src/runtest.rs
 +++ b/src/tools/compiletest/src/runtest.rs
 @@ -1164,6 +1164,9 @@ actual:\n\
@@ -895,5 +936,5 @@ index d2a0c776b3..c22020c3be 100644
              if self.config.target.contains("windows") {
                  cmd.env("IS_WINDOWS", "1");
 -- 
-2.15.0.403.gc27cc4dac6-goog
+2.15.0.417.g466bffb3ac-goog
 

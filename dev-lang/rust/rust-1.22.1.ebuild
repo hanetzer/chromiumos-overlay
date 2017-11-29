@@ -25,7 +25,7 @@ fi
 
 STAGE0_VERSION="1.$(($(get_version_component_range 2) - 1)).0"
 STAGE0_VERSION_CARGO="0.$(($(get_version_component_range 2))).0"
-STAGE0_DATE="2017-08-31"
+STAGE0_DATE="2017-10-12"
 RUST_STAGE0_amd64="rustc-${STAGE0_VERSION}-x86_64-unknown-linux-gnu"
 
 DESCRIPTION="Systems programming language from Mozilla"
@@ -72,14 +72,14 @@ src_prepare() {
 	# armv7a in cros versus armv7 and the abi is gnueabi in cros verus
 	# gnueabihf. This should no longer be needed after chromium:711369
 	# is fixed.
-	pushd src/librustc_back/target
+	pushd src/librustc_back/target || die
 	sed -e 's:"unknown":"cros":g' armv7_unknown_linux_gnueabihf.rs >armv7a_cros_linux_gnueabi.rs
 	popd
 
 	# One of the patches changes a vendored library, thereby changing the
 	# checksum.
-	pushd src/vendor/gcc
-	sed -i 's:d6a022eba51292e379c0ec092dfa2a931e2aa2dd3b5348740c61419a12676dd0:b456d39f05b21bbd31d6bb0ff02b67f50f0c7363fae2b0cb20899b5a61d2aa43:g' \
+	pushd src/vendor/cc || die
+	sed -i 's:5f254224f983fa9a5bae1c26bc94df6c434ba8a3ed0eb1deb8361dc0c6db3a41:2b12049076628a3d797fbddab46b8e69d2788faa809f3a03778880293b3d8a80:g' \
 		.cargo-checksum.json
 	popd
 
@@ -91,7 +91,7 @@ src_prepare() {
 	# src/compiler-rt is a submodule that only gets filled in after
 	# ./configure.
 	sed -e 's:#include <stdlib.h>:void abort(void);:g' \
-	    -i "${ECONF_SOURCE:-.}"/src/libcompiler_builtins/compiler-rt/lib/builtins/int_util.c || die
+		-i "${ECONF_SOURCE:-.}"/src/libcompiler_builtins/compiler-rt/lib/builtins/int_util.c || die
 
 	epatch "${PATCHES[@]}"
 

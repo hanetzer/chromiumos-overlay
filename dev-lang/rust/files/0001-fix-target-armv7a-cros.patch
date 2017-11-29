@@ -9,8 +9,8 @@ Subject: [PATCH] recognize armv7a as an armv7 linux target
 
 diff --git a/src/lib.rs b/src/lib.rs
 index 510df12..3aa4cac 100644
---- a/src/vendor/gcc/src/lib.rs
-+++ b/src/vendor/gcc/src/lib.rs
+--- a/src/vendor/cc/src/lib.rs
++++ b/src/vendor/cc/src/lib.rs
 @@ -1009,7 +1009,7 @@ impl Build {
                  }
  
