@@ -60,7 +60,7 @@ IUSE="
 	opengl
 	opengles
 	+runhooks
-	smbprovider
+	+smbprovider
 	thinlto
 	+v4l2_codec
 	v4lplugin
