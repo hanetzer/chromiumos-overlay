@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit cros-constants
 
@@ -21,6 +21,7 @@ RDEPEND="
 	chromeos-base/autotest-tests
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-security
+	chromeos-base/autotest-tests-toolchain
 	chromeos-base/ci-results-archiver
 	bluetooth? ( chromeos-base/autotest-server-tests-bluetooth )
 	buffet? ( chromeos-base/autotest-tests-cloud-services )

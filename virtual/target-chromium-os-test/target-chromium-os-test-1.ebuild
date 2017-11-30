@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI=5
 
 DESCRIPTION="List of packages that are needed inside the Chromium OS test image;
 Note: test images are a superset of dev images."
@@ -120,6 +120,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	shill? ( chromeos-base/shill-test-scripts )
 	!chromeless_tests? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
+	chromeos-base/toolchain-tests
 	dev-python/protobuf-python
 	dev-python/btsocket
 	dev-python/contextlib2
