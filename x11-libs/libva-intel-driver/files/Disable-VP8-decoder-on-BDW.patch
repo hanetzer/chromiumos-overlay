@@ -1,0 +1,25 @@
+From 3f768ec9ee2f83d393a6f2857d5e8d72e388249b Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Thu, 30 Nov 2017 13:39:02 +0900
+Subject: [PATCH] Disable VP8 decoder on BDW.
+
+Disable VP8 decoder on BDW to workaround GPU hangs on older kernels.
+---
+ src/i965_device_info.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index 629b1f2a..dbb50c82 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -265,7 +265,6 @@ static struct hw_codec_info bdw_hw_codec_info = {
+     .has_tiled_surface = 1,
+     .has_di_motion_adptive = 1,
+     .has_di_motion_compensated = 1,
+-    .has_vp8_decoding = 1,
+     .has_h264_mvc_encoding = 1,
+ 
+     .h264_brc_mode = VA_RC_CQP | VA_RC_CBR | VA_RC_VBR,
+-- 
+2.15.0.531.g2ccb3012c9-goog
+

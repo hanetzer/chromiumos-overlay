@@ -48,6 +48,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
+	epatch "${FILESDIR}"/Disable-VP8-decoder-on-BDW.patch
 	epatch "${FILESDIR}"/Don-t-check-the-stride-in-the-y-direction-for-a-sing.patch
 	epatch "${FILESDIR}"/Change-the-vertical-alignment-for-linear-surface.patch
 	epatch "${FILESDIR}"/Revert-Use-Media-Read-message-if-possible-on-Gen8.patch
