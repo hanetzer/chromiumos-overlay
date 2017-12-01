@@ -25,6 +25,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	media-libs/arc-camera3-android-headers
 	media-libs/arc-camera3-libcamera_client
+	media-libs/arc-camera3-libcamera_common
 	media-libs/arc-camera3-libcamera_metadata
 	media-libs/arc-camera3-libcbm
 	media-libs/libyuv
