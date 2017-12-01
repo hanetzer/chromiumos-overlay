@@ -29,11 +29,14 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	android_aep -android_gles2 -android_gles30 +android_gles31 -android_gles32 cheets +classic debug dri egl +gallium
+	android_aep -android_gles2 -android_gles30 +android_gles31 -android_gles32
+	-android_vulkan_compute_0
+	cheets +classic debug dri egl +gallium
 	-gbm gles1 gles2 +llvm +nptl pic selinux shared-glapi vulkan X xlib-glx"
 
 REQUIRED_USE="
 	^^ ( android_gles2 android_gles30 android_gles31 android_gles32 )
+	android_vulkan_compute_0? ( vulkan )
 	cheets? (
 		vulkan? ( video_cards_intel )
 		video_cards_amdgpu? ( llvm )
@@ -311,6 +314,12 @@ multilib_src_install_all_cheets() {
 	insinto "${ARC_PREFIX}/vendor/etc/"
 	doins "${FILESDIR}"/drirc
 
+	# For documentation on the feature set represented by each XML file
+	# installed into /vendor/etc/permissions, see
+	# <https://developer.android.com/reference/android/content/pm/PackageManager.html>.
+	# For example XML files for each feature, see
+	# <https://android.googlesource.com/platform/frameworks/native/+/master/data/etc>.
+
 	# Install init files to advertise supported API versions.
 	insinto "${ARC_PREFIX}/vendor/etc/init"
 	if use android_gles32; then
@@ -329,8 +338,13 @@ multilib_src_install_all_cheets() {
 		doins "${FILESDIR}/vulkan.rc"
 
 		insinto "${ARC_PREFIX}/vendor/etc/permissions"
-		doins "${FILESDIR}/android.hardware.vulkan.level-1.xml"
 		doins "${FILESDIR}/android.hardware.vulkan.version-1_0_3.xml"
+		doins "${FILESDIR}/android.hardware.vulkan.level-1.xml"
+	fi
+
+	if use android_vulkan_compute_0; then
+		insinto "${ARC_PREFIX}/vendor/etc/permissions"
+		doins "${FILESDIR}/android.hardware.vulkan.compute-0.xml"
 	fi
 
 	# Install permission file to declare opengles aep support.
