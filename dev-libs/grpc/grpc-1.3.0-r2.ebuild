@@ -4,7 +4,7 @@
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 python3_{4,5} )
-inherit python-r1 toolchain-funcs multilib
+inherit python-r1 toolchain-funcs multilib flag-o-matic
 
 DESCRIPTION="Modern open source high performance RPC framework"
 HOMEPAGE="http://www.grpc.io"
@@ -40,11 +40,15 @@ src_prepare() {
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
+	# Add "-Wno-sign-conversion" to CFLAGS, until
+	# https://github.com/grpc/grpc/issues/13597 gets fixed.
+	append-flags -Wno-sign-conversion
 	emake \
 		V=1 \
 		prefix=/usr \
 		AR="$(tc-getAR)" \
 		AROPTS="rcs" \
+		CFLAGS="${CFLAGS}" \
 		LD="${CC}" \
 		LDXX="${CXX}" \
 		STRIP=true \
