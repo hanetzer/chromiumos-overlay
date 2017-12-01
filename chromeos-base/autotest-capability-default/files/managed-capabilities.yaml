@@ -1,0 +1,58 @@
+# All the capabilities installed by autotest-capability are supposed to be
+# list up in this file. Otherwise, exception will be raised when parsing an
+# unknown capability.
+# Please refer to README.md for more details.
+
+# HW decoding
+## H264
+## We mark a device with hw_dec_h264_1080_30 capability if it supports
+## HW decoding for 1080p@30fps h264 formatted videos. Same for vp8 and vp9.
+- hw_dec_h264_1080_30
+- hw_dec_h264_1080_60
+- hw_dec_h264_2160_30
+- hw_dec_h264_2160_60
+
+## VP8
+- hw_dec_vp8_1080_30
+- hw_dec_vp8_1080_60
+- hw_dec_vp8_2160_30
+- hw_dec_vp8_2160_60
+
+## VP9
+- hw_dec_vp9_1080_30
+- hw_dec_vp9_1080_60
+- hw_dec_vp9_2160_30
+- hw_dec_vp9_2160_60
+
+## VP9-2
+- hw_dec_vp9-2_1080_30
+- hw_dec_vp9-2_1080_60
+- hw_dec_vp9-2_2160_30
+- hw_dec_vp9-2_2160_60
+
+
+## JPEG
+## hw_dec_jepg is marked if a device supports JPEG HW decoding.
+- hw_dec_jpeg
+
+
+# HW encoding
+## H264
+## We mark a device with hw_enc_h264_1080_30 capability if it supports
+## HW encoding for 1080p@30fps h264 formatted videos. Same for vp8 and vp9.
+- hw_enc_h264_1080_30
+
+## VP8
+- hw_enc_vp8_1080_30
+
+## VP9
+- hw_enc_vp9_1080_30
+
+## JPEG
+## hw_enc_jepg is marked if a device supports JPEG HW encoding.
+- hw_enc_jpeg
+
+
+# camera
+## webcam is marked if a device equips a USB camera.
+- webcam
