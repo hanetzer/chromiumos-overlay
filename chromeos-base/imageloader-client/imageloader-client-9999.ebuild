@@ -3,25 +3,18 @@
 
 EAPI="5"
 
-CROS_WORKON_LOCALNAME=(
-	"platform2"
-	"platform/imageloader"
-)
-CROS_WORKON_PROJECT=(
-	"chromiumos/platform2"
-	"chromiumos/platform/imageloader"
-)
-CROS_WORKON_DESTDIR=(
-	"${S}/platform2"
-	"${S}/platform/imageloader"
-)
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
 PLATFORM_SUBDIR="imageloader"
 PLATFORM_GYP_FILE="imageloader-client.gyp"
 
 inherit cros-workon platform
 
 DESCRIPTION="ImageLoader DBus client library for Chromium OS"
-HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/imageloader/"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/imageloader/"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -39,12 +32,6 @@ DEPEND="
 RDEPEND="
 	chromeos-base/imageloader
 "
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	S="${s}/platform/imageloader"
-}
 
 src_install() {
 	# Install DBus client library.
