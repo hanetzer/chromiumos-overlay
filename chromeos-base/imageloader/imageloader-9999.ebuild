@@ -1,24 +1,19 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
-CROS_WORKON_LOCALNAME=(
-	"platform2"
-	"platform/imageloader"
-)
-CROS_WORKON_PROJECT=(
-	"chromiumos/platform2"
-	"chromiumos/platform/imageloader"
-)
-CROS_WORKON_DESTDIR=(
-	"${S}/platform2"
-	"${S}/platform/imageloader"
-)
+EAPI="5"
+
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
 PLATFORM_SUBDIR="imageloader"
 
 inherit cros-workon platform user
 
 DESCRIPTION="Allow mounting verified utility images"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/imageloader/"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -31,13 +26,6 @@ RDEPEND="chromeos-base/libbrillo
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	# look in src/platform
-	S="${s}/platform/imageloader"
-}
 
 src_install() {
 	# Install seccomp policy file.
