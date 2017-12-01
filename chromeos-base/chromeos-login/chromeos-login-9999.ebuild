@@ -29,6 +29,7 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/libbrillo
 	chromeos-base/libchromeos-ui
 	chromeos-base/libcontainer
+	chromeos-base/libpasswordprovider
 	chromeos-base/metrics
 	dev-libs/nss
 	dev-libs/protobuf
