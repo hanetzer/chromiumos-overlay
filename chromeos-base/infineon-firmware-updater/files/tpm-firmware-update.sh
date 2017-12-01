@@ -115,55 +115,60 @@ reboot_here() {
   exit 1
 }
 
-# Run the updater in a loop so we can perform retries in case of insufficient
-# battery charge.
-while true; do
-  local status="$(run_updater)"
-  case "${status}" in
-    ${EXIT_CODE_SUCCESS})
-      reboot_here "warm"
-      ;;
-    ${EXIT_CODE_SUCCESS_COLD_REBOOT})
-      reboot_here "cold"
-      ;;
-    ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE})
-      # It's OK to continue booting.
-      ;;
-    ${EXIT_CODE_UPDATE_FAILED})
-      # Clear upgrade approval as a precautionary measure. This helps to avoid
-      # boot loops in case of systematic bugs causing the firmware updater to
-      # bail out before actually starting the update.
-      local vpd_params="$(vpd -i RW_VPD -g "tpm_firmware_update_params")"
-      vpd_params="$(update_vpd_params "${vpd_params}" 'mode' 'failed')"
-      vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
+main() {
+  # Run the updater in a loop so we can perform retries in case of insufficient
+  # battery charge.
+  while true; do
+    local status="$(run_updater)"
+    case "${status}" in
+      ${EXIT_CODE_SUCCESS})
+        reboot_here "warm"
+        ;;
+      ${EXIT_CODE_SUCCESS_COLD_REBOOT})
+        reboot_here "cold"
+        ;;
+      ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE})
+        # It's OK to continue booting.
+        ;;
+      ${EXIT_CODE_UPDATE_FAILED})
+        # Clear upgrade approval as a precautionary measure. This helps to avoid
+        # boot loops in case of systematic bugs causing the firmware updater to
+        # bail out before actually starting the update.
+        local vpd_params="$(vpd -i RW_VPD -g "tpm_firmware_update_params")"
+        vpd_params="$(update_vpd_params "${vpd_params}" 'mode' 'failed')"
+        vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
 
-      # The TPM is likely to be in an inoperational state due to the failed
-      # update. If it is, we need to go through recovery anyways to retry the
-      # update. Show a message to the user telling them about the failed update
-      # and reboot so the firmware can determine whether recovery is necessary.
-      chromeos-boot-alert update_tpm_firmware_failure
-      reboot_here "warm"
-      ;;
-    ${EXIT_CODE_LOW_BATTERY})
-      # Show a notification while we wait for the battery to charge.
-      wait_for_battery_to_charge
-      continue
-      ;;
-    ${EXIT_CODE_NOT_UPDATABLE}|${EXIT_CODE_MISSING_APPROVAL})
-      # We have an update, but either the TPM is already owned, or the update
-      # wasn't approved by the user. Drop a flag file so the system can detect
-      # this situation and allow the user to trigger the update flow.
-      touch "/run/tpm_firmware_update_available"
-      ;;
-    *)
-      # When we see an undefined status code, we continue booting. That's
-      # somewhat risky, but likely indicates a bug in the firmware updater
-      # driver script before it got to the point of actually attempting an
-      # update, so we should be good. The alternative would be to inhibit
-      # further firmware updates by updating VPD and rebooting.
-      ;;
-  esac
+        # The TPM is likely to be in an inoperational state due to the failed
+        # update. If it is, we need to go through recovery anyways to retry the
+        # update. Show a message to the user telling them about the failed
+        # update and reboot so the firmware can determine whether recovery is
+        # necessary.
+        chromeos-boot-alert update_tpm_firmware_failure
+        reboot_here "warm"
+        ;;
+      ${EXIT_CODE_LOW_BATTERY})
+        # Show a notification while we wait for the battery to charge.
+        wait_for_battery_to_charge
+        continue
+        ;;
+      ${EXIT_CODE_NOT_UPDATABLE}|${EXIT_CODE_MISSING_APPROVAL})
+        # We have an update, but either the TPM is already owned, or the update
+        # wasn't approved by the user. Drop a flag file so the system can detect
+        # this situation and allow the user to trigger the update flow.
+        touch "/run/tpm_firmware_update_available"
+        ;;
+      *)
+        # When we see an undefined status code, we continue booting. That's
+        # somewhat risky, but likely indicates a bug in the firmware updater
+        # driver script before it got to the point of actually attempting an
+        # update, so we should be good. The alternative would be to inhibit
+        # further firmware updates by updating VPD and rebooting.
+        ;;
+    esac
 
-  # Fall through means "continue booting".
-  exit 0
-done
+    # Fall through means "continue booting".
+    exit 0
+  done
+}
+
+main "$@"
