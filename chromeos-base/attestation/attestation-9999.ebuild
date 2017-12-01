@@ -1,19 +1,19 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/tpm")
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="attestation"
 
 inherit cros-workon libchrome platform user
 
 DESCRIPTION="Attestation service for Chromium OS"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/attestation/"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -46,12 +46,6 @@ pkg_preinst() {
 	enewgroup "attestation"
 	# Create group for /mnt/stateful_partition/unencrypted/preserve.
 	enewgroup "preserve"
-}
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	S="${s}/aosp/system/tpm/attestation"
 }
 
 src_install() {

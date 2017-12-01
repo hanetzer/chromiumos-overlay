@@ -1,20 +1,19 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/tpm")
-CROS_WORKON_USE_VCSID=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="trunks"
 
 inherit cros-workon platform user
 
 DESCRIPTION="Trunks service for Chromium OS"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/trunks/"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -35,12 +34,6 @@ RDEPEND="
 	"
 
 DEPEND="${COMMON_DEPEND}"
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	S="${s}/aosp/system/tpm/trunks"
-}
 
 src_install() {
 	insinto /etc/dbus-1/system.d
