@@ -97,6 +97,7 @@ SERVER_IUSE_TESTS="
 	+tests_enterprise_CFM_MeetAppSanity
 	+tests_enterprise_CFM_MimoSanity
 	+tests_enterprise_CFM_Perf
+	+tests_enterprise_CFM_PTZStress
 	+tests_enterprise_CFM_RebootStress
 	+tests_enterprise_CFM_Sanity
 	+tests_enterprise_CFM_SessionStress
