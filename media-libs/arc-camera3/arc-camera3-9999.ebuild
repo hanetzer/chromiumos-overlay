@@ -58,11 +58,3 @@ src_install() {
 		doins hal_adapter/init/init.camera.rc
 	fi
 }
-
-src_test() {
-	emake BASE_VER=${LIBCHROME_VERS} tests
-
-	if use x86 || use amd64; then
-		./common/future_unittest || die "future unit tests failed!"
-	fi
-}
