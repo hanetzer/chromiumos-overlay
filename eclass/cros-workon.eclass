@@ -46,7 +46,7 @@ ARRAY_VARIABLES=(
 
 # @ECLASS-VARIABLE: CROS_WORKON_DESTDIR
 # @DESCRIPTION:
-# Destination directory in ${WORKDIR} for checkout.
+# Destination directory in ${WORKDIR} for checkout. It must be under ${S}.
 # Note that the default is ${S}, but is only referenced in src_unpack for
 # ebuilds that would like to override it.
 : ${CROS_WORKON_DESTDIR:=}
