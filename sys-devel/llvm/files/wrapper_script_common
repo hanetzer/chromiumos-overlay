@@ -62,3 +62,19 @@ def handle_exec_exception(exc, argv0, use_ccache, execargs):
 def startswith_i86(s):
   """Returns true if s starts with i.86."""
   return s[0] + s[2:4] == 'i86'
+
+def find_source_file(arg_list):
+  """Find c source file in arg list, if it exists."""
+
+  c_endings = ('.c', '.cc', '.cpp', '.C', '.cxx', '.c++')
+  num_args = len(arg_list)
+  i = 1 # Start with second arg
+  while i < num_args:
+    arg = arg_list[i]
+    for ext in c_endings:
+      if arg.endswith(ext) and arg_list[i-1] != '-o':
+        return arg
+    i += 1
+
+  return ''
+

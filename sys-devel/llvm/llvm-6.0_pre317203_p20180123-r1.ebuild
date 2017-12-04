@@ -35,6 +35,10 @@ EGIT_REPO_URIS=(
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
 		"7e0bf617fb110ad1e246f7cb09e20e293d3b429e"  # EGIT_COMMIT r321487
+	"clang-tidy"
+		"tools/clang/tools/extra"
+		"https://git.llvm.org/git/clang-tools-extra.git"
+		"057470116210d2e6bf5e726361e641c8c5de9b35" # EGIT_COMMIT r321412
 )
 else
 # llvm:r317203 https://critique.corp.google.com/#review/175206381
@@ -51,6 +55,10 @@ EGIT_REPO_URIS=(
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
 		"4d085086c74a8fbce197f61548f488a63f300933"  # EGIT_COMMIT r317200
+	"clang-tidy"
+		"tools/clang/tools/extra"
+		"https://git.llvm.org/git/clang-tools-extra.git"
+		"47651f3221d4ae4d2fcc274f7730e1ac853d86b8" # EGIT_COMMIT r316094
 )
 fi
 
@@ -575,6 +583,7 @@ multilib_src_install() {
 		"${FILESDIR}/clang_host_wrapper.body" > \
 		"${D}/usr/bin/${wrapper_script}" || die
 	chmod 755 "${D}/usr/bin/${wrapper_script}" || die
+	newbin "${D}/usr/bin/clang-tidy" "clang-tidy"
 	dobin "${FILESDIR}/bisect_driver.py"
 	exeinto "/usr/bin"
 	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang"

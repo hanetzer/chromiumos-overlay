@@ -244,6 +244,14 @@ def main():
                  '-Wno-section',
                 ]
 
+  use_clang_tidy = os.environ.get('WITH_TIDY')
+  if use_clang_tidy:
+     c_src_file = find_source_file(sys.argv)
+     if not c_src_file:
+       use_clang_tidy = False
+  else:
+     c_src_file = ''
+
   # Get target architecture, 'armv7a-cros-linux-gnueabi' or
   # 'x86_64-cros-linux-gnu', etc.
   gcc_comp = os.path.basename(sys.argv[0])
@@ -264,7 +272,7 @@ def main():
   # _ProcessSysrootWrappers).
   use_ccache = True  # @CCACHE_DEFAULT@ Keep this comment for code.
 
-  if '-noccache' in myargs:
+  if '-noccache' in myargs or use_clang_tidy:
     use_ccache = False
 
   print_cmdline = '-print-cmdline' in myargs
@@ -369,6 +377,7 @@ def main():
   if invoke_clang and not skip_clang:
     clang_comp = os.environ.get(
         'CLANG', os.path.join(get_relocatable_root(), 'usr/bin/clang'))
+    clang_tidy_bin = clang_comp + '-tidy'
 
     # Check for clang or clang++.
     if sys.argv[0].endswith('++'):
@@ -424,6 +433,32 @@ def main():
     execargs += [clang_comp] + clang_cmdline
   else:
     execargs += [real_gcc] + gcc_flags + gcc_cmdline
+
+  if not clang_codegen:
+    use_clang_tidy = False
+
+  if use_clang_tidy:
+    import subprocess
+    tidy_execargs = []
+    default_tidy_checks = ('-checks=*,google*,-google-build-using-namespace,'
+                           '-google-default-arguments,-readability-*,'
+                           '-cppcoreguidelines-*,-modernize-*,'
+                           '-google-explicit-constructor,-google-readability*,'
+                           '-google-runtime-int,-google-runtime-references,'
+                           )
+    tidy_args = [default_tidy_checks]
+    resource_path = subprocess.check_output([clang_comp,
+                                             '--print-resource-dir'])
+    resource_dir_arg = ['-resource-dir=%s' % resource_path.strip()]
+    tidy_execargs += [clang_tidy_bin] + tidy_args + [c_src_file] + ['--'] \
+                     + resource_dir_arg + clang_cmdline
+    if print_cmdline:
+      print("Calling clang-tidy:")
+      print(repr(tidy_execargs))
+
+    retval = subprocess.call(tidy_execargs)
+    if retval != 0 and print_cmdline:
+      print("Call to clang-tidy failed!")
 
   if print_cmdline:
     print('[%s] %s' % (argv0, ' '.join(execargs)))

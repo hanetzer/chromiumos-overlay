@@ -32,6 +32,14 @@ def main(argv):
       '-grecord-gcc-switches',
   ]
 
+  use_clang_tidy = os.environ.get('WITH_TIDY')
+  if use_clang_tidy:
+     c_src_file = find_source_file(argv)
+     if not c_src_file:
+       use_clang_tidy = False
+  else:
+     c_src_file = ''
+
   myargs = argv[1:]
 
   bisect_stage = os.environ.get('BISECT_STAGE')
@@ -50,6 +58,7 @@ def main(argv):
 
   # Get the clang binary location relative to the wrapper.
   clang_bin = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clang')
+  clang_tidy_bin = clang_bin + '-tidy'
   clang_comp = os.environ.get('CLANG', clang_bin)
 
   # Check for clang or clang++.
@@ -69,9 +78,31 @@ def main(argv):
         clang_cmdline.append(flag)
 
   execargs = []
-
   argv0 = clang_comp
   execargs += [clang_comp] + clang_cmdline
+
+  if use_clang_tidy:
+    import subprocess
+    tidy_execargs = []
+    default_tidy_checks = ('-checks=*,google*,-google-build-using-namespace,'
+                           '-google-default-arguments,-readability-*,'
+                           '-cppcoreguidelines-*,-modernize-*,'
+                           '-google-explicit-constructor,-google-readability*,'
+                           '-google-runtime-int,-google-runtime-references')
+    tidy_args = [default_tidy_checks]
+    resource_path = subprocess.check_output([clang_comp,
+                                             '--print-resource-dir'])
+    resource_dir_arg = ['-resource-dir=%s' % resource_path.strip()]
+    tidy_execargs += [clang_tidy_bin] + tidy_args + [c_src_file] + ['--'] \
+                     + resource_dir_arg + clang_cmdline
+
+    if print_cmdline:
+      print("Calling clang-tidy:")
+      print(repr(tidy_execargs))
+
+    retval = subprocess.call(tidy_execargs)
+    if retval != 0 and print_cmdline:
+      print("Call to clang-tidy failed!")
 
   if print_cmdline:
     print('[%s] %s' % (argv0, ' '.join(execargs)))
