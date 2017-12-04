@@ -1,0 +1,5 @@
+{
+    "description": "Epson printing driver.",
+    "name": "epson-inkjet-printer-escpr",
+    "min_env_version": "2.1"
+}
