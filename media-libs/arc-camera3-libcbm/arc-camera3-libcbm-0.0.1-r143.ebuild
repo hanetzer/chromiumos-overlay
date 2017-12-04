@@ -2,24 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="6f27ab5f15e11f76917789f8528288cbaba79679"
-CROS_WORKON_TREE="ae048d601b4e1c5690fbe93c4e37d3acd0521075"
+CROS_WORKON_COMMIT="9d9377923cd643a704d3d28640af07a584d9df5f"
+CROS_WORKON_TREE="d85ebc3c0146139dfa3771380fe3320aa3ffa61e"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Jpeg compressor util."
+DESCRIPTION="ARC camera HAL v3 buffer manager."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND="virtual/jpeg:0"
+RDEPEND="
+	media-libs/minigbm
+	x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
-	media-libs/libyuv
+	media-libs/arc-camera3-android-headers
 	virtual/pkgconfig"
 
 src_configure() {
@@ -28,21 +30,30 @@ src_configure() {
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcbm
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_jpeg.pic.a
+	dolib common/libcbm.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/jpeg_compressor.h
+	doins include/arc/camera_buffer_manager.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_jpeg.pc.template > common/libcamera_jpeg.pc
+		common/libcbm.pc.template > common/libcbm.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_jpeg.pc
+	doins common/libcbm.pc
+}
+
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
+
+	if use x86 || use amd64; then
+		./common/camera_buffer_manager_unittest || \
+			die "camera_buffer_manager unit tests failed!"
+	fi
 }
