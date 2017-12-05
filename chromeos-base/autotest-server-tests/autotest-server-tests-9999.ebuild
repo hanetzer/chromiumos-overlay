@@ -54,6 +54,7 @@ SERVER_IUSE_TESTS="
 	+tests_audiovideo_AVSync
 	+tests_autotest_SyncCount
 	+tests_autoupdate_CatchBadSignatures
+	+tests_autoupdate_ForcedOOBEUpdate
 	+tests_autoupdate_Rollback
 	+tests_bluetooth_AdapterHIDReports
 	+tests_bluetooth_AdapterLEAdvertising
