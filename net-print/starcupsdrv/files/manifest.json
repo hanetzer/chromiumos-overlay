@@ -1,0 +1,5 @@
+{
+    "description": "Star printer driver.",
+    "name": "star-cups-driver",
+    "min-env-version": "1.1"
+}
