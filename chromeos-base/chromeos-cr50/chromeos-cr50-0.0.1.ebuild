@@ -3,7 +3,7 @@
 
 EAPI=5
 
-CROS_BOARDS=( fizz scarlet )
+CROS_BOARDS=( coral fizz scarlet )
 inherit cros-board
 
 DESCRIPTION="Ebuild to support the Chrome OS CR50 device."
@@ -33,7 +33,7 @@ src_install() {
 	local cr50_tarball_name
 
 	case "$(get_current_board_no_variant)" in
-	(fizz|scarlet)
+	(coral|fizz|scarlet)
 		cr50_tarball_name="${PRE_PVT_IMAGE}" ;;
 	(*)
 		cr50_tarball_name="${PROD_IMAGE}" ;;
