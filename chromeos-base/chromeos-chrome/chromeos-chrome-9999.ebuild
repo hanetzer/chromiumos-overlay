@@ -157,9 +157,9 @@ AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
 AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
 AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
 
-AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
-AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
-AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
+AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
+AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
+AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
 
 AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
