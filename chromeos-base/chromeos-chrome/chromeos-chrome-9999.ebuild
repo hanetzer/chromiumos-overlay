@@ -784,6 +784,7 @@ setup_compile_flags() {
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
 	EBUILD_CXXFLAGS=()
+	EBUILD_LDFLAGS=()
 	if use afdo_use; then
 		local afdo_flags=()
 		afdo_flags+=( -fprofile-sample-use="${AFDO_PROFILE_LOC}" )
@@ -805,6 +806,20 @@ setup_compile_flags() {
 	if use chrome_debug && ( use x86 || use arm ) && ! use clang; then
 		EBUILD_CFLAGS+=( -femit-struct-debug-reduced )
 		EBUILD_CXXFLAGS+=( -femit-struct-debug-reduced )
+	fi
+
+	if use thinlto; then
+		# We need to change the default value of import-instr-limit in
+		# LLVM to limit the text size increase. The default value is
+		# 100, and we change it to 30 to reduce the text size increase
+		# from 25% to 10%. The performance number of page_cycler is the
+		# same on two of the thinLTO configurations, we got 1% slowdown
+		# on speedometer when changing import-instr-limit from 100 to 30.
+		if use gold; then
+			EBUILD_LDFLAGS+=( "-Wl,-plugin-opt,-import-instr-limit=30" )
+		elif use lld; then
+			EBUILD_LDFLAGS+=( "-Wl,-mllvm,-import-instr-limit=30" )
+		fi
 	fi
 
 	# Enable std::vector []-operator bounds checking.
@@ -857,20 +872,6 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=${CXX_host}
 
-	if use thinlto; then
-		# We need to change the default value of import-instr-limit in
-		# LLVM to limit the text size increase. The default value is
-		# 100, and we change it to 30 to reduce the text size increase
-		# from 25% to 10%. The performance number of page_cycler is the
-		# same on two of the thinLTO configurations, we got 1% slowdown
-		# on speedometer when changing import-instr-limit from 100 to 30.
-		if use gold; then
-			append-ldflags "-Wl,-plugin-opt,-import-instr-limit=30"
-		elif use lld; then
-			append-ldflags "-Wl,-mllvm,-import-instr-limit=30"
-		fi
-	fi
-
 	# We need below change when USE="thinlto" is set. We set this globally
 	# so that users can turn on the "use_thin_lto" in the simplechrome
 	# flow more easily. We might be able to remve the dependency on use
@@ -903,6 +904,7 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		LDFLAGS="${LDFLAGS} ${EBUILD_LDFLAGS[*]}" \
 		"${cmd[@]}" || die
 	fi
 
@@ -917,7 +919,7 @@ src_configure() {
 		cros_target_extra_cflags="${CFLAGS} ${EBUILD_CFLAGS[*]}"
 		cros_target_extra_cppflags="${CPPFLAGS}"
 		cros_target_extra_cxxflags="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}"
-		cros_target_extra_ldflags="${LDFLAGS}"
+		cros_target_extra_ldflags="${LDFLAGS} ${EBUILD_LDFLAGS[*]}"
 		cros_host_cc="${CC_host}"
 		cros_host_cxx="${CXX_host}"
 		cros_host_ar="${AR_host}"
