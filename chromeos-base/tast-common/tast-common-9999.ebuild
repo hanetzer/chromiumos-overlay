@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
 CROS_GO_PACKAGES=(
-	"chromiumos/tast/common/..."
+	"chromiumos/tast/..."
 )
 
 CROS_GO_TEST=(

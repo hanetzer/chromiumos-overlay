@@ -6,9 +6,10 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast-tests"
 CROS_WORKON_LOCALNAME="tast-tests"
 
 CROS_GO_BINARIES=(
-	"chromiumos/tast/remote:remote_tests"
+	"chromiumos/cmd/remote_tests"
 )
 
+# Support packages live outside of cmd/.
 CROS_GO_TEST=(
 	"chromiumos/tast/remote/..."
 )
