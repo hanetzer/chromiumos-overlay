@@ -420,13 +420,8 @@ def main():
     argv0 = '/usr/bin/ccache'
     execargs += ['ccache']
 
-  # Temporarily disable Wunused-private-field. chromium:787037
-  # For clang, this must be the LAST argument on the command line;
-  # otherwise it does not work (empirical testing).
-  last_arg = ['-Wno-unused-private-field']
-
   if clang_codegen:
-    execargs += [clang_comp] + clang_cmdline + last_arg
+    execargs += [clang_comp] + clang_cmdline
   else:
     execargs += [real_gcc] + gcc_flags + gcc_cmdline
 
