@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit flag-o-matic
+inherit autotools flag-o-matic
 
 DESCRIPTION="Utilies for generating, examining AFDO profiles"
 HOMEPAGE="http://gcc.gnu.org/wiki/AutoFDO"
@@ -19,6 +19,15 @@ DEPEND="dev-libs/openssl
 	sys-devel/llvm
 	sys-libs/zlib"
 RDEPEND="${DEPEND}"
+
+src_prepare() {
+	# The upstream tarball does not have aclocal.m4, and the upstream
+	# Makefile.in is generated from automake 1.15. We are still using
+	# automake 1.14. This mismatch makes the build fail.
+	# https://github.com/google/autofdo/issues/60
+	# We need to regenerate the Makefile.
+	eautoreconf
+}
 
 src_configure() {
 	append-ldflags $(no-as-needed)
