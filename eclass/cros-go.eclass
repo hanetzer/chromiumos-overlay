@@ -61,6 +61,12 @@ cros_go() {
 		$(tc-getGO) "$@" || die
 }
 
+go_list() {
+	local workspace="${CROS_GO_WORKSPACE:-${S}}"
+	GOPATH="${workspace}" \
+		$(tc-getGO) list "$@" || die
+}
+
 go_test() {
 	local workspace="${CROS_GO_WORKSPACE:-${S}}"
 	GOPATH="${workspace}:${SYSROOT}/usr/lib/gopath" \
@@ -97,7 +103,7 @@ cros-go_src_install() {
 	# Install the importable packages in /usr/lib/gopath.
 	local pkglist=()
 	if [[ ${#CROS_GO_PACKAGES[@]} != 0 ]] ; then
-		pkglist=( $(cros_go list "${CROS_GO_PACKAGES[@]}") )
+		pkglist=( $(go_list "${CROS_GO_PACKAGES[@]}") )
 	fi
 	local pkg
 	for pkg in "${pkglist[@]}" ; do
