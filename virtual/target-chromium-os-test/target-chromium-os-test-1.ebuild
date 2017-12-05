@@ -112,6 +112,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
+	chromeos-base/pywalt
 	shill? ( chromeos-base/shill-test-scripts )
 	!chromeless_tests? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
