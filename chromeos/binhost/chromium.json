@@ -133,6 +133,7 @@
         "ozone_platform_default_gbm", 
         "ozone_platform_gbm", 
         "runhooks", 
+        "smbprovider", 
         "v4l2_codec", 
         "vaapi", 
         "xkbcommon"

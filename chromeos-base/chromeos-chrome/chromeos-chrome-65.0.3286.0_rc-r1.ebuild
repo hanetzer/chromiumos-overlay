@@ -60,7 +60,7 @@ IUSE="
 	opengl
 	opengles
 	+runhooks
-	smbprovider
+	+smbprovider
 	thinlto
 	+v4l2_codec
 	v4lplugin
@@ -153,13 +153,13 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-64.0.3271.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-65.0.3286.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-65.0.3286.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-65.0.3286.0_rc-r1.afdo"
 
-AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
-AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
-AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3239.50_rc-r1.afdo"
+AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
+AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
+AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
 
 AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
@@ -837,7 +837,7 @@ src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
 	export CC_host=$(usex clang "${CBUILD}-clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "${CBUILD}-clang++" "$(tc-getBUILD_CXX)")
-	export AR_host=$(tc-getBUILD_AR)
+
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
 			export GOLD_SET="yes"
@@ -856,15 +856,7 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=${CXX_host}
 
-	# USE=thinlto affects host build, we need to make changes below
-	# to make sure host package builds with thinlto.
-	# crbug.com/731335
 	if use thinlto; then
-		export RANLIB="llvm-ranlib"
-		export AR="llvm-ar"
-		export AR_host="llvm-ar"
-		export LD_host="${CXX_host}"
-		LD_host+=" -B$(get_binutils_path "${LD_host}")"
 		# We need to change the default value of import-instr-limit in
 		# LLVM to limit the text size increase. The default value is
 		# 100, and we change it to 30 to reduce the text size increase
@@ -876,6 +868,19 @@ src_configure() {
 		elif use lld; then
 			append-ldflags "-Wl,-mllvm,-import-instr-limit=30"
 		fi
+	fi
+
+	# We need below change when USE="thinlto" is set. We set this globally
+	# so that users can turn on the "use_thin_lto" in the simplechrome
+	# flow more easily. We might be able to remve the dependency on use
+	# clang because clang is the default compiler now.
+	if use clang ; then
+		export AR="llvm-ar"
+		# USE=thinlto affects host build, we need to set host AR to
+		# llvm-ar to make sure host package builds with thinlto.
+		# crbug.com/731335
+		export AR_host="llvm-ar"
+		export RANLIB="llvm-ranlib"
 	fi
 
 	# Set binutils path for goma.
