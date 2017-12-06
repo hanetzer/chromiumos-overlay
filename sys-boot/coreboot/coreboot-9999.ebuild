@@ -216,13 +216,21 @@ src_prepare() {
 	fi
 }
 
+# Returns true if EC supports EFS.
+is_ec_efs_enabled() {
+	grep -q "^CONFIG_VBOOT_EC_EFS=y$" "${CONFIG}"
+}
+
 add_ec() {
 	local rom="$1"
 	local name="$2"
 	local ecroot="$3"
+	local pad="0"
 
+	is_ec_efs_enabled && pad="128"
+	einfo "Padding ecrw ${pad} byte."
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c lzma \
-		-f "${ecroot}/ec.RW.bin" -n "${name}" || die
+		-f "${ecroot}/ec.RW.bin" -n "${name}" -p "${pad}" || die
 	cbfstool "${rom}" add -r FW_MAIN_A,FW_MAIN_B -t raw -c none \
 		-f "${ecroot}/ec.RW.hash" -n "${name}.hash" || die
 }
