@@ -27,6 +27,11 @@ RDEPEND="
 
 DEPEND="${RDEPEND}"
 
+pkg_preinst() {
+	enewgroup ippusb
+	enewuser ippusb
+}
+
 platform_pkg_test() {
 	platform_test "run" "${OUT}/ippusb_manager_testrunner"
 }
