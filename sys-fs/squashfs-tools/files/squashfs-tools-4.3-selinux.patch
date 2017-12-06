@@ -12,8 +12,8 @@ Subject: squashfs-tools: Allow setting selinux xattrs through
  of squashfs-tools and written by Mohamad Ayyash <mkayyash@google.com>
  ---
 diff -urN squashfs-tools/Makefile squashfs-tools/Makefile
---- Makefile	2014-05-12 03:56:00.000000000 +0900
-+++ Makefile	2017-11-28 13:14:30.191652478 +0900
+--- a/squashfs-tools/Makefile	2017-12-06 15:59:56.569288884 +0900
++++ b/squashfs-tools/Makefile	2017-12-06 16:00:58.104681646 +0900
 @@ -102,6 +102,22 @@
  # default.  Users can enable xattrs by using the -xattrs option.
  XATTR_DEFAULT = 1
@@ -61,9 +61,9 @@ diff -urN squashfs-tools/Makefile squashfs-tools/Makefile
  endif
  
  #
-diff -urN squashfs-tools/mksquashfs.c squashfs-tools/mksquashfs.c
---- mksquashfs.c	2017-11-27 15:30:41.637111340 +0900
-+++ mksquashfs.c	2017-11-28 12:49:33.721693512 +0900
+diff -urN --exclude compile_commands.json a/squashfs-tools/mksquashfs.c b/squashfs-tools/mksquashfs.c
+--- a/squashfs-tools/mksquashfs.c	2017-12-06 15:59:56.569288884 +0900
++++ b/squashfs-tools/mksquashfs.c	2017-12-06 16:02:03.028041005 +0900
 @@ -77,6 +77,7 @@
  #include "read_fs.h"
  #include "restore.h"
@@ -136,10 +136,10 @@ diff -urN squashfs-tools/mksquashfs.c squashfs-tools/mksquashfs.c
  			ERROR("-4k-align\t\tenables 4k alignment of all files\n");
  			ERROR("\nFilesystem filter options:\n");
  			ERROR("-p <pseudo-definition>\tAdd pseudo file "
-diff -urN squashfs-tools/selinux.c squashfs-tools/selinux.c
---- selinux.c	1970-01-01 09:00:00.000000000 +0900
-+++ selinux.c	2017-11-28 12:54:18.679027810 +0900
-@@ -0,0 +1,66 @@
+diff -urN --exclude compile_commands.json a/squashfs-tools/selinux.c b/squashfs-tools/selinux.c
+--- a/squashfs-tools/selinux.c	1970-01-01 09:00:00.000000000 +0900
++++ b/squashfs-tools/selinux.c	2017-12-06 15:59:36.481487118 +0900
+@@ -0,0 +1,61 @@
 +/* Copyright 2015 The Android Open Source Project */
 +
 +#include <errno.h>
@@ -191,25 +191,20 @@ diff -urN squashfs-tools/selinux.c squashfs-tools/selinux.c
 +	return secontext;
 +}
 +
-+int read_xattrs_from_context_file(char *filename, int mode,
-+	squashfs_selinux_handle *sehnd, struct xattr_list **xattrs) {
++void read_selinux_xattr_from_context_file(char *filename, int mode,
++	squashfs_selinux_handle *sehnd, struct xattr_list *xattrs) {
 +	char *attr_val;
-+	struct xattr_list *x = malloc(sizeof(*x));
-+	if(x == NULL)
-+		MEM_ERROR();
-+ 
-+	x->type = get_prefix(x, "security.selinux");
++
++	xattrs->type = get_prefix(xattrs, "security.selinux");
 +	attr_val = set_selabel(filename, mode, sehnd);
-+	x->value = (void *)attr_val;
-+	x->vsize = strlen(attr_val);
-+	*xattrs = x;
-+	return 1;
++	xattrs->value = (void *)attr_val;
++	xattrs->vsize = strlen(attr_val);
 +}
 +
-diff -urN squashfs-tools/selinux.h squashfs-tools/selinux.h
---- selinux.h	1970-01-01 09:00:00.000000000 +0900
-+++ selinux.h	2017-11-28 12:26:21.178711536 +0900
-@@ -0,0 +1,28 @@
+diff -urN --exclude compile_commands.json a/squashfs-tools/selinux.h b/squashfs-tools/selinux.h
+--- a/squashfs-tools/selinux.h	1970-01-01 09:00:00.000000000 +0900
++++ b/squashfs-tools/selinux.h	2017-12-04 17:11:59.999931242 +0900
+@@ -0,0 +1,27 @@
 +/* Copyright 2015 The Android Open Source Project */
 +
 +#ifndef SELINUX_H
@@ -220,8 +215,8 @@ diff -urN squashfs-tools/selinux.h squashfs-tools/selinux.h
 +#ifdef SELINUX_SUPPORT
 +typedef struct selabel_handle squashfs_selinux_handle;
 +extern squashfs_selinux_handle *get_sehnd(const char *context_file);
-+extern int read_xattrs_from_context_file(char *filename, int mode,
-+	struct selabel_handle *sehnd, struct xattr_list **xattrs);
++extern void read_selinux_xattr_from_context_file(char *filename, int mode,
++	struct selabel_handle *sehnd, struct xattr_list *xattrs);
 +#else
 +typedef void squashfs_selinux_handle;
 +
@@ -231,16 +226,15 @@ diff -urN squashfs-tools/selinux.h squashfs-tools/selinux.h
 +}
 +
 +
-+static int read_xattrs_from_context_file(char *filename, int mode,
-+	squashfs_selinux_handle *sehnd, struct xattr_list **xattrs) {
-+	return 0;
++static void read_selinux_xattr_from_context_file(char *filename, int mode,
++	squashfs_selinux_handle *sehnd, struct xattr_list *xattrs) {
 +}
 +#endif
 +
 +#endif
-diff -urN squashfs-tools/xattr.c squashfs-tools/xattr.c
---- xattr.c	2014-05-10 13:54:13.000000000 +0900
-+++ xattr.c	2017-11-28 13:16:25.206566220 +0900
+diff -urN --exclude compile_commands.json a/squashfs-tools/xattr.c b/squashfs-tools/xattr.c
+--- a/squashfs-tools/xattr.c	2017-12-06 15:59:56.569288884 +0900
++++ b/squashfs-tools/xattr.c	2017-12-06 15:59:24.473605618 +0900
 @@ -33,6 +33,7 @@
  #include <errno.h>
  #include <dirent.h>
@@ -303,40 +297,203 @@ diff -urN squashfs-tools/xattr.c squashfs-tools/xattr.c
  {
  	int i;
  
-@@ -110,7 +135,7 @@
+@@ -110,13 +135,49 @@
  	return prefix_table[i].type;
  }
  
 -	
+-static int read_xattrs_from_system(char *filename, struct xattr_list **xattrs)
++static struct xattr_list *xattr_list_add(int *xattr_count, struct xattr_list **xattrs) {
++	struct xattr_list *x, *next_xattr;
 +
- static int read_xattrs_from_system(char *filename, struct xattr_list **xattrs)
++	x = realloc(*xattrs, ++*xattr_count * sizeof(struct xattr_list));
++	if(x == NULL)
++		MEM_ERROR();
++
++	next_xattr = &x[*xattr_count - 1];
++	memset(next_xattr, 0, sizeof(struct xattr_list));
++
++	*xattrs = x;
++	return next_xattr;
++}
++
++static struct xattr_list *xattr_list_trim(int *xattr_count, struct xattr_list **xattrs) {
++	struct xattr_list *x, *last_xattr;
++
++	if (*xattr_count == 0 || *xattrs == NULL)
++		return NULL;
++	x = *xattrs;
++
++	last_xattr = &x[*xattr_count - 1];
++	free(last_xattr->full_name);
++	free(last_xattr->value);
++
++	if (--*xattr_count == 0) {
++		free(*xattrs);
++		*xattrs = NULL;
++		return NULL;
++	}
++
++	x = realloc(*xattrs, *xattr_count * sizeof(struct xattr_list));
++	if(x == NULL)
++		MEM_ERROR();
++
++	*xattrs = x;
++	return &x[*xattr_count - 1];
++}
++
++static int read_xattrs_from_system(char *filename, int *xattr_count, struct xattr_list **xattrs)
  {
  	ssize_t size, vsize;
-@@ -614,7 +639,20 @@
+ 	char *xattr_names, *p;
+-	int i;
+-	struct xattr_list *xattr_list = NULL;
+ 
+ 	while(1) {
+ 		size = llistxattr(filename, NULL, 0);
+@@ -152,74 +213,69 @@
+ 		break;
+ 	}
+ 
+-	for(i = 0, p = xattr_names; p < xattr_names + size; i++) {
+-		struct xattr_list *x = realloc(xattr_list, (i + 1) *
+-						sizeof(struct xattr_list));
+-		if(x == NULL)
+-			MEM_ERROR();
+-		xattr_list = x;
++	for(p = xattr_names; p < xattr_names + size; ) {
++		struct xattr_list *next_xattr = xattr_list_add(xattr_count, xattrs);
+ 
+-		xattr_list[i].type = get_prefix(&xattr_list[i], p);
++		next_xattr->type = get_prefix(next_xattr, p);
+ 		p += strlen(p) + 1;
+-		if(xattr_list[i].type == -1) {
++		if(next_xattr->type == -1) {
+ 			ERROR("Unrecognised xattr prefix %s\n",
+-				xattr_list[i].full_name);
+-			free(xattr_list[i].full_name);
+-			i--;
++				next_xattr->full_name);
++			xattr_list_trim(xattr_count, xattrs);
+ 			continue;
+ 		}
+ 
+ 		while(1) {
+-			vsize = lgetxattr(filename, xattr_list[i].full_name,
++			errno = 0;
++			vsize = lgetxattr(filename, next_xattr->full_name,
+ 								NULL, 0);
+ 			if(vsize < 0) {
+-				ERROR_START("lgetxattr failed for %s in "
+-					"read_attrs, because %s", filename,
+-					strerror(errno));
++				ERROR_START("lgetxattr failed for %s attrib %s "
++					"in read_attrs, because %s", filename,
++					next_xattr->full_name, strerror(errno));
+ 				ERROR_EXIT(".  Ignoring");
+-				free(xattr_list[i].full_name);
++				xattr_list_trim(xattr_count, xattrs);
+ 				goto failed;
+ 			}
+ 
+-			xattr_list[i].value = malloc(vsize);
+-			if(xattr_list[i].value == NULL)
++			next_xattr->value = malloc(vsize);
++			if(next_xattr->value == NULL)
+ 				MEM_ERROR();
+ 
+-			vsize = lgetxattr(filename, xattr_list[i].full_name,
+-						xattr_list[i].value, vsize);
++			errno = 0;
++			vsize = lgetxattr(filename, next_xattr->full_name,
++						next_xattr->value, vsize);
+ 			if(vsize < 0) {
+-				free(xattr_list[i].value);
++				free(next_xattr->value);
++				next_xattr->value = NULL;
+ 				if(errno == ERANGE)
+ 					/* xattr grew?  Try again */
+ 					continue;
+ 				else {
+ 					ERROR_START("lgetxattr failed for %s "
+-						"in read_attrs, because %s",
+-						filename, strerror(errno));
++						"attrib %s in read_attrs, "
++						"because %s", filename,
++						next_xattr->full_name,
++						strerror(errno));
+ 					ERROR_EXIT(".  Ignoring");
+-					free(xattr_list[i].full_name);
++					xattr_list_trim(xattr_count, xattrs);
+ 					goto failed;
+ 				}
+ 			}
+-			
++
+ 			break;
+ 		}
+-		xattr_list[i].vsize = vsize;
++		next_xattr->vsize = vsize;
+ 
+ 		TRACE("read_xattrs_from_system: filename %s, xattr name %s,"
+-			" vsize %d\n", filename, xattr_list[i].full_name,
+-			xattr_list[i].vsize);
++			" vsize %d\n", filename, next_xattr->full_name,
++			next_xattr->vsize);
+ 	}
+ 	free(xattr_names);
+-	*xattrs = xattr_list;
+-	return i;
++	return 1;
+ 
+ failed:
+-	while(--i >= 0) {
+-		free(xattr_list[i].full_name);
+-		free(xattr_list[i].value);
+-	}
+-	free(xattr_list);
++	while(xattr_list_trim(xattr_count, xattrs) != NULL);
+ 	free(xattr_names);
+ 	return 0;
+ }
+@@ -608,13 +664,31 @@
+ 	struct dir_ent *dir_ent = d;
+ 	struct inode_info *inode = dir_ent->inode;
+ 	char *filename = pathname(dir_ent);
+-	struct xattr_list *xattr_list;
+-	int xattrs;
++	struct xattr_list *xattr_list = NULL, *next_xattr = NULL;
++	int xattrs = 0;
+ 
  	if(no_xattrs || IS_PSEUDO(inode) || inode->root_entry)
  		return SQUASHFS_INVALID_XATTR;
  
 -	xattrs = read_xattrs_from_system(filename, &xattr_list);
++	read_xattrs_from_system(filename, &xattrs, &xattr_list);
++
 +	if(context_file) {
 +		if(sehnd == NULL)
 +			sehnd = get_sehnd(context_file);
 +		if(mount_point) {
 +			char *mounted_path;
 +			alloc_mounted_path(mount_point, subpathname(dir_ent), &mounted_path);
-+			xattrs = read_xattrs_from_context_file(mounted_path, inode->buf.st_mode,
-+					sehnd, &xattr_list);
-+		} else
-+			xattrs = read_xattrs_from_context_file(filename, inode->buf.st_mode,
-+					sehnd, &xattr_list);
-+	} else
-+		xattrs = read_xattrs_from_system(filename, &xattr_list);
++			next_xattr = xattr_list_add(&xattrs, &xattr_list);
++			read_selinux_xattr_from_context_file(mounted_path, inode->buf.st_mode,
++					sehnd, next_xattr);
++			free(mounted_path);
++		} else {
++			next_xattr = xattr_list_add(&xattrs, &xattr_list);
++			read_selinux_xattr_from_context_file(filename, inode->buf.st_mode,
++					sehnd, next_xattr);
++		}
++	}
 +
  	if(xattrs == 0)
  		return SQUASHFS_INVALID_XATTR;
  
-diff -urN squashfs-tools/xattr.h squashfs-tools/xattr.h
---- xattr.h	2014-05-10 13:54:13.000000000 +0900
-+++ xattr.h	2017-11-28 12:26:08.034834468 +0900
+diff -urN --exclude compile_commands.json a/squashfs-tools/xattr.h b/squashfs-tools/xattr.h
+--- a/squashfs-tools/xattr.h	2017-12-06 15:59:56.569288884 +0900
++++ b/squashfs-tools/xattr.h	2017-12-04 14:31:39.653943076 +0900
 @@ -24,6 +24,8 @@
   * xattr.h
   */
