@@ -31,11 +31,14 @@ MIN_FILELIST_BOARD_OVERRIDE_FILE="${PER_BOARD_OVERRIDE_DIR}/min_filelist_kbytes"
 MIN_FILELIST_SPECIAL_FILE="/proc/sys/vm/min_filelist_kbytes"
 
 min_filelist_default_generator() {
-  if grep -q CHROMEOS_ARC_VERSION /etc/lsb-release; then
+  # Check if ARC++ is running.  But don't check if it's not installed.
+  # TODO(crbug.com/792703): remove arc-setup check.
+  if grep -q CHROMEOS_ARC_VERSION /etc/lsb-release && \
+      [ "$(initctl status arc-boot-continue)" = \
+           "arc-boot-continue start/running" -o \
+        "$(initctl status arc-setup)" = "arc-setup start/running" ]; then
     echo 400000  # KiB
   else
-    # It is a good idea for this value to match that in
-    # platform/cheets-scripts/arc-stop-sysctl.conf.  (See comment there.)
     echo 100000  # KiB
   fi
 }
