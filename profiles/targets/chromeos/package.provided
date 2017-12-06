@@ -86,3 +86,7 @@ dev-util/cargo-0.21.0
 
 # We don't need the toolchain itself in the target board.
 dev-lang/rust-1.22.1
+
+# We sometimes need ruby for building, but don't yet care about targets.
+dev-lang/ruby-1.9.4
+dev-ruby/rubygems-2.2.2
