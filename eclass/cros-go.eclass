@@ -85,7 +85,8 @@ cros-go_src_compile() {
 }
 
 cros-go_src_test() {
-	go_test "${CROS_GO_TEST[@]}"
+	local pkglist=( $(go_list "${CROS_GO_TEST[@]}") )
+	go_test "${pkglist[@]}"
 }
 
 cros-go_src_install() {
