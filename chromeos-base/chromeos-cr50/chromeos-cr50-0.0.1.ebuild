@@ -3,7 +3,7 @@
 
 EAPI=5
 
-CROS_BOARDS=( coral fizz scarlet )
+CROS_BOARDS=( coral fizz scarlet soraka )
 inherit cros-board
 
 DESCRIPTION="Ebuild to support the Chrome OS CR50 device."
@@ -32,12 +32,13 @@ S="${WORKDIR}"
 src_install() {
 	local cr50_tarball_name
 
-	case "$(get_current_board_no_variant)" in
-	(coral|fizz|scarlet)
-		cr50_tarball_name="${PRE_PVT_IMAGE}" ;;
-	(*)
-		cr50_tarball_name="${PROD_IMAGE}" ;;
-	esac
+	if [[ -n "$(get_current_board_no_variant)" ]]; then
+		cr50_tarball_name="${PRE_PVT_IMAGE}"
+	else
+		cr50_tarball_name="${PROD_IMAGE}"
+	fi
+
+	elog "Will install ${cr50_tarball_name}"
 
 	insinto /opt/google/cr50/firmware
 	newins "${cr50_tarball_name}"/*.bin.prod cr50.bin.prod
