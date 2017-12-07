@@ -744,6 +744,7 @@ setup_test_lists() {
 		sandbox_linux_unittests
 		video_decode_accelerator_unittest
 		video_encode_accelerator_unittest
+		wayland_client_perftests
 	)
 
 	TEST_FILES+=( ppapi/examples/video_decode )
