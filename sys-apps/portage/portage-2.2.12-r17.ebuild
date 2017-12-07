@@ -14,7 +14,6 @@ PYTHON_COMPAT=(
 )
 inherit eutils multilib
 
-CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_PROJECT="chromiumos/third_party/portage_tool"
 CROS_WORKON_LOCALNAME="portage_tool"
 inherit cros-workon
