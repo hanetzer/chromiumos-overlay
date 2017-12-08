@@ -32,6 +32,7 @@ RDEPEND="
 	!<chromeos-base/autotest-tests-cellular-0.0.1-r3203
 	chromeos-base/autotest-deps-glbench
 	chromeos-base/autotest-deps-graphics
+	chromeos-base/autotest-deps-policy
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
 	chromeos-base/chromeos-chrome
@@ -95,7 +96,7 @@ IUSE_TESTS=(
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
-	 tests_logging_AsanCrash
+	tests_logging_AsanCrash
 	+tests_logging_CrashServices
 	+tests_logging_FeedbackReport
 	+tests_login_ChromeProfileSanitary

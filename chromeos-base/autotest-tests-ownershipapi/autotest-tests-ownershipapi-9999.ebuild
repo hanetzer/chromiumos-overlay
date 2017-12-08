@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -18,8 +18,8 @@ IUSE="+xset +tpmtools"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
+	chromeos-base/autotest-deps-policy
 	chromeos-base/chromeos-chrome
-	chromeos-base/protofiles
 	chromeos-base/telemetry
 	dev-python/protobuf-python
 	dev-python/pygobject
@@ -27,8 +27,8 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${RDEPEND}"
 
+# The telemetry dependency comes from the chrome.py import in some of the tests.
 IUSE_TESTS="
-	# Uses chrome test dependency.
 	+tests_login_CryptohomeOwnerQuery
 	+tests_login_GuestAndActualSession
 	+tests_login_MultipleSessions
@@ -39,9 +39,6 @@ IUSE_TESTS="
 	+tests_login_OwnershipTaken
 	+tests_login_RemoteOwnership
 	+tests_login_UserPolicyKeys
-
-	# Tests that depend on telemetry.
-	+tests_login_OwnershipTakenTelemetry
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
@@ -62,4 +59,8 @@ src_prepare() {
 	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
 	export PYTHONPATH="${TMP_DIR}/telemetry/src/third_party/catapult/telemetry"
 	autotest_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
 }
