@@ -27,4 +27,6 @@ DEPEND="
 	chromeos-base/tast-common
 	dev-go/subcommands
 "
-RDEPEND=""
+RDEPEND="
+	chromeos-base/google-breakpad
+"
