@@ -24,7 +24,6 @@ CDEPEND="
 	chromeos-base/minijail
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
-		eap-sim? ( sys-apps/pcsc-lite )
 		madwifi? ( ||
 			( >net-wireless/madwifi-ng-tools-0.9.3
 			net-wireless/madwifi-old )
@@ -221,7 +220,10 @@ src_configure() {
 		Kconfig_style_config EAP_SIM
 		Kconfig_style_config EAP_AKA
 		Kconfig_style_config EAP_AKA_PRIME
-		Kconfig_style_config PCSC
+		# CHROMIUM: We don't have smartcard support. Instead include the
+		# client library for external processing via the control interface.
+		# Kconfig_style_config PCSC
+		Kconfig_style_config BUILD_WPA_CLIENT_SO
 	fi
 
 	if use fasteap ; then
@@ -372,6 +374,14 @@ src_install() {
 	fi
 
 	use wimax && emake DESTDIR="${D}" -C ../src/eap_peer install
+
+	if use eap-sim ; then
+		# Install this library and header for the external processor.
+		dolib.so libwpa_client.so
+
+		insinto /usr/include/wpa_supplicant
+		doins ../src/common/wpa_ctrl.h
+	fi
 
 	if use dbus ; then
 		# DBus introspection XML file.
