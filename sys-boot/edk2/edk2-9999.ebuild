@@ -9,7 +9,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/edk2"
 CROS_WORKON_LOCALNAME="edk2"
 
-inherit toolchain-funcs cros-workon coreboot-sdk
+inherit toolchain-funcs cros-workon coreboot-sdk multiprocessing
 
 DESCRIPTION="EDK II firmware development environment for the UEFI and PI specifications."
 HOMEPAGE="https://github.com/tianocore/edk2"
@@ -72,7 +72,7 @@ src_compile() {
 	cat ${FILESDIR}/tools-add.txt >> Conf/tools_def.txt
 	(cd BaseTools/Source/C && ARCH=${ARCHITECTURE} emake -j1)
 	export COREBOOT_SDK_PREFIX_arm COREBOOT_SDK_PREFIX_arm64 COREBOOT_SDK_PREFIX_x86_32 COREBOOT_SDK_PREFIX_x86_64
-	build -t CBSDK -a IA32 -a X64 -b ${BUILDTYPE} \
+	build -t CBSDK -a IA32 -a X64 -b ${BUILDTYPE} -n $(makeopts_jobs) \
 			-p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 	create_cbfs
 }
