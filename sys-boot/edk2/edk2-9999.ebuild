@@ -30,7 +30,6 @@ PATCHES=(
 	"${FILESDIR}/02_CorebootPayloadPkg_bds.patch"
 	"${FILESDIR}/03_Library_EndofDXE.patch"
 	"${FILESDIR}/04_CorebootPayloadPkg_addps2.patch"
-	"${FILESDIR}/05_CorebootPayloadPkg_noserial.patch"
 	"${FILESDIR}/06_CorebootPayloadPkg_keep_cb_table.patch"
 )
 
@@ -61,6 +60,10 @@ create_cbfs() {
 }
 
 src_prepare() {
+	if ! use fwserial; then
+		PATCHES+=("${FILESDIR}/05_CorebootPayloadPkg_noserial.patch")
+	fi
+
 	epatch "${PATCHES[@]}"
 }
 
