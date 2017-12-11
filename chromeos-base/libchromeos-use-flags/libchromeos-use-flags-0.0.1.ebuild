@@ -19,7 +19,6 @@ IUSE="
 	arc
 	arc_always_start_with_no_play_store
 	arc_force_2x_scaling
-	arc_only_start_after_login
 	arc_oobe_optin
 	arc_transition_m_to_n
 	asan
