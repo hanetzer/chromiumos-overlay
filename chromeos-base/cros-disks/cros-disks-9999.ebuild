@@ -20,11 +20,10 @@ IUSE="chromeless_tty +seccomp"
 
 RDEPEND="
 	app-arch/unrar
-	chromeos-base/minijail
 	chromeos-base/libbrillo
 	chromeos-base/metrics
-	dev-libs/dbus-c++
-	dev-libs/glib
+	chromeos-base/minijail
+	chromeos-base/session_manager-client
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-fs/avfs
