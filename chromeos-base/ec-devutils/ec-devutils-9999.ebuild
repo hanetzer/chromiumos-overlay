@@ -11,15 +11,6 @@ inherit cros-workon distutils-r1
 DESCRIPTION="Host development utilities for Chromium OS EC"
 HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
-SERVO_MICRO_NAME="servo_micro-R57-9040.0.0"
-SERVO_V4_NAME="servo_v4-R57-9040.0.0"
-UPDATER_PATH="/usr/share/servo_updater/firmware"
-
-MIRROR_PATH="gs://chromeos-localmirror/distfiles/"
-
-SRC_URI="${MIRROR_PATH}/${SERVO_MICRO_NAME}.tar.gz
-	${MIRROR_PATH}/${SERVO_V4_NAME}.tar.gz"
-
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
@@ -27,6 +18,7 @@ ISUE=""
 
 RDEPEND="
 	app-mobilephone/dfu-util
+	sys-firmware/servo-firmware
 	sys-apps/flashrom
 	"
 DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
@@ -40,11 +32,6 @@ set_board() {
 src_configure() {
 	cros-workon_src_configure
 	distutils-r1_src_configure
-}
-
-src_unpack() {
-	unpack "${SERVO_MICRO_NAME}.tar.gz" "${SERVO_V4_NAME}.tar.gz"
-	cros-workon_src_unpack
 }
 
 src_compile() {
@@ -72,11 +59,4 @@ src_install() {
 	doins util/openocd/*
 
 	distutils-r1_src_install
-
-	insinto "${UPDATER_PATH}"
-	doins "${WORKDIR}/${SERVO_MICRO_NAME}.bin"
-	dosym "${SERVO_MICRO_NAME}.bin" "${UPDATER_PATH}/servo_micro.bin"
-
-	doins "${WORKDIR}/${SERVO_V4_NAME}.bin"
-	dosym "${SERVO_V4_NAME}.bin" "${UPDATER_PATH}/servo_v4.bin"
 }
