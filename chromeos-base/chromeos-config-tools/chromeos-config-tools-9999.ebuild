@@ -38,6 +38,8 @@ src_install() {
 }
 
 platform_pkg_test() {
+	# Run this here since we may not run cros_config_main_unittest.
+	./chromeos-config-test-setup.sh
 	local tests=(
 		fake_cros_config_unittest
 	)
