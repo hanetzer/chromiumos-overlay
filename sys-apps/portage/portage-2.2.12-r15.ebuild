@@ -5,8 +5,8 @@
 # Require EAPI 2 since we now require at least python-2.6 (for python 3
 # syntax support) which also requires EAPI 2.
 EAPI=5
-CROS_WORKON_COMMIT="dd8ad7251ab85091ebcac11b721eb82e21d82256"
-CROS_WORKON_TREE="4a1b3f63712cdee7907f1c7e44fc3dd933c8127b"
+CROS_WORKON_COMMIT="e5e0941c9f08f32425e8485032eadb51239c8ad2"
+CROS_WORKON_TREE="b1a91960c3f886adbf4d29846017f7afa3541f03"
 PYTHON_COMPAT=(
 	pypy
 	python3_2 python3_3 python3_4
