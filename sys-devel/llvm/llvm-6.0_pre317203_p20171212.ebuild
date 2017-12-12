@@ -21,7 +21,7 @@ LICENSE="UoI-NCSA"
 # a new llvm-next.
 if use llvm-next; then
 
-# llvm:r316199 https://critique.corp.google.com/#review/175206381
+# llvm:r317203 https://critique.corp.google.com/#review/175206381
 EGIT_REPO_URIS=(
 	"llvm"
 		""
@@ -37,20 +37,20 @@ EGIT_REPO_URIS=(
 		"4d085086c74a8fbce197f61548f488a63f300933"  # EGIT_COMMIT r317200
 )
 else
-# llvm:r316199 https://critique.corp.google.com/#review/173104684
+# llvm:r317203 https://critique.corp.google.com/#review/175206381
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"f56176dd98a9f4f7a3c59e1309bf8201d4529f76" # EGIT_COMMIT r316199
+		"66af8bde13a515b8d0fa76201f0d5b428187fd13" # EGIT_COMMIT r317203
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"98adaa2097783c0fe3a4c948397e3f2182dcc5d2" # EGIT_COMMIT r316048
+		"bcc227ee4af1ef3e63033b35dcb1d5627a3b2941" # EGIT_COMMIT r317186
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"53df1a5045c5c9471b0b4b00f8d64433d862699d"  # EGIT_COMMIT r316195
+		"4d085086c74a8fbce197f61548f488a63f300933"  # EGIT_COMMIT r317200
 )
 fi
 
@@ -195,7 +195,6 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" a312801e78a7627965158838eae1fb9a10487af7 " # r316211
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -204,9 +203,6 @@ pick_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" d7958d5ac0c1e979dec35ea26a981532e094b5b2 " # r316374, r316377
-	CHERRIES+=" b1bfcf247fd22246ea224ad2df241f25c63ea22e " # r316703
-	CHERRIES+=" 697969187cd6d8ed03eabbe1198ee7892d872953 " # r317092
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -273,11 +269,7 @@ src_prepare() {
 
 	# Link libgcc_eh when using compiler-rt as default rtlib.
 	# https://llvm.org/bugs/show_bug.cgi?id=28681
-	if use llvm-next; then
-		epatch "${FILESDIR}"/clang-6.0-enable-libgcc-with-compiler-rt.patch
-	else
-		epatch "${FILESDIR}"/clang-5.0-enable-libgcc-with-compiler-rt.patch
-	fi
+	epatch "${FILESDIR}"/clang-6.0-enable-libgcc-with-compiler-rt.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913

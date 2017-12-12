@@ -49,7 +49,7 @@ pkg_setup() {
 }
 
 src_unpack() {
-	EGIT_COMMIT="c9e633dcb3997ab998bcedcf11d4e36d5af44a6c" #r316180
+	EGIT_COMMIT="dc4c49229f1371f873e16cc960ff5767acfa881e" #r317082
 
 	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
 		EGIT_COMMIT="dc4c49229f1371f873e16cc960ff5767acfa881e" #r317082
