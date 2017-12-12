@@ -338,6 +338,8 @@ src_compile() {
 		export CROSS_COMPILE_mipsel=${COREBOOT_SDK_PREFIX_mips}
 		export CROSS_COMPILE_arm64=${COREBOOT_SDK_PREFIX_arm64}
 		export CROSS_COMPILE_arm=${COREBOOT_SDK_PREFIX_arm}
+
+		export PATH=/opt/coreboot-sdk/bin:$PATH
 	fi
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
