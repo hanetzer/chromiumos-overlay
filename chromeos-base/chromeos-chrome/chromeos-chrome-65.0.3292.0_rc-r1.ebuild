@@ -153,9 +153,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-65.0.3287.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-65.0.3287.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-65.0.3287.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-65.0.3292.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-65.0.3292.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-65.0.3292.0_rc-r1.afdo"
 
 AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
 AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-63.0.3239.50_rc-r2.afdo"
@@ -744,6 +744,7 @@ setup_test_lists() {
 		sandbox_linux_unittests
 		video_decode_accelerator_unittest
 		video_encode_accelerator_unittest
+		wayland_client_perftests
 	)
 
 	TEST_FILES+=( ppapi/examples/video_decode )
@@ -783,6 +784,7 @@ setup_compile_flags() {
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
 	EBUILD_CXXFLAGS=()
+	EBUILD_LDFLAGS=()
 	if use afdo_use; then
 		local afdo_flags=()
 		afdo_flags+=( -fprofile-sample-use="${AFDO_PROFILE_LOC}" )
@@ -804,6 +806,20 @@ setup_compile_flags() {
 	if use chrome_debug && ( use x86 || use arm ) && ! use clang; then
 		EBUILD_CFLAGS+=( -femit-struct-debug-reduced )
 		EBUILD_CXXFLAGS+=( -femit-struct-debug-reduced )
+	fi
+
+	if use thinlto; then
+		# We need to change the default value of import-instr-limit in
+		# LLVM to limit the text size increase. The default value is
+		# 100, and we change it to 30 to reduce the text size increase
+		# from 25% to 10%. The performance number of page_cycler is the
+		# same on two of the thinLTO configurations, we got 1% slowdown
+		# on speedometer when changing import-instr-limit from 100 to 30.
+		if use gold; then
+			EBUILD_LDFLAGS+=( "-Wl,-plugin-opt,-import-instr-limit=30" )
+		elif use lld; then
+			EBUILD_LDFLAGS+=( "-Wl,-mllvm,-import-instr-limit=30" )
+		fi
 	fi
 
 	# Enable std::vector []-operator bounds checking.
@@ -856,20 +872,6 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=${CXX_host}
 
-	if use thinlto; then
-		# We need to change the default value of import-instr-limit in
-		# LLVM to limit the text size increase. The default value is
-		# 100, and we change it to 30 to reduce the text size increase
-		# from 25% to 10%. The performance number of page_cycler is the
-		# same on two of the thinLTO configurations, we got 1% slowdown
-		# on speedometer when changing import-instr-limit from 100 to 30.
-		if use gold; then
-			append-ldflags "-Wl,-plugin-opt,-import-instr-limit=30"
-		elif use lld; then
-			append-ldflags "-Wl,-mllvm,-import-instr-limit=30"
-		fi
-	fi
-
 	# We need below change when USE="thinlto" is set. We set this globally
 	# so that users can turn on the "use_thin_lto" in the simplechrome
 	# flow more easily. We might be able to remve the dependency on use
@@ -902,6 +904,7 @@ src_configure() {
 		echo "${cmd[@]}"
 		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
 		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		LDFLAGS="${LDFLAGS} ${EBUILD_LDFLAGS[*]}" \
 		"${cmd[@]}" || die
 	fi
 
@@ -916,7 +919,7 @@ src_configure() {
 		cros_target_extra_cflags="${CFLAGS} ${EBUILD_CFLAGS[*]}"
 		cros_target_extra_cppflags="${CPPFLAGS}"
 		cros_target_extra_cxxflags="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}"
-		cros_target_extra_ldflags="${LDFLAGS}"
+		cros_target_extra_ldflags="${LDFLAGS} ${EBUILD_LDFLAGS[*]}"
 		cros_host_cc="${CC_host}"
 		cros_host_cxx="${CXX_host}"
 		cros_host_ar="${AR_host}"
