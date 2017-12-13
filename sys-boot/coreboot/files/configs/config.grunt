@@ -18,4 +18,5 @@ CONFIG_FRAMEBUFFER_SET_VESA_MODE=y
 CONFIG_VBE_LINEAR_FRAMEBUFFER=y
 CONFIG_AMD_PUBKEY_FILE="3rdparty/blobs/Stoney-PSP/AmdPubKeyST.bin"
 CONFIG_RO_REGION_ONLY="apu/amdfw"
-CONFIG_AGESA_BINARY_PI_FILE="/build/grunt/firmware/coreboot-private/3rdparty/blobs/pi/amd/00670F00/FT4/AGESA.bin"
+CONFIG_AGESA_BINARY_PI_AS_STAGE=y
+CONFIG_AGESA_BINARY_PI_FILE="/build/grunt/firmware/coreboot-private/3rdparty/blobs/pi/amd/00670F00/FT4/AGESA.elf"
