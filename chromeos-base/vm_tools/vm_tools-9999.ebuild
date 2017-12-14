@@ -20,10 +20,10 @@ KEYWORDS="~*"
 IUSE="kvm_host"
 
 RDEPEND="
+	chromeos-base/libbrillo
 	chromeos-base/minijail
 	dev-libs/grpc
 	dev-libs/protobuf:=
-	kvm_host? ( chromeos-base/libbrillo )
 	!kvm_host? ( !!sys-apps/upstart )
 "
 DEPEND="
@@ -36,6 +36,7 @@ src_install() {
 		dobin "${OUT}"/maitred_client
 		dobin "${OUT}"/vm_launcher
 		dobin "${OUT}"/vmlog_forwarder
+		dobin "${OUT}"/vsh
 		dobin "${OUT}"/vm_concierge
 		dobin "${OUT}"/concierge_client
 
@@ -49,6 +50,7 @@ src_install() {
 	else
 		dobin "${OUT}"/virtwl_guest_proxy
 		dobin "${OUT}"/vm_syslog
+		dosbin "${OUT}"/vshd
 
 		into /
 		newsbin "${OUT}"/maitred init
