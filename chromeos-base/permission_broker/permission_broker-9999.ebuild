@@ -22,7 +22,6 @@ KEYWORDS="~*"
 IUSE="containers"
 
 RDEPEND="
-	chromeos-base/firewalld
 	chromeos-base/libbrillo
 	containers? ( chromeos-base/container_utils )
 	sys-apps/dbus
