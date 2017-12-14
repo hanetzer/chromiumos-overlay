@@ -37,11 +37,12 @@ IUSE="${IUSE_VIDEO_CARDS}
 
 # llvmpipe requires ARC++ _userdebug images, ARC++ _user images can't use it
 # (b/33072485, b/28802929).
+# Only allow one vulkan driver as they all write vulkan.cheets.so.
 REQUIRED_USE="
 	^^ ( android_gles2 android_gles30 android_gles31 android_gles32 )
 	android_vulkan_compute_0? ( vulkan )
 	cheets? (
-		vulkan? ( video_cards_intel )
+		vulkan? ( ^^ ( video_cards_amdgpu video_cards_intel ) )
 		video_cards_amdgpu? ( llvm )
 		video_cards_llvmpipe? ( !cheets_user !cheets_user_64 )
 	)"
@@ -158,6 +159,7 @@ multilib_src_configure() {
 	fi
 
 	if use vulkan; then
+		vulkan_enable video_cards_amdgpu radeon
 		vulkan_enable video_cards_intel intel
 	fi
 
@@ -254,7 +256,12 @@ multilib_src_install_cheets() {
 
 	if use vulkan; then
 		exeinto "${ARC_PREFIX}/vendor/$(get_libdir)/hw"
-		newexe $(get_libdir)/libvulkan_intel.so vulkan.cheets.so
+		if use video_cards_amdgpu; then
+			newexe $(get_libdir)/libvulkan_radeon.so vulkan.cheets.so
+		fi
+		if use video_cards_intel; then
+			newexe $(get_libdir)/libvulkan_intel.so vulkan.cheets.so
+		fi
 	fi
 }
 
