@@ -27,6 +27,7 @@ S=${WORKDIR}
 
 # Use the device-tree compiler to create and install a config.dtb file
 # containing all the .dtsi files from ${UNIBOARD_DTS_DIR}.
+# For YAML files, convert them into JSON for platform runtime access.
 src_compile() {
 	local dts="${WORKDIR}/config.dts"
 	local dtb="${WORKDIR}/config.dtb"
@@ -65,10 +66,29 @@ please check your chromeos-config-bsp ebuild"
 	einfo "Validating config:"
 	validate_config "${dtb}" || die "Validation failed"
 	einfo "- OK"
+
+	# YAML config support.
+	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*.yaml )
+	local yaml="${WORKDIR}/config.yaml"
+	local json="${WORKDIR}/config.json"
+	if [[ "${files[0]}" =~ .*[a-z_]+\.yaml$ ]]; then
+		echo "# YAML generated from: ${files[*]}" > "${yaml}"
+		# This needs to be smarter eventually where it makes sure the
+		# common YAML file is inserted first before the model-specific
+		# YAML files.
+		# This hasn't been fully vetted yet, so punting until then.
+		cat "${files[@]}" >> "${yaml}"
+		cros_config_schema -c "${yaml}" -o "${json}" -f "True" \
+			|| die "Validation failed"
+	fi
 }
 
 src_install() {
 	# Get the directory name only, and use that as the install directory.
 	insinto "${UNIBOARD_DTB_INSTALL_PATH%/*}"
 	doins config.dtb
+
+	if [[ -e "${WORKDIR}/config.json" ]]; then
+		doins config.json
+	fi
 }
