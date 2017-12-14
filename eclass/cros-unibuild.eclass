@@ -169,17 +169,9 @@ get_dtb_data() {
 		_find_configs "${configdir}" ".dtsi"
 	fi
 
-	# TODO(sjg): remove the workaround once there is no longer the need to
-	#            have coral as the first model so we don't end up with a
-	#            large shellball with bios in each model.
-	local cat_workaround_arg=""
-	if [[ -e "${configdir}/coral/model.dtsi" ]]; then
-		cat_workaround_arg="${configdir}/coral/model.dtsi"
-	fi
-
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
-		cat "-" "${cat_workaround_arg}" "${files[@]}" |
+		cat "-" "${files[@]}" |
 		dtc -O dtb
 }
 
