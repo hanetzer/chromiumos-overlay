@@ -1,10 +1,10 @@
 DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=media-libs/arc-camera3-android-headers dev-vcs/git
-DESCRIPTION=Android libcamera_metadata
+DESCRIPTION=Android libcamera_client
 EAPI=5
-IUSE=-asan cros-debug cros_host cros_workon_tree_7b8b31ba3a694a6c5dc4e5a91c2d361646f5726f profiling
+IUSE=-asan cros-debug cros_host cros_workon_tree_00754bf9ec7bf1a7e4f55dbcc86404882c3c8755 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
 SLOT=0
 _eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=0a459d04184fcd6dbfc67f63aa789400
+_md5_=f3c0a27f45bb86b67f237f91ae5dad14
