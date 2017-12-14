@@ -22,36 +22,22 @@ UNIBOARD_DTB_INSTALL_PATH="${UNIBOARD_CROS_CONFIG_DIR}/config.dtb"
 #  This is the installation directory of the device-tree source files.
 UNIBOARD_DTS_DIR="${UNIBOARD_CROS_CONFIG_DIR}/dts"
 
+# @ECLASS-VARIABLE: UNIBOARD_YAML_DIR
+# @DESCRIPTION:
+#  This is the installation directory of the yaml source files.
+UNIBOARD_YAML_DIR="${UNIBOARD_CROS_CONFIG_DIR}/yaml"
+
 # @ECLASS-VARIABLE: UNIBOARD_CROS_CONFIG_FILES_DIR
 # @DESCRIPTION:
 #  This is the installation directory of files referenced in the model.dtsi.
 UNIBOARD_CROS_CONFIG_FILES_DIR="/usr/share/chromeos-config/files"
 
-# @FUNCTION: install_model_file
-# @USAGE:
-# @DESCRIPTION:
-# Installs the .dtsi file for the current board. This is called from the
-# chromeos-config-<board> public ebuild. It is named "model.dtsi".
-install_model_file() {
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
-
-	local dest="model.dtsi"
-
-	einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
-
-	# Avoid polluting callers with our insinto.
-	(
-		insinto "${UNIBOARD_DTS_DIR}"
-		newins ${FILESDIR}/model.dtsi "${dest}"
-	)
-}
-
 # @FUNCTION: install_private_model_file
 # @USAGE:
 # @DESCRIPTION:
-# Installs the .dtsi file for the current board. This is intended to be called
-# from the chromeos-config-<board> private ebuild. The file is named
-# "private-model.dtsi".
+# Installs the .dtsi/.yaml file for the current board. This is intended to be
+# called from the chromeos-config-<board> private ebuild. The file is named
+# "private-model.dtsi/.yaml".
 install_private_model_file() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
@@ -64,11 +50,23 @@ install_private_model_file() {
 		insinto "${UNIBOARD_DTS_DIR}"
 		newins ${FILESDIR}/model.dtsi "${dest}"
 	)
+
+	if [[ -e "${FILESDIR}/model.yaml" ]]; then
+		local dest="private-model.yaml"
+
+		einfo "Installing ${dest} to ${UNIBOARD_YAML_DIR}"
+
+		(
+			insinto "${UNIBOARD_YAML_DIR}"
+			newins ${FILESDIR}/model.yaml "${dest}"
+		)
+	fi
 }
 
-# Find .dtsi files in a given directory tree.
+# Find .dtsi/.yaml files in a given directory tree.
 # Args:
 #   $1: Directory to search.
+#   $2: Extension to search for (.dtsi or .yaml)
 # Returns:
 #   Exports a 'files' variable containing the array of files found.
 _find_configs() {
@@ -76,7 +74,7 @@ _find_configs() {
 
 	while read -d $'\0' -r file; do
 		files+=( "${file}" )
-	done < <(find "$1" -name '*.dtsi' -print0)
+	done < <(find "$1" -name "*$2" -print0)
 }
 
 # Install model files with a given prefix:
@@ -88,7 +86,7 @@ _install_model_files() {
 	local prefix="$1"
 	local files
 
-	_find_configs "${FILESDIR}"
+	_find_configs "${FILESDIR}" ".dtsi"
 
 	einfo "Validating ${#files[@]} files:"
 	validate_config -p "${files[@]}" || die "Validation failed"
@@ -106,6 +104,25 @@ _install_model_files() {
 			newins "${file}" "${dest}"
 		done
 	)
+
+	files=()
+	_find_configs "${FILESDIR}" ".yaml"
+
+	if [ -n "$files" ]; then
+		einfo "Installing ${#files[@]} files to ${UNIBOARD_YAML_DIR}"
+
+		# Avoid polluting callers with our newins.
+		(
+			insinto "${UNIBOARD_YAML_DIR}"
+			for file in "${files[@]}"; do
+				local dest="${file%/*}"
+				dest="${prefix}${dest##*/}.yaml"
+
+				einfo "Installing ${dest}"
+				newins "${file}" "${dest}"
+			done
+		)
+	fi
 }
 
 # @FUNCTION: install_private_model_files
@@ -149,7 +166,7 @@ get_dtb_data() {
 	# called by non-unibuild boards. We just need to output an empty
 	# config. But do skip this if there is no config BSP directory at all.
 	if [[ -d "${configdir}" ]]; then
-		_find_configs "${configdir}"
+		_find_configs "${configdir}" ".dtsi"
 	fi
 
 	# TODO(sjg): remove the workaround once there is no longer the need to
