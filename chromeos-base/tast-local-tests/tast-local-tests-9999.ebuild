@@ -28,6 +28,7 @@ DEPEND="
 	chromeos-base/tast-common
 	dev-go/cdp
 	dev-go/dbus
+	dev-go/gopsutil
 "
 RDEPEND=""
 
