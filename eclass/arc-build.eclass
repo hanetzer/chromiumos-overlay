@@ -46,7 +46,7 @@ case "${EAPI:-0}" in
 *) die "unsupported EAPI (${EAPI}) in eclass (${ECLASS})" ;;
 esac
 
-inherit multilib-build flag-o-matic
+inherit multilib-build flag-o-matic cros-constants
 
 DEPEND="sys-devel/arc-build[${MULTILIB_USEDEP}]"
 
@@ -66,7 +66,6 @@ _arc-build-select-common() {
 
 	arc-build-check-arch
 
-	export ARC_PREFIX="/opt/google/containers/android"
 	export ARC_SYSROOT="${SYSROOT}${ARC_PREFIX}"
 	export PKG_CONFIG="${ARC_SYSROOT}/build/bin/pkg-config"
 
