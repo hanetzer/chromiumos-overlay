@@ -29,10 +29,3 @@ if [[ $(cros_target) != "cros_host" ]]; then
 	INSTALL_MASK+=" ${glib_mask}"
 	unset glib_mask
 fi
-
-# Build glib with GCC, for the host package.
-cros_pre_src_prepare_use_gcc() {
-	if use cros_host; then
-		cros_use_gcc
-	fi
-}
