@@ -471,3 +471,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/puppet
 	dev-lang/ruby"
+
+# Host dependencies for generating and testing update payloads
+RDEPEND="${RDEPEND}
+	dev-python/backports-lzma"
