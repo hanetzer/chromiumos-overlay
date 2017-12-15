@@ -63,13 +63,17 @@ install_private_model_file() {
 	fi
 }
 
+# @FUNCTION: _unibuild_find_configs
+# @USAGE: [directory] [extension]
+# @INTERNAL
+# @DESCRIPTION:
 # Find .dtsi/.yaml files in a given directory tree.
 # Args:
 #   $1: Directory to search.
 #   $2: Extension to search for (.dtsi or .yaml)
 # Returns:
 #   Exports a 'files' variable containing the array of files found.
-_find_configs() {
+_unibuild_find_configs() {
 	local file
 
 	while read -d $'\0' -r file; do
@@ -77,16 +81,21 @@ _find_configs() {
 	done < <(find "$1" -name "*$2" -print0)
 }
 
+# @FUNCTION: _install_model_files
+# @USAGE: [prefix]
+# @INTERNAL
+# @DESCRIPTION:
+# Find .dtsi/.yaml files in a given directory tree.
 # Install model files with a given prefix:
 # Args:
-#   $1: Prefix to use
+#   $1: Prefix to use (either "" or "private-")
 _install_model_files() {
 	[[ $# -eq 1 ]] || die "${FUNCNAME}: takes one arguments"
 
 	local prefix="$1"
 	local files
 
-	_find_configs "${FILESDIR}" ".dtsi"
+	_unibuild_find_configs "${FILESDIR}" ".dtsi"
 
 	einfo "Validating ${#files[@]} files:"
 	validate_config -p "${files[@]}" || die "Validation failed"
@@ -106,7 +115,7 @@ _install_model_files() {
 	)
 
 	files=()
-	_find_configs "${FILESDIR}" ".yaml"
+	_unibuild_find_configs "${FILESDIR}" ".yaml"
 
 	if [ -n "$files" ]; then
 		einfo "Installing ${#files[@]} files to ${UNIBOARD_YAML_DIR}"
@@ -149,10 +158,13 @@ install_model_files() {
 	_install_model_files ""
 }
 
+# @FUNCTION: unibuild_get_dtb_data
+# @USAGE:
+# @DESCRIPTION:
 # Internal function to compile the device tree file on-the-fly and output a
 # file suitable for piping into "cros_config -c -".
 # TODO(crbug.com/771187): Move this to cros_config.
-get_dtb_data() {
+unibuild_get_dtb_data() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local basedir="$(dirname "${EBUILD}")/.."
@@ -166,7 +178,7 @@ get_dtb_data() {
 	# called by non-unibuild boards. We just need to output an empty
 	# config. But do skip this if there is no config BSP directory at all.
 	if [[ -d "${configdir}" ]]; then
-		_find_configs "${configdir}" ".dtsi"
+		_unibuild_find_configs "${configdir}" ".dtsi"
 	fi
 
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
@@ -198,10 +210,14 @@ install_thermal_files() {
 	done
 }
 
+# @FUNCTION: _unibuild_install_fw
+# @USAGE: [filename] [symlink path]
+# @INTERNAL
+# @DESCRIPTION:
 # Install touch firmware and create a symlink for 'request firmware' hotplug.
 #   $1: Filename of firmware in ${FILESDIR}
 #   $2: Full path to symlink in /lib/firmware
-_install_fw() {
+_unibuild_install_fw() {
 	local firmware="$1"
 	local symlink="$2"
 
@@ -226,7 +242,7 @@ unibuild_install_touch_files() {
 	cros_config_host_py get-touch-firmware-files |
 	( while read -r fwfile; do
 		read -r symlink
-		_install_fw "${fwfile}" "${symlink}"
+		_unibuild_install_fw "${fwfile}" "${symlink}"
 	done ) || die "Failed to read config"
 }
 
