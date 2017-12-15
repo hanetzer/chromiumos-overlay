@@ -121,7 +121,9 @@ main() {
       flag="0xff00"
       ;;
     "dev" | "proto"* | "evt"* | "dvt"*)
-      flag="0xff7f"
+      # Per discussion related in b/67009607 and
+      # go/cr50-board-id-in-factory#heading=h.7woiaqrgyoe1, 0x8000 is reserved.
+      flag="0x7f7f"
       ;;
     "mp"* | "pvt"*)
       flag="0x7f80"
