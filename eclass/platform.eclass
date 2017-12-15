@@ -153,6 +153,10 @@ platform_src_configure() {
 }
 
 platform_src_test() {
+	# We pass SRC along so unittests can access data files in their checkout.
+	# It's also the name used by the common.mk framework.
+	export SRC="${S}"
+
 	platform_test "pre_test"
 	[[ "${PLATFORM_NATIVE_TEST}" == "yes" ]] && ! platform_is_native &&
 		ewarn "Skipping unittests for non-x86: ${PN}" && return 0
