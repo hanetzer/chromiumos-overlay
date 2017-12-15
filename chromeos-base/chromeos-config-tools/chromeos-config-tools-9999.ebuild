@@ -30,6 +30,9 @@ DEPEND="${RDEPEND}"
 src_install() {
 	dolib.so "${OUT}/lib/libcros_config.so"
 
+	insinto "/usr/include/chromeos/chromeos-config/libcros_config"
+	doins "${S}"/libcros_config/*.h
+
 	"${S}"/platform2_preinstall.sh "${PV}" "/usr/include/chromeos" "${OUT}"
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	doins "${OUT}"/libcros_config.pc
