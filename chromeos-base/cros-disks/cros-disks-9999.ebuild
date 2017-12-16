@@ -67,7 +67,7 @@ src_install() {
 	doins cros-disks.conf
 	# Insert the --no-session-manager flag if needed.
 	if use chromeless_tty; then
-		sed -i -E "s/(CROS_DISKS_OPTS=')/\1--no-session-manager /" "${D}"/etc/init/cros-disks.conf || die
+		sed -i -E "s/(CROS_DISKS_OPTS=')/\1--no_session_manager /" "${D}"/etc/init/cros-disks.conf || die
 	fi
 
 	# Install D-Bus config file.
