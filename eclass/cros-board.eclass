@@ -85,6 +85,7 @@ ALL_BOARDS=(
 	celes-cheets
 	chell
 	chell-cheets
+	cheza
 	#chronos
 	cid
 	clapper
