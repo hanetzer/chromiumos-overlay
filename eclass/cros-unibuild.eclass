@@ -187,7 +187,7 @@ unibuild_get_dtb_data() {
 		dtc -O dtb
 }
 
-# @FUNCTION: _unibuild_install_fw
+# @FUNCTION: _unibuild_common_install
 # @USAGE: [command]
 # @INTERNAL
 # @DESCRIPTION:
@@ -223,24 +223,22 @@ unibuild_install_thermal_files() {
 }
 
 # @FUNCTION: _unibuild_install_fw
-# @USAGE: [filename] [symlink path]
+# @USAGE: [source] [dest] [symlink path]
 # @INTERNAL
 # @DESCRIPTION:
 # Install touch firmware and create a symlink for 'request firmware' hotplug.
-#   $1: Filename of firmware in ${FILESDIR}
-#   $2: Full path to symlink in /lib/firmware
+#   $1: Source filename
+#   $2: Destination filename (in /opt/google)
+#   $3: Full path to symlink in /lib/firmware
 _unibuild_install_fw() {
-	local firmware="$1"
-	local symlink="$2"
+	local source="$1"
+	local dest="$2"
+	local symlink="$3"
 
-	# TODO(crbug.com/769575): Remove this hard-coded path.
-	local touchfw_dir="/opt/google/touch/firmware"
-
-	elog "   - ${firmware} with symlink from ${symlink}"
-	local dest="${touchfw_dir}/${firmware}"
+	elog "   - ${source} with symlink from ${symlink}"
 	insinto "$(dirname "${dest}")"
-	doins "${FILESDIR}/${firmware}"
-	dosym "${dest}" "/lib/firmware/${symlink}"
+	doins "${source}"
+	dosym "${dest}" "${symlink}"
 }
 
 # @FUNCTION: unibuild_install_touch_files
@@ -252,9 +250,10 @@ unibuild_install_touch_files() {
 	einfo "unibuild: Installing touch files"
 	set -o pipefail
 	cros_config_host_py get-touch-firmware-files |
-	( while read -r fwfile; do
+	( while read -r source; do
+		read -r dest
 		read -r symlink
-		_unibuild_install_fw "${fwfile}" "${symlink}"
+		_unibuild_install_fw "${source}" "${dest}" "${symlink}"
 	done ) || die "Failed to read config"
 }
 
