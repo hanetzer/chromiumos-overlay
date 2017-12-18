@@ -453,6 +453,12 @@ cros-firmware_setup_source_unibuild() {
 cros-firmware_setup_source() {
 	local i uris
 
+	if [[ -f "${FILESDIR}/srcuris" ]]; then
+		mapfile -t uris -d ' ' < "${FILESDIR}/srcuris"
+		SRC_URI+=( "${uris[@]}" )
+		return
+	fi
+
 	FW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_IMAGE}"
 	FW_RW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_RW_IMAGE}"
 	EC_IMAGE_LOCATION="${CROS_FIRMWARE_EC_IMAGE}"
