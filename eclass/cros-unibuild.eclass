@@ -270,6 +270,24 @@ unibuild_install_audio_files() {
 	_unibuild_common_install get-audio-files
 }
 
+# @FUNCTION: unibuild_install_arc_files
+# @USAGE:
+# @DESCRIPTION: Install files related to arc++.
+unibuild_install_arc_files() {
+	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
+
+	einfo "unibuild: Installing arc++ files"
+	local source dest
+	(cros_config_host_py get-arc-files || die) |
+	while read -r source; do
+		read -r dest
+		einfo "   - ${source}"
+		insinto "$(dirname "${dest}")"
+		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
+		chmod 755 "${D}/${dest}"
+	done
+}
+
 # @FUNCTION: cros-unibuild-setup_bsp_source
 # @USAGE:
 # @DESCRIPTION:
