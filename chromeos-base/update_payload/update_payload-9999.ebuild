@@ -40,10 +40,7 @@ src_install() {
 }
 
 src_test() {
-	# Run python script unittests.
-	cd scripts/update_payload
-	local unittest_script
-	for unittest_script in *_unittest.py; do
-		./"${unittest_script}" || die
-	done
+	# Run update_payload unittests.
+	cd scripts
+	./run_unittests || die
 }
