@@ -123,6 +123,11 @@ src_unpack() {
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
 
+	epatch "${FILESDIR}"/gcc-remove-obsolete-functions.patch
+	epatch "${FILESDIR}"/gcc-thunk-support.patch
+	epatch "${FILESDIR}"/gcc-thunk-testsuite-changes.patch
+	epatch "${FILESDIR}"/gcc-thunk-inline-asm.patch
+
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
 	if [[ -d ${S}/.git ]]; then
 		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"

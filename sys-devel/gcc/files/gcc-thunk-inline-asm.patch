@@ -1,0 +1,62 @@
+From bc43efa6b29749e9992fa6d78f8e3aee5c8ae737 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Tue, 19 Dec 2017 08:28:36 -0800
+Subject: [PATCH] i386: Add 'V' register operand modifier
+
+For
+
+void
+bar (void (*func) (void))
+{
+  asm("call *%V0" : : "r"(func));
+}
+
+it generates:
+
+bar:
+	call *rdi
+	ret
+---
+ gcc/config/i386/i386.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/gcc/config/i386/i386.c b/gcc/config/i386/i386.c
+index 123c5cc4fba..fa4601335ad 100644
+--- a/gcc/config/i386/i386.c
++++ b/gcc/config/i386/i386.c
+@@ -17564,6 +17564,7 @@ put_condition_code (enum rtx_code code, machine_mode mode, bool reverse,
+    If CODE is 'h', pretend the reg is the 'high' byte register.
+    If CODE is 'y', print "st(0)" instead of "st", if the reg is stack op.
+    If CODE is 'd', duplicate the operand for AVX instruction.
++   If CODE is 'V', print naked register name without %.
+  */
+ 
+ void
+@@ -17574,7 +17575,7 @@ print_reg (rtx x, int code, FILE *file)
+   unsigned int regno;
+   bool duplicated;
+ 
+-  if (ASSEMBLER_DIALECT == ASM_ATT)
++  if (ASSEMBLER_DIALECT == ASM_ATT && code != 'V')
+     putc ('%', file);
+ 
+   if (x == pc_rtx)
+@@ -17745,6 +17746,7 @@ print_reg (rtx x, int code, FILE *file)
+    & -- print some in-use local-dynamic symbol name.
+    H -- print a memory address offset by 8; used for sse high-parts
+    Y -- print condition for XOP pcom* instruction.
++   V -- print naked register name without %.
+    + -- print a branch hint as 'cs' or 'ds' prefix
+    ; -- print a semicolon (after prefixes due to bug in older gas).
+    ~ -- print "i" if TARGET_AVX2, "f" otherwise.
+@@ -17968,6 +17970,7 @@ ix86_print_operand (FILE *file, rtx x, int code)
+ 	case 'X':
+ 	case 'P':
+ 	case 'p':
++	case 'V':
+ 	  break;
+ 
+ 	case 's':
+-- 
+2.14.3
+
