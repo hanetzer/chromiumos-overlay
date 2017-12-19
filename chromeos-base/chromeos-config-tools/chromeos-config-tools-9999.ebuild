@@ -34,6 +34,11 @@ src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	doins "${OUT}"/libcros_config.pc
 
+	insinto "/usr/include/cros_config"
+	doins "libcros_config/cros_config_interface.h"
+	doins "libcros_config/cros_config.h"
+	doins "libcros_config/fake_cros_config.h"
+
 	dobin "${OUT}"/cros_config
 }
 
