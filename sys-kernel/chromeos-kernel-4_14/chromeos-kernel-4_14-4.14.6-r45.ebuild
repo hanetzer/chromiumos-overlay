@@ -1,19 +1,19 @@
-# Copyright (c) 2017 The Chromium OS Authors. All rights reserved.
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="7a0423174ecb2c22f67306aff856813771f184c4"
-CROS_WORKON_TREE="437e57cb47caba829dfffd7d2e03c272b2571122"
+
+CROS_WORKON_COMMIT="6c18ed3e3551b05bdecf8021fafee8e3184e6858"
+CROS_WORKON_TREE="6787f7ebfc896b11131ae87cc1c250948dd7babd"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v3.10"
+CROS_WORKON_LOCALNAME="kernel/v4.14"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 3.10"
+DESCRIPTION="Chrome OS Linux Kernel 4.14"
 KEYWORDS="*"
-RDEPEND="!sys-kernel/kernel-freon"
 
 # Change the following (commented out) number to the next prime number
 # when you change "cros-kernel2.eclass" to work around http://crbug.com/220902
