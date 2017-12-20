@@ -2,24 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="daacf2c564d259f3c6f882a6a747eb056243475d"
-CROS_WORKON_TREE="00754bf9ec7bf1a7e4f55dbcc86404882c3c8755"
+CROS_WORKON_COMMIT="dd87ed8ed467706747e7f0d426b1939c278a5a99"
+CROS_WORKON_TREE="04e9a3c724b3aae929d4f0b47ad67a8de9c26176"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Jpeg compressor util."
+DESCRIPTION="ARC camera HAL v3 exif util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND="virtual/jpeg:0"
+RDEPEND="media-libs/libexif"
 
 DEPEND="${RDEPEND}
-	media-libs/libyuv
 	virtual/pkgconfig"
 
 src_configure() {
@@ -28,21 +27,21 @@ src_configure() {
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_exif
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_jpeg.pic.a
+	dolib.so common/libcamera_exif.so
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/jpeg_compressor.h
+	doins include/arc/exif_utils.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_jpeg.pc.template > common/libcamera_jpeg.pc
+		common/libcamera_exif.pc.template > common/libcamera_exif.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_jpeg.pc
+	doins common/libcamera_exif.pc
 }
