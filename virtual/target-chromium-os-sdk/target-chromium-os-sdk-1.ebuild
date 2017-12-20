@@ -438,6 +438,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for running integration tests
 RDEPEND="${RDEPEND}
 	chromeos-base/tast-cmd
+	chromeos-base/tast-remote-tests-cros
 	"
 
 # Host dependencies for building harfbuzz

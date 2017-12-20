@@ -6,6 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
 CROS_GO_BINARIES=(
+	"chromiumos/cmd/remote_test_runner"
 	"chromiumos/cmd/tast"
 )
 
@@ -15,7 +16,7 @@ CROS_GO_TEST=(
 
 inherit cros-go cros-workon
 
-DESCRIPTION="Host executable for running integration tests"
+DESCRIPTION="Host executables for running integration tests"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/tast/"
 
 LICENSE="BSD-Google"
