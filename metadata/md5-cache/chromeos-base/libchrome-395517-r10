@@ -8,5 +8,5 @@ KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=dev-libs/glib:2= dev-libs/libevent:= dev-libs/modp_b64:= crypto? ( dev-libs/nss:= dev-libs/openssl:= ) dbus? ( sys-apps/dbus:= dev-libs/protobuf:= )
 SLOT=395517
-_eclasses_=cros-constants	89fb49c1171dd1c1c5f2673438a88e38	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	scons-utils	988e24b9e2e4642189b4e97c03e5ae71	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	29abe6b09b91dc983b140b6e0574c57c	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	scons-utils	988e24b9e2e4642189b4e97c03e5ae71	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
 _md5_=a8c77c6ca4eb19abfa10dba0c16a6344
