@@ -582,6 +582,7 @@ multilib_src_install_all() {
 	doins -r utils/vim/*/.
 	# some users may find it useful
 	dodoc utils/vim/vimrc
+	dobin "${S}/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py"
 
 	if use clang; then
 		pushd tools/clang >/dev/null || die
