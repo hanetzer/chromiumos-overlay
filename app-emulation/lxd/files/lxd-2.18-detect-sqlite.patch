@@ -1,0 +1,31 @@
+From ac5d69d67ca5c5b0813b2865e9800e697b513468 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>
+Date: Tue, 5 Dec 2017 22:10:07 -0500
+Subject: [PATCH] Makefile: Better detect sqlite3.h
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Closes #4078
+
+Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 0491e862..51b83c8b 100644
+--- a/src/github.com/lxc/lxd/Makefile
++++ b/src/github.com/lxc/lxd/Makefile
+@@ -9,7 +9,7 @@ POTFILE=po/$(DOMAIN).pot
+ # TODO: use git describe for versioning
+ VERSION=$(shell grep "var Version" shared/version/flex.go | cut -d'"' -f2)
+ ARCHIVE=lxd-$(VERSION).tar
+-TAGS=$(shell test -e /usr/include/sqlite3.h && echo "-tags libsqlite3")
++TAGS=$(shell printf "\#include <sqlite3.h>\nvoid main(){}" | gcc -o /dev/null -xc - >/dev/null 2>&1 && echo "-tags libsqlite3")
+ 
+ .PHONY: default
+ default:
+-- 
+2.15.1.620.gb9897f4670-goog
+
