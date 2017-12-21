@@ -451,10 +451,14 @@ cros-firmware_setup_source_unibuild() {
 # With this we will end up downloading either the unibuild files or the
 # !unibuild files, depending on the 'unibuild' USE flag.
 cros-firmware_setup_source() {
+	# This function is called before FILESDIR is set so figure it out from
+	# the ebuild filename.
+	local basedir="$(dirname "${EBUILD}")"
+	local files="${basedir}/files"
 	local i uris
 
-	if [[ -f "${FILESDIR}/srcuris" ]]; then
-		mapfile -t uris -d ' ' < "${FILESDIR}/srcuris"
+	if [[ -f "${files}/srcuris" ]]; then
+		mapfile -t uris -d ' ' < "${files}/srcuris"
 		SRC_URI+=( "${uris[@]}" )
 		return
 	fi
