@@ -174,7 +174,7 @@ asan_death_hook() {
 		[[ ! -e ${l} ]] && return 0
 		echo
 		eerror "ASAN error detected:"
-		eerror "$(<"${l}")"
+		eerror "$(asan_symbolize.py -d -s ${SYSROOT} <${l})"
 		echo
 	done
 	return 1
