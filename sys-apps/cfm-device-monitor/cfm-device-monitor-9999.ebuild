@@ -34,11 +34,14 @@ src_unpack() {
 
 src_install() {
 	dosbin "${OUT}"/huddly-monitor
+	dosbin "${OUT}"/mimo-monitor
 	insinto "/etc/dbus-1/system.d"
 	doins dbus/org.chromium.huddlymonitor.conf
 	insinto "/etc/init"
 	doins init/huddly-monitor.conf
+	doins init/mimo-monitor.conf
 	udev_dorules conf/99-huddly-monitor.rules
+	udev_dorules conf/99-mimo-monitor.rules
 	dobin conf/huddlymonitor_update
 }
 
@@ -49,4 +52,5 @@ platform_pkg_test(){
 pkg_preinst() {
 	enewuser cfm-monitor
 	enewgroup cfm-monitor
+	enewgroup cfm-peripherals
 }
