@@ -19,7 +19,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ac_only -als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup unibuild"
+IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup unibuild"
 
 RDEPEND="
 	cellular? (
@@ -104,10 +104,6 @@ src_install() {
 		udev/gen_autosuspend_rules.py > "${T}"/98-autosuspend.rules || die
 		udev_dorules "${T}"/98-autosuspend.rules
 		udev_dorules udev/optional/98-powerknobs.rules
-
-		if use amd64 && ! use ac_only; then
-			udev_dorules udev/optional/98-powerknobs-intel-hda.rules
-		fi
 	fi
 	if use keyboard_includes_side_buttons; then
 		udev_dorules udev/optional/92-powerd-tags-keyboard-side-buttons.rules
