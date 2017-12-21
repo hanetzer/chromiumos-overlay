@@ -26,7 +26,11 @@ RDEPEND="
 	sys-apps/dbus
 "
 
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/protofiles:=
+	chromeos-base/system_api
+"
 
 pkg_preinst() {
 	enewuser "smbproviderd"
