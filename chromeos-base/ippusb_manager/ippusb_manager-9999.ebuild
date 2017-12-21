@@ -43,6 +43,11 @@ src_install() {
 	# udev rules.
 	udev_dorules udev/*.rules
 
+	# Install policy files.
+	insinto /usr/share/policy
+	newins seccomp/ippusb-manager-seccomp-${ARCH}.policy \
+		ippusb-manager-seccomp.policy
+
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/*.conf
