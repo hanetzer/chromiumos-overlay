@@ -9,7 +9,7 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_SUBDIR="vm_tools"
 
-inherit cros-workon platform user
+inherit cros-workon platform udev user
 
 DESCRIPTION="VM orchestration tools for Chrome OS"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/vm_tools"
@@ -36,9 +36,16 @@ src_install() {
 		dobin "${OUT}"/maitred_client
 		dobin "${OUT}"/vm_launcher
 		dobin "${OUT}"/vmlog_forwarder
+		dobin "${OUT}"/vm_concierge
+		dobin "${OUT}"/concierge_client
 
 		insinto /etc/init
-		doins init/vmlog_forwarder.conf
+		doins init/*.conf
+
+		insinto /etc/dbus-1/system.d
+		doins dbus/org.chromium.VmConcierge.conf
+
+		udev_dorules udev/99-vm.rules
 	else
 		dobin "${OUT}"/virtwl_guest_proxy
 		dobin "${OUT}"/vm_syslog
@@ -53,6 +60,7 @@ platform_pkg_test() {
 
 	if use kvm_host; then
 		tests+=(
+			concierge_test
 			syslog_forwarder_test
 		)
 	else
@@ -69,8 +77,7 @@ platform_pkg_test() {
 }
 
 pkg_preinst() {
-	if ! use kvm_host; then
-		enewuser syslog
-		enewgroup syslog
-	fi
+	# We need the syslog user and group for both host and guest builds.
+	enewuser syslog
+	enewgroup syslog
 }
