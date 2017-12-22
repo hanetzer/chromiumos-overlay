@@ -49,11 +49,14 @@ src_test() {
 src_install() {
 	newsbin TPMFactoryUpd/TPMFactoryUpd infineon-firmware-updater
 	dosbin "${FILESDIR}"/tpm-firmware-updater
+	dosbin "${FILESDIR}"/tpm-firmware-locate-update
 
 	insinto /etc/init
+	doins "${FILESDIR}"/tpm-firmware-check.conf
 	doins "${FILESDIR}"/tpm-firmware-update.conf
 	doins "${FILESDIR}"/send-tpm-firmware-update-metrics.conf
 	exeinto /usr/share/cros/init
+	doexe "${FILESDIR}"/tpm-firmware-check.sh
 	doexe "${FILESDIR}"/tpm-firmware-update.sh
 	doexe "${FILESDIR}"/tpm-firmware-update-factory.sh
 }

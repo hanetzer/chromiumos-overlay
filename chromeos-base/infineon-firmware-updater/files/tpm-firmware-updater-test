@@ -130,6 +130,14 @@ mock_infineon_firmware_updater() {
   return "$(kv_get updater status)"
 }
 
+mock_tpm_firmware_locate_update() {
+  # Run the actual script, but with empty PATH to catch unwanted dependencies.
+  (
+    . "$(dirname $0)/tpm-firmware-locate-update"
+    PATH="" main "$@"
+  )
+}
+
 # Helper to undo the PATH clearing for invoking mocks and utilities.
 with_real_path() {
   (PATH="${ORIG_PATH}" "$@")
@@ -149,6 +157,7 @@ launch_updater() {
     crossystem
     dump_power_status
     infineon-firmware-updater
+    tpm-firmware-locate-update
     tpmc
     vpd
   "
