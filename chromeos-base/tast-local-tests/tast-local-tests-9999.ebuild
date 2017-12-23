@@ -39,7 +39,7 @@ src_install() {
 	# directory) under /usr/share/tast/data.
 	pushd src || die "failed to pushd src"
 	local datadir
-	for datadir in chromiumos/tast/local/tests/*/data; do
+	for datadir in chromiumos/tast/local/bundles/cros/*/data; do
 		insinto "/usr/share/tast/data/$(dirname "${datadir}")"
 		doins -r "${datadir}"
 	done
