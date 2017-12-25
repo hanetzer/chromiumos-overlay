@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="arc-camera3 -chromeless_tests -chromeless_tty +crash_reporting cups +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
+IUSE="arc-camera3 -chromeless_tests -chromeless_tty +crash_reporting cups +encrypted_stateful hammerd +network_time -ppp +passive_metrics +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -98,6 +98,9 @@ CLIENT_IUSE_TESTS="
 			+tests_desktopui_Respawn
 			+tests_desktopui_SpeechSynthesisSemiAuto
 		)
+	)
+	hammerd? (
+		+tests_detachablebase_TriggerHammerd
 	)
 	+tests_dummy_Fail
 	+tests_dummy_Pass
