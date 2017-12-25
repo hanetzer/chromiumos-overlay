@@ -124,6 +124,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/dpkt
 	dev-python/imaging
 	dev-python/jsonrpclib
+	dev-python/mkvparse
 	dev-python/netifaces
 	dev-python/pygobject
 	dev-python/pyserial
