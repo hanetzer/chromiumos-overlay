@@ -32,6 +32,7 @@ RDEPEND="
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
 	chromeos-base/chromeos-chrome
+	dev-python/mkvparse
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/telemetry
 	vaapi? ( x11-libs/libva )
