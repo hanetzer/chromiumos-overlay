@@ -375,6 +375,8 @@ set_build_args() {
 	arm)
 		BUILD_ARGS+=(
 			arm_use_neon=$(usetf neon)
+			# To workaround the 4GB debug limit. crbug.com/792999.
+			remove_webcore_debug_symbols=true
 		)
 		BUILD_STRING_ARGS+=(
 			target_cpu=arm
