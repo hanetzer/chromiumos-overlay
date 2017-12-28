@@ -1004,6 +1004,16 @@ kmake() {
 	local afto_option=$(usex clang 'profile-sample-use' 'auto-profile')
 	use kernel_afdo && kcflags+=" -f${afto_option}=${AFDO_FILENAME}"
 
+	local indirect_branch_options=(
+		"-mindirect-branch=thunk"
+		"-mindirect-branch-loop=pause"
+		"-fno-jump-tables"
+	)
+	# Indirect branch options only available for Intel GCC.
+	if use x86 || use amd64; then
+		use clang || kcflags+=" ${indirect_branch_options[*]}"
+	fi
+
 	# LLVM needs this to parse perf.data.
 	# See AutoFDO README for details: https://github.com/google/autofdo
 	use clang && kcflags+=" -fdebug-info-for-profiling "
