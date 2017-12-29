@@ -40,7 +40,8 @@ src_compile() {
 }
 
 src_install() {
-	dolib.so hal/usb/camera_hal.so
+	insinto "/usr/$(get_libdir)/camera_hal"
+	newins hal/usb/camera_hal.so usb.so
 }
 
 src_test() {
