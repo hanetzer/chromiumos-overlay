@@ -13,7 +13,7 @@ camera device. It uses unix domain socket to build a synchronous channel."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan cheets arc-camera3-3a-sandbox"
+IUSE="-asan cheets +arc-camera3-3a-sandbox"
 
 RDEPEND="
 	arc-camera3-3a-sandbox? ( media-libs/arc-camera3-libcab )
