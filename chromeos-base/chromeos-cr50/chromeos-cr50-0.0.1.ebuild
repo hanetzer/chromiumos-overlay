@@ -3,9 +3,6 @@
 
 EAPI=5
 
-CROS_BOARDS=( coral fizz scarlet soraka )
-inherit cros-board
-
 DESCRIPTION="Ebuild to support the Chrome OS CR50 device."
 
 LICENSE="BSD-Google"
@@ -30,16 +27,14 @@ SRC_URI="$(printf " ${MIRROR_PATH}/%s.tbz2" "${CR50_BASE_NAMES[@]}")"
 S="${WORKDIR}"
 
 src_install() {
-	local cr50_tarball_name
-
-	if [[ -n "$(get_current_board_no_variant)" ]]; then
-		cr50_tarball_name="${PRE_PVT_IMAGE}"
-	else
-		cr50_tarball_name="${PROD_IMAGE}"
-	fi
-
-	elog "Will install ${cr50_tarball_name}"
+	# Always install both pre-pvt and MP Cr50 images, let the updater at
+	# run time decide which one to use, based on the H1 Board ID flags
+	# value.
 
 	insinto /opt/google/cr50/firmware
-	newins "${cr50_tarball_name}"/*.bin.prod cr50.bin.prod
+
+	elog "Will install ${PRE_PVT_IMAGE} and ${PROD_IMAGE}"
+
+	newins "${PRE_PVT_IMAGE}"/*.bin.prod cr50.bin.prepvt
+	newins "${PROD_IMAGE}"/*.bin.prod cr50.bin.prod
 }
