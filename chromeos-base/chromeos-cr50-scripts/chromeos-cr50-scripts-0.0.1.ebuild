@@ -22,7 +22,8 @@ src_install() {
 	doins "${FILESDIR}"/cr50-result.conf
 
 	exeinto /usr/share/cros
-	doexe "${FILESDIR}"/cr50-update.sh
-	doexe "${FILESDIR}"/cr50-set-board-id.sh
+	doexe "${FILESDIR}"/cr50-get-name.sh
 	doexe "${FILESDIR}"/cr50-reset.sh
+	doexe "${FILESDIR}"/cr50-set-board-id.sh
+	doexe "${FILESDIR}"/cr50-update.sh
 }

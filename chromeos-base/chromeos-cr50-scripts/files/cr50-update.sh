@@ -10,7 +10,10 @@
 # tries updating the H1 with the new cr50 image.
 
 script_name="$(basename "$0")"
+script_dir="$(dirname "$0")"
 pid="$$"
+
+. "${script_dir}/cr50-get-name.sh"
 
 # The mount point of the new image is passed in as the first parameter.
 root="$1"
@@ -21,12 +24,6 @@ logit() {
 }
 
 logit "Starting"
-
-CR50_IMAGE="${root}/opt/google/cr50/firmware/cr50.bin.prod"
-if [ ! -f "${CR50_IMAGE}" ]; then
-  logit "${CR50_IMAGE} not found, quitting."
-  exit 1
-fi
 
 GSCTOOL="/usr/sbin/gsctool"
 # Let's determine the best way to communicate with the Cr50.
@@ -41,6 +38,12 @@ elif "${GSCTOOL}" -f -t > /dev/null 2>&1; then
   UPDATER="${GSCTOOL} -t"
 else
   logit "Could not communicate with Cr50"
+  exit 1
+fi
+
+CR50_IMAGE="$(cr50_get_name "${UPDATER}")"
+if [ ! -f "${CR50_IMAGE}" ]; then
+  logit "${CR50_IMAGE} not found, quitting."
   exit 1
 fi
 
