@@ -69,9 +69,7 @@ net-libs/gnutls	-cxx
 # Also |messages| is for enabling POST processor in the library.
 net-libs/libmicrohttpd	ssl messages
 net-libs/libsoup	-ssl
-# For curl-7.19.6 turning on ipv6 use flag will turn off ares.
-# We should try and fix this at some point.
-net-misc/curl		ares -ipv6
+net-misc/curl		ares
 net-misc/dhcpcd		crash
 net-misc/iperf		threads
 # arping is used by some wifi autotests.
