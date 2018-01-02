@@ -51,8 +51,12 @@ RDEPEND="
 RDEPEND="${RDEPEND}
 	pam? ( app-admin/sudo )
 	app-admin/sysstat
+	app-arch/bzip2
 	app-arch/gzip
 	app-arch/tar
+	app-arch/unzip
+	app-arch/xz-utils
+	app-arch/zip
 	profile? (
 		app-benchmarks/punybench
 		chromeos-base/quipper
