@@ -5,10 +5,13 @@ EAPI="5"
 
 inherit eutils flag-o-matic toolchain-funcs multilib multilib-minimal
 
+PATCH_SET="openssl-1.0.2-patches-1.0"
 MY_P=${P/_/-}
 DESCRIPTION="full-strength general purpose cryptography library (including SSL and TLS)"
-HOMEPAGE="http://www.openssl.org/"
-SRC_URI="mirror://openssl/source/${MY_P}.tar.gz"
+HOMEPAGE="https://www.openssl.org/"
+SRC_URI="mirror://openssl/source/${MY_P}.tar.gz
+	mirror://gentoo/${PATCH_SET}.tar.xz
+	https://dev.gentoo.org/~whissi/dist/${PN}/${PATCH_SET}.tar.xz"
 
 LICENSE="openssl"
 SLOT="0"
@@ -44,20 +47,13 @@ src_prepare() {
 	rm -f Makefile
 
 	if ! use vanilla ; then
-		epatch "${FILESDIR}"/${PN}-1.0.0a-ldflags.patch #327421
-		epatch "${FILESDIR}"/${PN}-1.0.2i-parallel-build.patch
-		epatch "${FILESDIR}"/${PN}-1.0.2a-parallel-obj-headers.patch
-		epatch "${FILESDIR}"/${PN}-1.0.2a-parallel-install-dirs.patch
-		epatch "${FILESDIR}"/${PN}-1.0.2a-parallel-symlinking.patch #545028
-		epatch "${FILESDIR}"/${PN}-1.0.2-ipv6.patch
-		epatch "${FILESDIR}"/${PN}-1.0.2a-x32-asm.patch #542618
-		epatch "${FILESDIR}"/${PN}-1.0.1p-default-source.patch #554338
+		epatch "${WORKDIR}"/patch/*.patch
 
 		# Chromium OS patches.
 		epatch "${FILESDIR}"/${PN}-1.0.2-blacklist-by-sha1.patch
-
-		epatch_user #332661
 	fi
+
+	epatch_user
 
 	# llvm/clang doesn't recognize certain asm syntax in thumb mode.
 	# See crbug.com/630057
@@ -93,7 +89,7 @@ src_prepare() {
 
 	# allow openssl to be cross-compiled
 	cp "${FILESDIR}"/gentoo.config-1.0.2 gentoo.config || die
-	chmod a+rx gentoo.config
+	chmod a+rx gentoo.config || die
 
 	append-flags -fno-strict-aliasing
 	append-flags $(test-flags-CC -Wa,--noexecstack)
@@ -212,8 +208,9 @@ multilib_src_install_all() {
 	# we provide a shell version via app-misc/c_rehash
 	rm "${ED}"/usr/bin/c_rehash || die
 
-	dodoc CHANGES* FAQ NEWS README doc/*.txt doc/c-indentation.el
-	dohtml -r doc/*
+	local -a DOCS=( CHANGES* FAQ NEWS README doc/*.txt doc/c-indentation.el )
+	einstalldocs
+
 	use rfc3779 && dodoc engines/ccgost/README.gost
 
 	# This is crappy in that the static archives are still built even
