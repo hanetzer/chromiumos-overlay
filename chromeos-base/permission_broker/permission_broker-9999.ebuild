@@ -28,7 +28,8 @@ RDEPEND="
 	virtual/udev"
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api"
+	chromeos-base/system_api
+	sys-kernel/linux-headers"
 
 src_install() {
 	dobin "${OUT}"/permission_broker

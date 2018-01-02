@@ -18,7 +18,6 @@ index 019ba1e0799a..427d934bf251 100644
 +#define USBDEVFS_CAP_DROP_PRIVILEGES	0x40
  
  /* USBDEVFS_DISCONNECT_CLAIM flags & struct */
- 
 @@ -187,5 +189,6 @@ struct usbdevfs_streams {
  #define USBDEVFS_DISCONNECT_CLAIM  _IOR('U', 27, struct usbdevfs_disconnect_claim)
  #define USBDEVFS_ALLOC_STREAMS     _IOR('U', 28, struct usbdevfs_streams)
