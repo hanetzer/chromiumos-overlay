@@ -2,47 +2,57 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="7a85660f9facb79434dffb4a94e18a8862e49635"
-CROS_WORKON_TREE="4088733e43fca236dac67726d67aa657140312b5"
+CROS_WORKON_COMMIT="9a49fccc34afec06c92b4ccc8084400910e1200d"
+CROS_WORKON_TREE="f669cd7d2517d0a57db0ee76be170cf2771eaec8"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Jpeg compressor util."
+DESCRIPTION="ARC camera HAL v3 common util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND="virtual/jpeg:0"
+RDEPEND=""
 
 DEPEND="${RDEPEND}
-	media-libs/libyuv
 	virtual/pkgconfig"
 
 src_configure() {
-	asan-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_jpeg
+	asan-setup-env
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_common
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_jpeg.pic.a
+	dolib.a common/libcamera_common.pic.a
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/jpeg_compressor.h
+	doins include/arc/common.h \
+		include/arc/future.h \
+		include/arc/future_internal.h \
+		include/arc/camera_thread.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_jpeg.pc.template > common/libcamera_jpeg.pc
+		common/libcamera_common.pc.template > common/libcamera_common.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_jpeg.pc
+	doins common/libcamera_common.pc
+}
+
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
+
+	if use x86 || use amd64; then
+		./common/future_unittest || die "future unit tests failed!"
+	fi
 }

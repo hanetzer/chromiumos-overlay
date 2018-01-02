@@ -2,46 +2,46 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="7a85660f9facb79434dffb4a94e18a8862e49635"
-CROS_WORKON_TREE="4088733e43fca236dac67726d67aa657140312b5"
+CROS_WORKON_COMMIT="9a49fccc34afec06c92b4ccc8084400910e1200d"
+CROS_WORKON_TREE="f669cd7d2517d0a57db0ee76be170cf2771eaec8"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 exif util."
+DESCRIPTION="ARC camera HAL v3 Time zone util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan"
 
-RDEPEND="media-libs/libexif"
+RDEPEND=""
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_configure() {
-	asan-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_exif
+	asan-setup-env
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_timezone
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.so common/libcamera_exif.so
+	dolib.a common/libcamera_timezone.pic.a
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/exif_utils.h
+	doins include/arc/timezone.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_exif.pc.template > common/libcamera_exif.pc
+		common/libcamera_timezone.pc.template > common/libcamera_timezone.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_exif.pc
+	doins common/libcamera_timezone.pc
 }
