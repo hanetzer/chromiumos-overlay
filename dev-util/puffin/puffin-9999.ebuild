@@ -7,17 +7,19 @@ EAPI=5
 inherit cros-constants
 
 CROS_WORKON_INCREMENTAL_BUILD="1"
-CROS_WORKON_LOCALNAME=("../platform2" "../platform/puffin")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "chromiumos/platform/puffin")
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform/puffin")
-CROS_WORKON_REPO=("${CROS_GIT_HOST_URL}" "${CROS_GIT_HOST_URL}")
+CROS_WORKON_LOCALNAME=("../platform2" "../aosp/external/puffin")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/puffin")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/puffin")
+CROS_WORKON_REPO=("${CROS_GIT_HOST_URL}" "${CROS_GIT_AOSP_URL}")
+# We may need to blacklist this ebuild at some point, but it not totally
+# necessary right now.
 
 PLATFORM_SUBDIR="puffin"
 
 inherit cros-workon platform
 
 DESCRIPTION="Puffin: Deterministic patching tool for deflate streams"
-HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/puffin"
+HOMEPAGE="https://android.googlesource.com/platform/external/puffin/"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -30,15 +32,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}"
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-
-	# The platform eclass will look for puffin in src/platform2 This forces it
-	# to look in src/platform.
-	S="${s}/platform/puffin"
-}
 
 src_install() {
 	dobin "${OUT}"/puffin
