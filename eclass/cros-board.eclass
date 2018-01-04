@@ -73,6 +73,7 @@ ALL_BOARDS=(
 	#bxt-rvp
 	candy
 	capri
+	capri-zfpga
 	caroline
 	caroline-arc64
 	caroline-arcnext
