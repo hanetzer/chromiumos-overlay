@@ -3,6 +3,8 @@
 
 EAPI=5
 
+inherit cros-constants
+
 DESCRIPTION="Install dynamic media profiles on ARC++"
 
 LICENSE="BSD-Google"
@@ -25,5 +27,5 @@ src_install() {
 	# into /oem partition. Create a symbolic link in vendor image to redirect
 	# profiles correctly.
 	dosym "/oem/etc/media_profiles.xml" \
-		"/opt/google/containers/android/vendor/etc/media_profiles.xml"
+		"${ARC_VENDOR_DIR}/etc/media_profiles.xml"
 }
