@@ -50,6 +50,7 @@ IUSE="
 	native_gpu_memory_buffers
 	natural_scroll_default
 	neon
+	oobe_skip_to_login
 	opengles
 	ozone
 	passive_event_listeners
