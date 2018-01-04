@@ -33,11 +33,10 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dobin "${OUT}/modemfwd"
-}
 
-pkg_preinst() {
-	enewuser "modem-updater"
-	enewgroup "modem-updater"
+	# Upstart configuration
+	insinto /etc/init
+	doins modemfwd.conf
 }
 
 platform_pkg_test() {
