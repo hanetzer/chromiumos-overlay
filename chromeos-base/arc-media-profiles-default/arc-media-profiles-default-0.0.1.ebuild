@@ -3,6 +3,8 @@
 
 EAPI=4
 
+inherit cros-constants
+
 DESCRIPTION="Install media profiles on ARC++"
 
 LICENSE="BSD-Google"
@@ -12,6 +14,6 @@ IUSE=""
 S="${WORKDIR}"
 
 src_install() {
-	insinto /opt/google/containers/android/vendor/etc/
+	insinto "${ARC_VENDOR_DIR}/etc/"
 	doins "${FILESDIR}/media_profiles.xml"
 }
