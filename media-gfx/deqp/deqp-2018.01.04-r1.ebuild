@@ -10,22 +10,25 @@ inherit cmake-utils
 DESCRIPTION="drawElements Quality Program - an OpenGL ES testsuite"
 HOMEPAGE="https://android.googlesource.com/platform/external/deqp"
 
-# deqp-09b02... corresponds to android master deqp directory.
-# https://android.googlesource.com/platform/external/deqp/+/09b0225a8a77b3d385b7dc779d2ae06f5980bba7
-MY_DEQP_COMMIT='09b0225a8a77b3d385b7dc779d2ae06f5980bba7'
+# This corresponds to a commit near ToT.
+MY_DEQP_COMMIT='5ea85b4a84dd65bb702988f44bc0f7e08e5c6462'
+
+# To uprev deqp, follow these commands:
+# wget https://android.googlesource.com/platform/external/deqp/+archive/${MY_DEQP_COMMIT}.tar.gz
+# gsutil cp -a public-read deqp-${MY_DEQP_COMMIT}.tar.gz gs://chromeos-localmirror/distfiles/
 
 # When building the Vulkan CTS, dEQP requires that certain external
 # dependencies be unpacked into the source tree. See ${S}/external/fetch_sources.py
-# for the required dependencies.
-MY_GLSLANG_COMMIT='e3aa654c4b0c761b28d7864192ca8ceea6faf70a'
-MY_SPIRV_TOOLS_COMMIT='5c19de25107d496a15c7869b3e1dab0a0f85913d'
-MY_SPIRV_HEADERS_COMMIT='bd47a9abaefac00be692eae677daed1b977e625c'
+# in the dEQP for the required dependencies. Upload these tarballs to the ChromeOS mirror too and
+# update the manifest.
+MY_GLSLANG_COMMIT='a5c5fb61180e8703ca85f36d618f98e16dc317e2'
+MY_SPIRV_TOOLS_COMMIT='0b0454c42c6b6f6746434bd5c78c5c70f65d9c51'
+MY_SPIRV_HEADERS_COMMIT='2bf02308656f97898c5f7e433712f21737c61e4e'
 
-SRC_URI="gs://chromeos-localmirror/distfiles/deqp-${MY_DEQP_COMMIT}.tar.gz
+SRC_URI="https://android.googlesource.com/platform/external/deqp/+archive/${MY_DEQP_COMMIT}.tar.gz -> deqp-${MY_DEQP_COMMIT}.tar.gz
 	https://github.com/KhronosGroup/glslang/archive/${MY_GLSLANG_COMMIT}.tar.gz -> glslang-${MY_GLSLANG_COMMIT}.tar.gz
 	https://github.com/KhronosGroup/SPIRV-Tools/archive/${MY_SPIRV_TOOLS_COMMIT}.tar.gz -> SPIRV-Tools-${MY_SPIRV_TOOLS_COMMIT}.tar.gz
-	https://github.com/KhronosGroup/SPIRV-Headers/archive/${MY_SPIRV_HEADERS_COMMIT}.tar.gz -> SPIRV-Headers-${MY_SPIRV_HEADERS_COMMIT}.tar.gz
-"
+	https://github.com/KhronosGroup/SPIRV-Headers/archive/${MY_SPIRV_HEADERS_COMMIT}.tar.gz -> SPIRV-Headers-${MY_SPIRV_HEADERS_COMMIT}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -45,16 +48,6 @@ DEPEND="${RDEPEND}
 "
 
 S="${WORKDIR}"
-
-PATCHES=(
-	"${FILESDIR}"/0001-targets-surfaceless-Add-support-for-Chrome-OS-surfac.patch
-	"${FILESDIR}"/0002-Delete-compiler-check.patch
-	"${FILESDIR}"/0003-Added-support-for-creating-pBuffer-target.patch
-	"${FILESDIR}"/0004-cmake-Use-FindPNG-instead-of-find_path-find_library.patch
-	"${FILESDIR}"/0005-platform-surfaceless-Add-Vulkan-support.patch
-	"${FILESDIR}"/0006-Update-list-of-KHR-extensions.patch
-	"${FILESDIR}"/0007-Lower-correlation-threshold-in-flush-finish-tests-ag.patch
-)
 
 src_unpack() {
 	default_src_unpack || die
