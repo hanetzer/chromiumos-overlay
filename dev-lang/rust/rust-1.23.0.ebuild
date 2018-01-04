@@ -25,14 +25,14 @@ fi
 
 STAGE0_VERSION="1.$(($(get_version_component_range 2) - 1)).0"
 STAGE0_VERSION_CARGO="0.$(($(get_version_component_range 2))).0"
-STAGE0_DATE="2017-10-12"
+STAGE0_DATE="2017-11-20"
 RUST_STAGE0_amd64="rustc-${STAGE0_VERSION}-x86_64-unknown-linux-gnu"
 
 DESCRIPTION="Systems programming language from Mozilla"
 HOMEPAGE="http://www.rust-lang.org/"
 
 SRC_URI="https://static.rust-lang.org/dist/${SRC} -> rustc-${PV}-src.tar.gz
-	https://static.rust-lang.org/dist/${STAGE0_DATE}/rust-std-${STAGE0_VERSION}-x86_64-unknown-linux-gnu.tar.gz -> rust-std-${STAGE0_VERSION}.tar.gz
+	https://dev-static.rust-lang.org/dist/${STAGE0_DATE}/rust-std-${STAGE0_VERSION}-x86_64-unknown-linux-gnu.tar.gz -> rust-std-${STAGE0_VERSION}.tar.gz
 	https://static.rust-lang.org/dist/${RUST_STAGE0_amd64}.tar.gz
 	https://static.rust-lang.org/dist/cargo-${STAGE0_VERSION_CARGO}-x86_64-unknown-linux-gnu.tar.gz
 "
@@ -52,10 +52,6 @@ PATCHES=(
 	"${FILESDIR}"/0003-fix-unknown-vendors.patch
 	"${FILESDIR}"/0004-fix-rpath.patch
 	"${FILESDIR}"/0005-add-unknown-vendor-to-filesearch.patch
-	# TODO(zachr): The linker build option is backported from master. According to the schedule,
-	# these commits will be promoted to beta Nov 23rd, 2017, then released with 1.23 on Jan 4, 2018.
-	"${FILESDIR}"/0006-rustbuild-Support-specifying-archiver-and-linker-exp.patch
-	"${FILESDIR}"/0007-Don-t-use-target-s-linker-when-linking-build-scripts.patch
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -79,7 +75,7 @@ src_prepare() {
 	# One of the patches changes a vendored library, thereby changing the
 	# checksum.
 	pushd src/vendor/cc || die
-	sed -i 's:5f254224f983fa9a5bae1c26bc94df6c434ba8a3ed0eb1deb8361dc0c6db3a41:2b12049076628a3d797fbddab46b8e69d2788faa809f3a03778880293b3d8a80:g' \
+	sed -i 's:164a360f504c7614be1f51dd9c76ef84bf8195e94ea5f1a914a90c1a036db6b8:517952ae22648c61ef8c83a73ccf7d720387211dc267d1f99f2c80f97a84c472:g' \
 		.cargo-checksum.json
 	popd
 
@@ -131,7 +127,6 @@ mandir = "share/man"
 [rust]
 use-jemalloc = false
 default-linker = "${CBUILD}-clang"
-default-ar = "$(tc-getBUILD_AR)"
 channel = "${SLOT%%/*}"
 codegen-units = 0
 
