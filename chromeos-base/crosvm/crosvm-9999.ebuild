@@ -9,7 +9,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 CRATES="
 byteorder-1.1.0
-libc-0.2.32
+libc-0.2.34
 gcc-0.3.54
 "
 
