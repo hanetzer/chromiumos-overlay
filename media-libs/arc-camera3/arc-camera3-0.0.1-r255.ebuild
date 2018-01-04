@@ -7,7 +7,7 @@ CROS_WORKON_TREE="0884cd7e6de5345119f42ba39fc4a0aa44f634a7"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+inherit cros-constants cros-debug cros-workon libchrome toolchain-funcs
 
 DESCRIPTION="ARC camera HAL v3 service. The service is in charge of accessing
 camera device. It uses unix domain socket to build a synchronous channel."
@@ -56,7 +56,7 @@ src_install() {
 	newins hal_adapter/seccomp_filter/camera-halv3-adapter-${ARCH}.policy camera-halv3-adapter.policy
 
 	if use cheets; then
-		insinto /opt/google/containers/android/vendor/etc/init
+		insinto "${ARC_VENDOR_DIR}/etc/init"
 		doins hal_adapter/init/init.camera.rc
 	fi
 }
