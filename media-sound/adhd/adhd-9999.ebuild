@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="systemd unibuild"
+IUSE="selinux systemd unibuild"
 
 RDEPEND=">=media-libs/alsa-lib-1.0.27
 	media-sound/alsa-utils
@@ -27,7 +27,8 @@ RDEPEND=">=media-libs/alsa-lib-1.0.27
 	dev-libs/libpthread-stubs
 	virtual/udev
 	unibuild? ( chromeos-base/chromeos-config )
-	chromeos-base/chromeos-config-tools"
+	chromeos-base/chromeos-config-tools
+	selinux? ( sys-libs/libselinux )"
 DEPEND="${RDEPEND}
 	media-libs/ladspa-sdk"
 
@@ -38,7 +39,7 @@ src_prepare() {
 
 src_configure() {
 	cd cras
-	cros-workon_src_configure
+	cros-workon_src_configure $(use_enable selinux)
 }
 
 src_compile() {
