@@ -11,6 +11,7 @@
 
 set -e
 
+: "${TPM_DEVICE_NODE:=/dev/tpm0}"
 : "${TPM_FIRMWARE_DIR:=/lib/firmware/tpm}"
 : "${TPM_FIRMWARE_UPDATE_MAX_ATTEMPTS:=3}"
 : "${TPM_FIRMWARE_UPDATE_MIN_BATTERY:=10}"
@@ -56,13 +57,13 @@ EOF
 
 # See whether /dev/tpm0 exists and can be opened.
 probe_tpm() {
-  if [ ! -c "/dev/tpm0" ]; then
-    dlog "/dev/tpm0 unavailable"
+  if [ ! -c "${TPM_DEVICE_NODE}" ]; then
+    dlog "${TPM_DEVICE_NODE} unavailable"
     return 1
   fi
 
-  if ! (exec 3<>/dev/tpm0) ; then
-    dlog "Can't open /dev/tpm0. Is it claimed by another process? stop tcsd?"
+  if ! (exec 3<>"${TPM_DEVICE_NODE}") ; then
+    dlog "Can't open ${TPM_DEVICE_NODE}. Opened by another process? stop tcsd?"
     return 1
   fi
 
@@ -270,15 +271,16 @@ install_update() {
   local tpm_auth_mechanism="$1"
   local firmware_file="$2"
   local options="$3"
+  local status_file="$(mktemp -t infineon-firmware-updater-status.XXXXXX)"
   (
     set +e
     infineon-firmware-updater \
       -update "${tpm_auth_mechanism}" \
-      -access-mode 3 /dev/tpm0 \
+      -access-mode 3 "${TPM_DEVICE_NODE}" \
       -firmware "${firmware_file}" \
       -log /dev/stderr \
       ${options}
-    echo $? >/run/infineon-firmware-updater.status
+    echo $? >"${status_file}"
   ) | (
     # The updater writes progress indication to stdout. We post-process the
     # output as follows to obtain integer percentage numbers:
@@ -293,7 +295,7 @@ install_update() {
     stdbuf -oL tr -dc '0-9\n'
   )
 
-  local status=$(cat /run/infineon-firmware-updater.status)
+  local status=$(cat "${status_file}")
   return "${status:-1}"
 }
 
@@ -330,7 +332,7 @@ main() {
   fi
 
   if ! probe_tpm; then
-    exit "${EXIT_CODE_ERROR}"
+    return "${EXIT_CODE_ERROR}"
   fi
 
   # Cache tpm version info.
@@ -339,7 +341,7 @@ main() {
   read_key_value_pairs tpmc_version " " "${tpmc_version_data}"
   if [ "${tpmc_version_vendor}" != "49465800" ]; then
     dlog "This tool can only update Infineon hardware."
-    exit "${EXIT_CODE_NO_UPDATE}"
+    return "${EXIT_CODE_NO_UPDATE}"
   fi
 
   # Cache vendor-specific field updgrade info.
@@ -348,12 +350,12 @@ main() {
   local firmware_file="$(locate_firmware "${tpmc_version_data}" \
                                          "${tpmc_ifxfui_data}")"
   if [ -z "${firmware_file}" ]; then
-    exit "${EXIT_CODE_NO_UPDATE}"
+    return "${EXIT_CODE_NO_UPDATE}"
   fi
 
   local tpm_auth_mechanism
   if ! tpm_auth_mechanism="$(verify_tpm_state "${tpmc_ifxfui_data}")"; then
-    exit "${EXIT_CODE_NOT_UPDATABLE}"
+    return "${EXIT_CODE_NOT_UPDATABLE}"
   fi
 
   # Read R/W VPD. This is slow hence should happen as late as possible.
@@ -361,7 +363,7 @@ main() {
   local fw_image_hash="$(sha256sum "${firmware_file}" | cut -d ' ' -f 1)"
   if ! attempts="$(approve_update "${vpd_params}" "${fw_image_hash}" \
                                   "${tpmc_ifxfui_data}")"; then
-    exit "${EXIT_CODE_MISSING_APPROVAL}"
+    return "${EXIT_CODE_MISSING_APPROVAL}"
   fi
 
   read_key_value_pairs power_status " " "$(dump_power_status)"
@@ -369,7 +371,7 @@ main() {
   if [ "${power_status_battery_present}" = "1" -a \
        "${battery_percent}" -lt "${TPM_FIRMWARE_UPDATE_MIN_BATTERY}" ]; then
     dlog "Insufficient battery charge level."
-    exit "${EXIT_CODE_LOW_BATTERY}"
+    return "${EXIT_CODE_LOW_BATTERY}"
   fi
 
   local success_code="${EXIT_CODE_SUCCESS}"
@@ -395,7 +397,7 @@ main() {
   dlog "Installing TPM firmware update ${firmware_file}"
   if ! install_update "${tpm_auth_mechanism}" "${firmware_file}" \
                       "${updater_options}"; then
-    exit "${EXIT_CODE_UPDATE_FAILED}"
+    return "${EXIT_CODE_UPDATE_FAILED}"
   fi
   echo 100
 
@@ -404,7 +406,7 @@ main() {
   vpd_params="$(update_vpd_params "${vpd_params}" 'mode' 'complete')"
   vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
 
-  exit "${success_code}"
+  return "${success_code}"
 }
 
 if [ "$(basename "$0")" = "tpm-firmware-updater" ]; then

@@ -14,6 +14,8 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="tpm_slb9655_v4_31"
 
+DEPEND="test? ( dev-util/shunit2 )"
+
 RDEPEND="
 	dev-libs/openssl
 	tpm_slb9655_v4_31? ( chromeos-base/ec-utils )
@@ -38,6 +40,10 @@ src_configure() {
 
 src_compile() {
 	emake -C TPMFactoryUpd
+}
+
+src_test() {
+	"${FILESDIR}"/tpm-firmware-updater-test || die
 }
 
 src_install() {
