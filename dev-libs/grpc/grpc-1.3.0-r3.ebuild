@@ -63,5 +63,6 @@ src_install() {
 	emake \
 		prefix="${D}"/usr \
 		INSTALL_LIBDIR="$(get_libdir)" \
+		STRIP=true \
 		install
 }
