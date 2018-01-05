@@ -142,7 +142,12 @@ RDEPEND="${RDEPEND}
 	dev-lang/closure-compiler-bin
 	dev-lang/nasm
 	dev-lang/python:2.7
-	dev-lang/python:3.3
+	|| (
+		dev-lang/python:3.3
+		dev-lang/python:3.4
+		dev-lang/python:3.5
+		dev-lang/python:3.6
+	)
 	dev-lang/swig
 	dev-lang/yasm
 	dev-libs/dbus-c++
