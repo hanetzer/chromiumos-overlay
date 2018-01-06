@@ -57,7 +57,7 @@ REQUIRED_USE="
 	fit_compression_kernel_lzma? ( !fit_compression_kernel_lz4 )
 "
 STRIP_MASK="
-	/lib/modules/*
+	/lib/modules/*/kernel/*
 	/usr/lib/debug/boot/vmlinux
 	/usr/lib/debug/lib/modules/*
 	/usr/src/*
