@@ -1,0 +1,63 @@
+From cd76bc8157a42e028d622dd57269fc9da5ca9a6f Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Mon, 8 Jan 2018 14:46:52 -0800
+Subject: [PATCH] synchronization: add new WaitableEvent constructor
+
+This allows us to move incrementally to the constructor used in
+newer versions of libchrome without having to make a ton of
+synchronized changes.
+
+BUG=b:37434548
+TEST=emerge
+
+Change-Id: I0bfc9566746c7295ab8fb928921a455d1a7260fb
+---
+ base/synchronization/waitable_event.h        | 14 ++++++++++++++
+ base/synchronization/waitable_event_posix.cc |  6 ++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/base/synchronization/waitable_event.h b/base/synchronization/waitable_event.h
+index b5d91d0..247827b 100644
+--- a/base/synchronization/waitable_event.h
++++ b/base/synchronization/waitable_event.h
+@@ -43,6 +43,20 @@ class TimeDelta;
+ // be better off just using an Windows event directly.
+ class BASE_EXPORT WaitableEvent {
+  public:
++  // Indicates whether a WaitableEvent should automatically reset the event
++  // state after a single waiting thread has been released or remain signaled
++  // until Reset() is manually invoked.
++  enum class ResetPolicy { MANUAL, AUTOMATIC };
++
++  // Indicates whether a new WaitableEvent should start in a signaled state or
++  // not.
++  enum class InitialState { SIGNALED, NOT_SIGNALED };
++
++  // Constructs a WaitableEvent with policy and initial state as detailed in
++  // the above enums.
++  WaitableEvent(ResetPolicy reset_policy, InitialState initial_state);
++
++  // DEPRECATED: Please use the enum classes.
+   // If manual_reset is true, then to set the event state to non-signaled, a
+   // consumer must call the Reset method.  If this parameter is false, then the
+   // system automatically resets the event state to non-signaled after a single
+diff --git a/base/synchronization/waitable_event_posix.cc b/base/synchronization/waitable_event_posix.cc
+index 64d4376..704eb71 100644
+--- a/base/synchronization/waitable_event_posix.cc
++++ b/base/synchronization/waitable_event_posix.cc
+@@ -39,6 +39,12 @@ namespace base {
+ // -----------------------------------------------------------------------------
+ // This is just an abstract base class for waking the two types of waiters
+ // -----------------------------------------------------------------------------
++WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
++                             InitialState initial_state)
++    : WaitableEvent(reset_policy == ResetPolicy::MANUAL,
++                    initial_state == InitialState::SIGNALED) {
++}
++
+ WaitableEvent::WaitableEvent(bool manual_reset, bool initially_signaled)
+     : kernel_(new WaitableEventKernel(manual_reset, initially_signaled)) {
+ }
+-- 
+2.13.5
+

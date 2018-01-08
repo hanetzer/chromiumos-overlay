@@ -43,6 +43,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-preg_leak_fix.patch
+	epatch "${FILESDIR}"/${P}-synchronization-add-new-WaitableEvent-constructor.patch
 
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.
