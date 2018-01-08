@@ -19,3 +19,4 @@ CONFIG_AMD_PUBKEY_FILE="3rdparty/blobs/Stoney-PSP/AmdPubKeyST.bin"
 CONFIG_RO_REGION_ONLY="apu/amdfw"
 CONFIG_AGESA_BINARY_PI_AS_STAGE=y
 CONFIG_AGESA_BINARY_PI_FILE="/build/kahlee/firmware/coreboot-private/3rdparty/blobs/pi/amd/00670F00/FT4/AGESA.elf"
+CONFIG_AGESA_SPLIT_MEMORY_FILES=y
