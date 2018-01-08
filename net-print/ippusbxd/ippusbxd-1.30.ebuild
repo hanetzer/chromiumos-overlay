@@ -22,6 +22,7 @@ DEPEND="
 S="${WORKDIR}/${P}/src"
 
 PATCHES=(
+	"${FILESDIR}/ippusbxd-1.31-fix-syslog.patch"
 	"${FILESDIR}/unix-socket.patch"
 )
 
