@@ -37,9 +37,9 @@ cr50_check_board_id_and_flag() {
   local new_flag="$2"
 
   local output
-  output="$("${UPDATER}" -s -i)"
+  output="$("${UPDATER}" -a -i)"
   if [ $? != 0 ]; then
-    die "Failed to execute ${UPDATER} -s -i"
+    die "Failed to execute ${UPDATER} -a -i"
   fi
 
   # Parse the output. E.g., 5a5a4146:a5a5beb9:0000ff00
@@ -72,7 +72,7 @@ cr50_set_board_id_and_flag() {
   local flag="$2"
 
   local updater_arg="${board_id}:${flag}"
-  "${UPDATER}" -s -i "${updater_arg}" 2>&1
+  "${UPDATER}" -a -i "${updater_arg}" 2>&1
   if [ $? != 0 ]; then
     die "Failed to update with ${updater_arg}"
   fi
