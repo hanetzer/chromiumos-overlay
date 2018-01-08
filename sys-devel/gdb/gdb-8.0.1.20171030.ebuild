@@ -34,7 +34,6 @@ REQUIRED_USE="
 
 RDEPEND="server? ( !dev-util/gdbserver )
 	client? (
-		>=sys-libs/ncurses-5.2-r2:0=
 		sys-libs/readline:0=
 		lzma? ( app-arch/xz-utils )
 		python? ( ${PYTHON_DEPS} )
@@ -45,10 +44,15 @@ DEPEND="${RDEPEND}
 	app-arch/xz-utils
 	sys-apps/texinfo
 	client? (
+		>=sys-libs/ncurses-5.2-r2:0=
 		virtual/yacc
 		test? ( dev-util/dejagnu )
 		nls? ( sys-devel/gettext )
 	)"
+# Transition hack until we upgrade ncurses.
+RDEPEND+="
+	client? ( || ( sys-libs/ncurses:0= sys-libs/ncurses:5/5 ) )"
+
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
