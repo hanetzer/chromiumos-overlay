@@ -31,6 +31,7 @@ RDEPEND="
 	!<chromeos-base/chromeos-cheets-scripts-0.0.2
 	chromeos-base/cryptohome-client
 	chromeos-base/libbrillo
+	chromeos-base/metrics
 	chromeos-base/minijail
 	sys-libs/libselinux
 	dev-libs/protobuf"
