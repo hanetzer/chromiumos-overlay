@@ -9,7 +9,7 @@ CROS_WORKON_LOCALNAME="kernel/v3.18"
 # This is required by kernel_afdo.
 #
 # TODO: Allow different versions for different CHROMEOS_KERNEL_SPLITCONFIGs
-AFDO_PROFILE_VERSION="R65-10230.0-1514805867"
+AFDO_PROFILE_VERSION="R65-10278.0-1515411878"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
