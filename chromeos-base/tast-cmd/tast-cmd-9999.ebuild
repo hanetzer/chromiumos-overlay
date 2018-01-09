@@ -28,5 +28,7 @@ DEPEND="
 	dev-go/subcommands
 "
 RDEPEND="
+	app-arch/xz-utils
 	chromeos-base/google-breakpad
+	net-misc/gsutil
 "
