@@ -401,6 +401,7 @@ CONFIG_VIRTIO_NET=m
 CONFIG_VIRTIO_CONSOLE=m
 CONFIG_VIRTIO_RING=m
 CONFIG_VIRTIO_PCI=m
+CONFIG_VIRTUALIZATION=y
 "
 
 kvm_host_desc="Support running virtual machines with KVM"
@@ -420,6 +421,8 @@ CONFIG_KVM_INTEL=y
 CONFIG_KVM_MMIO=y
 CONFIG_VSOCKETS=m
 CONFIG_VHOST_VSOCK=m
+CONFIG_VIRTUALIZATION=y
+CONFIG_KVM_ARM_HOST=y
 "
 
 # TODO(benchan): Remove the 'mbim' use flag and unconditionally enable the
