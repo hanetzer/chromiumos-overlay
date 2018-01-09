@@ -13,8 +13,8 @@ EXIT_CODE_NO_UPDATE=3
 EXIT_CODE_UPDATE_FAILED=4
 EXIT_CODE_LOW_BATTERY=5
 EXIT_CODE_NOT_UPDATABLE=6
-EXIT_CODE_MISSING_APPROVAL=7
 EXIT_CODE_SUCCESS_COLD_REBOOT=8
+EXIT_CODE_BAD_RETRY=9
 
 # Helpers to maintain key-value mappings in backing files. Used to mock various
 # system utilities.
@@ -250,8 +250,6 @@ setUp() {
   kv_set power_status battery_voltage "12.34"
   kv_set power_status battery_discharging "0"
 
-  kv_set vpd tpm_firmware_update_params "mode:first_boot"
-
   kv_set updater status "0"
 
   # Environment variables controlling updater behavior.
@@ -290,7 +288,7 @@ test_success_first_boot() {
 }
 
 test_success_dry_run() {
-  kv_set vpd tpm_firmware_update_params "mode:first_boot,dryrun:1"
+  kv_set vpd tpm_firmware_update_params "dryrun:1"
   run_updater "${EXIT_CODE_SUCCESS}"
   assertTrue "flag set" "kv_is_set updater dry_run"
   assertEquals "vpd dryrun" "1" "$(kv_get vpd_param dryrun)"
@@ -340,11 +338,6 @@ test_no_update() {
   run_updater "${EXIT_CODE_NO_UPDATE}"
 }
 
-test_no_approval() {
-  kv_set vpd tpm_firmware_update_params ""
-  run_updater "${EXIT_CODE_MISSING_APPROVAL}"
-}
-
 test_owned() {
   kv_set tpmc_getownership Owned "yes"
   run_updater "${EXIT_CODE_NOT_UPDATABLE}"
@@ -381,7 +374,7 @@ test_firmware_hash_mismatch() {
   kv_set tpmc_ifxfieldupgradeinfo process_fw_package_id "00010100"
   kv_set tpmc_ifxfieldupgradeinfo process_fw_version "000003f2"
   kv_set vpd tpm_firmware_update_params "mode:recovery,image:badhash"
-  run_updater "${EXIT_CODE_MISSING_APPROVAL}"
+  run_updater "${EXIT_CODE_BAD_RETRY}"
 }
 
 test_firmware_stale_version() {
@@ -412,16 +405,16 @@ test_attempts_too_many_attempts() {
   kv_set tpmc_ifxfieldupgradeinfo process_fw_package_id "00010100"
   kv_set tpmc_ifxfieldupgradeinfo process_fw_version "000003f3"
   kv_set vpd tpm_firmware_update_params "mode:recovery,attempts:5"
-  run_updater "${EXIT_CODE_MISSING_APPROVAL}"
+  run_updater "${EXIT_CODE_BAD_RETRY}"
 }
 
 test_attempts_too_many_updates() {
   kv_set tpmc_ifxfieldupgradeinfo field_upgrade_counter "32"
-  run_updater "${EXIT_CODE_NOT_UPDATABLE}"
+  run_updater "${EXIT_CODE_BAD_RETRY}"
 }
 
 test_attempts_reset_on_first_attempt() {
-  kv_set vpd tpm_firmware_update_params "mode:first_boot,attempts:10"
+  kv_set vpd tpm_firmware_update_params "attempts:10"
   run_updater "${EXIT_CODE_SUCCESS}"
   assertEquals "attempt reset" "1" "$(kv_get vpd_param attempts)"
 }
@@ -447,7 +440,7 @@ test_updater_failure_repeated() {
   kv_set tpmc_ifxfieldupgradeinfo status "5a3c"
   kv_set tpmc_ifxfieldupgradeinfo process_fw_package_id "00010100"
   kv_set tpmc_ifxfieldupgradeinfo process_fw_version "000003f3"
-  kv_set vpd tpm_firmware_update_params "mode:first_boot,attempts:1"
+  kv_set vpd tpm_firmware_update_params "attempts:1"
   kv_set updater status 1
   run_updater "${EXIT_CODE_UPDATE_FAILED}"
   assertEquals "attempt recorded" "2" "$(kv_get vpd_param attempts)"

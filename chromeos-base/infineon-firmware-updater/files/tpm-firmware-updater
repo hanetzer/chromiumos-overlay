@@ -23,8 +23,8 @@ EXIT_CODE_NO_UPDATE=3
 EXIT_CODE_UPDATE_FAILED=4
 EXIT_CODE_LOW_BATTERY=5
 EXIT_CODE_NOT_UPDATABLE=6
-EXIT_CODE_MISSING_APPROVAL=7
 EXIT_CODE_SUCCESS_COLD_REBOOT=8
+EXIT_CODE_BAD_RETRY=9
 
 # Log a diagnostic message to stderr.
 dlog() {
@@ -101,72 +101,27 @@ verify_tpm_state() {
       return 1
   esac
 
-  # The TPM enforces a maximum number of 64 of updates before it doesn't allow
-  # further updates. Enforce an artificial safety margin.
-  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
-  if [ "${tpmc_ifxfui_field_upgrade_counter}" -le \
-       "${TPM_FIRMWARE_UPDATE_MIN_REMAINING}" ]; then
-    dlog "Out of update attempts!"
-    return 1
-  fi
-
   # All checks passed, success!
   return 0
 }
 
-# Checks whether VPD state allows the update to go ahead. Prints the update
-# attempt counter on stdout.
-approve_update() {
-  local vpd_params=$1
+# Performs sanity checks to determine whether it makes sense to go ahead with
+# this update attempt. Prints the update attempt counter on stdout.
+validate_attempt() {
+  local vpd_params="$1"
   local fw_image_hash="$2"
   local tpmc_ifxfui_data="$3"
 
+  read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
+  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
+
   # Determine whether a previous update attempt failed.
   local previous_failed_update
-  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
+  local previous_attempts=0
   if [ "${tpmc_ifxfui_status}" = "5a3c" ]; then
     previous_failed_update=1
-  fi
-
-  # Determine how many times we failed updating according to VPD.
-  read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
-  local previous_attempts=0
-  if [ -n "${previous_failed_update}" ]; then
     previous_attempts="${vpd_param_attempts:-0}"
   fi
-
-  # See whether we're allowed to update at all. The user's consent to run an
-  # update is reflected ${vpd_param_mode}.
-  local mainfw_type=$(crossystem mainfw_type)
-  case "${mainfw_type}" in
-    recovery)
-      if [ -n "${previous_failed_update}" ]; then
-        # Waive consent for TPMs that failed to update previously. They're
-        # already in a hosed state so no need to confirm with the user that
-        # they're OK with the risk of entering that state. Note that we're still
-        # subject to the hard limit on update attempts below.
-        :
-      elif [ "${vpd_param_mode}" != "recovery" -a \
-             "${vpd_param_mode}" != "first_boot" ]; then
-        dlog "Update mode '${vpd_param_mode}' not allowed in recovery mode."
-        return 1
-      fi
-      ;;
-    normal|developer)
-      if [ -z "${FACTORY_SHIM_CONSENT}" ]; then
-        if [ "${vpd_param_mode}" != "first_boot" ]; then
-          dlog "Update mode '${vpd_param_mode}' not allowed in normal/dev mode."
-          return 1
-        fi
-      else
-        dlog "Proceeding based on FACTORY_SHIM_CONSENT, w/o checking vpd."
-      fi
-      ;;
-    *)
-      dlog "Unsupported boot mode: ${mainfw_type}"
-      return 1
-      ;;
-  esac
 
   # If there are previous failed updates, we only have a very limited number of
   # attempts to recover. Run some additional checks to make sure we're not
@@ -187,6 +142,14 @@ approve_update() {
       dlog "Too many attempts at updating firmware, giving up."
       return 1
     fi
+  fi
+
+  # The TPM enforces a maximum number of 64 of updates before it doesn't allow
+  # further updates. Enforce an artificial safety margin.
+  if [ "${tpmc_ifxfui_field_upgrade_counter}" -le \
+       "${TPM_FIRMWARE_UPDATE_MIN_REMAINING}" ]; then
+    dlog "Out of update attempts!"
+    return 1
   fi
 
   echo "$(( previous_attempts + 1 ))"
@@ -277,9 +240,7 @@ Installs Infineon TPM firmware updates. Checks the following prerequisites:
 
  1. Updated firmware for the TPM chip in the device is available.
  2. The TPM is in a state that allows updating.
- 3. The user consented to the update accroding to the tpm_firmware_update_params
-    value in VPD.
- 4. The battery (if present) is sufficiently charged.
+ 3. The battery (if present) is sufficiently charged.
 
 If all of the checks above succeed, the script will install the update and write
 progress information to stdout.
@@ -295,17 +256,15 @@ main() {
     return "${EXIT_CODE_ERROR}"
   fi
 
-  # Cache tpm version info.
+  # Cache tpm version info and vendor-specific field upgrade info.
   local tpmc_version_data="$(tpmc getversion)"
+  local tpmc_ifxfui_data="$(tpmc ifxfieldupgradeinfo)"
 
   read_key_value_pairs tpmc_version " " "${tpmc_version_data}"
   if [ "${tpmc_version_vendor}" != "49465800" ]; then
     dlog "This tool can only update Infineon hardware."
     return "${EXIT_CODE_NO_UPDATE}"
   fi
-
-  # Cache vendor-specific field updgrade info.
-  local tpmc_ifxfui_data="$(tpmc ifxfieldupgradeinfo)"
 
   local firmware_file="$(tpm-firmware-locate-update "${tpmc_version_data}" \
                                                     "${tpmc_ifxfui_data}")"
@@ -321,9 +280,9 @@ main() {
   # Read R/W VPD. This is slow hence should happen as late as possible.
   local vpd_params="$(vpd -i RW_VPD -g tpm_firmware_update_params)"
   local fw_image_hash="$(sha256sum "${firmware_file}" | cut -d ' ' -f 1)"
-  if ! attempts="$(approve_update "${vpd_params}" "${fw_image_hash}" \
-                                  "${tpmc_ifxfui_data}")"; then
-    return "${EXIT_CODE_MISSING_APPROVAL}"
+  if ! attempts="$(validate_attempt "${vpd_params}" "${fw_image_hash}" \
+                                    "${tpmc_ifxfui_data}")"; then
+    return "${EXIT_CODE_BAD_RETRY}"
   fi
 
   read_key_value_pairs power_status " " "$(dump_power_status)"

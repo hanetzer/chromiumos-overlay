@@ -13,14 +13,17 @@ EXIT_CODE_NO_UPDATE=3
 EXIT_CODE_UPDATE_FAILED=4
 EXIT_CODE_LOW_BATTERY=5
 EXIT_CODE_NOT_UPDATABLE=6
-EXIT_CODE_MISSING_APPROVAL=7
 EXIT_CODE_SUCCESS_COLD_REBOOT=8
+EXIT_CODE_BAD_RETRY=9
 
 # Minimum battery charge level at which to retry running the updater.
 MIN_BATTERY_CHARGE_PERCENT=10
 
 # Directory containing tpm firmware images and behavior flags.
 TPM_FIRMWARE_DIR=/lib/firmware/tpm
+
+# Flag file indicating that a TPM firmware update has been requested.
+TPM_FIRMWARE_UPDATE_REQUEST=/mnt/stateful_partition/unencrypted/preserve/tpm_firmware_update_request
 
 # Executes the updater, collects its status and prints the status to stdout.
 run_updater() {
@@ -55,16 +58,6 @@ run_updater() {
   # metrics.
   local status="$(cat /run/tpm-firmware-updater.status)"
   echo "${status:-1}"
-}
-
-# Updates a value in the vpd_params string.
-update_vpd_params() {
-  local params=$1
-  local key=$2
-  local value=$3
-
-  local stripped="$(printf "${params}" | tr ',' '\n' | grep -v "^${key}:")"
-  printf "${key}:${value}\n${stripped}" | tr '\n' ','
 }
 
 wait_for_battery_to_charge() {
@@ -116,6 +109,16 @@ reboot_here() {
 }
 
 main() {
+  # Check whether a firmware update has been requested, bail out if not.
+  if [ ! -e "${TPM_FIRMWARE_UPDATE_REQUEST}" ]; then
+    return 0
+  fi
+
+  # Remove the request file so we don't trigger the TPM update again after
+  # reboot. The updater would decide there's nothing to do, but that takes time,
+  # so we want to remove the flag file so we take the quick exit path above.
+  rm "${TPM_FIRMWARE_UPDATE_REQUEST}"
+
   # Run the updater in a loop so we can perform retries in case of insufficient
   # battery charge.
   while true; do
@@ -127,17 +130,10 @@ main() {
       ${EXIT_CODE_SUCCESS_COLD_REBOOT})
         reboot_here "cold"
         ;;
-      ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE})
+      ${EXIT_CODE_ERROR}|${EXIT_CODE_NO_UPDATE}|${EXIT_CODE_BAD_RETRY})
         # It's OK to continue booting.
         ;;
       ${EXIT_CODE_UPDATE_FAILED})
-        # Clear upgrade approval as a precautionary measure. This helps to avoid
-        # boot loops in case of systematic bugs causing the firmware updater to
-        # bail out before actually starting the update.
-        local vpd_params="$(vpd -i RW_VPD -g "tpm_firmware_update_params")"
-        vpd_params="$(update_vpd_params "${vpd_params}" 'mode' 'failed')"
-        vpd -i RW_VPD -s "tpm_firmware_update_params=${vpd_params}"
-
         # The TPM is likely to be in an inoperational state due to the failed
         # update. If it is, we need to go through recovery anyways to retry the
         # update. Show a message to the user telling them about the failed
@@ -151,11 +147,10 @@ main() {
         wait_for_battery_to_charge
         continue
         ;;
-      ${EXIT_CODE_NOT_UPDATABLE}|${EXIT_CODE_MISSING_APPROVAL})
-        # We have an update, but either the TPM is already owned, or the update
-        # wasn't approved by the user. Drop a flag file so the system can detect
-        # this situation and allow the user to trigger the update flow.
-        touch "/run/tpm_firmware_update_available"
+      ${EXIT_CODE_NOT_UPDATABLE})
+        # We have an update, but the TPM is already owned. This indicates a
+        # logic error - the system should have requested a TPM clear when
+        # putting the update request flag in place.
         ;;
       *)
         # When we see an undefined status code, we continue booting. That's
