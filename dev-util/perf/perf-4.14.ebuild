@@ -37,12 +37,12 @@ SRC_URI+=" mirror://kernel/linux/kernel/v${LINUX_V}/${LINUX_SOURCES}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="*"
 IUSE="audit debug +demangle +doc gtk numa perl python slang unwind"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND="audit? ( sys-process/audit )
-	demangle? ( sys-libs/binutils-libs:= )
+	demangle? ( sys-devel/binutils:= )
 	gtk? ( x11-libs/gtk+:2 )
 	numa? ( sys-process/numactl )
 	perl? ( dev-lang/perl )
@@ -51,7 +51,7 @@ RDEPEND="audit? ( sys-process/audit )
 	unwind? ( sys-libs/libunwind )
 	dev-libs/elfutils"
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-4.9
+	>=sys-kernel/linux-headers-4.4
 	${LINUX_PATCH+dev-util/patchutils}
 	sys-devel/bison
 	sys-devel/flex
@@ -110,9 +110,17 @@ src_prepare() {
 	# Drop some upstream too-developer-oriented flags and fix the
 	# Makefile in general
 	sed -i \
+		-e 's:-Werror::' \
 		-e "s:\$(sysconfdir_SQ)/bash_completion.d:$(get_bashcompdir):" \
 		"${S}"/Makefile.perf || die
 	sed -i -e 's:-Werror::' "${S_K}"/tools/lib/api/Makefile || die
+
+	PATCHES=(
+		"${FILESDIR}/4.14-Fix-hugepage-text.patch"
+		"${FILESDIR}/4.14-Don-t-install-self-tests.patch"
+	)
+
+	epatch "${PATCHES[@]}"
 
 	# Avoid the call to make kernelversion
 	echo "#define PERF_VERSION \"${MY_PV}\"" > PERF-VERSION-FILE
