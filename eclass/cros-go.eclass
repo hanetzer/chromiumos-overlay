@@ -18,12 +18,16 @@
 # of the package path will become the name of the executable.
 # The executable name can be overridden by appending a colon
 # to the package path, followed by an alternate name.
+# The install path for an executable can be overridden by
+# appending a colon to the package path, followed by the
+# desired install path/name for it.
 # For example:
 #   CROS_GO_BINARIES=(
 #     "golang.org/x/tools/cmd/godoc"
 #     "golang.org/x/tools/cmd/guru:goguru"
+#     "golang.org/x/tools/cmd/stringer:/usr/local/bin/gostringer"
 #   )
-# will build and install "godoc" and "goguru" binaries.
+# will build and install "godoc", "goguru", and "gostringer" binaries.
 
 # @ECLASS-VARIABLE: CROS_GO_PACKAGES
 # @DESCRIPTION:
@@ -77,8 +81,8 @@ cros-go_src_compile() {
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
 		einfo "Building \"${bin}\""
-		local name="${bin##*/}"
-		name="${name#*:}"
+		local path="${bin#*:}"
+		local name="${path##*/}"
 		bin="${bin%:*}"
 		cros_go build -v -o "${name}" "${bin}"
 	done
@@ -96,9 +100,18 @@ cros-go_src_install() {
 	local bin
 	for bin in "${CROS_GO_BINARIES[@]}" ; do
 		einfo "Installing \"${bin}\""
-		local name="${bin##*/}"
-		name="${name#*:}"
-		dobin "${name}"
+		local path="${bin#*:}"
+		local name="${path##*/}"
+		if [[ "${bin}" == *:*/* ]] ; then
+			path="${path%/*}"
+		else
+			path="/usr/bin"
+		fi
+		(
+			# Run in sub-shell so we do not modify env.
+			exeinto "${path}"
+			doexe "${name}"
+		)
 	done
 
 	# Install the importable packages in /usr/lib/gopath.
