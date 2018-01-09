@@ -2,14 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="0256efded8710ffd23210409dff28e62401a1af0"
-CROS_WORKON_TREE="7223a2c5750eb32c82b79b9802c47459ba6c23ae"
+CROS_WORKON_COMMIT="46c6e190a528e52cfae9ecad3fc6a9e698575d19"
+CROS_WORKON_TREE="81ef510c36f7151e473493152e1c21a48a7174fa"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="ARC camera HAL v3 Time zone util."
+DESCRIPTION="ARC camera HAL v3 common util."
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -27,21 +27,32 @@ src_configure() {
 
 src_compile() {
 	asan-setup-env
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_timezone
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_common
 }
 
 src_install() {
 	local INCLUDE_DIR="/usr/include/arc"
 	local LIB_DIR="/usr/$(get_libdir)"
 
-	dolib.a common/libcamera_timezone.pic.a
+	dolib.a common/libcamera_common.pic.a
 
 	insinto "${INCLUDE_DIR}"
-	doins include/arc/timezone.h
+	doins include/arc/common.h \
+		include/arc/future.h \
+		include/arc/future_internal.h \
+		include/arc/camera_thread.h
 
 	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
 		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_timezone.pc.template > common/libcamera_timezone.pc
+		common/libcamera_common.pc.template > common/libcamera_common.pc
 	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_timezone.pc
+	doins common/libcamera_common.pc
+}
+
+src_test() {
+	emake BASE_VER=${LIBCHROME_VERS} tests
+
+	if use x86 || use amd64; then
+		./common/future_unittest || die "future unit tests failed!"
+	fi
 }
