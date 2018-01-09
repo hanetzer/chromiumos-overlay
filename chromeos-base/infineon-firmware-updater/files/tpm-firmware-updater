@@ -31,12 +31,6 @@ dlog() {
   echo "tpm-firmware-updater: $*" >&2
 }
 
-# Log an error and exit.
-fail() {
-  dlog "$@"
-  exit "${EXIT_CODE_ERROR}"
-}
-
 # Parse key-value pairs and assign corresponding shell variables. Keys and
 # values are sanitized before assigning.
 read_key_value_pairs() {
@@ -74,8 +68,6 @@ probe_tpm() {
 # Checks whether the TPM is in a state that allows updating and prints the
 # TPM auth mechanism (physical presence or owner auth) to use to stdout.
 verify_tpm_state() {
-  local tpmc_ifxfui_data="$1"
-
   local mainfw_type=$(crossystem mainfw_type)
   case "${mainfw_type}" in
     recovery)
@@ -108,29 +100,20 @@ verify_tpm_state() {
 # Performs sanity checks to determine whether it makes sense to go ahead with
 # this update attempt. Prints the update attempt counter on stdout.
 validate_attempt() {
-  local vpd_params="$1"
-  local fw_image_hash="$2"
-  local tpmc_ifxfui_data="$3"
-
-  read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
-  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
-
-  # Determine whether a previous update attempt failed.
-  local previous_failed_update
-  local previous_attempts=0
-  if [ "${tpmc_ifxfui_status}" = "5a3c" ]; then
-    previous_failed_update=1
-    previous_attempts="${vpd_param_attempts:-0}"
-  fi
+  local previous_attempts="${1:-0}"
+  local previous_image_hash="$2"
+  local tpm_status="$3"
+  local upgrade_counter="$4"
+  local fw_image_hash="$5"
 
   # If there are previous failed updates, we only have a very limited number of
   # attempts to recover. Run some additional checks to make sure we're not
   # burning update attempts carelessly in case of bugs.
-  if [ -n "${previous_failed_update}" ]; then
+  if [ "${tpm_status}" = "5a3c" ]; then
     # If we've previously attempted an update we need to send the exact same
     # image again on retry or the update will fail and burn an attempt.
-    if [ -n "${vpd_param_image}" -a \
-         "${fw_image_hash}" != "${vpd_param_image}" ]; then
+    if [ -n "${previous_image_hash}" -a \
+         "${fw_image_hash}" != "${previous_image_hash}" ]; then
       dlog "Firmware image hash mismatch on retry."
       return 1
     fi
@@ -142,12 +125,15 @@ validate_attempt() {
       dlog "Too many attempts at updating firmware, giving up."
       return 1
     fi
+  else
+    # If the TPM is not in bootloader mode, then by definition this is the first
+    # attempt to install the update.
+    previous_attempts=0
   fi
 
   # The TPM enforces a maximum number of 64 of updates before it doesn't allow
   # further updates. Enforce an artificial safety margin.
-  if [ "${tpmc_ifxfui_field_upgrade_counter}" -le \
-       "${TPM_FIRMWARE_UPDATE_MIN_REMAINING}" ]; then
+  if [ "${upgrade_counter}" -le "${TPM_FIRMWARE_UPDATE_MIN_REMAINING}" ]; then
     dlog "Out of update attempts!"
     return 1
   fi
@@ -233,7 +219,7 @@ update_vpd_params() {
 }
 
 usage() {
-  fail <<EOL
+  echo 1>&2 <<EOL
 Usage: $0
 
 Installs Infineon TPM firmware updates. Checks the following prerequisites:
@@ -245,6 +231,7 @@ Installs Infineon TPM firmware updates. Checks the following prerequisites:
 If all of the checks above succeed, the script will install the update and write
 progress information to stdout.
 EOL
+  exit "${EXIT_CODE_ERROR}"
 }
 
 main() {
@@ -256,35 +243,45 @@ main() {
     return "${EXIT_CODE_ERROR}"
   fi
 
-  # Cache tpm version info and vendor-specific field upgrade info.
+  # Read relevant system information.
   local tpmc_version_data="$(tpmc getversion)"
-  local tpmc_ifxfui_data="$(tpmc ifxfieldupgradeinfo)"
-
   read_key_value_pairs tpmc_version " " "${tpmc_version_data}"
+  local tpmc_ifxfui_data="$(tpmc ifxfieldupgradeinfo)"
+  read_key_value_pairs tpmc_ifxfui " " "${tpmc_ifxfui_data}"
+
   if [ "${tpmc_version_vendor}" != "49465800" ]; then
     dlog "This tool can only update Infineon hardware."
     return "${EXIT_CODE_NO_UPDATE}"
   fi
 
+  # Check whether we have a firmware binary with an update.
   local firmware_file="$(tpm-firmware-locate-update "${tpmc_version_data}" \
                                                     "${tpmc_ifxfui_data}")"
   if [ -z "${firmware_file}" ]; then
     return "${EXIT_CODE_NO_UPDATE}"
   fi
+  local fw_image_hash="$(sha256sum "${firmware_file}" | cut -d ' ' -f 1)"
 
+  # Check whether the TPM is in updateable state in this boot cycle.
   local tpm_auth_mechanism
-  if ! tpm_auth_mechanism="$(verify_tpm_state "${tpmc_ifxfui_data}")"; then
+  if ! tpm_auth_mechanism="$(verify_tpm_state)"; then
     return "${EXIT_CODE_NOT_UPDATABLE}"
   fi
 
-  # Read R/W VPD. This is slow hence should happen as late as possible.
+  # Run a couple of safety checks to prevent doomed retries.
   local vpd_params="$(vpd -i RW_VPD -g tpm_firmware_update_params)"
-  local fw_image_hash="$(sha256sum "${firmware_file}" | cut -d ' ' -f 1)"
-  if ! attempts="$(validate_attempt "${vpd_params}" "${fw_image_hash}" \
-                                    "${tpmc_ifxfui_data}")"; then
+  read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
+  local attempts
+  if ! attempts="$(validate_attempt "${vpd_param_attempts}" \
+                                    "${vpd_param_image}" \
+                                    "${tpmc_ifxfui_status}" \
+                                    "${tpmc_ifxfui_field_upgrade_counter}" \
+                                    "${fw_image_hash}")"; then
     return "${EXIT_CODE_BAD_RETRY}"
   fi
 
+  # Check that the battery (if present) is sufficiently charged to prevent
+  # failed updates due to power loss while sending the update.
   read_key_value_pairs power_status " " "$(dump_power_status)"
   local battery_percent="${power_status_battery_display_percent%%.*}"
   if [ "${power_status_battery_present}" = "1" -a \
@@ -293,6 +290,7 @@ main() {
     return "${EXIT_CODE_LOW_BATTERY}"
   fi
 
+  # Figure out updater options.
   local success_code="${EXIT_CODE_SUCCESS}"
   local updater_options
   read_key_value_pairs vpd_param ":" "$(echo "${vpd_params}" | tr ',' '\n')"
