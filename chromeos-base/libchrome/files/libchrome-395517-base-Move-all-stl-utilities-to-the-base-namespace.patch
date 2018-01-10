@@ -1,0 +1,64 @@
+From 68be7151416dcfc5e5a1aed66c6a76ef289f0ad1 Mon Sep 17 00:00:00 2001
+From: skyostil <skyostil@chromium.org>
+Date: Tue, 9 Aug 2016 15:18:00 -0700
+Subject: [PATCH] base: Move all stl utilities to the base namespace
+
+Previously only some of the utility functions in base/stl_util.h were in
+the base namespace. This patch moves all of them into that namespace.
+
+Since there are many call sites for these functions expecting them in
+the global namespace, this patch also adds transitionary aliases which
+will be removed once the call sites have been updated.
+
+Review-Url: https://codereview.chromium.org/2221403002
+Cr-Commit-Position: refs/heads/master@{#410851}
+---
+ base/stl_util.h | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/base/stl_util.h b/base/stl_util.h
+index 12e226a9db9b..8882ac966ad5 100644
+--- a/base/stl_util.h
++++ b/base/stl_util.h
+@@ -15,6 +15,8 @@
+ 
+ #include "base/logging.h"
+ 
++namespace base {
++
+ // Clears internal memory of an STL object.
+ // STL clear()/reserve(0) does not always free internal memory allocated
+ // This function uses swap/destructor to ensure the internal memory is freed.
+@@ -198,8 +200,6 @@ bool ContainsValue(const Collection& collection, const Value& value) {
+       collection.end();
+ }
+ 
+-namespace base {
+-
+ // Returns true if the container is sorted.
+ template <typename Container>
+ bool STLIsSorted(const Container& cont) {
+@@ -259,4 +259,20 @@ bool STLIncludes(const Arg1& a1, const Arg2& a2) {
+ 
+ }  // namespace base
+ 
++// TODO(skyostil): Remove these global aliases once all call sites have been
++// fixed.
++using base::ContainsKey;
++using base::ContainsValue;
++using base::STLClearObject;
++using base::STLCount;
++using base::STLDeleteContainerPairFirstPointers;
++using base::STLDeleteContainerPairPointers;
++using base::STLDeleteContainerPairSecondPointers;
++using base::STLDeleteContainerPointers;
++using base::STLDeleteElements;
++using base::STLDeleteValues;
++using base::STLElementDeleter;
++using base::STLValueDeleter;
++using base::string_as_array;
++
+ #endif  // BASE_STL_UTIL_H_
+-- 
+2.16.0.rc1.238.g530d649a79-goog
+
