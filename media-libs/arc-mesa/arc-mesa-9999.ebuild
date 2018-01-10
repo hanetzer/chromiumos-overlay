@@ -90,12 +90,16 @@ src_prepare() {
 
 	# Restrict gles version based on USE flag. (See crbug.com/30202361, b/30202371, b/31041422, b:68023287)
 	if use android_gles32; then
+		einfo "Limiting android to gles32."
 		epatch "${FILESDIR}/gles32/0001-limit-gles-version.patch"
 	elif use android_gles31; then
+		einfo "Limiting android to gles31."
 		epatch "${FILESDIR}/gles31/0001-limit-gles-version.patch"
 	elif use android_gles30; then
+		einfo "Limiting android to gles30."
 		epatch "${FILESDIR}/gles30/0001-limit-gles-version.patch"
 	elif use android_gles2; then
+		einfo "Limiting android to gles2."
 		epatch "${FILESDIR}/gles2/0001-limit-gles-version.patch"
 	fi
 
@@ -333,6 +337,7 @@ multilib_src_install_all_cheets() {
 
 	# Install vulkan related files.
 	if use vulkan; then
+		einfo "Using android vulkan."
 		insinto "${ARC_PREFIX}/vendor/etc/init"
 		doins "${FILESDIR}/vulkan.rc"
 
@@ -342,12 +347,14 @@ multilib_src_install_all_cheets() {
 	fi
 
 	if use android_vulkan_compute_0; then
+		einfo "Using android vulkan_compute_0."
 		insinto "${ARC_PREFIX}/vendor/etc/permissions"
 		doins "${FILESDIR}/android.hardware.vulkan.compute-0.xml"
 	fi
 
 	# Install permission file to declare opengles aep support.
 	if use android_aep; then
+		einfo "Using android aep."
 		insinto "${ARC_PREFIX}/vendor/etc/permissions"
 		doins "${FILESDIR}/android.hardware.opengles.aep.xml"
 	fi
