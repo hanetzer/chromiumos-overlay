@@ -214,7 +214,10 @@ CROS_COMMON_RDEPEND+="
 	virtual/linux-sources
 	virtual/modutils
 	virtual/service-manager
-	cr50_onboard? ( chromeos-base/chromeos-cr50 )
+	cr50_onboard? (
+		chromeos-base/chromeos-cr50
+		chromeos-base/u2fd
+	)
 	ime? (
 		app-i18n/chinese-input
 		app-i18n/keyboard-input
