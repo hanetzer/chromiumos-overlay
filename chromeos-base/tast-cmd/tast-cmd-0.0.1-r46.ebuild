@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="4a6a1ee64b548fa3e4f9a76a37d3794241aebe74"
-CROS_WORKON_TREE="911330e3a52431c15fd71eaff621b27c2741ba92"
+CROS_WORKON_COMMIT="2644cda1107edd65f321c5fb39b538319220de98"
+CROS_WORKON_TREE="eef1a1d34ce9727b485cd0cf079d6e5cb8d2aa32"
 CROS_WORKON_PROJECT="chromiumos/platform/tast"
 CROS_WORKON_LOCALNAME="tast"
 
@@ -30,5 +30,7 @@ DEPEND="
 	dev-go/subcommands
 "
 RDEPEND="
+	app-arch/xz-utils
 	chromeos-base/google-breakpad
+	net-misc/gsutil
 "
