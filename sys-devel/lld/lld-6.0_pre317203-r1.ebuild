@@ -32,7 +32,7 @@ pick_cherries() {
 }
 
 pick_next_cherries() {
-	CHERRIES="0c9a338de181a4c5f4905a455ffb424a774d8a3e" #r319020
+	CHERRIES=""
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -52,7 +52,7 @@ src_unpack() {
 	EGIT_COMMIT="dc4c49229f1371f873e16cc960ff5767acfa881e" #r317082
 
 	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
-		EGIT_COMMIT="dc4c49229f1371f873e16cc960ff5767acfa881e" #r317082
+		EGIT_COMMIT="901304abaacc60ef78ab5983d24f0f4666a70fe1" #r321473
 	fi
 
 	git-r3_fetch
@@ -61,11 +61,12 @@ src_unpack() {
 
 src_prepare() {
 	if use llvm-next  && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
+		epatch "${FILESDIR}/$PN-invoke-name-llvm-next.patch"
 		pick_next_cherries
 	else
+		epatch "${FILESDIR}/$PN-invoke-name.patch"
 		pick_cherries
 	fi
-	epatch "${FILESDIR}/$PN-invoke-name.patch"
 }
 src_configure() {
 	local mycmakeargs=(

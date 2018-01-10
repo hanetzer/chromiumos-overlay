@@ -21,20 +21,20 @@ LICENSE="UoI-NCSA"
 # a new llvm-next.
 if use llvm-next; then
 
-# llvm:r317203 https://critique.corp.google.com/#review/175206381
+# llvm:r321490 https://critique.corp.google.com/#review/181250307
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"66af8bde13a515b8d0fa76201f0d5b428187fd13" # EGIT_COMMIT r317203
+		"7e6fcc775f56cdeeae061f6f8071f5c103087330" # EGIT_COMMIT r321490
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"bcc227ee4af1ef3e63033b35dcb1d5627a3b2941" # EGIT_COMMIT r317186
+		"3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" # EGIT_COMMIT r321485
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"4d085086c74a8fbce197f61548f488a63f300933"  # EGIT_COMMIT r317200
+		"7e0bf617fb110ad1e246f7cb09e20e293d3b429e"  # EGIT_COMMIT r321487
 )
 else
 # llvm:r317203 https://critique.corp.google.com/#review/175206381
@@ -230,6 +230,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
+	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"

@@ -26,8 +26,8 @@ src_unpack() {
 	# For this version of the ebuild, llvm and llvm-next are the same until we roll
 	# a new version of llvm-next.
 	if use llvm-next; then
-		# llvm:r317186 https://critique.corp.google.com/#review/174279660
-		EGIT_COMMIT="bcc227ee4af1ef3e63033b35dcb1d5627a3b2941" #r317186
+		# llvm:r321485 https://critique.corp.google.com/#review/180179552
+		EGIT_COMMIT="3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" #r321485
 	else
 		# llvm:r317186 https://critique.corp.google.com/#review/174279660
 		EGIT_COMMIT="bcc227ee4af1ef3e63033b35dcb1d5627a3b2941" #r317186
