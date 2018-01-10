@@ -1,24 +1,24 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-fs/fuse/fuse-2.8.5.ebuild,v 1.11 2011/07/26 00:09:54 zmedico Exp $
 
-EAPI=3
-inherit eutils libtool linux-info fcaps
+EAPI=5
+inherit eutils libtool linux-info udev toolchain-funcs fcaps
 
-MY_P=${P/_/-}
-DESCRIPTION="An interface for filesystems implemented in userspace."
-HOMEPAGE="http://fuse.sourceforge.net"
-SRC_URI="mirror://sourceforge/fuse/${MY_P}.tar.gz"
+DESCRIPTION="An interface for filesystems implemented in userspace"
+HOMEPAGE="https://github.com/libfuse/libfuse"
+SRC_URI="https://github.com/libfuse/libfuse/releases/download/${P}/${P}.tar.gz"
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="kernel_linux kernel_FreeBSD"
-S=${WORKDIR}/${MY_P}
+IUSE="examples kernel_linux kernel_FreeBSD static-libs"
+
 PDEPEND="kernel_FreeBSD? ( sys-fs/fuse4bsd )"
+DEPEND="virtual/pkgconfig"
 
 pkg_setup() {
 	if use kernel_linux ; then
-		if kernel_is lt 2 6 9; then
+		if kernel_is lt 2 6 9 ; then
 			die "Your kernel is too old."
 		fi
 		CONFIG_CHECK="~FUSE_FS"
@@ -28,6 +28,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# sandbox violation with mtab writability wrt #438250
+	# don't sed configure.in without eautoreconf because of maintainer mode
+	sed -i 's:umount --fake:true --fake:' configure || die
+	elibtoolize
+
 	epatch "${FILESDIR}"/fuse-2.8.5-fix-lazy-binding.patch
 	epatch "${FILESDIR}"/fuse-2.8.5-gold.patch
 	# This patch changes fusermount to avoid calling getpwuid(3)
@@ -36,29 +41,27 @@ src_prepare() {
 	# socket/connect syscalls, which allows Chromium OS daemons to
 	# put more restrictive seccomp filters on fusermount.
 	epatch "${FILESDIR}"/fuse-2.8.6-user-option.patch
-	epatch "${FILESDIR}"/fuse-2.8.6-kernel-types.patch
-	epatch "${FILESDIR}"/fuse-2.8.6-fix-gnusource.patch
 	epatch "${FILESDIR}"/fuse-2.8.6-remove-setuid.patch
-
-	elibtoolize
+	epatch "${FILESDIR}"/fuse-2.9.3-kernel-types.patch
 }
 
 src_configure() {
 	econf \
 		INIT_D_PATH="${EPREFIX}/etc/init.d" \
 		MOUNT_FUSE_PATH="${EPREFIX}/sbin" \
-		UDEV_RULES_PATH="${EPREFIX}/lib/udev/rules.d" \
+		UDEV_RULES_PATH="${EPREFIX}/$(get_udevdir)/rules.d" \
+		$(use_enable static-libs static) \
 		--disable-example
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed"
+	local DOCS=( AUTHORS ChangeLog README.md README.NFS NEWS doc/how-fuse-works doc/kernel.txt )
+	default
 
-	dodoc AUTHORS ChangeLog Filesystems README \
-		README.NFS NEWS doc/how-fuse-works \
-		doc/kernel.txt FAQ
-	docinto example
-	dodoc example/*
+	if use examples ; then
+		docinto examples
+		dodoc example/*
+	fi
 
 	if use kernel_linux ; then
 		newinitd "${FILESDIR}"/fuse.init fuse
@@ -70,13 +73,14 @@ src_install() {
 		die "We don't know what init code install for your kernel, please file a bug."
 	fi
 
-	rm -rf "${D}/dev"
+	prune_libtool_files
+	rm -rf "${D}"/dev
 
 	# user_allow_other is enabled to allow Chromium OS to run FUSE-based
 	# file system daemons as a non-root and non-chronos user, while
 	# allowing chronos to access the mount file systems.
 	dodir /etc
-	cat >"${ED}"/etc/fuse.conf <<-EOF
+	cat > "${ED}"/etc/fuse.conf <<-EOF
 		# Set the maximum number of FUSE mounts allowed to non-root users.
 		# The default is 1000.
 		#
