@@ -19,6 +19,7 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/autotest-server-deps
 	chromeos-base/autotest-web-frontend
+	chromeos-base/infra-virtualenv
 	chromeos-base/lucifer
 "
 

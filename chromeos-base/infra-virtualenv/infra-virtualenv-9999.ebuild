@@ -29,9 +29,10 @@ src_configure() {
 }
 
 src_install() {
-	insinto "/opt/${PN}"
+	insinto "/opt/infra_virtualenv"
 	doins -r *
-	python_optimize "${D}/opt/${PN}"
+	fperms -R 755 /opt/infra_virtualenv/bin
+	python_optimize "${D}/opt/infra_virtualenv"
 }
 
 src_test() {
