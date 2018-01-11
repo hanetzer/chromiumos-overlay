@@ -19,6 +19,12 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="+seccomp"
 
+RDEPEND="
+	chromeos-base/libbrillo
+"
+
+DEPEND="${RDEPEND}"
+
 src_unpack() {
 	platform_src_unpack
 
