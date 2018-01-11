@@ -4,6 +4,7 @@
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/platform/tast-tests"
 CROS_WORKON_LOCALNAME="tast-tests"
+CROS_WORKON_BLACKLIST=1
 
 CROS_GO_BINARIES=(
 	"chromiumos/cmd/remote_tests"
