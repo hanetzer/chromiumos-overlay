@@ -192,11 +192,11 @@ src_install() {
 			unzip "${S}"/speech_synthesis/patts/tts_service_arm.nexe.zip
 			doins "${S}"/tts_service_arm.nexe
 		elif use x86 ; then
-			unzip "${S}"/speech_synthesis/patts/tts_service_x86-32.nexe.zip
-			doins "${S}"/tts_service_x86-32.nexe
+			unzip "${S}"/speech_synthesis/patts/tts_service_x86_32.nexe.zip
+			doins "${S}"/tts_service_x86_32.nexe
 		elif use amd64 ; then
-			unzip "${S}"/speech_synthesis/patts/tts_service_x86-64.nexe.zip
-			doins "${S}"/tts_service_x86-64.nexe
+			unzip "${S}"/speech_synthesis/patts/tts_service_x86_64.nexe.zip
+			doins "${S}"/tts_service_x86_64.nexe
 		fi
 
 	fi
