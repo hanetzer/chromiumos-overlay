@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=cellular? ( board_use_kip? ( chromeos-base/ec-utils ) ) unibuild? ( chromeos-base/chromeos-config ) chromeos-base/chromeos-config-tools chromeos-base/metrics dev-libs/libnl dev-libs/protobuf cras? ( media-sound/adhd ) virtual/udev chromeos-base/system_api dev-vcs/git dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] test? ( dev-cpp/gmock ) dev-cpp/gtest virtual/pkgconfig virtual/pkgconfig sys-apps/baselayout
+DESCRIPTION=Power Manager for Chromium OS
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/chromium-os/packages/power_manager
+IUSE=-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup unibuild board_use_kip cros_host unibuild cros_host cros_workon_tree_e7aed09b9d5f26d5013358dcd0fffbd34d165d25 profiling cros-debug cros_host cros_workon_tree_e7aed09b9d5f26d5013358dcd0fffbd34d165d25 profiling cros-debug asan cros_host test
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=cellular? ( board_use_kip? ( chromeos-base/ec-utils ) ) unibuild? ( chromeos-base/chromeos-config ) chromeos-base/chromeos-config-tools chromeos-base/metrics dev-libs/libnl dev-libs/protobuf cras? ( media-sound/adhd ) virtual/udev mosys_eventlog? ( sys-apps/mosys ) chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+SLOT=0
+_eclasses_=cros-board	9b16b205ba503b404f37c9cc5243b16a	cros-constants	bff2e60998898d47ed40153d31657335	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e187d472f97a2f6b03598ccd4173ea7b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	8c9c777e1550c062b99cec5adda98d08	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	udev	a9a8d051efb42bfe884c1db82ce161de	user	c8f947561e8797a300801d0dd3625448
+_md5_=a11dd6fa6441a890cd59b6aca2ab1bb8
