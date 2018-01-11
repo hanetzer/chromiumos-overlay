@@ -29,7 +29,7 @@ DEPEND="
 	dev-go/dbus
 	dev-go/gopsutil
 "
-RDEPEND=""
+RDEPEND="!chromeos-base/tast-local-tests"
 
 src_install() {
 	cros-go_src_install
