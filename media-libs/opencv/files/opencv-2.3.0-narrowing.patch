@@ -1,0 +1,25 @@
+Fix clang errors from [-Wc++11-narrowing]:
+constant expression evaluates to 4294967295 which cannot be narrowed to type 'int'
+The issue is already fixed in upstream opencv.
+
+--- OpenCV-2.3.0/modules/core/src/arithm.cpp
++++ OpenCV-2.3.0/modules/core/src/arithm.cpp
+@@ -425,17 +425,17 @@ struct _VAbsDiff32f
+     }
+ };
+ 
+ struct _VAdd64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_add_pd(a,b); }};
+ struct _VSub64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_sub_pd(a,b); }};
+ struct _VMin64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_min_pd(a,b); }};
+ struct _VMax64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_max_pd(a,b); }};
+ 
+-static int CV_DECL_ALIGNED(16) v64f_absmask[] = { 0xffffffff, 0x7fffffff, 0xffffffff, 0x7fffffff };
++static int CV_DECL_ALIGNED(16) v64f_absmask[] = { (int)0xffffffff, 0x7fffffff, (int)0xffffffff, 0x7fffffff };
+ struct _VAbsDiff64f
+ {
+     __m128d operator()(const __m128d& a, const __m128d& b) const
+     {
+         return _mm_and_pd(_mm_sub_pd(a,b), *(const __m128d*)v64f_absmask);
+     }
+ };
+ 

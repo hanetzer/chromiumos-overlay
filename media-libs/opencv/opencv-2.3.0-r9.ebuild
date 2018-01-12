@@ -64,6 +64,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.3.0-manual-change-fps.patch"
 	"${FILESDIR}/${PN}-2.3.0-clang-error.patch"
 	"${FILESDIR}/${PN}-2.3.0-const-operator.patch"
+	"${FILESDIR}/${PN}-2.3.0-narrowing.patch"
 )
 
 CMAKE_BUILD_TYPE="Release"
