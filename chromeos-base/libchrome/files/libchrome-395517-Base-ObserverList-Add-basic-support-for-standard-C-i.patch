@@ -1,0 +1,799 @@
+From 2f6c0d7785902a80a6799e6b126eb8418f5fc412 Mon Sep 17 00:00:00 2001
+From: loyso <loyso@chromium.org>
+Date: Mon, 10 Oct 2016 23:51:33 -0700
+Subject: [PATCH] Base ObserverList: Add basic support for standard C++
+ iterators.
+
+Also add a support for const_iterator.
+
+The range-based for loop support follows for free.
+
+See the use case in the dependent CL.
+
+BUG=634916
+
+Change-Id: I788de5b90635dad6b535ad6cc6e9802e440afd91
+Review-Url: https://codereview.chromium.org/2340583005
+Cr-Commit-Position: refs/heads/master@{#424381}
+---
+ base/observer_list.h           | 183 ++++++++++++++----
+ base/observer_list_unittest.cc | 415 ++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 545 insertions(+), 53 deletions(-)
+
+diff --git a/base/observer_list.h b/base/observer_list.h
+index 3156421..7543a98 100644
+--- a/base/observer_list.h
++++ b/base/observer_list.h
+@@ -11,6 +11,7 @@
+ #include <limits>
+ #include <vector>
+ 
++#include "base/gtest_prod_util.h"
+ #include "base/logging.h"
+ #include "base/macros.h"
+ #include "base/memory/weak_ptr.h"
+@@ -46,11 +47,14 @@
+ //     }
+ //
+ //     void NotifyFoo() {
+-//       FOR_EACH_OBSERVER(Observer, observer_list_, OnFoo(this));
++//       for (auto& observer : observer_list_)
++//         observer.OnFoo(this);
+ //     }
+ //
+ //     void NotifyBar(int x, int y) {
+-//       FOR_EACH_OBSERVER(Observer, observer_list_, OnBar(this, x, y));
++//       for (FooList::iterator i = observer_list.begin(),
++//           e = observer_list.end(); i != e; ++i)
++//        i->OnBar(this, x, y);
+ //     }
+ //
+ //    private:
+@@ -80,20 +84,69 @@ class ObserverListBase
+     NOTIFY_EXISTING_ONLY
+   };
+ 
+-  // An iterator class that can be used to access the list of observers.  See
+-  // also the FOR_EACH_OBSERVER macro defined below.
+-  class Iterator {
++  // An iterator class that can be used to access the list of observers.
++  template <class ContainerType>
++  class Iter {
+    public:
+-    explicit Iterator(ObserverListBase<ObserverType>* list);
+-    ~Iterator();
++    Iter();
++    explicit Iter(ContainerType* list);
++    ~Iter();
++
++    // Deprecated.
+     ObserverType* GetNext();
+ 
++    // A workaround for C2244. MSVC requires fully qualified type name for
++    // return type on a function definition to match a function declaration.
++    using ThisType =
++        typename ObserverListBase<ObserverType>::template Iter<ContainerType>;
++
++    bool operator==(const Iter& other) const;
++    bool operator!=(const Iter& other) const;
++    ThisType& operator++();
++    ObserverType* operator->() const;
++    ObserverType& operator*() const;
++
+    private:
++    FRIEND_TEST_ALL_PREFIXES(ObserverListTest, BasicStdIterator);
++    FRIEND_TEST_ALL_PREFIXES(ObserverListTest, StdIteratorRemoveFront);
++
++    ObserverType* GetCurrent() const;
++    void EnsureValidIndex();
++
++    size_t clamped_max_index() const {
++      return std::min(max_index_, list_->observers_.size());
++    }
++
++    bool is_end() const { return !list_ || index_ == clamped_max_index(); }
++
+     WeakPtr<ObserverListBase<ObserverType>> list_;
++    // When initially constructed and each time the iterator is incremented,
++    // |index_| is guaranteed to point to a non-null index if the iterator
++    // has not reached the end of the ObserverList.
+     size_t index_;
+     size_t max_index_;
+   };
+ 
++  using Iterator = Iter<ObserverListBase<ObserverType>>;
++
++  using iterator = Iter<ObserverListBase<ObserverType>>;
++  iterator begin() {
++    // An optimization: do not involve weak pointers for empty list.
++    // Note: can't use ?: operator here due to some MSVC bug (unit tests fail)
++    if (observers_.empty())
++      return iterator();
++    return iterator(this);
++  }
++  iterator end() { return iterator(); }
++
++  using const_iterator = Iter<const ObserverListBase<ObserverType>>;
++  const_iterator begin() const {
++    if (observers_.empty())
++      return const_iterator();
++    return const_iterator(this);
++  }
++  const_iterator end() const { return const_iterator(); }
++
+   ObserverListBase() : notify_depth_(0), type_(NOTIFY_ALL) {}
+   explicit ObserverListBase(NotificationType type)
+       : notify_depth_(0), type_(type) {}
+@@ -124,37 +177,108 @@ class ObserverListBase
+   int notify_depth_;
+   NotificationType type_;
+ 
+-  friend class ObserverListBase::Iterator;
++  template <class ContainerType>
++  friend class Iter;
+ 
+   DISALLOW_COPY_AND_ASSIGN(ObserverListBase);
+ };
+ 
+ template <class ObserverType>
+-ObserverListBase<ObserverType>::Iterator::Iterator(
+-    ObserverListBase<ObserverType>* list)
+-    : list_(list->AsWeakPtr()),
++template <class ContainerType>
++ObserverListBase<ObserverType>::Iter<ContainerType>::Iter()
++    : index_(0), max_index_(0) {}
++
++template <class ObserverType>
++template <class ContainerType>
++ObserverListBase<ObserverType>::Iter<ContainerType>::Iter(ContainerType* list)
++    : list_(const_cast<ObserverListBase<ObserverType>*>(list)->AsWeakPtr()),
+       index_(0),
+       max_index_(list->type_ == NOTIFY_ALL ? std::numeric_limits<size_t>::max()
+                                            : list->observers_.size()) {
++  EnsureValidIndex();
++  DCHECK(list_);
+   ++list_->notify_depth_;
+ }
+ 
+ template <class ObserverType>
+-ObserverListBase<ObserverType>::Iterator::~Iterator() {
+-  if (list_.get() && --list_->notify_depth_ == 0)
++template <class ContainerType>
++ObserverListBase<ObserverType>::Iter<ContainerType>::~Iter() {
++  if (list_ && --list_->notify_depth_ == 0)
+     list_->Compact();
+ }
+ 
+ template <class ObserverType>
+-ObserverType* ObserverListBase<ObserverType>::Iterator::GetNext() {
+-  if (!list_.get())
++template <class ContainerType>
++bool ObserverListBase<ObserverType>::Iter<ContainerType>::operator==(
++    const Iter& other) const {
++  if (is_end() && other.is_end())
++    return true;
++  return list_.get() == other.list_.get() && index_ == other.index_;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++bool ObserverListBase<ObserverType>::Iter<ContainerType>::operator!=(
++    const Iter& other) const {
++  return !operator==(other);
++}
++
++template <class ObserverType>
++template <class ContainerType>
++typename ObserverListBase<ObserverType>::template Iter<ContainerType>&
++    ObserverListBase<ObserverType>::Iter<ContainerType>::operator++() {
++  if (list_) {
++    ++index_;
++    EnsureValidIndex();
++  }
++  return *this;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++ObserverType* ObserverListBase<ObserverType>::Iter<ContainerType>::operator->()
++    const {
++  ObserverType* current = GetCurrent();
++  DCHECK(current);
++  return current;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++ObserverType& ObserverListBase<ObserverType>::Iter<ContainerType>::operator*()
++    const {
++  ObserverType* current = GetCurrent();
++  DCHECK(current);
++  return *current;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++ObserverType* ObserverListBase<ObserverType>::Iter<ContainerType>::GetCurrent()
++    const {
++  if (!list_)
+     return nullptr;
+-  ListType& observers = list_->observers_;
+-  // Advance if the current element is null
+-  size_t max_index = std::min(max_index_, observers.size());
+-  while (index_ < max_index && !observers[index_])
++  return index_ < clamped_max_index() ? list_->observers_[index_] : nullptr;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++void ObserverListBase<ObserverType>::Iter<ContainerType>::EnsureValidIndex() {
++  if (!list_)
++    return;
++
++  size_t max_index = clamped_max_index();
++  while (index_ < max_index && !list_->observers_[index_])
+     ++index_;
+-  return index_ < max_index ? observers[index_++] : nullptr;
++}
++
++template <class ObserverType>
++template <class ContainerType>
++ObserverType* ObserverListBase<ObserverType>::Iter<ContainerType>::GetNext() {
++  EnsureValidIndex();
++  ObserverType* current = GetCurrent();
++  operator++();
++  return current;
+ }
+ 
+ template <class ObserverType>
+@@ -205,9 +329,8 @@ void ObserverListBase<ObserverType>::Clear() {
+ 
+ template <class ObserverType>
+ void ObserverListBase<ObserverType>::Compact() {
+-  observers_.erase(
+-      std::remove(observers_.begin(), observers_.end(), nullptr),
+-      observers_.end());
++  observers_.erase(std::remove(observers_.begin(), observers_.end(), nullptr),
++                   observers_.end());
+ }
+ 
+ template <class ObserverType, bool check_empty = false>
+@@ -233,15 +356,11 @@ class ObserverList : public ObserverListBase<ObserverType> {
+   }
+ };
+ 
+-#define FOR_EACH_OBSERVER(ObserverType, observer_list, func)             \
+-  do {                                                                   \
+-    if ((observer_list).might_have_observers()) {                        \
+-      base::ObserverListBase<ObserverType>::Iterator it_inside_observer_macro( \
+-          &observer_list);                                               \
+-      ObserverType* obs;                                                 \
+-      while ((obs = it_inside_observer_macro.GetNext()) != nullptr)      \
+-        obs->func;                                                       \
+-    }                                                                    \
++// Deprecated. Use the range-based for loop instead.
++#define FOR_EACH_OBSERVER(ObserverType, observer_list, func) \
++  do {                                                       \
++    for (ObserverType & o : observer_list)                   \
++      o.func;                                                \
+   } while (0)
+ 
+ }  // namespace base
+diff --git a/base/observer_list_unittest.cc b/base/observer_list_unittest.cc
+index 2e51e45..a6eb176 100644
+--- a/base/observer_list_unittest.cc
++++ b/base/observer_list_unittest.cc
+@@ -22,13 +22,17 @@ class Foo {
+  public:
+   virtual void Observe(int x) = 0;
+   virtual ~Foo() {}
++  virtual int GetValue() const { return 0; }
+ };
+ 
+ class Adder : public Foo {
+  public:
+   explicit Adder(int scaler) : total(0), scaler_(scaler) {}
+-  void Observe(int x) override { total += x * scaler_; }
+   ~Adder() override {}
++
++  void Observe(int x) override { total += x * scaler_; }
++  int GetValue() const override { return total; }
++
+   int total;
+ 
+  private:
+@@ -37,16 +41,28 @@ class Adder : public Foo {
+ 
+ class Disrupter : public Foo {
+  public:
++  Disrupter(ObserverList<Foo>* list, Foo* doomed, bool remove_self)
++      : list_(list), doomed_(doomed), remove_self_(remove_self) {}
+   Disrupter(ObserverList<Foo>* list, Foo* doomed)
+-      : list_(list),
+-        doomed_(doomed) {
+-  }
++      : Disrupter(list, doomed, false) {}
++  Disrupter(ObserverList<Foo>* list, bool remove_self)
++      : Disrupter(list, nullptr, remove_self) {}
++
+   ~Disrupter() override {}
+-  void Observe(int x) override { list_->RemoveObserver(doomed_); }
++
++  void Observe(int x) override {
++    if (remove_self_)
++      list_->RemoveObserver(this);
++    if (doomed_)
++      list_->RemoveObserver(doomed_);
++  }
++
++  void SetDoomed(Foo* doomed) { doomed_ = doomed; }
+ 
+  private:
+   ObserverList<Foo>* list_;
+   Foo* doomed_;
++  bool remove_self_;
+ };
+ 
+ class ThreadSafeDisrupter : public Foo {
+@@ -67,21 +83,19 @@ template <typename ObserverListType>
+ class AddInObserve : public Foo {
+  public:
+   explicit AddInObserve(ObserverListType* observer_list)
+-      : added(false),
+-        observer_list(observer_list),
+-        adder(1) {
+-  }
++      : observer_list(observer_list), to_add_() {}
++
++  void SetToAdd(Foo* to_add) { to_add_ = to_add; }
+ 
+   void Observe(int x) override {
+-    if (!added) {
+-      added = true;
+-      observer_list->AddObserver(&adder);
++    if (to_add_) {
++      observer_list->AddObserver(to_add_);
++      to_add_ = nullptr;
+     }
+   }
+ 
+-  bool added;
+   ObserverListType* observer_list;
+-  Adder adder;
++  Foo* to_add_;
+ };
+ 
+ 
+@@ -176,6 +190,8 @@ class AddRemoveThread : public PlatformThread::Delegate,
+   base::WeakPtrFactory<AddRemoveThread> weak_factory_;
+ };
+ 
++}  // namespace
++
+ TEST(ObserverListTest, BasicTest) {
+   ObserverList<Foo> observer_list;
+   Adder a(1), b(-1), c(1), d(-1), e(-1);
+@@ -205,6 +221,48 @@ TEST(ObserverListTest, BasicTest) {
+   EXPECT_EQ(0, e.total);
+ }
+ 
++TEST(ObserverListTest, DisruptSelf) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter evil(&observer_list, true);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++
++  FOR_EACH_OBSERVER(Foo, observer_list, Observe(10));
++
++  observer_list.AddObserver(&evil);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  FOR_EACH_OBSERVER(Foo, observer_list, Observe(10));
++
++  EXPECT_EQ(20, a.total);
++  EXPECT_EQ(-20, b.total);
++  EXPECT_EQ(10, c.total);
++  EXPECT_EQ(-10, d.total);
++}
++
++TEST(ObserverListTest, DisruptBefore) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter evil(&observer_list, &b);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&evil);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  FOR_EACH_OBSERVER(Foo, observer_list, Observe(10));
++  FOR_EACH_OBSERVER(Foo, observer_list, Observe(10));
++
++  EXPECT_EQ(20, a.total);
++  EXPECT_EQ(-10, b.total);
++  EXPECT_EQ(20, c.total);
++  EXPECT_EQ(-20, d.total);
++}
++
+ TEST(ObserverListThreadSafeTest, BasicTest) {
+   MessageLoop loop;
+ 
+@@ -433,20 +491,22 @@ TEST(ObserverListTest, Existing) {
+   ObserverList<Foo> observer_list(ObserverList<Foo>::NOTIFY_EXISTING_ONLY);
+   Adder a(1);
+   AddInObserve<ObserverList<Foo> > b(&observer_list);
++  Adder c(1);
++  b.SetToAdd(&c);
+ 
+   observer_list.AddObserver(&a);
+   observer_list.AddObserver(&b);
+ 
+   FOR_EACH_OBSERVER(Foo, observer_list, Observe(1));
+ 
+-  EXPECT_TRUE(b.added);
++  EXPECT_FALSE(b.to_add_);
+   // B's adder should not have been notified because it was added during
+   // notification.
+-  EXPECT_EQ(0, b.adder.total);
++  EXPECT_EQ(0, c.total);
+ 
+   // Notify again to make sure b's adder is notified.
+   FOR_EACH_OBSERVER(Foo, observer_list, Observe(1));
+-  EXPECT_EQ(1, b.adder.total);
++  EXPECT_EQ(1, c.total);
+ }
+ 
+ // Same as above, but for ObserverListThreadSafe
+@@ -456,6 +516,8 @@ TEST(ObserverListThreadSafeTest, Existing) {
+       new ObserverListThreadSafe<Foo>(ObserverList<Foo>::NOTIFY_EXISTING_ONLY));
+   Adder a(1);
+   AddInObserve<ObserverListThreadSafe<Foo> > b(observer_list.get());
++  Adder c(1);
++  b.SetToAdd(&c);
+ 
+   observer_list->AddObserver(&a);
+   observer_list->AddObserver(&b);
+@@ -463,15 +525,15 @@ TEST(ObserverListThreadSafeTest, Existing) {
+   observer_list->Notify(FROM_HERE, &Foo::Observe, 1);
+   RunLoop().RunUntilIdle();
+ 
+-  EXPECT_TRUE(b.added);
++  EXPECT_FALSE(b.to_add_);
+   // B's adder should not have been notified because it was added during
+   // notification.
+-  EXPECT_EQ(0, b.adder.total);
++  EXPECT_EQ(0, c.total);
+ 
+   // Notify again to make sure b's adder is notified.
+   observer_list->Notify(FROM_HERE, &Foo::Observe, 1);
+   RunLoop().RunUntilIdle();
+-  EXPECT_EQ(1, b.adder.total);
++  EXPECT_EQ(1, c.total);
+ }
+ 
+ class AddInClearObserve : public Foo {
+@@ -541,5 +603,316 @@ TEST(ObserverListTest, IteratorOutlivesList) {
+   // of scope.
+ }
+ 
+-}  // namespace
++TEST(ObserverListTest, BasicStdIterator) {
++  using FooList = ObserverList<Foo>;
++  FooList observer_list;
++
++  // An optimization: begin() and end() do not involve weak pointers on
++  // empty list.
++  EXPECT_FALSE(observer_list.begin().list_);
++  EXPECT_FALSE(observer_list.end().list_);
++
++  // Iterate over empty list: no effect, no crash.
++  for (auto& i : observer_list)
++    i.Observe(10);
++
++  Adder a(1), b(-1), c(1), d(-1);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (FooList::iterator i = observer_list.begin(), e = observer_list.end();
++       i != e; ++i)
++    i->Observe(1);
++
++  EXPECT_EQ(1, a.total);
++  EXPECT_EQ(-1, b.total);
++  EXPECT_EQ(1, c.total);
++  EXPECT_EQ(-1, d.total);
++
++  // Check an iteration over a 'const view' for a given container.
++  const FooList& const_list = observer_list;
++  for (FooList::const_iterator i = const_list.begin(), e = const_list.end();
++       i != e; ++i) {
++    EXPECT_EQ(1, std::abs(i->GetValue()));
++  }
++
++  for (const auto& o : const_list)
++    EXPECT_EQ(1, std::abs(o.GetValue()));
++}
++
++TEST(ObserverListTest, StdIteratorRemoveItself) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, true);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveBefore) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, &b);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-1, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveAfter) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, &c);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(0, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveAfterFront) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, &a);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(1, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveBeforeBack) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, &d);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(0, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveFront) {
++  using FooList = ObserverList<Foo>;
++  FooList observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, true);
++
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  bool test_disruptor = true;
++  for (FooList::iterator i = observer_list.begin(), e = observer_list.end();
++       i != e; ++i) {
++    i->Observe(1);
++    // Check that second call to i->Observe() would crash here.
++    if (test_disruptor) {
++      EXPECT_FALSE(i.GetCurrent());
++      test_disruptor = false;
++    }
++  }
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, StdIteratorRemoveBack) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, true);
++
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++  observer_list.AddObserver(&disrupter);
++
++  for (auto& o : observer_list)
++    o.Observe(1);
++
++  for (auto& o : observer_list)
++    o.Observe(10);
++
++  EXPECT_EQ(11, a.total);
++  EXPECT_EQ(-11, b.total);
++  EXPECT_EQ(11, c.total);
++  EXPECT_EQ(-11, d.total);
++}
++
++TEST(ObserverListTest, NestedLoop) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1), c(1), d(-1);
++  Disrupter disrupter(&observer_list, true);
++
++  observer_list.AddObserver(&disrupter);
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++  observer_list.AddObserver(&c);
++  observer_list.AddObserver(&d);
++
++  for (auto& o : observer_list) {
++    o.Observe(10);
++
++    for (auto& o : observer_list)
++      o.Observe(1);
++  }
++
++  EXPECT_EQ(15, a.total);
++  EXPECT_EQ(-15, b.total);
++  EXPECT_EQ(15, c.total);
++  EXPECT_EQ(-15, d.total);
++}
++
++TEST(ObserverListTest, NonCompactList) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1);
++
++  Disrupter disrupter1(&observer_list, true);
++  Disrupter disrupter2(&observer_list, true);
++
++  // Disrupt itself and another guy.
++  disrupter1.SetDoomed(&disrupter2);
++
++  observer_list.AddObserver(&disrupter1);
++  observer_list.AddObserver(&disrupter2);
++  observer_list.AddObserver(&a);
++  observer_list.AddObserver(&b);
++
++  for (auto& o : observer_list) {
++    // Get the { nullptr, nullptr, &a, &b } non-compact list
++    // on the first inner pass.
++    o.Observe(10);
++
++    for (auto& o : observer_list)
++      o.Observe(1);
++  }
++
++  EXPECT_EQ(13, a.total);
++  EXPECT_EQ(-13, b.total);
++}
++
++TEST(ObserverListTest, BecomesEmptyThanNonEmpty) {
++  ObserverList<Foo> observer_list;
++  Adder a(1), b(-1);
++
++  Disrupter disrupter1(&observer_list, true);
++  Disrupter disrupter2(&observer_list, true);
++
++  // Disrupt itself and another guy.
++  disrupter1.SetDoomed(&disrupter2);
++
++  observer_list.AddObserver(&disrupter1);
++  observer_list.AddObserver(&disrupter2);
++
++  bool add_observers = true;
++  for (auto& o : observer_list) {
++    // Get the { nullptr, nullptr } empty list on the first inner pass.
++    o.Observe(10);
++
++    for (auto& o : observer_list)
++      o.Observe(1);
++
++    if (add_observers) {
++      observer_list.AddObserver(&a);
++      observer_list.AddObserver(&b);
++      add_observers = false;
++    }
++  }
++
++  EXPECT_EQ(12, a.total);
++  EXPECT_EQ(-12, b.total);
++}
++
++TEST(ObserverListTest, AddObserverInTheLastObserve) {
++  using FooList = ObserverList<Foo>;
++  FooList observer_list;
++
++  AddInObserve<FooList> a(&observer_list);
++  Adder b(-1);
++
++  a.SetToAdd(&b);
++  observer_list.AddObserver(&a);
++
++  FooList::Iterator it(&observer_list);
++  Foo* foo;
++  while ((foo = it.GetNext()) != nullptr)
++    foo->Observe(10);
++
++  EXPECT_EQ(-10, b.total);
++}
++
+ }  // namespace base
+-- 
+2.13.5
+
