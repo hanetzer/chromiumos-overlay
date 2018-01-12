@@ -65,6 +65,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.3.0-clang-error.patch"
 	"${FILESDIR}/${PN}-2.3.0-const-operator.patch"
 	"${FILESDIR}/${PN}-2.3.0-narrowing.patch"
+	"${FILESDIR}/${PN}-2.3.0-atomic.patch"
 )
 
 CMAKE_BUILD_TYPE="Release"
