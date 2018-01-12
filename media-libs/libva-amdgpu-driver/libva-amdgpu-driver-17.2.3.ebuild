@@ -25,7 +25,9 @@ LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 RDEPEND="${LIBDRM_DEPSTRING}
 	>=x11-libs/libva-1.8.3"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	sys-devel/llvm
+"
 
 VA_INSTALL="src/gallium/targets/va/"
 
@@ -35,7 +37,7 @@ src_prepare() {
 }
 
 src_configure() {
-	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
+	export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
 
 	econf \
 		--disable-option-checking \
@@ -61,10 +63,10 @@ src_configure() {
 		--with-platforms=drm
 }
 src_install() {
-    cd "${VA_INSTALL}"
-    default
-    # install radeonsi_drv_video.so in LIBVA standard path
-    insinto "/usr/$(get_libdir)/va1/drivers/"
-    insopts -m0755
-    doins "${D}/usr/$(get_libdir)/dri/radeonsi_drv_video.so"
+	cd "${VA_INSTALL}"
+	default
+	# install radeonsi_drv_video.so in LIBVA standard path
+	insinto "/usr/$(get_libdir)/va1/drivers/"
+	insopts -m0755
+	doins "${D}/usr/$(get_libdir)/dri/radeonsi_drv_video.so"
 }
