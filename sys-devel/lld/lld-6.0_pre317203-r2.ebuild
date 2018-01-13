@@ -7,7 +7,7 @@ EAPI=5
 CMAKE_MIN_VERSION=3.7.0-r1
 PYTHON_COMPAT=( python2_7 )
 
-inherit cros-constants cmake-utils git-r3 llvm python-any-r1
+inherit cros-constants cmake-utils git-r3 llvm python-any-r1 toolchain-funcs
 
 DESCRIPTION="The LLVM linker (link editor)"
 HOMEPAGE="https://llvm.org/"
@@ -69,6 +69,21 @@ src_prepare() {
 	fi
 }
 src_configure() {
+	# HACK: This is a temporary hack to detect the c++ library used in libLLVM.so
+	# lld needs to link with same library as llvm but there is no good way to find
+	# that. So grep the libc++ usage and if not used link with libstdc++.
+	# Remove this hack once everything is migrated to libc++.
+	# https://crbug.com/801681
+	if tc-is-clang; then
+		if [[ -n $(scanelf -qN libc++.so.1 /usr/$(get_libdir)/libLLVM.so) ]]; then
+			append-flags -stdlib=libc++
+			append-ldflags -stdlib=libc++
+		else
+			append-flags -stdlib=libstdc++
+			append-ldflags -stdlib=libstdc++
+		fi
+	fi
+	# End HACK
 	local mycmakeargs=(
 		#-DBUILD_SHARED_LIBS=ON
 		# TODO: fix detecting pthread upstream in stand-alone build
