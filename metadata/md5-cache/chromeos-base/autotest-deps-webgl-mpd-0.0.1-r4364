@@ -3,10 +3,10 @@ DEPEND=dev-vcs/git
 DESCRIPTION=Dependencies for WebGL many planets deep test
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_host cros_workon_tree_f8ee04fb074e30542c8745dad511605afd83038b profiling +buildcheck autotest opengles
+IUSE=+autotest cros_host cros_workon_tree_f269615e25cf78bb08bf036cf6542d3009c0c676 profiling +buildcheck autotest opengles
 KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	e187d472f97a2f6b03598ccd4173ea7b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=bf4b40996907a93191b372a093781d77
+_md5_=8ec086aad55266e5724aa8e3db7a3fc4
