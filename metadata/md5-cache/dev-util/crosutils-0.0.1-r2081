@@ -1,0 +1,11 @@
+DEFINED_PHASES=info install setup unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Chromium OS build utilities
+EAPI=4
+HOMEPAGE=http://www.chromium.org/chromium-os
+IUSE=cros_host cros_workon_tree_1f34682a3eded8360a15cb7db70ea7e2edc43c6d profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	e187d472f97a2f6b03598ccd4173ea7b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=b1dc35982a707a3f6a1f6c6d8f838fc6
