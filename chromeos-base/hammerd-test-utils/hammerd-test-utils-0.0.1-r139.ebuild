@@ -23,7 +23,9 @@ SLOT=0
 KEYWORDS="*"
 IUSE="+hammerd_api"
 
-RDEPEND=""
+RDEPEND="
+	chromeos-base/hammerd
+"
 DEPEND="
 	${RDEPEND}
 	dev-python/setuptools[${PYTHON_USEDEP}]
