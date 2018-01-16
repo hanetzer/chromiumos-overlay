@@ -44,6 +44,8 @@ src_configure() {
 		-DUSE_LTTNG=OFF
 		-DUSE_FSAL_XFS=OFF
 		-DUSE_FSAL_ZFS=OFF
+		-DUSE_FSAL_GPFS=OFF
+		-DUSE_FSAL_PANFS=OFF
 		# nfs-ganesha does not honor the option above in its config
 		# -DNTIRPC_BASE_DIR=
 		$(cmake-utils_use_use caps LIBCAP)
