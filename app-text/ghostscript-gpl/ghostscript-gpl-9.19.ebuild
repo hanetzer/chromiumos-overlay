@@ -109,6 +109,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}/${PN}-9.19-ccaux.patch"
 	epatch "${FILESDIR}/${PN}-9.18-libdata-deps.patch"
+	epatch "${FILESDIR}/${PN}-9.23-Ensure-is_glyph_index-flag-is-consistent.patch"
 	epatch "${FILESDIR}/${PN}-clang-fortify.patch"
 	epatch "${FILESDIR}/${PN}-have-eqproc-check-its-parameters.patch"
 	epatch "${FILESDIR}/${PN}-have-rsdparams-check-its-parameters.patch"
