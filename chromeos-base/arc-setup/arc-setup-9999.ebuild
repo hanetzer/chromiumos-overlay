@@ -25,10 +25,13 @@ IUSE="
 	cheets_aosp_userdebug
 	cheets_aosp_userdebug_64
 	houdini
-	ndk_translation"
+	ndk_translation
+	unibuild"
 
 RDEPEND="
 	!<chromeos-base/chromeos-cheets-scripts-0.0.2
+	unibuild? ( chromeos-base/chromeos-config )
+	chromeos-base/chromeos-config-tools
 	chromeos-base/cryptohome-client
 	chromeos-base/libbrillo
 	chromeos-base/metrics
