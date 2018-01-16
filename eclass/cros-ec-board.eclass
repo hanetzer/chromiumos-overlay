@@ -66,6 +66,7 @@ EC_BOARD_NAMES=(
 	kahlee
 	kevin
 	llama
+	lux
 	meowth
 	minimuffin
 	nami
