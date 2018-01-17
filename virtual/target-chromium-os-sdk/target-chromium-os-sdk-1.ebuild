@@ -400,6 +400,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-dbus-bindings
 	dev-util/gyp
+	dev-util/meson
 	dev-util/ninja
 	"
 
