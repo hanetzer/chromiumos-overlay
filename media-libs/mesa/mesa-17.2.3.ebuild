@@ -127,6 +127,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.0-CHROMIUM-disable-hiz-on-braswell.patch
 	epatch "${FILESDIR}"/17.1-VIRGL-surfaces-samplers-virtual-context-refcount.patch
 	epatch "${FILESDIR}"/17.2-i965-Use-is_scheduling_barrier-instead-of-s.patch
+	epatch "${FILESDIR}"/17.2-0001-i965-Make-intel_miptree_prepare_texture-take-level-l.patch
+	epatch "${FILESDIR}"/17.2-0002-i965-Only-resolve-texture-levels-layers-that-are-acc.patch
+	epatch "${FILESDIR}"/17.2-0003-i965-Remove-the-intel_miptree_prepare_fb_fetch-wrapp.patch
+	epatch "${FILESDIR}"/17.2-0004-i965-Don-t-disable-aux-buffers-for-non-overlapping-m.patch
 	base_src_prepare
 
 	eautoreconf
