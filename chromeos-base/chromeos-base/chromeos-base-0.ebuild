@@ -103,6 +103,7 @@ pkg_preinst() {
 	add_daemon_user "input"  # For /dev/input/event access
 	enewgroup "i2c"          # For I2C device node access.
 	enewgroup "serial"       # For owning access to serial devices.
+	enewgroup "tun"          # For access to /dev/net/tun.
 
 	# The user that all user-facing processes will run as.
 	local system_user="${SHARED_USER_NAME}"
