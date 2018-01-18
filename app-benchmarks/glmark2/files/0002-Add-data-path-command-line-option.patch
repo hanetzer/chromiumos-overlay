@@ -93,7 +93,7 @@ index 05cd617..559d80b 100644
             "                         list of benchmark descriptions (one per line)\n"
             "                         (the option can be used multiple times)\n"
 +           "      --data-path        Path to glmark2 models, shaders and textures\n"
-+           "                         Default: "GLMARK_DATA_PATH"\n"
++           "                         Default: " GLMARK_DATA_PATH "\n"
             "      --validate         Run a quick output validation test instead of \n"
             "                         running the benchmarks\n"
             "      --frame-end METHOD How to end a frame [default,none,swap,finish,readpixels]\n"
