@@ -56,3 +56,7 @@ LDFLAGS="-Wl,-O2 -Wl,--as-needed"
 # We want to migrate away from this at some point.
 # https://crbug.com/360346
 SYMLINK_LIB="yes"
+
+# Default target(s) for python-r1.eclass
+PYTHON_TARGETS="python2_7 python3_4"
+PYTHON_SINGLE_TARGET="python2_7"
