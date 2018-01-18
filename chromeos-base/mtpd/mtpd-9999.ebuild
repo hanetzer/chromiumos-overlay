@@ -2,26 +2,17 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
-CROS_WORKON_LOCALNAME=(
-	"platform2"
-	"platform/mtpd"
-)
-CROS_WORKON_PROJECT=(
-	"chromiumos/platform2"
-	"chromiumos/platform/mtpd"
-)
-CROS_WORKON_DESTDIR=(
-	"${S}/platform2"
-	"${S}/platform/mtpd"
-)
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_INCREMENTAL_BUILD=1
 PLATFORM_SUBDIR="mtpd"
 PLATFORM_NATIVE_TEST="yes"
 
 inherit cros-workon platform systemd user
 
 DESCRIPTION="MTP daemon for Chromium OS"
-HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/mtpd/"
-SRC_URI=""
+HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/mtpd"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -37,13 +28,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	# look in src/platform
-	S="${s}/platform/mtpd"
-}
 
 src_install() {
 	exeinto /opt/google/mtpd
