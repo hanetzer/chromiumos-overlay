@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 RDEPEND="
-	dev-python/backports-lzma[${PYTHON_USEDEP}]
+	$(python_gen_cond_dep 'dev-python/backports-lzma[${PYTHON_USEDEP}]' python2_7)
 	dev-python/protobuf-python[${PYTHON_USEDEP}]
 	!<chromeos-base/devserver-0.0.3
 "
