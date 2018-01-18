@@ -68,6 +68,7 @@ EC_BOARD_NAMES=(
 	llama
 	lux
 	meowth
+	meowth_fp
 	minimuffin
 	nami
 	nautilus
