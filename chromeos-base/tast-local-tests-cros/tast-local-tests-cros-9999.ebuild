@@ -5,15 +5,12 @@ EAPI=5
 CROS_WORKON_PROJECT="chromiumos/platform/tast-tests"
 CROS_WORKON_LOCALNAME="tast-tests"
 
-CROS_GO_BINARIES=(
-	"chromiumos/tast/local/bundles/cros:/usr/libexec/tast/bundles/cros"
-)
-
+# Test support packages that live above local/bundles/.
 CROS_GO_TEST=(
 	"chromiumos/tast/local/..."
 )
 
-inherit cros-go cros-workon
+inherit cros-workon tast-bundle
 
 DESCRIPTION="Bundle of local integration tests for Chrome OS"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/tast-tests/"
@@ -24,23 +21,8 @@ KEYWORDS="~*"
 IUSE=""
 
 DEPEND="
-	chromeos-base/tast-common
 	dev-go/cdp
 	dev-go/dbus
 	dev-go/gopsutil
 "
 RDEPEND="!chromeos-base/tast-local-tests"
-
-src_install() {
-	cros-go_src_install
-
-	# Install each category's data dir (with its full path within the src/
-	# directory) under /usr/share/tast/data.
-	pushd src || die "failed to pushd src"
-	local datadir
-	for datadir in chromiumos/tast/local/bundles/cros/*/data; do
-		insinto "/usr/share/tast/data/$(dirname "${datadir}")"
-		doins -r "${datadir}"
-	done
-	popd
-}
