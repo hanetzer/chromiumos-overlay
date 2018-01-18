@@ -66,6 +66,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.3.0-const-operator.patch"
 	"${FILESDIR}/${PN}-2.3.0-narrowing.patch"
 	"${FILESDIR}/${PN}-2.3.0-atomic.patch"
+	"${FILESDIR}/${PN}-2.3.0-local-iota.patch"
 )
 
 CMAKE_BUILD_TYPE="Release"
