@@ -44,6 +44,7 @@ PATCHES=(
 	"${FILESDIR}/clang-syntax.patch"
 	"${FILESDIR}/libpng-1.6.patch"
 	"${FILESDIR}/glmark2-libcxx.patch"
+	"${FILESDIR}/deprecated-auto-ptr.patch"
 )
 
 src_configure() {
@@ -52,6 +53,7 @@ src_configure() {
 	# Remove this one after llvm upgrades.
 	append-flags -Wno-unknown-warning-option
 	append-flags -Wno-tautological-unsigned-zero-compare
+	append-flags -std=gnu++11
 	if use X; then
 		if use opengl; then
 			flavors+=(x11-gl)
