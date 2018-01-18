@@ -1,15 +1,11 @@
 Fix clang errors from [-Wc++11-narrowing]:
 constant expression evaluates to 4294967295 which cannot be narrowed to type 'int'
+case value evaluates to 2147483680, which cannot be narrowed to type 'int'
 The issue is already fixed in upstream opencv.
 
 --- OpenCV-2.3.0/modules/core/src/arithm.cpp
 +++ OpenCV-2.3.0/modules/core/src/arithm.cpp
-@@ -425,17 +425,17 @@ struct _VAbsDiff32f
-     }
- };
- 
- struct _VAdd64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_add_pd(a,b); }};
- struct _VSub64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_sub_pd(a,b); }};
+@@ -430,7 +430,7 @@ struct _VSub64f { __m128d operator()(const __m128d& a, const __m128d& b) const {
  struct _VMin64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_min_pd(a,b); }};
  struct _VMax64f { __m128d operator()(const __m128d& a, const __m128d& b) const { return _mm_max_pd(a,b); }};
  
@@ -18,8 +14,14 @@ The issue is already fixed in upstream opencv.
  struct _VAbsDiff64f
  {
      __m128d operator()(const __m128d& a, const __m128d& b) const
-     {
-         return _mm_and_pd(_mm_sub_pd(a,b), *(const __m128d*)v64f_absmask);
-     }
- };
- 
+--- OpenCV-2.3.0/modules/python/src1/cv.cpp
++++ OpenCV-2.3.0/modules/python/src1/cv.cpp
+@@ -269,7 +269,7 @@ static PyObject *iplimage_tostring(PyObject *self, PyObject *args)
+   if (i == NULL)
+     return NULL;
+   int bps;
+-  switch (i->depth) {
++  switch ((unsigned int)i->depth) {
+   case IPL_DEPTH_8U:
+   case IPL_DEPTH_8S:
+     bps = 1;
