@@ -16,7 +16,6 @@ IUSE_KERNEL_VERS=(
 	kernel-3_14
 	kernel-3_18
 	kernel-4_4
-	kernel-4_12
 	kernel-4_14
 	kernel-experimental
 	kernel-upstream-mainline
@@ -31,7 +30,6 @@ RDEPEND="
 	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14 )
 	kernel-3_18? ( sys-kernel/chromeos-kernel-3_18 )
 	kernel-4_4? ( sys-kernel/chromeos-kernel-4_4 )
-	kernel-4_12? ( sys-kernel/chromeos-kernel-4_12 )
 	kernel-4_14? ( sys-kernel/chromeos-kernel-4_14 )
 	kernel-experimental? ( sys-kernel/chromeos-kernel-experimental )
 	kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline )
