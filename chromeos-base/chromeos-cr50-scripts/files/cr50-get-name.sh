@@ -17,6 +17,7 @@
 #
 cr50_get_name() {
   local board_flags
+  local board_id
   local cr50_image_base_name="/opt/google/cr50/firmware/cr50.bin"
   local ext="prod"  # Prod is a safer default option.
   local logger_tag="cr50_get_name"
@@ -27,12 +28,15 @@ cr50_get_name() {
   # Determine the type of the Cr50 image to use based on the H1's board ID
   # flags. The hexadecimal value of flags is reported by 'gsctool -i' in the
   # last element of a colon separated string of values.
-  board_flags="0x$(${updater} -i | sed 's/.*://')"
+  board_id="$(${updater} -i | sed 's/.*: //')"
+  board_flags="0x$(echo "${board_id}" | sed 's/.*://')"
 
   if [ -z "${board_flags}" ]; then
     # Any error in detecting board flags will force using the prod image,
     # which the safe option.
-    logger -t  "${logger_tag}" "error detecting board ID flags"
+    logger -t "${logger_tag}" "error detecting board ID flags"
+  elif [ "${board_id}" = "ffffffff:ffffffff:ffffffff" ]; then
+    logger -t "${logger_tag}" "board ID is erased using ${ext} image"
   else
     local pre_pvt
 
@@ -45,7 +49,7 @@ cr50_get_name() {
   fi
 
   logger -t "${logger_tag}" \
-    "board_flags: '${board_flags}', extension: '${ext}'"
+    "board_id: '${board_id}' board_flags: '${board_flags}', extension: '${ext}'"
 
   printf "${cr50_image_base_name}.${ext}"
 }
