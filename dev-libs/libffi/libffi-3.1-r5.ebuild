@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/libffi/libffi-3.1-r3.ebuild,v 1.2 2014/08/10 20:35:34 slyfox Exp $
 
 EAPI=5
-inherit eutils libtool multilib multilib-minimal toolchain-funcs
+inherit eutils libtool multilib multilib-minimal toolchain-funcs flag-o-matic
 
 DESCRIPTION="a portable, high level programming interface to various calling conventions"
 HOMEPAGE="http://sourceware.org/libffi/"
@@ -51,6 +51,10 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	# Arm assembly syntax used in libffi is not recognized by
+	# the integrated assembler (https://crbug.com/801303).
+	append-flags -fno-integrated-as
+
 	use userland_BSD && export HOST="${CHOST}"
 	econf \
 		$(use_enable static-libs static) \
