@@ -1,0 +1,56 @@
+From 462e961ed0da8e097a21682525963b39f3f7aaa8 Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Thu, 18 Jan 2018 16:43:49 -0800
+Subject: [PATCH] ScopedTempDir: add GetPath from upstream libchrome
+
+In upstream libchrome, ScopedTempDir::path was removed after being
+replaced by ScopedTempDir::GetPath. Add the new API in alongside
+the old one so that things can be migrated incrementally.
+
+BUG=b:37434548
+TEST=emerge
+
+Change-Id: I24a47d3c6ea5dafb09a103066540c3d8ffe68670
+---
+ base/files/scoped_temp_dir.cc | 5 +++++
+ base/files/scoped_temp_dir.h  | 6 ++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/base/files/scoped_temp_dir.cc b/base/files/scoped_temp_dir.cc
+index 27b758e..2681521 100644
+--- a/base/files/scoped_temp_dir.cc
++++ b/base/files/scoped_temp_dir.cc
+@@ -76,6 +76,11 @@ FilePath ScopedTempDir::Take() {
+   return ret;
+ }
+ 
++const FilePath& ScopedTempDir::GetPath() const {
++  DCHECK(!path_.empty()) << "Did you call CreateUniqueTempDir* before?";
++  return path_;
++}
++
+ bool ScopedTempDir::IsValid() const {
+   return !path_.empty() && DirectoryExists(path_);
+ }
+diff --git a/base/files/scoped_temp_dir.h b/base/files/scoped_temp_dir.h
+index b1f2f5b..97f5d2a 100644
+--- a/base/files/scoped_temp_dir.h
++++ b/base/files/scoped_temp_dir.h
+@@ -47,8 +47,14 @@ class BASE_EXPORT ScopedTempDir {
+   // when this object goes out of scope.
+   FilePath Take();
+ 
++  // DEPRECATED: Use GetPath instead. See https://crbug.com/640599 for more
++  // info.
+   const FilePath& path() const { return path_; }
+ 
++  // Returns the path to the created directory. Call one of the
++  // CreateUniqueTempDir* methods before getting the path.
++  const FilePath& GetPath() const;
++
+   // Returns true if path_ is non-empty and exists.
+   bool IsValid() const;
+ 
+-- 
+2.13.5
+
