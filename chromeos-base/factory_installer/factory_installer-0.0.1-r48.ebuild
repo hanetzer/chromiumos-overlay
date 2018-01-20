@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="f892c5eca0567f7cdfac8bc9ee9cf771759278cb"
-CROS_WORKON_TREE="17c4f0848ab6410d4c6c6b7858146e6837f890fb"
+CROS_WORKON_COMMIT="cb3397a8519c4f95f17565ada8f6123a1ce6ae49"
+CROS_WORKON_TREE="63492a57a38119d3d77258cc69e6bd19204323b6"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon toolchain-funcs cros-factory
