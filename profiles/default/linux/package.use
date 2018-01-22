@@ -93,3 +93,6 @@ sys-kernel/chromeos-kernel-4_4 kernel_afdo
 sys-kernel/chromeos-kernel-3_18 kernel_afdo
 sys-kernel/chromeos-kernel-3_14 kernel_afdo
 sys-kernel/chromeos-kernel-3_8 kernel_afdo
+
+# start using coreboot-sdk across firmware packages
+sys-boot/coreboot coreboot-sdk
