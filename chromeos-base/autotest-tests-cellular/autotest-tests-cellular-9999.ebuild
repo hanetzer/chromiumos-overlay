@@ -26,6 +26,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
+	+tests_cellular_ActivateLTE
 	+tests_cellular_ConnectFailure
 	+tests_cellular_DeferredRegistration
 	+tests_cellular_DisableWhileConnecting
@@ -45,7 +46,6 @@ IUSE_TESTS="
 	+tests_network_3GRecoverFromGobiDesync
 	+tests_network_CDMAActivate
 	+tests_network_GobiUncleanDisconnect
-	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
 	+tests_network_SwitchCarrier
