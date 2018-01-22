@@ -31,6 +31,7 @@ IUSE_TESTS="
 	+tests_cellular_OutOfCreditsSubscriptionState
 	+tests_cellular_SafetyDance
 	+tests_cellular_ServiceName
+	+tests_cellular_StressEnable
 	+tests_network_3GDisableWhileConnecting
 	+tests_network_3GDisableGobiWhileConnecting
 	+tests_network_3GDisconnectFailure
@@ -41,7 +42,6 @@ IUSE_TESTS="
 	+tests_network_3GRecoverFromGobiDesync
 	+tests_network_3GScanningProperty
 	+tests_network_3GSmokeTest
-	+tests_network_3GStressEnable
 	+tests_network_CDMAActivate
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LTEActivate
