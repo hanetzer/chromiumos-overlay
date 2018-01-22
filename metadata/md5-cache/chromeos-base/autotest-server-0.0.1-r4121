@@ -1,12 +1,12 @@
-DEFINED_PHASES=configure info install prepare setup unpack
+DEFINED_PHASES=compile configure info install prepare setup test unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Autotest server web frontend
+DESCRIPTION=Autotest scripts and tools
 EAPI=4
 HOMEPAGE=http://dev.chromium.org/chromium-os/testing
-IUSE=cros_host cros_workon_tree_348e3047aefd7946c61df7989848289f2b6d387c profiling
+IUSE=cros_host cros_workon_tree_4c666aa3f69853bf87473c302e5284acd8958bc4 profiling
 KEYWORDS=*
 LICENSE=GPL-2
-RDEPEND=!<=chromeos-base/autotest-server-0.0.1-r1260
+RDEPEND=chromeos-base/autotest-server-deps chromeos-base/autotest-web-frontend chromeos-base/lucifer
 SLOT=0
 _eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	e187d472f97a2f6b03598ccd4173ea7b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=ee5f896c04102fe8cd96c0e2218f542c
+_md5_=b8884c76a01939935b3f75d4f20b0a6d
