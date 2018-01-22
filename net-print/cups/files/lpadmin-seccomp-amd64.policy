@@ -24,6 +24,7 @@ mmap: 1
 mprotect: 1
 mremap: 1
 munmap: 1
+nanosleep: 1
 open: 1
 poll: 1
 read: 1
