@@ -27,6 +27,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_cellular_DeferredRegistration
+	+tests_cellular_Identifiers
 	+tests_cellular_OutOfCreditsSubscriptionState
 	+tests_cellular_ServiceName
 	+tests_network_3GDisableWhileConnecting
@@ -35,7 +36,6 @@ IUSE_TESTS="
 	+tests_network_3GDormancyDance
 	+tests_network_3GFailedConnect
 	+tests_network_3GGobiPorts
-	+tests_network_3GIdentifiers
 	+tests_network_3GNoGobi
 	+tests_network_3GRecoverFromGobiDesync
 	+tests_network_3GSafetyDance
