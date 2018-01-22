@@ -32,6 +32,7 @@ IUSE_TESTS="
 	+tests_cellular_DisconnectFailure
 	+tests_cellular_Identifiers
 	+tests_cellular_OutOfCreditsSubscriptionState
+	+tests_cellular_SIMLocking
 	+tests_cellular_SafetyDance
 	+tests_cellular_ScanningProperty
 	+tests_cellular_ServiceName
@@ -47,7 +48,6 @@ IUSE_TESTS="
 	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
-	+tests_network_SIMLocking
 	+tests_network_SwitchCarrier
 "
 
