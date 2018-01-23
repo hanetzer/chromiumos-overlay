@@ -128,6 +128,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.2-0002-i965-Only-resolve-texture-levels-layers-that-are-acc.patch
 	epatch "${FILESDIR}"/17.2-0003-i965-Remove-the-intel_miptree_prepare_fb_fetch-wrapp.patch
 	epatch "${FILESDIR}"/17.2-0004-i965-Don-t-disable-aux-buffers-for-non-overlapping-m.patch
+	epatch "${FILESDIR}"/17.3-Flush-After-Fallback-Texture.patch
 	base_src_prepare
 
 	# Produce a dummy git_sha1.h file because .git will not be copied to portage tmp directory
