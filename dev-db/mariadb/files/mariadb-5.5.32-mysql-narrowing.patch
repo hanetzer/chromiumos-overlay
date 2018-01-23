@@ -1,0 +1,25 @@
+Fix build errors due to [-Wc++11-narrowing]: http://crbug.com/805000
+
+This patch is already present upstream as a part of
+commit ba7e5516f7a5574e66f0010c97cd309e8aa6d8fd
+Author: Jon Olav Hauglid <jon.hauglid@oracle.com>
+Date:   2013-11-27
+
+    Bug#14631159: ALLOW COMPILATION USING CLANG IN C++11 MODE
+
+    This patch fixes the new compilation errors that are reported by Clang and GCC
+    when compiling in C++11 mode.
+
+https://github.com/mysql/mysql-server/commit/ba7e5516f7a5574e66f0010c97cd309e8aa6d8fd#diff-f7cb084b9c90fbc5c84ee63bba52f9b3
+
+--- mysql/sql/parse_file.h
++++ mysql/sql/parse_file.h
+@@ -43,7 +43,7 @@ enum file_opt_type {
+ struct File_option
+ {
+   LEX_STRING name;		/**< Name of the option */
+-  int offset;			/**< offset to base address of value */
++  size_t offset;		/**< offset to base address of value */
+   file_opt_type type;		/**< Option type */
+ };
+ 
