@@ -27,6 +27,7 @@ IUSE="
 RDEPEND="
 	!chromeos-base/autotest-telemetry
 	!<chromeos-base/autotest-tests-0.0.4
+	!<chromeos-base/autotest-tests-cellular-0.0.1-r3203
 	chromeos-base/autotest-deps-glbench
 	chromeos-base/autotest-deps-graphics
 	chromeos-base/autotest-deps-webgl-mpd
