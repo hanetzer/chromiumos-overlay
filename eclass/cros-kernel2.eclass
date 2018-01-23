@@ -726,6 +726,44 @@ kernelrelease() {
 	kmake -s --no-print-directory kernelrelease
 }
 
+# @FUNCTION: kernelrelease_raw
+# @DESCRIPTION:
+# Returns the kernel version, retrieved from kernel Makefile.
+# To be used if kernelrelease() does not work (such as from kmake).
+# Note: Only valid after src_configure has finished running.
+kernelrelease_raw() {
+	local KERNEL_MAKEFILE="$(cros-workon_get_build_dir)/Makefile"
+	local KV=""
+
+	if [[ -e "${KERNEL_MAKEFILE}" ]]; then
+		local KV_MAJOR=$(getfilevar_noexec VERSION "${KERNEL_MAKEFILE}")
+		local KV_MINOR=$(getfilevar_noexec PATCHLEVEL "${KERNEL_MAKEFILE}")
+		local KV_PATCH=$(getfilevar_noexec SUBLEVEL "${KERNEL_MAKEFILE}")
+		local KV_EXTRA=$(getfilevar_noexec EXTRAVERSION "${KERNEL_MAKEFILE}")
+
+		if [[ -n "${KV_MAJOR}" && -n "${KV_MINOR}" ]]; then
+			KV="${KV_MAJOR}.${KV_MINOR}"
+			if [[ -n "${KV_PATCH}" ]]; then
+				KV+=".${KV_PATCH}"
+			fi
+			if [[ -n "${KV_EXTRA}" ]]; then
+				KV+=".${KV_EXTRA}"
+			fi
+		fi
+	fi
+	echo "${KV}"
+}
+
+# @FUNCTION: cc_option
+# @DESCRIPTION:
+# Return 0 if ${CC} supports all provided options, 1 otherwise.
+# test-flags-CC tests each flag individually and returns the
+# supported flags, which is not what we need here.
+cc_option() {
+	local t="$(test-flags-CC $1)"
+	[[ "${t}" == "$1" ]]
+}
+
 # @FUNCTION: install_kernel_sources
 # @DESCRIPTION:
 # Installs the kernel sources into ${D}/usr/src/${P} and fixes symlinks.
@@ -1007,14 +1045,29 @@ kmake() {
 	local afto_option=$(usex clang 'profile-sample-use' 'auto-profile')
 	use kernel_afdo && kcflags+=" -f${afto_option}=${AFDO_FILENAME}"
 
-	local indirect_branch_options=(
+	local indirect_branch_options_v1=(
 		"-mindirect-branch=thunk"
 		"-mindirect-branch-loop=pause"
 		"-fno-jump-tables"
 	)
+	local indirect_branch_options_v2=(
+		"-mindirect-branch=thunk"
+		"-mindirect-branch-register"
+	)
+
 	# Indirect branch options only available for Intel GCC.
 	if use x86 || use amd64; then
-		use clang || kcflags+=" ${indirect_branch_options[*]}"
+		local version=$(kernelrelease_raw)
+		# For kernel versions < 4.4 and when compiling with GCC.
+		# chromeos-4.4 and later support RETPOLINE as a configuration option,
+		# so no need to add extra compiler command-line flags.
+		if ! version_is_at_least 4.4 "${version}" && ! use clang; then
+			if cc_option "${indirect_branch_options_v1[*]}"; then
+				kcflags+=" ${indirect_branch_options_v1[*]}"
+			elif cc_option "${indirect_branch_options_v2[*]}"; then
+				kcflags+=" ${indirect_branch_options_v2[*]}"
+			fi
+		fi
 	fi
 
 	# LLVM needs this to parse perf.data.
