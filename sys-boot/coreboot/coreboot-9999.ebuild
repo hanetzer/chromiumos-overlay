@@ -403,7 +403,7 @@ do_install() {
 	# Keep binaries with debug symbols around for crash dump analysis
 	if [[ -s "${BUILD_DIR}/bl31.elf" ]]; then
 		newins "${BUILD_DIR}/bl31.elf" bl31.elf
-		newins "${BUILD_DIR}/bl31.elf" bl31.serial.elf
+		newins "${BUILD_DIR_SERIAL}/bl31.elf" bl31.serial.elf
 	fi
 	insinto "${dest_dir}"/coreboot
 	doins "${BUILD_DIR}"/cbfs/fallback/*.debug
