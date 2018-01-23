@@ -66,6 +66,18 @@ cross-armv7a-cros-linux-gnueabihf/gcc   hardfp
 cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
 sys-devel/clang		multitarget
 sys-devel/llvm		multitarget
+
+# Temporarily disable GDB Python during Python upgrade. crbug.com/736322
+=sys-devel/gdb-8.0.1.20171030-r2			-python
+=cross-aarch64-cros-linux-gnu/gdb-8.0.1.20171030-r2	-python
+=cross-arm-none-eabi/gdb-8.0.1.20171030-r2		-python
+=cross-armv6j-cros-linux-gnueabi/gdb-8.0.1.20171030-r2	-python
+=cross-armv7a-cros-linux-gnueabi/gdb-8.0.1.20171030-r2	-python
+=cross-armv7a-cros-linux-gnueabihf/gdb-8.0.1.20171030-r2	-python
+=cross-i686-pc-linux-gnu/gdb-8.0.1.20171030-r2		-python
+=cross-mipsel-cros-linux-gnu/gdb-7.11.20170503-r2	-python
+=cross-x86_64-cros-linux-gnu/gdb-8.0.1.20171030-r2	-python
+
 # pciutils is required by flashrom / mosys which is required to be statically
 # compiled to reduce dependency during auto update.
 sys-apps/pciutils	static-libs -udev
