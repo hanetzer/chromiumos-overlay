@@ -46,7 +46,6 @@ IUSE_TESTS="
 	+tests_cellular_ServiceName
 	+tests_cellular_Smoke
 	+tests_cellular_StressEnable
-	+tests_network_3GNoGobi
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
 "
