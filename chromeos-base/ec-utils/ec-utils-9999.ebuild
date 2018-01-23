@@ -23,7 +23,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-cr50_onboard static unibuild"
+IUSE="-cr50_onboard -cr50_utils static unibuild"
 
 DEPEND="dev-embedded/libftdi"
 RDEPEND="${DEPEND}"
@@ -44,7 +44,7 @@ src_compile() {
 	export HOSTCC="${CC} $(usex static '-static' '')"
 
 	# Do not set BOARD yet, as gsctool is built for cr50.
-	if use cr50_onboard; then
+	if use cr50_onboard || use cr50_utils; then
 		# Get rid of the local compilation products in case they are
 		# present.
 		emake -C extra/usb_updater clean
@@ -102,7 +102,7 @@ src_install() {
 set '${EC_BOARDS[*]}'"
 	fi
 
-	if use cr50_onboard; then
+	if use cr50_onboard || use cr50_utils; then
 		dosbin "extra/usb_updater/gsctool"
 		dosym "gsctool" "/usr/sbin/usb_updater"
 	fi
