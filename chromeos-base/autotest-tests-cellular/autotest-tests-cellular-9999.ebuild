@@ -35,6 +35,7 @@ IUSE_TESTS="
 	+tests_cellular_GobiDormancyDance
 	+tests_cellular_GobiPorts
 	+tests_cellular_GobiRecoverFromDesync
+	+tests_cellular_GobiSwitchCarrier
 	+tests_cellular_GobiUncleanDisconnect
 	+tests_cellular_Identifiers
 	+tests_cellular_OutOfCreditsSubscriptionState
@@ -48,7 +49,6 @@ IUSE_TESTS="
 	+tests_network_3GNoGobi
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
-	+tests_network_SwitchCarrier
 "
 
 IUSE_MBIM_TESTS="
