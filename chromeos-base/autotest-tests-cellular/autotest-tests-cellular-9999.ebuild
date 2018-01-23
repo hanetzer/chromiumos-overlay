@@ -34,6 +34,7 @@ IUSE_TESTS="
 	+tests_cellular_DisconnectFailure
 	+tests_cellular_GobiDormancyDance
 	+tests_cellular_GobiPorts
+	+tests_cellular_GobiRecoverFromDesync
 	+tests_cellular_Identifiers
 	+tests_cellular_OutOfCreditsSubscriptionState
 	+tests_cellular_SIMLocking
@@ -44,7 +45,6 @@ IUSE_TESTS="
 	+tests_cellular_StressEnable
 	+tests_network_3GDisableGobiWhileConnecting
 	+tests_network_3GNoGobi
-	+tests_network_3GRecoverFromGobiDesync
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
