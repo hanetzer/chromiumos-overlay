@@ -67,6 +67,7 @@ CROS_COMMON_RDEPEND="
 	p2p? ( dev-python/dpkt )
 	peerd? ( dev-python/dpkt )
 	dev-util/dbus-spy
+	dev-util/fps_meter
 	cr50_onboard? ( dev-util/u2f-ref-code )
 	net-misc/rsync
 	sys-apps/memtester
