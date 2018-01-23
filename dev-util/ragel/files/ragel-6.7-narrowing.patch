@@ -1,0 +1,35 @@
+Fix build errors from [-Wc++11-narrowing]: https://crbug.com/804996
+
+This issue is already fixed upstream at git://git.colm.net/ragel.git in
+commit b36524576acfccf840842f4a615855e5b51c247e
+Author: Adrian Thurston <thurston@complang.org>
+Date:   2016-06-28
+
+    use separate signed/unsigned values for host type min/max
+
+    Using separate values avoids the need to type cast before the data goes into
+    FsmCtx structs. Keep it in native types until it is used.
+
+but that patch is too large to backport/rebase here. For one thing, the source
+files have moved around: ragel/common.cpp is now src/common.cc in upstream.
+
+--- ragel-6.7/ragel/common.cpp
++++ ragel-6.7/ragel/common.cpp
+@@ -34,7 +34,7 @@ HostType hostTypesC[] =
+ 	{ "int",      0,       "int",     true,   true,  false,  INT_MIN,   INT_MAX,    sizeof(int) },
+ 	{ "unsigned", "int",   "uint",    false,  true,  false,  0,         UINT_MAX,   sizeof(unsigned int) },
+ 	{ "long",     0,       "long",    true,   true,  false,  LONG_MIN,  LONG_MAX,   sizeof(long) },
+-	{ "unsigned", "long",  "ulong",   false,  true,  false,  0,         ULONG_MAX,  sizeof(unsigned long) }
++	{ "unsigned", "long",  "ulong",   false,  true,  false,  0,         (long long)ULONG_MAX,  sizeof(unsigned long) }
+ };
+ 
+ #define S8BIT_MIN  -128
+@@ -114,7 +114,7 @@ HostType hostTypesCSharp[] =
+ 	{ "int",     0,  "int",     true,   true,  false,  INT_MIN,   INT_MAX,     4 },
+ 	{ "uint",    0,  "uint",    false,  true,  false,  0,         UINT_MAX,    4 },
+ 	{ "long",    0,  "long",    true,   true,  false,  LONG_MIN,  LONG_MAX,    8 },
+-	{ "ulong",   0,  "ulong",   false,  true,  false,  0,         ULONG_MAX,   8 }
++	{ "ulong",   0,  "ulong",   false,  true,  false,  0,         (long long)ULONG_MAX,   8 }
+ };
+ 
+ HostType hostTypesOCaml[] =
