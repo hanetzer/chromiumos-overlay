@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="login_manager"
 
-inherit cros-workon platform systemd
+inherit cros-workon platform systemd user
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
@@ -39,6 +39,10 @@ DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	chromeos-base/vboot_reference"
+
+pkg_preinst() {
+	enewgroup policy-readers
+}
 
 platform_pkg_test() {
 	local tests=( session_manager_test )
