@@ -4,7 +4,6 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/cypress-tools"
 CROS_WORKON_LOCALNAME=../third_party/cypress-tools
-CROS_WORKON_SUBDIR=
 
 inherit toolchain-funcs cros-workon
 
