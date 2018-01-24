@@ -5,8 +5,7 @@
 EAPI=4
 PYTHON_DEPEND="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
-CROS_WORKON_LOCALNAME="u-boot"
-CROS_WORKON_SUBDIR="files"
+CROS_WORKON_LOCALNAME="u-boot/files"
 
 inherit cros-workon distutils
 
