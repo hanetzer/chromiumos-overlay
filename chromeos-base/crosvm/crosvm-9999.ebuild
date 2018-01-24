@@ -11,6 +11,7 @@ CRATES="
 byteorder-1.1.0
 libc-0.2.34
 gcc-0.3.54
+rand-0.4.2
 "
 
 inherit cargo cros-workon toolchain-funcs user
