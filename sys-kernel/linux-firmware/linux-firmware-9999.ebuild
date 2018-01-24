@@ -1,7 +1,7 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -62,6 +62,7 @@ IUSE_LINUX_FIRMWARE=(
 	i915_cnl
 	i915_kbl
 	i915_skl
+	ibt_9560
 	ibt-hw
 	ipu3_fw
 	keyspan_usb
@@ -97,6 +98,7 @@ LICENSE="
 	linux_firmware_i915_kbl? ( LICENSE.i915 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_ipu3_fw? ( LICENSE.ipu3_firmware )
+	linux_firmware_ibt_9560? ( LICENCE.ibt_firmware )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_keyspan_usb? ( LICENSE.keyspan_usb )
 	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
@@ -180,6 +182,7 @@ src_install() {
 	use_fw i915_skl && doins_subdir i915/skl*
 	# ipu3-fw.bin is a symlink to irci_*.bin
 	use_fw ipu3_fw && doins intel/irci_* intel/ipu3-fw.bin
+	use_fw ibt_9560 && doins_subdir intel/ibt-17-16-1.*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw keyspan_usb && doins_subdir keyspan/*
 	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin

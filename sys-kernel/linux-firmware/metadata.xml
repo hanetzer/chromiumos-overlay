@@ -41,6 +41,9 @@
 	<flag name='linux_firmware_i915_skl'>
 		Install SKL firmware files for i915 driver
 	</flag>
+	<flag name='linux_firmware_ibt_9560'>
+		Install 9560 firmware files for ibt driver
+	</flag>
 	<flag name='linux_firmware_ipu3_fw'>
 		Install KBL IPU3 firmware to enable MIPI camera
 	</flag>
