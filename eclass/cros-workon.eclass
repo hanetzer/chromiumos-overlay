@@ -26,22 +26,36 @@ ARRAY_VARIABLES=(
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
 # @DESCRIPTION:
-# Sub-directory which is added to create full source checkout path
+# Sub-directory which is added to create full source checkout path.  Most
+# projects want to leave this blank (with the notable exception of autotest).
 : ${CROS_WORKON_SUBDIR:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
-# Git URL which is prefixed to CROS_WORKON_PROJECT
+# The base git URL to locate the remote repository.  This is usually the root of
+# the GoB server.  It could be any git server, but for infra reliability, our
+# policy is to only refer to servers we maintain (e.g. googlesource.com).
+# It is combined with CROS_WORKON_PROJECT to form the full URL.
+# Look at the cros-constants eclass for common values.
 : ${CROS_WORKON_REPO:=${CROS_GIT_HOST_URL}}
 
 # @ECLASS-VARIABLE: CROS_WORKON_PROJECT
 # @DESCRIPTION:
-# Git project name which is suffixed to CROS_WORKON_REPO
+# The path on the remote server (beneath CROS_WORKON_REPO) to find the git repo.
+# This has no relationship to where the source is checked out locally in the
+# manifest.  If looking at a manifest.xml, this is the "name" attribute of the
+# "project" tag.
 : ${CROS_WORKON_PROJECT:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_LOCALNAME
 # @DESCRIPTION:
-# Temporary local name in third_party
+# The relative path in the local manifest checkout to find the local git
+# checkout.  The exact path it is relative to depends on the CATEGORY of the
+# ebuild.  For chromeos-base packages, this is relative to src/.  For all other
+# packages, it is relative to src/third_party/.  This applies to all ebuilds
+# regardless of the overlay they live in.
+# If looking at a manifest.xml, this is related to the "path" attribute of the
+# "project" tag (although that path is relative to the root of the manifest).
 : ${CROS_WORKON_LOCALNAME:=${PN}}
 
 # @ECLASS-VARIABLE: CROS_WORKON_DESTDIR
@@ -87,17 +101,24 @@ ARRAY_VARIABLES=(
 
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
-# Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
+# Root of the manifest checkout.  The src/platform/ and src/third_party/ and
+# related trees all live here.  It is extremely uncommon for any package to
+# want to access this path, so please think twice (or consult with someone)
+# before doing so.  All source code that an ebuild needs should be listed in
+# its CROS_WORKON_PROJECT settings (so changes can be properly tracked).
 : ${CROS_WORKON_SRCROOT:="${CHROOT_SOURCE_ROOT}"}
 
 # @ECLASS-VARIABLE: CROS_WORKON_INPLACE
 # @DESCRIPTION:
-# Build the sources in place. Don't copy them to a temp dir.
+# Build the sources in place.  Don't copy them to a temp dir.  No ebuild should
+# set this itself as it is meant for other tools (e.g. cros_workon_make).
 : ${CROS_WORKON_INPLACE:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_USE_VCSID
 # @DESCRIPTION:
-# Export VCSID into the project
+# Export VCSID into the project.  This may contain information like the git
+# commit of the project's checkout as well as the current package version.
+# Most packages do not use this, so unless you're sure you do, do not set it.
 : ${CROS_WORKON_USE_VCSID:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_GIT_SUFFIX
