@@ -181,6 +181,7 @@ eblit-src_prepare-post() {
 	epatch "${FILESDIR}"/local/glibc-2.23-ld-library-path-suid.patch
 	epatch "${FILESDIR}"/local/glibc-2.23-empty-token.patch
 	epatch "${FILESDIR}"/local/glibc-2.23-getcwd.patch
+	epatch "${FILESDIR}"/local/glibc-2.23-dlopen.patch
 	epatch "${FILESDIR}"/2.19/${PN}-2.19-ia64-gcc-4.8-reloc-hack.patch #503838
 
 	if use hardened ; then
