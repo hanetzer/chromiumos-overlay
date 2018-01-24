@@ -4,8 +4,7 @@
 EAPI=4
 
 CROS_WORKON_PROJECT=("chromiumos/third_party/u-boot" "chromiumos/platform/vboot_reference")
-CROS_WORKON_LOCALNAME=("u-boot" "../platform/vboot_reference")
-CROS_WORKON_SUBDIR=("files" "")
+CROS_WORKON_LOCALNAME=("u-boot/files" "../platform/vboot_reference")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
 CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 
