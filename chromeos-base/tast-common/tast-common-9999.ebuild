@@ -24,4 +24,7 @@ KEYWORDS="~*"
 IUSE=""
 
 DEPEND=""
-RDEPEND="dev-go/crypto"
+RDEPEND="
+	app-arch/tar
+	dev-go/crypto
+"
