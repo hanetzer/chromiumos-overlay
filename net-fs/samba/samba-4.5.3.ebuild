@@ -100,6 +100,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-list_forced_gpos_last.patch"
 	"${FILESDIR}/${PN}-4.5.3-fix_cve_2017_7494.patch"
 	"${FILESDIR}/${PN}-4.5.3-fix_cve_2017_9461.patch"
+	"${FILESDIR}/${PN}-4.5.3-fix-ftruncate-smb2.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"
