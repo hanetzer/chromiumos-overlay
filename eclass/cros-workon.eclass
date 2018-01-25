@@ -92,13 +92,6 @@ ARRAY_VARIABLES=(
 # to only uprev if there are changes within the specified subdirectories.
 : ${CROS_WORKON_SUBDIRS_TO_REV:=/}
 
-# @ECLASS-VARIABLE: CROS_WORKON_SUBDIR_BLACKLIST
-# @DESCRIPTION:
-# Array of directories in the source tree to explicitly ignore and not even copy
-# them over. This is intended, for example, for blocking infamous bloated and
-# generated content that is unwanted during the build.
-: ${CROS_WORKON_SUBDIR_BLACKLIST:=}
-
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Root of the manifest checkout.  The src/platform/ and src/third_party/ and
@@ -207,17 +200,6 @@ fi
 # provides a global project_count variable which contains the number of
 # projects.
 array_vars_autocomplete() {
-	# If we never copy sources off of the user's checkout, we have no way of
-	# enforcing the subdir blacklist.
-	if [[ ${CROS_WORKON_SUBDIR_BLACKLIST} == "1" ]]; then
-		if [[ ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]]; then
-			die "CROS_WORKON_SUBDIR_BLACKLIST not compatible with CROS_WORKON_OUTOFTREE_BUILD"
-		fi
-		if [[ ${CROS_WORKON_INPLACE} == "1" ]]; then
-			die "CROS_WORKON_SUBDIR_BLACKLIST not compatible with CROS_WORKON_INPLACE"
-		fi
-	fi
-
 	# CROS_WORKON_{PROJECT,SRCPATH} must have all values explicitly filled in.
 	# They have to be of the same length, or one may be undefined (length <= 1
 	# and empty).
@@ -301,26 +283,11 @@ get_paths() {
 	done
 }
 
-delete_blacklisted_subdirs() {
-	local dst="${1}"
-
-	if [[ -z "${CROS_WORKON_SUBDIR_BLACKLIST[@]}" ]]; then
-		return
-	fi
-
-	einfo "Deleting CROS_WORKON_SUBDIR_BLACKLIST directories from ${dst}"
-	local subdir
-	for subdir in "${CROS_WORKON_SUBDIR_BLACKLIST[@]}"; do
-		rm -rf "${dst}/${subdir}"
-	done
-}
-
 local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
 	einfo "Copying sources from ${src}"
 	local blacklist=(
-		"${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}"
 		# Python compiled objects are a pain.
 		"--exclude=*.py[co]"
 		# Assume any dir named ".git" is an actual git dir.  We don't copy them
@@ -334,8 +301,8 @@ local_copy_cp() {
 		if [[ -d "${src}/${sl}" ]]; then
 			mkdir -p "${dst}/${sl}"
 			rsync -a --safe-links \
-				"${blacklist[@]}" "${src}/${sl}/" "${dst}/${sl}/" || \
-				die "rsync -a ${blacklist[*]} ${src}/${sl}/ ${dst}/${sl}/"
+				"${blacklist[@]}" --filter=":- .gitignore" "${src}/${sl}/" "${dst}/${sl}/" || \
+				die "rsync -a ${blacklist[*]} --filter=':- .gitignore' ${src}/${sl}/ ${dst}/${sl}/"
 		fi
 	done
 }
@@ -506,7 +473,6 @@ cros-workon_src_unpack() {
 					# code path to fail and explain the problem.
 					git clone -s "${path[i]}" "${destdir[i]}" || \
 						die "Can't clone ${path[i]}."
-					delete_blacklisted_subdirs "${destdir[i]}"
 					: $(( ++fetched ))
 				else
 					git clone -sn "${path[i]}" "${destdir[i]}" || \
@@ -516,7 +482,6 @@ cros-workon_src_unpack() {
 						ewarn "Is ${path[i]} up to date? Try running repo sync."
 						rm -rf "${destdir[i]}/.git"
 					else
-						delete_blacklisted_subdirs "${destdir[i]}"
 						: $(( ++fetched ))
 					fi
 				fi
@@ -549,7 +514,6 @@ cros-workon_src_unpack() {
 			# The normal cros-workon flow above doesn't do it, so don't
 			# let git-2 do it either.  http://crosbug.com/38342
 			EGIT_NOUNPACK=true git-2_src_unpack
-			delete_blacklisted_subdirs "${destdir[i]}"
 			# TODO(zbehan): Support multiple projects for vcsid?
 		done
 		set_vcsid "${CROS_WORKON_COMMIT[0]}"

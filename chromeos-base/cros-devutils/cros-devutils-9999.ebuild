@@ -4,8 +4,6 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
-# Avoid copying any devserver data created outside the chroot.
-CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 
 inherit cros-workon multilib python
 
