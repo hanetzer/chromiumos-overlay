@@ -17,7 +17,7 @@ index f3e794f..6d5842e 100644
  extern void		_cupsSetError(ipp_status_t status, const char *message,
  			              int localize);
 diff --git a/cups/util.c b/cups/util.c
-index 689f3cf..26f2034 100644
+index 689f3cf..2dc5f65 100644
 --- a/cups/util.c
 +++ b/cups/util.c
 @@ -20,7 +20,10 @@
@@ -31,7 +31,7 @@ index 689f3cf..26f2034 100644
  #include <sys/stat.h>
  #if defined(WIN32) || defined(__EMX__)
  #  include <io.h>
-@@ -1652,6 +1655,244 @@ cups_get_printer_uri(
+@@ -1652,6 +1655,250 @@ cups_get_printer_uri(
    return (0);
  }
  
@@ -233,6 +233,15 @@ index 689f3cf..26f2034 100644
 +  return status;
 +}
 +
++#define COMPONENT_FILTERS_LENGTH 4
++/* a map from filter name to component name */
++static const char* component_filters[COMPONENT_FILTERS_LENGTH][2] = {
++  {"epson-escpr-wrapper", "epson-inkjet-printer-escpr"},
++  {"epson-escpr", "epson-inkjet-printer-escpr"},
++  {"rastertostar", "star-cups-driver"},
++  {"rastertostarlm", "star-cups-driver"}
++};
++
 +/*
 + * '_cupsSearchFilterLatest()' - Identify component folder for a filter. Then recursively
 + * search in the component's root folder with a filter_name
@@ -254,30 +263,27 @@ index 689f3cf..26f2034 100644
 +                            char       *full_path,
 +                            size_t     full_path_size)
 +{
-+  if (strcmp(filter_name, "epson-escpr-wrapper") == 0 ||
-+      strcmp(filter_name, "epson-escpr") == 0)
-+  {
-+    const char search_root[] = "/run/imageloader/epson-inkjet-printer-escpr";
-+    return searchFilterLatest(search_root, filter_name, full_path,
-+                              full_path_size);
++  int i;
++  for (i = 0; i < COMPONENT_FILTERS_LENGTH; i++) {
++    const char* filter = component_filters[i][0];
++    const char* component = component_filters[i][1];
++    if (strcmp(filter_name, filter) == 0) {
++      const char search_root[PATH_MAX];
++      strcpy(search_root, "/run/imageloader/");
++      strcat(search_root, component);
++      return searchFilterLatest(search_root,
++                                filter,
++                                full_path,
++                                full_path_size);
++    }
 +  }
-+  else if (strcmp(filter_name, "rastertostar") == 0 ||
-+           strcmp(filter_name, "rastertostarlm") == 0)
-+  {
-+    const char search_root[] = "/run/imageloader/star-cups-driver";
-+    return searchFilterLatest(search_root, filter_name, full_path,
-+                              full_path_size);
-+  }
-+  else
-+  {
-+    return 3;
-+  }
++  return 3;
 +}
  
  /*
   * End of "$Id: util.c 12884 2015-10-07 20:31:46Z msweet $".
 diff --git a/scheduler/job.c b/scheduler/job.c
-index c112714..4c243a7 100644
+index 374dc9d..ceac27e 100644
 --- a/scheduler/job.c
 +++ b/scheduler/job.c
 @@ -1129,9 +1129,15 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
@@ -298,7 +304,7 @@ index c112714..4c243a7 100644
        strlcpy(command, filter->filter, sizeof(command));
  
 diff --git a/systemv/cupstestppd.c b/systemv/cupstestppd.c
-index 579feb5..7bafdb4 100644
+index 1e34b94..0ce734c 100644
 --- a/systemv/cupstestppd.c
 +++ b/systemv/cupstestppd.c
 @@ -2434,6 +2434,11 @@ check_filters(ppd_file_t *ppd,		/* I - PPD file */
