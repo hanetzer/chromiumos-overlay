@@ -7,6 +7,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_USE_VCSID="1"
+CROS_WORKON_SUBTREE="gobi-cromo-plugin"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs multilib
 

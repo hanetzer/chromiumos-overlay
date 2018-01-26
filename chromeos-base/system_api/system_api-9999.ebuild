@@ -16,6 +16,10 @@ CROS_WORKON_DESTDIR=(
 	"${S}/platform2"
 	"${S}/platform/system_api"
 )
+CROS_WORKON_SUBTREE=(
+	"common-mk"
+	""
+)
 
 PLATFORM_SUBDIR="system_api"
 

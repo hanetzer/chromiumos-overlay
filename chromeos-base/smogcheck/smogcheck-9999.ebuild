@@ -6,6 +6,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
+CROS_WORKON_SUBTREE="common-mk smogcheck"
 
 inherit toolchain-funcs cros-debug cros-workon
 

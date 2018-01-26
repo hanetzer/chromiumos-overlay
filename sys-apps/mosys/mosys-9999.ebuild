@@ -18,6 +18,11 @@ CROS_WORKON_DESTDIR=(
 	"${S}/platform/mosys"
 )
 
+CROS_WORKON_SUBTREE=(
+	"common-mk"
+	""
+)
+
 PLATFORM_SUBDIR="mosys"
 
 inherit flag-o-matic toolchain-funcs cros-unibuild cros-workon platform

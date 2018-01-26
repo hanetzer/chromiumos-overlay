@@ -7,6 +7,7 @@ CROS_WORKON_INCREMENTAL_BUILD="1"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk arc/mount-passthrough"
 
 PLATFORM_SUBDIR="arc/mount-passthrough"
 PLATFORM_GYP_FILE="mount-passthrough.gyp"

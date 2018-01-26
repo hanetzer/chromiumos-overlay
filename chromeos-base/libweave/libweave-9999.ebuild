@@ -8,6 +8,7 @@ CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "weave/libweave")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://weave.googlesource.com")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/weave/libweave")
+CROS_WORKON_SUBTREE=("common-mk libweave" "")
 
 PLATFORM_SUBDIR="libweave"
 PLATFORM_GYP_FILE="libweave.gyp"

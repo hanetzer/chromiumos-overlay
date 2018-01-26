@@ -7,6 +7,7 @@ CROS_WORKON_LOCALNAME=("platform2" "third_party/atrusctl")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "chromiumos/third_party/atrusctl")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/third_party/atrusctl")
 CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_SUBTREE=("common-mk" "")
 
 PLATFORM_SUBDIR="atrusctl"
 

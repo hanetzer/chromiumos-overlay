@@ -7,6 +7,7 @@ CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/connectivity/shill")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/shill")
 CROS_WORKON_INCREMENTAL_BUILD="1"
+CROS_WORKON_SUBTREE=("common-mk" "")
 
 PLATFORM_SUBDIR="shill"
 

@@ -8,6 +8,7 @@ CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/update_engine"
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
 CROS_WORKON_USE_VCSID=1
 CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_SUBTREE=("common-mk" "")
 
 PLATFORM_SUBDIR="update_engine"
 

@@ -11,6 +11,7 @@ CROS_WORKON_LOCALNAME=("../platform2" "../aosp/external/puffin")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/puffin")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/puffin")
 CROS_WORKON_REPO=("${CROS_GIT_HOST_URL}" "${CROS_GIT_AOSP_URL}")
+CROS_WORKON_SUBTREE=("common-mk" "")
 # We may need to blacklist this ebuild at some point, but it not totally
 # necessary right now.
 

@@ -9,6 +9,8 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_DESTDIR="${S}/platform2"
+# chromiumos-wide-profiling directory is in $SRC_URI, not in platform2.
+CROS_WORKON_SUBTREE="common-mk"
 
 PLATFORM_SUBDIR="chromiumos-wide-profiling"
 

@@ -5,6 +5,8 @@ EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk touch_keyboard"
+
 PLATFORM_SUBDIR="touch_keyboard"
 
 inherit cros-workon platform user

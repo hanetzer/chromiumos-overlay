@@ -10,6 +10,7 @@ CROS_WORKON_PROJECT=("chromiumos/platform2" "chromiumos/platform/cfm-device-moni
 CROS_WORKON_LOCALNAME=("../platform2" "../platform/cfm-device-monitor")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform/cfm-device-monitor")
 CROS_WORKON_REPO=("${CROS_GIT_HOST_URL}" "${CROS_GIT_HOST_URL}")
+CROS_WORKON_SUBTREE=("common-mk" "")
 
 PLATFORM_SUBDIR="cfm-device-monitor"
 

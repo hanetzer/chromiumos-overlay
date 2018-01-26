@@ -5,6 +5,7 @@ EAPI="4"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk image-burner"
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="image-burner"

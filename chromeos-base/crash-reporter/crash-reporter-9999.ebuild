@@ -8,6 +8,8 @@ CROS_WORKON_USE_VCSID=1
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+# TODO(crbug.com/809389): Avoid directly including headers from other packages.
+CROS_WORKON_SUBTREE="common-mk crash-reporter metrics"
 
 PLATFORM_SUBDIR="crash-reporter"
 
