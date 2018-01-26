@@ -22,7 +22,19 @@ inherit cros-constants
 # - no items as the cros-workon default
 # The exception is CROS_WORKON_PROJECT which has to have all items specified.
 ARRAY_VARIABLES=(
-	CROS_WORKON_{REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
+	CROS_WORKON_{SUBTREE,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
+
+# @ECLASS-VARIABLE: CROS_WORKON_SUBTREE
+# @DESCRIPTION:
+# Subpaths of the source checkout to be used in the build, separated by
+# whitespace. Normally this will be set to directories, but files are also
+# allowed if necessary.
+# Default value is an empty string, meaning the whole source checkout is used.
+# It is strongly recommended to set this variable if the source checkout
+# contains multiple packages (e.g. platform2) to avoid unnecessary uprev when
+# unrelated files in the repository are modified.
+# Access to files outside of these subpaths will be denied.
+: ${CROS_WORKON_SUBTREE:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
@@ -61,14 +73,24 @@ ARRAY_VARIABLES=(
 
 # @ECLASS-VARIABLE: CROS_WORKON_COMMIT
 # @DESCRIPTION:
-# Git commit to checkout to
+# Git commit hashes of the source repositories.
+# It is guaranteed that files identified by tree hashes in CROS_WORKON_TREE
+# can be found in the commit.
+# CROW_WORKON_COMMIT is updated only when CROS_WORKON_TREE below is updated,
+# so it does not necessarily point to HEAD in the source repository.
 : ${CROS_WORKON_COMMIT:=master}
 
 # @ECLASS-VARIABLE: CROS_WORKON_TREE
 # @DESCRIPTION:
-# SHA1 of the contents of the repository. This is used for verifying the
-# correctness of prebuilts. Unlike the commit hash, this SHA1 is unaffected
-# by the history of the repository, or by commit messages.
+# Git tree hashes of the contents of the source repositories.
+# If CROS_WORKON_SUBTREE is set, tree hashes are taken from specified subpaths;
+# otherwise, they are taken from the root directories of the source
+# repositories. Therefore note that CROS_WORKON_TREE may have different number
+# of entries than CROS_WORKON_COMMIT if multiple subpaths are specified in
+# CROS_WORKON_SUBTREE.
+# This is used for verifying the correctness of prebuilts. Unlike the commit
+# hash, this hash is unaffected by the history of the repository, or by
+# commit messages.
 : ${CROS_WORKON_TREE:=}
 
 # Scalar variables. These variables modify the behaviour of the eclass.
@@ -377,6 +399,14 @@ cros-workon_src_unpack() {
 	# Fix array variables
 	array_vars_autocomplete
 
+	# Make sure all CROS_WORKON_DESTDIR are under S.
+	local p
+	for p in "${CROS_WORKON_DESTDIR[@]}"; do
+		if [[ "${p}" != "${S}" && "${p}" != "${S}"/* ]]; then
+			die "CROS_WORKON_DESTDIR=${p} must be under S=${S}"
+		fi
+	done
+
 	if [[ "${PV}" == "9999" && "${CROS_WORKON_ALWAYS_LIVE}" != "1" ]] || [[ -z "${CROS_WORKON_PROJECT[*]}" ]]; then
 		# Live / non-repo packages
 		fetch_method=local
@@ -489,6 +519,7 @@ cros-workon_src_unpack() {
 				# CROS_WORKON_COMMIT directly because it could be a named or
 				# abbreviated ref.
 				set_vcsid "$(get_rev "${destdir[0]}/.git")"
+				cros-workon_enforce_subtrees
 				return
 			else
 				ewarn "Falling back to git.eclass..."
@@ -513,6 +544,7 @@ cros-workon_src_unpack() {
 			# TODO(zbehan): Support multiple projects for vcsid?
 		done
 		set_vcsid "${CROS_WORKON_COMMIT[0]}"
+		cros-workon_enforce_subtrees
 		return
 	fi
 
@@ -538,6 +570,116 @@ cros-workon_src_unpack() {
 	done
 	if [[ -n "${CROS_WORKON_PROJECT[*]}" ]]; then
 		set_vcsid "$(get_rev "${path[0]}/.git")"
+	fi
+	cros-workon_enforce_subtrees
+}
+
+# Enforces subtree restrictions specified by CROS_WORKON_SUBTREE.
+cros-workon_enforce_subtrees() {
+	local i j p q
+
+	local destdir=( "${CROS_WORKON_DESTDIR[@]}" )
+
+	# If CROS_WORKON_OUTOFTREE_BUILD is enabled, CROS_WORKON_DESTDIR
+	# can be outdated. In that case, S has been set to path[0] at this
+	# point.
+	if [[ "${CROS_WORKON_OUTOFTREE_BUILD}" == 1 ]]; then
+		destdir=( "${S}" )
+	fi
+
+	# Gather the subtrees specified by CROS_WORKON_SUBTREE. All directories
+	# and files under those subtrees are not blacklisted.
+	local keep_dirs=()
+	for (( i = 0; i < project_count; ++i )); do
+		if [[ -z "${CROS_WORKON_SUBTREE[i]}" ]]; then
+			keep_dirs+=( "${destdir[i]}" )
+		else
+			for p in ${CROS_WORKON_SUBTREE[i]}; do
+				keep_dirs+=( "${destdir[i]}/${p}" )
+			done
+		fi
+	done
+
+	keep_dirs=( $(IFS=$'\n'; LC_ALL=C sort -u <<<"${keep_dirs[*]}") )
+
+	# Ignore overlapping subtrees.
+	for (( i = 0; i < ${#keep_dirs[@]}; ++i )); do
+		p="${keep_dirs[i]}"
+		: $(( j = i + 1 ))
+		while (( j < ${#keep_dirs[@]} )); do
+			q="${keep_dirs[j]}"
+			if [[ "${q}" == "${p}"/* ]]; then
+				einfo "Ignoring overlapping CROS_WORKON_SUBTREE: ${q} is under ${p}"
+				keep_dirs=( "${keep_dirs[@]:0:j}" "${keep_dirs[@]:$(( j + 1 ))}" )
+			else
+				: $(( ++j ))
+			fi
+		done
+	done
+
+	# If the directory to keep is $S only, then there is nothing we need to do.
+	if [[ "${#keep_dirs[@]}" == 1 && "${keep_dirs}" == "${S}" ]]; then
+		return
+	fi
+
+	# It is an error to specify a missing file in CROS_WORKON_SUBTREE.
+	for p in "${keep_dirs[@]}"; do
+		if [[ ! -e "${p}" ]]; then
+			die "File specified in CROS_WORKON_SUBTREE is missing: ${p}"
+		fi
+	done
+
+	# Gather the parent directories of subtrees to use.
+	# Those directories are exempted from blacklist because we need them to
+	# reach subtrees.
+	local keep_parents=()
+	for p in "${keep_dirs[@]}"; do
+		if [[ "${p}" == "${S}" ]]; then
+			continue
+		fi
+		q="${p%/*}"
+		while [[ "${q}" != "${S}" ]]; do
+			keep_parents+=( "${q}" )
+			q="${q%/*}"
+		done
+	done
+
+	keep_parents=( $(IFS=$'\n'; LC_ALL=C sort -u <<<"${keep_parents[*]}") )
+
+	# Construct arguments to pass to find(1) to list directories/files to
+	# blacklist.
+	#
+	# The command line built here is tricky, but it does the following
+	# during traversal of the filesystem by depth-first order:
+	#
+	#   1. Do nothing about the root directory ($S). Note that we should not
+	#      reach here if there is nothing to blacklist.
+	#   2. If the visiting file is a parent directory of a subtree (i.e. in
+	#      $keep_parents[@]), then recurse into its contents.
+	#   3. If the visiting file is the top directory of a subtree (i.e. in
+	#      $keep_dirs[@]), then do not recurse into its contents.
+	#   4. Otherwise, blacklist the visiting file, and if it is a directory,
+	#      do not recursive into its contents.
+	#
+	local find_args=( "${S}" -mindepth 1 )
+	for p in "${keep_parents[@]}"; do
+		find_args+=( ! -path "${p}" )
+	done
+	find_args+=( -prune )
+	for p in "${keep_dirs[@]}"; do
+		find_args+=( ! -path "${p}" )
+	done
+
+	if [[ "${S}" == "${WORKDIR}"/* ]]; then
+		# $S is writable, so just remove blacklisted files.
+		find "${find_args[@]}" -exec rm -rf {} +
+	else
+		# $S is read-only, so use portage sandbox.
+		local deny_paths="$(find "${find_args[@]}" -printf '%p:')"
+		deny_paths="${deny_paths%:}"
+		if [[ -n "${deny_paths}" ]]; then
+			adddeny "${deny_paths}"
+		fi
 	fi
 }
 
