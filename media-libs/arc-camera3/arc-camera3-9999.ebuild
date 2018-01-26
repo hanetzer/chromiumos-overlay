@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-constants cros-debug cros-workon libchrome toolchain-funcs
+inherit cros-constants cros-debug cros-workon libchrome toolchain-funcs user
 
 DESCRIPTION="ARC camera HAL v3 service. The service is in charge of accessing
 camera device. It uses unix domain socket to build a synchronous channel."
@@ -57,4 +57,9 @@ src_install() {
 		insinto "${ARC_VENDOR_DIR}/etc/init"
 		doins hal_adapter/init/init.camera.rc
 	fi
+}
+
+pkg_preinst() {
+	enewuser "arc-camera"
+	enewgroup "arc-camera"
 }

@@ -5,7 +5,7 @@ EAPI="5"
 CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
 CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+inherit cros-debug cros-workon libchrome toolchain-funcs user
 
 DESCRIPTION="ARC camera service. The service is in charge of accessing camera
 device. It uses linux domain socket (/run/camera/camera.sock) to build a
@@ -34,4 +34,12 @@ src_compile() {
 
 src_install() {
 	dobin arc_camera_service
+
+	insinto /etc/init
+	doins hal/usb_v1/init/arc-camera.conf
+}
+
+pkg_preinst() {
+	enewuser "arc-camera"
+	enewgroup "arc-camera"
 }
