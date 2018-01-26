@@ -5,4 +5,4 @@
 
 exec gawk \
   '$1 == "\"version\":" {print gensub(/[",]/, "", "g", $NF)}' \
-  "$1"/nassh/manifest.json
+  "$1"/nassh/manifest_v1.5.json
