@@ -22,8 +22,8 @@ CONFIG_HAVE_IFD_BIN=y
 CONFIG_IFD_BIN_PATH="3rdparty/blobs/mainboard/google/meowth/descriptor.bin"
 
 # FSP blobs
-CONFIG_FSP_M_FILE="3rdparty/blobs/mainboard/google/meowth/fsp/fspm.bin"
-CONFIG_FSP_S_FILE="3rdparty/blobs/mainboard/google/meowth/fsp/fsps.bin"
+CONFIG_FSP_M_FILE="3rdparty/blobs/mainboard/google/meowth/fsp/Fsp_M.fd"
+CONFIG_FSP_S_FILE="3rdparty/blobs/mainboard/google/meowth/fsp/Fsp_S.fd"
 
 # Microcode
 CONFIG_CPU_UCODE_BINARIES="3rdparty/blobs/mainboard/google/meowth/ucode.bin"
