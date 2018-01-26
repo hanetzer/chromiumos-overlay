@@ -3,9 +3,8 @@
 
 EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
-CROS_WORKON_SUBDIRS_TO_COPY="util/crossgcc"
-CROS_WORKON_SUBDIRS_TO_REV="util/crossgcc"
 CROS_WORKON_LOCALNAME="coreboot"
+CROS_WORKON_SUBTREE="util/crossgcc"
 
 inherit cros-workon toolchain-funcs multiprocessing
 
