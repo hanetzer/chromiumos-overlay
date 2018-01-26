@@ -129,6 +129,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_Cr50CCDServoCap
 	+tests_firmware_Cr50ConsoleCommands
 	+tests_firmware_Cr50DeepSleepStress
+	+tests_firmware_Cr50GetName
 	+tests_firmware_Cr50InvalidateRW
 	+tests_firmware_Cr50Open
 	+tests_firmware_Cr50SetBoardId
