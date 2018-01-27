@@ -74,14 +74,6 @@ get_dependent_services() {
 	fi
 }
 
-load_cfg80211() {
-	if use wifi; then
-		echo "modprobe cfg80211"
-	else
-		echo true
-	fi
-}
-
 src_unpack() {
 	local s="${S}"
 	platform_src_unpack
@@ -173,15 +165,10 @@ src_install() {
 
 	# Replace template parameters inside init scripts
 	local shill_name="shill.$(usex systemd service conf)"
-	local network_services_name="network-services.$(usex systemd service conf)"
 	sed \
 		"s,@expected_started_services@,$(get_dependent_services)," \
 		"init/${shill_name}.in" \
 		> "${T}/${shill_name}"
-	sed \
-		"s,@load_cfg80211@,$(load_cfg80211)," \
-		init/${network_services_name}.in \
-		> "${T}/${network_services_name}"
 
 	# Install init scripts
 	if use systemd; then
@@ -200,12 +187,15 @@ src_install() {
 		done
 		systemd_enable_service shill.service network.target
 
-		systemd_dounit "${T}/network-services.service"
+		systemd_dounit init/network-services.service
 		systemd_enable_service boot-services.target network-services.service
 	else
 		insinto /etc/init
+
 		doins "${T}"/*.conf
-		doins init/shill-start-user-session.conf \
+		doins \
+			init/network-services.conf \
+			init/shill-start-user-session.conf \
 			init/shill-stop-user-session.conf \
 			init/shill_respawn.conf
 		if [[ "${netfilter_queue_helper}" == "yes" ]]; then
