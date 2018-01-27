@@ -1,0 +1,736 @@
+commit 17b90924dbf7eb14c591d72d4e360d77b87fdefc
+Author: Chandler Carruth <chandlerc@gmail.com>
+Date:   2018-01-22
+
+    Introduce the "retpoline" x86 mitigation technique for variant #2 of the speculative execution vulnerabilities disclosed today, specifically identified by CVE-2017-5715, "Branch Target Injection", and is one of the two halves to Spectre..
+    
+    Summary:
+    First, we need to explain the core of the vulnerability. Note that this
+    is a very incomplete description, please see the Project Zero blog post
+    for details:
+    https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html
+    
+    The basis for branch target injection is to direct speculative execution
+    of the processor to some "gadget" of executable code by poisoning the
+    prediction of indirect branches with the address of that gadget. The
+    gadget in turn contains an operation that provides a side channel for
+    reading data. Most commonly, this will look like a load of secret data
+    followed by a branch on the loaded value and then a load of some
+    predictable cache line. The attacker then uses timing of the processors
+    cache to determine which direction the branch took *in the speculative
+    execution*, and in turn what one bit of the loaded value was. Due to the
+    nature of these timing side channels and the branch predictor on Intel
+    processors, this allows an attacker to leak data only accessible to
+    a privileged domain (like the kernel) back into an unprivileged domain.
+    
+    The goal is simple: avoid generating code which contains an indirect
+    branch that could have its prediction poisoned by an attacker. In many
+    cases, the compiler can simply use directed conditional branches and
+    a small search tree. LLVM already has support for lowering switches in
+    this way and the first step of this patch is to disable jump-table
+    lowering of switches and introduce a pass to rewrite explicit indirectbr
+    sequences into a switch over integers.
+    
+    However, there is no fully general alternative to indirect calls. We
+    introduce a new construct we call a "retpoline" to implement indirect
+    calls in a non-speculatable way. It can be thought of loosely as
+    a trampoline for indirect calls which uses the RET instruction on x86.
+    Further, we arrange for a specific call->ret sequence which ensures the
+    processor predicts the return to go to a controlled, known location. The
+    retpoline then "smashes" the return address pushed onto the stack by the
+    call with the desired target of the original indirect call. The result
+    is a predicted return to the next instruction after a call (which can be
+    used to trap speculative execution within an infinite loop) and an
+    actual indirect branch to an arbitrary address.
+    
+    On 64-bit x86 ABIs, this is especially easily done in the compiler by
+    using a guaranteed scratch register to pass the target into this device.
+    For 32-bit ABIs there isn't a guaranteed scratch register and so several
+    different retpoline variants are introduced to use a scratch register if
+    one is available in the calling convention and to otherwise use direct
+    stack push/pop sequences to pass the target address.
+    
+    This "retpoline" mitigation is fully described in the following blog
+    post: https://support.google.com/faqs/answer/7625886
+    
+    We also support a target feature that disables emission of the retpoline
+    thunk by the compiler to allow for custom thunks if users want them.
+    These are particularly useful in environments like kernels that
+    routinely do hot-patching on boot and want to hot-patch their thunk to
+    different code sequences. They can write this custom thunk and use
+    `-mretpoline-external-thunk` *in addition* to `-mretpoline`. In this
+    case, on x86-64 thu thunk names must be:
+    ```
+      __llvm_external_retpoline_r11
+    ```
+    or on 32-bit:
+    ```
+      __llvm_external_retpoline_eax
+      __llvm_external_retpoline_ecx
+      __llvm_external_retpoline_edx
+      __llvm_external_retpoline_push
+    ```
+    And the target of the retpoline is passed in the named register, or in
+    the case of the `push` suffix on the top of the stack via a `pushl`
+    instruction.
+    
+    There is one other important source of indirect branches in x86 ELF
+    binaries: the PLT. These patches also include support for LLD to
+    generate PLT entries that perform a retpoline-style indirection.
+    
+    The only other indirect branches remaining that we are aware of are from
+    precompiled runtimes (such as crt0.o and similar). The ones we have
+    found are not really attackable, and so we have not focused on them
+    here, but eventually these runtimes should also be replicated for
+    retpoline-ed configurations for completeness.
+    
+    For kernels or other freestanding or fully static executables, the
+    compiler switch `-mretpoline` is sufficient to fully mitigate this
+    particular attack. For dynamic executables, you must compile *all*
+    libraries with `-mretpoline` and additionally link the dynamic
+    executable and all shared libraries with LLD and pass `-z retpolineplt`
+    (or use similar functionality from some other linker). We strongly
+    recommend also using `-z now` as non-lazy binding allows the
+    retpoline-mitigated PLT to be substantially smaller.
+    
+    When manually apply similar transformations to `-mretpoline` to the
+    Linux kernel we observed very small performance hits to applications
+    running typical workloads, and relatively minor hits (approximately 2%)
+    even for extremely syscall-heavy applications. This is largely due to
+    the small number of indirect branches that occur in performance
+    sensitive paths of the kernel.
+    
+    When using these patches on statically linked applications, especially
+    C++ applications, you should expect to see a much more dramatic
+    performance hit. For microbenchmarks that are switch, indirect-, or
+    virtual-call heavy we have seen overheads ranging from 10% to 50%.
+    
+    However, real-world workloads exhibit substantially lower performance
+    impact. Notably, techniques such as PGO and ThinLTO dramatically reduce
+    the impact of hot indirect calls (by speculatively promoting them to
+    direct calls) and allow optimized search trees to be used to lower
+    switches. If you need to deploy these techniques in C++ applications, we
+    *strongly* recommend that you ensure all hot call targets are statically
+    linked (avoiding PLT indirection) and use both PGO and ThinLTO. Well
+    tuned servers using all of these techniques saw 5% - 10% overhead from
+    the use of retpoline.
+    
+    We will add detailed documentation covering these components in
+    subsequent patches, but wanted to make the core functionality available
+    as soon as possible. Happy for more code review, but we'd really like to
+    get these patches landed and backported ASAP for obvious reasons. We're
+    planning to backport this to both 6.0 and 5.0 release streams and get
+    a 5.0 release with just this cherry picked ASAP for distros and vendors.
+    
+    This patch is the work of a number of people over the past month: Eric, Reid,
+    Rui, and myself. I'm mailing it out as a single commit due to the time
+    sensitive nature of landing this and the need to backport it. Huge thanks to
+    everyone who helped out here, and everyone at Intel who helped out in
+    discussions about how to craft this. Also, credit goes to Paul Turner (at
+    Google, but not an LLVM contributor) for much of the underlying retpoline
+    design.
+    
+    Reviewers: echristo, rnk, ruiu, craig.topper, DavidKreitzer
+    
+    Subscribers: sanjoy, emaste, mcrosier, mgorny, mehdi_amini, hiraditya, llvm-commits
+    
+    Differential Revision: https://reviews.llvm.org/D41723
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/lld/trunk@323155 91177308-0d34-0410-b5e6-96231b3b80d8
+
+--- ELF/Arch/X86.cpp
++++ ELF/Arch/X86.cpp
+@@ -21,7 +21,7 @@ using namespace lld;
+ using namespace lld::elf;
+ 
+ namespace {
+-class X86 final : public TargetInfo {
++class X86 : public TargetInfo {
+ public:
+   X86();
+   RelExpr getRelExpr(RelType Type, const Symbol &S,
+@@ -399,7 +399,145 @@ void X86::relaxTlsLdToLe(uint8_t *Loc, RelType Type, uint64_t Val) const {
+   memcpy(Loc - 2, Inst, sizeof(Inst));
+ }
+ 
++namespace {
++class RetpolinePic : public X86 {
++public:
++  RetpolinePic();
++  void writeGotPlt(uint8_t *Buf, const Symbol &S) const override;
++  void writePltHeader(uint8_t *Buf) const override;
++  void writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr, uint64_t PltEntryAddr,
++                int32_t Index, unsigned RelOff) const override;
++};
++
++class RetpolineNoPic : public X86 {
++public:
++  RetpolineNoPic();
++  void writeGotPlt(uint8_t *Buf, const Symbol &S) const override;
++  void writePltHeader(uint8_t *Buf) const override;
++  void writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr, uint64_t PltEntryAddr,
++                int32_t Index, unsigned RelOff) const override;
++};
++} // namespace
++
++RetpolinePic::RetpolinePic() {
++  PltHeaderSize = 48;
++  PltEntrySize = 32;
++}
++
++void RetpolinePic::writeGotPlt(uint8_t *Buf, const Symbol &S) const {
++  write32le(Buf, S.getPltVA() + 17);
++}
++
++void RetpolinePic::writePltHeader(uint8_t *Buf) const {
++  const uint8_t Insn[] = {
++      0xff, 0xb3, 0,    0,    0,    0,          // 0:    pushl GOTPLT+4(%ebx)
++      0x50,                                     // 6:    pushl %eax
++      0x8b, 0x83, 0,    0,    0,    0,          // 7:    mov GOTPLT+8(%ebx), %eax
++      0xe8, 0x0e, 0x00, 0x00, 0x00,             // d:    call next
++      0xf3, 0x90,                               // 12: loop: pause
++      0x0f, 0xae, 0xe8,                         // 14:   lfence
++      0xeb, 0xf9,                               // 17:   jmp loop
++      0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, // 19:   int3; .align 16
++      0x89, 0x0c, 0x24,                         // 20: next: mov %ecx, (%esp)
++      0x8b, 0x4c, 0x24, 0x04,                   // 23:   mov 0x4(%esp), %ecx
++      0x89, 0x44, 0x24, 0x04,                   // 27:   mov %eax ,0x4(%esp)
++      0x89, 0xc8,                               // 2b:   mov %ecx, %eax
++      0x59,                                     // 2d:   pop %ecx
++      0xc3,                                     // 2e:   ret
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  uint32_t Ebx = InX::Got->getVA() + InX::Got->getSize();
++  uint32_t GotPlt = InX::GotPlt->getVA() - Ebx;
++  write32le(Buf + 2, GotPlt + 4);
++  write32le(Buf + 9, GotPlt + 8);
++}
++
++void RetpolinePic::writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr,
++                            uint64_t PltEntryAddr, int32_t Index,
++                            unsigned RelOff) const {
++  const uint8_t Insn[] = {
++      0x50,                   // pushl %eax
++      0x8b, 0x83, 0, 0, 0, 0, // mov foo@GOT(%ebx), %eax
++      0xe8, 0,    0, 0, 0,    // call plt+0x20
++      0xe9, 0,    0, 0, 0,    // jmp plt+0x12
++      0x68, 0,    0, 0, 0,    // pushl $reloc_offset
++      0xe9, 0,    0, 0, 0,    // jmp plt+0
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  uint32_t Ebx = InX::Got->getVA() + InX::Got->getSize();
++  write32le(Buf + 3, GotPltEntryAddr - Ebx);
++  write32le(Buf + 8, -Index * PltEntrySize - PltHeaderSize - 12 + 32);
++  write32le(Buf + 13, -Index * PltEntrySize - PltHeaderSize - 17 + 18);
++  write32le(Buf + 18, RelOff);
++  write32le(Buf + 23, -Index * PltEntrySize - PltHeaderSize - 27);
++}
++
++RetpolineNoPic::RetpolineNoPic() {
++  PltHeaderSize = 64;
++  PltEntrySize = 32;
++}
++
++void RetpolineNoPic::writeGotPlt(uint8_t *Buf, const Symbol &S) const {
++  write32le(Buf, S.getPltVA() + 16);
++}
++
++void RetpolineNoPic::writePltHeader(uint8_t *Buf) const {
++  const uint8_t PltData[] = {
++      0xff, 0x35, 0,    0,    0,    0, // 0:    pushl GOTPLT+4
++      0x50,                            // 6:    pushl %eax
++      0xa1, 0,    0,    0,    0,       // 7:    mov GOTPLT+8, %eax
++      0xe8, 0x0f, 0x00, 0x00, 0x00,    // c:    call next
++      0xf3, 0x90,                      // 11: loop: pause
++      0x0f, 0xae, 0xe8,                // 13:   lfence
++      0xeb, 0xf9,                      // 16:   jmp loop
++      0xcc, 0xcc, 0xcc, 0xcc, 0xcc,    // 18:   int3
++      0xcc, 0xcc, 0xcc,                // 1f:   int3; .align 16
++      0x89, 0x0c, 0x24,                // 20: next: mov %ecx, (%esp)
++      0x8b, 0x4c, 0x24, 0x04,          // 23:   mov 0x4(%esp), %ecx
++      0x89, 0x44, 0x24, 0x04,          // 27:   mov %eax ,0x4(%esp)
++      0x89, 0xc8,                      // 2b:   mov %ecx, %eax
++      0x59,                            // 2d:   pop %ecx
++      0xc3,                            // 2e:   ret
++  };
++  memcpy(Buf, PltData, sizeof(PltData));
++
++  uint32_t GotPlt = InX::GotPlt->getVA();
++  write32le(Buf + 2, GotPlt + 4);
++  write32le(Buf + 8, GotPlt + 8);
++}
++
++void RetpolineNoPic::writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr,
++                              uint64_t PltEntryAddr, int32_t Index,
++                              unsigned RelOff) const {
++  const uint8_t Insn[] = {
++      0x50,             // 0:  pushl %eax
++      0xa1, 0, 0, 0, 0, // 1:  mov foo_in_GOT, %eax
++      0xe8, 0, 0, 0, 0, // 6:  call plt+0x20
++      0xe9, 0, 0, 0, 0, // b:  jmp plt+0x11
++      0x68, 0, 0, 0, 0, // 10: pushl $reloc_offset
++      0xe9, 0, 0, 0, 0, // 15: jmp plt+0
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  write32le(Buf + 2, GotPltEntryAddr);
++  write32le(Buf + 7, -Index * PltEntrySize - PltHeaderSize - 11 + 32);
++  write32le(Buf + 12, -Index * PltEntrySize - PltHeaderSize - 16 + 17);
++  write32le(Buf + 17, RelOff);
++  write32le(Buf + 22, -Index * PltEntrySize - PltHeaderSize - 26);
++}
++
+ TargetInfo *elf::getX86TargetInfo() {
+-  static X86 Target;
+-  return &Target;
++  if (Config->ZRetpolineplt) {
++    if (Config->Pic) {
++      static RetpolinePic T;
++      return &T;
++    }
++    static RetpolineNoPic T;
++    return &T;
++  }
++
++  static X86 T;
++  return &T;
+ }
+--- ELF/Arch/X86_64.cpp
++++ ELF/Arch/X86_64.cpp
+@@ -23,7 +23,7 @@ using namespace lld;
+ using namespace lld::elf;
+ 
+ namespace {
+-template <class ELFT> class X86_64 final : public TargetInfo {
++template <class ELFT> class X86_64 : public TargetInfo {
+ public:
+   X86_64();
+   RelExpr getRelExpr(RelType Type, const Symbol &S,
+@@ -460,12 +460,125 @@ void X86_64<ELFT>::relaxGot(uint8_t *Loc, uint64_t Val) const {
+   write32le(Loc - 1, Val + 1);
+ }
+ 
+-TargetInfo *elf::getX32TargetInfo() {
+-  static X86_64<ELF32LE> Target;
+-  return &Target;
++namespace {
++template <class ELFT> class Retpoline : public X86_64<ELFT> {
++public:
++  Retpoline();
++  void writeGotPlt(uint8_t *Buf, const Symbol &S) const override;
++  void writePltHeader(uint8_t *Buf) const override;
++  void writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr, uint64_t PltEntryAddr,
++                int32_t Index, unsigned RelOff) const override;
++};
++
++template <class ELFT> class RetpolineZNow : public X86_64<ELFT> {
++public:
++  RetpolineZNow();
++  void writeGotPlt(uint8_t *Buf, const Symbol &S) const override {}
++  void writePltHeader(uint8_t *Buf) const override;
++  void writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr, uint64_t PltEntryAddr,
++                int32_t Index, unsigned RelOff) const override;
++};
++} // namespace
++
++template <class ELFT> Retpoline<ELFT>::Retpoline() {
++  TargetInfo::PltHeaderSize = 48;
++  TargetInfo::PltEntrySize = 32;
++}
++
++template <class ELFT>
++void Retpoline<ELFT>::writeGotPlt(uint8_t *Buf, const Symbol &S) const {
++  write32le(Buf, S.getPltVA() + 17);
++}
++
++template <class ELFT> void Retpoline<ELFT>::writePltHeader(uint8_t *Buf) const {
++  const uint8_t Insn[] = {
++      0xff, 0x35, 0,    0,    0,    0,          // 0:    pushq GOTPLT+8(%rip)
++      0x4c, 0x8b, 0x1d, 0,    0,    0,    0,    // 6:    mov GOTPLT+16(%rip), %r11
++      0xe8, 0x0e, 0x00, 0x00, 0x00,             // d:    callq next
++      0xf3, 0x90,                               // 12: loop: pause
++      0x0f, 0xae, 0xe8,                         // 14:   lfence
++      0xeb, 0xf9,                               // 17:   jmp loop
++      0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, // 19:   int3; .align 16
++      0x4c, 0x89, 0x1c, 0x24,                   // 20: next: mov %r11, (%rsp)
++      0xc3,                                     // 24:   ret
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  uint64_t GotPlt = InX::GotPlt->getVA();
++  uint64_t Plt = InX::Plt->getVA();
++  write32le(Buf + 2, GotPlt - Plt - 6 + 8);
++  write32le(Buf + 9, GotPlt - Plt - 13 + 16);
++}
++
++template <class ELFT>
++void Retpoline<ELFT>::writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr,
++                               uint64_t PltEntryAddr, int32_t Index,
++                               unsigned RelOff) const {
++  const uint8_t Insn[] = {
++      0x4c, 0x8b, 0x1d, 0, 0, 0, 0, // 0:  mov foo@GOTPLT(%rip), %r11
++      0xe8, 0,    0,    0, 0,       // 7:  callq plt+0x20
++      0xe9, 0,    0,    0, 0,       // c:  jmp plt+0x12
++      0x68, 0,    0,    0, 0,       // 11: pushq <relocation index>
++      0xe9, 0,    0,    0, 0,       // 16: jmp plt+0
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  uint64_t Off = TargetInfo::PltHeaderSize + TargetInfo::PltEntrySize * Index;
++
++  write32le(Buf + 3, GotPltEntryAddr - PltEntryAddr - 7);
++  write32le(Buf + 8, -Off - 12 + 32);
++  write32le(Buf + 13, -Off - 17 + 18);
++  write32le(Buf + 18, Index);
++  write32le(Buf + 23, -Off - 27);
++}
++
++template <class ELFT> RetpolineZNow<ELFT>::RetpolineZNow() {
++  TargetInfo::PltHeaderSize = 32;
++  TargetInfo::PltEntrySize = 16;
++}
++
++template <class ELFT>
++void RetpolineZNow<ELFT>::writePltHeader(uint8_t *Buf) const {
++  const uint8_t Insn[] = {
++      0xe8, 0x0b, 0x00, 0x00, 0x00, // 0:    call next
++      0xf3, 0x90,                   // 5:  loop: pause
++      0x0f, 0xae, 0xe8,             // 7:    lfence
++      0xeb, 0xf9,                   // a:    jmp loop
++      0xcc, 0xcc, 0xcc, 0xcc,       // c:    int3; .align 16
++      0x4c, 0x89, 0x1c, 0x24,       // 10: next: mov %r11, (%rsp)
++      0xc3,                         // 14:   ret
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
+ }
+ 
+-TargetInfo *elf::getX86_64TargetInfo() {
+-  static X86_64<ELF64LE> Target;
+-  return &Target;
++template <class ELFT>
++void RetpolineZNow<ELFT>::writePlt(uint8_t *Buf, uint64_t GotPltEntryAddr,
++                                   uint64_t PltEntryAddr, int32_t Index,
++                                   unsigned RelOff) const {
++  const uint8_t Insn[] = {
++      0x4c, 0x8b, 0x1d, 0, 0, 0, 0, // mov foo@GOTPLT(%rip), %r11
++      0xe9, 0,    0,    0, 0,       // jmp plt+0
++  };
++  memcpy(Buf, Insn, sizeof(Insn));
++
++  write32le(Buf + 3, GotPltEntryAddr - PltEntryAddr - 7);
++  write32le(Buf + 8,
++            -Index * TargetInfo::PltEntrySize - TargetInfo::PltHeaderSize - 12);
+ }
++
++template <class ELFT> TargetInfo *getTargetInfo() {
++  if (Config->ZRetpolineplt) {
++    if (Config->ZNow) {
++      static RetpolineZNow<ELFT> T;
++      return &T;
++    }
++    static Retpoline<ELFT> T;
++    return &T;
++  }
++
++  static X86_64<ELFT> T;
++  return &T;
++}
++
++TargetInfo *elf::getX32TargetInfo() { return getTargetInfo<ELF32LE>(); }
++TargetInfo *elf::getX86_64TargetInfo() { return getTargetInfo<ELF64LE>(); }
+--- ELF/Config.h
++++ ELF/Config.h
+@@ -159,6 +159,7 @@ struct Configuration {
+   bool ZRelro;
+   bool ZRodynamic;
+   bool ZText;
++  bool ZRetpolineplt;
+   bool ExitEarly;
+   bool ZWxneeded;
+   DiscardPolicy Discard;
+--- ELF/Driver.cpp
++++ ELF/Driver.cpp
+@@ -674,6 +674,7 @@ void LinkerDriver::readConfigs(opt::InputArgList &Args) {
+   Config->ZNow = hasZOption(Args, "now");
+   Config->ZOrigin = hasZOption(Args, "origin");
+   Config->ZRelro = !hasZOption(Args, "norelro");
++  Config->ZRetpolineplt = hasZOption(Args, "retpolineplt");
+   Config->ZRodynamic = hasZOption(Args, "rodynamic");
+   Config->ZStackSize = args::getZOptionValue(Args, OPT_z, "stack-size", 0);
+   Config->ZText = !hasZOption(Args, "notext");
+--- /dev/null
++++ test/ELF/i386-retpoline-nopic.s
+@@ -0,0 +1,81 @@
++// REQUIRES: x86
++// RUN: llvm-mc -filetype=obj -triple=i386-unknown-linux %s -o %t1.o
++// RUN: llvm-mc -filetype=obj -triple=i386-unknown-linux %p/Inputs/shared.s -o %t2.o
++// RUN: ld.lld -shared %t2.o -o %t2.so
++
++// RUN: ld.lld %t1.o %t2.so -o %t.exe -z retpolineplt
++// RUN: llvm-objdump -d -s %t.exe | FileCheck %s
++
++// CHECK:      Disassembly of section .plt:
++// CHECK-NEXT: .plt:
++// CHECK-NEXT: 11010:       ff 35 04 20 01 00       pushl   73732
++// CHECK-NEXT: 11016:       50      pushl   %eax
++// CHECK-NEXT: 11017:       a1 08 20 01 00  movl    73736, %eax
++// CHECK-NEXT: 1101c:       e8 0f 00 00 00  calll   15 <.plt+0x20>
++// CHECK-NEXT: 11021:       f3 90   pause
++// CHECK-NEXT: 11023:       0f ae e8        lfence
++// CHECK-NEXT: 11026:       eb f9   jmp     -7 <.plt+0x11>
++// CHECK-NEXT: 11028:       cc      int3
++// CHECK-NEXT: 11029:       cc      int3
++// CHECK-NEXT: 1102a:       cc      int3
++// CHECK-NEXT: 1102b:       cc      int3
++// CHECK-NEXT: 1102c:       cc      int3
++// CHECK-NEXT: 1102d:       cc      int3
++// CHECK-NEXT: 1102e:       cc      int3
++// CHECK-NEXT: 1102f:       cc      int3
++// CHECK-NEXT: 11030:       89 0c 24        movl    %ecx, (%esp)
++// CHECK-NEXT: 11033:       8b 4c 24 04     movl    4(%esp), %ecx
++// CHECK-NEXT: 11037:       89 44 24 04     movl    %eax, 4(%esp)
++// CHECK-NEXT: 1103b:       89 c8   movl    %ecx, %eax
++// CHECK-NEXT: 1103d:       59      popl    %ecx
++// CHECK-NEXT: 1103e:       c3      retl
++// CHECK-NEXT: 1103f:       cc      int3
++// CHECK-NEXT: 11040:       cc      int3
++// CHECK-NEXT: 11041:       cc      int3
++// CHECK-NEXT: 11042:       cc      int3
++// CHECK-NEXT: 11043:       cc      int3
++// CHECK-NEXT: 11044:       cc      int3
++// CHECK-NEXT: 11045:       cc      int3
++// CHECK-NEXT: 11046:       cc      int3
++// CHECK-NEXT: 11047:       cc      int3
++// CHECK-NEXT: 11048:       cc      int3
++// CHECK-NEXT: 11049:       cc      int3
++// CHECK-NEXT: 1104a:       cc      int3
++// CHECK-NEXT: 1104b:       cc      int3
++// CHECK-NEXT: 1104c:       cc      int3
++// CHECK-NEXT: 1104d:       cc      int3
++// CHECK-NEXT: 1104e:       cc      int3
++// CHECK-NEXT: 1104f:       cc      int3
++// CHECK-NEXT: 11050:       50      pushl   %eax
++// CHECK-NEXT: 11051:       a1 0c 20 01 00  movl    73740, %eax
++// CHECK-NEXT: 11056:       e8 d5 ff ff ff  calll   -43 <.plt+0x20>
++// CHECK-NEXT: 1105b:       e9 c1 ff ff ff  jmp     -63 <.plt+0x11>
++// CHECK-NEXT: 11060:       68 00 00 00 00  pushl   $0
++// CHECK-NEXT: 11065:       e9 a6 ff ff ff  jmp     -90 <.plt>
++// CHECK-NEXT: 1106a:       cc      int3
++// CHECK-NEXT: 1106b:       cc      int3
++// CHECK-NEXT: 1106c:       cc      int3
++// CHECK-NEXT: 1106d:       cc      int3
++// CHECK-NEXT: 1106e:       cc      int3
++// CHECK-NEXT: 1106f:       cc      int3
++// CHECK-NEXT: 11070:       50      pushl   %eax
++// CHECK-NEXT: 11071:       a1 10 20 01 00  movl    73744, %eax
++// CHECK-NEXT: 11076:       e8 b5 ff ff ff  calll   -75 <.plt+0x20>
++// CHECK-NEXT: 1107b:       e9 a1 ff ff ff  jmp     -95 <.plt+0x11>
++// CHECK-NEXT: 11080:       68 08 00 00 00  pushl   $8
++// CHECK-NEXT: 11085:       e9 86 ff ff ff  jmp     -122 <.plt>
++// CHECK-NEXT: 1108a:       cc      int3
++// CHECK-NEXT: 1108b:       cc      int3
++// CHECK-NEXT: 1108c:       cc      int3
++// CHECK-NEXT: 1108d:       cc      int3
++// CHECK-NEXT: 1108e:       cc      int3
++// CHECK-NEXT: 1108f:       cc      int3
++
++// CHECK:      Contents of section .got.plt:
++// CHECK-NEXT: 00300100 00000000 00000000 60100100
++// CHECK-NEXT: 80100100
++
++.global _start
++_start:
++  jmp bar@PLT
++  jmp zed@PLT
+--- /dev/null
++++ test/ELF/i386-retpoline-pic.s
+@@ -0,0 +1,62 @@
++// REQUIRES: x86
++// RUN: llvm-mc -filetype=obj -triple=i386-unknown-linux -position-independent %s -o %t1.o
++// RUN: llvm-mc -filetype=obj -triple=i386-unknown-linux -position-independent %p/Inputs/shared.s -o %t2.o
++// RUN: ld.lld -shared %t2.o -o %t2.so
++
++// RUN: ld.lld %t1.o %t2.so -o %t.exe -z retpolineplt -pie
++// RUN: llvm-objdump -d -s %t.exe | FileCheck %s
++
++// CHECK:      Disassembly of section .plt:
++// CHECK-NEXT: .plt:
++// CHECK-NEXT: 1010:       ff b3 04 20 00 00       pushl   8196(%ebx)
++// CHECK-NEXT: 1016:       50      pushl   %eax
++// CHECK-NEXT: 1017:       8b 83 08 20 00 00       movl    8200(%ebx), %eax
++// CHECK-NEXT: 101d:       e8 0e 00 00 00  calll   14 <.plt+0x20>
++// CHECK-NEXT: 1022:       f3 90   pause
++// CHECK-NEXT: 1024:       0f ae e8        lfence
++// CHECK-NEXT: 1027:       eb f9   jmp     -7 <.plt+0x12>
++// CHECK-NEXT: 1029:       cc      int3
++// CHECK-NEXT: 102a:       cc      int3
++// CHECK-NEXT: 102b:       cc      int3
++// CHECK-NEXT: 102c:       cc      int3
++// CHECK-NEXT: 102d:       cc      int3
++// CHECK-NEXT: 102e:       cc      int3
++// CHECK-NEXT: 102f:       cc      int3
++// CHECK-NEXT: 1030:       89 0c 24        movl    %ecx, (%esp)
++// CHECK-NEXT: 1033:       8b 4c 24 04     movl    4(%esp), %ecx
++// CHECK-NEXT: 1037:       89 44 24 04     movl    %eax, 4(%esp)
++// CHECK-NEXT: 103b:       89 c8   movl    %ecx, %eax
++// CHECK-NEXT: 103d:       59      popl    %ecx
++// CHECK-NEXT: 103e:       c3      retl
++// CHECK-NEXT: 103f:       cc      int3
++// CHECK-NEXT: 1040:       50      pushl   %eax
++// CHECK-NEXT: 1041:       8b 83 0c 20 00 00       movl    8204(%ebx), %eax
++// CHECK-NEXT: 1047:       e8 e4 ff ff ff  calll   -28 <.plt+0x20>
++// CHECK-NEXT: 104c:       e9 d1 ff ff ff  jmp     -47 <.plt+0x12>
++// CHECK-NEXT: 1051:       68 00 00 00 00  pushl   $0
++// CHECK-NEXT: 1056:       e9 b5 ff ff ff  jmp     -75 <.plt>
++// CHECK-NEXT: 105b:       cc      int3
++// CHECK-NEXT: 105c:       cc      int3
++// CHECK-NEXT: 105d:       cc      int3
++// CHECK-NEXT: 105e:       cc      int3
++// CHECK-NEXT: 105f:       cc      int3
++// CHECK-NEXT: 1060:       50      pushl   %eax
++// CHECK-NEXT: 1061:       8b 83 10 20 00 00       movl    8208(%ebx), %eax
++// CHECK-NEXT: 1067:       e8 c4 ff ff ff  calll   -60 <.plt+0x20>
++// CHECK-NEXT: 106c:       e9 b1 ff ff ff  jmp     -79 <.plt+0x12>
++// CHECK-NEXT: 1071:       68 08 00 00 00  pushl   $8
++// CHECK-NEXT: 1076:       e9 95 ff ff ff  jmp     -107 <.plt>
++// CHECK-NEXT: 107b:       cc      int3
++// CHECK-NEXT: 107c:       cc      int3
++// CHECK-NEXT: 107d:       cc      int3
++// CHECK-NEXT: 107e:       cc      int3
++// CHECK-NEXT: 107f:       cc      int3
++
++// CHECK:      Contents of section .got.plt:
++// CHECK-NEXT: 2000 00300000 00000000 00000000 51100000
++// CHECK-NEXT: 2010 71100000
++
++.global _start
++_start:
++  jmp bar@PLT
++  jmp zed@PLT
+--- /dev/null
++++ test/ELF/x86-64-retpoline-znow.s
+@@ -0,0 +1,53 @@
++// REQUIRES: x86
++// RUN: llvm-mc -filetype=obj -triple=x86_64-unknown-linux %s -o %t1.o
++// RUN: llvm-mc -filetype=obj -triple=x86_64-unknown-linux %p/Inputs/shared.s -o %t2.o
++// RUN: ld.lld -shared %t2.o -o %t2.so
++
++// RUN: ld.lld -shared %t1.o %t2.so -o %t.exe -z retpolineplt -z now
++// RUN: llvm-objdump -d -s %t.exe | FileCheck %s
++
++// CHECK:      Disassembly of section .plt:
++// CHECK-NEXT: .plt:
++// CHECK-NEXT: 1010:	e8 0b 00 00 00 	callq	11 <.plt+0x10>
++// CHECK-NEXT: 1015:	f3 90 	pause
++// CHECK-NEXT: 1017:	0f ae e8 	lfence
++// CHECK-NEXT: 101a:	eb f9 	jmp	-7 <.plt+0x5>
++// CHECK-NEXT: 101c:	cc 	int3
++// CHECK-NEXT: 101d:	cc 	int3
++// CHECK-NEXT: 101e:	cc 	int3
++// CHECK-NEXT: 101f:	cc 	int3
++// CHECK-NEXT: 1020:	4c 89 1c 24 	movq	%r11, (%rsp)
++// CHECK-NEXT: 1024:	c3 	retq
++// CHECK-NEXT: 1025:	cc 	int3
++// CHECK-NEXT: 1026:	cc 	int3
++// CHECK-NEXT: 1027:	cc 	int3
++// CHECK-NEXT: 1028:	cc 	int3
++// CHECK-NEXT: 1029:	cc 	int3
++// CHECK-NEXT: 102a:	cc 	int3
++// CHECK-NEXT: 102b:	cc 	int3
++// CHECK-NEXT: 102c:	cc 	int3
++// CHECK-NEXT: 102d:	cc 	int3
++// CHECK-NEXT: 102e:	cc 	int3
++// CHECK-NEXT: 102f:	cc 	int3
++// CHECK-NEXT: 1030:	4c 8b 1d c1 10 00 00 	movq	4289(%rip), %r11
++// CHECK-NEXT: 1037:	e9 d4 ff ff ff 	jmp	-44 <.plt>
++// CHECK-NEXT: 103c:	cc 	int3
++// CHECK-NEXT: 103d:	cc 	int3
++// CHECK-NEXT: 103e:	cc 	int3
++// CHECK-NEXT: 103f:	cc 	int3
++// CHECK-NEXT: 1040:	4c 8b 1d b9 10 00 00 	movq	4281(%rip), %r11
++// CHECK-NEXT: 1047:	e9 c4 ff ff ff 	jmp	-60 <.plt>
++// CHECK-NEXT: 104c:	cc 	int3
++// CHECK-NEXT: 104d:	cc 	int3
++// CHECK-NEXT: 104e:	cc 	int3
++// CHECK-NEXT: 104f:	cc 	int3
++
++// CHECK:      Contents of section .got.plt:
++// CHECK-NEXT: 20e0 00200000 00000000 00000000 00000000
++// CHECK-NEXT: 20f0 00000000 00000000 00000000 00000000
++// CHECK-NEXT: 2100 00000000 00000000
++
++.global _start
++_start:
++  jmp bar@PLT
++  jmp zed@PLT
+--- /dev/null
++++ test/ELF/x86-64-retpoline.s
+@@ -0,0 +1,66 @@
++// REQUIRES: x86
++// RUN: llvm-mc -filetype=obj -triple=x86_64-unknown-linux %s -o %t1.o
++// RUN: llvm-mc -filetype=obj -triple=x86_64-unknown-linux %p/Inputs/shared.s -o %t2.o
++// RUN: ld.lld -shared %t2.o -o %t2.so
++
++// RUN: ld.lld -shared %t1.o %t2.so -o %t.exe -z retpolineplt
++// RUN: llvm-objdump -d -s %t.exe | FileCheck %s
++
++// CHECK:      Disassembly of section .plt:
++// CHECK-NEXT: .plt:
++// CHECK-NEXT: 1010:       ff 35 f2 0f 00 00       pushq   4082(%rip)
++// CHECK-NEXT: 1016:       4c 8b 1d f3 0f 00 00    movq    4083(%rip), %r11
++// CHECK-NEXT: 101d:       e8 0e 00 00 00  callq   14 <.plt+0x20>
++// CHECK-NEXT: 1022:       f3 90   pause
++// CHECK-NEXT: 1024:       0f ae e8        lfence
++// CHECK-NEXT: 1027:       eb f9   jmp     -7 <.plt+0x12>
++// CHECK-NEXT: 1029:       cc      int3
++// CHECK-NEXT: 102a:       cc      int3
++// CHECK-NEXT: 102b:       cc      int3
++// CHECK-NEXT: 102c:       cc      int3
++// CHECK-NEXT: 102d:       cc      int3
++// CHECK-NEXT: 102e:       cc      int3
++// CHECK-NEXT: 102f:       cc      int3
++// CHECK-NEXT: 1030:       4c 89 1c 24     movq    %r11, (%rsp)
++// CHECK-NEXT: 1034:       c3      retq
++// CHECK-NEXT: 1035:       cc      int3
++// CHECK-NEXT: 1036:       cc      int3
++// CHECK-NEXT: 1037:       cc      int3
++// CHECK-NEXT: 1038:       cc      int3
++// CHECK-NEXT: 1039:       cc      int3
++// CHECK-NEXT: 103a:       cc      int3
++// CHECK-NEXT: 103b:       cc      int3
++// CHECK-NEXT: 103c:       cc      int3
++// CHECK-NEXT: 103d:       cc      int3
++// CHECK-NEXT: 103e:       cc      int3
++// CHECK-NEXT: 103f:       cc      int3
++// CHECK-NEXT: 1040:       4c 8b 1d d1 0f 00 00    movq    4049(%rip), %r11
++// CHECK-NEXT: 1047:       e8 e4 ff ff ff  callq   -28 <.plt+0x20>
++// CHECK-NEXT: 104c:       e9 d1 ff ff ff  jmp     -47 <.plt+0x12>
++// CHECK-NEXT: 1051:       68 00 00 00 00  pushq   $0
++// CHECK-NEXT: 1056:       e9 b5 ff ff ff  jmp     -75 <.plt>
++// CHECK-NEXT: 105b:       cc      int3
++// CHECK-NEXT: 105c:       cc      int3
++// CHECK-NEXT: 105d:       cc      int3
++// CHECK-NEXT: 105e:       cc      int3
++// CHECK-NEXT: 105f:       cc      int3
++// CHECK-NEXT: 1060:       4c 8b 1d b9 0f 00 00    movq    4025(%rip), %r11
++// CHECK-NEXT: 1067:       e8 c4 ff ff ff  callq   -60 <.plt+0x20>
++// CHECK-NEXT: 106c:       e9 b1 ff ff ff  jmp     -79 <.plt+0x12>
++// CHECK-NEXT: 1071:       68 01 00 00 00  pushq   $1
++// CHECK-NEXT: 1076:       e9 95 ff ff ff  jmp     -107 <.plt>
++// CHECK-NEXT: 107b:       cc      int3
++// CHECK-NEXT: 107c:       cc      int3
++// CHECK-NEXT: 107d:       cc      int3
++// CHECK-NEXT: 107e:       cc      int3
++// CHECK-NEXT: 107f:       cc      int3
++
++// CHECK:      Contents of section .got.plt:
++// CHECK-NEXT: 2000 00300000 00000000 00000000 00000000
++// CHECK-NEXT: 2010 00000000 00000000 51100000 00000000
++// CHECK-NEXT: 2020 71100000 00000000
++
++.global _start
++_start:
++  jmp bar@PLT
++  jmp zed@PLT

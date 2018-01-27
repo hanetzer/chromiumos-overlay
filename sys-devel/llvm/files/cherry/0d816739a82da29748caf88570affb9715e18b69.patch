@@ -1,0 +1,201 @@
+commit 0d816739a82da29748caf88570affb9715e18b69
+Author: Chandler Carruth <chandlerc@gmail.com>
+Date:   2018-01-22
+
+    Introduce the "retpoline" x86 mitigation technique for variant #2 of the speculative execution vulnerabilities disclosed today, specifically identified by CVE-2017-5715, "Branch Target Injection", and is one of the two halves to Spectre..
+    
+    Summary:
+    First, we need to explain the core of the vulnerability. Note that this
+    is a very incomplete description, please see the Project Zero blog post
+    for details:
+    https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html
+    
+    The basis for branch target injection is to direct speculative execution
+    of the processor to some "gadget" of executable code by poisoning the
+    prediction of indirect branches with the address of that gadget. The
+    gadget in turn contains an operation that provides a side channel for
+    reading data. Most commonly, this will look like a load of secret data
+    followed by a branch on the loaded value and then a load of some
+    predictable cache line. The attacker then uses timing of the processors
+    cache to determine which direction the branch took *in the speculative
+    execution*, and in turn what one bit of the loaded value was. Due to the
+    nature of these timing side channels and the branch predictor on Intel
+    processors, this allows an attacker to leak data only accessible to
+    a privileged domain (like the kernel) back into an unprivileged domain.
+    
+    The goal is simple: avoid generating code which contains an indirect
+    branch that could have its prediction poisoned by an attacker. In many
+    cases, the compiler can simply use directed conditional branches and
+    a small search tree. LLVM already has support for lowering switches in
+    this way and the first step of this patch is to disable jump-table
+    lowering of switches and introduce a pass to rewrite explicit indirectbr
+    sequences into a switch over integers.
+    
+    However, there is no fully general alternative to indirect calls. We
+    introduce a new construct we call a "retpoline" to implement indirect
+    calls in a non-speculatable way. It can be thought of loosely as
+    a trampoline for indirect calls which uses the RET instruction on x86.
+    Further, we arrange for a specific call->ret sequence which ensures the
+    processor predicts the return to go to a controlled, known location. The
+    retpoline then "smashes" the return address pushed onto the stack by the
+    call with the desired target of the original indirect call. The result
+    is a predicted return to the next instruction after a call (which can be
+    used to trap speculative execution within an infinite loop) and an
+    actual indirect branch to an arbitrary address.
+    
+    On 64-bit x86 ABIs, this is especially easily done in the compiler by
+    using a guaranteed scratch register to pass the target into this device.
+    For 32-bit ABIs there isn't a guaranteed scratch register and so several
+    different retpoline variants are introduced to use a scratch register if
+    one is available in the calling convention and to otherwise use direct
+    stack push/pop sequences to pass the target address.
+    
+    This "retpoline" mitigation is fully described in the following blog
+    post: https://support.google.com/faqs/answer/7625886
+    
+    We also support a target feature that disables emission of the retpoline
+    thunk by the compiler to allow for custom thunks if users want them.
+    These are particularly useful in environments like kernels that
+    routinely do hot-patching on boot and want to hot-patch their thunk to
+    different code sequences. They can write this custom thunk and use
+    `-mretpoline-external-thunk` *in addition* to `-mretpoline`. In this
+    case, on x86-64 thu thunk names must be:
+    ```
+      __llvm_external_retpoline_r11
+    ```
+    or on 32-bit:
+    ```
+      __llvm_external_retpoline_eax
+      __llvm_external_retpoline_ecx
+      __llvm_external_retpoline_edx
+      __llvm_external_retpoline_push
+    ```
+    And the target of the retpoline is passed in the named register, or in
+    the case of the `push` suffix on the top of the stack via a `pushl`
+    instruction.
+    
+    There is one other important source of indirect branches in x86 ELF
+    binaries: the PLT. These patches also include support for LLD to
+    generate PLT entries that perform a retpoline-style indirection.
+    
+    The only other indirect branches remaining that we are aware of are from
+    precompiled runtimes (such as crt0.o and similar). The ones we have
+    found are not really attackable, and so we have not focused on them
+    here, but eventually these runtimes should also be replicated for
+    retpoline-ed configurations for completeness.
+    
+    For kernels or other freestanding or fully static executables, the
+    compiler switch `-mretpoline` is sufficient to fully mitigate this
+    particular attack. For dynamic executables, you must compile *all*
+    libraries with `-mretpoline` and additionally link the dynamic
+    executable and all shared libraries with LLD and pass `-z retpolineplt`
+    (or use similar functionality from some other linker). We strongly
+    recommend also using `-z now` as non-lazy binding allows the
+    retpoline-mitigated PLT to be substantially smaller.
+    
+    When manually apply similar transformations to `-mretpoline` to the
+    Linux kernel we observed very small performance hits to applications
+    running typical workloads, and relatively minor hits (approximately 2%)
+    even for extremely syscall-heavy applications. This is largely due to
+    the small number of indirect branches that occur in performance
+    sensitive paths of the kernel.
+    
+    When using these patches on statically linked applications, especially
+    C++ applications, you should expect to see a much more dramatic
+    performance hit. For microbenchmarks that are switch, indirect-, or
+    virtual-call heavy we have seen overheads ranging from 10% to 50%.
+    
+    However, real-world workloads exhibit substantially lower performance
+    impact. Notably, techniques such as PGO and ThinLTO dramatically reduce
+    the impact of hot indirect calls (by speculatively promoting them to
+    direct calls) and allow optimized search trees to be used to lower
+    switches. If you need to deploy these techniques in C++ applications, we
+    *strongly* recommend that you ensure all hot call targets are statically
+    linked (avoiding PLT indirection) and use both PGO and ThinLTO. Well
+    tuned servers using all of these techniques saw 5% - 10% overhead from
+    the use of retpoline.
+    
+    We will add detailed documentation covering these components in
+    subsequent patches, but wanted to make the core functionality available
+    as soon as possible. Happy for more code review, but we'd really like to
+    get these patches landed and backported ASAP for obvious reasons. We're
+    planning to backport this to both 6.0 and 5.0 release streams and get
+    a 5.0 release with just this cherry picked ASAP for distros and vendors.
+    
+    This patch is the work of a number of people over the past month: Eric, Reid,
+    Rui, and myself. I'm mailing it out as a single commit due to the time
+    sensitive nature of landing this and the need to backport it. Huge thanks to
+    everyone who helped out here, and everyone at Intel who helped out in
+    discussions about how to craft this. Also, credit goes to Paul Turner (at
+    Google, but not an LLVM contributor) for much of the underlying retpoline
+    design.
+    
+    Reviewers: echristo, rnk, ruiu, craig.topper, DavidKreitzer
+    
+    Subscribers: sanjoy, emaste, mcrosier, mgorny, mehdi_amini, hiraditya, llvm-commits
+    
+    Differential Revision: https://reviews.llvm.org/D41723
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@323155 91177308-0d34-0410-b5e6-96231b3b80d8
+
+--- include/clang/Driver/Options.td
++++ include/clang/Driver/Options.td
+@@ -2569,6 +2569,10 @@ def mshstk : Flag<["-"], "mshstk">, Group<m_x86_Features_Group>;
+ def mno_shstk : Flag<["-"], "mno-shstk">, Group<m_x86_Features_Group>;
+ def mibt : Flag<["-"], "mibt">, Group<m_x86_Features_Group>;
+ def mno_ibt : Flag<["-"], "mno-ibt">, Group<m_x86_Features_Group>;
++def mretpoline : Flag<["-"], "mretpoline">, Group<m_x86_Features_Group>;
++def mno_retpoline : Flag<["-"], "mno-retpoline">, Group<m_x86_Features_Group>;
++def mretpoline_external_thunk : Flag<["-"], "mretpoline-external-thunk">, Group<m_x86_Features_Group>;
++def mno_retpoline_external_thunk : Flag<["-"], "mno-retpoline-external-thunk">, Group<m_x86_Features_Group>;
+ 
+ // These are legacy user-facing driver-level option spellings. They are always
+ // aliases for options that are spelled using the more common Unix / GNU flag
+--- lib/Basic/Targets/X86.cpp
++++ lib/Basic/Targets/X86.cpp
+@@ -759,6 +759,10 @@ bool X86TargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
+       HasPREFETCHWT1 = true;
+     } else if (Feature == "+clzero") {
+       HasCLZERO = true;
++    } else if (Feature == "+retpoline") {
++      HasRetpoline = true;
++    } else if (Feature == "+retpoline-external-thunk") {
++      HasRetpolineExternalThunk = true;
+     }
+ 
+     X86SSEEnum Level = llvm::StringSwitch<X86SSEEnum>(Feature)
+@@ -1301,6 +1305,8 @@ bool X86TargetInfo::hasFeature(StringRef Feature) const {
+       .Case("prfchw", HasPRFCHW)
+       .Case("rdrnd", HasRDRND)
+       .Case("rdseed", HasRDSEED)
++      .Case("retpoline", HasRetpoline)
++      .Case("retpoline-external-thunk", HasRetpolineExternalThunk)
+       .Case("rtm", HasRTM)
+       .Case("sgx", HasSGX)
+       .Case("sha", HasSHA)
+--- lib/Basic/Targets/X86.h
++++ lib/Basic/Targets/X86.h
+@@ -96,6 +96,8 @@ class LLVM_LIBRARY_VISIBILITY X86TargetInfo : public TargetInfo {
+   bool HasCLWB = false;
+   bool HasMOVBE = false;
+   bool HasPREFETCHWT1 = false;
++  bool HasRetpoline = false;
++  bool HasRetpolineExternalThunk = false;
+ 
+   /// \brief Enumeration of all of the X86 CPUs supported by Clang.
+   ///
+--- test/Driver/x86-target-features.c
++++ test/Driver/x86-target-features.c
+@@ -125,3 +125,12 @@
+ // VBMI2: "-target-feature" "+avx512vbmi2"
+ // NO-VBMI2: "-target-feature" "-avx512vbmi2"
+ 
++// RUN: %clang -target i386-linux-gnu -mretpoline %s -### -o %t.o 2>&1 | FileCheck -check-prefix=RETPOLINE %s
++// RUN: %clang -target i386-linux-gnu -mno-retpoline %s -### -o %t.o 2>&1 | FileCheck -check-prefix=NO-RETPOLINE %s
++// RETPOLINE: "-target-feature" "+retpoline"
++// NO-RETPOLINE: "-target-feature" "-retpoline"
++
++// RUN: %clang -target i386-linux-gnu -mretpoline -mretpoline-external-thunk %s -### -o %t.o 2>&1 | FileCheck -check-prefix=RETPOLINE-EXTERNAL-THUNK %s
++// RUN: %clang -target i386-linux-gnu -mretpoline -mno-retpoline-external-thunk %s -### -o %t.o 2>&1 | FileCheck -check-prefix=NO-RETPOLINE-EXTERNAL-THUNK %s
++// RETPOLINE-EXTERNAL-THUNK: "-target-feature" "+retpoline-external-thunk"
++// NO-RETPOLINE-EXTERNAL-THUNK: "-target-feature" "-retpoline-external-thunk"
