@@ -4,7 +4,6 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/ltp"
 CROS_WORKON_LOCALNAME=../third_party/ltp
-CROS_WORKON_SUBDIR=
 
 inherit cros-workon cros-constants
 
