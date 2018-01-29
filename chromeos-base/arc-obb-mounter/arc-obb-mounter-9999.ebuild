@@ -29,12 +29,29 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
+CONTAINER_DIR="/opt/google/containers/arc-obb-mounter"
+
 src_install() {
 	dobin "${OUT}"/arc-obb-mounter
 	dobin "${OUT}"/mount-obb
 
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.ArcObbMounter.conf
+
+	insinto /etc/init
+	doins init/arc-obb-mounter.conf
+
+	insinto "${CONTAINER_DIR}"
+	doins "${OUT}"/rootfs.squashfs
+
+	# Keep the parent directory of mountpoints inaccessible from non-root
+	# users because mountpoints themselves are often world-readable but we
+	# do not want to expose them.
+	# container-root is where the root filesystem of the container in which
+	# arc-obb-mounter daemon runs is mounted.
+	diropts --mode=0700 --owner=root --group=root
+	keepdir "${CONTAINER_DIR}"/mountpoints/
+	keepdir "${CONTAINER_DIR}"/mountpoints/container-root
 }
 
 platform_pkg_test() {
