@@ -8,10 +8,23 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 CRATES="
+bitflags-1.0.1
 byteorder-1.1.0
-libc-0.2.34
+cfg-if-0.1.2
+fuchsia-zircon-0.3.3
+fuchsia-zircon-sys-0.3.3
 gcc-0.3.54
+libc-0.2.34
+log-0.4.1
+protobuf-1.4.3
+protoc-1.4.3
+protoc-rust-1.4.3
+rand-0.3.20
 rand-0.4.2
+tempdir-0.3.5
+winapi-0.3.4
+winapi-i686-pc-windows-gnu-0.4.0
+winapi-x86_64-pc-windows-gnu-0.4.0
 "
 
 inherit cargo cros-workon toolchain-funcs user
