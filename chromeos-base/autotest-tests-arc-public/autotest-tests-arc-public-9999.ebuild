@@ -15,6 +15,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 CLIENT_TESTS="
+	+tests_cheets_Midis
 	+tests_cheets_StartAndroid
 	+tests_graphics_Gralloc
 "
