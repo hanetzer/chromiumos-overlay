@@ -4,6 +4,8 @@
 
 EAPI="5"
 
+inherit user
+
 DESCRIPTION="Run sslh on port 22 to multiplex adb/ssh connections"
 HOMEPAGE="http://www.chromium.org/"
 
@@ -26,4 +28,9 @@ src_install() {
 
 	insinto /usr/share/policy
 	newins "${FILESDIR}/sslh-seccomp-${ARCH}.policy" sslh-seccomp.policy
+}
+
+pkg_preinst() {
+	enewuser "sslh"
+	enewgroup "sslh"
 }
