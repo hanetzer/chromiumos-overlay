@@ -42,6 +42,7 @@ IUSE="quiet verbose coreboot-sdk unibuild"
 RDEPEND="dev-embedded/libftdi"
 DEPEND="
 	${RDEPEND}
+	virtual/chromeos-ec-private-files
 	virtual/chromeos-ec-touch-firmware
 	unibuild? ( chromeos-base/chromeos-config )
 "
@@ -53,6 +54,13 @@ RESTRICT="binchecks"
 src_unpack() {
 	cros-workon_src_unpack
 	S+="/platform/ec"
+}
+
+src_prepare() {
+	if ! [[ ${PV} = 9999* ]]; then
+		# Link the private sources in the private/ sub-directory if needed
+		ln -sf ${SYSROOT}/firmware/ec-private ${S}/private
+	fi
 }
 
 src_configure() {
