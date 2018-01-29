@@ -24,6 +24,7 @@ RDEPEND="
 	chromeos-base/minijail
 	dev-libs/grpc
 	dev-libs/protobuf:=
+	kvm_host? ( chromeos-base/crosvm )
 	!kvm_host? ( !!sys-apps/upstart )
 "
 DEPEND="

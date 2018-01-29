@@ -85,6 +85,19 @@ src_install() {
 		insinto /usr/share/policy/crosvm
 		doins "${seccomp_path}"/*.policy
 	fi
+
+	# Install qcow utils library, header, and pkgconfig files.
+	dolib.so "${WORKDIR}/${CHOST}/$(usex debug debug release)/libqcow_utils.so"
+
+	local include_dir="/usr/include/crosvm"
+
+	"${S}"/qcow_utils/platform2_preinstall.sh "${PV}" "${include_dir}" \
+		"${WORKDIR}"
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${WORKDIR}/libqcow_utils.pc"
+
+	insinto "${include_dir}"
+	doins "${S}"/qcow_utils/src/qcow_utils.h
 }
 
 pkg_preinst() {
