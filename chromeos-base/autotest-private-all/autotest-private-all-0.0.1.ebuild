@@ -22,4 +22,3 @@ RDEPEND=""
 
 # CROS_WORKON_PROJECT=autotest-private
 # CROS_WORKON_LOCALNAME=../third_party/autotest-private
-# CROS_WORKON_SUBDIR=

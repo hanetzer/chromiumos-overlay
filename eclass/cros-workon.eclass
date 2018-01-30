@@ -22,13 +22,7 @@ inherit cros-constants
 # - no items as the cros-workon default
 # The exception is CROS_WORKON_PROJECT which has to have all items specified.
 ARRAY_VARIABLES=(
-	CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
-
-# @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
-# @DESCRIPTION:
-# Sub-directory which is added to create full source checkout path.  Most
-# projects want to leave this blank (with the notable exception of autotest).
-: ${CROS_WORKON_SUBDIR:=}
+	CROS_WORKON_{REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
@@ -195,6 +189,11 @@ if [[ -n "${CROS_WORKON_PROJECT[*]}" ]]; then
 	inherit git-2
 fi
 
+# Block deprecated vars.
+if [[ ${CROS_WORKON_SUBDIR+set} == "set" ]]; then
+	die "CROS_WORKON_SUBDIR is no longer supported.  Please use CROS_WORKON_LOCALNAME instead."
+fi
+
 # Sanitize all variables, autocomplete where necessary.
 # This function possibly modifies all CROS_WORKON_ variables inplace. It also
 # provides a global project_count variable which contains the number of
@@ -275,9 +274,6 @@ get_paths() {
 			if [[ ! -d "${pathelement}" ]]; then
 				pathelement="${pathbase}/platform/${CROS_WORKON_LOCALNAME[i]}"
 			fi
-		fi
-		if [[ -n "${CROS_WORKON_SUBDIR[i]}" ]]; then
-			pathelement+="/${CROS_WORKON_SUBDIR[i]}"
 		fi
 		path+=( "${pathelement}" )
 	done
