@@ -146,6 +146,11 @@ src_configure() {
 	# Needs std=gnu++11 to build with libc++. crbug.com/750831
 	append-cxxflags "-std=gnu++11"
 
+	# For llvmpipe on ARM we'll get errors about being unable to resolve
+	# "__aeabi_unwind_cpp_pr1" if we don't include this flag; seems wise
+	# to include it for all platforms though.
+	use video_cards_llvmpipe && append-flags "-rtlib=libgcc"
+
 	if use !gallium && use !classic && use !vulkan; then
 		ewarn "You enabled neither classic, gallium, nor vulkan "
 		ewarn "USE flags. No hardware drivers will be built."
