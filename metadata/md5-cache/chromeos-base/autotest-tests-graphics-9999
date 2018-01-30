@@ -8,5 +8,5 @@ KEYWORDS=~*
 LICENSE=GPL-2
 RDEPEND=!<chromeos-base/autotest-tests-0.0.3 chromeos-base/autotest-deps-glbench chromeos-base/autotest-deps-graphics ozone? ( tests_graphics_Drm? ( chromeos-base/drm-tests ) tests_graphics_Gbm? ( media-libs/minigbm ) ) tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 ) tests_graphics_SanAngeles? ( media-libs/waffle ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
-_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	e187d472f97a2f6b03598ccd4173ea7b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	5286f7575fe9d11a2aa6de15f6b6e581	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
 _md5_=2294ad9e0a6fd7cd0d5ec753d5be70e0
