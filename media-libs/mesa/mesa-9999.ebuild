@@ -40,7 +40,7 @@ KEYWORDS="~*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="amdgpu radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau r128 radeonsi savage sis tdfx via virgl vmware"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno llvmpipe mach64 mga nouveau r128 radeonsi savage sis softpipe tdfx via virgl vmware"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -50,6 +50,9 @@ IUSE="${IUSE_VIDEO_CARDS}
 	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
+
+REQUIRED_USE="video_cards_amdgpu? ( llvm )
+	video_cards_llvmpipe? ( llvm )"
 
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
@@ -157,6 +160,7 @@ src_configure() {
 	if use gallium; then
 	# Configurable gallium drivers
 		gallium_driver_enable video_cards_llvmpipe swrast
+		gallium_driver_enable video_cards_softpipe swrast
 
 		# Nouveau code
 		gallium_driver_enable video_cards_nouveau nouveau
@@ -180,7 +184,11 @@ src_configure() {
 		fi
 	fi
 
-	export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
+	LLVM_ENABLE="--disable-llvm"
+	if use llvm && use !video_cards_softpipe; then
+		export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
+		LLVM_ENABLE="--enable-llvm"
+	fi
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
 	econf \
@@ -197,7 +205,6 @@ src_configure() {
 		--disable-dri3 \
 		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
-		$(use_enable llvm) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
 		$(use_enable gles1) \
@@ -212,6 +219,7 @@ src_configure() {
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
+		${LLVM_ENABLE} \
 		$(use egl && echo "--with-platforms=surfaceless")
 }
 
