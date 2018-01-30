@@ -47,6 +47,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-base-Move-all-stl-utilities-to-the-base-namespace.patch
 	epatch "${FILESDIR}"/${P}-Base-ObserverList-Add-basic-support-for-standard-C-i.patch
 	epatch "${FILESDIR}"/${P}-ScopedTempDir-add-GetPath-from-upstream-libchrome.patch
+	epatch "${FILESDIR}"/${P}-FileDescriptorWatcher-add-constructor-taking-Locatio.patch
 
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.

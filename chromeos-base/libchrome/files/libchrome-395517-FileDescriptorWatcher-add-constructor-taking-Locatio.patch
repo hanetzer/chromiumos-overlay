@@ -1,0 +1,57 @@
+From 99fff2c9fa7b91ac88a7fe344dcf31ca4fe50d43 Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Mon, 29 Jan 2018 10:23:11 -0800
+Subject: [PATCH] FileDescriptorWatcher: add constructor taking Location
+
+The location is unused for now but will be used in future versions
+of libchrome.
+
+BUG=b:37434548
+TEST=emerge
+
+Change-Id: If02047f9d57a3ae2d6d322aefa3d7e28a63f63cc
+---
+ base/message_loop/message_pump_libevent.cc | 5 +++++
+ base/message_loop/message_pump_libevent.h  | 3 +++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/base/message_loop/message_pump_libevent.cc b/base/message_loop/message_pump_libevent.cc
+index 5f20447..a4f4714 100644
+--- a/base/message_loop/message_pump_libevent.cc
++++ b/base/message_loop/message_pump_libevent.cc
+@@ -51,6 +51,11 @@ MessagePumpLibevent::FileDescriptorWatcher::FileDescriptorWatcher()
+       was_destroyed_(NULL) {
+ }
+ 
++MessagePumpLibevent::FileDescriptorWatcher::FileDescriptorWatcher(
++    const tracked_objects::Location& from_here)
++    : FileDescriptorWatcher() {
++}
++
+ MessagePumpLibevent::FileDescriptorWatcher::~FileDescriptorWatcher() {
+   if (event_) {
+     StopWatchingFileDescriptor();
+diff --git a/base/message_loop/message_pump_libevent.h b/base/message_loop/message_pump_libevent.h
+index 76f882f..3eeb8dd 100644
+--- a/base/message_loop/message_pump_libevent.h
++++ b/base/message_loop/message_pump_libevent.h
+@@ -10,6 +10,7 @@
+ #include "base/message_loop/message_pump.h"
+ #include "base/threading/thread_checker.h"
+ #include "base/time/time.h"
++#include "base/tracked_objects.h"
+ 
+ // Declare structs we need from libevent.h rather than including it
+ struct event_base;
+@@ -38,6 +39,8 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump {
+   class FileDescriptorWatcher {
+    public:
+     FileDescriptorWatcher();
++    // |from_here| will be unused until the uprev.
++    explicit FileDescriptorWatcher(const tracked_objects::Location& from_here);
+     ~FileDescriptorWatcher();  // Implicitly calls StopWatchingFileDescriptor.
+ 
+     // NOTE: These methods aren't called StartWatching()/StopWatching() to
+-- 
+2.13.5
+
