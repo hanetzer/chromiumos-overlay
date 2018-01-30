@@ -40,6 +40,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 # Only allow one vulkan driver as they all write vulkan.cheets.so.
 REQUIRED_USE="
 	^^ ( android_gles2 android_gles30 android_gles31 android_gles32 )
+	android_aep? ( !android_gles2 !android_gles30 )
 	android_vulkan_compute_0? ( vulkan )
 	cheets? (
 		vulkan? ( ^^ ( video_cards_amdgpu video_cards_intel ) )
