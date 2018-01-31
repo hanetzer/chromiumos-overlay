@@ -15,63 +15,40 @@ IUSE="cheets -chromeless_tests +bluetooth buffet +cellular +cras +cros_disks +cr
 
 RDEPEND="
 	chromeos-base/autotest-client
+	chromeos-base/autotest-private-all
 	chromeos-base/autotest-server-tests
-	cheets? ( chromeos-base/autotest-tests-arc-public )
-	bluetooth? ( chromeos-base/autotest-server-tests-bluetooth )
-	shill? ( chromeos-base/autotest-server-tests-shill )
+	chromeos-base/autotest-server-tests-tast
 	chromeos-base/autotest-tests
-	!chromeless_tty? (
-		chromeos-base/autotest-tests-cryptohome
-	)
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-security
-	chromeos-base/autotest-private-all
 	chromeos-base/ci-results-archiver
-	cellular? (
-		chromeos-base/autotest-tests-cellular
-	)
-	cras? (
-		chromeos-base/autotest-tests-audio
-	)
-	cros_disks? (
-		chromeos-base/autotest-tests-cros-disks
-	)
-	cros_p2p? (
-		chromeos-base/autotest-tests-p2p
-	)
+	bluetooth? ( chromeos-base/autotest-server-tests-bluetooth )
+	buffet? ( chromeos-base/autotest-tests-cloud-services )
+	cellular? ( chromeos-base/autotest-tests-cellular )
+	cheets? ( chromeos-base/autotest-tests-arc-public )
 	!chromeless_tty? (
+		chromeos-base/autotest-tests-cryptohome
 		!chromeless_tests? (
+			chromeos-base/autotest-chrome
+			chromeos-base/autotest-server-tests-telemetry
 			chromeos-base/autotest-tests-graphics
 			chromeos-base/autotest-tests-ownershipapi
-			chromeos-base/autotest-server-tests-telemetry
 			chromeos-base/autotest-tests-touchpad
-			chromeos-base/autotest-chrome
 		)
 	)
-	debugd? (
-		chromeos-base/autotest-tests-debugd
-	)
-	power_management? (
-		chromeos-base/autotest-tests-power
-	)
+	cras? ( chromeos-base/autotest-tests-audio )
+	cros_disks? ( chromeos-base/autotest-tests-cros-disks )
+	cros_p2p? ( chromeos-base/autotest-tests-p2p )
+	debugd? ( chromeos-base/autotest-tests-debugd )
+	peerd? ( chromeos-base/autotest-tests-peerd )
+	power_management? ( chromeos-base/autotest-tests-power )
 	shill? (
+		chromeos-base/autotest-server-tests-shill
 		chromeos-base/autotest-tests-shill
 	)
-	tpm? (
-		chromeos-base/autotest-tests-tpm
-	)
-	tpm2? (
-		chromeos-base/autotest-tests-tpm
-	)
-	peerd? (
-		chromeos-base/autotest-tests-peerd
-	)
-	buffet? (
-		chromeos-base/autotest-tests-cloud-services
-	)
-	wifi_bootstrapping? (
-		chromeos-base/autotest-tests-wifi-bootstrapping
-	)
+	tpm2? ( chromeos-base/autotest-tests-tpm )
+	tpm? ( chromeos-base/autotest-tests-tpm )
+	wifi_bootstrapping? ( chromeos-base/autotest-tests-wifi-bootstrapping )
 "
 
 DEPEND="${RDEPEND}"
