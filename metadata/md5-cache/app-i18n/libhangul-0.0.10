@@ -1,6 +1,5 @@
 DEFINED_PHASES=install
 DESCRIPTION=libhangul is a generalized and portable library for processing hangul.
-EAPI=0
 HOMEPAGE=http://kldp.net/projects/hangul/
 KEYWORDS=*
 LICENSE=LGPL-2.1

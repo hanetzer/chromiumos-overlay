@@ -1,7 +1,6 @@
 DEFINED_PHASES=compile install postinst unpack
 DEPEND=sys-apps/sed
 DESCRIPTION=Daemon for Advanced Configuration and Power Interface
-EAPI=0
 HOMEPAGE=http://acpid.sourceforge.net
 KEYWORDS=~alpha amd64 ia64 -ppc x86
 LICENSE=GPL-2

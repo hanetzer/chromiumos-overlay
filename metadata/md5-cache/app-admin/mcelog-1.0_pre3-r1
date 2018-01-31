@@ -1,6 +1,5 @@
 DEFINED_PHASES=compile install unpack
 DESCRIPTION=A tool to log and decode Machine Check Exceptions
-EAPI=0
 HOMEPAGE=http://www.kernel.org/pub/linux/utils/cpu/mce/
 KEYWORDS=amd64 x86
 LICENSE=GPL-2

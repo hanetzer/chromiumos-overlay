@@ -1,6 +1,5 @@
 DEFINED_PHASES=compile install unpack
 DESCRIPTION=A selection of tools from Debian
-EAPI=0
 HOMEPAGE=http://packages.qa.debian.org/d/debianutils.html
 IUSE=kernel_linux static
 KEYWORDS=*

@@ -1,7 +1,6 @@
 DEFINED_PHASES=install postinst postrm setup
 DEPEND=X? ( x11-apps/mkfontdir media-fonts/encodings ) >=media-libs/fontconfig-2.4.0
 DESCRIPTION=Jomolhari font for Tibetan
-EAPI=0
 HOMEPAGE=https://sites.google.com/site/chrisfynn2/home/fonts/jomolhari
 IUSE=X
 KEYWORDS=*
