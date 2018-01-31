@@ -24,6 +24,7 @@ DEPEND="${RDEPEND}"
 
 pick_cherries() {
 	CHERRIES=""
+	CHERRIES+=" 17b90924dbf7eb14c591d72d4e360d77b87fdefc" # r323155
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -50,7 +51,7 @@ pkg_setup() {
 }
 
 src_unpack() {
-	EGIT_COMMIT="dc4c49229f1371f873e16cc960ff5767acfa881e" #r317082
+	EGIT_COMMIT="901304abaacc60ef78ab5983d24f0f4666a70fe1" #r321473
 
 	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
 		EGIT_COMMIT="901304abaacc60ef78ab5983d24f0f4666a70fe1" #r321473
@@ -62,12 +63,11 @@ src_unpack() {
 
 src_prepare() {
 	if use llvm-next  && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
-		epatch "${FILESDIR}/$PN-invoke-name-llvm-next.patch"
 		pick_next_cherries
 	else
-		epatch "${FILESDIR}/$PN-invoke-name.patch"
 		pick_cherries
 	fi
+	epatch "${FILESDIR}/$PN-invoke-name.patch"
 }
 src_configure() {
 	# HACK: This is a temporary hack to detect the c++ library used in libLLVM.so
