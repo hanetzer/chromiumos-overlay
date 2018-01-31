@@ -25,6 +25,7 @@ RDEPEND="
 	tpm? ( chromeos-base/chaps )
 	chromeos-base/minijail
 	chromeos-base/libbrillo
+	chromeos-base/libpasswordprovider
 	chromeos-base/metrics
 	chromeos-base/nsswitch
 	wimax? ( chromeos-base/wimax_manager )
