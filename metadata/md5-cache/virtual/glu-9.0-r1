@@ -1,5 +1,6 @@
 DEFINED_PHASES=-
 DESCRIPTION=Virtual for OpenGL utility library
+EAPI=0
 KEYWORDS=*
 RDEPEND=|| ( media-libs/glu media-libs/opengl-apple )
 SLOT=0

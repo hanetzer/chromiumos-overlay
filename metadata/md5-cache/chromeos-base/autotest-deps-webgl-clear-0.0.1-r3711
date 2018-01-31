@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install postinst prepare setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Dependencies for WebGL many planets deep test
+DESCRIPTION=Dependencies for WebGL clear test.
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_host cros_workon_tree_efb1b7bb05621691a894d180f8cede3f4014011f profiling +buildcheck autotest opengles
+IUSE=+autotest cros_host cros_workon_tree_dc6c1d5f96acbd5744168a7a43b53977f3013bb8 profiling +buildcheck autotest opengles
 KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	d33b5e5a7ff2d0001ed58301805cc52f	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	5286f7575fe9d11a2aa6de15f6b6e581	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=4afc9711e9591b8464c89b5e145e458f
+_md5_=3e7ecd9ceb147a267125f02b99c40be8

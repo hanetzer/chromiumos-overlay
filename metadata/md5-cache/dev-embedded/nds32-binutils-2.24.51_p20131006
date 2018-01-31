@@ -1,6 +1,7 @@
 DEFINED_PHASES=compile install postinst postrm setup test unpack
 DEPEND=sys-devel/gnuconfig >=sys-devel/binutils-config-3 zlib? ( sys-libs/zlib ) test? ( dev-util/dejagnu ) nls? ( sys-devel/gettext ) sys-devel/flex virtual/yacc
 DESCRIPTION=Tools necessary to build programs for Andes cores
+EAPI=0
 HOMEPAGE=https://sourceware.org/binutils/
 IUSE=cxx multitarget nls static-libs test vanilla zlib
 KEYWORDS=~amd64 ~x86
