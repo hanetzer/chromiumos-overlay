@@ -1,7 +1,8 @@
-From 2c371c6d0614f1c4dbbcc964060e55901eb80849 Mon Sep 17 00:00:00 2001
-From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Thu, 9 Nov 2017 18:32:04 -0800
-Subject: [PATCH 2/3] gallium: Fix renderbuffer sampler view destruction crash
+From b2702bef6e83f06d4394ada7252f49985712cc7b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Tue, 30 Jan 2018 15:56:43 -0800
+Subject: [PATCH] Subject: [PATCH 2/3] gallium: Fix renderbuffer sampler view
+ destruction crash
 
 Avoid crash on sampler view destruction when context is gone.
 
@@ -16,8 +17,6 @@ Context:
 
 BUG=none
 TEST=compile
-
-Change-Id: I1c00b9d4781337fd33a2565cd3b83defb605b940
 ---
  src/gallium/auxiliary/util/u_inlines.h          |  2 +-
  src/gallium/drivers/llvmpipe/lp_state_sampler.c |  4 ++++
@@ -26,15 +25,16 @@ Change-Id: I1c00b9d4781337fd33a2565cd3b83defb605b940
  src/gallium/drivers/r600/r600_state.c           |  1 +
  src/gallium/drivers/r600/r600_state_common.c    |  4 ++--
  src/gallium/drivers/radeonsi/si_state.c         | 19 ++++++++++---------
+ src/gallium/drivers/softpipe/sp_tex_sample.c    |  1 +
  src/gallium/drivers/virgl/virgl_context.c       |  1 +
  src/gallium/include/pipe/p_state.h              |  3 +++
- 9 files changed, 29 insertions(+), 12 deletions(-)
+ 10 files changed, 30 insertions(+), 12 deletions(-)
 
 diff --git a/src/gallium/auxiliary/util/u_inlines.h b/src/gallium/auxiliary/util/u_inlines.h
-index aff320da09..f759c8ae4f 100644
+index 790352d780..5ccbe0c467 100644
 --- a/src/gallium/auxiliary/util/u_inlines.h
 +++ b/src/gallium/auxiliary/util/u_inlines.h
-@@ -156,7 +156,7 @@ pipe_sampler_view_reference(struct pipe_sampler_view **ptr, struct pipe_sampler_
+@@ -162,7 +162,7 @@ pipe_sampler_view_reference(struct pipe_sampler_view **ptr, struct pipe_sampler_
  
     if (pipe_reference_described(&(*ptr)->reference, &view->reference,
                                  (debug_reference_descriptor)debug_describe_sampler_view))
@@ -89,10 +89,10 @@ index 437df48826..192318361c 100644
  
  	view->width0_override = width0_override;
 diff --git a/src/gallium/drivers/r600/r600_pipe.h b/src/gallium/drivers/r600/r600_pipe.h
-index 0d2551ac56..aa6ad1878b 100644
+index ad7e499be2..fe3c9b8567 100644
 --- a/src/gallium/drivers/r600/r600_pipe.h
 +++ b/src/gallium/drivers/r600/r600_pipe.h
-@@ -737,6 +737,8 @@ void r600_sampler_views_dirty(struct r600_context *rctx,
+@@ -794,6 +794,8 @@ void r600_sampler_views_dirty(struct r600_context *rctx,
  			      struct r600_samplerview_state *state);
  void r600_sampler_states_dirty(struct r600_context *rctx,
  			       struct r600_sampler_states *state);
@@ -102,7 +102,7 @@ index 0d2551ac56..aa6ad1878b 100644
  void r600_set_sample_locations_constant_buffer(struct r600_context *rctx);
  uint32_t r600_translate_stencil_op(int s_op);
 diff --git a/src/gallium/drivers/r600/r600_state.c b/src/gallium/drivers/r600/r600_state.c
-index c21e8dabb1..3807cf6844 100644
+index 3102905537..b46e70e5fd 100644
 --- a/src/gallium/drivers/r600/r600_state.c
 +++ b/src/gallium/drivers/r600/r600_state.c
 @@ -682,6 +682,7 @@ r600_create_sampler_view_custom(struct pipe_context *ctx,
@@ -114,10 +114,10 @@ index c21e8dabb1..3807cf6844 100644
  	if (texture->target == PIPE_BUFFER)
  		return texture_buffer_sampler_view(view, texture->width0, 1);
 diff --git a/src/gallium/drivers/r600/r600_state_common.c b/src/gallium/drivers/r600/r600_state_common.c
-index 0e8c5d666e..78d8f796e1 100644
+index b8d4b8f70f..314ed453cd 100644
 --- a/src/gallium/drivers/r600/r600_state_common.c
 +++ b/src/gallium/drivers/r600/r600_state_common.c
-@@ -385,8 +385,8 @@ static void r600_delete_rs_state(struct pipe_context *ctx, void *state)
+@@ -408,8 +408,8 @@ static void r600_delete_rs_state(struct pipe_context *ctx, void *state)
  	FREE(rs);
  }
  
@@ -129,10 +129,10 @@ index 0e8c5d666e..78d8f796e1 100644
  	struct r600_pipe_sampler_view *view = (struct r600_pipe_sampler_view *)state;
  
 diff --git a/src/gallium/drivers/radeonsi/si_state.c b/src/gallium/drivers/radeonsi/si_state.c
-index ae45e1a6b2..428aa988c7 100644
+index fcf4928e65..0f4c12c002 100644
 --- a/src/gallium/drivers/radeonsi/si_state.c
 +++ b/src/gallium/drivers/radeonsi/si_state.c
-@@ -3786,6 +3786,15 @@ si_make_texture_descriptor(struct si_screen *screen,
+@@ -3783,6 +3783,15 @@ si_make_texture_descriptor(struct si_screen *screen,
  	}
  }
  
@@ -148,7 +148,7 @@ index ae45e1a6b2..428aa988c7 100644
  /**
   * Create a sampler view.
   *
-@@ -3821,6 +3830,7 @@ si_create_sampler_view_custom(struct pipe_context *ctx,
+@@ -3818,6 +3827,7 @@ si_create_sampler_view_custom(struct pipe_context *ctx,
  	view->base.texture = NULL;
  	view->base.reference.count = 1;
  	view->base.context = ctx;
@@ -156,7 +156,7 @@ index ae45e1a6b2..428aa988c7 100644
  
  	assert(texture);
  	pipe_resource_reference(&view->base.texture, texture);
-@@ -3956,15 +3966,6 @@ si_create_sampler_view(struct pipe_context *ctx,
+@@ -3953,15 +3963,6 @@ si_create_sampler_view(struct pipe_context *ctx,
  					     texture ? texture->height0 : 0, 0);
  }
  
@@ -172,11 +172,23 @@ index ae45e1a6b2..428aa988c7 100644
  static bool wrap_mode_uses_border_color(unsigned wrap, bool linear_filter)
  {
  	return wrap == PIPE_TEX_WRAP_CLAMP_TO_BORDER ||
+diff --git a/src/gallium/drivers/softpipe/sp_tex_sample.c b/src/gallium/drivers/softpipe/sp_tex_sample.c
+index 92c78da86f..de2b074b45 100644
+--- a/src/gallium/drivers/softpipe/sp_tex_sample.c
++++ b/src/gallium/drivers/softpipe/sp_tex_sample.c
+@@ -3467,6 +3467,7 @@ softpipe_create_sampler_view(struct pipe_context *pipe,
+       view->texture = NULL;
+       pipe_resource_reference(&view->texture, resource);
+       view->context = pipe;
++      view->sampler_view_destroy = pipe->sampler_view_destroy;
+ 
+ #ifdef DEBUG
+      /*
 diff --git a/src/gallium/drivers/virgl/virgl_context.c b/src/gallium/drivers/virgl/virgl_context.c
-index 4a70ac8d51..c65ed39c52 100644
+index 232d2951c0..56ce506949 100644
 --- a/src/gallium/drivers/virgl/virgl_context.c
 +++ b/src/gallium/drivers/virgl/virgl_context.c
-@@ -679,6 +679,7 @@ static struct pipe_sampler_view *virgl_create_sampler_view(struct pipe_context *
+@@ -678,6 +678,7 @@ static struct pipe_sampler_view *virgl_create_sampler_view(struct pipe_context *
     grview->base.context = ctx;
     pipe_resource_reference(&grview->base.texture, texture);
     grview->handle = handle;
@@ -185,10 +197,10 @@ index 4a70ac8d51..c65ed39c52 100644
  }
  
 diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
-index e043422292..2843e36816 100644
+index 10d21db28c..ce2fd132e9 100644
 --- a/src/gallium/include/pipe/p_state.h
 +++ b/src/gallium/include/pipe/p_state.h
-@@ -459,6 +459,9 @@ struct pipe_sampler_view
+@@ -461,6 +461,9 @@ struct pipe_sampler_view
           unsigned size;     /**< size of the readable sub-range in bytes */
        } buf;
     } u;
@@ -199,5 +211,5 @@ index e043422292..2843e36816 100644
  
  
 -- 
-2.13.5
+2.16.0.rc1.238.g530d649a79-goog
 
