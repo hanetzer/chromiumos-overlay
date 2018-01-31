@@ -1,6 +1,7 @@
 DEFINED_PHASES=compile install postinst postrm preinst setup test unpack
 DEPEND=tcl? ( >=dev-lang/tcl-8.4 ) test? ( >=dev-lang/tcl-8.4 ) java? ( >=virtual/jdk-1.5 ) >=sys-devel/binutils-2.16.1 test? ( >=dev-lang/tcl-8.4 ) java? ( >=dev-java/java-config-2.2.0-r3 ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13 >=sys-devel/automake-1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
 DESCRIPTION=Oracle Berkeley DB
+EAPI=0
 HOMEPAGE=http://www.oracle.com/technology/software/products/berkeley-db/index.html
 IUSE=doc java nocxx tcl test doc test elibc_FreeBSD java
 KEYWORDS=*

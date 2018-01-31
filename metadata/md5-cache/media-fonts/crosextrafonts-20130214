@@ -1,6 +1,7 @@
 DEFINED_PHASES=install postinst postrm setup
 DEPEND=X? ( x11-apps/mkfontdir media-fonts/encodings ) >=media-libs/fontconfig-2.4.0
 DESCRIPTION=Caladea font for Chrom*OS by Huerta Tipografia
+EAPI=0
 IUSE=X
 KEYWORDS=*
 LICENSE=Apache-2.0
