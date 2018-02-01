@@ -106,13 +106,13 @@ src_install() {
 		udev_dorules udev/optional/98-powerknobs.rules
 	fi
 	if use keyboard_includes_side_buttons; then
-		udev_dorules udev/optional/92-powerd-tags-keyboard-side-buttons.rules
+		udev_dorules udev/optional/93-powerd-tags-keyboard-side-buttons.rules
 	fi
 	if ! use touchpad_wakeup; then
-		udev_dorules udev/optional/92-powerd-tags-no-touchpad-wakeup.rules
+		udev_dorules udev/optional/93-powerd-tags-no-touchpad-wakeup.rules
 	fi
 	if use touchscreen_wakeup; then
-		udev_dorules udev/optional/92-powerd-tags-touchscreen-wakeup.rules
+		udev_dorules udev/optional/93-powerd-tags-touchscreen-wakeup.rules
 	fi
 
 	# Init scripts
