@@ -16,7 +16,10 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-VIDEO_CARDS="amdgpu exynos intel marvell mediatek radeon radeonsi rockchip tegra virgl"
+VIDEO_CARDS="
+	amdgpu exynos intel marvell mediatek msm
+	radeon radeonsi rockchip tegra virgl
+"
 IUSE="-asan"
 for card in ${VIDEO_CARDS}; do
 	IUSE+=" video_cards_${card}"
@@ -37,15 +40,16 @@ src_prepare() {
 
 src_configure() {
 	export LIBDIR="/usr/$(get_libdir)"
+	use video_cards_amdgpu && append-cppflags -DDRV_AMDGPU && export DRV_AMDGPU=1
 	use video_cards_exynos && append-cppflags -DDRV_EXYNOS && export DRV_EXYNOS=1
 	use video_cards_intel && append-cppflags -DDRV_I915 && export DRV_I915=1
 	use video_cards_marvell && append-cppflags -DDRV_MARVELL && export DRV_MARVELL=1
 	use video_cards_mediatek && append-cppflags -DDRV_MEDIATEK && export DRV_MEDIATEK=1
+	use video_cards_msm && append-cppflags -DDRV_MSM && export DRV_MSM=1
 	use video_cards_radeon && append-cppflags -DDRV_RADEON && export DRV_RADEON=1
 	use video_cards_radeonsi && append-cppflags -DDRV_RADEON && export DRV_RADEON=1
 	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
 	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
-	use video_cards_amdgpu && append-cppflags -DDRV_AMDGPU && export DRV_AMDGPU=1
 	use video_cards_virgl && append-cppflags -DDRV_VIRGL && export DRV_VIRGL=1
 	cros-workon_src_configure
 }
