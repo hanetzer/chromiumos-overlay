@@ -15,8 +15,7 @@ KEYWORDS="*"
 IUSE="alsa debug networkmanager ntp video_cards_intel video_cards_radeon"
 
 vbetool="!video_cards_intel? ( sys-apps/vbetool )"
-DEPEND="!<app-laptop/laptop-mode-tools-1.55-r1
-	!<sys-power/powermgmt-base-1.31
+DEPEND="!<sys-power/powermgmt-base-1.31
 	!>=sys-power/powermgmt-base-1.31[-pm-utils]"
 RDEPEND="${DEPEND}
 	sys-apps/dbus

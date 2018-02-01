@@ -272,7 +272,6 @@ CROS_RDEPEND="
 CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/tar
 	app-editors/vim
-	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner

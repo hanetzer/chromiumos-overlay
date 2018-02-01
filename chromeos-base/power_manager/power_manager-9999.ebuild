@@ -35,6 +35,11 @@ RDEPEND="
 	cras? ( media-sound/adhd )
 	virtual/udev"
 
+# blocker (https://crbug.com/214886), can be removed later
+RDEPEND+="
+	 !app-laptop/laptop-mode-tools
+"
+
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
 

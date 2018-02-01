@@ -25,11 +25,6 @@ media-fonts/sil-abyssinica X
 media-fonts/tlbt-jomohari X
 media-fonts/robotofonts X
 
-# David James <davidjames@chromium.org> (14 Feb 2011)
-# ACPI support is currently disabled in laptop-mode-tools.
-# TODO(davidjames): Should it be enabled?
-app-laptop/laptop-mode-tools acpi
-
 # Allow hardened glibc on the target.
 sys-libs/glibc -hardened
 
