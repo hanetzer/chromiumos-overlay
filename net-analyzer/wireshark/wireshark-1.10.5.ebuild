@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-analyzer/wireshark/wireshark-1.10.5.ebuild,v 1.11 2014/03/01 22:26:46 mgorny Exp $
 
 EAPI=5
-inherit autotools eutils fcaps user
+inherit autotools eutils user
 
 [[ -n ${PV#*_rc} && ${PV#*_rc} != ${PV} ]] && MY_P=${PN}-${PV/_} || MY_P=${P}
 DESCRIPTION="A network protocol analyzer formerly known as ethereal"
@@ -204,12 +204,4 @@ src_install() {
 	use pcap && chmod o-x "${ED}"/usr/bin/dumpcap #357237
 
 	prune_libtool_files
-}
-
-pkg_postinst() {
-	if use pcap; then
-		fcaps -o 0 -g wireshark -m 4710 -M 0710 \
-			cap_dac_read_search,cap_net_raw,cap_net_admin \
-			"${EROOT}"/usr/bin/dumpcap
-	fi
 }
