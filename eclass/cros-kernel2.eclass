@@ -726,34 +726,6 @@ kernelrelease() {
 	kmake -s --no-print-directory kernelrelease
 }
 
-# @FUNCTION: kernelrelease_raw
-# @DESCRIPTION:
-# Returns the kernel version, retrieved from kernel Makefile.
-# To be used if kernelrelease() does not work (such as from kmake).
-# Note: Only valid after src_configure has finished running.
-kernelrelease_raw() {
-	local KERNEL_MAKEFILE="$(cros-workon_get_build_dir)/Makefile"
-	local KV=""
-
-	if [[ -e "${KERNEL_MAKEFILE}" ]]; then
-		local KV_MAJOR=$(getfilevar_noexec VERSION "${KERNEL_MAKEFILE}")
-		local KV_MINOR=$(getfilevar_noexec PATCHLEVEL "${KERNEL_MAKEFILE}")
-		local KV_PATCH=$(getfilevar_noexec SUBLEVEL "${KERNEL_MAKEFILE}")
-		local KV_EXTRA=$(getfilevar_noexec EXTRAVERSION "${KERNEL_MAKEFILE}")
-
-		if [[ -n "${KV_MAJOR}" && -n "${KV_MINOR}" ]]; then
-			KV="${KV_MAJOR}.${KV_MINOR}"
-			if [[ -n "${KV_PATCH}" ]]; then
-				KV+=".${KV_PATCH}"
-			fi
-			if [[ -n "${KV_EXTRA}" ]]; then
-				KV+=".${KV_EXTRA}"
-			fi
-		fi
-	fi
-	echo "${KV}"
-}
-
 # @FUNCTION: cc_option
 # @DESCRIPTION:
 # Return 0 if ${CC} supports all provided options, 1 otherwise.
@@ -1055,17 +1027,21 @@ kmake() {
 		"-mindirect-branch-register"
 	)
 
-	# Indirect branch options only available for Intel GCC.
+	# Indirect branch options only available for Intel GCC and clang.
 	if use x86 || use amd64; then
-		local version=$(kernelrelease_raw)
-		# For kernel versions < 4.4 and when compiling with GCC.
-		# chromeos-4.4 and later support RETPOLINE as a configuration option,
-		# so no need to add extra compiler command-line flags.
-		if ! version_is_at_least 4.4 "${version}" && ! use clang; then
-			if cc_option "${indirect_branch_options_v1[*]}"; then
-				kcflags+=" ${indirect_branch_options_v1[*]}"
-			elif cc_option "${indirect_branch_options_v2[*]}"; then
-				kcflags+=" ${indirect_branch_options_v2[*]}"
+		# The kernel will set required compiler options if it supports
+		# the RETPOLINE configuration option and it is enabled.
+		# Otherwise set supported compiler options here to get a basic
+		# level of protection.
+		if ! cros_chkconfig_present RETPOLINE; then
+			if use clang; then
+				kcflags+=" $(test-flags-CC -mretpoline)"
+			else
+				if cc_option "${indirect_branch_options_v1[*]}"; then
+					kcflags+=" ${indirect_branch_options_v1[*]}"
+				elif cc_option "${indirect_branch_options_v2[*]}"; then
+					kcflags+=" ${indirect_branch_options_v2[*]}"
+				fi
 			fi
 		fi
 	fi
