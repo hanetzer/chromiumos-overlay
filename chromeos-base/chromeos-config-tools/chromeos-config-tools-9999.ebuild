@@ -50,16 +50,9 @@ platform_pkg_test() {
 	./chromeos-config-test-setup.sh
 	local tests=(
 		fake_cros_config_unittest
+		cros_config_unittest
+		cros_config_main_unittest
 	)
-
-	# TODO(sjg#chromium.org): Get JSON tests to pass. They currently die
-	# with a segfault.
-	if ! use json; then
-		tests+=(
-			cros_config_unittest
-			cros_config_main_unittest
-		)
-	fi
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
