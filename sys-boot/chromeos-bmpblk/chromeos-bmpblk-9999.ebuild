@@ -109,6 +109,9 @@ src_compile() {
 	fi
 	emake OUTPUT="${WORKDIR}" "${BOARD}"
 	emake OUTPUT="${WORKDIR}/${BOARD}" ARCHIVER="/usr/bin/archive" archive
+	if [[ "${BOARD}" == "${ARCH}-generic" ]]; then
+		printf "1" > "${WORKDIR}/${BOARD}/vbgfx_not_scaled"
+	fi
 }
 
 doins_if_exist() {
@@ -132,4 +135,7 @@ src_install() {
 	doins_if_exist "${WORKDIR}/${BOARD}"/locales
 	doins_if_exist "${WORKDIR}/${BOARD}"/locale_*.bin
 	doins_if_exist "${WORKDIR}/${BOARD}"/font.bin
+	# This flag tells the firmware_Bmpblk test to flag this build as
+	# not ready for release.
+	doins_if_exist "${WORKDIR}/${BOARD}"/vbgfx_not_scaled
 }
