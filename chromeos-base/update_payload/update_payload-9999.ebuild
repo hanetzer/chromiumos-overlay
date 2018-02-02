@@ -37,6 +37,9 @@ src_install() {
 		doins scripts/update_payload/update-payload-key.pub.pem
 	}
 	python_foreach_impl install_update_payload
+
+	# Install paycheck.py script as check_update_payload.
+	newbin scripts/paycheck.py check_update_payload
 }
 
 src_test() {
