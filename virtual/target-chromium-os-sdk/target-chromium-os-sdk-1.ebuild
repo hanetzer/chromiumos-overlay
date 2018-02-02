@@ -482,4 +482,4 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for generating and testing update payloads
 RDEPEND="${RDEPEND}
-	dev-python/backports-lzma"
+	chromeos-base/update_payload"
