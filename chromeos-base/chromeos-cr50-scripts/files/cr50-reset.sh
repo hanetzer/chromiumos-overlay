@@ -58,10 +58,7 @@ cr50_reset() {
 
   # Display the challenge.
   echo "Challenge:"
-  echo "${ch}" | awk -F' ' '{print $1, $2, $3, $4}'
-  echo "${ch}" | awk -F' ' '{print $5, $6, $7, $8}'
-  echo "${ch}" | awk -F' ' '{print $9, $10, $11, $12}'
-  echo "${ch}" | awk -F' ' '{print $13, $14, $15, $16}'
+  echo "${ch}"
 
   # Remove whitespace from challenge.
   ch="$(echo "${ch}" | sed -e 's/ //g')"
@@ -81,7 +78,7 @@ cr50_reset() {
     read -p "Enter authorization code: " ac
 
     # Test authorization code.
-    gsctool -t -r "${$ac}"
+    gsctool -t -r "${ac}"
     status=$?
 
     case "${status}" in
