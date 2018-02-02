@@ -26,7 +26,7 @@ MY_SRC="src/gallium/winsys/amdgpu/drm/addrlib/"
 PATCHES=( "${FILESDIR}"/*.patch )
 
 src_configure() {
-	arc-build-select-gcc
+	arc-build-select-clang
 
 	autotools-multilib_src_configure
 }
