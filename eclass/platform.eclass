@@ -136,6 +136,19 @@ platform_test() {
 	"${cmd[@]}" || die
 }
 
+platform_fuzzer_install() {
+	if use fuzzer; then
+		insinto "/usr/libexec/fuzzers"
+		doins "$@"
+	fi
+}
+
+platform_fuzzer_test() {
+	if use fuzzer; then
+		"$@" -runs=0 "${PLATFORM_TOOLDIR}"/fuzzer_corpus || die
+	fi
+}
+
 platform_src_compile() {
 	platform "compile" "all"
 }
