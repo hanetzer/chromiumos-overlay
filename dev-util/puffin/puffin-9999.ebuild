@@ -24,6 +24,7 @@ HOMEPAGE="https://android.googlesource.com/platform/external/puffin/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="fuzzer"
 
 RDEPEND="
 	chromeos-base/libbrillo
@@ -43,10 +44,15 @@ src_install() {
 
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	doins libpuffdiff.pc libpuffpatch.pc
+
+	platform_fuzzer_install "${OUT}"/puffin_fuzzer
 }
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/puffin_unittest"
+
+	# Run fuzzer.
+	platform_fuzzer_test "${OUT}"/puffin_fuzzer
 }
 
 pkg_preinst() {
