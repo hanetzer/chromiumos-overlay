@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="${PV}"
 KEYWORDS="*"
-IUSE="cros_host +crypto +dbus +timers"
+IUSE="asan cros_host +crypto +dbus +timers"
 
 # TODO(avakulenko): Put dev-libs/nss behind a USE flag to make sure NSS is
 # pulled only into the configurations that require it.
@@ -48,6 +48,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Base-ObserverList-Add-basic-support-for-standard-C-i.patch
 	epatch "${FILESDIR}"/${P}-ScopedTempDir-add-GetPath-from-upstream-libchrome.patch
 	epatch "${FILESDIR}"/${P}-FileDescriptorWatcher-add-constructor-taking-Locatio.patch
+	# Disable custom memory allocator when asan is used.
+	# https://crbug.com/807685
+	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch
 
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.

@@ -1,0 +1,38 @@
+The custom memory allocator in //base/allocator should not be used
+together with address sanitizer.
+https://crbug.com/807685
+
+diff -Nuar old/libchrome-395517/base/allocator/allocator_shim_override_cpp_symbols.h new/libchrome-395517/base/allocator/allocator_shim_override_cpp_symbols.h
+--- old/libchrome-395517/base/allocator/allocator_shim_override_cpp_symbols.h
++++ new/libchrome-395517/base/allocator/allocator_shim_override_cpp_symbols.h
+@@ -13,7 +13,7 @@
+ #include <new>
+ 
+ #include "base/allocator/allocator_shim_internals.h"
+-
++#if 0
+ SHIM_ALWAYS_EXPORT void* operator new(size_t size)
+     SHIM_ALIAS_SYMBOL(ShimCppNew);
+ 
+@@ -40,3 +40,4 @@
+ SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                           const std::nothrow_t&) __THROW
+     SHIM_ALIAS_SYMBOL(ShimCppDelete);
++#endif
+diff -Nuar old/libchrome-395517/base/allocator/allocator_shim_override_libc_symbols.h new/libchrome-395517/base/allocator/allocator_shim_override_libc_symbols.h
+--- old/libchrome-395517/base/allocator/allocator_shim_override_libc_symbols.h
++++ new/libchrome-395517/base/allocator/allocator_shim_override_libc_symbols.h
+@@ -13,7 +13,7 @@
+ #include <malloc.h>
+ 
+ #include "base/allocator/allocator_shim_internals.h"
+-
++#if 0
+ extern "C" {
+ 
+ SHIM_ALWAYS_EXPORT void* malloc(size_t size) __THROW
+@@ -52,3 +52,4 @@
+ //   size_t malloc_usable_size(const void*);
+ 
+ }  // extern "C"
++#endif
