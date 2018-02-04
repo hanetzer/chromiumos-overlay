@@ -59,7 +59,7 @@ please check your chromeos-config-bsp ebuild"
 		|| die "Preprocessor failed"
 
 	# Compile it to produce the requird output file.
-	dtc -I dts -O dtb -o "${dtb}" "${dts}.tmp" \
+	dtc -I dts -O dtb -Wno-unit_address_vs_reg -o "${dtb}" "${dts}.tmp" \
 		|| die "Device-tree compilation failed"
 
 	# Validate the config.

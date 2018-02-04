@@ -184,7 +184,7 @@ unibuild_get_dtb_data() {
 	echo "/dts-v1/; / { chromeos { family: family { }; " \
 		"models: models { }; }; };" |
 		cat "-" "${files[@]}" |
-		dtc -O dtb
+		dtc -O dtb -Wno-unit_address_vs_reg
 }
 
 # @FUNCTION: _unibuild_common_install
