@@ -34,9 +34,9 @@ tast-bundle_pkg_setup() {
 	# Strip off everything preceding the bundle name.
 	TAST_BUNDLE_NAME=${PN#tast-*-tests-}
 
-	# Install the bundle under /usr/libexec/tast/bundles.
+	# Install the bundle under /usr/libexec/tast/bundles/<type>.
 	CROS_GO_BINARIES=(
-		"chromiumos/tast/${TAST_BUNDLE_TYPE}/bundles/${TAST_BUNDLE_NAME}:/usr/libexec/tast/bundles/${TAST_BUNDLE_NAME}"
+		"chromiumos/tast/${TAST_BUNDLE_TYPE}/bundles/${TAST_BUNDLE_NAME}:/usr/libexec/tast/bundles/${TAST_BUNDLE_TYPE}/${TAST_BUNDLE_NAME}"
 	)
 }
 
@@ -47,13 +47,13 @@ tast-bundle_src_install() {
 	cros-go_src_install
 
 	# Install each test category's data dir (with its full path within the src/
-	# directory) under /usr/share/tast/data.
+	# directory) under /usr/share/tast/data/<type>.
 	pushd src >/dev/null || die "failed to pushd src"
 	local bundle="chromiumos/tast/${TAST_BUNDLE_TYPE}/bundles/${TAST_BUNDLE_NAME}"
 	local datadir
 	for datadir in "${bundle}"/*/data; do
 		[[ -e "${datadir}" ]] || break
-		(insinto "/usr/share/tast/data/${datadir%/*}" && doins -r "${datadir}")
+		(insinto "/usr/share/tast/data/${TAST_BUNDLE_TYPE}/${datadir%/*}" && doins -r "${datadir}")
 	done
 	popd >/dev/null
 }
