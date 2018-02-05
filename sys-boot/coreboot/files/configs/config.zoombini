@@ -23,5 +23,7 @@ CONFIG_IFD_BIN_PATH="3rdparty/blobs/baseboard-zoombini/descriptor.bin"
 CONFIG_HAVE_ME_BIN=y
 CONFIG_ME_BIN_PATH="3rdparty/blobs/baseboard-zoombini/me.bin"
 
+CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE=y
+CONFIG_RUN_FSP_GOP=y
 CONFIG_INTEL_GMA_VBT_FILE="3rdparty/blobs/baseboard-zoombini/vbt.bin"
 CONFIG_CPU_UCODE_BINARIES="3rdparty/blobs/baseboard-zoombini/ucode.bin"
