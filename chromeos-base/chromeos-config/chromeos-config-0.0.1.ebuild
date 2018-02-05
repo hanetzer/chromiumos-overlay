@@ -79,7 +79,7 @@ please check your chromeos-config-bsp ebuild"
 		# This hasn't been fully vetted yet, so punting until then.
 		cat "${files[@]}" >> "${yaml}"
 		cros_config_schema -c "${yaml}" -o "${json}" -f "True" \
-			|| die "Validation failed"
+			|| echo "Warning: Validation failed"
 	fi
 }
 
