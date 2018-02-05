@@ -1,0 +1,144 @@
+Update TensorFlow sources that assume lite protos are only used for Android
+builds. Since Chrome OS's version of libprotobuf is compiled in lite mode, we
+are a (rare) non-Android client that requires lite protos.
+
+We print opaque error strings instead of proto debug strings (as is already
+done for Android builds). We also remove broken lines of a test-only method.
+
+This issue has been reported upstream at
+https://github.com/tensorflow/tensorflow/issues/17525.
+
+Patch by martis@chromium.org.
+
+--- tensorflow/core/framework/reader_base.cc
++++ tensorflow/core/framework/reader_base.cc
+@@ -241,21 +241,13 @@ Status ReaderBase::RestoreBaseState(const ReaderBaseState& state) {
+   num_records_produced_ = state.num_records_produced();
+   work_ = state.current_work();
+   if (work_started_ < 0 || work_finished_ < 0 || num_records_produced_ < 0) {
+-#ifdef __ANDROID__
+     const string debug_string = "<debug state not available>";
+-#else
+-    const string debug_string = state.DebugString();
+-#endif
+     return errors::InvalidArgument(
+         "Unexpected negative value when restoring in ", name(), ": ",
+         debug_string);
+   }
+   if (work_started_ > work_finished_) {
+-#ifdef __ANDROID__
+     const string debug_string = "<debug state not available>";
+-#else
+-    const string debug_string = state.DebugString();
+-#endif
+     return errors::InvalidArgument(
+         "Inconsistent work started vs. finished when restoring in ", name(),
+         ": ", debug_string);
+--- tensorflow/core/grappler/costs/op_level_cost_estimator.cc
++++ tensorflow/core/grappler/costs/op_level_cost_estimator.cc
+@@ -772,7 +772,7 @@ int64 OpLevelCostEstimator::CountConv2DBackpropFilterOperations(
+ int64 OpLevelCostEstimator::CalculateTensorElementCount(
+     const OpInfo::TensorProperties& tensor, bool* found_unknown_shapes) const {
+   VLOG(2) << "   with " << tensor.dtype() << " tensor of shape "
+-          << tensor.shape().DebugString();
++          << "<debug state not available>";
+   int64 tensor_size = 1;
+   int num_dims = std::max(1, tensor.shape().dim_size());
+   auto tensor_shape =
+--- tensorflow/core/grappler/costs/utils.cc
++++ tensorflow/core/grappler/costs/utils.cc
+@@ -105,9 +105,9 @@ static void ExtractExtraProperties(
+ 
+     if (i >= op_info->inputs_size()) {
+       LOG(ERROR) << "OpInfo's inputs doesn't match the graph! OpInfo: "
+-                 << op_info->DebugString()
+-                 << "\nCurrent node: " << node.DebugString()
+-                 << "\nInput node: " << input_node->DebugString();
++                 << "<debug state not available>"
++                 << "\nCurrent node: <debug state not available>"
++                 << "\nInput node: <debug state not available>";
+     }
+ 
+     // The value attribute in Const input is useful for cost prediction.
+--- tensorflow/core/grappler/grappler_item_builder.cc
++++ tensorflow/core/grappler/grappler_item_builder.cc
+@@ -396,7 +396,7 @@ std::unique_ptr<GrapplerItem> GrapplerItemFromMetaGraphDef(
+         if (!iter->second.has_tensor() ||
+             iter->second.tensor().string_val_size() != 1) {
+           LOG(INFO) << "Unexected AttrValue proto: "
+-                    << iter->second.DebugString();
++                    << "<debug state not available>";
+           return nullptr;
+         }
+         LOG(INFO) << "Using asset file " << it->second << " for node "
+--- tensorflow/core/grappler/inputs/utils.cc
++++ tensorflow/core/grappler/inputs/utils.cc
+@@ -37,9 +37,6 @@ bool FileExists(const std::string& file, Status* status) {
+ Status ReadGraphDefFromFile(const std::string& graph_def_pbtxt_path,
+                             GraphDef* result) {
+   Status status;
+-  if (FileExists(graph_def_pbtxt_path, &status)) {
+-    return ReadTextProto(Env::Default(), graph_def_pbtxt_path, result);
+-  }
+   return status;
+ }
+ 
+--- tensorflow/core/grappler/optimizers/constant_folding.cc
++++ tensorflow/core/grappler/optimizers/constant_folding.cc
+@@ -1365,7 +1365,7 @@ Status ConstantFolding::SimplifyGraph(GraphDef* output,
+       const NodeDef* y = node_map_->GetNode(node->input(1));
+       if (x == nullptr || y == nullptr) {
+         return errors::InvalidArgument("Invalid inputs to node: ",
+-                                       node->DebugString());
++                                       "<debug state not available>");
+       }
+       const TensorShapeProto& output_shape =
+           properties.GetOutputProperties(node->name())[0].shape();
+--- tensorflow/core/grappler/optimizers/dependency_optimizer.cc
++++ tensorflow/core/grappler/optimizers/dependency_optimizer.cc
+@@ -63,7 +63,7 @@ void PruneControlInputs(NodeDef* node) {
+     //    if (!inputs.insert(NodeName(input)).second && IsControlInput(input)) {
+     if (IsControlInput(input) && !inputs.insert(input).second) {
+       VLOG(1) << "**** Removing duplicate control input: " << input
+-              << " from node " << node->DebugString();
++              << " from node <debug state not available>";
+       node->mutable_input()->SwapElements(pos, node->input_size() - 1);
+       node->mutable_input()->RemoveLast();
+     } else {
+@@ -220,7 +220,7 @@ void DependencyOptimizer::OptimizeNode(int node_idx,
+     for (auto consumer : output_nodes) {
+       bool updated_consumer = false;
+       VLOG(1) << "***** Considering consumer  " << consumer->name() << "\n"
+-              << consumer->DebugString();
++              << "<debug state not available>";
+       for (int i = 0; i < num_inputs; ++i) {
+         const NodeDef* input = input_nodes[i];
+         // Forward dependency from input to consumer if it doesn't already
+@@ -401,7 +401,7 @@ Status DependencyOptimizer::Optimize(Cluster* cluster, const GrapplerItem& item,
+   nodes_to_preserve_ = item.NodesToPreserve();
+   fetch_nodes_known_ = !item.fetch.empty();
+ 
+-  VLOG(1) << "Graph before optimization:\n" << optimized_graph_->DebugString();
++  VLOG(1) << "Graph before optimization:\n <debug state not available>";
+   CleanControlInputs();
+   const int num_iterations = opt_level_ == RewriterConfig::AGGRESSIVE ? 2 : 1;
+   for (int iteration = 0; iteration < num_iterations; ++iteration) {
+@@ -422,15 +422,15 @@ Status DependencyOptimizer::Optimize(Cluster* cluster, const GrapplerItem& item,
+         LOG(ERROR) << topo_sort_status.error_message();
+       }
+       VLOG(1) << "Graph after transitive reduction:\n"
+-              << optimized_graph_->DebugString();
++              << "<debug state not available>";
+     }
+ 
+     // Turn nodes without non-control outputs into NoOps, prune NoOps.
+     TF_RETURN_IF_ERROR(OptimizeDependencies());
+     VLOG(1) << "Graph after NoOp conversion & pruning:\n"
+-            << optimized_graph_->DebugString();
++            << "<debug state not available>";
+   }
+-  VLOG(1) << "Graph after optimization:\n" << optimized_graph_->DebugString();
++  VLOG(1) << "Graph after optimization:\n<debug state not available>";
+ 
+   return Status::OK();
+ }

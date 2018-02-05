@@ -1,0 +1,22 @@
+Update the NSYNC makefile to allow for building with Clang. This is
+required since we link with libraries from existing packages that are built
+with Clang (e.g. libprotobuf).
+
+The -x c++ flag is also required to force C++ compilation even on .c files.
+
+This patch will become obsolete when we switch to using Bazel to compile
+TensorFlow and its dependencies.
+
+Patch by martis@chromium.org.
+
+--- tensorflow/contrib/makefile/downloads/nsync/builds/x86_64.linux.c++11/Makefile
++++ tensorflow/contrib/makefile/downloads/nsync/builds/x86_64.linux.c++11/Makefile
+@@ -1,5 +1,6 @@
+-CC=g++
+-PLATFORM_CPPFLAGS=-DNSYNC_USE_CPP11_TIMEPOINT -DNSYNC_ATOMIC_CPP11 -I../../platform/c++11 -I../../platform/gcc -I../../platform/posix -pthread
++CC=$(COMPILER)-clang++
++CXX=$(COMPILER)-clang++
++PLATFORM_CPPFLAGS=-DNSYNC_USE_CPP11_TIMEPOINT -DNSYNC_ATOMIC_CPP11 -x c++ -I../../platform/c++11 -I../../platform/gcc -I../../platform/posix -pthread
+ PLATFORM_CFLAGS=-std=c++11 -Werror -Wall -Wextra -pedantic
+ PLATFORM_LDFLAGS=-pthread
+ MKDEP=${CC} -M -std=c++11

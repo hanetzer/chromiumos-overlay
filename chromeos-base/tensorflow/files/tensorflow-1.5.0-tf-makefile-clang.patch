@@ -1,0 +1,74 @@
+Update the TensorFlow makefile to allow for building with Clang. This is
+required since we link with libraries from existing packages that are built
+with Clang (e.g. libprotobuf) and use Clang's libc++ instead of GCC's
+libstdc++.
+
+Also update the C++ compilers and paths used to better support our
+cross-compilation environment.
+
+This patch will become obsolete when we switch to using Bazel to compile
+TensorFlow and its dependencies.
+
+A note about terminology:
+Portage and TensorFlow have opposite opinions about which architecture is host;
+Portage uses "host" to refer to the architecture of the Chromebook and
+TensorFlow uses "host" to refer to the architecture of the build-system. To
+avoid this ambiguity, we use "board" to refer to the architecture of the
+Chromebook and "build" to refer to the architecture of the build system.
+
+Patch by martis@chromium.org.
+
+--- tensorflow/contrib/makefile/Makefile
++++ tensorflow/contrib/makefile/Makefile
+@@ -73,7 +73,7 @@
+ HOST_GENDIR := $(MAKEFILE_DIR)/gen/host_obj/
+ 
+ # Settings for the host compiler.
+-HOST_CXX := $(CC_PREFIX) gcc
++HOST_CXX := $(CC_PREFIX) $(CBUILD)-clang++
+ HOST_CXXFLAGS := --std=c++11
+ HOST_LDOPTS :=
+ ifeq ($(HAS_GEN_HOST_PROTOC),true)
+@@ -99,7 +99,7 @@
+ 
+ HOST_LIBS := \
+ $(HOST_NSYNC_LIB) \
+--lstdc++ \
++-lc++ \
+ -lprotobuf \
+ -lpthread \
+ -lm \
+@@ -152,16 +152,14 @@
+ $(shell mkdir -p $(DEPDIR) >/dev/null)
+ 
+ # Settings for the target compiler.
+-CXX := $(CC_PREFIX) gcc
++CXX := $(CC_PREFIX) $(CBOARD)-clang++
+ OPTFLAGS := -O2
+ 
+ ifneq ($(TARGET),ANDROID)
+   OPTFLAGS += -march=native
+ endif
+ 
+-CXXFLAGS := --std=c++11 -DIS_SLIM_BUILD -fno-exceptions -DNDEBUG $(OPTFLAGS)
+-LDFLAGS := \
+--L/usr/local/lib
++CXXFLAGS := --std=c++11 -DTENSORFLOW_LITE_PROTOS -DIS_SLIM_BUILD -fno-exceptions -DNDEBUG $(BOARD_CXXFLAGS)
+ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
+ 
+ INCLUDES := \
+@@ -176,13 +174,10 @@
+ ifeq ($(HAS_GEN_HOST_PROTOC),true)
+ 	INCLUDES += -I$(MAKEFILE_DIR)/gen/protobuf-host/include
+ endif
+-# This is at the end so any globally-installed frameworks like protobuf don't
+-# override local versions in the source tree.
+-INCLUDES += -I/usr/local/include
+ 
+ LIBS := \
+ $(TARGET_NSYNC_LIB) \
+--lstdc++ \
++-lc++ \
+ -lprotobuf \
+ -lz \
+ -lm
