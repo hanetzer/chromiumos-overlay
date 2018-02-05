@@ -45,9 +45,6 @@ net-print/cups-filters -postscript
 # supported by official Gentoo portage repository.
 dev-embedded/openocd	-jlink
 
-# We want to get rid of elfutils. Remove the utils is the first step.
-dev-libs/elfutils       -utils
-
 # Provide 32-lib libc++ libraries.
 # https://crbug.com/756528
 sys-libs/libcxxabi abi_x86_32
