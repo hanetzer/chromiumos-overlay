@@ -68,7 +68,7 @@ cr50_reset() {
 
   # Create qrcode and display it.
   qrencode -o "${chg_str_path}/chg.png" "${chstr}"
-  printf "\033]image:file=/chg.png\033\\" > /run/frecon/vt0
+  printf "\033]image:file=/chg.png;scale=2\033\\" > /run/frecon/vt0
 
   local n=0
   local ac
