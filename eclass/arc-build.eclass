@@ -109,12 +109,13 @@ _arc-build-select-common() {
 	local android_version=$(printf "0x%04x" \
 		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
 	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
-	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
 }
 
 # Set up the compiler settings for GCC.
 arc-build-select-gcc() {
 	_arc-build-select-common
+
+	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
 
 	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-gcc"
 	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
@@ -126,10 +127,16 @@ arc-build-select-clang() {
 	# TODO(b/73520402): Remove this once arc-llvm stops ignoring flags in CC and CXX
 	append-flags "--gcc-toolchain=${ARC_GCC_BASE}"
 	append-flags -target "${CHOST}"
+	append-cxxflags -stdlib=libc++
 
 	ARC_LLVM_BASE="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}"
 	export CC="${ARC_LLVM_BASE}/bin/clang --gcc-toolchain=${ARC_GCC_BASE} -target ${CHOST}"
 	export CXX="${ARC_LLVM_BASE}/bin/clang++ --gcc-toolchain=${ARC_GCC_BASE} -target ${CHOST}"
+
+	# Newer Clang versions properly include their C++ headers.
+	if [[ ${ARC_LLVM_VERSION} == "3.8" ]]; then
+		append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9
+	fi
 }
 
 fi
