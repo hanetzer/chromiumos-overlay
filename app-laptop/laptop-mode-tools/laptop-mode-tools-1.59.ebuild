@@ -66,6 +66,7 @@ PATCHES=(
 	"0036-disable-wireless-power-management.patch" \
 	"0037-disable-intel-hda-power-management.patch" \
 	"0038-disable-intel-sata-powermanagement.patch" \
+	"0039-Fix-hdparm-udevadm-location.patch" \
 )
 
 src_prepare() {
