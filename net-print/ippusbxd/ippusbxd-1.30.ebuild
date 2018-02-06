@@ -12,11 +12,10 @@ SRC_URI="https://github.com/tillkamppeter/ippusbxd/${P}.tar.gz"
 KEYWORDS="*"
 LICENSE="Apache-2.0"
 SLOT="0"
-IUSE="usb zeroconf"
 
 DEPEND="
-	usb? ( virtual/libusb )
-	zeroconf? ( >=net-dns/avahi-0.6.32 )
+	virtual/libusb:1=
+	>=net-dns/avahi-0.6.32
 "
 
 S="${WORKDIR}/${P}/src"
