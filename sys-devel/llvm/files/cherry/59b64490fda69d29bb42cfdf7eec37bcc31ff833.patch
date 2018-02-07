@@ -1,0 +1,221 @@
+commit 59b64490fda69d29bb42cfdf7eec37bcc31ff833
+Author: Chandler Carruth <chandlerc@gmail.com>
+Date:   2018-02-07
+
+    [x86/retpoline] Make the external thunk names exactly match the names
+    that happened to end up in GCC.
+    
+    This is really unfortunate, as the names don't have much rhyme or reason
+    to them. Originally in the discussions it seemed fine to rely on aliases
+    to map different names to whatever external thunk code developers wished
+    to use but there are practical problems with that in the kernel it turns
+    out. And since we're discovering this practical problems late and since
+    GCC has already shipped a release with one set of names, we are forced,
+    yet again, to blindly match what is there.
+    
+    Somewhat rushing this patch out for the Linux kernel folks to test and
+    so we can get it patched into our releases.
+    
+    Differential Revision: https://reviews.llvm.org/D42998
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@324449 91177308-0d34-0410-b5e6-96231b3b80d8
+
+--- lib/Target/X86/X86ISelLowering.cpp
++++ lib/Target/X86/X86ISelLowering.cpp
+@@ -26926,28 +26926,57 @@ static unsigned getOpcodeForRetpoline(unsigned RPOpc) {
+ 
+ static const char *getRetpolineSymbol(const X86Subtarget &Subtarget,
+                                       unsigned Reg) {
++  if (Subtarget.useRetpolineExternalThunk()) {
++    // When using an external thunk for retpolines, we pick names that match the
++    // names GCC happens to use as well. This helps simplify the implementation
++    // of the thunks for kernels where they have no easy ability to create
++    // aliases and are doing non-trivial configuration of the thunk's body. For
++    // example, the Linux kernel will do boot-time hot patching of the thunk
++    // bodies and cannot easily export aliases of these to loaded modules.
++    //
++    // Note that at any point in the future, we may need to change the semantics
++    // of how we implement retpolines and at that time will likely change the
++    // name of the called thunk. Essentially, there is no hard guarantee that
++    // LLVM will generate calls to specific thunks, we merely make a best-effort
++    // attempt to help out kernels and other systems where duplicating the
++    // thunks is costly.
++    switch (Reg) {
++    case 0:
++      assert(!Subtarget.is64Bit() && "R11 should always be available on x64");
++      return "__x86_indirect_thunk";
++    case X86::EAX:
++      assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++      return "__x86_indirect_thunk_eax";
++    case X86::ECX:
++      assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++      return "__x86_indirect_thunk_ecx";
++    case X86::EDX:
++      assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++      return "__x86_indirect_thunk_edx";
++    case X86::R11:
++      assert(Subtarget.is64Bit() && "Should not be using a 64-bit thunk!");
++      return "__x86_indirect_thunk_r11";
++    }
++    llvm_unreachable("unexpected reg for retpoline");
++  }
++
++  // When targeting an internal COMDAT thunk use an LLVM-specific name.
+   switch (Reg) {
+   case 0:
+     assert(!Subtarget.is64Bit() && "R11 should always be available on x64");
+-    return Subtarget.useRetpolineExternalThunk()
+-               ? "__llvm_external_retpoline_push"
+-               : "__llvm_retpoline_push";
++    return "__llvm_retpoline_push";
+   case X86::EAX:
+-    return Subtarget.useRetpolineExternalThunk()
+-               ? "__llvm_external_retpoline_eax"
+-               : "__llvm_retpoline_eax";
++    assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++    return "__llvm_retpoline_eax";
+   case X86::ECX:
+-    return Subtarget.useRetpolineExternalThunk()
+-               ? "__llvm_external_retpoline_ecx"
+-               : "__llvm_retpoline_ecx";
++    assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++    return "__llvm_retpoline_ecx";
+   case X86::EDX:
+-    return Subtarget.useRetpolineExternalThunk()
+-               ? "__llvm_external_retpoline_edx"
+-               : "__llvm_retpoline_edx";
++    assert(!Subtarget.is64Bit() && "Should not be using a 32-bit thunk!");
++    return "__llvm_retpoline_edx";
+   case X86::R11:
+-    return Subtarget.useRetpolineExternalThunk()
+-               ? "__llvm_external_retpoline_r11"
+-               : "__llvm_retpoline_r11";
++    assert(Subtarget.is64Bit() && "Should not be using a 64-bit thunk!");
++    return "__llvm_retpoline_r11";
+   }
+   llvm_unreachable("unexpected reg for retpoline");
+ }
+--- test/CodeGen/X86/retpoline-external.ll
++++ test/CodeGen/X86/retpoline-external.ll
+@@ -23,18 +23,18 @@ entry:
+ ; X64:       callq bar
+ ; X64-DAG:   movl %[[x]], %edi
+ ; X64-DAG:   movq %[[fp]], %r11
+-; X64:       callq __llvm_external_retpoline_r11
++; X64:       callq __x86_indirect_thunk_r11
+ ; X64:       movl %[[x]], %edi
+ ; X64:       callq bar
+ ; X64-DAG:   movl %[[x]], %edi
+ ; X64-DAG:   movq %[[fp]], %r11
+-; X64:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X64FAST-LABEL: icall_reg:
+ ; X64FAST:       callq bar
+-; X64FAST:       callq __llvm_external_retpoline_r11
++; X64FAST:       callq __x86_indirect_thunk_r11
+ ; X64FAST:       callq bar
+-; X64FAST:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64FAST:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X86-LABEL: icall_reg:
+ ; X86-DAG:   movl 12(%esp), %[[fp:[^ ]*]]
+@@ -43,19 +43,19 @@ entry:
+ ; X86:       calll bar
+ ; X86:       movl %[[fp]], %eax
+ ; X86:       pushl %[[x]]
+-; X86:       calll __llvm_external_retpoline_eax
++; X86:       calll __x86_indirect_thunk_eax
+ ; X86:       pushl %[[x]]
+ ; X86:       calll bar
+ ; X86:       movl %[[fp]], %eax
+ ; X86:       pushl %[[x]]
+-; X86:       calll __llvm_external_retpoline_eax
++; X86:       calll __x86_indirect_thunk_eax
+ ; X86-NOT:   # TAILCALL
+ 
+ ; X86FAST-LABEL: icall_reg:
+ ; X86FAST:       calll bar
+-; X86FAST:       calll __llvm_external_retpoline_eax
++; X86FAST:       calll __x86_indirect_thunk_eax
+ ; X86FAST:       calll bar
+-; X86FAST:       calll __llvm_external_retpoline_eax
++; X86FAST:       calll __x86_indirect_thunk_eax
+ 
+ 
+ @global_fp = external global void (i32)*
+@@ -72,28 +72,28 @@ define void @icall_global_fp(i32 %x, void (i32)** %fpp) #0 {
+ ; X64-LABEL: icall_global_fp:
+ ; X64-DAG:   movl %edi, %[[x:[^ ]*]]
+ ; X64-DAG:   movq global_fp(%rip), %r11
+-; X64:       callq __llvm_external_retpoline_r11
++; X64:       callq __x86_indirect_thunk_r11
+ ; X64-DAG:   movl %[[x]], %edi
+ ; X64-DAG:   movq global_fp(%rip), %r11
+-; X64:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X64FAST-LABEL: icall_global_fp:
+ ; X64FAST:       movq global_fp(%rip), %r11
+-; X64FAST:       callq __llvm_external_retpoline_r11
++; X64FAST:       callq __x86_indirect_thunk_r11
+ ; X64FAST:       movq global_fp(%rip), %r11
+-; X64FAST:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64FAST:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X86-LABEL: icall_global_fp:
+ ; X86:       movl global_fp, %eax
+ ; X86:       pushl 4(%esp)
+-; X86:       calll __llvm_external_retpoline_eax
++; X86:       calll __x86_indirect_thunk_eax
+ ; X86:       addl $4, %esp
+ ; X86:       movl global_fp, %eax
+-; X86:       jmp __llvm_external_retpoline_eax # TAILCALL
++; X86:       jmp __x86_indirect_thunk_eax # TAILCALL
+ 
+ ; X86FAST-LABEL: icall_global_fp:
+-; X86FAST:       calll __llvm_external_retpoline_eax
+-; X86FAST:       jmp __llvm_external_retpoline_eax # TAILCALL
++; X86FAST:       calll __x86_indirect_thunk_eax
++; X86FAST:       jmp __x86_indirect_thunk_eax # TAILCALL
+ 
+ 
+ %struct.Foo = type { void (%struct.Foo*)** }
+@@ -114,14 +114,14 @@ define void @vcall(%struct.Foo* %obj) #0 {
+ ; X64:       movq (%[[obj]]), %[[vptr:[^ ]*]]
+ ; X64:       movq 8(%[[vptr]]), %[[fp:[^ ]*]]
+ ; X64:       movq %[[fp]], %r11
+-; X64:       callq __llvm_external_retpoline_r11
++; X64:       callq __x86_indirect_thunk_r11
+ ; X64-DAG:   movq %[[obj]], %rdi
+ ; X64-DAG:   movq %[[fp]], %r11
+-; X64:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X64FAST-LABEL: vcall:
+-; X64FAST:       callq __llvm_external_retpoline_r11
+-; X64FAST:       jmp __llvm_external_retpoline_r11 # TAILCALL
++; X64FAST:       callq __x86_indirect_thunk_r11
++; X64FAST:       jmp __x86_indirect_thunk_r11 # TAILCALL
+ 
+ ; X86-LABEL: vcall:
+ ; X86:       movl 8(%esp), %[[obj:[^ ]*]]
+@@ -129,14 +129,14 @@ define void @vcall(%struct.Foo* %obj) #0 {
+ ; X86:       movl 4(%[[vptr]]), %[[fp:[^ ]*]]
+ ; X86:       movl %[[fp]], %eax
+ ; X86:       pushl %[[obj]]
+-; X86:       calll __llvm_external_retpoline_eax
++; X86:       calll __x86_indirect_thunk_eax
+ ; X86:       addl $4, %esp
+ ; X86:       movl %[[fp]], %eax
+-; X86:       jmp __llvm_external_retpoline_eax # TAILCALL
++; X86:       jmp __x86_indirect_thunk_eax # TAILCALL
+ 
+ ; X86FAST-LABEL: vcall:
+-; X86FAST:       calll __llvm_external_retpoline_eax
+-; X86FAST:       jmp __llvm_external_retpoline_eax # TAILCALL
++; X86FAST:       calll __x86_indirect_thunk_eax
++; X86FAST:       jmp __x86_indirect_thunk_eax # TAILCALL
+ 
+ 
+ declare void @direct_callee()
