@@ -21,6 +21,7 @@ IUSE="+seccomp"
 
 RDEPEND="
 	chromeos-base/libbrillo
+	chromeos-base/libmojo
 "
 
 DEPEND="${RDEPEND}"
