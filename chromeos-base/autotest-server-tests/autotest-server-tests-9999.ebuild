@@ -90,6 +90,7 @@ SERVER_IUSE_TESTS="
 	+tests_dummy_PassServer
 	+tests_dummy_FailServer
 	+tests_dummy_FlakyTestServer
+	+tests_enterprise_CFM_AtrusUpdaterStress
 	+tests_enterprise_CFM_AutotestSmokeTest
 	+tests_enterprise_CFM_AutoZoomSanity
 	+tests_enterprise_CFM_ConfigurableCfmTestSanity
