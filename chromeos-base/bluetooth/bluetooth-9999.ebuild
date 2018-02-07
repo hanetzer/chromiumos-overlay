@@ -26,6 +26,9 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dobin "${OUT}"/newblued
+
+	insinto /etc/init
+	doins init/upstart/newblued.conf
 }
 
 platform_pkg_test() {
