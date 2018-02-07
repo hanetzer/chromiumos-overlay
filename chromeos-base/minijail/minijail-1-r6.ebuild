@@ -3,8 +3,8 @@
 
 EAPI="5"
 
-CROS_WORKON_COMMIT="4f3e09f23a0e338440513c0e10db14d41ebc5dd0"
-CROS_WORKON_TREE="64d3f8bf44c19637defb73dbfc7d4e7a07a6d4ee"
+CROS_WORKON_COMMIT="9741372f23e7895a180a535c9bfd7246bb69dd2b"
+CROS_WORKON_TREE="e12ffa400796237bd2e5c0c5d04005ac15733875"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME="aosp/external/minijail"
 CROS_WORKON_PROJECT="platform/external/minijail"
@@ -48,6 +48,8 @@ src_install() {
 	dosbin minijail0
 	dolib.so libminijail.so
 	dolib.so libminijailpreload.so
+
+	doman minijail0.[15]
 
 	local include_dir="/usr/include/chromeos"
 
