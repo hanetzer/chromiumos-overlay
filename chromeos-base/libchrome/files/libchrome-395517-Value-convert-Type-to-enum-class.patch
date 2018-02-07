@@ -1,0 +1,1391 @@
+From f43304bd86d51ea9f2106b50d0c6b612c662c78d Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Wed, 7 Feb 2018 10:01:23 -0800
+Subject: [PATCH] Value: convert Type to enum class
+
+Upstream the symbols look a little different for this, and it can
+help us move away from FundamentalValue in parts to match this
+up first.
+
+BUG=37434548
+TEST=emerge
+
+Change-Id: I7ff112e7e265e5bb414d44698d3df71e35425781
+---
+ base/json/json_parser.cc                        | 14 ++---
+ base/json/json_parser_unittest.cc               |  2 +-
+ base/json/json_reader_unittest.cc               | 80 ++++++++++++-------------
+ base/json/json_value_serializer_unittest.cc     | 12 ++--
+ base/json/json_writer.cc                        | 20 +++----
+ base/test/trace_event_analyzer.cc               |  2 +-
+ base/test/trace_event_analyzer_unittest.cc      |  2 +-
+ base/trace_event/trace_event_argument.cc        | 32 +++++-----
+ base/trace_event/trace_event_memory_overhead.cc | 16 ++---
+ base/trace_event/trace_event_unittest.cc        | 16 ++---
+ base/values.cc                                  | 74 +++++++++++------------
+ base/values.h                                   | 24 ++++----
+ base/values_unittest.cc                         | 32 +++++-----
+ dbus/values_util.cc                             | 34 +++++------
+ 14 files changed, 180 insertions(+), 180 deletions(-)
+
+diff --git a/base/json/json_parser.cc b/base/json/json_parser.cc
+index c1bcf4a..f702ee2 100644
+--- a/base/json/json_parser.cc
++++ b/base/json/json_parser.cc
+@@ -39,7 +39,7 @@ class DictionaryHiddenRootValue : public DictionaryValue {
+   DictionaryHiddenRootValue(std::unique_ptr<std::string> json,
+                             std::unique_ptr<Value> root)
+       : json_(std::move(json)) {
+-    DCHECK(root->IsType(Value::TYPE_DICTIONARY));
++    DCHECK(root->IsType(Value::Type::DICTIONARY));
+     DictionaryValue::Swap(static_cast<DictionaryValue*>(root.get()));
+   }
+ 
+@@ -91,7 +91,7 @@ class ListHiddenRootValue : public ListValue {
+   ListHiddenRootValue(std::unique_ptr<std::string> json,
+                       std::unique_ptr<Value> root)
+       : json_(std::move(json)) {
+-    DCHECK(root->IsType(Value::TYPE_LIST));
++    DCHECK(root->IsType(Value::Type::LIST));
+     ListValue::Swap(static_cast<ListValue*>(root.get()));
+   }
+ 
+@@ -140,7 +140,7 @@ class ListHiddenRootValue : public ListValue {
+ class JSONStringValue : public Value {
+  public:
+   explicit JSONStringValue(StringPiece piece)
+-      : Value(TYPE_STRING), string_piece_(piece) {}
++      : Value(Type::STRING), string_piece_(piece) {}
+ 
+   // Overridden from Value:
+   bool GetAsString(std::string* out_value) const override {
+@@ -156,7 +156,7 @@ class JSONStringValue : public Value {
+   }
+   bool Equals(const Value* other) const override {
+     std::string other_string;
+-    return other->IsType(TYPE_STRING) && other->GetAsString(&other_string) &&
++    return other->IsType(Type::STRING) && other->GetAsString(&other_string) &&
+         StringPiece(other_string) == string_piece_;
+   }
+ 
+@@ -254,13 +254,13 @@ std::unique_ptr<Value> JSONParser::Parse(StringPiece input) {
+   // Dictionaries and lists can contain JSONStringValues, so wrap them in a
+   // hidden root.
+   if (!(options_ & JSON_DETACHABLE_CHILDREN)) {
+-    if (root->IsType(Value::TYPE_DICTIONARY)) {
++    if (root->IsType(Value::Type::DICTIONARY)) {
+       return WrapUnique(new DictionaryHiddenRootValue(std::move(input_copy),
+                                                       std::move(root)));
+-    } else if (root->IsType(Value::TYPE_LIST)) {
++    } else if (root->IsType(Value::Type::LIST)) {
+       return WrapUnique(
+           new ListHiddenRootValue(std::move(input_copy), std::move(root)));
+-    } else if (root->IsType(Value::TYPE_STRING)) {
++    } else if (root->IsType(Value::Type::STRING)) {
+       // A string type could be a JSONStringValue, but because there's no
+       // corresponding HiddenRootValue, the memory will be lost. Deep copy to
+       // preserve it.
+diff --git a/base/json/json_parser_unittest.cc b/base/json/json_parser_unittest.cc
+index 30255ca..31a28ee 100644
+--- a/base/json/json_parser_unittest.cc
++++ b/base/json/json_parser_unittest.cc
+@@ -123,7 +123,7 @@ TEST_F(JSONParserTest, ConsumeLiterals) {
+   TestLastThree(parser.get());
+ 
+   ASSERT_TRUE(value.get());
+-  EXPECT_TRUE(value->IsType(Value::TYPE_NULL));
++  EXPECT_TRUE(value->IsType(Value::Type::NONE));
+ }
+ 
+ TEST_F(JSONParserTest, ConsumeNumbers) {
+diff --git a/base/json/json_reader_unittest.cc b/base/json/json_reader_unittest.cc
+index c54dafa..cc2fbc9 100644
+--- a/base/json/json_reader_unittest.cc
++++ b/base/json/json_reader_unittest.cc
+@@ -26,7 +26,7 @@ TEST(JSONReaderTest, Reading) {
+   // some whitespace checking
+   std::unique_ptr<Value> root = JSONReader().ReadToValue("   null   ");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_NULL));
++  EXPECT_TRUE(root->IsType(Value::Type::NONE));
+ 
+   // Invalid JSON string
+   root = JSONReader().ReadToValue("nu");
+@@ -35,21 +35,21 @@ TEST(JSONReaderTest, Reading) {
+   // Simple bool
+   root = JSONReader().ReadToValue("true  ");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_BOOLEAN));
++  EXPECT_TRUE(root->IsType(Value::Type::BOOLEAN));
+ 
+   // Embedded comment
+   root = JSONReader().ReadToValue("/* comment */null");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_NULL));
++  EXPECT_TRUE(root->IsType(Value::Type::NONE));
+   root = JSONReader().ReadToValue("40 /* comment */");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_INTEGER));
++  EXPECT_TRUE(root->IsType(Value::Type::INTEGER));
+   root = JSONReader().ReadToValue("true // comment");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_BOOLEAN));
++  EXPECT_TRUE(root->IsType(Value::Type::BOOLEAN));
+   root = JSONReader().ReadToValue("/* comment */\"sample string\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   std::string value;
+   EXPECT_TRUE(root->GetAsString(&value));
+   EXPECT_EQ("sample string", value);
+@@ -68,7 +68,7 @@ TEST(JSONReaderTest, Reading) {
+   EXPECT_EQ(3u, list->GetSize());
+   root = JSONReader().ReadToValue("/* comment **/42");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_INTEGER));
++  EXPECT_TRUE(root->IsType(Value::Type::INTEGER));
+   EXPECT_TRUE(root->GetAsInteger(&int_val));
+   EXPECT_EQ(42, int_val);
+   root = JSONReader().ReadToValue(
+@@ -76,14 +76,14 @@ TEST(JSONReaderTest, Reading) {
+       "// */ 43\n"
+       "44");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_INTEGER));
++  EXPECT_TRUE(root->IsType(Value::Type::INTEGER));
+   EXPECT_TRUE(root->GetAsInteger(&int_val));
+   EXPECT_EQ(44, int_val);
+ 
+   // Test number formats
+   root = JSONReader().ReadToValue("43");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_INTEGER));
++  EXPECT_TRUE(root->IsType(Value::Type::INTEGER));
+   EXPECT_TRUE(root->GetAsInteger(&int_val));
+   EXPECT_EQ(43, int_val);
+ 
+@@ -99,7 +99,7 @@ TEST(JSONReaderTest, Reading) {
+   // clause).
+   root = JSONReader().ReadToValue("0");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_INTEGER));
++  EXPECT_TRUE(root->IsType(Value::Type::INTEGER));
+   int_val = 1;
+   EXPECT_TRUE(root->GetAsInteger(&int_val));
+   EXPECT_EQ(0, int_val);
+@@ -109,13 +109,13 @@ TEST(JSONReaderTest, Reading) {
+   root = JSONReader().ReadToValue("2147483648");
+   ASSERT_TRUE(root.get());
+   double double_val;
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(2147483648.0, double_val);
+   root = JSONReader().ReadToValue("-2147483649");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(-2147483649.0, double_val);
+@@ -123,42 +123,42 @@ TEST(JSONReaderTest, Reading) {
+   // Parse a double
+   root = JSONReader().ReadToValue("43.1");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(43.1, double_val);
+ 
+   root = JSONReader().ReadToValue("4.3e-1");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(.43, double_val);
+ 
+   root = JSONReader().ReadToValue("2.1e0");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(2.1, double_val);
+ 
+   root = JSONReader().ReadToValue("2.1e+0001");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(21.0, double_val);
+ 
+   root = JSONReader().ReadToValue("0.01");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(0.01, double_val);
+ 
+   root = JSONReader().ReadToValue("1.00");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(root->IsType(Value::Type::DOUBLE));
+   double_val = 0.0;
+   EXPECT_TRUE(root->GetAsDouble(&double_val));
+   EXPECT_DOUBLE_EQ(1.0, double_val);
+@@ -202,7 +202,7 @@ TEST(JSONReaderTest, Reading) {
+   // Test string parser
+   root = JSONReader().ReadToValue("\"hello world\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   std::string str_val;
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ("hello world", str_val);
+@@ -210,7 +210,7 @@ TEST(JSONReaderTest, Reading) {
+   // Empty string
+   root = JSONReader().ReadToValue("\"\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ("", str_val);
+@@ -218,7 +218,7 @@ TEST(JSONReaderTest, Reading) {
+   // Test basic string escapes
+   root = JSONReader().ReadToValue("\" \\\"\\\\\\/\\b\\f\\n\\r\\t\\v\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ(" \"\\/\b\f\n\r\t\v", str_val);
+@@ -226,7 +226,7 @@ TEST(JSONReaderTest, Reading) {
+   // Test hex and unicode escapes including the null character.
+   root = JSONReader().ReadToValue("\"\\x41\\x00\\u1234\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ(std::wstring(L"A\0\x1234", 3), UTF8ToWide(str_val));
+@@ -248,7 +248,7 @@ TEST(JSONReaderTest, Reading) {
+   // Basic array
+   root = JSONReader::Read("[true, false, null]");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_LIST));
++  EXPECT_TRUE(root->IsType(Value::Type::LIST));
+   list = static_cast<ListValue*>(root.get());
+   EXPECT_EQ(3U, list->GetSize());
+ 
+@@ -260,14 +260,14 @@ TEST(JSONReaderTest, Reading) {
+   // Empty array
+   root = JSONReader::Read("[]");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_LIST));
++  EXPECT_TRUE(root->IsType(Value::Type::LIST));
+   list = static_cast<ListValue*>(root.get());
+   EXPECT_EQ(0U, list->GetSize());
+ 
+   // Nested arrays
+   root = JSONReader::Read("[[true], [], [false, [], [null]], null]");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_LIST));
++  EXPECT_TRUE(root->IsType(Value::Type::LIST));
+   list = static_cast<ListValue*>(root.get());
+   EXPECT_EQ(4U, list->GetSize());
+ 
+@@ -297,12 +297,12 @@ TEST(JSONReaderTest, Reading) {
+   // Valid if we set |allow_trailing_comma| to true.
+   root = JSONReader::Read("[true,]", JSON_ALLOW_TRAILING_COMMAS);
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_LIST));
++  EXPECT_TRUE(root->IsType(Value::Type::LIST));
+   list = static_cast<ListValue*>(root.get());
+   EXPECT_EQ(1U, list->GetSize());
+   Value* tmp_value = NULL;
+   ASSERT_TRUE(list->Get(0, &tmp_value));
+-  EXPECT_TRUE(tmp_value->IsType(Value::TYPE_BOOLEAN));
++  EXPECT_TRUE(tmp_value->IsType(Value::Type::BOOLEAN));
+   bool bool_value = false;
+   EXPECT_TRUE(tmp_value->GetAsBoolean(&bool_value));
+   EXPECT_TRUE(bool_value);
+@@ -321,19 +321,19 @@ TEST(JSONReaderTest, Reading) {
+   // Test objects
+   root = JSONReader::Read("{}");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+ 
+   root = JSONReader::Read(
+       "{\"number\":9.87654321, \"null\":null , \"\\x53\" : \"str\" }");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+   DictionaryValue* dict_val = static_cast<DictionaryValue*>(root.get());
+   double_val = 0.0;
+   EXPECT_TRUE(dict_val->GetDouble("number", &double_val));
+   EXPECT_DOUBLE_EQ(9.87654321, double_val);
+   Value* null_val = NULL;
+   ASSERT_TRUE(dict_val->Get("null", &null_val));
+-  EXPECT_TRUE(null_val->IsType(Value::TYPE_NULL));
++  EXPECT_TRUE(null_val->IsType(Value::Type::NONE));
+   str_val.clear();
+   EXPECT_TRUE(dict_val->GetString("S", &str_val));
+   EXPECT_EQ("str", str_val);
+@@ -369,7 +369,7 @@ TEST(JSONReaderTest, Reading) {
+   root = JSONReader::Read(
+       "{\"inner\":{\"array\":[true]},\"false\":false,\"d\":{}}");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+   dict_val = static_cast<DictionaryValue*>(root.get());
+   DictionaryValue* inner_dict = NULL;
+   ASSERT_TRUE(dict_val->GetDictionary("inner", &inner_dict));
+@@ -390,7 +390,7 @@ TEST(JSONReaderTest, Reading) {
+   // Test keys with periods
+   root = JSONReader::Read("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+   dict_val = static_cast<DictionaryValue*>(root.get());
+   int integer_value = 0;
+   EXPECT_TRUE(dict_val->GetIntegerWithoutPathExpansion("a.b", &integer_value));
+@@ -407,7 +407,7 @@ TEST(JSONReaderTest, Reading) {
+ 
+   root = JSONReader::Read("{\"a\":{\"b\":2},\"a.b\":1}");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+   dict_val = static_cast<DictionaryValue*>(root.get());
+   EXPECT_TRUE(dict_val->GetInteger("a.b", &integer_value));
+   EXPECT_EQ(2, integer_value);
+@@ -465,14 +465,14 @@ TEST(JSONReaderTest, Reading) {
+   not_evil.append("[]]");
+   root = JSONReader::Read(not_evil);
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_LIST));
++  EXPECT_TRUE(root->IsType(Value::Type::LIST));
+   list = static_cast<ListValue*>(root.get());
+   EXPECT_EQ(5001U, list->GetSize());
+ 
+   // Test utf8 encoded input
+   root = JSONReader().ReadToValue("\"\xe7\xbd\x91\xe9\xa1\xb5\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ(L"\x7f51\x9875", UTF8ToWide(str_val));
+@@ -480,7 +480,7 @@ TEST(JSONReaderTest, Reading) {
+   root = JSONReader().ReadToValue(
+       "{\"path\": \"/tmp/\xc3\xa0\xc3\xa8\xc3\xb2.png\"}");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+   EXPECT_TRUE(root->GetAsDictionary(&dict_val));
+   EXPECT_TRUE(dict_val->GetString("path", &str_val));
+   EXPECT_EQ("/tmp/\xC3\xA0\xC3\xA8\xC3\xB2.png", str_val);
+@@ -496,14 +496,14 @@ TEST(JSONReaderTest, Reading) {
+   // Test utf16 encoded strings.
+   root = JSONReader().ReadToValue("\"\\u20ac3,14\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ("\xe2\x82\xac""3,14", str_val);
+ 
+   root = JSONReader().ReadToValue("\"\\ud83d\\udca9\\ud83d\\udc6c\"");
+   ASSERT_TRUE(root.get());
+-  EXPECT_TRUE(root->IsType(Value::TYPE_STRING));
++  EXPECT_TRUE(root->IsType(Value::Type::STRING));
+   str_val.clear();
+   EXPECT_TRUE(root->GetAsString(&str_val));
+   EXPECT_EQ("\xf0\x9f\x92\xa9\xf0\x9f\x91\xac", str_val);
+@@ -526,7 +526,7 @@ TEST(JSONReaderTest, Reading) {
+ 
+   // Test literal root objects.
+   root = JSONReader::Read("null");
+-  EXPECT_TRUE(root->IsType(Value::TYPE_NULL));
++  EXPECT_TRUE(root->IsType(Value::Type::NONE));
+ 
+   root = JSONReader::Read("true");
+   ASSERT_TRUE(root.get());
+@@ -558,7 +558,7 @@ TEST(JSONReaderTest, ReadFromFile) {
+   JSONReader reader;
+   std::unique_ptr<Value> root(reader.ReadToValue(input));
+   ASSERT_TRUE(root.get()) << reader.GetErrorMessage();
+-  EXPECT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  EXPECT_TRUE(root->IsType(Value::Type::DICTIONARY));
+ }
+ #endif  // !__ANDROID__ && !__ANDROID_HOST__
+ 
+diff --git a/base/json/json_value_serializer_unittest.cc b/base/json/json_value_serializer_unittest.cc
+index 0c079b7..abc43f8 100644
+--- a/base/json/json_value_serializer_unittest.cc
++++ b/base/json/json_value_serializer_unittest.cc
+@@ -79,7 +79,7 @@ void CheckJSONIsStillTheSame(const Value& value) {
+ 
+ void ValidateJsonList(const std::string& json) {
+   std::unique_ptr<Value> root = JSONReader::Read(json);
+-  ASSERT_TRUE(root.get() && root->IsType(Value::TYPE_LIST));
++  ASSERT_TRUE(root.get() && root->IsType(Value::Type::LIST));
+   ListValue* list = static_cast<ListValue*>(root.get());
+   ASSERT_EQ(1U, list->GetSize());
+   Value* elt = NULL;
+@@ -221,14 +221,14 @@ TEST(JSONValueSerializerTest, Roundtrip) {
+   JSONStringValueDeserializer deserializer(kOriginalSerialization);
+   std::unique_ptr<Value> root = deserializer.Deserialize(NULL, NULL);
+   ASSERT_TRUE(root.get());
+-  ASSERT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  ASSERT_TRUE(root->IsType(Value::Type::DICTIONARY));
+ 
+   DictionaryValue* root_dict = static_cast<DictionaryValue*>(root.get());
+ 
+   Value* null_value = NULL;
+   ASSERT_TRUE(root_dict->Get("null", &null_value));
+   ASSERT_TRUE(null_value);
+-  ASSERT_TRUE(null_value->IsType(Value::TYPE_NULL));
++  ASSERT_TRUE(null_value->IsType(Value::Type::NONE));
+ 
+   bool bool_value = false;
+   ASSERT_TRUE(root_dict->GetBoolean("bool", &bool_value));
+@@ -381,7 +381,7 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
+ 
+   // It's ok to have a comment in a string.
+   std::unique_ptr<Value> root = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+-  ASSERT_TRUE(root.get() && root->IsType(Value::TYPE_LIST));
++  ASSERT_TRUE(root.get() && root->IsType(Value::Type::LIST));
+   ListValue* list = static_cast<ListValue*>(root.get());
+   ASSERT_EQ(1U, list->GetSize());
+   Value* elt = NULL;
+@@ -420,14 +420,14 @@ TEST_F(JSONFileValueSerializerTest, Roundtrip) {
+   root = deserializer.Deserialize(NULL, NULL);
+ 
+   ASSERT_TRUE(root.get());
+-  ASSERT_TRUE(root->IsType(Value::TYPE_DICTIONARY));
++  ASSERT_TRUE(root->IsType(Value::Type::DICTIONARY));
+ 
+   DictionaryValue* root_dict = static_cast<DictionaryValue*>(root.get());
+ 
+   Value* null_value = NULL;
+   ASSERT_TRUE(root_dict->Get("null", &null_value));
+   ASSERT_TRUE(null_value);
+-  ASSERT_TRUE(null_value->IsType(Value::TYPE_NULL));
++  ASSERT_TRUE(null_value->IsType(Value::Type::NONE));
+ 
+   bool bool_value = false;
+   ASSERT_TRUE(root_dict->GetBoolean("bool", &bool_value));
+diff --git a/base/json/json_writer.cc b/base/json/json_writer.cc
+index 19bc0da..8d980cc 100644
+--- a/base/json/json_writer.cc
++++ b/base/json/json_writer.cc
+@@ -57,12 +57,12 @@ JSONWriter::JSONWriter(int options, std::string* json)
+ 
+ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+   switch (node.GetType()) {
+-    case Value::TYPE_NULL: {
++    case Value::Type::NONE: {
+       json_string_->append("null");
+       return true;
+     }
+ 
+-    case Value::TYPE_BOOLEAN: {
++    case Value::Type::BOOLEAN: {
+       bool value;
+       bool result = node.GetAsBoolean(&value);
+       DCHECK(result);
+@@ -70,7 +70,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_INTEGER: {
++    case Value::Type::INTEGER: {
+       int value;
+       bool result = node.GetAsInteger(&value);
+       DCHECK(result);
+@@ -78,7 +78,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_DOUBLE: {
++    case Value::Type::DOUBLE: {
+       double value;
+       bool result = node.GetAsDouble(&value);
+       DCHECK(result);
+@@ -110,7 +110,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_STRING: {
++    case Value::Type::STRING: {
+       std::string value;
+       bool result = node.GetAsString(&value);
+       DCHECK(result);
+@@ -118,7 +118,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_LIST: {
++    case Value::Type::LIST: {
+       json_string_->push_back('[');
+       if (pretty_print_)
+         json_string_->push_back(' ');
+@@ -130,7 +130,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       for (ListValue::const_iterator it = list->begin(); it != list->end();
+            ++it) {
+         const Value* value = *it;
+-        if (omit_binary_values_ && value->GetType() == Value::TYPE_BINARY)
++        if (omit_binary_values_ && value->GetType() == Value::Type::BINARY)
+           continue;
+ 
+         if (first_value_has_been_output) {
+@@ -151,7 +151,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_DICTIONARY: {
++    case Value::Type::DICTIONARY: {
+       json_string_->push_back('{');
+       if (pretty_print_)
+         json_string_->append(kPrettyPrintLineEnding);
+@@ -163,7 +163,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       for (DictionaryValue::Iterator itr(*dict); !itr.IsAtEnd();
+            itr.Advance()) {
+         if (omit_binary_values_ &&
+-            itr.value().GetType() == Value::TYPE_BINARY) {
++            itr.value().GetType() == Value::Type::BINARY) {
+           continue;
+         }
+ 
+@@ -196,7 +196,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+       return result;
+     }
+ 
+-    case Value::TYPE_BINARY:
++    case Value::Type::BINARY:
+       // Successful only if we're allowed to omit it.
+       DLOG_IF(ERROR, !omit_binary_values_) << "Cannot serialize binary value.";
+       return omit_binary_values_;
+diff --git a/base/test/trace_event_analyzer.cc b/base/test/trace_event_analyzer.cc
+index 64436dc..cf7fb83 100644
+--- a/base/test/trace_event_analyzer.cc
++++ b/base/test/trace_event_analyzer.cc
+@@ -34,7 +34,7 @@ TraceEvent::~TraceEvent() {
+ TraceEvent& TraceEvent::operator=(TraceEvent&& rhs) = default;
+ 
+ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
+-  if (event_value->GetType() != base::Value::TYPE_DICTIONARY) {
++  if (event_value->GetType() != base::Value::Type::DICTIONARY) {
+     LOG(ERROR) << "Value must be TYPE_DICTIONARY";
+     return false;
+   }
+diff --git a/base/test/trace_event_analyzer_unittest.cc b/base/test/trace_event_analyzer_unittest.cc
+index e73dd65..3e8ef00 100644
+--- a/base/test/trace_event_analyzer_unittest.cc
++++ b/base/test/trace_event_analyzer_unittest.cc
+@@ -121,7 +121,7 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
+ 
+   std::unique_ptr<base::Value> arg;
+   EXPECT_TRUE(event.GetArgAsValue("dict", &arg));
+-  EXPECT_EQ(base::Value::TYPE_DICTIONARY, arg->GetType());
++  EXPECT_EQ(base::Value::Type::DICTIONARY, arg->GetType());
+ }
+ 
+ TEST_F(TraceEventAnalyzerTest, QueryEventMember) {
+diff --git a/base/trace_event/trace_event_argument.cc b/base/trace_event/trace_event_argument.cc
+index 8babf3b..8b242b6 100644
+--- a/base/trace_event/trace_event_argument.cc
++++ b/base/trace_event/trace_event_argument.cc
+@@ -244,36 +244,36 @@ void TracedValue::SetBaseValueWithCopiedName(base::StringPiece name,
+                                              const base::Value& value) {
+   DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
+   switch (value.GetType()) {
+-    case base::Value::TYPE_NULL:
+-    case base::Value::TYPE_BINARY:
++    case base::Value::Type::NONE:
++    case base::Value::Type::BINARY:
+       NOTREACHED();
+       break;
+ 
+-    case base::Value::TYPE_BOOLEAN: {
++    case base::Value::Type::BOOLEAN: {
+       bool bool_value;
+       value.GetAsBoolean(&bool_value);
+       SetBooleanWithCopiedName(name, bool_value);
+     } break;
+ 
+-    case base::Value::TYPE_INTEGER: {
++    case base::Value::Type::INTEGER: {
+       int int_value;
+       value.GetAsInteger(&int_value);
+       SetIntegerWithCopiedName(name, int_value);
+     } break;
+ 
+-    case base::Value::TYPE_DOUBLE: {
++    case base::Value::Type::DOUBLE: {
+       double double_value;
+       value.GetAsDouble(&double_value);
+       SetDoubleWithCopiedName(name, double_value);
+     } break;
+ 
+-    case base::Value::TYPE_STRING: {
++    case base::Value::Type::STRING: {
+       const StringValue* string_value;
+       value.GetAsString(&string_value);
+       SetStringWithCopiedName(name, string_value->GetString());
+     } break;
+ 
+-    case base::Value::TYPE_DICTIONARY: {
++    case base::Value::Type::DICTIONARY: {
+       const DictionaryValue* dict_value;
+       value.GetAsDictionary(&dict_value);
+       BeginDictionaryWithCopiedName(name);
+@@ -284,7 +284,7 @@ void TracedValue::SetBaseValueWithCopiedName(base::StringPiece name,
+       EndDictionary();
+     } break;
+ 
+-    case base::Value::TYPE_LIST: {
++    case base::Value::Type::LIST: {
+       const ListValue* list_value;
+       value.GetAsList(&list_value);
+       BeginArrayWithCopiedName(name);
+@@ -298,36 +298,36 @@ void TracedValue::SetBaseValueWithCopiedName(base::StringPiece name,
+ void TracedValue::AppendBaseValue(const base::Value& value) {
+   DCHECK_CURRENT_CONTAINER_IS(kStackTypeArray);
+   switch (value.GetType()) {
+-    case base::Value::TYPE_NULL:
+-    case base::Value::TYPE_BINARY:
++    case base::Value::Type::NONE:
++    case base::Value::Type::BINARY:
+       NOTREACHED();
+       break;
+ 
+-    case base::Value::TYPE_BOOLEAN: {
++    case base::Value::Type::BOOLEAN: {
+       bool bool_value;
+       value.GetAsBoolean(&bool_value);
+       AppendBoolean(bool_value);
+     } break;
+ 
+-    case base::Value::TYPE_INTEGER: {
++    case base::Value::Type::INTEGER: {
+       int int_value;
+       value.GetAsInteger(&int_value);
+       AppendInteger(int_value);
+     } break;
+ 
+-    case base::Value::TYPE_DOUBLE: {
++    case base::Value::Type::DOUBLE: {
+       double double_value;
+       value.GetAsDouble(&double_value);
+       AppendDouble(double_value);
+     } break;
+ 
+-    case base::Value::TYPE_STRING: {
++    case base::Value::Type::STRING: {
+       const StringValue* string_value;
+       value.GetAsString(&string_value);
+       AppendString(string_value->GetString());
+     } break;
+ 
+-    case base::Value::TYPE_DICTIONARY: {
++    case base::Value::Type::DICTIONARY: {
+       const DictionaryValue* dict_value;
+       value.GetAsDictionary(&dict_value);
+       BeginDictionary();
+@@ -338,7 +338,7 @@ void TracedValue::AppendBaseValue(const base::Value& value) {
+       EndDictionary();
+     } break;
+ 
+-    case base::Value::TYPE_LIST: {
++    case base::Value::Type::LIST: {
+       const ListValue* list_value;
+       value.GetAsList(&list_value);
+       BeginArray();
+diff --git a/base/trace_event/trace_event_memory_overhead.cc b/base/trace_event/trace_event_memory_overhead.cc
+index ba7207d..0dd36d2 100644
+--- a/base/trace_event/trace_event_memory_overhead.cc
++++ b/base/trace_event/trace_event_memory_overhead.cc
+@@ -69,27 +69,27 @@ void TraceEventMemoryOverhead::AddRefCountedString(
+ 
+ void TraceEventMemoryOverhead::AddValue(const Value& value) {
+   switch (value.GetType()) {
+-    case Value::TYPE_NULL:
+-    case Value::TYPE_BOOLEAN:
+-    case Value::TYPE_INTEGER:
+-    case Value::TYPE_DOUBLE:
++    case Value::Type::NONE:
++    case Value::Type::BOOLEAN:
++    case Value::Type::INTEGER:
++    case Value::Type::DOUBLE:
+       Add("FundamentalValue", sizeof(Value));
+       break;
+ 
+-    case Value::TYPE_STRING: {
++    case Value::Type::STRING: {
+       const StringValue* string_value = nullptr;
+       value.GetAsString(&string_value);
+       Add("StringValue", sizeof(StringValue));
+       AddString(string_value->GetString());
+     } break;
+ 
+-    case Value::TYPE_BINARY: {
++    case Value::Type::BINARY: {
+       const BinaryValue* binary_value = nullptr;
+       value.GetAsBinary(&binary_value);
+       Add("BinaryValue", sizeof(BinaryValue) + binary_value->GetSize());
+     } break;
+ 
+-    case Value::TYPE_DICTIONARY: {
++    case Value::Type::DICTIONARY: {
+       const DictionaryValue* dictionary_value = nullptr;
+       value.GetAsDictionary(&dictionary_value);
+       Add("DictionaryValue", sizeof(DictionaryValue));
+@@ -100,7 +100,7 @@ void TraceEventMemoryOverhead::AddValue(const Value& value) {
+       }
+     } break;
+ 
+-    case Value::TYPE_LIST: {
++    case Value::Type::LIST: {
+       const ListValue* list_value = nullptr;
+       value.GetAsList(&list_value);
+       Add("ListValue", sizeof(ListValue));
+diff --git a/base/trace_event/trace_event_unittest.cc b/base/trace_event/trace_event_unittest.cc
+index e626a77..b712798 100644
+--- a/base/trace_event/trace_event_unittest.cc
++++ b/base/trace_event/trace_event_unittest.cc
+@@ -256,7 +256,7 @@ DictionaryValue* TraceEventTestFixture::FindMatchingTraceEntry(
+   for (size_t i = 0; i < trace_parsed_count; i++) {
+     Value* value = NULL;
+     trace_parsed_.Get(i, &value);
+-    if (!value || value->GetType() != Value::TYPE_DICTIONARY)
++    if (!value || value->GetType() != Value::Type::DICTIONARY)
+       continue;
+     DictionaryValue* dict = static_cast<DictionaryValue*>(value);
+ 
+@@ -274,7 +274,7 @@ void TraceEventTestFixture::DropTracedMetadataRecords() {
+   for (size_t i = 0; i < old_trace_parsed_size; i++) {
+     Value* value = nullptr;
+     old_trace_parsed->Get(i, &value);
+-    if (!value || value->GetType() != Value::TYPE_DICTIONARY) {
++    if (!value || value->GetType() != Value::Type::DICTIONARY) {
+       trace_parsed_.Append(value->CreateDeepCopy());
+       continue;
+     }
+@@ -363,7 +363,7 @@ const DictionaryValue* FindTraceEntry(
+          match_after_this_item = NULL;
+       continue;
+     }
+-    if (!value || value->GetType() != Value::TYPE_DICTIONARY)
++    if (!value || value->GetType() != Value::Type::DICTIONARY)
+       continue;
+     const DictionaryValue* dict = static_cast<const DictionaryValue*>(value);
+ 
+@@ -381,7 +381,7 @@ std::vector<const DictionaryValue*> FindTraceEntries(
+   for (size_t i = 0; i < trace_parsed_count; i++) {
+     const Value* value = NULL;
+     trace_parsed.Get(i, &value);
+-    if (!value || value->GetType() != Value::TYPE_DICTIONARY)
++    if (!value || value->GetType() != Value::Type::DICTIONARY)
+       continue;
+     const DictionaryValue* dict = static_cast<const DictionaryValue*>(value);
+ 
+@@ -974,7 +974,7 @@ void ValidateInstantEventPresentOnEveryThread(const ListValue& trace_parsed,
+   for (size_t i = 0; i < trace_parsed_count; i++) {
+     const Value* value = NULL;
+     trace_parsed.Get(i, &value);
+-    if (!value || value->GetType() != Value::TYPE_DICTIONARY)
++    if (!value || value->GetType() != Value::Type::DICTIONARY)
+       continue;
+     const DictionaryValue* dict = static_cast<const DictionaryValue*>(value);
+     std::string name;
+@@ -2225,7 +2225,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
+   dict->GetDictionary("args", &args_dict);
+   ASSERT_TRUE(args_dict);
+   EXPECT_TRUE(args_dict->Get("float_one", &value));
+-  EXPECT_TRUE(value->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(value->IsType(Value::Type::DOUBLE));
+   EXPECT_TRUE(value->GetAsDouble(&double_value));
+   EXPECT_EQ(1, double_value);
+ 
+@@ -2235,7 +2235,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
+   dict->GetDictionary("args", &args_dict);
+   ASSERT_TRUE(args_dict);
+   EXPECT_TRUE(args_dict->Get("float_half", &value));
+-  EXPECT_TRUE(value->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(value->IsType(Value::Type::DOUBLE));
+   EXPECT_TRUE(value->GetAsDouble(&double_value));
+   EXPECT_EQ(0.5, double_value);
+ 
+@@ -2245,7 +2245,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
+   dict->GetDictionary("args", &args_dict);
+   ASSERT_TRUE(args_dict);
+   EXPECT_TRUE(args_dict->Get("float_neghalf", &value));
+-  EXPECT_TRUE(value->IsType(Value::TYPE_DOUBLE));
++  EXPECT_TRUE(value->IsType(Value::Type::DOUBLE));
+   EXPECT_TRUE(value->GetAsDouble(&double_value));
+   EXPECT_EQ(-0.5, double_value);
+ 
+diff --git a/base/values.cc b/base/values.cc
+index 5f6eaae..e402a35 100644
+--- a/base/values.cc
++++ b/base/values.cc
+@@ -56,10 +56,10 @@ std::unique_ptr<DictionaryValue> CopyDictionaryWithoutEmptyChildren(
+ 
+ std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node) {
+   switch (node.GetType()) {
+-    case Value::TYPE_LIST:
++    case Value::Type::LIST:
+       return CopyListWithoutEmptyChildren(static_cast<const ListValue&>(node));
+ 
+-    case Value::TYPE_DICTIONARY:
++    case Value::Type::DICTIONARY:
+       return CopyDictionaryWithoutEmptyChildren(
+           static_cast<const DictionaryValue&>(node));
+ 
+@@ -91,7 +91,7 @@ Value::~Value() {
+ 
+ // static
+ std::unique_ptr<Value> Value::CreateNullValue() {
+-  return WrapUnique(new Value(TYPE_NULL));
++  return WrapUnique(new Value(Type::NONE));
+ }
+ 
+ bool Value::GetAsBinary(const BinaryValue**) const {
+@@ -141,7 +141,7 @@ bool Value::GetAsDictionary(const DictionaryValue**) const {
+ Value* Value::DeepCopy() const {
+   // This method should only be getting called for null Values--all subclasses
+   // need to provide their own implementation;.
+-  DCHECK(IsType(TYPE_NULL));
++  DCHECK(IsType(Type::NONE));
+   return CreateNullValue().release();
+ }
+ 
+@@ -152,8 +152,8 @@ std::unique_ptr<Value> Value::CreateDeepCopy() const {
+ bool Value::Equals(const Value* other) const {
+   // This method should only be getting called for null Values--all subclasses
+   // need to provide their own implementation;.
+-  DCHECK(IsType(TYPE_NULL));
+-  return other->IsType(TYPE_NULL);
++  DCHECK(IsType(Type::NONE));
++  return other->IsType(Type::NONE);
+ }
+ 
+ // static
+@@ -175,15 +175,15 @@ Value& Value::operator=(const Value& that) {
+ ///////////////////// FundamentalValue ////////////////////
+ 
+ FundamentalValue::FundamentalValue(bool in_value)
+-    : Value(TYPE_BOOLEAN), boolean_value_(in_value) {
++    : Value(Type::BOOLEAN), boolean_value_(in_value) {
+ }
+ 
+ FundamentalValue::FundamentalValue(int in_value)
+-    : Value(TYPE_INTEGER), integer_value_(in_value) {
++    : Value(Type::INTEGER), integer_value_(in_value) {
+ }
+ 
+ FundamentalValue::FundamentalValue(double in_value)
+-    : Value(TYPE_DOUBLE), double_value_(in_value) {
++    : Value(Type::DOUBLE), double_value_(in_value) {
+   if (!std::isfinite(double_value_)) {
+     NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
+                  << "values cannot be represented in JSON";
+@@ -195,34 +195,34 @@ FundamentalValue::~FundamentalValue() {
+ }
+ 
+ bool FundamentalValue::GetAsBoolean(bool* out_value) const {
+-  if (out_value && IsType(TYPE_BOOLEAN))
++  if (out_value && IsType(Type::BOOLEAN))
+     *out_value = boolean_value_;
+-  return (IsType(TYPE_BOOLEAN));
++  return (IsType(Type::BOOLEAN));
+ }
+ 
+ bool FundamentalValue::GetAsInteger(int* out_value) const {
+-  if (out_value && IsType(TYPE_INTEGER))
++  if (out_value && IsType(Type::INTEGER))
+     *out_value = integer_value_;
+-  return (IsType(TYPE_INTEGER));
++  return (IsType(Type::INTEGER));
+ }
+ 
+ bool FundamentalValue::GetAsDouble(double* out_value) const {
+-  if (out_value && IsType(TYPE_DOUBLE))
++  if (out_value && IsType(Type::DOUBLE))
+     *out_value = double_value_;
+-  else if (out_value && IsType(TYPE_INTEGER))
++  else if (out_value && IsType(Type::INTEGER))
+     *out_value = integer_value_;
+-  return (IsType(TYPE_DOUBLE) || IsType(TYPE_INTEGER));
++  return (IsType(Type::DOUBLE) || IsType(Type::INTEGER));
+ }
+ 
+ FundamentalValue* FundamentalValue::DeepCopy() const {
+   switch (GetType()) {
+-    case TYPE_BOOLEAN:
++    case Type::BOOLEAN:
+       return new FundamentalValue(boolean_value_);
+ 
+-    case TYPE_INTEGER:
++    case Type::INTEGER:
+       return new FundamentalValue(integer_value_);
+ 
+-    case TYPE_DOUBLE:
++    case Type::DOUBLE:
+       return new FundamentalValue(double_value_);
+ 
+     default:
+@@ -236,15 +236,15 @@ bool FundamentalValue::Equals(const Value* other) const {
+     return false;
+ 
+   switch (GetType()) {
+-    case TYPE_BOOLEAN: {
++    case Type::BOOLEAN: {
+       bool lhs, rhs;
+       return GetAsBoolean(&lhs) && other->GetAsBoolean(&rhs) && lhs == rhs;
+     }
+-    case TYPE_INTEGER: {
++    case Type::INTEGER: {
+       int lhs, rhs;
+       return GetAsInteger(&lhs) && other->GetAsInteger(&rhs) && lhs == rhs;
+     }
+-    case TYPE_DOUBLE: {
++    case Type::DOUBLE: {
+       double lhs, rhs;
+       return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
+     }
+@@ -257,13 +257,13 @@ bool FundamentalValue::Equals(const Value* other) const {
+ ///////////////////// StringValue ////////////////////
+ 
+ StringValue::StringValue(const std::string& in_value)
+-    : Value(TYPE_STRING),
++    : Value(Type::STRING),
+       value_(in_value) {
+   DCHECK(IsStringUTF8(in_value));
+ }
+ 
+ StringValue::StringValue(const string16& in_value)
+-    : Value(TYPE_STRING),
++    : Value(Type::STRING),
+       value_(UTF16ToUTF8(in_value)) {
+ }
+ 
+@@ -310,12 +310,12 @@ bool StringValue::Equals(const Value* other) const {
+ ///////////////////// BinaryValue ////////////////////
+ 
+ BinaryValue::BinaryValue()
+-    : Value(TYPE_BINARY),
++    : Value(Type::BINARY),
+       size_(0) {
+ }
+ 
+ BinaryValue::BinaryValue(std::unique_ptr<char[]> buffer, size_t size)
+-    : Value(TYPE_BINARY), buffer_(std::move(buffer)), size_(size) {}
++    : Value(Type::BINARY), buffer_(std::move(buffer)), size_(size) {}
+ 
+ BinaryValue::~BinaryValue() {
+ }
+@@ -362,7 +362,7 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
+ }
+ 
+ DictionaryValue::DictionaryValue()
+-    : Value(TYPE_DICTIONARY) {
++    : Value(Type::DICTIONARY) {
+ }
+ 
+ DictionaryValue::~DictionaryValue() {
+@@ -587,7 +587,7 @@ bool DictionaryValue::GetBinary(const std::string& path,
+                                 const BinaryValue** out_value) const {
+   const Value* value;
+   bool result = Get(path, &value);
+-  if (!result || !value->IsType(TYPE_BINARY))
++  if (!result || !value->IsType(Type::BINARY))
+     return false;
+ 
+   if (out_value)
+@@ -607,7 +607,7 @@ bool DictionaryValue::GetDictionary(StringPiece path,
+                                     const DictionaryValue** out_value) const {
+   const Value* value;
+   bool result = Get(path, &value);
+-  if (!result || !value->IsType(TYPE_DICTIONARY))
++  if (!result || !value->IsType(Type::DICTIONARY))
+     return false;
+ 
+   if (out_value)
+@@ -627,7 +627,7 @@ bool DictionaryValue::GetList(const std::string& path,
+                               const ListValue** out_value) const {
+   const Value* value;
+   bool result = Get(path, &value);
+-  if (!result || !value->IsType(TYPE_LIST))
++  if (!result || !value->IsType(Type::LIST))
+     return false;
+ 
+   if (out_value)
+@@ -713,7 +713,7 @@ bool DictionaryValue::GetDictionaryWithoutPathExpansion(
+     const DictionaryValue** out_value) const {
+   const Value* value;
+   bool result = GetWithoutPathExpansion(key, &value);
+-  if (!result || !value->IsType(TYPE_DICTIONARY))
++  if (!result || !value->IsType(Type::DICTIONARY))
+     return false;
+ 
+   if (out_value)
+@@ -737,7 +737,7 @@ bool DictionaryValue::GetListWithoutPathExpansion(
+     const ListValue** out_value) const {
+   const Value* value;
+   bool result = GetWithoutPathExpansion(key, &value);
+-  if (!result || !value->IsType(TYPE_LIST))
++  if (!result || !value->IsType(Type::LIST))
+     return false;
+ 
+   if (out_value)
+@@ -821,7 +821,7 @@ void DictionaryValue::MergeDictionary(const DictionaryValue* dictionary) {
+   for (DictionaryValue::Iterator it(*dictionary); !it.IsAtEnd(); it.Advance()) {
+     const Value* merge_value = &it.value();
+     // Check whether we have to merge dictionaries.
+-    if (merge_value->IsType(Value::TYPE_DICTIONARY)) {
++    if (merge_value->IsType(Value::Type::DICTIONARY)) {
+       DictionaryValue* sub_dict;
+       if (GetDictionaryWithoutPathExpansion(it.key(), &sub_dict)) {
+         sub_dict->MergeDictionary(
+@@ -896,7 +896,7 @@ std::unique_ptr<ListValue> ListValue::From(std::unique_ptr<Value> value) {
+   return nullptr;
+ }
+ 
+-ListValue::ListValue() : Value(TYPE_LIST) {
++ListValue::ListValue() : Value(Type::LIST) {
+ }
+ 
+ ListValue::~ListValue() {
+@@ -989,7 +989,7 @@ bool ListValue::GetString(size_t index, string16* out_value) const {
+ bool ListValue::GetBinary(size_t index, const BinaryValue** out_value) const {
+   const Value* value;
+   bool result = Get(index, &value);
+-  if (!result || !value->IsType(TYPE_BINARY))
++  if (!result || !value->IsType(Type::BINARY))
+     return false;
+ 
+   if (out_value)
+@@ -1008,7 +1008,7 @@ bool ListValue::GetDictionary(size_t index,
+                               const DictionaryValue** out_value) const {
+   const Value* value;
+   bool result = Get(index, &value);
+-  if (!result || !value->IsType(TYPE_DICTIONARY))
++  if (!result || !value->IsType(Type::DICTIONARY))
+     return false;
+ 
+   if (out_value)
+@@ -1026,7 +1026,7 @@ bool ListValue::GetDictionary(size_t index, DictionaryValue** out_value) {
+ bool ListValue::GetList(size_t index, const ListValue** out_value) const {
+   const Value* value;
+   bool result = Get(index, &value);
+-  if (!result || !value->IsType(TYPE_LIST))
++  if (!result || !value->IsType(Type::LIST))
+     return false;
+ 
+   if (out_value)
+diff --git a/base/values.h b/base/values.h
+index e2506cc..0883a07 100644
+--- a/base/values.h
++++ b/base/values.h
+@@ -52,15 +52,15 @@ typedef std::map<std::string, Value*> ValueMap;
+ // See the file-level comment above for more information.
+ class BASE_EXPORT Value {
+  public:
+-  enum Type {
+-    TYPE_NULL = 0,
+-    TYPE_BOOLEAN,
+-    TYPE_INTEGER,
+-    TYPE_DOUBLE,
+-    TYPE_STRING,
+-    TYPE_BINARY,
+-    TYPE_DICTIONARY,
+-    TYPE_LIST
++  enum class Type {
++    NONE = 0,
++    BOOLEAN,
++    INTEGER,
++    DOUBLE,
++    STRING,
++    BINARY,
++    DICTIONARY,
++    LIST
+     // Note: Do not add more types. See the file-level comment above for why.
+   };
+ 
+@@ -132,7 +132,7 @@ class BASE_EXPORT FundamentalValue : public Value {
+   // Overridden from Value:
+   bool GetAsBoolean(bool* out_value) const override;
+   bool GetAsInteger(int* out_value) const override;
+-  // Values of both type TYPE_INTEGER and TYPE_DOUBLE can be obtained as
++  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
+   // doubles.
+   bool GetAsDouble(double* out_value) const override;
+   FundamentalValue* DeepCopy() const override;
+@@ -284,7 +284,7 @@ class BASE_EXPORT DictionaryValue : public Value {
+   // |out_value| is optional and will only be set if non-NULL.
+   bool GetBoolean(const std::string& path, bool* out_value) const;
+   bool GetInteger(const std::string& path, int* out_value) const;
+-  // Values of both type TYPE_INTEGER and TYPE_DOUBLE can be obtained as
++  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
+   // doubles.
+   bool GetDouble(const std::string& path, double* out_value) const;
+   bool GetString(const std::string& path, std::string* out_value) const;
+@@ -430,7 +430,7 @@ class BASE_EXPORT ListValue : public Value {
+   // |out_value| is optional and will only be set if non-NULL.
+   bool GetBoolean(size_t index, bool* out_value) const;
+   bool GetInteger(size_t index, int* out_value) const;
+-  // Values of both type TYPE_INTEGER and TYPE_DOUBLE can be obtained as
++  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
+   // doubles.
+   bool GetDouble(size_t index, double* out_value) const;
+   bool GetString(size_t index, std::string* out_value) const;
+diff --git a/base/values_unittest.cc b/base/values_unittest.cc
+index ac78830..867df00 100644
+--- a/base/values_unittest.cc
++++ b/base/values_unittest.cc
+@@ -145,10 +145,10 @@ TEST(ValuesTest, StringValue) {
+   // Test overloaded StringValue constructor.
+   std::unique_ptr<Value> narrow_value(new StringValue("narrow"));
+   ASSERT_TRUE(narrow_value.get());
+-  ASSERT_TRUE(narrow_value->IsType(Value::TYPE_STRING));
++  ASSERT_TRUE(narrow_value->IsType(Value::Type::STRING));
+   std::unique_ptr<Value> utf16_value(new StringValue(ASCIIToUTF16("utf16")));
+   ASSERT_TRUE(utf16_value.get());
+-  ASSERT_TRUE(utf16_value->IsType(Value::TYPE_STRING));
++  ASSERT_TRUE(utf16_value->IsType(Value::Type::STRING));
+ 
+   // Test overloaded GetAsString.
+   std::string narrow = "http://google.com";
+@@ -179,7 +179,7 @@ TEST(ValuesTest, StringValue) {
+ // properly deleted by modifying the value of external flag on destruction.
+ class DeletionTestValue : public Value {
+  public:
+-  explicit DeletionTestValue(bool* deletion_flag) : Value(TYPE_NULL) {
++  explicit DeletionTestValue(bool* deletion_flag) : Value(Type::NONE) {
+     Init(deletion_flag);  // Separate function so that we can use ASSERT_*
+   }
+ 
+@@ -343,7 +343,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansion) {
+   EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
+   Value* value4;
+   ASSERT_TRUE(dict.GetWithoutPathExpansion("this.isnt.expanded", &value4));
+-  EXPECT_EQ(Value::TYPE_NULL, value4->GetType());
++  EXPECT_EQ(Value::Type::NONE, value4->GetType());
+ }
+ 
+ // Tests the deprecated version of SetWithoutPathExpansion.
+@@ -367,7 +367,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
+   EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
+   Value* value4;
+   ASSERT_TRUE(dict.GetWithoutPathExpansion("this.isnt.expanded", &value4));
+-  EXPECT_EQ(Value::TYPE_NULL, value4->GetType());
++  EXPECT_EQ(Value::Type::NONE, value4->GetType());
+ }
+ 
+ TEST(ValuesTest, DictionaryRemovePath) {
+@@ -378,7 +378,7 @@ TEST(ValuesTest, DictionaryRemovePath) {
+   std::unique_ptr<Value> removed_item;
+   EXPECT_TRUE(dict.RemovePath("a.long.way.down", &removed_item));
+   ASSERT_TRUE(removed_item);
+-  EXPECT_TRUE(removed_item->IsType(base::Value::TYPE_INTEGER));
++  EXPECT_TRUE(removed_item->IsType(base::Value::Type::INTEGER));
+   EXPECT_FALSE(dict.HasKey("a.long.way.down"));
+   EXPECT_FALSE(dict.HasKey("a.long.way"));
+   EXPECT_TRUE(dict.Get("a.long.key.path", NULL));
+@@ -391,7 +391,7 @@ TEST(ValuesTest, DictionaryRemovePath) {
+   removed_item.reset();
+   EXPECT_TRUE(dict.RemovePath("a.long.key.path", &removed_item));
+   ASSERT_TRUE(removed_item);
+-  EXPECT_TRUE(removed_item->IsType(base::Value::TYPE_BOOLEAN));
++  EXPECT_TRUE(removed_item->IsType(base::Value::Type::BOOLEAN));
+   EXPECT_TRUE(dict.empty());
+ }
+ 
+@@ -450,13 +450,13 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("null", &copy_null));
+   ASSERT_TRUE(copy_null);
+   ASSERT_NE(copy_null, original_null);
+-  ASSERT_TRUE(copy_null->IsType(Value::TYPE_NULL));
++  ASSERT_TRUE(copy_null->IsType(Value::Type::NONE));
+ 
+   Value* copy_bool = NULL;
+   ASSERT_TRUE(copy_dict->Get("bool", &copy_bool));
+   ASSERT_TRUE(copy_bool);
+   ASSERT_NE(copy_bool, original_bool);
+-  ASSERT_TRUE(copy_bool->IsType(Value::TYPE_BOOLEAN));
++  ASSERT_TRUE(copy_bool->IsType(Value::Type::BOOLEAN));
+   bool copy_bool_value = false;
+   ASSERT_TRUE(copy_bool->GetAsBoolean(&copy_bool_value));
+   ASSERT_TRUE(copy_bool_value);
+@@ -465,7 +465,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("int", &copy_int));
+   ASSERT_TRUE(copy_int);
+   ASSERT_NE(copy_int, original_int);
+-  ASSERT_TRUE(copy_int->IsType(Value::TYPE_INTEGER));
++  ASSERT_TRUE(copy_int->IsType(Value::Type::INTEGER));
+   int copy_int_value = 0;
+   ASSERT_TRUE(copy_int->GetAsInteger(&copy_int_value));
+   ASSERT_EQ(42, copy_int_value);
+@@ -474,7 +474,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("double", &copy_double));
+   ASSERT_TRUE(copy_double);
+   ASSERT_NE(copy_double, original_double);
+-  ASSERT_TRUE(copy_double->IsType(Value::TYPE_DOUBLE));
++  ASSERT_TRUE(copy_double->IsType(Value::Type::DOUBLE));
+   double copy_double_value = 0;
+   ASSERT_TRUE(copy_double->GetAsDouble(&copy_double_value));
+   ASSERT_EQ(3.14, copy_double_value);
+@@ -483,7 +483,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("string", &copy_string));
+   ASSERT_TRUE(copy_string);
+   ASSERT_NE(copy_string, original_string);
+-  ASSERT_TRUE(copy_string->IsType(Value::TYPE_STRING));
++  ASSERT_TRUE(copy_string->IsType(Value::Type::STRING));
+   std::string copy_string_value;
+   string16 copy_string16_value;
+   ASSERT_TRUE(copy_string->GetAsString(&copy_string_value));
+@@ -495,7 +495,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("string16", &copy_string16));
+   ASSERT_TRUE(copy_string16);
+   ASSERT_NE(copy_string16, original_string16);
+-  ASSERT_TRUE(copy_string16->IsType(Value::TYPE_STRING));
++  ASSERT_TRUE(copy_string16->IsType(Value::Type::STRING));
+   ASSERT_TRUE(copy_string16->GetAsString(&copy_string_value));
+   ASSERT_TRUE(copy_string16->GetAsString(&copy_string16_value));
+   ASSERT_EQ(std::string("hello16"), copy_string_value);
+@@ -505,7 +505,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("binary", &copy_binary));
+   ASSERT_TRUE(copy_binary);
+   ASSERT_NE(copy_binary, original_binary);
+-  ASSERT_TRUE(copy_binary->IsType(Value::TYPE_BINARY));
++  ASSERT_TRUE(copy_binary->IsType(Value::Type::BINARY));
+   ASSERT_NE(original_binary->GetBuffer(),
+     static_cast<BinaryValue*>(copy_binary)->GetBuffer());
+   ASSERT_EQ(original_binary->GetSize(),
+@@ -518,7 +518,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("list", &copy_value));
+   ASSERT_TRUE(copy_value);
+   ASSERT_NE(copy_value, original_list);
+-  ASSERT_TRUE(copy_value->IsType(Value::TYPE_LIST));
++  ASSERT_TRUE(copy_value->IsType(Value::Type::LIST));
+   ListValue* copy_list = NULL;
+   ASSERT_TRUE(copy_value->GetAsList(&copy_list));
+   ASSERT_TRUE(copy_list);
+@@ -544,7 +544,7 @@ TEST(ValuesTest, DeepCopy) {
+   ASSERT_TRUE(copy_dict->Get("dictionary", &copy_value));
+   ASSERT_TRUE(copy_value);
+   ASSERT_NE(copy_value, original_nested_dictionary);
+-  ASSERT_TRUE(copy_value->IsType(Value::TYPE_DICTIONARY));
++  ASSERT_TRUE(copy_value->IsType(Value::Type::DICTIONARY));
+   DictionaryValue* copy_nested_dictionary = NULL;
+   ASSERT_TRUE(copy_value->GetAsDictionary(&copy_nested_dictionary));
+   ASSERT_TRUE(copy_nested_dictionary);
+diff --git a/dbus/values_util.cc b/dbus/values_util.cc
+index ed435a1..56832d3 100644
+--- a/dbus/values_util.cc
++++ b/dbus/values_util.cc
+@@ -66,19 +66,19 @@ bool PopDictionaryEntries(MessageReader* reader,
+ // Gets the D-Bus type signature for the value.
+ std::string GetTypeSignature(const base::Value& value) {
+   switch (value.GetType()) {
+-    case base::Value::TYPE_BOOLEAN:
++    case base::Value::Type::BOOLEAN:
+       return "b";
+-    case base::Value::TYPE_INTEGER:
++    case base::Value::Type::INTEGER:
+       return "i";
+-    case base::Value::TYPE_DOUBLE:
++    case base::Value::Type::DOUBLE:
+       return "d";
+-    case base::Value::TYPE_STRING:
++    case base::Value::Type::STRING:
+       return "s";
+-    case base::Value::TYPE_BINARY:
++    case base::Value::Type::BINARY:
+       return "ay";
+-    case base::Value::TYPE_DICTIONARY:
++    case base::Value::Type::DICTIONARY:
+       return "a{sv}";
+-    case base::Value::TYPE_LIST:
++    case base::Value::Type::LIST:
+       return "av";
+     default:
+       DLOG(ERROR) << "Unexpected type " << value.GetType();
+@@ -214,28 +214,28 @@ base::Value* PopDataAsValue(MessageReader* reader) {
+ 
+ void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
+   switch (value.GetType()) {
+-    case base::Value::TYPE_BOOLEAN: {
++    case base::Value::Type::BOOLEAN: {
+       bool bool_value = false;
+       bool success = value.GetAsBoolean(&bool_value);
+       DCHECK(success);
+       writer->AppendBool(bool_value);
+       break;
+     }
+-    case base::Value::TYPE_INTEGER: {
++    case base::Value::Type::INTEGER: {
+       int int_value = 0;
+       bool success = value.GetAsInteger(&int_value);
+       DCHECK(success);
+       writer->AppendInt32(int_value);
+       break;
+     }
+-    case base::Value::TYPE_DOUBLE: {
++    case base::Value::Type::DOUBLE: {
+       double double_value = 0;
+       bool success = value.GetAsDouble(&double_value);
+       DCHECK(success);
+       writer->AppendDouble(double_value);
+       break;
+     }
+-    case base::Value::TYPE_STRING: {
++    case base::Value::Type::STRING: {
+       std::string string_value;
+       bool success = value.GetAsString(&string_value);
+       DCHECK(success);
+@@ -258,7 +258,7 @@ void AppendBasicTypeValueDataAsVariant(MessageWriter* writer,
+ 
+ void AppendValueData(MessageWriter* writer, const base::Value& value) {
+   switch (value.GetType()) {
+-    case base::Value::TYPE_DICTIONARY: {
++    case base::Value::Type::DICTIONARY: {
+       const base::DictionaryValue* dictionary = NULL;
+       value.GetAsDictionary(&dictionary);
+       dbus::MessageWriter array_writer(NULL);
+@@ -274,7 +274,7 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
+       writer->CloseContainer(&array_writer);
+       break;
+     }
+-    case base::Value::TYPE_LIST: {
++    case base::Value::Type::LIST: {
+       const base::ListValue* list = NULL;
+       value.GetAsList(&list);
+       dbus::MessageWriter array_writer(NULL);
+@@ -287,10 +287,10 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
+       writer->CloseContainer(&array_writer);
+       break;
+     }
+-    case base::Value::TYPE_BOOLEAN:
+-    case base::Value::TYPE_INTEGER:
+-    case base::Value::TYPE_DOUBLE:
+-    case base::Value::TYPE_STRING:
++    case base::Value::Type::BOOLEAN:
++    case base::Value::Type::INTEGER:
++    case base::Value::Type::DOUBLE:
++    case base::Value::Type::STRING:
+       AppendBasicTypeValueData(writer, value);
+       break;
+     default:
+-- 
+2.13.5
+

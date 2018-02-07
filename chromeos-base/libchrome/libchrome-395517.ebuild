@@ -49,6 +49,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-ScopedTempDir-add-GetPath-from-upstream-libchrome.patch
 	epatch "${FILESDIR}"/${P}-FileDescriptorWatcher-add-constructor-taking-Locatio.patch
 	epatch "${FILESDIR}"/${P}-Base-DirReader-Alignment.patch
+	epatch "${FILESDIR}"/${P}-Value-convert-Type-to-enum-class.patch
 	# Disable custom memory allocator when asan is used.
 	# https://crbug.com/807685
 	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch
