@@ -242,6 +242,7 @@ pick_next_cherries() {
 	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
 	CHERRIES+=" fd5a8723ce9f2a6b250e85972ef859e4253ea95d" # r323155
 	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
+	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
