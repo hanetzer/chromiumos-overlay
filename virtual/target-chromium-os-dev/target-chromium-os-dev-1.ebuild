@@ -69,6 +69,7 @@ RDEPEND="${RDEPEND}
 	app-editors/nano
 	app-editors/qemacs
 	app-editors/vim
+	app-misc/edid-decode
 	app-misc/evtest
 	app-misc/screen
 	app-portage/portage-utils

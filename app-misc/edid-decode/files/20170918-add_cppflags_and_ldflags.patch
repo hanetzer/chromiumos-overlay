@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 75c436e..9e6375a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@ bindir ?= /usr/bin
+ mandir ?= /usr/share/man
+ 
+ edid-decode: edid-decode.c
+-	$(CC) $(CFLAGS) -g -Wall -o $@ $< -lm
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -g -Wall -o $@ $< -lm
+ 
+ clean:
+ 	rm -f edid-decode
