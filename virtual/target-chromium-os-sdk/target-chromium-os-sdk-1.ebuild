@@ -454,6 +454,11 @@ RDEPEND="${RDEPEND}
 	dev-embedded/coreboot-sdk
 	"
 
+# Host dependencies for building chromeos-firmware-*
+RDEPEND="${RDEPEND}
+	chromeos-base/ec-utils
+	"
+
 # Host dependencies for virtualbox-guest-additions
 RDEPEND="${RDEPEND}
 	dev-util/kbuild
