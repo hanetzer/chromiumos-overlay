@@ -29,6 +29,15 @@
 #   )
 # will build and install "godoc", "goguru", and "gostringer" binaries.
 
+# @ECLASS-VARIABLE: CROS_GO_VERSION
+# @DESCRIPTION:
+# Version string to embed in the executable binary.
+# The variable main.Version is set to this value at build time.
+# For example:
+#   CROS_GO_VERSION="${PVR}"
+# will set main.Version string variable to package version and
+# revision (if any) of the ebuild.
+
 # @ECLASS-VARIABLE: CROS_GO_PACKAGES
 # @DESCRIPTION:
 # Go packages to install in /usr/lib/gopath
@@ -84,7 +93,10 @@ cros-go_src_compile() {
 		local path="${bin#*:}"
 		local name="${path##*/}"
 		bin="${bin%:*}"
-		cros_go build -v -o "${name}" "${bin}"
+		cros_go build -v \
+			${CROS_GO_VERSION:+"-ldflags=-X main.Version=${CROS_GO_VERSION}"} \
+			-o "${name}" \
+			"${bin}"
 	done
 }
 

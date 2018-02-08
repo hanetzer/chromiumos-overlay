@@ -10,6 +10,8 @@ CROS_GO_BINARIES=(
 	"chromiumos/cmd/tast"
 )
 
+CROS_GO_VERSION="${PF}"
+
 CROS_GO_TEST=(
 	"chromiumos/cmd/tast/..."
 )
