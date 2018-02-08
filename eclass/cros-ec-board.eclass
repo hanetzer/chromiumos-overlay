@@ -90,6 +90,8 @@ EC_BOARD_NAMES=(
 	staff
 	strago
 	twinkie
+	wand
+	whiskers
 	zinger
 	zoombini
 )
