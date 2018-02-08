@@ -19,6 +19,7 @@ ALL_PORTS=(
 	ttyMSM{0..5}
 	ttymxc{0..5}
 	ttyO{0..5}
+	ttyPS{0..5}
 	ttyS{0..5}
 	ttySAC{0..5}
 	ttyUSB{0..5}
