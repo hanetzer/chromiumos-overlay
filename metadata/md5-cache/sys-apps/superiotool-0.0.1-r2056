@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=sys-apps/pciutils dev-vcs/git
+DESCRIPTION=Superiotool allows you to detect which Super I/O you have on your mainboard, and it can provide detailed information about the register contents of the Super I/O.
+EAPI=4
+HOMEPAGE=http://www.coreboot.org/Superiotool
+IUSE=cros_host cros_workon_tree_0417467ec43ded5d47fe605adca91ea1bfdd87fe profiling
+KEYWORDS=amd64 x86
+LICENSE=GPL-2
+RDEPEND=sys-apps/pciutils
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	ad71652145efed1c8bac4c817227afe0	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=caf1670374cfaa4f8a7da23f9755834a
