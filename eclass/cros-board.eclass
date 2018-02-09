@@ -223,6 +223,7 @@ ALL_BOARDS=(
 	oak
 	oak-cheets
 	octavius
+	octopus
 	#optimus
 	orco
 	panda

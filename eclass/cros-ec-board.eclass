@@ -75,6 +75,7 @@ EC_BOARD_NAMES=(
 	nefario
 	oak
 	oak_pd
+	octopus
 	plankton
 	poppy
 	reef
