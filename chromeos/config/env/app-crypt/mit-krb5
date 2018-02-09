@@ -13,7 +13,6 @@ krb5_mask="
   /usr/sbin
   /usr/bin/k5srvutil
   /usr/bin/kadmin
-  /usr/bin/kpasswd
   /usr/bin/ksu
   /usr/bin/kswitch
   /usr/bin/ktutil
