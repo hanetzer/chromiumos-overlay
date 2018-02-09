@@ -23,6 +23,8 @@ CROS_WORKON_DESTDIR=(
 	"${S}/libunwind_llvm"
 )
 
+CROS_WORKON_BLACKLIST="1"
+
 inherit cmake-multilib cros-llvm cros-workon flag-o-matic llvm python-any-r1
 
 DESCRIPTION="Low level support for a standard C++ library"
