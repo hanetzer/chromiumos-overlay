@@ -30,6 +30,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
+	>=chromeos-base/system_api-0.0.1-r3259
 	>=sys-kernel/linux-headers-4.4-r10
 "
 
