@@ -68,6 +68,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-225-udev-event-add-replace_whitespace-param.patch
 	"${FILESDIR}"/${PN}-225-udev-rules-perform-whitespace-replacement.patch
 	"${FILESDIR}"/${PN}-225-60-persistent-storage.rules-add-nvme-id-model.patch
+	"${FILESDIR}"/${PN}-225-udev-rules-all-values-can-contain-escaped-double-quotes-now.patch
 )
 
 check_default_rules() {
