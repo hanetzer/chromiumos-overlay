@@ -20,9 +20,13 @@ inherit cros-constants
 # - the same number of items globally
 # - one item as default for all
 # - no items as the cros-workon default
-# The exception is CROS_WORKON_PROJECT which has to have all items specified.
+# The exceptions are:
+# - CROS_WORKON_PROJECT has to have all items specified.
+# - CROS_WORKON_TREE is not listed here because it may not have the same number
+#   of items as other array variables when CROS_WORKON_SUBTREE is used.
+#   See the variable description below for more details.
 ARRAY_VARIABLES=(
-	CROS_WORKON_{SUBTREE,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
+	CROS_WORKON_{SUBTREE,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,SRCPATH} )
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBTREE
 # @DESCRIPTION:
