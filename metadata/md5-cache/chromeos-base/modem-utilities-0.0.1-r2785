@@ -1,0 +1,12 @@
+DEFINED_PHASES=info setup unpack
+DEPEND=sys-apps/dbus dev-vcs/git
+DESCRIPTION=Chromium OS modem utilities
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_09e9e493a4ca8b8554a6b94bebb822639c97c2c9 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=sys-apps/dbus
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	44220208e2b10f9ad5d258e0a5dab753	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=71330b04d8b88346cbce2ac19eee8db4
