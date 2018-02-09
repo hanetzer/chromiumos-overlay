@@ -17,7 +17,7 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/blueto
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="seccomp"
 
 RDEPEND=""
 
@@ -29,6 +29,15 @@ src_install() {
 
 	insinto /etc/init
 	doins init/upstart/newblued.conf
+
+	if use seccomp; then
+		# Install seccomp policy files.
+		insinto /usr/share/policy
+		newins "seccomp_filters/newblued-seccomp-${ARCH}.policy" newblued-seccomp.policy
+	else
+		# Remove seccomp flags from minijail parameters.
+		sed -i '/^env seccomp_flags=/s:=.*:="":' "${ED}"/etc/init/newblued.conf || die
+	fi
 }
 
 platform_pkg_test() {
