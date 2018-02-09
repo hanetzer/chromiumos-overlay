@@ -1094,7 +1094,7 @@ test_strip_install() {
 	mkdir -p "${dest}"
 	local f
 	for f in "$@"; do
-		$(tc-getSTRIP) --strip-debug --keep-file-symbols \
+		$(tc-getSTRIP) --strip-debug \
 			"${from}"/${f} -o "${dest}/$(basename ${f})"
 	done
 }
@@ -1238,7 +1238,7 @@ src_install() {
 	if [[ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		export PORTAGE_STRIP_FLAGS="--strip-unneeded"
 	else
-		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
+		export PORTAGE_STRIP_FLAGS="--strip-debug"
 	fi
 	einfo "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
 	LS=$(ls -alhS ${FROM})
