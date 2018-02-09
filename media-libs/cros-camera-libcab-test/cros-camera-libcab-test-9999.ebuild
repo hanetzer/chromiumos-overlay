@@ -7,30 +7,27 @@ CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
-DESCRIPTION="Runtime detect the number of cameras on device to generate
-corresponding media_profiles.xml."
+DESCRIPTION="Test for camera algorithm bridge library"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
 RDEPEND="
-	chromeos-base/libbrillo"
+	!media-libs/arc-camera3-libcab-test
+	media-libs/cros-camera-libcab"
 
-DEPEND="${RDEPEND}
-	media-libs/cros-camera-libcamera_timezone
-	virtual/pkgconfig"
+DEPEND="${RDEPEND}"
 
 src_configure() {
-	asan-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} camera_profile
+	cw_emake BASE_VER=${LIBCHROME_VERS} libcab_test
 }
 
 src_install() {
-	dobin tools/generate_camera_profile
+	dobin common/libcab_test
+	dolib common/libcam_algo.so
 }
