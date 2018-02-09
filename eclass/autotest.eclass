@@ -106,7 +106,7 @@ create_autotest_workdir() {
 	local dst=${1}
 
 	# create a working enviroment for pre-building
-	ln -sf "${SYSROOT}"${AUTOTEST_BASE}/{conmux,tko,global_config.ini,shadow_config.ini} "${dst}"/
+	ln -sf "${SYSROOT}"${AUTOTEST_BASE}/{tko,global_config.ini,shadow_config.ini} "${dst}"/
 
 	# NOTE: in order to make autotest not notice it's running from /usr/local/, we need
 	# to make sure the binaries are real, because they do the path magic
