@@ -31,8 +31,9 @@ src_prepare() {
 	cp -fpru "${S}"/* "${AUTOTEST_WORK}/" &>/dev/null
 	find "${AUTOTEST_WORK}" -name '*.pyc' -delete
 
-	# Remove the shadow_config.ini file.
 	rm "${AUTOTEST_WORK}"/shadow_config.ini
+	# We want to create a symlink here instead.
+	rm -rf "${AUTOTEST_WORK}"/logs
 }
 
 src_compile() {
