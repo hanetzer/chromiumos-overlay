@@ -109,14 +109,13 @@ _arc-build-select-common() {
 	local android_version=$(printf "0x%04x" \
 		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
 	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
-	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9
+	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
 }
 
 # Set up the compiler settings for GCC.
 arc-build-select-gcc() {
 	_arc-build-select-common
 
-	append-libs -lc++
 	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-gcc"
 	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
 	export CCLD="${CC}"
@@ -127,7 +126,6 @@ arc-build-select-clang() {
 
 	append-flags "--gcc-toolchain=${ARC_GCC_BASE}"
 	append-flags -target "${CHOST}"
-	append-cxxflags -stdlib=libc++
 
 	ARC_LLVM_BASE="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}"
 	export CC="${ARC_LLVM_BASE}/bin/clang"
