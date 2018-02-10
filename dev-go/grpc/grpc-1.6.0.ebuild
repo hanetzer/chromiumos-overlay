@@ -47,5 +47,4 @@ DEPEND=""
 RDEPEND="
 	dev-go/genproto
 	dev-go/net
-	dev-go/oauth2
 "
