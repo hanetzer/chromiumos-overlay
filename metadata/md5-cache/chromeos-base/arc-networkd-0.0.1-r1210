@@ -3,10 +3,10 @@ DEPEND=chromeos-base/libbrillo dev-libs/protobuf net-libs/libndp chromeos-base/s
 DESCRIPTION=ARC connectivity management daemon
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_b0098ea277840d735d0e3845259984af3b9ae763 profiling cros-debug cros-debug cros_host cros_workon_tree_b0098ea277840d735d0e3845259984af3b9ae763 profiling cros-debug asan cros_host fuzzer test
+IUSE=cros_host cros_workon_tree_d2f6a3aa3a2a5bb35db9020b9cab0cf3e0fc7dd9 profiling cros-debug cros-debug cros_host cros_workon_tree_d2f6a3aa3a2a5bb35db9020b9cab0cf3e0fc7dd9 profiling cros-debug asan cros_host fuzzer test
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=chromeos-base/libbrillo dev-libs/protobuf net-libs/libndp chromeos-base/libchrome:395517[cros-debug=] chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
 SLOT=0
 _eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	44220208e2b10f9ad5d258e0a5dab753	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	ff183e1c1af531b2d0c537b985406714	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	user	c8f947561e8797a300801d0dd3625448
-_md5_=f2857b33aca47081940d08508062faab
+_md5_=b3b761b8da6bf4712aba81e3eb21c86a
