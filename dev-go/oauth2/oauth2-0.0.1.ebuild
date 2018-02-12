@@ -38,5 +38,5 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
-DEPEND=""
-RDEPEND="dev-go/gcp"
+DEPEND="dev-go/gcp-compute"
+RDEPEND="${DEPEND}"
