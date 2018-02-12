@@ -111,6 +111,7 @@ src_install() {
 		udev/gen_autosuspend_rules.py > "${T}"/98-autosuspend.rules || die
 		udev_dorules "${T}"/98-autosuspend.rules
 		udev_dorules udev/optional/98-powerknobs.rules
+		dobin udev/optional/set_blkdev_pm
 	fi
 	if use keyboard_includes_side_buttons; then
 		udev_dorules udev/optional/93-powerd-tags-keyboard-side-buttons.rules
