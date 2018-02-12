@@ -23,7 +23,7 @@ else
 fi
 
 LICENSE="MIT"
-SLOT="1"
+SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
 	KEYWORDS="*"
 else
@@ -46,7 +46,8 @@ RDEPEND=">=x11-libs/libdrm-2.4.46
 	)
 	egl? ( >=media-libs/mesa-9.1.6[egl] )
 	opengl? ( >=virtual/opengl-7.0-r1 )
-	wayland? ( >=dev-libs/wayland-1.0.6 )"
+	wayland? ( >=dev-libs/wayland-1.0.6 )
+	"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -60,8 +61,10 @@ PDEPEND="video_cards_nvidia? ( >=x11-libs/libva-vdpau-driver-0.7.4-r1 )
 		|| ( >=x11-drivers/ati-drivers-14.12-r3
 			>=x11-libs/xvba-video-0.8.0-r1 )
 		)
-	video_cards_intel? ( x11-libs/libva-intel-driver:${SLOT} )
-	"
+	video_cards_intel? ( ~x11-libs/libva-intel-driver-2.1.0 )
+	video_cards_i965? ( ~x11-libs/libva-intel-driver-2.1.0 )
+	utils? ( media-video/libva-utils )
+	x11-libs/libva:1"
 
 REQUIRED_USE="|| ( drm wayland X )
 		opengl? ( X )"
@@ -77,36 +80,17 @@ MULTILIB_WRAPPED_HEADERS=(
 )
 
 src_prepare() {
-	epatch "${FILESDIR}"/"${PV}"-va_enc_h264-fix-union-struct-typo-to-silence-warning.patch
-	# Patch linking information in .pc files
-	sed -e 's/-lva/-l:libva.so.1/g' -i ${S}/pkgconfig/libva.pc.in || die
-	sed -e 's/\(Requires: libva\)/\11/g' -i ${S}/pkgconfig/libva-*.pc.in || die
-	sed -e 's/-lva-\${display}/-l:libva-${display}.so.1/g' -i ${S}/pkgconfig/libva-*.pc.in || die
-	sed -e 's/-lva-tpi/-l:libva-tpi.so.1/g' -i ${S}/pkgconfig/libva-tpi.pc.in || die
 	autotools-utils_src_prepare
 }
 
 multilib_src_configure() {
 	local myeconfargs=(
-		--with-drivers-path="${EPREFIX}/usr/$(get_libdir)/va${SLOT}/drivers"
-		--includedir="${EPREFIX}/usr/include/va${SLOT}"
+		--with-drivers-path="${EPREFIX}/usr/$(get_libdir)/va/drivers"
+		--includedir="${EPREFIX}/usr/include"
 		$(use_enable opengl glx)
 		$(use_enable X x11)
 		$(use_enable wayland)
-		$(use_enable egl)
 		$(use_enable drm)
 	)
 	autotools-utils_src_configure
-}
-
-src_install() {
-	autotools-utils_src_install
-	# Update headers to they include va files from the correct path
-	sed -e 's/#include <va\//#include <va1\/va\//g' -i $(find "${D}/usr/include/va${SLOT}" -name *.h) || die
-	# Remove .so files as they conflict with other slots
-	rm "${D}/usr/$(get_libdir)/"*.so
-	# Rename libva*.pc to libva1*.pc
-	pushd "${D}/usr/$(get_libdir)/pkgconfig/"
-	for f in libva*.pc; do mv ${f} ${f//libva/libva1}; done || die
-	popd
 }

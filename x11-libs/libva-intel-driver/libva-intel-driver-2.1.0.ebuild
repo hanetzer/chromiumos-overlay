@@ -24,7 +24,7 @@ else
 fi
 
 LICENSE="MIT"
-SLOT="1"
+SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
 	KEYWORDS="*"
 else
@@ -32,9 +32,9 @@ else
 fi
 IUSE="+drm wayland X hybrid_codec"
 
-RDEPEND="~x11-libs/libva-1.8.3[X?,wayland?,drm?]
+RDEPEND=">=x11-libs/libva-2.1.0[X?,wayland?,drm?]
 	>=x11-libs/libdrm-2.4.46[video_cards_intel]
-	hybrid_codec? ( media-libs/intel-hybrid-driver:1 )
+	hybrid_codec? ( media-libs/intel-hybrid-driver:0 )
 	wayland? ( >=media-libs/mesa-9.1.6[egl] >=dev-libs/wayland-1.0.6 )"
 
 DEPEND="${RDEPEND}
@@ -49,27 +49,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/disable_vp8_encoding.patch
 	epatch "${FILESDIR}"/Disable-VP8-decoder-on-BDW.patch
-	epatch "${FILESDIR}"/"${PV}"-Don-t-check-the-stride-in-the-y-direction-for-a-sing.patch
-	epatch "${FILESDIR}"/"${PV}"-Change-the-vertical-alignment-for-linear-surface.patch
-	epatch "${FILESDIR}"/"${PV}"-Revert-Use-Media-Read-message-if-possible-on-Gen8.patch
-# next seven patches are a specific backport for cyan h.264 encoder.  They are adapted
-# to work only on this 1.8.3 build. When moving to libva-2.0 all seven patches can be
-# safely removed
-	epatch "${FILESDIR}"/"${PV}"-make-gpe-utils-compatible-with-gen8.patch
-	epatch "${FILESDIR}"/"${PV}"-change-prefix-of-function-name-from-gen9-to-i965-in-.patch
-	epatch "${FILESDIR}"/"${PV}"-add-gen8-avc-encoder-kernel.patch
-	epatch "${FILESDIR}"/"${PV}"-add-structures-and-const-tables-related-with-gen8-av.patch
-	epatch "${FILESDIR}"/"${PV}"-add-init-kernel-set-curbe-send-surface-for-gen8-avc-.patch
-	epatch "${FILESDIR}"/"${PV}"-update-gen8-avc-encoder-code-path.patch
-	epatch "${FILESDIR}"/"${PV}"-change-file-name-prefix-from-gen9-to-i965-for-avc-en.patch
 
 	sed -e 's/intel-gen4asm/\0diSaBlEd/g' -i configure.ac || die
-
-	# pkgconfig files are named libva1
-	sed -e 's/\(PKG_CONFIG.*libva\)/\11/g' -i configure.ac || die
-	sed -e 's/\(PKG_CHECK_MODULES.*libva\)/\11/g' -i configure.ac || die
-	# headers are in /usr/include/va1
-	sed -e 's/#include <va\//#include <va1\/va\//g' -i $(find -name *.[ch]) || die
 	autotools-multilib_src_prepare
 }
 

@@ -12,10 +12,10 @@ HOMEPAGE="https://github.com/01org/intel-hybrid-driver"
 SRC_URI="https://github.com/01org/intel-hybrid-driver/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
-SLOT="0"
+SLOT="1"
 KEYWORDS="-* amd64 x86"
 
-RDEPEND="x11-libs/libva:0
+RDEPEND="x11-libs/libva:1
 	x11-libs/libdrm
 	media-libs/cmrt"
 
@@ -23,6 +23,11 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
+	# pkgconfig files are named libva1
+	sed -e 's/\(PKG_CONFIG.*libva\)/\11/g' -i configure.ac || die
+	sed -e 's/\(PKG_CHECK_MODULES.*libva\)/\11/g' -i configure.ac || die
+	# headers are in /usr/include/va1
+	sed -e 's/#include <va\//#include <va1\/va\//g' -i $(find -name *.[ch]) || die
 	eautoreconf
 }
 

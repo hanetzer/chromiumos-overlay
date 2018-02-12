@@ -66,7 +66,7 @@ src_install() {
 	cd "${VA_INSTALL}"
 	default
 	# install radeonsi_drv_video.so in LIBVA standard path
-	insinto "/usr/$(get_libdir)/va1/drivers/"
+	insinto "/usr/$(get_libdir)/va/drivers/"
 	insopts -m0755
 	doins "${D}/usr/$(get_libdir)/dri/radeonsi_drv_video.so"
 }

@@ -16,7 +16,7 @@ KEYWORDS="-* amd64 x86"
 RDEPEND="x11-libs/libdrm"
 
 DEPEND="${RDEPEND}
-	x11-libs/libva
+	x11-libs/libva:0
 	virtual/pkgconfig"
 
 src_prepare() {
