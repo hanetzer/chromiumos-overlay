@@ -13,7 +13,7 @@ CROS_WORKON_PROJECT="external/github.com/GoogleCloudPlatform/google-cloud-go"
 CROS_WORKON_DESTDIR="${S}/src/cloud.google.com/go"
 
 CROS_GO_PACKAGES=(
-	"cloud.google.com/go/compute/metadata"
+	"cloud.google.com/go/internal/version"
 )
 
 CROS_GO_TEST=(
@@ -31,5 +31,11 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
-DEPEND="dev-go/net"
+DEPEND="
+	dev-go/gapi-iterator
+	dev-go/gapi-transport
+	dev-go/gax
+	dev-go/genproto
+	dev-go/net
+"
 RDEPEND="${DEPEND}"
