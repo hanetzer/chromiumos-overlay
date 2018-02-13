@@ -17,7 +17,9 @@ KEYWORDS="~*"
 RDEPEND="!media-libs/arc-camera3-libcab"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libmojo"
+	chromeos-base/libmojo
+	media-libs/cros-camera-libcamera_common
+	media-libs/cros-camera-libcamera_ipc"
 
 src_configure() {
 	cros-workon_src_configure

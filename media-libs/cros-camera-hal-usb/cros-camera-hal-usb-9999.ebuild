@@ -23,6 +23,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	media-libs/cros-camera-android-headers
 	media-libs/cros-camera-libcamera_client
+	media-libs/cros-camera-libcamera_common
 	media-libs/cros-camera-libcamera_jpeg
 	media-libs/cros-camera-libcamera_metadata
 	media-libs/cros-camera-libcamera_timezone
