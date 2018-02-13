@@ -71,6 +71,7 @@ CROS_COMMON_RDEPEND="
 	cr50_onboard? ( dev-util/u2f-ref-code )
 	net-misc/rsync
 	sys-apps/memtester
+	virtual/autotest-capability
 	virtual/chromeos-bsp-test
 "
 

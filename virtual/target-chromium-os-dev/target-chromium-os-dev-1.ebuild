@@ -128,5 +128,6 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
+	virtual/autotest-capability
 	virtual/chromeos-bsp-dev
 "
