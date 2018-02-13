@@ -20,7 +20,8 @@ KEYWORDS="~*"
 IUSE="seccomp"
 
 RDEPEND="
-	chromeos-base/libbrillo"
+	chromeos-base/libbrillo
+	net-wireless/bluez"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"

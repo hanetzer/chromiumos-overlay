@@ -145,7 +145,7 @@ CROS_COMMON_RDEPEND+="
 	syslog? ( app-admin/rsyslog )
 	biod? ( chromeos-base/biod )
 	compupdates? ( chromeos-base/imageloader )
-	bluetooth? ( net-wireless/bluez )
+	bluetooth? ( chromeos-base/bluetooth )
 	bootchart? ( app-benchmarks/bootchart )
 	tpm? (
 		!tpm2? ( app-crypt/trousers )
