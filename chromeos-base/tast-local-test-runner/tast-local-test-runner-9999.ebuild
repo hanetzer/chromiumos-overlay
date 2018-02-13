@@ -11,6 +11,8 @@ CROS_GO_BINARIES=(
 
 CROS_GO_TEST=(
 	"chromiumos/cmd/local_test_runner/..."
+	# Also test common code.
+	"chromiumos/tast/..."
 )
 
 inherit cros-go cros-workon
@@ -23,5 +25,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-DEPEND="chromeos-base/tast-common"
-RDEPEND=""
+DEPEND="dev-go/crypto"
+RDEPEND="
+	app-arch/tar
+	!chromeos-base/tast-common
+"

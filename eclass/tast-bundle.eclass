@@ -16,7 +16,8 @@
 
 inherit cros-go
 
-DEPEND="chromeos-base/tast-common"
+DEPEND="dev-go/crypto"
+RDEPEND="app-arch/tar"
 
 if ! [[ "${PN}" =~ ^tast-(local|remote)-tests-[a-z]+$ ]]; then
 	die "Package \"${PN}\" not of form \"tast-<type>-tests-<name>\""

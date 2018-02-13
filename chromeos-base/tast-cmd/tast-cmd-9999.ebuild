@@ -14,6 +14,8 @@ CROS_GO_VERSION="${PF}"
 
 CROS_GO_TEST=(
 	"chromiumos/cmd/tast/..."
+	# Also test common code.
+	"chromiumos/tast/..."
 )
 
 inherit cros-go cros-workon
@@ -27,11 +29,13 @@ KEYWORDS="~*"
 IUSE=""
 
 DEPEND="
-	chromeos-base/tast-common
+	dev-go/crypto
 	dev-go/subcommands
 "
 RDEPEND="
+	app-arch/tar
 	app-arch/xz-utils
 	chromeos-base/google-breakpad
 	net-misc/gsutil
+	!chromeos-base/tast-common
 "
