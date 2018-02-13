@@ -696,7 +696,11 @@ cros-workon_get_build_dir() {
 	local dir
 	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} == "1" ]]; then
 		dir="${SYSROOT}/var/cache/portage/${CATEGORY}/${PN}"
-		[[ ${SLOT:-0} != "0" ]] && dir+=":${SLOT}"
+		local stripped_slot="${SLOT%%/*}"
+		# We don't use the colon when adding in SLOTs because some tools
+		# such as protoc interpret it as a special character in some
+		# flags...
+		[[ ${stripped_slot:-0} != "0" ]] && dir+="__${stripped_slot}"
 	else
 		dir="${WORKDIR}/build"
 	fi

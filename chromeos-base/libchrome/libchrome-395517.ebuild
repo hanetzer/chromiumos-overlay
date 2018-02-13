@@ -51,6 +51,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Base-DirReader-Alignment.patch
 	epatch "${FILESDIR}"/${P}-Value-convert-Type-to-enum-class.patch
 	epatch "${FILESDIR}"/${P}-SConstruct-asan-build.patch
+	epatch "${FILESDIR}"/${P}-Inline-FundamentalValue-into-base-Value.patch
 	# Disable custom memory allocator when asan is used.
 	# https://crbug.com/807685
 	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch

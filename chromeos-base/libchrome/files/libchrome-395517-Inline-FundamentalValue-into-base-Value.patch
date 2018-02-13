@@ -1,0 +1,450 @@
+From f6d712d17f079fe07d6dceb840f8951f86ce3452 Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Fri, 9 Feb 2018 10:43:36 -0800
+Subject: [PATCH] Inline FundamentalValue into base::Value
+
+This is a port of upstream chrome commit 05eb316801c8.
+
+BUG=b:37434548
+TEST=emerge
+
+Change-Id: I98fb916659c6e681f65bf38ddaa2a789e3eab7cd
+---
+ base/values.cc | 257 ++++++++++++++++++++++++++++++++++-----------------------
+ base/values.h  |  64 +++++++-------
+ 2 files changed, 182 insertions(+), 139 deletions(-)
+
+diff --git a/base/values.cc b/base/values.cc
+index e402a35..8dbac03 100644
+--- a/base/values.cc
++++ b/base/values.cc
+@@ -68,6 +68,15 @@ std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node) {
+   }
+ }
+ 
++bool IsAssignmentSafe(Value::Type lhs, Value::Type rhs) {
++  auto IsImplemented = [](Value::Type type) {
++    return type == Value::Type::NONE || type == Value::Type::BOOLEAN ||
++           type == Value::Type::INTEGER || type == Value::Type::DOUBLE;
++  };
++
++  return lhs == rhs || (IsImplemented(lhs) && IsImplemented(rhs));
++}
++
+ // A small functor for comparing Values for std::find_if and similar.
+ class ValueEquals {
+  public:
+@@ -86,28 +95,105 @@ class ValueEquals {
+ 
+ }  // namespace
+ 
+-Value::~Value() {
+-}
+-
+ // static
+ std::unique_ptr<Value> Value::CreateNullValue() {
+   return WrapUnique(new Value(Type::NONE));
+ }
+ 
+-bool Value::GetAsBinary(const BinaryValue**) const {
+-  return false;
++Value::Value(const Value& that) {
++  InternalCopyFrom(that);
+ }
+ 
+-bool Value::GetAsBoolean(bool*) const {
+-  return false;
++Value::Value(Value&& that) {
++  InternalCopyFrom(that);
+ }
+ 
+-bool Value::GetAsInteger(int*) const {
+-  return false;
++Value::Value() : type_(Type::NONE) {}
++
++Value::Value(Type type) : type_(type) {
++  // Initialize with the default value.
++  switch (type_) {
++    case Type::NONE:
++      return;
++
++    case Type::BOOLEAN:
++      bool_value_ = false;
++      return;
++    case Type::INTEGER:
++      int_value_ = 0;
++      return;
++    case Type::DOUBLE:
++      double_value_ = 0.0;
++      return;
++
++    case Type::STRING:
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
++  }
+ }
+ 
+-bool Value::GetAsDouble(double*) const {
+-  return false;
++Value::Value(bool in_bool) : type_(Type::BOOLEAN), bool_value_(in_bool) {}
++
++Value::Value(int in_int) : type_(Type::INTEGER), int_value_(in_int) {}
++
++Value::Value(double in_double) : type_(Type::DOUBLE), double_value_(in_double) {
++  if (!std::isfinite(double_value_)) {
++    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
++                 << "values cannot be represented in JSON";
++    double_value_ = 0.0;
++  }
++}
++
++Value& Value::operator=(const Value& that) {
++  if (this != &that) {
++    DCHECK(IsAssignmentSafe(type_, that.type_));
++    InternalCopyFrom(that);
++  }
++
++  return *this;
++}
++
++Value& Value::operator=(Value&& that) {
++  if (this != &that) {
++    // TODO(crbug.com/646113): Implement InternalMoveFrom for types where moving
++    // and copying differ.
++    DCHECK(IsAssignmentSafe(type_, that.type_));
++    InternalCopyFrom(that);
++  }
++
++  return *this;
++}
++
++Value::~Value() {}
++
++bool Value::GetAsBoolean(bool* out_value) const {
++  if (out_value && is_bool()) {
++    *out_value = bool_value_;
++    return true;
++  }
++  return is_bool();
++}
++
++bool Value::GetAsInteger(int* out_value) const {
++  if (out_value && is_int()) {
++    *out_value = int_value_;
++    return true;
++  }
++  return is_int();
++}
++
++bool Value::GetAsDouble(double* out_value) const {
++  if (out_value && is_double()) {
++    *out_value = double_value_;
++    return true;
++  } else if (out_value && is_int()) {
++    // Allow promotion from int to double.
++    *out_value = int_value_;
++    return true;
++  }
++  return is_double() || is_int();
+ }
+ 
+ bool Value::GetAsString(std::string*) const {
+@@ -122,6 +208,10 @@ bool Value::GetAsString(const StringValue**) const {
+   return false;
+ }
+ 
++bool Value::GetAsBinary(const BinaryValue**) const {
++  return false;
++}
++
+ bool Value::GetAsList(ListValue**) {
+   return false;
+ }
+@@ -139,10 +229,24 @@ bool Value::GetAsDictionary(const DictionaryValue**) const {
+ }
+ 
+ Value* Value::DeepCopy() const {
+-  // This method should only be getting called for null Values--all subclasses
+-  // need to provide their own implementation;.
+-  DCHECK(IsType(Type::NONE));
+-  return CreateNullValue().release();
++  switch (type()) {
++    case Type::NONE:
++      return CreateNullValue().release();
++
++    // For now, make FundamentalValues for backward-compatibility. Convert to
++    // Value when that code is deleted.
++    case Type::BOOLEAN:
++      return new FundamentalValue(bool_value_);
++    case Type::INTEGER:
++      return new FundamentalValue(int_value_);
++    case Type::DOUBLE:
++      return new FundamentalValue(double_value_);
++
++    default:
++      // All other types should be handled by subclasses.
++      NOTREACHED();
++      return nullptr;
++  }
+ }
+ 
+ std::unique_ptr<Value> Value::CreateDeepCopy() const {
+@@ -150,10 +254,24 @@ std::unique_ptr<Value> Value::CreateDeepCopy() const {
+ }
+ 
+ bool Value::Equals(const Value* other) const {
+-  // This method should only be getting called for null Values--all subclasses
+-  // need to provide their own implementation;.
+-  DCHECK(IsType(Type::NONE));
+-  return other->IsType(Type::NONE);
++  if (other->type() != type())
++    return false;
++
++  switch (type()) {
++    case Type::NONE:
++      return true;
++    case Type::BOOLEAN:
++      return bool_value_ == other->bool_value_;
++    case Type::INTEGER:
++      return int_value_ == other->int_value_;
++    case Type::DOUBLE:
++      return double_value_ == other->double_value_;
++    default:
++      // This method should only be getting called for the above types -- all
++      // subclasses need to provide their own implementation;.
++      NOTREACHED();
++      return false;
++  }
+ }
+ 
+ // static
+@@ -163,94 +281,27 @@ bool Value::Equals(const Value* a, const Value* b) {
+   return a->Equals(b);
+ }
+ 
+-Value::Value(Type type) : type_(type) {}
+-
+-Value::Value(const Value& that) : type_(that.type_) {}
+-
+-Value& Value::operator=(const Value& that) {
++void Value::InternalCopyFrom(const Value& that) {
+   type_ = that.type_;
+-  return *this;
+-}
+-
+-///////////////////// FundamentalValue ////////////////////
+-
+-FundamentalValue::FundamentalValue(bool in_value)
+-    : Value(Type::BOOLEAN), boolean_value_(in_value) {
+-}
+-
+-FundamentalValue::FundamentalValue(int in_value)
+-    : Value(Type::INTEGER), integer_value_(in_value) {
+-}
+-
+-FundamentalValue::FundamentalValue(double in_value)
+-    : Value(Type::DOUBLE), double_value_(in_value) {
+-  if (!std::isfinite(double_value_)) {
+-    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
+-                 << "values cannot be represented in JSON";
+-    double_value_ = 0.0;
+-  }
+-}
+-
+-FundamentalValue::~FundamentalValue() {
+-}
+-
+-bool FundamentalValue::GetAsBoolean(bool* out_value) const {
+-  if (out_value && IsType(Type::BOOLEAN))
+-    *out_value = boolean_value_;
+-  return (IsType(Type::BOOLEAN));
+-}
+-
+-bool FundamentalValue::GetAsInteger(int* out_value) const {
+-  if (out_value && IsType(Type::INTEGER))
+-    *out_value = integer_value_;
+-  return (IsType(Type::INTEGER));
+-}
+-
+-bool FundamentalValue::GetAsDouble(double* out_value) const {
+-  if (out_value && IsType(Type::DOUBLE))
+-    *out_value = double_value_;
+-  else if (out_value && IsType(Type::INTEGER))
+-    *out_value = integer_value_;
+-  return (IsType(Type::DOUBLE) || IsType(Type::INTEGER));
+-}
+-
+-FundamentalValue* FundamentalValue::DeepCopy() const {
+-  switch (GetType()) {
++  switch (type_) {
++    case Type::NONE:
++      // Nothing to do.
++      return;
+     case Type::BOOLEAN:
+-      return new FundamentalValue(boolean_value_);
+-
++      bool_value_ = that.bool_value_;
++      return;
+     case Type::INTEGER:
+-      return new FundamentalValue(integer_value_);
+-
++      int_value_ = that.int_value_;
++      return;
+     case Type::DOUBLE:
+-      return new FundamentalValue(double_value_);
+-
+-    default:
+-      NOTREACHED();
+-      return NULL;
+-  }
+-}
+-
+-bool FundamentalValue::Equals(const Value* other) const {
+-  if (other->GetType() != GetType())
+-    return false;
+-
+-  switch (GetType()) {
+-    case Type::BOOLEAN: {
+-      bool lhs, rhs;
+-      return GetAsBoolean(&lhs) && other->GetAsBoolean(&rhs) && lhs == rhs;
+-    }
+-    case Type::INTEGER: {
+-      int lhs, rhs;
+-      return GetAsInteger(&lhs) && other->GetAsInteger(&rhs) && lhs == rhs;
+-    }
+-    case Type::DOUBLE: {
+-      double lhs, rhs;
+-      return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
+-    }
+-    default:
+-      NOTREACHED();
+-      return false;
++      double_value_ = that.double_value_;
++      return;
++
++    case Type::STRING:
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
+   }
+ }
+ 
+diff --git a/base/values.h b/base/values.h
+index 0883a07..d0e068c 100644
+--- a/base/values.h
++++ b/base/values.h
+@@ -37,10 +37,10 @@ namespace base {
+ 
+ class BinaryValue;
+ class DictionaryValue;
+-class FundamentalValue;
+ class ListValue;
+ class StringValue;
+ class Value;
++using FundamentalValue = Value;
+ 
+ typedef std::vector<Value*> ValueVector;
+ typedef std::map<std::string, Value*> ValueMap;
+@@ -64,19 +64,39 @@ class BASE_EXPORT Value {
+     // Note: Do not add more types. See the file-level comment above for why.
+   };
+ 
+-  virtual ~Value();
+-
+   static std::unique_ptr<Value> CreateNullValue();
+ 
++  Value(const Value& that);
++  Value(Value&& that);
++  Value();  // A null value.
++  explicit Value(Type type);
++  explicit Value(bool in_bool);
++  explicit Value(int in_int);
++  explicit Value(double in_double);
++
++  Value& operator=(const Value& that);
++  Value& operator=(Value&& that);
++
++  virtual ~Value();
++
+   // Returns the type of the value stored by the current Value object.
+   // Each type will be implemented by only one subclass of Value, so it's
+   // safe to use the Type to determine whether you can cast from
+   // Value* to (Implementing Class)*.  Also, a Value object never changes
+   // its type after construction.
+-  Type GetType() const { return type_; }
++  Type GetType() const { return type_; }  // DEPRECATED, use type().
++  Type type() const { return type_; }
+ 
+   // Returns true if the current object represents a given type.
+   bool IsType(Type type) const { return type == type_; }
++  bool is_bool() const { return type() == Type::BOOLEAN; }
++  bool is_int() const { return type() == Type::INTEGER; }
++  bool is_double() const { return type() == Type::DOUBLE; }
++  bool is_string() const { return type() == Type::STRING; }
++  bool is_blob() const { return type() == Type::BINARY; }
++  bool is_dict() const { return type() == Type::DICTIONARY; }
++  bool is_list() const { return type() == Type::LIST; }
++
+ 
+   // These methods allow the convenient retrieval of the contents of the Value.
+   // If the current object can be converted into the given type, the value is
+@@ -111,37 +131,14 @@ class BASE_EXPORT Value {
+   // NULLs are considered equal but different from Value::CreateNullValue().
+   static bool Equals(const Value* a, const Value* b);
+ 
+- protected:
+-  // These aren't safe for end-users, but they are useful for subclasses.
+-  explicit Value(Type type);
+-  Value(const Value& that);
+-  Value& operator=(const Value& that);
+-
+  private:
+-  Type type_;
+-};
+-
+-// FundamentalValue represents the simple fundamental types of values.
+-class BASE_EXPORT FundamentalValue : public Value {
+- public:
+-  explicit FundamentalValue(bool in_value);
+-  explicit FundamentalValue(int in_value);
+-  explicit FundamentalValue(double in_value);
+-  ~FundamentalValue() override;
++  void InternalCopyFrom(const Value& that);
+ 
+-  // Overridden from Value:
+-  bool GetAsBoolean(bool* out_value) const override;
+-  bool GetAsInteger(int* out_value) const override;
+-  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
+-  // doubles.
+-  bool GetAsDouble(double* out_value) const override;
+-  FundamentalValue* DeepCopy() const override;
+-  bool Equals(const Value* other) const override;
++  Type type_;
+ 
+- private:
+   union {
+-    bool boolean_value_;
+-    int integer_value_;
++    bool bool_value_;
++    int int_value_;
+     double double_value_;
+   };
+ };
+@@ -545,11 +542,6 @@ class BASE_EXPORT ValueDeserializer {
+ BASE_EXPORT std::ostream& operator<<(std::ostream& out, const Value& value);
+ 
+ BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
+-                                            const FundamentalValue& value) {
+-  return out << static_cast<const Value&>(value);
+-}
+-
+-BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
+                                             const StringValue& value) {
+   return out << static_cast<const Value&>(value);
+ }
+-- 
+2.13.5
+
