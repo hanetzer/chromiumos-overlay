@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/connectivity/shill")
@@ -52,7 +52,8 @@ DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/shill-client
 	chromeos-base/power_manager-client
-	chromeos-base/system_api"
+	chromeos-base/system_api
+	vpn? ( chromeos-base/vpn-manager )"
 
 pkg_preinst() {
 	enewgroup "shill-crypto"
