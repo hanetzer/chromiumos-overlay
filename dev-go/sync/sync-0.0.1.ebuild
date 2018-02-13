@@ -13,6 +13,7 @@ CROS_WORKON_DESTDIR="${S}/src/golang.org/x/sync"
 
 CROS_GO_PACKAGES=(
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 )
 
 CROS_GO_TEST=(
