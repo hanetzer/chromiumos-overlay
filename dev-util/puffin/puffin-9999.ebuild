@@ -25,7 +25,6 @@ HOMEPAGE="https://android.googlesource.com/platform/external/puffin/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="fuzzer"
 
 RDEPEND="
 	chromeos-base/libbrillo
