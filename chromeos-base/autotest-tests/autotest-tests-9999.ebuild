@@ -248,6 +248,7 @@ CLIENT_IUSE_TESTS="
 	+tests_touch_UpdateErrors
 	+tests_touch_WakeupSource
 	+tests_usbpd_DisplayPortSink
+	+tests_video_VideoCapability
 "
 
 IUSE_TESTS="${IUSE_TESTS}
