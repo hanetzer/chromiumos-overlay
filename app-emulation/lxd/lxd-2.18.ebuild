@@ -43,18 +43,18 @@ EGO_VENDOR=(
 ARCHIVE_URI="https://${EGO_PN}/archive/${P}.tar.gz -> ${P}.tar.gz"
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="-* amd64"
+KEYWORDS="-* amd64 arm"
 
 IUSE="+daemon +ipv6 +dnsmasq nls test"
 
-inherit bash-completion-r1 linux-info systemd user golang-vcs-snapshot
+inherit bash-completion-r1 systemd user golang-vcs-snapshot cros-go
 
 SRC_URI="${ARCHIVE_URI}
 	${EGO_VENDOR_URI}"
 
 DEPEND="
 	>=dev-lang/go-1.7.1
-	dev-libs/protobuf
+	dev-libs/protobuf:=
 	nls? ( sys-devel/gettext )
 	test? (
 		app-misc/jq
@@ -78,85 +78,30 @@ RDEPEND="
 	)
 "
 
-CONFIG_CHECK="
-	~BRIDGE
-	~DUMMY
-	~IP6_NF_NAT
-	~IP6_NF_TARGET_MASQUERADE
-	~IPV6
-	~IP_NF_NAT
-	~IP_NF_TARGET_MASQUERADE
-	~MACVLAN
-	~NETFILTER_XT_MATCH_COMMENT
-	~NET_IPGRE
-	~NET_IPGRE_DEMUX
-	~NET_IPIP
-	~NF_NAT_MASQUERADE_IPV4
-	~NF_NAT_MASQUERADE_IPV6
-	~VXLAN
-"
-
-ERROR_BRIDGE="BRIDGE: needed for network commands"
-ERROR_DUMMY="DUMMY: needed for network commands"
-ERROR_IP6_NF_NAT="IP6_NF_NAT: needed for network commands"
-ERROR_IP6_NF_TARGET_MASQUERADE="IP6_NF_TARGET_MASQUERADE: needed for network commands"
-ERROR_IPV6="IPV6: needed for network commands"
-ERROR_IP_NF_NAT="IP_NF_NAT: needed for network commands"
-ERROR_IP_NF_TARGET_MASQUERADE="IP_NF_TARGET_MASQUERADE: needed for network commands"
-ERROR_MACVLAN="MACVLAN: needed for network commands"
-ERROR_NETFILTER_XT_MATCH_COMMENT="NETFILTER_XT_MATCH_COMMENT: needed for network commands"
-ERROR_NET_IPGRE="NET_IPGRE: needed for network commands"
-ERROR_NET_IPGRE_DEMUX="NET_IPGRE_DEMUX: needed for network commands"
-ERROR_NET_IPIP="NET_IPIP: needed for network commands"
-ERROR_NF_NAT_MASQUERADE_IPV4="NF_NAT_MASQUERADE_IPV4: needed for network commands"
-ERROR_NF_NAT_MASQUERADE_IPV6="NF_NAT_MASQUERADE_IPV6: needed for network commands"
-ERROR_VXLAN="VXLAN: needed for network commands"
-
-PATCHES=(
-	"${FILESDIR}/${P}-dont-go-get.patch"
-	"${FILESDIR}/${P}-detect-sqlite.patch"
-	"${FILESDIR}/${P}-dont-hardcode-gcc.patch"
-)
-
-src_prepare() {
-	default_src_prepare
-	epatch "${PATCHES[@]}"
-
-	# Examples in go-lxc make our build fail.
-	rm -rf "${S}/src/${EGO_PN}/vendor/gopkg.in/lxc/go-lxc.v2/examples" || die
-}
-
 src_compile() {
-	export GOPATH="${S}"
-
-	cd "${S}/src/${EGO_PN}" || die "Failed to change to deep src dir"
-
-	tmpgoroot="${T}/goroot"
+	CROS_GO_BINARIES=(
+		"${EGO_PN}/lxc"
+	)
 	if use daemon; then
-		# Build binaries
-		emake
-	else
-		# build client tool
-		emake client
+		CROS_GO_BINARIES+=(
+			"${EGO_PN}/lxd"
+			"${EGO_PN}/fuidshift"
+		)
 	fi
 
-	use nls && emake build-mo
-}
-
-src_test() {
-	if use daemon; then
-		export GOPATH="${S}"
-		cd "${S}/src/${EGO_PN}" || die "Failed to change to deep src dir"
-
-		emake check
+	cros-go_src_compile
+	if use nls; then
+		cd "${S}/src/${EGO_PN}" || die
+		emake build-mo
 	fi
 }
 
 src_install() {
-	dobin bin/lxc
+	dobin lxc
+
 	if use daemon; then
-		dosbin bin/lxd
-		dobin bin/fuidshift
+		dosbin lxd
+		dobin fuidshift
 	fi
 
 	cd "src/${EGO_PN}" || die "can't cd into ${S}/src/${EGO_PN}"
