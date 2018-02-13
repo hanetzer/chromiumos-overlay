@@ -136,13 +136,23 @@ platform_test() {
 	"${cmd[@]}" || die
 }
 
+# @FUNCTION: platform_fuzzer_install
+# @DESCRIPTION:
+# Installs fuzzer targets in one common location for all fuzzing projects.
 platform_fuzzer_install() {
 	if use fuzzer; then
-		insinto "/usr/libexec/fuzzers"
-		doins "$@"
+		(
+			exeinto "/usr/libexec/fuzzers"
+			doexe "$@"
+		)
 	fi
 }
 
+# @FUNCTION: platform_fuzzer_test
+# @DESCRIPTION:
+# Tests a fuzzer binary (passed as an argument) against a small corpus of
+# files. This is needed to make sure the fuzzer is built correctly and runs
+# properly before being uploaded for contiguous tests.
 platform_fuzzer_test() {
 	if use fuzzer; then
 		"$@" -runs=0 "${PLATFORM_TOOLDIR}"/fuzzer_corpus || die
