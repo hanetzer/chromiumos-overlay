@@ -125,12 +125,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.1-VIRGL-surfaces-samplers-virtual-context-refcount.patch
-	epatch "${FILESDIR}"/17.2-i965-Use-is_scheduling_barrier-instead-of-s.patch
-	epatch "${FILESDIR}"/17.2-0001-i965-Make-intel_miptree_prepare_texture-take-level-l.patch
-	epatch "${FILESDIR}"/17.2-0002-i965-Only-resolve-texture-levels-layers-that-are-acc.patch
-	epatch "${FILESDIR}"/17.2-0003-i965-Remove-the-intel_miptree_prepare_fb_fetch-wrapp.patch
-	epatch "${FILESDIR}"/17.2-0004-i965-Don-t-disable-aux-buffers-for-non-overlapping-m.patch
-	epatch "${FILESDIR}"/17.3-Flush-After-Fallback-Texture.patch
 	epatch "${FILESDIR}"/17.3-virgl-also-remove-dimension-on-indirect.patch
 	epatch "${FILESDIR}"/17.3-virgl-Support-v2-caps-struct-v2.patch
 	epatch "${FILESDIR}"/17.3-mesa-don-t-clamp-just-based-on-ARB_viewport_array-ex.patch

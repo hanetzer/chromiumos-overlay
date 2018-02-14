@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="11adea4b24140db37bc1eb5c858435602d2ce224"
-CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
+CROS_WORKON_COMMIT="131e871385b343467d3f8be0a8f3ccf09ab81075"
+CROS_WORKON_TREE="92f454a7dcbc7ce8cb20ca3ec3439b67794fc314"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -128,12 +128,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/11.5-meta-state-fix.patch
 	epatch "${FILESDIR}"/17.0-glcpp-Hack-to-handle-expressions-in-line-di.patch
 	epatch "${FILESDIR}"/17.1-VIRGL-surfaces-samplers-virtual-context-refcount.patch
-	epatch "${FILESDIR}"/17.2-i965-Use-is_scheduling_barrier-instead-of-s.patch
-	epatch "${FILESDIR}"/17.2-0001-i965-Make-intel_miptree_prepare_texture-take-level-l.patch
-	epatch "${FILESDIR}"/17.2-0002-i965-Only-resolve-texture-levels-layers-that-are-acc.patch
-	epatch "${FILESDIR}"/17.2-0003-i965-Remove-the-intel_miptree_prepare_fb_fetch-wrapp.patch
-	epatch "${FILESDIR}"/17.2-0004-i965-Don-t-disable-aux-buffers-for-non-overlapping-m.patch
-	epatch "${FILESDIR}"/17.3-Flush-After-Fallback-Texture.patch
 	epatch "${FILESDIR}"/17.3-virgl-also-remove-dimension-on-indirect.patch
 	epatch "${FILESDIR}"/17.3-virgl-Support-v2-caps-struct-v2.patch
 	epatch "${FILESDIR}"/17.3-mesa-don-t-clamp-just-based-on-ARB_viewport_array-ex.patch
