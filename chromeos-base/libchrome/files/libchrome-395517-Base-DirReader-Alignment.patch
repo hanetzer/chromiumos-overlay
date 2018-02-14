@@ -1,0 +1,37 @@
+commit 6f7ee4bf915be08d284f383940cab70f08d8740b
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Wed Feb 7 14:19:35 2018 +0000
+
+    Fix an alignment issue reported by ASan.
+    
+    linux_dirent struct pointers are casted to buf[] array in a few
+    functions. However buf[]'s alignment (4) doesn't match the
+    alignment required by linux_dirent making ASan unhappy.
+    
+    Fix this by forcing buf[]'s alignment to match linux_dirent struct.
+    
+    This issue was discovered when I was trying to libbase work with ASan
+    on Chrome OS.
+    
+    BUG=chromium:809786
+    TEST=ASan's alignment errors are gone.
+    
+    Change-Id: I9ec7f1436e5129fde836f5e5f97da7780560a153
+    Reviewed-on: https://chromium-review.googlesource.com/905806
+    Commit-Queue: Manoj Gupta <manojgupta@chromium.org>
+    Reviewed-by: Gabriel Charette <gab@chromium.org>
+    Cr-Commit-Position: refs/heads/master@{#534999}
+
+diff --git a/base/files/dir_reader_linux.h b/base/files/dir_reader_linux.h
+index 4ce0c34245fc..259bcfede310 100644
+--- a/base/files/dir_reader_linux.h
++++ b/base/files/dir_reader_linux.h
+@@ -89,7 +89,7 @@ class DirReaderLinux {
+ 
+  private:
+   const int fd_;
+-  unsigned char buf_[512];
++  alignas(linux_dirent) unsigned char buf_[512];
+   size_t offset_;
+   size_t size_;
+ 
