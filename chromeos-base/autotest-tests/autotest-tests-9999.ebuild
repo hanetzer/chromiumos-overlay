@@ -83,6 +83,7 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_sysrq_info
 	+tests_unixbench
 	+tests_autoupdate_CannedOmahaUpdate
+	+tests_autoupdate_DisconnectReconnectNetwork
 	+tests_build_RootFilesystemSize
 	+tests_camera_V4L2
 	arc-camera3? (
