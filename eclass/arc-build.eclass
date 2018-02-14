@@ -61,7 +61,7 @@ arc-build-check-arch() {
 _arc-build-select-common() {
 	if [[ -n ${ARC_SYSROOT} ]] ; then
 		# If we've already been set up, don't re-run.
-		return 0
+		die "arc-build must be initialized only once. Please fix your ebuild."
 	fi
 
 	arc-build-check-arch
