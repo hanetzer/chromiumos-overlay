@@ -34,7 +34,7 @@ src_compile() {
 	local added=0
 	local dtsi
 	local files=( "${SYSROOT}${UNIBOARD_DTS_DIR}/"*.dtsi )
-	local target_dirs="${WORKDIR}/_dir_targets.dtsi"
+	local schema_info="${WORKDIR}/_dir_targets.dtsi"
 
 	if [[ "${#files[@]}" -eq 0 ]]; then
 		die "No .dtsi files found in ${SYSROOT}${UNIBOARD_DTS_DIR}: \
@@ -43,11 +43,13 @@ please check your chromeos-config-bsp ebuild"
 
 	# Create a .dts file with all the includes.
 	cat "${FILESDIR}/skeleton.dts" >"${dts}"
-	cros_config_host_py write-target-dirs >"${target_dirs}" \
-		|| die "Failed to write directory targets file"
-	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${target_dirs}"; do
+	cros_config_host_py write-target-dirs >"${schema_info}" \
+		|| die "Failed to write directory targets"
+	cros_config_host_py write-phandle-properties >>"${schema_info}" \
+		|| die "Failed to write phandle properties"
+	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${schema_info}"; do
 		einfo "Adding ${dtsi}"
-		[[ "${dtsi}" != "${target_dirs}" ]] && cp "${dtsi}" "${WORKDIR}"
+		[[ "${dtsi}" != "${schema_info}" ]] && cp "${dtsi}" "${WORKDIR}"
 		# Drop the directory path from ${dtsi} in the #include.
 		echo "#include \"${dtsi##*/}\"" >> "${dts}"
 		: $((added++))
