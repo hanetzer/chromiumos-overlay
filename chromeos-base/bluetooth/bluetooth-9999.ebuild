@@ -19,7 +19,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="seccomp"
 
-RDEPEND=""
+RDEPEND="
+	chromeos-base/libbrillo"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
