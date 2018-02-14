@@ -41,8 +41,3 @@ src_compile() {
 	python -m cros_config_host.validate_config README.md ||
 		die "Validation failed"
 }
-
-src_test() {
-	./chromeos-config-test-setup.sh
-	./run_tests.sh || die "cros_config unit tests have errors"
-}

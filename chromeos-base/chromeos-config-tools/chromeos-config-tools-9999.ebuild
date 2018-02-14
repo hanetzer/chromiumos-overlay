@@ -59,4 +59,5 @@ platform_pkg_test() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}"
 	done
+	./run_tests.sh || die "cros_config unit tests have errors"
 }
