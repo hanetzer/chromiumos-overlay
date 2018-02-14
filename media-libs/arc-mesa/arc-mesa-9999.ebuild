@@ -229,10 +229,6 @@ multilib_src_configure() {
 		$(use egl && echo "--with-platforms=${EGL_PLATFORM}")
 }
 
-multilib_src_compile() {
-	emake CCLD="${CCLD}"
-}
-
 multilib_src_install_cheets() {
 	exeinto "${ARC_PREFIX}/vendor/$(get_libdir)"
 	newexe $(get_libdir)/libglapi.so libglapi.so

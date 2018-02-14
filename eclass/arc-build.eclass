@@ -118,21 +118,18 @@ arc-build-select-gcc() {
 
 	export CC="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-gcc"
 	export CXX="${ARC_GCC_BASE}/bin/${ARC_GCC_TUPLE}-g++"
-	export CCLD="${CC}"
 }
 
 arc-build-select-clang() {
 	_arc-build-select-common
 
+	# TODO(b/73520402): Remove this once arc-llvm stops ignoring flags in CC and CXX
 	append-flags "--gcc-toolchain=${ARC_GCC_BASE}"
 	append-flags -target "${CHOST}"
 
 	ARC_LLVM_BASE="${ARC_BASE}/arc-llvm/${ARC_LLVM_VERSION}"
-	export CC="${ARC_LLVM_BASE}/bin/clang"
-	export CXX="${ARC_LLVM_BASE}/bin/clang++"
-	# Needed to make libtool pass arc-toolchain-n clang flags
-	# through to linker command lines.
-	export CCLD="\${CC} -XCClinker --gcc-toolchain=${ARC_GCC_BASE} -XCClinker -target -XCClinker \${CHOST}"
+	export CC="${ARC_LLVM_BASE}/bin/clang --gcc-toolchain=${ARC_GCC_BASE} -target ${CHOST}"
+	export CXX="${ARC_LLVM_BASE}/bin/clang++ --gcc-toolchain=${ARC_GCC_BASE} -target ${CHOST}"
 }
 
 fi
