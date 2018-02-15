@@ -599,6 +599,9 @@ multilib_src_install() {
 	chmod 755 "${D}/usr/bin/${wrapper_script}" || die
 	newbin "${D}/usr/bin/clang-tidy" "clang-tidy"
 	dobin "${FILESDIR}/bisect_driver.py"
+	dobin "${FILESDIR}/clang-tidy-parse-build-log.py"
+	dobin "${FILESDIR}/clang-tidy-warn.py"
+	dobin "${FILESDIR}/clang_tidy_execute.py"
 	exeinto "/usr/bin"
 	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang"
 	dosym "${wrapper_script}" "/usr/bin/${CHOST}-clang++"
