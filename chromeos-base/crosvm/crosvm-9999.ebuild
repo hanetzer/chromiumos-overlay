@@ -65,6 +65,10 @@ src_test() {
 			--exclude qcow \
 			--target="${CHOST}" -- --test-threads=1 \
 			|| die "cargo test failed"
+		# Plugin tests all require /dev/kvm, but we want to make sure they build
+		# at least.
+		cargo test --no-run --features plugin --target="${CHOST}" \
+			|| die "cargo build with plugin feature failed"
 	fi
 }
 
