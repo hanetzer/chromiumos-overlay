@@ -34,10 +34,14 @@ src_install() {
 		insinto /etc/gesture
 	fi
 
-	# -cheets variants are running on the same hardware as their non-cheets
-	# counterpart. Strip -cheets suffix to re-use the config.
-	local board_variant=${board_variant%-cheets}
-	local board=${board%-cheets}
+	# -cheets and -arcnext variants are running on the same hardware as
+	# their non-cheets and non-arcnext counterpart. Strip the suffix to
+	# re-use the config.
+	local suffix
+	for suffix in cheets arcnext; do
+		board_variant=${board_variant%-${suffix}}
+		board=${board%-${suffix}}
+	done
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
 	#
