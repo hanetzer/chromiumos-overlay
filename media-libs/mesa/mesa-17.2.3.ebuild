@@ -136,6 +136,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.3-Flush-After-Fallback-Texture.patch
 	epatch "${FILESDIR}"/17.3-virgl-also-remove-dimension-on-indirect.patch
 	epatch "${FILESDIR}"/17.3-virgl-Support-v2-caps-struct-v2.patch
+	epatch "${FILESDIR}"/17.3-mesa-don-t-clamp-just-based-on-ARB_viewport_array-ex.patch
 	base_src_prepare
 
 	eautoreconf
