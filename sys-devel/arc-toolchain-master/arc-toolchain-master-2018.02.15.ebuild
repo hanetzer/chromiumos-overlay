@@ -6,27 +6,25 @@
 
 # Clang is from
 # prebuilts/clang/host/linux-x86/clang-4053586
-# Last commit is 5f131c01b2029e4f1d2a4e9aa9f55aaa49047601
+# Last commit is d9a956564b93ff10c01d9bcda84f99bfe86b4a23
 
 # Gcc is from
 # prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
-# Last commit: ff98796d7a8b1b0331201a5de28f304bdb8f8041
+# Last commit: efea8fa51447a95895ad64c38bfede04ce735866
 # prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9
-# Last commit: 00d54f85f120023a1aec62d0e2b7ba313f877539
+# Last commit: 5f6246e27efc3737c1502c275f3523edf97d2044
 
 # Libraries are from
-# https://android-build.googleplex.com/builds/submitted/4207971/cheets_arm-userdebug/latest
-# https://android-build.googleplex.com/builds/submitted/4207971/cheets_x86_64-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4605468/cheets_arm-userdebug/latest
+# https://android-build.googleplex.com/builds/submitted/4605468/cheets_x86_64-userdebug/latest
 
 # Headers are from
 # bionic
-# Last commit: 73a57f5814168dfffe18b44ea5e5117c4d8c3b54
+# Last commit: 3b2caecfca46c92793d7856d56f6dabc3cc61d1a
 # external/libcxx
-# Last commit: 5e523c742961f2f34436ef97406b6c9272482bf4
-# external/llvm
-# Last commit: 55358ef5fd2616530d62f411578fead8aff45eff
+# Last commit: 09aa642224808b83271550fb1eda6899201353db
 # frameworks/native/vulkan/include
-# Last commit: fabd2f5c8f31b352a87c6d22228a6c6b5614522a
+# Last commit: d0e91e778e019fc79ee7011ea6713b2b2f2512f4
 
 EAPI=5
 
