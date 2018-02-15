@@ -7,8 +7,10 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk arc/network"
 
-PLATFORM_SUBDIR="arc-networkd"
+PLATFORM_SUBDIR="arc/network"
+PLATFORM_GYP_FILE="arc-network.gyp"
 
 inherit cros-workon libchrome platform user
 
