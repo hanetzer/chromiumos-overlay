@@ -34,13 +34,11 @@ rt_sigaction: 1
 rt_sigprocmask: 1
 sendmsg: 1
 sendto: 1
-setgid: 1
 setgroups: arg0 == 0 && arg1 == 0
 set_robust_list: 1
 setsid: 1
 setsockopt: 1
 set_tid_address: 1
-setuid: 1
 socket: 1
 stat: 1
 umask: 1
