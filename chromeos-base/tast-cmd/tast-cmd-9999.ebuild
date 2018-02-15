@@ -37,5 +37,4 @@ RDEPEND="
 	app-arch/xz-utils
 	chromeos-base/google-breakpad
 	net-misc/gsutil
-	!chromeos-base/tast-common
 "
