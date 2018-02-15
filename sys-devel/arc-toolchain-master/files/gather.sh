@@ -18,7 +18,7 @@
 #
 # 1. Download prebuilts for ARM and x86_64
 #
-# Go to go/a-b, select branch git_nyc-mr1-arc. Pick a -userdebug build for all
+# Go to go/ab, select branch git_master-arc-dev. Pick a -userdebug build for all
 # architectures, then download cheets_${arch}-target_files-${build_id}.zip.
 # Extract those files and point ARTIFACTS_DIR_${ARCH} to the respective
 # directories.
@@ -220,6 +220,7 @@ for (( a = 0; a < ${len}; ++a )); do
 		"frameworks/native/vulkan/include/hardware"
 		"frameworks/native/vulkan/include/vulkan"
 		"hardware/libhardware/include/hardware"
+		"system/core/base/include/android-base"
 		"system/core/include/cutils"
 		"system/core/include/log"
 		"system/core/include/system"
@@ -233,17 +234,6 @@ for (( a = 0; a < ${len}; ++a )); do
 	for f in "${INCLUDE_DIRS[@]}"; do
 		basename="$(basename "${f}")"
 		todir="${arch_to_dir}/usr/include/${basename}"
-		runcmd mkdir -p "${todir}"
-		runcmd cp -pP "${ANDROID_TREE}/${f}"/*.h "${todir}/"
-	done
-
-	### 4.3b Other include directories (arch-specific)
-	INCLUDE_DIRS=(
-		"bionic/libc/arch-${arch}/include/machine"
-	)
-
-	for f in "${INCLUDE_DIRS[@]}"; do
-		todir="${arch_to_dir}/usr/include/arch-${arch}/include/machine"
 		runcmd mkdir -p "${todir}"
 		runcmd cp -pP "${ANDROID_TREE}/${f}"/*.h "${todir}/"
 	done
