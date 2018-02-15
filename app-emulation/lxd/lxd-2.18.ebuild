@@ -41,7 +41,7 @@ EGO_VENDOR=(
 )
 
 ARCHIVE_URI="https://${EGO_PN}/archive/${P}.tar.gz -> ${P}.tar.gz"
-LICENSE="Apache-2.0"
+LICENSE="Apache-2.0 BSD BSD-2 LGPL-2.1-with-linking-exception LGPL-3-with-linking-exception MIT"
 SLOT="0"
 KEYWORDS="-* amd64 arm"
 
