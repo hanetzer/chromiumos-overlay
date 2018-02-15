@@ -135,6 +135,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_Cr50GetName
 	+tests_firmware_Cr50InvalidateRW
 	+tests_firmware_Cr50Open
+	+tests_firmware_Cr50OpenWhileAPOff
 	+tests_firmware_Cr50SetBoardId
 	+tests_firmware_Cr50Testlab
 	+tests_firmware_Cr50Unlock
