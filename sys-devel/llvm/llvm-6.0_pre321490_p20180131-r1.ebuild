@@ -214,8 +214,11 @@ pick_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
 	CHERRIES+=" fd5a8723ce9f2a6b250e85972ef859e4253ea95d" # r323155
+	CHERRIES+=" e4eed790f8967cc92fc03fa2cf9183c6b03b3428" # r323915
 	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
 	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
+	CHERRIES+=" 197917a303a397db80df6f71246490ad5cf23228" # r325049
+	CHERRIES+=" d09d7393dda2a6afe77b58a3db0bf046f8d2c2b3" # r325085
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -245,8 +248,11 @@ pick_next_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
 	CHERRIES+=" fd5a8723ce9f2a6b250e85972ef859e4253ea95d" # r323155
+	CHERRIES+=" e4eed790f8967cc92fc03fa2cf9183c6b03b3428" # r323915
 	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
 	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
+	CHERRIES+=" 197917a303a397db80df6f71246490ad5cf23228" # r325049
+	CHERRIES+=" d09d7393dda2a6afe77b58a3db0bf046f8d2c2b3" # r325085
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"

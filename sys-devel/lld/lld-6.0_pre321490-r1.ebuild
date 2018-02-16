@@ -25,6 +25,7 @@ DEPEND="${RDEPEND}"
 pick_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 17b90924dbf7eb14c591d72d4e360d77b87fdefc" # r323155
+	CHERRIES+=" cb6934a621f04652dda0be611ec298877b1d8e14" # r323288
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -35,6 +36,7 @@ pick_cherries() {
 pick_next_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 17b90924dbf7eb14c591d72d4e360d77b87fdefc" # r323155
+	CHERRIES+=" cb6934a621f04652dda0be611ec298877b1d8e14" # r323288
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
