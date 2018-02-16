@@ -145,14 +145,15 @@ cros-go_src_install() {
 		)
 	done
 
-	# Check for missing dependencies of installed packages.
-	local CROS_GO_WORKSPACE="${D}/usr/lib/gopath"
-	for pkg in "${pkglist[@]}" ; do
-		if [[ $(cros_go list -f "{{.Incomplete}}" "${pkg}") == "true" ]] ; then
-			cros_go list -f "{{.DepsErrors}}" "${pkg}"
-			die "Package has missing dependency: \"${pkg}\""
-		fi
-	done
+	# TODO(crbug.com/811542,crbug.com/749300): Disable as workaround for bug.
+	# # Check for missing dependencies of installed packages.
+	# local CROS_GO_WORKSPACE="${D}/usr/lib/gopath"
+	# for pkg in "${pkglist[@]}" ; do
+	# 	if [[ $(cros_go list -f "{{.Incomplete}}" "${pkg}") == "true" ]] ; then
+	# 		cros_go list -f "{{.DepsErrors}}" "${pkg}"
+	# 		die "Package has missing dependency: \"${pkg}\""
+	# 	fi
+	# done
 }
 
 EXPORT_FUNCTIONS src_compile src_test src_install
