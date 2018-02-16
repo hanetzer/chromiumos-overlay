@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="8091a2a525f4a9de2f5493d396ce904779a7715f"
-CROS_WORKON_TREE="b87dcf1c3e64e8a6a21b288ce60b24b5d71f726e"
+CROS_WORKON_COMMIT="ee0d67cc5ef36f278d5a0926d491498f125c0afa"
+CROS_WORKON_TREE="fd59453d10a2b78a4c8d015ee1330fd096c494c0"
 CROS_WORKON_PROJECT="chromiumos/platform/crosvm"
 CROS_WORKON_LOCALNAME="../platform/crosvm"
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -67,6 +67,10 @@ src_test() {
 			--exclude qcow \
 			--target="${CHOST}" -- --test-threads=1 \
 			|| die "cargo test failed"
+		# Plugin tests all require /dev/kvm, but we want to make sure they build
+		# at least.
+		cargo test --no-run --features plugin --target="${CHOST}" \
+			|| die "cargo build with plugin feature failed"
 	fi
 }
 
