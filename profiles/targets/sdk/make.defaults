@@ -36,9 +36,9 @@ USE="${USE} -openrc"
 # Various runtime features that control emerge behavior.
 # See "man 5 make.conf" for details.
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
-          -ebuild-locks -merge-sync parallel-install -preserve-libs sandbox
-          -strict userfetch userpriv usersandbox -unknown-features-warn
-          network-sandbox"
+          -ebuild-locks force-mirror -merge-sync
+          parallel-install -preserve-libs sandbox -strict userfetch
+          userpriv usersandbox -unknown-features-warn network-sandbox"
 
 # This is used by profiles/base/profile.bashrc to figure out that we
 # are targeting the cros-sdk (in all its various modes).  It should
