@@ -301,9 +301,16 @@ for arch in "${ARC_ARCH_ANDROID[@]}"; do
 done
 
 ### 6. Do the pack
+
+### 6.1. Ensure permissions are correct to avoid repeating crbug.com/811217
+runcmd find "${TO_DIR_BASE}" -type d -exec chmod 755 {} \;
+runcmd find "${TO_DIR_BASE}" -type f -executable -exec chmod 755 {} \;
+runcmd find "${TO_DIR_BASE}" -type f ! -executable -exec chmod 644 {} \;
+
+### 6.2. Create the tarball with files owned by root:root
 PACKET_VERSION=$(date --rfc-3339=date | sed 's/-/./g')
 TARBALL="${TO_DIR_BASE}/../arc-toolchain-n-${PACKET_VERSION}.tar.gz"
-runcmd tar zcf "${TARBALL}" -C "${TO_DIR_BASE}" .
+runcmd tar zcf "${TARBALL}" --owner=root --group=root -C "${TO_DIR_BASE}" .
 
 ### 7. Manually upload
 ### Or you try this command: gsutil cp -a public-read arc-toolchain-* gs://chromeos-localmirror/distfiles/
