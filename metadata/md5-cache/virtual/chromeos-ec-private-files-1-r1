@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Generic ebuild which satisfies virtual/chromeos-ec-private-files. This is a direct dependency of chromeos-base/chromeos-ec, and it is overridden in private overlay to retrieve the private sources for the EC build.
+EAPI=5
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/ec/
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-ec-private-files-null
+SLOT=0
+_md5_=9806b6d30b598002d2140956efced12f

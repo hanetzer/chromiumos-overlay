@@ -1,5 +1,5 @@
-DEFINED_PHASES=compile configure info install setup test unpack
-DEPEND=dev-embedded/libftdi virtual/chromeos-ec-touch-firmware unibuild? ( chromeos-base/chromeos-config ) dev-vcs/git
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=dev-embedded/libftdi virtual/chromeos-ec-private-files virtual/chromeos-ec-touch-firmware unibuild? ( chromeos-base/chromeos-config ) dev-vcs/git
 DESCRIPTION=Embedded Controller firmware code
 EAPI=4
 HOMEPAGE=https://www.chromium.org/chromium-os/ec-development
@@ -10,4 +10,4 @@ RDEPEND=dev-embedded/libftdi
 RESTRICT=binchecks
 SLOT=0
 _eclasses_=coreboot-sdk	fca2fbc66c065a5fa585f926e6f9ce0b	cros-constants	bff2e60998898d47ed40153d31657335	cros-ec-board	541738c245b9839f671a26adae9772e3	cros-unibuild	4561747631cf38650d21f8e855bd161c	cros-workon	44220208e2b10f9ad5d258e0a5dab753	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=3f8ccd7c5684f1f40b164e37de82c761
+_md5_=f7b46a2f88699e29e21a14b7e8af23e9
