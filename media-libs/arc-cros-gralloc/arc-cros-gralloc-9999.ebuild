@@ -26,7 +26,7 @@ DEPEND="${RDEPEND}"
 
 src_configure() {
 	# Use arc-build base class to select the right compiler
-	arc-build-select-gcc
+	arc-build-select-clang
 
 	BUILD_DIR="$(cros-workon_get_build_dir)"
 
