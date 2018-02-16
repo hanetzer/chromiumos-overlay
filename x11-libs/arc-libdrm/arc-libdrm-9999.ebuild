@@ -41,7 +41,7 @@ src_prepare() {
 
 src_configure() {
 	# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
-	arc-build-select-gcc
+	arc-build-select-clang
 
 	XORG_CONFIGURE_OPTIONS=(
 		--disable-install-test-programs
