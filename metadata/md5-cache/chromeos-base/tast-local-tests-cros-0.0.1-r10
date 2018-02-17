@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup test unpack
+DEPEND=dev-go/cdp dev-go/dbus dev-go/gopsutil dev-vcs/git dev-lang/go dev-go/crypto
+DESCRIPTION=Bundle of local integration tests for Chrome OS
+EAPI=5
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+IUSE=cros_host cros_workon_tree_a1f3a607af797789c63251dd9af105c0097292a6_2bf66d69a74ec98ea9d4c728865f53e99aa2d254 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!chromeos-base/tast-local-tests app-arch/tar
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-go	36b5429cbed16f946a88b8c4875538c9	cros-workon	44220208e2b10f9ad5d258e0a5dab753	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	tast-bundle	42e31aaa94f90c3d0bfa4649c2c23b51	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=797e9e1b139622ba6ce6d7fb88773f2b
