@@ -21,6 +21,8 @@ RDEPEND="
 	chromeos-base/autotest-web-frontend
 	chromeos-base/infra-virtualenv
 	chromeos-base/lucifer
+	chromeos-base/tast-cmd
+	chromeos-base/tast-remote-tests-cros
 "
 
 DEPEND=""
