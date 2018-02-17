@@ -134,6 +134,7 @@ IUSE_TESTS=(
 	+tests_policy_ImagesBlockedForUrls
 	+tests_policy_JavaScriptAllowedForUrls
 	+tests_policy_JavaScriptBlockedForUrls
+	+tests_policy_KeyboardDefaultToFunctionKeys
 	+tests_policy_ManagedBookmarks
 	+tests_policy_NotificationsAllowedForUrls
 	+tests_policy_NotificationsBlockedForUrls
