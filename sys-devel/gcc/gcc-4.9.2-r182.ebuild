@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI="4"
-CROS_WORKON_COMMIT="d64d815b3af9d2653d924ea2e1ebb21ee8b043b7"
-CROS_WORKON_TREE="41ddc808254fa6b40de6540413015909760ec306"
+CROS_WORKON_COMMIT="2cdcfd30c27f0d836cc477f2ae9f456287fd6b1b"
+CROS_WORKON_TREE="0a687778c96865d73a7c6dbcd9ec580a02daa3a0"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/gcc"
 CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
@@ -124,8 +124,6 @@ src_unpack() {
 		update_location_for_aosp
 		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
-
-	epatch "${FILESDIR}"/fix-emutls.patch
 
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
 	if [[ -d ${S}/.git ]]; then
