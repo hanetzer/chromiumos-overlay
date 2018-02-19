@@ -323,8 +323,13 @@ local_copy_cp() {
 		if [[ -d "${src}/${sl}" ]]; then
 			mkdir -p "${dst}/${sl}"
 			rsync -a --safe-links \
-				"${blacklist[@]}" --filter=":- .gitignore" "${src}/${sl}/" "${dst}/${sl}/" || \
-				die "rsync -a ${blacklist[*]} --filter=':- .gitignore' ${src}/${sl}/ ${dst}/${sl}/"
+				--exclude-from=<(
+					cd "${src}/${sl}" || \
+						die "cd ${src}/${sl}"
+					git ls-files --others --ignored --exclude-standard --directory 2>/dev/null | \
+						sed 's:^:/:'
+				) "${blacklist[@]}" "${src}/${sl}/" "${dst}/${sl}/" || \
+				die "rsync -a --safe-links --exclude-from=<(...) ${blacklist[*]} ${src}/${sl}/ ${dst}/${sl}/"
 		fi
 	done
 }
