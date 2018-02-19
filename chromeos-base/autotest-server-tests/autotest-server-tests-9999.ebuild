@@ -111,6 +111,7 @@ SERVER_IUSE_TESTS="
 	+tests_enterprise_KioskEnrollmentServer
 	+tests_enterprise_LongevityTrackerServer
 	+tests_enterprise_RemoraRequisitionServer
+	+tests_enterprise_RemoraRequisitionDisplayUsageServer
 	+tests_factory_Basic
 	+tests_firmware_Bmpblk
 	+tests_firmware_CgptStress
