@@ -152,7 +152,6 @@ cros_post_src_unpack_asan_init() {
 		# 'suppressions' option specified in $LSAN_OPTIONS.
 		strip_sysroot="${SYSROOT}"
 	fi
-	export ASAN_OPTIONS+=" detect_container_overflow=0"
 	export ASAN_OPTIONS+=" log_path=${log_path#${strip_sysroot}}"
 
 	local lsan_suppression="${S}/lsan_suppressions"
