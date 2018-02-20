@@ -50,6 +50,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-FileDescriptorWatcher-add-constructor-taking-Locatio.patch
 	epatch "${FILESDIR}"/${P}-Base-DirReader-Alignment.patch
 	epatch "${FILESDIR}"/${P}-Value-convert-Type-to-enum-class.patch
+	epatch "${FILESDIR}"/${P}-SConstruct-asan-build.patch
 	# Disable custom memory allocator when asan is used.
 	# https://crbug.com/807685
 	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch
@@ -60,6 +61,7 @@ src_prepare() {
 }
 
 src_configure() {
+	asan-setup-env
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 }
@@ -67,6 +69,7 @@ src_configure() {
 src_compile() {
 	BASE_VER=${SLOT} \
 	CHROME_INCLUDE_PATH="${S}" \
+	USE_ASAN="$(usex asan 1 0)" \
 	USE_DBUS="$(usex dbus 1 0)" \
 	USE_CRYPTO="$(usex crypto 1 0)" \
 	USE_TIMERS="$(usex timers 1 0)" \
