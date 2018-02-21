@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install setup test unpack
+DEPEND=dev-go/grpc dev-vcs/git dev-lang/go
+DESCRIPTION=Google API Extensions for Go
+EAPI=5
+HOMEPAGE=https://github.com/googleapis/gax-go
+IUSE=cros_host cros_workon_tree_ profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-go/grpc
+RESTRICT=binchecks strip
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-go	117dba28da9bef152ae016ce5528b6ca	cros-workon	44220208e2b10f9ad5d258e0a5dab753	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_md5_=5afb8ef567511eacfcff543d2534764b
