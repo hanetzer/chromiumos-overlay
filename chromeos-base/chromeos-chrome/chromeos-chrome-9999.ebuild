@@ -1236,7 +1236,7 @@ src_install() {
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
 	if [[ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
-		export PORTAGE_STRIP_FLAGS="--strip-unneeded"
+		export PORTAGE_STRIP_FLAGS=""
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug"
 	fi
