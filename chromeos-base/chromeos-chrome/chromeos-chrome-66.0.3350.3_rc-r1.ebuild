@@ -153,13 +153,13 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3344.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3344.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3344.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3350.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3350.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3350.0_rc-r1.afdo"
 
-AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-64.0.3280.5_rc-r1.afdo"
-AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-64.0.3280.5_rc-r1.afdo"
-AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-64.0.3280.5_rc-r1.afdo"
+AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
+AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
+AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
 
 AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
@@ -1094,7 +1094,7 @@ test_strip_install() {
 	mkdir -p "${dest}"
 	local f
 	for f in "$@"; do
-		$(tc-getSTRIP) --strip-debug --keep-file-symbols \
+		$(tc-getSTRIP) --strip-debug \
 			"${from}"/${f} -o "${dest}/$(basename ${f})"
 	done
 }
@@ -1238,7 +1238,7 @@ src_install() {
 	if [[ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		export PORTAGE_STRIP_FLAGS="--strip-unneeded"
 	else
-		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
+		export PORTAGE_STRIP_FLAGS="--strip-debug"
 	fi
 	einfo "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
 	LS=$(ls -alhS ${FROM})
