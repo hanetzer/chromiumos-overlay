@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 DESCRIPTION="List of packages that are needed inside the Chromium OS SDK"
 HOMEPAGE="http://dev.chromium.org/"
@@ -474,7 +474,8 @@ RDEPEND="${RDEPEND}
 
 # Host dependency for managing SELinux labels
 RDEPEND="${RDEPEND}
-	sys-apps/restorecon"
+	sys-apps/restorecon
+	sys-apps/secilc"
 
 # Host dependencies that are needed for chromite/bin/cros_generate_android_breakpad_symbols
 RDEPEND="${RDEPEND}
