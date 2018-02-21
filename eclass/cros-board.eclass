@@ -273,6 +273,7 @@ ALL_BOARDS=(
 	samus-cheets
 	sand
 	scarlet
+	scarlet-arcnext
 	sentry
 	setzer
 	shogun
