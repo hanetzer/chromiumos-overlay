@@ -1394,15 +1394,19 @@ src_install() {
 pkg_preinst() {
 	enewuser "wayland"
 	enewgroup "wayland"
-}
-
-pkg_postinst() {
-	autotest_pkg_postinst
-	LS=$(ls -alhS ${ROOT}/${CHROME_DIR})
+	LS=$(ls -alhS ${ED}/${CHROME_DIR})
 	einfo "CHROME_DIR after installation\n${LS}"
-	CHROME_SIZE=$(stat --printf="%s" ${ROOT}/${CHROME_DIR}/chrome)
+	CHROME_SIZE=$(stat --printf="%s" ${ED}/${CHROME_DIR}/chrome)
 	einfo "CHROME_SIZE = ${CHROME_SIZE}"
 	if [[ ${CHROME_SIZE} -ge 200000000 && -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		die "Installed chrome binary got suspiciously large (size=${CHROME_SIZE})."
 	fi
+	if use arm; then
+		local files=$(find "${ED}/usr/lib/debug${CHROME_DIR}" -size 4G -o -size +4G)
+		[[ -n ${files} ]] && die "Debug files exceed 4GiB: ${files}"
+	fi
+}
+
+pkg_postinst() {
+	autotest_pkg_postinst
 }
