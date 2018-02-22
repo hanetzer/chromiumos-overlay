@@ -49,3 +49,23 @@ dev-embedded/openocd	-jlink
 # https://crbug.com/756528
 sys-libs/libcxxabi abi_x86_32
 sys-libs/libcxx abi_x86_32
+
+# Temporarily disable GDB Python during Python upgrade. crbug.com/736322
+=sys-devel/gdb-8.0.1.20171030-r3			-python -python_targets_python3_3 -python_targets_python3_4
+=cross-aarch64-cros-linux-gnu/gdb-8.0.1.20171030-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-arm-none-eabi/gdb-8.0.1.20171030-r3		-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv6j-cros-linux-gnueabi/gdb-8.0.1.20171030-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv7a-cros-linux-gnueabi/gdb-8.0.1.20171030-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv7a-cros-linux-gnueabihf/gdb-8.0.1.20171030-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-i686-pc-linux-gnu/gdb-8.0.1.20171030-r3		-python -python_targets_python3_3 -python_targets_python3_4
+=cross-mipsel-cros-linux-gnu/gdb-7.11.20170503-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-x86_64-cros-linux-gnu/gdb-8.0.1.20171030-r3	-python -python_targets_python3_3 -python_targets_python3_4
+=sys-devel/gdb-8.0.1.20171030-r4			-python -python_targets_python3_3 -python_targets_python3_4
+=cross-aarch64-cros-linux-gnu/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-arm-none-eabi/gdb-8.0.1.20171030-r4		-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv6j-cros-linux-gnueabi/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv7a-cros-linux-gnueabi/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-armv7a-cros-linux-gnueabihf/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-i686-pc-linux-gnu/gdb-8.0.1.20171030-r4		-python -python_targets_python3_3 -python_targets_python3_4
+=cross-mipsel-cros-linux-gnu/gdb-7.11.20170503-r4	-python -python_targets_python3_3 -python_targets_python3_4
+=cross-x86_64-cros-linux-gnu/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
