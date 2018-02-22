@@ -60,6 +60,7 @@ src_prepare() {
 	}
 
 	epatch "${FILESDIR}"/${PN}-2.8.1-94f6d57a4.patch
+	epatch "${FILESDIR}"/${PN}-2.8.1-cc2f3cde.patch
 	epatch "${FILESDIR}"/${PN}-2.4.11-sizeof-types.patch # 459966
 
 	# Enable stem-darkening for CFF font
