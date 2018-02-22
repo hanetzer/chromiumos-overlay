@@ -54,5 +54,5 @@
 
 
 # camera
-## webcam is marked if a device equips a USB camera.
-- webcam
+## usb_camra is marked if a device equips a USB camera.
+- usb_camera
