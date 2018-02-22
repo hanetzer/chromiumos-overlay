@@ -29,7 +29,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks[test?]
+		chromeos-base/trunks
 	)
 	chromeos-base/chaps
 	chromeos-base/minijail
@@ -40,6 +40,7 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	chromeos-base/vboot_reference
+	tpm2? ( chromeos-base/trunks[test?] )
 	"
 
 pkg_preinst() {

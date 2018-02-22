@@ -1,7 +1,8 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
+
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_DESTDIR="${S}/platform2"
@@ -31,7 +32,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks[test?]
+		chromeos-base/trunks
 		chromeos-base/tpm_manager
 		chromeos-base/attestation
 	)
@@ -51,6 +52,7 @@ RDEPEND="
 	sys-fs/lvm2
 "
 DEPEND="${RDEPEND}
+	tpm2? ( chromeos-base/trunks[test?] )
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 "

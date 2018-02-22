@@ -26,12 +26,16 @@ REQUIRED_USE="tpm2? ( !tpm )"
 
 RDEPEND="
 	tpm? ( app-crypt/trousers )
-	tpm2? ( chromeos-base/trunks[test?] )
+	tpm2? (
+		chromeos-base/trunks
+	)
 	chromeos-base/minijail
 	chromeos-base/libbrillo
 	"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	tpm2? ( chromeos-base/trunks[test?] )
+	"
 
 pkg_preinst() {
 	enewuser tpm_manager

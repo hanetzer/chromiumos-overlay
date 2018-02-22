@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
@@ -31,7 +31,7 @@ RDEPEND="
 		app-crypt/trousers
 	)
 	tpm2? (
-		chromeos-base/trunks[test?]
+		chromeos-base/trunks
 	)
 	chromeos-base/minijail
 	chromeos-base/libbrillo
@@ -43,7 +43,9 @@ RDEPEND="
 	dev-libs/protobuf
 "
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	tpm2? ( chromeos-base/trunks[test?] )
+	"
 
 src_install() {
 	dosbin "${OUT}"/chapsd
