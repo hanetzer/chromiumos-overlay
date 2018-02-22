@@ -36,7 +36,6 @@ src_install() {
 	cd "${OUT}"
 	dosbin imageloader
 	cd "${S}"
-	dosbin imageloader_wrapper
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.ImageLoader.conf
 	insinto /usr/share/dbus-1/system-services
