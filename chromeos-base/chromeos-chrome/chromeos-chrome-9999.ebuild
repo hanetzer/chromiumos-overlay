@@ -138,11 +138,12 @@ BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
 BUILD_OUT_SYM="c"
 
 AFDO_BZ_SUFFIX=".bz2"
+AFDO_XZ_SUFFIX=".xz"
 AFDO_PROF_SUFFIX=".prof"
-AFDO_EXP1_SUFFIX=".exp1"
+AFDO_EXP1_SUFFIX=".cwp"
 AFDO_EXP2_SUFFIX=".exp2"
 AFDO_LOCATION_LLVM=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/llvm/"}
-AFDO_LOCATION_EXP1=${AFDO_GS_DIRECTORY:-"gs://chromeos-localmirror/distfiles/afdo/experimental/cwp/"}
+AFDO_LOCATION_EXP1=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/cwp/chrome/"}
 AFDO_LOCATION_EXP2=${AFDO_GS_DIRECTORY:-"gs://chromeos-localmirror/distfiles/afdo/experimental/approximation/"}
 
 # These dictionaries contain one entry per architecture. The value for each
@@ -157,9 +158,9 @@ AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3352.0_rc-r2.afdo"
 AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3352.0_rc-r2.afdo"
 AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3352.0_rc-r2.afdo"
 
-AFDO_FILE_EXP1["amd64"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
-AFDO_FILE_EXP1["x86"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
-AFDO_FILE_EXP1["arm"]="chromeos-chrome-amd64-65.0.3299.0_rc-r1.afdo"
+AFDO_FILE_EXP1["amd64"]="R65-3325.65-1519323840.afdo"
+AFDO_FILE_EXP1["x86"]="R65-3325.65-1519323840.afdo"
+AFDO_FILE_EXP1["arm"]="R65-3325.65-1519323840.afdo"
 
 AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
@@ -187,7 +188,7 @@ add_afdo_files() {
 	for a in "${!AFDO_FILE_EXP1[@]}" ; do
 		f=${AFDO_FILE_EXP1[${a}]}
 		if [[ -n ${f} ]]; then
-			SRC_URI+=" afdo_chrome_exp1? ( ${a}? ( ${AFDO_LOCATION_EXP1}${f}${AFDO_BZ_SUFFIX} -> ${f}${AFDO_EXP1_SUFFIX}${AFDO_BZ_SUFFIX} ) )"
+			SRC_URI+=" afdo_chrome_exp1? ( ${a}? ( ${AFDO_LOCATION_EXP1}${f}${AFDO_XZ_SUFFIX} -> ${f}${AFDO_EXP1_SUFFIX}${AFDO_XZ_SUFFIX} ) )"
 		fi
 	done
 	for a in "${!AFDO_FILE_EXP2[@]}" ; do
@@ -656,11 +657,13 @@ src_unpack() {
 		local PROFILE_STATE="CURRENT"
 		local PROFILE_FILE=${AFDO_FILE_LLVM[${ARCH}]}
 		local PROFILE_SUFFIX=${AFDO_PROF_SUFFIX}
+		local COMPRESSOR_SUFFIX=${AFDO_BZ_SUFFIX}
 
 		if use afdo_chrome_exp1; then
 			PROFILE_STATE="EXPERIMENT 1"
 			PROFILE_FILE=${AFDO_FILE_EXP1[${ARCH}]}
 			PROFILE_SUFFIX=${AFDO_EXP1_SUFFIX}
+			COMPRESSOR_SUFFIX=${AFDO_XZ_SUFFIX}
 		fi
 
 		if use afdo_chrome_exp2; then
@@ -677,7 +680,7 @@ src_unpack() {
 		PROFILE_FILE=${PROFILE_FILE}${PROFILE_SUFFIX}
 
 		[[ -n ${PROFILE_FILE} ]] || die "Missing AFDO profile for ${ARCH}"
-		unpack "${PROFILE_FILE}${AFDO_BZ_SUFFIX}"
+		unpack "${PROFILE_FILE}${COMPRESSOR_SUFFIX}"
 		popd > /dev/null
 
 		AFDO_PROFILE_LOC="${PROFILE_DIR}/${PROFILE_FILE}"
