@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="cheets -chromeless_tests +bluetooth buffet +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty peerd +power_management +shill wifi_bootstrapping +tpm tpm2"
+IUSE="cheets -chromeless_tests +bluetooth buffet +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty kvm_host peerd +power_management +shill wifi_bootstrapping +tpm tpm2"
 
 RDEPEND="
 	chromeos-base/autotest-client
@@ -41,6 +41,7 @@ RDEPEND="
 	cros_disks? ( chromeos-base/autotest-tests-cros-disks )
 	cros_p2p? ( chromeos-base/autotest-tests-p2p )
 	debugd? ( chromeos-base/autotest-tests-debugd )
+	kvm_host? ( chromeos-base/autotest-tests-vm-host )
 	peerd? ( chromeos-base/autotest-tests-peerd )
 	power_management? ( chromeos-base/autotest-tests-power )
 	shill? (
