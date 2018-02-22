@@ -18,9 +18,7 @@ KEYWORDS="~*"
 IUSE="+autotest"
 
 RDEPEND="
-	chromeos-base/autotest-chrome
 	!<chromeos-base/autotest-tests-0.0.3
-	chromeos-base/telemetry
 "
 DEPEND="${RDEPEND}"
 
@@ -36,20 +34,8 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeNonDirs
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
-	+tests_platform_InitLoginPerf
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
-
-src_prepare() {
-	# [Note: This approach is copied from autotest-tests-cheets (CL:*240887)]
-	# Telemetry tests require the path to telemetry source to exist in order to
-	# build. Copy the telemetry source to a temporary directory that is writable,
-	# so that file removals in Telemetry source can be performed properly.
-	export TMP_DIR="$(mktemp -d)"
-	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
-	export PYTHONPATH="${TMP_DIR}/telemetry/src/third_party/catapult/telemetry"
-	autotest_src_prepare
-}

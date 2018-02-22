@@ -112,6 +112,7 @@ IUSE_TESTS=(
 	+tests_performance_InboxInputLatency
 	+tests_platform_AddPrinter
 	+tests_platform_ChromeCgroups
+	+tests_platform_InitLoginPerf
 	+tests_platform_InputBrightness
 	+tests_platform_InputBrowserNav
 	+tests_platform_InputNewTab
