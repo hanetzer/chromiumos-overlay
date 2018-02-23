@@ -8,7 +8,7 @@ CROS_WORKON_LOCALNAME="../platform/arc-camera"
 inherit cros-debug cros-workon libchrome toolchain-funcs
 
 DESCRIPTION="Runtime detect the number of cameras on device to generate
-corresponding media_profiles.xml.xml."
+corresponding media_profiles.xml."
 
 LICENSE="BSD-Google"
 SLOT="0"
