@@ -108,6 +108,7 @@ SERVER_IUSE_TESTS="
 	+tests_enterprise_CFM_USBPeripheralRebootStress
 	+tests_enterprise_CFM_USBSpeakerEndToEndSanity
 	+tests_enterprise_CFM_VolumeChange
+	+tests_enterprise_ClearTPM
 	+tests_enterprise_KioskEnrollmentServer
 	+tests_enterprise_LongevityTrackerServer
 	+tests_enterprise_RemoraRequisitionServer
