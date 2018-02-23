@@ -10,7 +10,7 @@ CROS_WORKON_SUBTREE="common-mk ml"
 
 PLATFORM_SUBDIR="ml"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Machine learning service for Chromium OS"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/ml"
@@ -26,4 +26,12 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	dobin "${OUT}"/ml_service
+
+	insinto /etc/init
+	doins init/*.conf
+}
+
+pkg_preinst() {
+	enewuser "ml-service"
+	enewgroup "ml-service"
 }
