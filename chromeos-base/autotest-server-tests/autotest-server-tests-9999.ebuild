@@ -222,7 +222,6 @@ SERVER_IUSE_TESTS="
 	+tests_platform_BootDevice
 	+tests_platform_BootLockboxServer
 	+tests_platform_BootPerfServer
-	+tests_platform_CFM_USBPeripheralStress
 	+tests_platform_CompromisedStatefulPartition
 	+tests_platform_CorruptRootfs
 	+tests_platform_CrashStateful
