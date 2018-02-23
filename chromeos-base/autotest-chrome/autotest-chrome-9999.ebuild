@@ -44,8 +44,8 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS=(
 	# Uses chrome_binary_test dependency.
+	+tests_video_JDAPerf
 	+tests_video_JpegDecodeAccelerator
-	+tests_video_JpegDecodeAcceleratorPerf
 	+tests_video_VideoDecodeAccelerator
 	+tests_video_VideoEncodeAccelerator
 	+tests_video_VDAPerf
