@@ -154,13 +154,13 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3353.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3353.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3353.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3353.0_rc-r2.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3353.0_rc-r2.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3353.0_rc-r2.afdo"
 
-AFDO_FILE_EXP1["amd64"]="R65-3325.65-1519323840.afdo"
-AFDO_FILE_EXP1["x86"]="R65-3325.65-1519323840.afdo"
-AFDO_FILE_EXP1["arm"]="R65-3325.65-1519323840.afdo"
+AFDO_FILE_EXP1["amd64"]="R66-3325.0-1519321598.afdo"
+AFDO_FILE_EXP1["x86"]="R66-3325.0-1519321598.afdo"
+AFDO_FILE_EXP1["arm"]="R66-3325.0-1519321598.afdo"
 
 AFDO_FILE_EXP2["amd64"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
 AFDO_FILE_EXP2["x86"]="chromeos-chrome-amd64-64.0.3245.0_rc-r1.afdo"
