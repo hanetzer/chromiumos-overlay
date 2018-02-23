@@ -138,6 +138,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.3-virgl-Support-v2-caps-struct-v2.patch
 	epatch "${FILESDIR}"/17.3-mesa-don-t-clamp-just-based-on-ARB_viewport_array-ex.patch
 	epatch "${FILESDIR}"/17.3-virgl-remap-query-types-to-hw-support.patch
+	epatch "${FILESDIR}"/17.3-virgl-handle-getting-new-capsets.patch
+	epatch "${FILESDIR}"/17.3-virgl-reduce-some-default-capset-limits.patch
+	epatch "${FILESDIR}"/17.3-virgl-add-offset-alignment-values-to-to-v2-caps-stru.patch
 	base_src_prepare
 
 	eautoreconf
