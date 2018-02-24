@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Don't use Makefile.external here as it fetches from the network.
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 
@@ -42,10 +42,10 @@ src_unpack() {
 	mkdir "${S}"
 
 	pushd "${S}" >/dev/null
-	rm -rf *				#This step can be removed after the chromiumos-wide-profiling subtree is removed.
 	unpack ${SRC}
 	mv "${PN}"/{.[!.],}* ./ || die
 	rmdir "${PN}" || die
+	epatch "${FILESDIR}"/quipper-disable-flaky-tests.patch
 	popd >/dev/null
 }
 
