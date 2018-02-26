@@ -92,6 +92,9 @@ src_install_upstart() {
 				doins upstart/udev-trigger-early.conf
 			fi
 		fi
+		if use frecon; then
+			doins upstart/boot-splash.conf
+		fi
 	else
 		doins upstart/*.conf
 
