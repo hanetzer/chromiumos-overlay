@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT=("7d7d34b06d06e30abc8cac9de56195706be93b60" "799b1c03d065c983e634b98c444f24b3f7f76c07")
-CROS_WORKON_TREE=("de0a86653150e21e0dc43a12c02370b658970bea" "468a783ad9b02ccbfc42c0d8f4a3c46d420f09b7")
+CROS_WORKON_COMMIT=("de6e586e0552340d177894e50709cbc0854a404a" "799b1c03d065c983e634b98c444f24b3f7f76c07")
+CROS_WORKON_TREE=("b7a9bc9394839f82393753ee599f47f38b4f6cdb" "468a783ad9b02ccbfc42c0d8f4a3c46d420f09b7")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/tast"
 	"chromiumos/platform/tast-tests"
@@ -20,16 +20,23 @@ CROS_WORKON_DESTDIR=(
 CROS_GO_WORKSPACE="${S}:${S}/tast-tests"
 
 CROS_GO_TEST=(
-	# Test support packages that live above remote/bundles/.
-	"chromiumos/tast/remote/..."
+	# Test support packages that live above local/bundles/.
+	"chromiumos/tast/local/..."
 )
 
 inherit cros-workon tast-bundle
 
-DESCRIPTION="Bundle of remote integration tests for Chrome OS"
+DESCRIPTION="Bundle of local integration tests for Chrome OS"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform/tast-tests/"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
+
+DEPEND="
+	dev-go/cdp
+	dev-go/dbus
+	dev-go/gopsutil
+"
+RDEPEND="!chromeos-base/tast-local-tests"
