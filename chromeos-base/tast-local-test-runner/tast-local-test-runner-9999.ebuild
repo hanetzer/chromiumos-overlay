@@ -26,4 +26,7 @@ KEYWORDS="~*"
 IUSE=""
 
 DEPEND="dev-go/crypto"
-RDEPEND="app-arch/tar"
+RDEPEND="
+	app-arch/tar
+	!chromeos-base/tast-common
+"
