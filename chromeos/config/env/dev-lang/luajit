@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# luajit fails w/clang syntax checking.
+cros_pre_src_prepare_use_gcc() {
+	if use x86 || use amd64; then
+		filter_clang_syntax
+	fi
+}
