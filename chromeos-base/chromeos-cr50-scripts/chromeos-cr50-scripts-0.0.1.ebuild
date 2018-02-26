@@ -17,13 +17,22 @@ RDEPEND="
 S="${WORKDIR}"
 
 src_install() {
+	local cros_files
+	local f
+
 	insinto /etc/init
 	doins "${FILESDIR}/"cr50-update.conf
 	doins "${FILESDIR}"/cr50-result.conf
 
 	exeinto /usr/share/cros
-	doexe "${FILESDIR}"/cr50-get-name.sh
-	doexe "${FILESDIR}"/cr50-reset.sh
-	doexe "${FILESDIR}"/cr50-set-board-id.sh
-	doexe "${FILESDIR}"/cr50-update.sh
+	cros_files=(
+		cr50-get-name.sh
+		cr50-reset.sh
+		cr50-set-board-id.sh
+		cr50-update.sh
+		cr50-verify-ro.sh
+	)
+	for f in "${cros_files[@]}"; do
+		doexe "${FILESDIR}/${f}"
+	done
 }
