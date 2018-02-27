@@ -3,6 +3,8 @@
 
 EAPI=5
 
+inherit udev
+
 DESCRIPTION="Ebuild to support the Chrome OS Cr50 device."
 
 LICENSE="BSD-Google"
@@ -23,6 +25,8 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/"cr50-update.conf
 	doins "${FILESDIR}"/cr50-result.conf
+
+	udev_dorules "${FILESDIR}"/99-cr50.rules
 
 	exeinto /usr/share/cros
 	cros_files=(
