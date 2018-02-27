@@ -59,8 +59,8 @@ src_prepare() {
 			modules.cfg || die "unable to disable module $1"
 	}
 
-	epatch "${FILESDIR}"/${PN}-2.8.1-94f6d57a4.patch
-	epatch "${FILESDIR}"/${PN}-2.8.1-cc2f3cde.patch
+	epatch "${FILESDIR}"/${PN}-2.9-4a03f17.patch
+	epatch "${FILESDIR}"/${PN}-2.9-libtool.patch
 	epatch "${FILESDIR}"/${PN}-2.4.11-sizeof-types.patch # 459966
 
 	# Enable stem-darkening for CFF font
@@ -68,7 +68,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.6.2-enable-cff-stem-darkening.patch
 
 	# Will be the new default for >=freetype-2.7.0
-	disable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  2"
 
 	if use infinality && use cleartype_hinting; then
 		enable_option "TT_CONFIG_OPTION_SUBPIXEL_HINTING  ( 1 | 2 )"
@@ -82,6 +81,7 @@ src_prepare() {
 	# Harmony (new default in 2.8.1 when FT_CONFIG_OPTION_SUBPIXEL_RENDERING
 	# is undefined), instead. See
 	# https://bugs.chromium.org/p/chromium/issues/detail?id=654563#c3 .
+	# Coordinate with Chromium on Linux.
 	if ! use bindist; then
 		# See http://freetype.org/patents.html
 		# ClearType is covered by several Microsoft patents in the US
