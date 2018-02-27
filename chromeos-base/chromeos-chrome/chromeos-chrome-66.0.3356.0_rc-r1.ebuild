@@ -52,6 +52,7 @@ IUSE="
 	hardfp
 	+highdpi
 	internal_gles_conform
+	jumbo
 	+libcxx
 	lld
 	mojo
@@ -154,9 +155,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3355.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3355.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3355.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-66.0.3356.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-66.0.3356.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-66.0.3356.0_rc-r1.afdo"
 
 AFDO_FILE_EXP1["amd64"]="R66-3325.0-1519321598.afdo"
 AFDO_FILE_EXP1["x86"]="R66-3325.0-1519321598.afdo"
@@ -321,6 +322,9 @@ set_build_args() {
 		use_system_freetype=true
 		use_system_libsync=true
 		use_cups=$(usetf cups)
+		# Jumbo merges translation units together, making builds faster on single machines.
+		# This flag is not automatically tested, so it may not work all the time.
+		use_jumbo_build=$(usetf jumbo)
 
 		# Clang features.
 		is_asan=$(usetf asan)
