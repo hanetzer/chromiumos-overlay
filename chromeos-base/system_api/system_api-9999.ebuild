@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=(
@@ -32,7 +32,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_host"
 
-DEPEND="
+RDEPEND="chromeos-base/libmojo"
+
+DEPEND="${RDEPEND}
 	dev-libs/protobuf
 	cros_host? ( dev-libs/grpc )
 "
