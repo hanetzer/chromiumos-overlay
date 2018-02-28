@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
@@ -75,6 +75,7 @@ src_install() {
 		systemd_enable_service multi-user.target crash-reporter.service
 		systemd_enable_service multi-user.target crash-boot-collect.service
 		systemd_dounit init/crash-sender.service
+		systemd_enable_service multi-user.target crash-sender.service
 		systemd_dounit init/crash-sender.timer
 		systemd_enable_service timers.target crash-sender.timer
 		if ! use cros_embedded; then
