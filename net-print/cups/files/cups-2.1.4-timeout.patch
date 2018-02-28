@@ -1,0 +1,47 @@
+Decrease printer connection timeout from a week to 20 seconds. Consider all
+failures timeout worthy; no more cases of waiting for a connection forever.
+
+This allows us to use a larger timeout on chrome, allowing ample time for
+large print jobs and still catching persistent non-connection failures.
+
+From: Luum Habtemariam <luum@chromium.org>
+Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=786182
+diff --git a/backend/ipp.c b/backend/ipp.c
+index 47e5faf..21b82d2 100644
+--- a/backend/ipp.c
++++ b/backend/ipp.c
+@@ -435,7 +435,7 @@ main(int  argc,				/* I - Number of command-line args */
+   version     = 20;
+   waitjob     = 1;
+   waitprinter = 1;
+-  contimeout  = 7 * 24 * 60 * 60;
++  contimeout  = 20;
+ 
+   if ((optptr = strchr(resource, '?')) != NULL)
+   {
+@@ -824,17 +824,17 @@ main(int  argc,				/* I - Number of command-line args */
+ 
+       fprintf(stderr, "DEBUG: Connection error: %s\n", strerror(errno));
+ 
++      if (contimeout && (time(NULL) - start_time) > contimeout)
++      {
++        _cupsLangPrintFilter(stderr, "ERROR",
++                             _("The printer is not responding."));
++        update_reasons(NULL, "-connecting-to-device");
++        return (CUPS_BACKEND_FAILED);
++      }
++
+       if (errno == ECONNREFUSED || errno == EHOSTDOWN ||
+           errno == EHOSTUNREACH)
+       {
+-        if (contimeout && (time(NULL) - start_time) > contimeout)
+-	{
+-	  _cupsLangPrintFilter(stderr, "ERROR",
+-	                       _("The printer is not responding."));
+-	  update_reasons(NULL, "-connecting-to-device");
+-	  return (CUPS_BACKEND_FAILED);
+-	}
+-
+ 	switch (error)
+ 	{
+ 	  case EHOSTDOWN :
