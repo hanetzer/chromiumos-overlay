@@ -61,6 +61,7 @@ IUSE_TESTS=(
 	+tests_audio_PlaybackPower
 	+tests_audio_SeekAudioFeedback
 	+tests_audio_WebRtcAudioLoopback
+	+tests_autoupdate_EOL
 	+tests_autoupdate_StartOOBEUpdate
 	+tests_bluetooth_AdapterSanity
 	+tests_bluetooth_IDCheck
