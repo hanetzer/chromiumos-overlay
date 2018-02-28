@@ -35,8 +35,6 @@ pick_cherries() {
 
 pick_next_cherries() {
 	CHERRIES=""
-	CHERRIES+=" 17b90924dbf7eb14c591d72d4e360d77b87fdefc" # r323155
-	CHERRIES+=" cb6934a621f04652dda0be611ec298877b1d8e14" # r323288
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -56,7 +54,7 @@ src_unpack() {
 	EGIT_COMMIT="901304abaacc60ef78ab5983d24f0f4666a70fe1" #r321473
 
 	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
-		EGIT_COMMIT="901304abaacc60ef78ab5983d24f0f4666a70fe1" #r321473
+		EGIT_COMMIT="1c99f7d72ed89ebbe6995b31e55e04a9456a8005" #r324072
 	fi
 
 	git-r3_fetch

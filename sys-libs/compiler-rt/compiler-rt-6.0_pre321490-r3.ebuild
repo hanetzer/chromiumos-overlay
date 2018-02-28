@@ -26,8 +26,8 @@ src_unpack() {
 	# For this version of the ebuild, llvm and llvm-next are the same until we roll
 	# a new version of llvm-next.
 	if use llvm-next; then
-		# llvm:r321485 https://critique.corp.google.com/#review/180179552
-		EGIT_COMMIT="3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" #r321485
+		# llvm:r324073 https://critique.corp.google.com/#review/186055351
+		EGIT_COMMIT="5197e945a56dd5da7925c64b06f9ca14a7385786" #r324034
 	else
 		# llvm:r321485 https://critique.corp.google.com/#review/180179552
 		EGIT_COMMIT="3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" #r321485
@@ -98,5 +98,18 @@ src_install() {
 	rm -rf "${ED}"usr/share || die
 	rm -rf "${ED}"${libdir}/clang/*/include || die
 	rm -f "${ED}"${libdir}/clang/*/*_blacklist.txt || die
+	rm -f "${ED}"${libdir}/clang/*/*/*_blacklist.txt || die
 	rm -f "${ED}"${libdir}/clang/*/dfsan_abilist.txt || die
+	rm -f "${ED}"${libdir}/clang/*/*/dfsan_abilist.txt || die
+
+	# This section can be removed once prebuilds for 324073 have been created.
+	local llvm_version=$(llvm-config --version)
+	local clang_version=${llvm_version%svn*}
+	clang_version=${clang_version%git*}
+	if [[ ${clang_version} == "6.0.0" ]] ; then
+		new_version="7.0.0"
+	else
+		new_version="6.0.0"
+	fi
+	cp -r  "${D}${libdir}/clang/${clang_version}" "${D}${libdir}/clang/${new_version}"
 }

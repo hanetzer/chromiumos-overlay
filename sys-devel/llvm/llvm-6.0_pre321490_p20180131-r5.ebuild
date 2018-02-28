@@ -17,28 +17,26 @@ EGIT_REPO_URI="http://llvm.org/git/llvm.git
 	https://github.com/llvm-mirror/llvm.git"
 LICENSE="UoI-NCSA"
 
-# For this version of the ebuild, llvm and llvm-next are the same. We need to roll
-# a new llvm-next.
 if use llvm-next; then
 
-# llvm:r321490 https://critique.corp.google.com/#review/181250307
+# llvm:r324073 https://critique.corp.google.com/#review/186055351
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"7e6fcc775f56cdeeae061f6f8071f5c103087330" # EGIT_COMMIT r321490
+		"299f8c346e1ab483463da5f02536ffd00b7ad9c6" # EGIT_COMMIT r324066
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" # EGIT_COMMIT r321485
+		"5197e945a56dd5da7925c64b06f9ca14a7385786" # EGIT_COMMIT r324034
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"7e0bf617fb110ad1e246f7cb09e20e293d3b429e" # EGIT_COMMIT r321487
+		"a2ca4ae98b35d76b14cc936af1ebf13b93199d79" # EGIT_COMMIT r324062
 	"clang-tidy"
 		"tools/clang/tools/extra"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm-clang-tools-extra.git"
-		"057470116210d2e6bf5e726361e641c8c5de9b35" # EGIT_COMMIT r321412
+		"0eaf52897e57a152f38441619e776303b84568f3" # EGIT_COMMIT r324073
 )
 else
 # llvm:r321490 https://critique.corp.google.com/#review/181250307
@@ -239,7 +237,6 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 0d816739a82da29748caf88570affb9715e18b69" # r323155
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -248,11 +245,6 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
-	CHERRIES+=" fd5a8723ce9f2a6b250e85972ef859e4253ea95d" # r323155
-	CHERRIES+=" 771594b9ab02241dec7c254f490eb701b62de070" # r323759
-	CHERRIES+=" 61c5605f601c14b58d9697c7b625f2082daed65d" # r323813
-	CHERRIES+=" e4eed790f8967cc92fc03fa2cf9183c6b03b3428" # r323915
 	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
 	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
 	CHERRIES+=" 197917a303a397db80df6f71246490ad5cf23228" # r325049
