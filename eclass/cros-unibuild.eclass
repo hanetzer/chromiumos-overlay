@@ -22,6 +22,13 @@ UNIBOARD_DTB_INSTALL_PATH="${UNIBOARD_CROS_CONFIG_DIR}/config.dtb"
 #  This is the installation directory of the device-tree source files.
 UNIBOARD_DTS_DIR="${UNIBOARD_CROS_CONFIG_DIR}/dts"
 
+# @ECLASS-VARIABLE: UNIBOARD_DTS_BASEBOARD
+# @DESCRIPTION:
+#  This is a shared file that can be installed by a baseboard ebuild and shared
+#  among various overlays. Commonly used for sharing SKU's.
+UNIBOARD_DTS_BASEBOARD="${CROS_MODELS_DIR}/baseboard/model.dtsi"
+# TODO(jclinton): Support YAML joining of files
+
 # @ECLASS-VARIABLE: UNIBOARD_YAML_DIR
 # @DESCRIPTION:
 #  This is the installation directory of the yaml source files.
@@ -95,7 +102,12 @@ _install_model_files() {
 	local prefix="$1"
 	local files
 
-	_unibuild_find_configs "${FILESDIR}" ".dtsi"
+	# Support a shared base file that can be imported from a baseboard ebuild
+	if [[ -e "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" ]]; then
+		files+=( "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" )
+	fi
+
+	_unibuild_find_configs "${D}/${CROS_MODELS_DIR}" ".dtsi"
 
 	einfo "Validating ${#files[@]} files:"
 	validate_config -p "${files[@]}" || die "Validation failed"
