@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
-CROS_WORKON_COMMIT="01c7c05897beb2992dfe49ed493ee8036c245566"
-CROS_WORKON_TREE="f5daf4c3dc83ea3d0d0e7f9b064363e386e4e5dd"
+CROS_WORKON_COMMIT="a2af9cab9d290bad970dfd8446953d894a3c1a6f"
+CROS_WORKON_TREE="49251d9b8cbea66f2c48db312946e722ed098fcf"
 CROS_WORKON_PROJECT="chromiumos/platform/frecon"
 CROS_WORKON_LOCALNAME="../platform/frecon"
 CROS_WORKON_OUTOFTREE_BUILD=1
