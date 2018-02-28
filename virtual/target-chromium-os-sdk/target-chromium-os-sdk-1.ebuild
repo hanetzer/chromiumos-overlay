@@ -78,6 +78,7 @@ RDEPEND="${RDEPEND}
 	app-arch/pigz
 	app-arch/pixz
 	app-admin/sudo
+	app-crypt/sbsigntool
 	dev-embedded/cbootimage
 	dev-embedded/tegrarcm
 	dev-embedded/u-boot-tools

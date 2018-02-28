@@ -1,0 +1,2 @@
+# app-crypt/sbsigntool depends on binutils-libs.
+sys-libs/binutils-libs-0
