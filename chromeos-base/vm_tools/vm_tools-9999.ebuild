@@ -53,6 +53,7 @@ src_install() {
 	else
 		dobin "${OUT}"/virtwl_guest_proxy
 		dobin "${OUT}"/vm_syslog
+		dobin "${OUT}"/garcon
 		dosbin "${OUT}"/vshd
 
 		into /
