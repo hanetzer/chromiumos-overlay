@@ -33,7 +33,7 @@ pkg_preinst() {
 
 src_install() {
 	# Install a tool to override max pressure.
-	exeinto "$(udev_get_udevdir)"
+	exeinto "$(get_udevdir)"
 	doexe "${OUT}/override-max-pressure"
 
 	# Install the correct seccomp policy for this architecture.

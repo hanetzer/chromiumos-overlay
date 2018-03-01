@@ -35,7 +35,7 @@ src_test() {
 
 src_install() {
 	udev_dorules "${FILESDIR}"/udev/99-cros-ec-accel.rules
-	exeinto $(udev_get_udevdir)
+	exeinto $(get_udevdir)
 	doexe "${FILESDIR}"/udev/*.sh
 
 	insinto /etc/init

@@ -22,6 +22,6 @@ src_install() {
 		"${FILESDIR}"/udev/rules.d/99-rk3399-hdcp.rules
 
 	# Install device specific HDCP script
-	exeinto "$(udev_get_udevdir)"
+	exeinto "$(get_udevdir)"
 	doexe "${FILESDIR}/hdcp_pass_key.sh"
 }

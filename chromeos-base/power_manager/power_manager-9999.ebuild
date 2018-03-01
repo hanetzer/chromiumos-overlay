@@ -98,7 +98,7 @@ src_install() {
 	doins dbus/org.chromium.PowerManager.conf
 
 	# udev scripts and rules.
-	exeinto "$(udev_get_udevdir)"
+	exeinto "$(get_udevdir)"
 	doexe udev/*.sh
 	udev_dorules udev/*.rules
 

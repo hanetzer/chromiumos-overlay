@@ -49,6 +49,6 @@ src_compile() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" UDEV_RULE_DIR=$(udev_get_udevdir)/rules.d \
+	emake DESTDIR="${D}" UDEV_RULE_DIR=$(get_udevdir)/rules.d \
 		install || die "emake install failed"
 }

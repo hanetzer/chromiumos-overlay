@@ -140,7 +140,7 @@ src_install() {
 	udev_dorules "${FILESDIR}/52-mm-modem-permissions.rules"
 	udev_dorules "${FILESDIR}/77-mm-fibocom-port-types.rules"
 	udev_dorules "${FILESDIR}/77-mm-huawei-configuration.rules"
-	exeinto "$(udev_get_udevdir)"
+	exeinto "$(get_udevdir)"
 	doexe "${FILESDIR}/mm-huawei-configuration-switch.sh"
 
 	# When built with USE=gobi, override 80-mm-candidate.rules provided by
