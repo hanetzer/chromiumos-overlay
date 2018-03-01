@@ -325,6 +325,7 @@ set_build_args() {
 		# Jumbo merges translation units together, making builds faster on single machines.
 		# This flag is not automatically tested, so it may not work all the time.
 		use_jumbo_build=$(usetf jumbo)
+		use_bundled_fontconfig=false
 
 		# Clang features.
 		is_asan=$(usetf asan)
