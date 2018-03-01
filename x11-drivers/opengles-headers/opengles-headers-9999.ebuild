@@ -38,6 +38,7 @@ src_install() {
 	insinto /usr/include/GLES3
 	doins "${S}/include/GLES3/gl3.h"
 	doins "${S}/include/GLES3/gl31.h"
+	doins "${S}/include/GLES3/gl32.h"
 	doins "${S}/include/GLES3/gl3platform.h"
 	insinto /usr/include/CL
 	doins "${S}/include/CL/cl.h"
