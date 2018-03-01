@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 DESCRIPTION="List of packages that are needed inside the Chromium OS base (release)"
 HOMEPAGE="http://dev.chromium.org/"
@@ -38,6 +38,7 @@ IUSE="
 	kvm_host
 	mist
 	modemfwd
+	ml_service
 	mtd
 	+network_time
 	nfc
@@ -169,6 +170,7 @@ CROS_COMMON_RDEPEND+="
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
 	scanner? ( chromeos-base/lorgnette )
+	ml_service? ( chromeos-base/ml )
 	peerd? ( chromeos-base/peerd )
 	hammerd? ( chromeos-base/hammerd )
 	power_management? ( chromeos-base/power_manager )
