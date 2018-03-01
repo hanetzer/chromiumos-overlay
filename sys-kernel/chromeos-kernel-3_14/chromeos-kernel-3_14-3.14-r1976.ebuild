@@ -1,23 +1,23 @@
-# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2017 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="2b101f962c98d436e0f149a9df2024bd875ee4e9"
-CROS_WORKON_TREE="e5ae08a90586e86ef1cee4473ad131b6e3a30ecd"
+CROS_WORKON_COMMIT="f0259f98dbd0f02e44a8ce40543b2ae6d6101753"
+CROS_WORKON_TREE="9b54f7535aaef25a392a4e22913f6628642f0a54"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v4.4"
+CROS_WORKON_LOCALNAME="kernel/v3.14"
 
 # AFDO_PROFILE_VERSION is the build on which the profile is collected.
 # This is required by kernel_afdo.
 #
 # TODO: Allow different versions for different CHROMEOS_KERNEL_SPLITCONFIGs
-AFDO_PROFILE_VERSION="R66-10425.0-1519643386"
+AFDO_PROFILE_VERSION="R66-10425.0-1519643221"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 4.4"
+DESCRIPTION="Chrome OS Linux Kernel 3.14"
 KEYWORDS="*"
 
 # Change the following (commented out) number to the next prime number
