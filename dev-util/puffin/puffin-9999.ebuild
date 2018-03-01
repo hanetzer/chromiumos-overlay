@@ -26,9 +26,10 @@ HOMEPAGE="https://android.googlesource.com/platform/external/puffin/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="asan fuzzer"
 
 RDEPEND="
-	chromeos-base/libbrillo
+	chromeos-base/libbrillo[asan?,fuzzer?]
 	dev-libs/protobuf:=
 	dev-util/bsdiff
 "
