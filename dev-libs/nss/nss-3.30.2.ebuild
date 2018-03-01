@@ -20,7 +20,7 @@ SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/${RTM_NAME}/src/$
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cacert +nss-pem utils"
+IUSE="cacert cros_host +nss-pem utils"
 CDEPEND=">=dev-db/sqlite-3.8.2[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]"
 DEPEND=">=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]
@@ -112,6 +112,11 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	# Workaround the bug in crbug.com/817911
+	# With BFD linker, the libsmime3.so contains two NSS_3.10 symbols, one is
+	# global, the other is local and this makes LLD cry.
+	use cros_host && append-ldflags -fuse-ld=gold
+
 	# Ensure we stay multilib aware
 	sed -i -e "/@libdir@/ s:lib64:$(get_libdir):" config/Makefile || die
 }
