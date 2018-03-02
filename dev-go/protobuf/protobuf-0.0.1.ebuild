@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="0a4f71a498b7c4812f64969510bcb4eca251e33a"
+CROS_WORKON_COMMIT="bbd03ef6da3a115852eaf24c8a1c46aeb39aa175"
 CROS_WORKON_PROJECT="external/github.com/golang/protobuf"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/protobuf"
 
