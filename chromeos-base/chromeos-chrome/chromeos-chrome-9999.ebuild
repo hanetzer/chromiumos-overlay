@@ -37,6 +37,7 @@ IUSE="
 	+authpolicy
 	+build_tests
 	+chrome_debug
+	cfi
 	chrome_debug_tests
 	chrome_internal
 	chrome_media
@@ -73,6 +74,7 @@ IUSE="
 REQUIRED_USE="
 	asan? ( clang )
 	?? ( gold lld )
+	cfi? ( thinlto )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
@@ -334,6 +336,8 @@ set_build_args() {
 		clang_use_chrome_plugins=false
 		use_thin_lto=$(usetf thinlto)
 		use_lld=$(usetf lld)
+		is_cfi=$(usetf cfi)
+		use_cfi_cast=$(usetf cfi)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.

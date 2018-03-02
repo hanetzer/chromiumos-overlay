@@ -5,6 +5,7 @@
 	<flag name='app_shell'>Build app_shell</flag>
 	<flag name='asan'>Build with Address Sanitizer support</flag>
 	<flag name='build_tests'>Build test targets</flag>
+	<flag name='cfi'>Build Chrome with CFI (Control Flow Integrity) enabled</flag>
 	<flag name='chrome_debug'>Build with debug symbols (-g)</flag>
 	<flag name='chrome_debug_tests'>Don't strip test targets</flag>
 	<flag name='chrome_internal'>Add chrome branding</flag>
