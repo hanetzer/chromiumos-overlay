@@ -24,6 +24,10 @@ CROS_GO_PACKAGES=(
 	"go.opencensus.io/trace/propagation"
 )
 
+CROS_GO_TEST=(
+	"${CROS_GO_PACKAGES[@]}"
+)
+
 inherit cros-workon cros-go
 
 DESCRIPTION="A stats collection and distributed tracing framework"
