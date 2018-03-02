@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 DESCRIPTION="Chrome OS Install Shim (meta package)"
 HOMEPAGE="http://src.chromium.org"
@@ -71,6 +71,7 @@ RDEPEND="
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-libs/gcc-libs
+	sys-libs/libcxx
 	sys-process/lsof
 	sys-process/procps
 	virtual/chromeos-auth-config
