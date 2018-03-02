@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="d581abfc04272f381d7a05e4b80163ea4e2b9447"
+CROS_WORKON_COMMIT="v${PV}"
 CROS_WORKON_PROJECT="external/github.com/golang/mock"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/mock"
 
