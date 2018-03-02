@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="*"
 
 DEPEND="
-	chromeos-base/chromeos-config-bsp:=
+	virtual/chromeos-config-bsp:=
 "
 
 # This ebuild creates the Chrome OS master configuration file stored in

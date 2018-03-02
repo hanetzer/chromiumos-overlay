@@ -86,7 +86,6 @@ DEPEND="
 case "${EAPI:-0}" in
 5|6)
 	DEPEND+=" unibuild? (
-			chromeos-base/chromeos-config-bsp:=
 			chromeos-base/chromeos-config:=
 		) "
 	;;

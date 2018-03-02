@@ -20,21 +20,33 @@ CROS_MODELS_DIR="/usr/share/models"
 #  for the inheritance of configurations, not a real model.
 CROS_COMMON_MODEL="common"
 
+# @ECLASS-VARIABLE: CROS_MODEL_PRIVATE
+# @DESCRIPTION:
+#  This is the subdirectory name for private config files.
+CROS_MODEL_PRIVATE="private"
+
 # @FUNCTION: cros-model_src_install_parent_config
 # @DESCRIPTION:
 # Copies all configuration files of parent model into folder of model.
 cros-model_src_install_parent_config() {
-	[[ $# -ne 2 ]] && die "Usage: ${FUNCNAME} <parent_model> <model>"
+	[[ $# -ne 3 ]] && die "Usage: ${FUNCNAME} <parent_model> <model>" \
+		"<${CROS_MODEL_PRIVATE} or empty string>"
 
-	local parent_model=$1
-	local model=$2
+	local parent_model="$1"
+	local model="$2"
+	local private="$3"
 
 	if [[ -n "${parent_model}" ]]; then
 		# Avoid polluting callers with our newins.
 		(
 			einfo "Installing parent ${parent_model} config files"
-			insinto "${CROS_MODELS_DIR}/${model}"
-			doins -r "${D}${CROS_MODELS_DIR}/${parent_model}"/*
+			if [[ ${#private} -ne 0 ]]; then
+				insinto "${CROS_MODELS_DIR}/${model}/${private}"
+				doins -r "${D}${CROS_MODELS_DIR}/${parent_model}/${private}"/*
+			else
+				insinto "${CROS_MODELS_DIR}/${model}"
+				doins -r "${D}${CROS_MODELS_DIR}/${parent_model}"/*
+			fi
 		)
 	fi
 }
@@ -45,14 +57,21 @@ cros-model_src_install_parent_config() {
 # Copies all configuration files of model into CROS_MODELS_DIR and copies
 # the model.dtsi to where cros-config expects it as input.
 cros-model_src_install_model_config() {
-	[[ $# -ne 1 ]] && die "Usage: ${FUNCNAME} <model>"
+	[[ $# -ne 2 ]] && die \
+		"Usage: ${FUNCNAME} <model> <${CROS_MODEL_PRIVATE} or empty string>"
 
-	local model=$1
+	local model="$1"
+	local private="$2"
 
 	# Avoid polluting callers with our newins.
 	(
-		einfo "Installing ${model} config files"
-		insinto "${CROS_MODELS_DIR}/${model}"
+		einfo "Installing ${model} ${private} config files"
+		einfo ""
+		if [[ ${#private} -ne 0 ]]; then
+				insinto "${CROS_MODELS_DIR}/${model}/${private}"
+		else
+				insinto "${CROS_MODELS_DIR}/${model}"
+		fi
 		[[ -d "${FILESDIR}/${model}" ]] && doins -r "${FILESDIR}/${model}"/*
 
 		# Could remove the file, but leaving it for now, so it's obvious in diff
@@ -61,11 +80,27 @@ cros-model_src_install_model_config() {
 	)
 }
 
-# @FUNCTION: cros-model_src_install
+# @FUNCTION: _cros-model_src_install
 # @DESCRIPTION:
 # Copies all model configuration files to where they need to be.
-cros-model_src_install() {
-	local models=( $("${FILESDIR}/createInheritanceList.py" \
+_cros-model_src_install() {
+	[[ $# -ne 1 ]] && die "Usage: ${FUNCNAME} <${CROS_MODEL_PRIVATE} or empty string>"
+
+	local private="$1"
+	local root_dir="${SYSROOT%/}${CROS_MODELS_DIR}"
+
+	# It makes the code in the board's chromeos-bsp-<board>.ebuild a bit simpler
+	# and to make it easier to migrate in phases, this needs to be supported, as
+	# otherwise we'll have broken builds from the boards that have not done the
+	# split into public/private yet.
+	# It might be even cleaner if we offered a helper function that users of
+	# cros-model.eclass can use to iterate over models instead of doing it
+	# themselves based on the directory structure.
+	if [[ ${#private} -eq 0 ]]; then
+		root_dir="${FILESDIR}"
+	fi
+
+	local models=( $("${root_dir}/createInheritanceList.py" \
 		"${SYSROOT%/}${CROS_MODELS_DIR}") )
 
 	einfo $models
@@ -75,89 +110,23 @@ cros-model_src_install() {
 		# The first model is the root and doesn't have a parent, so nothing to
 		# copy from.
 		if [[ ${it} -ne 0 ]]; then
-			cros-model_src_install_parent_config "${models[it]%/*}" "${model}"
+			cros-model_src_install_parent_config "${models[it]%/*}" "${model}" \
+				"${private}"
 		fi
-		cros-model_src_install_model_config "${model}"
+		cros-model_src_install_model_config "${model}" "${private}"
 	done
-
-	# TODO(pberny): add private model copy on top
 }
 
-# @FUNCTION: cros-model_audio_configs_install
-# @USAGE: <model> <portage_install_dir>
+# @FUNCTION: cros-model_src_install
 # @DESCRIPTION:
-# Copy audio configuration files to where CRAS expects them to be.
-cros-model_audio_configs_install() {
-	[[ $# -ne 2 ]] && die "Usage: ${FUNCNAME} <model> <portage_install_dir>"
+# Copies all model configuration files to where they need to be.
+cros-model_src_install() {
+	_cros-model_src_install ""
+}
 
-	# Install alsa config files.
-	local model=$1
-	local src_dir=$2
-	local install_dir=$2
-
-	local audio_config_dir="${src_dir}${CROS_MODELS_DIR}/${model}/audio"
-
-	local alsa_conf="${audio_config_dir}/alsa-module-config/alsa.conf"
-	if [[ -f "${alsa_conf}" ]] ; then
-		einfo "Installing ALSA config for ${model}"
-		local modprobe_dir="${install_dir}etc/modprobe.d"
-		mkdir -p "${modprobe_dir}"
-		# This should never fail, since this models' config shouldn't be there.
-		cp "${alsa_conf}" "${modprobe_dir}/alsa-${model}.conf" || die
-	fi
-
-	# Install alsa patch files.
-	local alsa_patch="${audio_config_dir}/alsa-module-config/alsa.fw"
-	if [[ -f "${alsa_patch}" ]] ; then
-		einfo "Installing ALSA patch file for ${model}"
-		local libfw_dir="${install_dir}lib/firmware"
-		mkdir -p "${libfw_dir}"
-		cp "${alsa_patch}" "${libfw_dir}/${model}_alsa.fw" || die
-	fi
-
-	# Install ucm config files.
-	local ucm_config="${audio_config_dir}/ucm-config"
-	if [[ -d "${ucm_config}" ]] ; then
-		einfo "Installing ucm config for model ${model}"
-		local ucm_config_dir="${install_dir}usr/share/alsa/ucm"
-		mkdir -p "${ucm_config_dir}"
-		# there should only be one conf ever. TODO assert if that's not true
-		# for now just break out of loop
-		local conf_file
-		for conf_file in "${ucm_config}"/*.conf; do
-			# Note that the .conf file must have the correct name matching
-			# the audio card
-			local audio_card_name="${conf_file%.conf}"
-			audio_card_name="${audio_card_name##*/}"
-			cp -r "${ucm_config}" "${ucm_config_dir}/${audio_card_name}.${model}" \
-				|| die
-			mv "${ucm_config_dir}/${audio_card_name}.${model}/${conf_file##*/}" \
-				"${ucm_config_dir}/${audio_card_name}.${model}/${audio_card_name}.${model}.conf"
-			break
-		done
-
-		# Fix up the submodels
-		for sub in "${ucm_config}"/*; do
-			if [[ -d "${sub}" ]]; then
-				local submodel=${sub##*/}
-				einfo "Installing ucm config for sku ${submodel}"
-				cp -r "${ucm_config}/${submodel}" \
-					"${ucm_config_dir}/${audio_card_name}.${model}.${submodel}" || die
-				mv "${ucm_config_dir}/${audio_card_name}.${model}.${submodel}/${conf_file##*/}" \
-				"${ucm_config_dir}/${audio_card_name}.${model}.${submodel}/${audio_card_name}.${model}.${submodel}.conf"
-			fi
-		done
-	fi
-
-	local cras_config="${audio_config_dir}/cras-config"
-	if [[ -d "${cras_config}" ]] ; then
-		local cras_config_dir="${install_dir}etc/cras"
-		mkdir -p "${cras_config_dir}"
-		cp -r "${cras_config}" "${cras_config_dir}/${model}" || die
-		if [[ "${CROS_COMMON_MODEL}" == "${model}" ]]; then
-			mv "${cras_config_dir}/${model}"/get_* "${cras_config_dir}"
-		else
-			rm "${cras_config_dir}/${model}"/get_*
-		fi
-	fi
+# @FUNCTION: cros-model_private_src_install
+# @DESCRIPTION:
+# Copies all private model configuration files to where they need to be.
+cros-model_private_src_install() {
+	_cros-model_src_install "${CROS_MODEL_PRIVATE}"
 }
