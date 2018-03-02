@@ -15,7 +15,7 @@ SRC_URI="https://storage.googleapis.com/golang/go${PV}.src.tar.gz
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
