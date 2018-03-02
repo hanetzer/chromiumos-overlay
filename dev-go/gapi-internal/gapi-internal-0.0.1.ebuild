@@ -31,5 +31,9 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
-DEPEND=""
+DEPEND="
+	dev-go/cmp
+	dev-go/grpc
+	dev-go/oauth2
+"
 RDEPEND="${DEPEND}"
