@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 CROS_WORKON_COMMIT="f5941190dcc2a367fc8fa0f86d2594c2197cf12d"
 CROS_WORKON_TREE="701d5d0aa00ae63354a963469ffff9a851049086"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
@@ -25,6 +25,7 @@ RDEPEND="cros_host? ( app-emulation/qemu )
 	dev-lang/python
 	dev-util/shflags
 	cros_host? ( dev-util/crosutils )
+	cros_host? ( dev-util/toolchain-utils )
 	sys-apps/flashmap
 	"
 # These are all either bash / python scripts.  No actual builds DEPS.
