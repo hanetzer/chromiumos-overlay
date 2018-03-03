@@ -39,4 +39,7 @@ src_install() {
 	for f in "${cros_files[@]}"; do
 		doexe "${FILESDIR}/${f}"
 	done
+
+	insinto /opt/google/cr50/ro_db
+	doins "${FILESDIR}"/verify_ro.db
 }
