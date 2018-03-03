@@ -39,7 +39,8 @@ KEYWORDS="~*"
 IUSE="debug"
 
 RDEPEND="chromeos-base/minijail
-	!chromeos-base/crosvm-bin"
+	!chromeos-base/crosvm-bin
+	arm? ( sys-apps/dtc )"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
