@@ -24,6 +24,7 @@ CROS_GO_PACKAGES=(
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 	"golang.org/x/net/lex/httplex"
+	"golang.org/x/net/netutil"
 	"golang.org/x/net/trace"
 )
 
