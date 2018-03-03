@@ -37,6 +37,7 @@ IUSE="
 	+authpolicy
 	+build_tests
 	+chrome_debug
+	cfi
 	chrome_debug_tests
 	chrome_internal
 	chrome_media
@@ -73,6 +74,7 @@ IUSE="
 REQUIRED_USE="
 	asan? ( clang )
 	?? ( gold lld )
+	cfi? ( thinlto )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
@@ -155,9 +157,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3360.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3360.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3360.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3360.0_rc-r2.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3360.0_rc-r2.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3360.0_rc-r2.afdo"
 
 AFDO_FILE_EXP1["amd64"]="R66-3325.65-1519428391.afdo"
 AFDO_FILE_EXP1["x86"]="R66-3325.65-1519428391.afdo"
@@ -334,6 +336,8 @@ set_build_args() {
 		clang_use_chrome_plugins=false
 		use_thin_lto=$(usetf thinlto)
 		use_lld=$(usetf lld)
+		is_cfi=$(usetf cfi)
+		use_cfi_cast=$(usetf cfi)
 	)
 	# BUILD_STRING_ARGS needs appropriate quoting. So, we keep them separate and
 	# add them to BUILD_ARGS at the end.
