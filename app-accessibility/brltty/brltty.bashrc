@@ -32,6 +32,6 @@ cros_post_src_prepare_brltty_config() {
 cros_post_src_install_brltty_config() {
 	insinto /etc
 	doins "${FILESDIR}"/brltty.conf
-	exeinto $(udev_get_udevdir)
+	exeinto $(get_udevdir)
 	doexe "${FILESDIR}"/brltty
 }
