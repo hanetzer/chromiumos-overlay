@@ -99,6 +99,8 @@ sys-apps/coreutils	multicall
 sys-apps/dtc		static-libs
 sys-apps/dbus		-X
 sys-apps/hwids		-net
+sys-apps/mawk		forced-sandbox
+sys-apps/sed		forced-sandbox
 sys-apps/smartmontools	minimal
 sys-apps/util-linux     -unicode
 # pam_unix: empty password is not OK
