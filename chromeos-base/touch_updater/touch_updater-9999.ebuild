@@ -18,6 +18,7 @@ IUSE="input_devices_synaptics
 	input_devices_wacom
 	input_devices_st
 	input_devices_weida
+	input_devices_goodix
 "
 
 RDEPEND="
@@ -25,6 +26,7 @@ RDEPEND="
 	input_devices_wacom? ( chromeos-base/wacom_fw_flash )
 	input_devices_st? ( chromeos-base/st_flash )
 	input_devices_weida? ( chromeos-base/weida_wdt_util )
+	input_devices_goodix? ( chromeos-base/gdix_hid_firmware_update )
 	sys-apps/mosys
 "
 
