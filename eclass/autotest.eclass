@@ -23,7 +23,6 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 : ${AUTOTEST_CLIENT_SITE_TESTS:=client/site_tests}
 : ${AUTOTEST_SERVER_TESTS:=server/tests}
 : ${AUTOTEST_SERVER_SITE_TESTS:=server/site_tests}
-: ${AUTOTEST_CONFIG:=client/config}
 : ${AUTOTEST_DEPS:=client/deps}
 : ${AUTOTEST_PROFILERS:=client/profilers}
 
@@ -85,15 +84,17 @@ touch_init_py() {
 	done
 }
 
-# Exports a CROS_WORKON_SUBDIRS_TO_COPY variable to ensure that only the
+# Exports a CROS_WORKON_SUBTREE variable to ensure that only the
 # necessary files will be copied. This cannot be applied globally, as some
 # ebuilds may not have tests only.
 autotest_restrict_workon_subdirs() {
-	CROS_WORKON_SUBDIRS_TO_COPY=()
+	if [[ -n "${CROS_WORKON_SUBTREE[*]}" ]]; then
+		die "CROS_WORKON_SUBTREE is incompatible with autotest.eclass"
+	fi
 	local var
 	for var in AUTOTEST_{CLIENT,SERVER}_{TESTS,SITE_TESTS} \
-	           AUTOTEST_{CONFIG,DEPS,PROFILERS}; do
-		CROS_WORKON_SUBDIRS_TO_COPY+=( ${!var} )
+			AUTOTEST_{DEPS,PROFILERS}; do
+		CROS_WORKON_SUBTREE[0]+="${!var} "
 	done
 }
 
