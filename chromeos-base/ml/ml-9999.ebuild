@@ -29,6 +29,10 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+
+	# Install seccomp policy file.
+	insinto /usr/share/policy
+	newins "seccomp/ml_service-seccomp-${ARCH}.policy" ml_service-seccomp.policy
 }
 
 pkg_preinst() {
