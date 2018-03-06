@@ -18,6 +18,11 @@ _cellular_get_helperdir() {
 	echo /opt/google/modemfwd-helpers
 }
 
+# The modemfwd firmware directory (until CUS handles the firmware package).
+_cellular_get_firmwaredir() {
+	echo /opt/google/modemfwd-firmware
+}
+
 # @FUNCTION: cellular_dohelper
 # @DESCRIPTION:
 # Installs a helper binary to the modemfwd helper directory
@@ -47,6 +52,16 @@ cellular_newhelper() {
 cellular_domanifest() {
 	(
 		insinto "$(_cellular_get_helperdir)"
+		doins "${@}"
+	)
+}
+
+# @FUNCTION: cellular_dofirmware
+# @DESCRIPTION:
+# Installs the firmware blob(s) into the firmware directory.
+cellular_dofirmware() {
+	(
+		insinto "$(_cellular_get_firmwaredir)"
 		doins "${@}"
 	)
 }
