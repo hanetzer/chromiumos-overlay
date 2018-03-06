@@ -432,7 +432,7 @@ _expand_list() {
 cros-firmware_setup_source_unibuild() {
 	local uri_list
 
-	uri_list=$(unibuild_get_dtb_data | cros_config_host_py -c - \
+	uri_list=$(unibuild_get_dtb_data | cros_config_host -c - \
 		get-firmware-uris)
 	if [[ -n "${uri_list// }" ]]; then
 		SRC_URI+="unibuild? ( ${uri_list} )"

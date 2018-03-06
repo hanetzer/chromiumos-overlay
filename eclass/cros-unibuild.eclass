@@ -207,13 +207,13 @@ unibuild_get_dtb_data() {
 # Install files from a relative path in FILESDIR to an absolute path in the
 # root.
 # Args:
-#   $1: Command to pass to cros_config_host_py to get the files
+#   $1: Command to pass to cros_config_host to get the files
 _unibuild_common_install() {
 	[[ $# -eq 1 ]] || die "${FUNCNAME}: takes one argument"
 
 	local cmd="$1"
 	local source dest
-	(cros_config_host_py "${cmd}" || die) |
+	(cros_config_host "${cmd}" || die) |
 	while read -r source; do
 		read -r dest
 		einfo "   - ${source}"
@@ -261,7 +261,7 @@ _unibuild_install_fw() {
 unibuild_install_touch_files() {
 	einfo "unibuild: Installing touch files"
 	set -o pipefail
-	cros_config_host_py get-touch-firmware-files |
+	cros_config_host get-touch-firmware-files |
 	( while read -r source; do
 		read -r dest
 		read -r symlink
@@ -289,7 +289,7 @@ unibuild_install_arc_files() {
 
 	einfo "unibuild: Installing arc++ files"
 	local source dest
-	(cros_config_host_py get-arc-files || die) |
+	(cros_config_host get-arc-files || die) |
 	while read -r source; do
 		read -r dest
 		einfo "   - ${source}"
