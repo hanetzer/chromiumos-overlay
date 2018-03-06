@@ -13,14 +13,22 @@ HOMEPAGE="https://git.kernel.org/cgit/linux/kernel/git/will/kvmtool.git/"
 LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+aio +zlib"
+IUSE="+aio +zlib static"
 
-RDEPEND="
-	aio? ( dev-libs/libaio )
-	arm? ( sys-apps/dtc )
-	zlib? ( sys-libs/zlib )"
+LIB_DEPEND="
+	aio? ( dev-libs/libaio[static-libs(+)] )
+	arm? ( sys-apps/dtc[static-libs(+)] )
+	zlib? ( sys-libs/zlib[static-libs(+)] )"
+RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
+DEPEND="${RDEPEND}
+	static? ( ${LIB_DEPEND} )"
 
-DEPEND="${RDEPEND}"
+src_configure() {
+	TARGET="lkvm"
+	if use static ; then
+		TARGET="${TARGET}-static"
+	fi
+}
 
 kvm_arch() {
 	local arch=${ARCH}
@@ -37,9 +45,10 @@ src_compile() {
 		WERROR=0 \
 		ARCH_HAS_FRAMEBUFFER=0 \
 		USE_AIO="$(usex aio)" \
-		USE_ZLIB="$(usex zlib)"
+		USE_ZLIB="$(usex zlib)" \
+		"${TARGET}"
 }
 
 src_install() {
-	dobin lkvm
+	newbin "${TARGET}" lkvm
 }
