@@ -348,6 +348,12 @@ multilib_src_install_all() {
 	# Create a symbolic link from "ippusb' to the ipp backend.
 	dosym ipp /usr/libexec/cups/backend/ippusb
 
+	# Install a symlink exception file to prevent the system from blocking
+	# symlink traversal where it is relied upon by CUPS. This should be
+	# removed when crbug/817851 is resolved.
+	insinto /usr/share/cros/startup/symlink_exceptions/
+	doins "${FILESDIR}"/cups-symlink-exceptions.txt
+
 	# Install our own conf files
 	insinto /etc/cups
 	doins "${FILESDIR}"/{cupsd,cups-files}.conf
