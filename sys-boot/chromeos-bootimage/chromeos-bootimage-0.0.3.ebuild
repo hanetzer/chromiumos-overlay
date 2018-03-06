@@ -180,20 +180,32 @@ build_image() {
 #                                  in src_compile
 #       cbfs/*                   - files to add to all three CBFS regions,
 #                                  uncompressed
-#   $2: Name of target to build, used for output files (can be empty)
+#   $2: Name to use when naming output files (see note above, can be empty)
+#
+#   $3: Name of target to build for coreboot (can be empty)
+#
+#   $4: Name of target to build for depthcharge (can be empty)
 build_images() {
 	local froot="$1"
-	local build_target="$2"
+	local build_name="$2"
+	local coreboot_build_target="$3"
+	local depthcharge_build_target="$4"
 	local outdir
 	local suffix
 
-	local coreboot_file="${froot}/coreboot.rom"
+	local coreboot_file
+	local depthcharge_prefix
 
-	if [ -n "${build_target}" ]; then
-		einfo "Building firmware images for ${build_target}"
-		outdir="${build_target}/"
+	if [ -n "${build_name}" ]; then
+		einfo "Building firmware images for ${build_name}"
+		outdir="${build_name}/"
 		mkdir "${outdir}"
-		suffix="-${build_target}"
+		suffix="-${build_name}"
+		coreboot_file="${froot}/${coreboot_build_target}/coreboot.rom"
+		depthcharge_prefix="${froot}/${depthcharge_build_target}"
+	else
+		coreboot_file="${froot}/coreboot.rom"
+		depthcharge_prefix="${froot}"
 	fi
 
 	cp ${coreboot_file} coreboot.rom
@@ -235,10 +247,10 @@ build_images() {
 		fi
 	fi
 
-	local depthcharge="${froot}/depthcharge/depthcharge.elf"
-	local depthcharge_dev="${froot}/depthcharge/dev.elf"
-	local netboot="${froot}/depthcharge/netboot.elf"
-	local fastboot="${froot}/depthcharge/fastboot.elf"
+	local depthcharge="${depthcharge_prefix}/depthcharge/depthcharge.elf"
+	local depthcharge_dev="${depthcharge_prefix}/depthcharge/dev.elf"
+	local netboot="${depthcharge_prefix}/depthcharge/netboot.elf"
+	local fastboot="${depthcharge_prefix}/depthcharge/fastboot.elf"
 
 	build_image "" "${coreboot_file}" "${depthcharge}" "${depthcharge}"
 
@@ -279,7 +291,6 @@ build_images() {
 
 src_compile() {
 	local froot="${CROS_FIRMWARE_ROOT}"
-
 	einfo "Compressing static assets"
 	# files from rocbfs/ are installed in all images' RO CBFS, compressed
 	mkdir compressed-assets
@@ -289,27 +300,30 @@ src_compile() {
 			compressed-assets/'{}' LZMA
 
 	if use unibuild; then
-		local build_targets=( $(cros_config_host_py \
-			get-firmware-build-targets coreboot) )
-		local build_target
-
-		einfo "Building ${#build_targets[@]} target(s): ${build_targets[@]}"
-		for build_target in "${build_targets[@]}"; do
-			build_images "${froot}/${build_target}" "${build_target}"
+		local fields="coreboot,depthcharge"
+		local cmd="get-firmware-build-combinations"
+		(cros_config_host "${cmd}" "${fields}" || die) |
+		while read -r name; do
+			read -r coreboot
+			read -r depthcharge
+			einfo "Building image for: ${name}"
+			build_images ${froot} ${name} ${coreboot} ${depthcharge}
 		done
 	else
-		build_images "${froot}" ""
+		build_images "${froot}" "" "" ""
 	fi
 }
 
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	if use unibuild; then
-		local build_target
-
-		for build_target in $(cros_config_host_py \
-			get-firmware-build-targets coreboot); do
-			doins "${build_target}"/image-${build_target}*.bin
+		local fields="coreboot,depthcharge"
+		local cmd="get-firmware-build-combinations"
+		(cros_config_host "${cmd}" "${fields}" || die) |
+		while read -r name; do
+			read -r coreboot
+			read -r depthcharge
+			doins "${name}"/image-${name}*.bin
 		done
 	else
 		doins image*.bin
