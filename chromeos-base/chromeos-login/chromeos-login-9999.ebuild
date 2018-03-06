@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cheets systemd unibuild android-container-master-arc-dev"
+IUSE="cheets systemd unibuild"
 
 RDEPEND="chromeos-base/bootstat
 	unibuild? ( chromeos-base/chromeos-config )
