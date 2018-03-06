@@ -119,6 +119,7 @@ ALL_BOARDS=(
 	eve
 	eve-arcnext
 	#eve-bertha
+	eve-campfire
 	eve-kvm
 	eve-userdebug
 	expresso
