@@ -69,3 +69,6 @@ sys-libs/libcxx abi_x86_32
 =cross-i686-pc-linux-gnu/gdb-8.0.1.20171030-r4		-python -python_targets_python3_3 -python_targets_python3_4
 =cross-mipsel-cros-linux-gnu/gdb-7.11.20170503-r4	-python -python_targets_python3_3 -python_targets_python3_4
 =cross-x86_64-cros-linux-gnu/gdb-8.0.1.20171030-r4	-python -python_targets_python3_3 -python_targets_python3_4
+
+# vaapi is not used through ffmpeg on ChromiumOS, avoid dependency for sdk
+media-video/ffmpeg -vaapi
