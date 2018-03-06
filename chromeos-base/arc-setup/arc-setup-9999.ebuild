@@ -23,9 +23,6 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="
-	android-container-master-arc-dev
-	cheets_aosp_userdebug
-	cheets_aosp_userdebug_64
 	houdini
 	ndk_translation
 	unibuild"
