@@ -28,10 +28,15 @@ cr50_get_name() {
   # Determine the type of the Cr50 image to use based on the H1's board ID
   # flags. The hexadecimal value of flags is reported by 'gsctool -i' in the
   # last element of a colon separated string of values.
-  board_id="$(${updater} -i | sed 's/.*: //')"
+  exit_status=0
+  output=$(${updater} -i 2>&1) || exit_status="$?"
+  board_id="$(echo "${output}" | sed 's/.*: //')"
   board_flags="0x$(echo "${board_id}" | sed 's/.*://')"
 
-  if [ -z "${board_flags}" ]; then
+  if [ "${exit_status}" != "0" ]; then
+    logit "exit status: ${exit_status}"
+    logit "output: ${output}"
+  elif [ -z "${board_flags}" ]; then
     # Any error in detecting board flags will force using the prod image,
     # which the safe option.
     logger -t "${logger_tag}" "error detecting board ID flags"
