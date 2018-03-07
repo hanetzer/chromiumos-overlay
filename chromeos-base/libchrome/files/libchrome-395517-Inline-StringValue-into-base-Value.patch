@@ -1,0 +1,464 @@
+From f5d7c695de5e9bba6c518e03abc86cfd59feaf32 Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Wed, 7 Mar 2018 11:06:11 -0800
+Subject: [PATCH] Inline StringValue into base::Value
+
+This is a port of commit f38f37b34fda511b74b32569f9f2fb23f69c8cea by
+jdoerrie@chromium.org, with the following commit message:
+
+Similarly as done with FundamentalValue we inline StringValue into base::Value.
+There will be a follow up CL updating all call sites to use Value instead of
+StringValue, again similarly to how the removal of FundamentalValue was done.
+
+BUG=646113
+Review-Url: https://codereview.chromium.org/2516363005
+
+Change-Id: Ic084d16a68fc5f008239fd4ae2109425713b0045
+---
+ base/values.cc | 218 ++++++++++++++++++++++++++++++++++++++++++---------------
+ base/values.h  |  52 ++++++--------
+ 2 files changed, 183 insertions(+), 87 deletions(-)
+
+diff --git a/base/values.cc b/base/values.cc
+index 8dbac03..d862265 100644
+--- a/base/values.cc
++++ b/base/values.cc
+@@ -71,7 +71,8 @@ std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node) {
+ bool IsAssignmentSafe(Value::Type lhs, Value::Type rhs) {
+   auto IsImplemented = [](Value::Type type) {
+     return type == Value::Type::NONE || type == Value::Type::BOOLEAN ||
+-           type == Value::Type::INTEGER || type == Value::Type::DOUBLE;
++           type == Value::Type::INTEGER || type == Value::Type::DOUBLE ||
++           type == Value::Type::STRING;
+   };
+ 
+   return lhs == rhs || (IsImplemented(lhs) && IsImplemented(rhs));
+@@ -101,11 +102,11 @@ std::unique_ptr<Value> Value::CreateNullValue() {
+ }
+ 
+ Value::Value(const Value& that) {
+-  InternalCopyFrom(that);
++  InternalCopyConstructFrom(that);
+ }
+ 
+ Value::Value(Value&& that) {
+-  InternalCopyFrom(that);
++  InternalMoveConstructFrom(std::move(that));
+ }
+ 
+ Value::Value() : type_(Type::NONE) {}
+@@ -125,8 +126,10 @@ Value::Value(Type type) : type_(type) {
+     case Type::DOUBLE:
+       double_value_ = 0.0;
+       return;
+-
+     case Type::STRING:
++      string_value_.Init();
++      return;
++
+     case Type::BINARY:
+     case Type::LIST:
+     case Type::DICTIONARY:
+@@ -146,10 +149,38 @@ Value::Value(double in_double) : type_(Type::DOUBLE), double_value_(in_double) {
+   }
+ }
+ 
++Value::Value(const char* in_string) : type_(Type::STRING) {
++  string_value_.Init(in_string);
++  DCHECK(IsStringUTF8(*string_value_));
++}
++
++Value::Value(const std::string& in_string) : type_(Type::STRING) {
++  string_value_.Init(in_string);
++  DCHECK(IsStringUTF8(*string_value_));
++}
++
++Value::Value(std::string&& in_string) : type_(Type::STRING) {
++  string_value_.Init(std::move(in_string));
++  DCHECK(IsStringUTF8(*string_value_));
++}
++
++Value::Value(const char16* in_string) : type_(Type::STRING) {
++  string_value_.Init(UTF16ToUTF8(in_string));
++}
++
++Value::Value(const string16& in_string) : type_(Type::STRING) {
++  string_value_.Init(UTF16ToUTF8(in_string));
++}
++
+ Value& Value::operator=(const Value& that) {
+   if (this != &that) {
+     DCHECK(IsAssignmentSafe(type_, that.type_));
+-    InternalCopyFrom(that);
++    if (type_ == that.type_) {
++      InternalCopyAssignFrom(std::move(that));
++    } else {
++      InternalCleanup();
++      InternalCopyConstructFrom(std::move(that));
++    }
+   }
+ 
+   return *this;
+@@ -157,16 +188,26 @@ Value& Value::operator=(const Value& that) {
+ 
+ Value& Value::operator=(Value&& that) {
+   if (this != &that) {
+-    // TODO(crbug.com/646113): Implement InternalMoveFrom for types where moving
+-    // and copying differ.
+     DCHECK(IsAssignmentSafe(type_, that.type_));
+-    InternalCopyFrom(that);
++    if (type_ == that.type_) {
++      InternalMoveAssignFrom(std::move(that));
++    } else {
++      InternalCleanup();
++      InternalMoveConstructFrom(std::move(that));
++    }
+   }
+ 
+   return *this;
+ }
+ 
+-Value::~Value() {}
++Value::~Value() {
++  InternalCleanup();
++}
++
++const std::string& Value::GetString() const {
++  CHECK(is_string());
++  return *string_value_;
++}
+ 
+ bool Value::GetAsBoolean(bool* out_value) const {
+   if (out_value && is_bool()) {
+@@ -196,16 +237,28 @@ bool Value::GetAsDouble(double* out_value) const {
+   return is_double() || is_int();
+ }
+ 
+-bool Value::GetAsString(std::string*) const {
+-  return false;
++bool Value::GetAsString(std::string* out_value) const {
++  if (out_value && is_string()) {
++    *out_value = *string_value_;
++    return true;
++  }
++  return is_string();
+ }
+ 
+-bool Value::GetAsString(string16*) const {
+-  return false;
++bool Value::GetAsString(string16* out_value) const {
++  if (out_value && is_string()) {
++    *out_value = UTF8ToUTF16(*string_value_);
++    return true;
++  }
++  return is_string();
+ }
+ 
+-bool Value::GetAsString(const StringValue**) const {
+-  return false;
++bool Value::GetAsString(const StringValue** out_value) const {
++  if (out_value && is_string()) {
++    *out_value = static_cast<const StringValue*>(this);
++    return true;
++  }
++  return is_string();
+ }
+ 
+ bool Value::GetAsBinary(const BinaryValue**) const {
+@@ -241,6 +294,10 @@ Value* Value::DeepCopy() const {
+       return new FundamentalValue(int_value_);
+     case Type::DOUBLE:
+       return new FundamentalValue(double_value_);
++    // For now, make StringValues for backward-compatibility. Convert to
++    // Value when that code is deleted.
++    case Type::STRING:
++      return new StringValue(*string_value_);
+ 
+     default:
+       // All other types should be handled by subclasses.
+@@ -266,6 +323,8 @@ bool Value::Equals(const Value* other) const {
+       return int_value_ == other->int_value_;
+     case Type::DOUBLE:
+       return double_value_ == other->double_value_;
++    case Type::STRING:
++      return *string_value_ == *other->string_value_;
+     default:
+       // This method should only be getting called for the above types -- all
+       // subclasses need to provide their own implementation;.
+@@ -281,8 +340,7 @@ bool Value::Equals(const Value* a, const Value* b) {
+   return a->Equals(b);
+ }
+ 
+-void Value::InternalCopyFrom(const Value& that) {
+-  type_ = that.type_;
++void Value::InternalCopyFundamentalValue(const Value& that) {
+   switch (type_) {
+     case Type::NONE:
+       // Nothing to do.
+@@ -297,7 +355,25 @@ void Value::InternalCopyFrom(const Value& that) {
+       double_value_ = that.double_value_;
+       return;
+ 
++    default:
++      NOTREACHED();
++  }
++}
++
++void Value::InternalCopyConstructFrom(const Value& that) {
++  type_ = that.type_;
++  switch (type_) {
++    case Type::NONE:
++    case Type::BOOLEAN:
++    case Type::INTEGER:
++    case Type::DOUBLE:
++      InternalCopyFundamentalValue(that);
++      return;
++
+     case Type::STRING:
++      string_value_.Init(*that.string_value_);
++      return;
++
+     case Type::BINARY:
+     case Type::LIST:
+     case Type::DICTIONARY:
+@@ -305,57 +381,89 @@ void Value::InternalCopyFrom(const Value& that) {
+   }
+ }
+ 
+-///////////////////// StringValue ////////////////////
++void Value::InternalMoveConstructFrom(Value&& that) {
++  type_ = that.type_;
++  switch (type_) {
++    case Type::NONE:
++    case Type::BOOLEAN:
++    case Type::INTEGER:
++    case Type::DOUBLE:
++      InternalCopyFundamentalValue(that);
++      return;
+ 
+-StringValue::StringValue(const std::string& in_value)
+-    : Value(Type::STRING),
+-      value_(in_value) {
+-  DCHECK(IsStringUTF8(in_value));
+-}
++    case Type::STRING:
++      string_value_.InitFromMove(std::move(that.string_value_));
++      return;
+ 
+-StringValue::StringValue(const string16& in_value)
+-    : Value(Type::STRING),
+-      value_(UTF16ToUTF8(in_value)) {
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
++  }
+ }
+ 
+-StringValue::~StringValue() {
+-}
++void Value::InternalCopyAssignFrom(const Value& that) {
++  type_ = that.type_;
++  switch (type_) {
++    case Type::NONE:
++    case Type::BOOLEAN:
++    case Type::INTEGER:
++    case Type::DOUBLE:
++      InternalCopyFundamentalValue(that);
++      return;
+ 
+-std::string* StringValue::GetString() {
+-  return &value_;
+-}
++    case Type::STRING:
++      *string_value_ = *that.string_value_;
++      return;
+ 
+-const std::string& StringValue::GetString() const {
+-  return value_;
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
++  }
+ }
+ 
+-bool StringValue::GetAsString(std::string* out_value) const {
+-  if (out_value)
+-    *out_value = value_;
+-  return true;
+-}
++void Value::InternalMoveAssignFrom(Value&& that) {
++  type_ = that.type_;
++  switch (type_) {
++    case Type::NONE:
++    case Type::BOOLEAN:
++    case Type::INTEGER:
++    case Type::DOUBLE:
++      InternalCopyFundamentalValue(that);
++      return;
+ 
+-bool StringValue::GetAsString(string16* out_value) const {
+-  if (out_value)
+-    *out_value = UTF8ToUTF16(value_);
+-  return true;
+-}
++    case Type::STRING:
++      *string_value_ = std::move(*that.string_value_);
++      return;
+ 
+-bool StringValue::GetAsString(const StringValue** out_value) const {
+-  if (out_value)
+-    *out_value = this;
+-  return true;
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
++  }
+ }
+ 
+-StringValue* StringValue::DeepCopy() const {
+-  return new StringValue(value_);
+-}
++void Value::InternalCleanup() {
++  switch (type_) {
++    case Type::NONE:
++    case Type::BOOLEAN:
++    case Type::INTEGER:
++    case Type::DOUBLE:
++      // Nothing to do
++      return;
+ 
+-bool StringValue::Equals(const Value* other) const {
+-  if (other->GetType() != GetType())
+-    return false;
+-  std::string lhs, rhs;
+-  return GetAsString(&lhs) && other->GetAsString(&rhs) && lhs == rhs;
++    case Type::STRING:
++      string_value_.Destroy();
++      return;
++
++    // TODO(crbug.com/646113): Implement these once the corresponding derived
++    // classes are removed.
++    case Type::BINARY:
++    case Type::LIST:
++    case Type::DICTIONARY:
++      return;
++  }
+ }
+ 
+ ///////////////////// BinaryValue ////////////////////
+diff --git a/base/values.h b/base/values.h
+index d0e068c..5735bc2 100644
+--- a/base/values.h
++++ b/base/values.h
+@@ -30,6 +30,7 @@
+ #include "base/base_export.h"
+ #include "base/compiler_specific.h"
+ #include "base/macros.h"
++#include "base/memory/manual_constructor.h"
+ #include "base/strings/string16.h"
+ #include "base/strings/string_piece.h"
+ 
+@@ -38,9 +39,9 @@ namespace base {
+ class BinaryValue;
+ class DictionaryValue;
+ class ListValue;
+-class StringValue;
+ class Value;
+ using FundamentalValue = Value;
++using StringValue = Value;
+ 
+ typedef std::vector<Value*> ValueVector;
+ typedef std::map<std::string, Value*> ValueMap;
+@@ -74,6 +75,16 @@ class BASE_EXPORT Value {
+   explicit Value(int in_int);
+   explicit Value(double in_double);
+ 
++  // Value(const char*) and Value(const char16*) are required despite
++  // Value(const std::string&) and Value(const string16&) because otherwise the
++  // compiler will choose the Value(bool) constructor for these arguments.
++  // Value(std::string&&) allow for efficient move construction.
++  explicit Value(const char* in_string);
++  explicit Value(const std::string& in_string);
++  explicit Value(std::string&& in_string);
++  explicit Value(const char16* in_string);
++  explicit Value(const string16& in_string);
++
+   Value& operator=(const Value& that);
+   Value& operator=(Value&& that);
+ 
+@@ -97,6 +108,7 @@ class BASE_EXPORT Value {
+   bool is_dict() const { return type() == Type::DICTIONARY; }
+   bool is_list() const { return type() == Type::LIST; }
+ 
++  const std::string& GetString() const;
+ 
+   // These methods allow the convenient retrieval of the contents of the Value.
+   // If the current object can be converted into the given type, the value is
+@@ -132,7 +144,12 @@ class BASE_EXPORT Value {
+   static bool Equals(const Value* a, const Value* b);
+ 
+  private:
+-  void InternalCopyFrom(const Value& that);
++  void InternalCopyFundamentalValue(const Value& that);
++  void InternalCopyConstructFrom(const Value& that);
++  void InternalMoveConstructFrom(Value&& that);
++  void InternalCopyAssignFrom(const Value& that);
++  void InternalMoveAssignFrom(Value&& that);
++  void InternalCleanup();
+ 
+   Type type_;
+ 
+@@ -140,34 +157,10 @@ class BASE_EXPORT Value {
+     bool bool_value_;
+     int int_value_;
+     double double_value_;
++    ManualConstructor<std::string> string_value_;
+   };
+ };
+ 
+-class BASE_EXPORT StringValue : public Value {
+- public:
+-  // Initializes a StringValue with a UTF-8 narrow character string.
+-  explicit StringValue(const std::string& in_value);
+-
+-  // Initializes a StringValue with a string16.
+-  explicit StringValue(const string16& in_value);
+-
+-  ~StringValue() override;
+-
+-  // Returns |value_| as a pointer or reference.
+-  std::string* GetString();
+-  const std::string& GetString() const;
+-
+-  // Overridden from Value:
+-  bool GetAsString(std::string* out_value) const override;
+-  bool GetAsString(string16* out_value) const override;
+-  bool GetAsString(const StringValue** out_value) const override;
+-  StringValue* DeepCopy() const override;
+-  bool Equals(const Value* other) const override;
+-
+- private:
+-  std::string value_;
+-};
+-
+ class BASE_EXPORT BinaryValue: public Value {
+  public:
+   // Creates a BinaryValue with a null buffer and size of 0.
+@@ -542,11 +535,6 @@ class BASE_EXPORT ValueDeserializer {
+ BASE_EXPORT std::ostream& operator<<(std::ostream& out, const Value& value);
+ 
+ BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
+-                                            const StringValue& value) {
+-  return out << static_cast<const Value&>(value);
+-}
+-
+-BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
+                                             const DictionaryValue& value) {
+   return out << static_cast<const Value&>(value);
+ }
+-- 
+2.13.5
+

@@ -20,7 +20,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
 SRC_URI=""
 
 LICENSE="BSD-Google"
-SLOT="0/${PV}"
+SLOT="0/${PV}.0"
 KEYWORDS="~*"
 IUSE="cros_host +dbus"
 
