@@ -80,6 +80,7 @@ RDEPEND="${RDEPEND}
 	)
 	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-dev-root
+	chromeos-base/cryptohome-dev-utils
 	chromeos-base/gmerge
 	chromeos-base/protofiles
 	shill? ( chromeos-base/shill-test-scripts )
