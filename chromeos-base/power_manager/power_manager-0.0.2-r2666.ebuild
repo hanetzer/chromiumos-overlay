@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="d47c686a9be963ca97011b3a5192ff07d767231f"
-CROS_WORKON_TREE=("0295472676671915bab943e84d561ed834ea7622" "0eabd5a039f14e8e6b65c19ce64121d2b159d0ef" "5537ead1e5132f3c0e82055878d238733e79d2d7" "f151afc2e5241eeb2ae52d3c83d124e1f0dcc836" "f2e22305962dfc4b96c0db227847b450f1be1b7b")
+CROS_WORKON_COMMIT="6f8393901fbf14f6a2f6b5bf594b5e8fd8b7affd"
+CROS_WORKON_TREE=("0295472676671915bab943e84d561ed834ea7622" "0eabd5a039f14e8e6b65c19ce64121d2b159d0ef" "5537ead1e5132f3c0e82055878d238733e79d2d7" "f151afc2e5241eeb2ae52d3c83d124e1f0dcc836" "15a6519cf2ed25df7d4da61bae4711f588934034")
 CROS_WORKON_USE_VCSID="1"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -36,6 +36,11 @@ RDEPEND="
 	dev-libs/protobuf
 	cras? ( media-sound/adhd )
 	virtual/udev"
+
+# blocker (https://crbug.com/214886), can be removed later
+RDEPEND+="
+	 !app-laptop/laptop-mode-tools
+"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api"
@@ -108,6 +113,7 @@ src_install() {
 		udev/gen_autosuspend_rules.py > "${T}"/98-autosuspend.rules || die
 		udev_dorules "${T}"/98-autosuspend.rules
 		udev_dorules udev/optional/98-powerknobs.rules
+		dobin udev/optional/set_blkdev_pm
 	fi
 	if use keyboard_includes_side_buttons; then
 		udev_dorules udev/optional/93-powerd-tags-keyboard-side-buttons.rules

@@ -3,24 +3,22 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("0b52deb81094774a6851a2ec8ede25f34cc86e9e" "e20eb915eb1d9777bbcdcffb324ce92014cafa79")
-CROS_WORKON_TREE=("0295472676671915bab943e84d561ed834ea7622" "8f026a68a3cd4d595cc8cb1b41ccdfe4a3aa1dd7")
-CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
-CROS_WORKON_PROJECT=("chromiumos/platform2" "aosp/platform/system/update_engine")
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
-CROS_WORKON_USE_VCSID=1
+CROS_WORKON_COMMIT="6f8393901fbf14f6a2f6b5bf594b5e8fd8b7affd"
+CROS_WORKON_TREE=("0295472676671915bab943e84d561ed834ea7622" "15a6519cf2ed25df7d4da61bae4711f588934034")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_SUBTREE=("common-mk" "")
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_SUBTREE="common-mk power_manager"
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="${PN%-client}"
 PLATFORM_GYP_FILE="${PN}.gyp"
 
-inherit cros-debug cros-workon platform
+inherit cros-workon platform
 
-DESCRIPTION="Chrome OS Update Engine client library"
+DESCRIPTION="Power manager DBus client library for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -39,16 +37,10 @@ DEPEND="
 "
 
 RDEPEND="
-	!<chromeos-base/update_engine-0.0.3
+	!<chromeos-base/power_manager-0.0.2
 "
-
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	S="${s}/aosp/system/update_engine"
-}
 
 src_install() {
 	# Install DBus client library.
-	platform_install_dbus_client_lib "update_engine"
+	platform_install_dbus_client_lib "power_manager"
 }
