@@ -65,9 +65,15 @@ src_configure() {
 	# by using libstdc++ since libc++ is built after compiler-rt in crossdev.
 	append-cxxflags "-stdlib=libstdc++"
 	append-flags "-fomit-frame-pointer"
-	if [[ ${CATEGORY} == cross-armv7a* ]] ; then
+	if [[ ${CTARGET} == armv7a* ]]; then
 		# Use vfpv3 to be able to target non-neon targets
 		append-flags -mfpu=vfpv3
+	elif [[ ${CTARGET} == armv7m* ]]; then
+		# Some of the arm32 assembly builtins in compiler-rt need vfpv2.
+		# Passing this flag should not be required but currently
+		# upstream compiler-rt's cmake config does not provide a way to
+		# exclude these asm files.
+		append-flags -Wa,-mfpu=vfpv2
 	fi
 	BUILD_DIR=${WORKDIR}/${P}_build
 	local llvm_version=$(llvm-config --version)
@@ -75,10 +81,23 @@ src_configure() {
 	local clang_version=${llvm_version%svn*}
 	clang_version=${clang_version%git*}
 	local libdir=$(llvm-config --libdir)
-	local mycmakeargs=(
-			"${mycmakeargs[@]}"
+
+	local mycmakeargs=()
+	if [[ ${CTARGET} == *-eabi ]]; then
+		mycmakeargs+=(
+			-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY
+			-DCOMPILER_RT_OS_DIR=baremetal
+			-DCOMPILER_RT_BAREMETAL_BUILD=yes
+			-DCMAKE_C_COMPILER_TARGET="${CTARGET}"
+			-DCOMPILER_RT_DEFAULT_TARGET_ONLY=yes
+		)
+	else
+		mycmakeargs+=(
 			-DCOMPILER_RT_TEST_TARGET_TRIPLE="${CTARGET}"
-			-DCOMPILER_RT_INSTALL_PATH="${EPREFIX}${libdir}/clang/${clang_version}"
+		)
+	fi
+	mycmakeargs+=(
+		-DCOMPILER_RT_INSTALL_PATH="${EPREFIX}${libdir}/clang/${clang_version}"
 	)
 	cmake-utils_src_configure
 }
@@ -87,7 +106,7 @@ src_install() {
 	# There is install conflict between cross-armv7a-cros-linux-gnueabihf
 	# and cross-armv7a-cros-linux-gnueabi. Remove this once we are ready to
 	# move to cross-armv7a-cros-linux-gnueabihf.
-	if [[ ${CATEGORY} == cross-armv7a-cros-linux-gnueabihf ]] ; then
+	if [[ ${CTARGET} == armv7a-cros-linux-gnueabihf ]] ; then
 		return
 	fi
 	cmake-utils_src_install
