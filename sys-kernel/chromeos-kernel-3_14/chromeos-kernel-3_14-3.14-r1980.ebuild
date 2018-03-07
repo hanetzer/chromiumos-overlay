@@ -2,18 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="9d070a52c5bf0f9b679260fe27d834106721ddcc"
-CROS_WORKON_TREE="e7517aa8ae56b3c2d674a9d08bddbf090f0de4da"
+CROS_WORKON_COMMIT="9e7d33ec55b21beb97e2d7f6942516c3d427e88b"
+CROS_WORKON_TREE="6f12c4b8b9f8fd3820b27f6cabd70ef410bfd503"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v3.10"
+CROS_WORKON_LOCALNAME="kernel/v3.14"
+
+# AFDO_PROFILE_VERSION is the build on which the profile is collected.
+# This is required by kernel_afdo.
+#
+# TODO: Allow different versions for different CHROMEOS_KERNEL_SPLITCONFIGs
+AFDO_PROFILE_VERSION="R67-10443.0-1520249435"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 3.10"
+DESCRIPTION="Chrome OS Linux Kernel 3.14"
 KEYWORDS="*"
-RDEPEND="!sys-kernel/kernel-freon"
 
 # Change the following (commented out) number to the next prime number
 # when you change "cros-kernel2.eclass" to work around http://crbug.com/220902
