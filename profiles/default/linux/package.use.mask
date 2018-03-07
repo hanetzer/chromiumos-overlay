@@ -29,6 +29,8 @@ cross-armv7a-cros-linux-gnueabihf/glibc hardened
 # Disable hardened for bare-metal toolchains.
 cross-arm-none-eabi/gcc hardened
 cross-arm-none-eabi/newlib hardened
+cross-armv7m-cros-eabi/gcc hardened
+cross-armv7m-cros-eabi/newlib hardened
 cross-nds32le-cros-elf/nds32-gcc hardened
 cross-nds32le-cros-elf/gcc hardened
 cross-nds32le-cros-elf/nds32-newlib hardened
