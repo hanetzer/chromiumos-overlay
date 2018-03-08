@@ -1,0 +1,81 @@
+From d48bbc3804e3e8997b4899d321b1b463da2f207e Mon Sep 17 00:00:00 2001
+From: Eric Caruso <ejcaruso@chromium.org>
+Date: Thu, 8 Mar 2018 14:51:18 -0800
+Subject: [PATCH] dbus: add new-style FD bindings
+
+These bindings allow users to avoid dbus::FileDescriptor, which
+is gone in newer versions of libchrome.
+
+BUG=b:37434548
+TEST=emerge, libbrillo unit tests
+
+Change-Id: I667fc2e0de473c3c506c0120696025440beb07fe
+---
+ dbus/message.cc | 17 +++++++++++++++++
+ dbus/message.h  |  3 +++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/dbus/message.cc b/dbus/message.cc
+index 4a84756..63641eb 100644
+--- a/dbus/message.cc
++++ b/dbus/message.cc
+@@ -725,6 +725,11 @@ void MessageWriter::AppendFileDescriptor(const FileDescriptor& value) {
+   AppendBasic(DBUS_TYPE_UNIX_FD, &fd);
+ }
+ 
++void MessageWriter::AppendFileDescriptor(int value) {
++  CHECK(IsDBusTypeUnixFdSupported());
++  AppendBasic(DBUS_TYPE_UNIX_FD, &value);  // This duplicates the FD.
++}
++
+ //
+ // MessageReader implementation.
+ //
+@@ -1029,4 +1034,16 @@ bool MessageReader::PopFileDescriptor(FileDescriptor* value) {
+   return true;
+ }
+ 
++bool MessageReader::PopFileDescriptor(base::ScopedFD* value) {
++  CHECK(IsDBusTypeUnixFdSupported());
++
++  int fd = -1;
++  const bool success = PopBasic(DBUS_TYPE_UNIX_FD, &fd);
++  if (!success)
++    return false;
++
++  *value = base::ScopedFD(fd);
++  return true;
++}
++
+ }  // namespace dbus
+diff --git a/dbus/message.h b/dbus/message.h
+index 0aa010c..9c47638 100644
+--- a/dbus/message.h
++++ b/dbus/message.h
+@@ -13,6 +13,7 @@
+ #include <string>
+ #include <vector>
+ 
++#include "base/files/scoped_file.h"
+ #include "base/macros.h"
+ #include "dbus/dbus_export.h"
+ #include "dbus/file_descriptor.h"
+@@ -286,6 +287,7 @@ class CHROME_DBUS_EXPORT MessageWriter {
+   void AppendString(const std::string& value);
+   void AppendObjectPath(const ObjectPath& value);
+   void AppendFileDescriptor(const FileDescriptor& value);
++  void AppendFileDescriptor(int value);
+ 
+   // Opens an array. The array contents can be added to the array with
+   // |sub_writer|. The client code must close the array with
+@@ -399,6 +401,7 @@ class CHROME_DBUS_EXPORT MessageReader {
+   bool PopString(std::string* value);
+   bool PopObjectPath(ObjectPath* value);
+   bool PopFileDescriptor(FileDescriptor* value);
++  bool PopFileDescriptor(base::ScopedFD* value);
+ 
+   // Sets up the given message reader to read an array at the current
+   // iterator position.
+-- 
+2.13.5
+

@@ -55,6 +55,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Remove-Custom-StringValue-implementations.patch
 	epatch "${FILESDIR}"/${P}-Inline-StringValue-into-base-Value.patch
 	epatch "${FILESDIR}"/${P}-dbus-Property-Add-type-specializations.patch
+	epatch "${FILESDIR}"/${P}-dbus-add-new-style-FD-bindings.patch
 	# Disable custom memory allocator when asan is used.
 	# https://crbug.com/807685
 	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch
