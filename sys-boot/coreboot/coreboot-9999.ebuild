@@ -5,7 +5,7 @@
 # coreboot and an auto-revbump is required.
 # VERSION=REVBUMP-0.0.15
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -207,7 +207,7 @@ src_prepare() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(cros_config_host_py \
+		for build_target in $(cros_config_host \
 			get-firmware-build-targets coreboot); do
 			create_config "${build_target}" "$(get_board)"
 		done
@@ -346,7 +346,7 @@ src_compile() {
 
 	# Build a second ROM with serial support for developers.
 	if use unibuild; then
-		local build_targets=( $(cros_config_host_py \
+		local build_targets=( $(cros_config_host \
 			get-firmware-build-targets coreboot) )
 		local build_target
 
@@ -415,7 +415,7 @@ src_install() {
 	local build_target
 
 	if use unibuild; then
-		for build_target in $(cros_config_host_py \
+		for build_target in $(cros_config_host \
 			get-firmware-build-targets coreboot); do
 			set_build_env "${build_target}" "$(get_board)"
 			do_install ${build_target}
