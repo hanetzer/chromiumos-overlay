@@ -21,6 +21,7 @@
 	<flag name='jumbo'>Coalesce translation units together, making builds faster (not automatically tested).</flag>
 	<flag name='lld'>Use lld linker</flag>
 	<flag name='nacl'>Build Native Client (NaCL) support</flag>
+	<flag name='native_assistant'>Build native Google Assistant support</flag>
 	<flag name='neon'>Use neon instructions (ARM only)</flag>
 	<flag name='ozone'>Build Chrome for the Ozone metaplatform.</flag>
 	<flag name='pgo_generate'>Generate profile-guided optimization data</flag>

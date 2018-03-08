@@ -59,6 +59,7 @@ IUSE="
 	lld
 	mojo
 	+nacl
+	native_assistant
 	neon
 	opengl
 	opengles
@@ -377,6 +378,17 @@ set_build_args() {
 	if use "ozone_platform_gbm"; then
 		BUILD_ARGS+=(use_system_minigbm=true)
 		BUILD_ARGS+=(use_system_libdrm=true)
+	fi
+
+	# Assistant features.
+	# Only add the args when use flag is on. This is to avoid conflicting
+	# with future finch based release. At that time, these build args will
+	# be default true.
+	if use "native_assistant"; then
+		BUILD_ARGS+=(
+			enable_cros_assistant=true
+			enable_cros_libassistant=true
+		)
 	fi
 
 	# Set proper build args for the arch
