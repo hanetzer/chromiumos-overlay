@@ -54,7 +54,9 @@ DEPEND="cheets? (
 		video_cards_amdgpu? (
 			dev-libs/arc-elfutils[${MULTILIB_USEDEP}]
 		)
-	)"
+	)
+	x11-drivers/opengles-headers
+"
 
 RDEPEND="${DEPEND}"
 
@@ -265,6 +267,13 @@ multilib_src_install_cheets() {
 			newexe $(get_libdir)/libvulkan_intel.so vulkan.cheets.so
 		fi
 	fi
+
+	# Reuse headers from opengles-headers instead of installing our own.
+	local incdir=$(realpath -m --relative-to="${ARC_PREFIX}/vendor/include" /usr/include)
+	local d
+	for d in EGL GL GLES GLES2 GLES3 KHR; do
+		dosym "${incdir}/${d}" "${ARC_PREFIX}/vendor/include/${d}"
+	done
 }
 
 multilib_src_install() {
