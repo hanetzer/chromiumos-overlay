@@ -1,7 +1,7 @@
 # Copyright 2012 The Chromium OS Authors.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/depthcharge"
 	"chromiumos/platform/vboot_reference"
@@ -120,7 +120,7 @@ src_compile() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(cros_config_host_py \
+		for build_target in $(cros_config_host \
 			get-firmware-build-targets depthcharge); do
 			make_depthcharge "${build_target}" "${build_target}"
 		done
@@ -162,7 +162,7 @@ src_install() {
 	local build_target
 
 	if use unibuild; then
-		for build_target in $(cros_config_host_py \
+		for build_target in $(cros_config_host \
 			get-firmware-build-targets depthcharge); do
 			do_install "${build_target}" "${build_target}"
 		done
