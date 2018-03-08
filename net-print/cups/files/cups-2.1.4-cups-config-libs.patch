@@ -1,0 +1,39 @@
+From b3ed3ba3e94315485668877836b804c03c04d42c Mon Sep 17 00:00:00 2001
+From: Brian Norris <briannorris@chromium.org>
+Date: Thu, 8 Mar 2018 10:30:28 -0800
+Subject: [PATCH] cups-config: only CUPS libraries go in non-static
+ `cups-config --libs`
+
+We're including compression and crypto libraries in the linker flags
+output, even when we're built as a shared library. This doesn't make
+sense, because callers of cups-config are only looking for their direct
+dependencies. If they plan to make any SSL or zlib calls of their own,
+they should be managing those flags on their own.
+
+This resolves problems seen in package management, where libcups users
+end up inadvertently linking against (e.g.) gnutls directly, without the
+package manager being aware. (And thus, it doesn't know to rebuild on
+library upgrades.)
+---
+Sent upstream here:
+https://github.com/apple/cups/pull/5261
+
+ cups-config.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cups-config.in b/cups-config.in
+index 49b70f0581a5..be99c9a4c401 100755
+--- a/cups-config.in
++++ b/cups-config.in
+@@ -107,7 +107,7 @@ while test $# -gt 0; do
+ 	    ;;
+ 	--libs)
+ 	    if test $static = no; then
+-	        libs="@EXTLINKCUPS@ $LIBS";
++	        libs="@EXTLINKCUPS@";
+  	        if test $image = yes; then
+  	            libs="@EXTLINKCUPSIMAGE@ $libs"
+ 		fi
+-- 
+2.13.5
+
