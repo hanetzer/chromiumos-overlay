@@ -103,6 +103,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.5.3-fix-ftruncate-smb2.patch"
 	"${FILESDIR}/${PN}-4.5.3-improve_gss_init_sec_context_error_handing.patch"
 	"${FILESDIR}/${PN}-4.5.3-machinepass_stdin.patch"
+	"${FILESDIR}/${PN}-4.5.3-machinepass_expire.patch"
 )
 
 #CONFDIR="${FILESDIR}/$(get_version_component_range 1-2)"
