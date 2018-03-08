@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/chromeos-config-bsp
+DESCRIPTION=Chrome OS BSP config virtual package
+EAPI=5
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD
+SLOT=0
+_md5_=5d0f513a0b0036e416ce8e590e3ae790
