@@ -878,6 +878,7 @@ src_configure() {
 	elif use lld ; then
 		export CC="${CC} -fuse-ld=lld"
 		export CXX="${CXX} -fuse-ld=lld"
+		export STRIP=eu-strip
 	else
 		ewarn "gold and lld disabled. Using GNU ld."
 	fi
