@@ -107,7 +107,7 @@ _install_model_files() {
 		files+=( "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" )
 	fi
 
-	_unibuild_find_configs "${D}/${CROS_MODELS_DIR}" ".dtsi"
+	_unibuild_find_configs "${FILESDIR}" ".dtsi"
 
 	einfo "Validating ${#files[@]} files:"
 	validate_config -p "${files[@]}" || die "Validation failed"
