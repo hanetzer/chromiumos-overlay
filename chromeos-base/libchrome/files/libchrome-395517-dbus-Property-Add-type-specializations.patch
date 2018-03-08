@@ -1,0 +1,216 @@
+From df5636816febc6589127039844c7c4eef7a278c9 Mon Sep 17 00:00:00 2001
+From: Sonny Sasaka <sonnysasaka@chromium.org>
+Date: Wed, 7 Mar 2018 17:20:33 -0800
+Subject: [PATCH] dbus::Property: Add type specializations
+
+More dbus::Property type specializations are required for Bluetooth
+daemon:
+* dbus::Property<std::unordered_map<std::string, std::vector<uint8_t>>>
+* dbus::Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>
+
+Change-Id: Id12f561f1139f5ba503854955b7aadea45cf60cf
+---
+ dbus/property.cc | 132 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ dbus/property.h  |  23 ++++++++++
+ 2 files changed, 155 insertions(+)
+
+diff --git a/dbus/property.cc b/dbus/property.cc
+index aa58436..93f9ed6 100644
+--- a/dbus/property.cc
++++ b/dbus/property.cc
+@@ -6,6 +6,8 @@
+ 
+ #include <stddef.h>
+ 
++#include <memory>
++
+ #include "base/bind.h"
+ #include "base/logging.h"
+ 
+@@ -659,6 +661,134 @@ void Property<std::vector<std::pair<std::vector<uint8_t>, uint16_t>>>::
+   writer->CloseContainer(&variant_writer);
+ }
+ 
++//
++// Property<std::unordered_map<std::string, std::vector<uint8_t>>>
++// specialization.
++//
++
++template <>
++bool Property<std::unordered_map<std::string, std::vector<uint8_t>>>::
++    PopValueFromReader(MessageReader* reader) {
++  MessageReader variant_reader(nullptr);
++  MessageReader dict_reader(nullptr);
++  if (!reader->PopVariant(&variant_reader) ||
++      !variant_reader.PopArray(&dict_reader))
++    return false;
++
++  value_.clear();
++  while (dict_reader.HasMoreData()) {
++    MessageReader entry_reader(nullptr);
++    if (!dict_reader.PopDictEntry(&entry_reader))
++      return false;
++
++    std::string key;
++    MessageReader value_varient_reader(nullptr);
++    if (!entry_reader.PopString(&key) ||
++        !entry_reader.PopVariant(&value_varient_reader))
++      return false;
++
++    const uint8_t* bytes = nullptr;
++    size_t length = 0;
++    if (!value_varient_reader.PopArrayOfBytes(&bytes, &length))
++      return false;
++
++    value_[key].assign(bytes, bytes + length);
++  }
++  return true;
++}
++
++template <>
++void Property<std::unordered_map<std::string, std::vector<uint8_t>>>::
++    AppendSetValueToWriter(MessageWriter* writer) {
++  MessageWriter variant_writer(nullptr);
++  MessageWriter dict_writer(nullptr);
++
++  writer->OpenVariant("a{sv}", &variant_writer);
++  variant_writer.OpenArray("{sv}", &dict_writer);
++
++  for (const auto& pair : set_value_) {
++    MessageWriter entry_writer(nullptr);
++    dict_writer.OpenDictEntry(&entry_writer);
++
++    entry_writer.AppendString(pair.first);
++
++    MessageWriter value_varient_writer(nullptr);
++    entry_writer.OpenVariant("ay", &value_varient_writer);
++    value_varient_writer.AppendArrayOfBytes(pair.second.data(),
++                                            pair.second.size());
++    entry_writer.CloseContainer(&value_varient_writer);
++
++    dict_writer.CloseContainer(&entry_writer);
++  }
++
++  variant_writer.CloseContainer(&dict_writer);
++  writer->CloseContainer(&variant_writer);
++}
++
++//
++// Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>
++// specialization.
++//
++
++template <>
++bool Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>::
++    PopValueFromReader(MessageReader* reader) {
++  MessageReader variant_reader(nullptr);
++  MessageReader dict_reader(nullptr);
++  if (!reader->PopVariant(&variant_reader) ||
++      !variant_reader.PopArray(&dict_reader))
++    return false;
++
++  value_.clear();
++  while (dict_reader.HasMoreData()) {
++    MessageReader entry_reader(nullptr);
++    if (!dict_reader.PopDictEntry(&entry_reader))
++      return false;
++
++    uint16_t key;
++    MessageReader value_varient_reader(nullptr);
++    if (!entry_reader.PopUint16(&key) ||
++        !entry_reader.PopVariant(&value_varient_reader))
++      return false;
++
++    const uint8_t* bytes = nullptr;
++    size_t length = 0;
++    if (!value_varient_reader.PopArrayOfBytes(&bytes, &length))
++      return false;
++
++    value_[key].assign(bytes, bytes + length);
++  }
++  return true;
++}
++
++template <>
++void Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>::
++    AppendSetValueToWriter(MessageWriter* writer) {
++  MessageWriter variant_writer(nullptr);
++  MessageWriter dict_writer(nullptr);
++
++  writer->OpenVariant("a{qv}", &variant_writer);
++  variant_writer.OpenArray("{qv}", &dict_writer);
++
++  for (const auto& pair : set_value_) {
++    MessageWriter entry_writer(nullptr);
++    dict_writer.OpenDictEntry(&entry_writer);
++
++    entry_writer.AppendUint16(pair.first);
++
++    MessageWriter value_varient_writer(nullptr);
++    entry_writer.OpenVariant("ay", &value_varient_writer);
++    value_varient_writer.AppendArrayOfBytes(pair.second.data(),
++                                            pair.second.size());
++    entry_writer.CloseContainer(&value_varient_writer);
++
++    dict_writer.CloseContainer(&entry_writer);
++  }
++
++  variant_writer.CloseContainer(&dict_writer);
++  writer->CloseContainer(&variant_writer);
++}
++
+ template class Property<uint8_t>;
+ template class Property<bool>;
+ template class Property<int16_t>;
+@@ -675,5 +805,7 @@ template class Property<std::vector<ObjectPath> >;
+ template class Property<std::vector<uint8_t>>;
+ template class Property<std::map<std::string, std::string>>;
+ template class Property<std::vector<std::pair<std::vector<uint8_t>, uint16_t>>>;
++template class Property<std::unordered_map<std::string, std::vector<uint8_t>>>;
++template class Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>;
+ 
+ }  // namespace dbus
+diff --git a/dbus/property.h b/dbus/property.h
+index efbad22..0559ea0 100644
+--- a/dbus/property.h
++++ b/dbus/property.h
+@@ -9,6 +9,7 @@
+ 
+ #include <map>
+ #include <string>
++#include <unordered_map>
+ #include <utility>
+ #include <vector>
+ 
+@@ -610,6 +611,28 @@ Property<std::vector<std::pair<std::vector<uint8_t>, uint16_t>>>::
+ extern template class CHROME_DBUS_EXPORT
+     Property<std::vector<std::pair<std::vector<uint8_t>, uint16_t>>>;
+ 
++template <>
++CHROME_DBUS_EXPORT bool
++Property<std::unordered_map<std::string, std::vector<uint8_t>>>::
++    PopValueFromReader(MessageReader* reader);
++template <>
++CHROME_DBUS_EXPORT void
++Property<std::unordered_map<std::string, std::vector<uint8_t>>>::
++    AppendSetValueToWriter(MessageWriter* writer);
++extern template class CHROME_DBUS_EXPORT
++    Property<std::unordered_map<std::string, std::vector<uint8_t>>>;
++
++template <>
++CHROME_DBUS_EXPORT bool
++Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>::
++    PopValueFromReader(MessageReader* reader);
++template <>
++CHROME_DBUS_EXPORT void
++Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>::
++    AppendSetValueToWriter(MessageWriter* writer);
++extern template class CHROME_DBUS_EXPORT
++    Property<std::unordered_map<uint16_t, std::vector<uint8_t>>>;
++
+ #pragma GCC diagnostic pop
+ 
+ }  // namespace dbus
+-- 
+2.13.5
+
