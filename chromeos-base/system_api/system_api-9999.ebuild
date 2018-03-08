@@ -30,10 +30,12 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="cros_host"
 
-DEPEND="dev-libs/protobuf"
-
+DEPEND="
+	dev-libs/protobuf
+	cros_host? ( dev-libs/grpc )
+"
 
 src_unpack() {
 	local s="${S}"
