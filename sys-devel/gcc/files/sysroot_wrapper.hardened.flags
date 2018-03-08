@@ -1,0 +1,27 @@
+
+# Full hardening. Some/all of these may be discarded depending on
+# other flags.
+# Temporarily disable function splitting because of chromium:434751.
+FLAGS_TO_ADD = set(['-fstack-protector-strong', '-fPIE', '-pie',
+                    '-D_FORTIFY_SOURCE=2',
+                    '-fno-omit-frame-pointer',
+                   ])
+
+# Flags to be used only with the GCC compiler.
+GCC_FLAGS_TO_ADD = set(['-fno-reorder-blocks-and-partition',
+                        '-Wno-unused-local-typedefs',
+                        '-Wno-maybe-uninitialized',
+                       ])
+
+# Flags to be used only with the clang compiler.
+# Temporarily disable tautological-*-compare chromium:778316.
+# Temporarily add no-unknown-warning-option to deal with old clang versions.
+# Temporarily disable Wsection since kernel gets a bunch of these. chromium:778867
+CLANG_FLAGS_TO_ADD = set(['-Qunused-arguments',
+                          '-grecord-gcc-switches',
+                          '-Wno-tautological-constant-compare',
+                          '-Wno-tautological-unsigned-enum-zero-compare',
+                          '-Wno-unknown-warning-option',
+                          '-Wno-section',
+                         ])
+

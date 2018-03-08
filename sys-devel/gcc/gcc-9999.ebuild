@@ -365,22 +365,24 @@ EOF
 		if use hardened
 		then
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
-			cat "${FILESDIR}/sysroot_wrapper.hardened.header" \
-				"${FILESDIR}/wrapper_script_common" \
-				"${FILESDIR}/sysroot_wrapper.hardened.body" > \
-				"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
-			chmod 755 "${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
-			cat "${FILESDIR}/bisect_driver.py" > \
-				"${D}$(get_bin_dir)/bisect_driver.py" || die
+			SYSROOT_WRAPPER_FLAGS=sysroot_wrapper.hardened.flags
+			SYSROOT_WRAPPER_HEADER=sysroot_wrapper.hardened.header
 		else
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
+			SYSROOT_WRAPPER_FLAGS=sysroot_wrapper.flags
+			SYSROOT_WRAPPER_HEADER=sysroot_wrapper.header
 		fi
 
 		exeinto "$(get_bin_dir)"
-		if ! use hardened
-		then
-			doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
-		fi
+		cat "${FILESDIR}/${SYSROOT_WRAPPER_HEADER}" \
+			"${FILESDIR}/wrapper_script_common" \
+			"${FILESDIR}/${SYSROOT_WRAPPER_FLAGS}" \
+			"${FILESDIR}/sysroot_wrapper.body" > \
+			"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
+		chmod 755 "${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
+		cat "${FILESDIR}/bisect_driver.py" > \
+			"${D}$(get_bin_dir)/bisect_driver.py" || die
+
 		sed -i \
 			-e "/^  use_ccache = .*@CCACHE_DEFAULT@/s:=[^#]*:= $(usex wrapper_ccache True False) :" \
 			"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die

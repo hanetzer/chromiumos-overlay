@@ -1,0 +1,23 @@
+
+# Flags to be added to non-hardened toolchain.
+
+# Common flags to add for gcc/clang.
+FLAGS_TO_ADD = set([])
+
+# Flags to be used only with the GCC compiler.
+GCC_FLAGS_TO_ADD = set(['-Wno-maybe-uninitialized',
+                        '-Wno-unused-local-typedefs',
+                        '-Wno-deprecated-declarations',
+                       ])
+
+# Flags to be used only with the clang compiler.
+# Temporarily disable tautological-*-compare chromium:778316.
+# Temporarily add no-unknown-warning-option to deal with old clang versions.
+# Temporarily disable Wsection since kernel gets a bunch of these. chromium:778867
+CLANG_FLAGS_TO_ADD = set(['-Qunused-arguments',
+                          '-Wno-tautological-constant-compare',
+                          '-Wno-tautological-unsigned-enum-zero-compare',
+                          '-Wno-unknown-warning-option',
+                          '-Wno-section',
+                         ])
+

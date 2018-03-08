@@ -1,0 +1,22 @@
+#!/usr/bin/python2 -S
+# Copyright 2018 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script is a meta-driver for the toolchain. It transforms the command
+# line to allow the following:
+# 1. This script ensures that '--sysroot' is passed to whatever it is wrapping.
+#
+# 2. Enable clang diagnostics with -clang-syntax option
+#
+# 3. Add new -print-cmdline option to print the command line before executon
+#
+# 4. Enable clang codegen.
+# This is currently implemented as two loops on the list of arguments. The
+# first loop # identifies hardening flags, as well as determining if clang
+# invocation is specified. The second loop build command line for clang
+# invocation as well adjusting gcc command line.
+#
+
+"""Compiler wrapper script for target compilers."""
+
