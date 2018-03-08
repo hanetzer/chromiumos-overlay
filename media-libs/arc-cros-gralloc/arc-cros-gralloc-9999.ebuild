@@ -50,7 +50,7 @@ src_configure() {
 
 	if use video_cards_amdgpu; then
 		export DRV_AMDGPU=1
-		append-cppflags -DDRV_AMDGPU
+		append-cppflags -DDRV_AMDGPU -DHAVE_LIBDRM
 	fi
 
 	if use video_cards_virgl; then
