@@ -77,12 +77,6 @@ get_board() {
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
-	if use fsp; then
-		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
-			elog "   - using fsp config"
-			board=${board}.fsp
-		fi
-	fi
 	echo "${board}"
 }
 
