@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 inherit cros-debug
 
@@ -47,6 +47,7 @@ IUSE="
 	legacy_power_button
 	link
 	moblab
+	native_assistant
 	native_gpu_memory_buffers
 	natural_scroll_default
 	neon
