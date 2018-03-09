@@ -3,7 +3,7 @@
 
 EAPI="5"
 
-CROS_WORKON_COMMIT="a0b54062c11f49789141b6f72832405910517cdc"
+CROS_WORKON_COMMIT="0d1e49eb5c5eaa66d792f56b6097d4cd26b90230"
 CROS_WORKON_TREE=("0295472676671915bab943e84d561ed834ea7622" "74765a29c8f1b61027c98c1d16e6fe0ec92a2780")
 CROS_WORKON_INCREMENTAL_BUILD="1"
 CROS_WORKON_LOCALNAME="platform2"
@@ -27,6 +27,5 @@ src_install() {
 	insinto /etc/init
 	doins arc-adbd.conf
 
-	exeinto /usr/sbin
-	doexe "${OUT}/arc-adbd"
+	dosbin "${OUT}/arc-adbd"
 }
