@@ -25,6 +25,5 @@ src_install() {
 	insinto /etc/init
 	doins arc-adbd.conf
 
-	exeinto /usr/sbin
-	doexe "${OUT}/arc-adbd"
+	dosbin "${OUT}/arc-adbd"
 }
