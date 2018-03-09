@@ -20,10 +20,19 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/arc/ad
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="+seccomp"
+
+RDEPEND="
+	chromeos-base/libbrillo
+	chromeos-base/minijail
+"
 
 src_install() {
 	insinto /etc/init
-	doins arc-adbd.conf
+	doins init/arc-adbd.conf
+
+	insinto /usr/share/policy
+	use seccomp && newins "seccomp/arc-adbd-${ARCH}.policy" arc-adbd-seccomp.policy
 
 	dosbin "${OUT}/arc-adbd"
 }
