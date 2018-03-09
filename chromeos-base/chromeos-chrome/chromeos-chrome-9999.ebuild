@@ -43,6 +43,7 @@ IUSE="
 	chrome_media
 	+chrome_remoting
 	+clang
+	clang_tidy
 	component_build
 	cups
 	+debug_fission
@@ -75,6 +76,7 @@ REQUIRED_USE="
 	asan? ( clang )
 	?? ( gold lld )
 	cfi? ( thinlto )
+	clang_tidy? ( clang )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
@@ -967,6 +969,10 @@ src_configure() {
 		--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 
 	setup_test_lists
+
+	if use clang_tidy; then
+		export WITH_TIDY=1
+	fi
 }
 
 chrome_make() {

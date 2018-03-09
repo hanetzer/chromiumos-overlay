@@ -13,6 +13,7 @@
 	<flag name='chrome_pdf'>Build pdf reader</flag>
 	<flag name='chrome_remoting'>Build chrome remoting feature</flag>
 	<flag name='clang'>Build with CC and C++ set to clang</flag>
+	<flag name='clang_tidy'>Build with clang-tidy static analyzer; warnings get written to Chrome build log.</flag>
 	<flag name='component_build'>Build components as shared libraries (faster link)</flag>
 	<flag name='evdev_gestures'>Build Chrome with ChromeOS touchpad gestures support.</flag>
 	<flag name='gold'>Use gold linker</flag>
