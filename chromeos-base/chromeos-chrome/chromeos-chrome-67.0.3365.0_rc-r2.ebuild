@@ -157,9 +157,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3365.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3365.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3365.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3365.0_rc-r2.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3365.0_rc-r2.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3365.0_rc-r2.afdo"
 
 AFDO_FILE_EXP1["amd64"]="R67-3356.0-1520248208.afdo"
 AFDO_FILE_EXP1["x86"]="R67-3356.0-1520248208.afdo"
@@ -878,6 +878,7 @@ src_configure() {
 	elif use lld ; then
 		export CC="${CC} -fuse-ld=lld"
 		export CXX="${CXX} -fuse-ld=lld"
+		export STRIP=eu-strip
 	else
 		ewarn "gold and lld disabled. Using GNU ld."
 	fi
