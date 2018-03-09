@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS camera HAL configs virtual package
+EAPI=5
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=c0c40d0ddf5671f834dbf3748115914f
