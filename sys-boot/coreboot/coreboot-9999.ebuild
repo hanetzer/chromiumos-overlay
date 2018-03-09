@@ -88,12 +88,13 @@ get_board() {
 
 set_build_env() {
 	BOARD="$1"
+	BUILD_TARGET_NAME="$2"
 
 	if use unibuild; then
 		CONFIG=".config-${BOARD}"
 		CONFIG_SERIAL=".config_serial-${BOARD}"
-		BUILD_DIR="build-${BOARD}"
-		BUILD_DIR_SERIAL="build_serial-${BOARD}"
+		BUILD_DIR="build-${BUILD_TARGET_NAME}"
+		BUILD_DIR_SERIAL="build_serial-${BUILD_TARGET_NAME}"
 	else
 		CONFIG=".config"
 		CONFIG_SERIAL=".config_serial"
@@ -105,12 +106,10 @@ set_build_env() {
 # Create the coreboot configuration files for a particular board. This
 # creates a standard config and a serial config.
 # Args:
-#   $1: Name of board to create a configure file for (e.g. "reef")
-#   $2: Base board name, if any (used for unified builds)
+#   $1: Base board name, if any (used for unified builds)
 create_config() {
-	local base_board="$2"
-
-	set_build_env "$1"
+	# TODO(teravest): Remove this arg and replace with family lookup.
+	local base_board="$1"
 
 	if [[ -s "${FILESDIR}/configs/config.${BOARD}" ]]; then
 
@@ -207,12 +206,18 @@ src_prepare() {
 	if use unibuild; then
 		local build_target
 
-		for build_target in $(cros_config_host \
-			get-firmware-build-targets coreboot); do
-			create_config "${build_target}" "$(get_board)"
+		local fields="coreboot,ec"
+		local cmd="get-firmware-build-combinations"
+		(cros_config_host "${cmd}" "${fields}" || die) |
+		while read -r name; do
+			read -r coreboot
+			read -r ec
+			set_build_env "${coreboot}" "${name}"
+			create_config "$(get_board)"
 		done
 	else
-		create_config "$(get_board)"
+		set_build_env "$(get_board)"
+		create_config
 	fi
 }
 
@@ -252,10 +257,12 @@ add_fw_blob() {
 #   $1: Build directory to use (e.g. "build_serial")
 #   $2: Config file to use (e.g. ".config_serial")
 #   $3: Build target build (e.g. "pyro"), for USE=unibuild only.
+#   $4: Build target ec (e.g. "pyro"), for USE=unibuild only.
 make_coreboot() {
 	local builddir="$1"
 	local config_fname="$2"
 	local build_target="$3"
+	local ec_target="$4"
 	local froot="${SYSROOT}/firmware"
 	local fblobroot="${SYSROOT}/firmware"
 
@@ -286,7 +293,13 @@ make_coreboot() {
 	fi
 
 	if use cros_ec; then
-		add_ec "${builddir}/coreboot.rom" "ecrw" "${froot}"
+		if use unibuild; then
+			einfo "Adding ec for ${ec_target}"
+			add_ec "${builddir}/coreboot.rom" "ecrw" \
+				"${SYSROOT}/firmware/${ec_target}"
+		else
+			add_ec "${builddir}/coreboot.rom" "ecrw" "${froot}"
+		fi
 	fi
 
 	if use pd_sync; then
@@ -344,22 +357,27 @@ src_compile() {
 
 	use verbose && elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
-	# Build a second ROM with serial support for developers.
 	if use unibuild; then
-		local build_targets=( $(cros_config_host \
-			get-firmware-build-targets coreboot) )
-		local build_target
+		local fields="coreboot,ec"
+		local cmd="get-firmware-build-combinations"
+		(cros_config_host "${cmd}" "${fields}" || die) |
+		while read -r name; do
+			read -r coreboot
+			read -r ec
 
-		einfo "Building ${#build_targets[@]} target(s): ${build_targets[@]}"
-		for build_target in "${build_targets[@]}"; do
-			set_build_env "${build_target}"
-			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${build_target}"
+			set_build_env "${coreboot}" "${name}"
+			make_coreboot "${BUILD_DIR}" "${CONFIG}" "${name}" \
+				"${ec}"
+
+			# Build a second ROM with serial support for developers.
 			make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}" \
-				"${build_target}"
+				"${name}" "${ec}"
 		done
 	else
 		set_build_env "$(get_board)"
 		make_coreboot "${BUILD_DIR}" "${CONFIG}"
+
+		# Build a second ROM with serial support for developers.
 		make_coreboot "${BUILD_DIR_SERIAL}" "${CONFIG_SERIAL}"
 	fi
 }
@@ -415,13 +433,18 @@ src_install() {
 	local build_target
 
 	if use unibuild; then
-		for build_target in $(cros_config_host \
-			get-firmware-build-targets coreboot); do
-			set_build_env "${build_target}" "$(get_board)"
-			do_install ${build_target}
+		local fields="coreboot,ec"
+		local cmd="get-firmware-build-combinations"
+		(cros_config_host "${cmd}" "${fields}" || die) |
+		while read -r name; do
+			read -r coreboot
+			read -r ec
+
+			set_build_env "${coreboot}" "${name}"
+			do_install ${coreboot}
 		done
 	else
-		set_build_env "$(get_board)"
+		set_build_env
 		do_install
 	fi
 }
