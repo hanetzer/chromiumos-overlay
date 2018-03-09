@@ -41,6 +41,7 @@ EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
 
 # EC firmware board names for overlay with special configuration
 EC_BOARD_NAMES=(
+	atlas
 	bds
 	chell
 	chell_pd
