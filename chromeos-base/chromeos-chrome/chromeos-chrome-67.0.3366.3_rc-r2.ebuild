@@ -43,6 +43,7 @@ IUSE="
 	chrome_media
 	+chrome_remoting
 	+clang
+	clang_tidy
 	component_build
 	cups
 	+debug_fission
@@ -75,6 +76,7 @@ REQUIRED_USE="
 	asan? ( clang )
 	?? ( gold lld )
 	cfi? ( thinlto )
+	clang_tidy? ( clang )
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
@@ -157,9 +159,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3366.3_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3366.3_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3366.3_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3366.3_rc-r2.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3366.3_rc-r2.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3366.3_rc-r2.afdo"
 
 AFDO_FILE_EXP1["amd64"]="R67-3356.0-1520248208.afdo"
 AFDO_FILE_EXP1["x86"]="R67-3356.0-1520248208.afdo"
@@ -967,6 +969,10 @@ src_configure() {
 		--args="${GN_ARGS}" --root="${CHROME_ROOT}/src" || die
 
 	setup_test_lists
+
+	if use clang_tidy; then
+		export WITH_TIDY=1
+	fi
 }
 
 chrome_make() {
