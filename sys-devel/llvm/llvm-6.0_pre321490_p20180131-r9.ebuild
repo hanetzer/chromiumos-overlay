@@ -19,24 +19,24 @@ LICENSE="UoI-NCSA"
 
 if use llvm-next; then
 
-# llvm:r324073 https://critique.corp.google.com/#review/186055351
+# llvm:r326829 https://critique.corp.google.com/#review/188273767
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"299f8c346e1ab483463da5f02536ffd00b7ad9c6" # EGIT_COMMIT r324066
+		"195a164675af86f390f9816e53291013d1b551d7" # EGIT_COMMIT r326829
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"5197e945a56dd5da7925c64b06f9ca14a7385786" # EGIT_COMMIT r324034
+		"6a52b697d564699d511de92bce88e15bf6fc56b8" # EGIT_COMMIT r326768
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"a2ca4ae98b35d76b14cc936af1ebf13b93199d79" # EGIT_COMMIT r324062
+		"860fc25e85a105ef1fa9de717bb974231fab80ba" # EGIT_COMMIT r326827
 	"clang-tidy"
 		"tools/clang/tools/extra"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm-clang-tools-extra.git"
-		"0eaf52897e57a152f38441619e776303b84568f3" # EGIT_COMMIT r324073
+		"5383c119dd185d9c4ef1707f0c89697f76ba87eb" # EGIT_COMMIT r326809
 )
 else
 # llvm:r321490 https://critique.corp.google.com/#review/181250307
@@ -238,8 +238,8 @@ pick_next_cherries() {
 	# clang
 	local CHERRIES=""
 	pushd "${S}"/tools/clang >/dev/null || die
-	CHERRIES+=" 30f9051d7d8b6f56c8149fd1bdcc714285f77527" # r325733
-	CHERRIES+=" 284236c047631c8b0eabac3ddd3d0c95253f4361" # r326639
+	CHERRIES+=" 8fdc88794b44e70bdb93c6cf04baf3c1e3251d8b" # r327192
+	CHERRIES+=" c28eb6d02c5cedd40b02aa7c496f13a71763312e" # r327229
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
 	done
@@ -247,13 +247,7 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 16748767563bb9bcb1e1c3e42c35d44924d464d0" # r324252
-	CHERRIES+=" ffaaef68dbab0e872c0e6013836170bb78705a81" # r324301
-	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
-	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
-	CHERRIES+=" 197917a303a397db80df6f71246490ad5cf23228" # r325049
-	CHERRIES+=" d09d7393dda2a6afe77b58a3db0bf046f8d2c2b3" # r325085
-	CHERRIES+=" 98079e294f718c14d25ccf30ab2b1938780ffe4d" # r326570
+	CHERRIES+=" 824eedb9eb4888575924b1ed80c4250dddd5b59b" # r327198
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
