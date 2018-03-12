@@ -191,6 +191,7 @@ CROS_COMMON_RDEPEND+="
 	mtd? ( sys-fs/mtd-utils )
 	cups? (
 		net-print/cups
+		net-print/cups-filters
 		postscript? ( net-print/hplip )
 	)
 	touchview? ( chromeos-base/chromeos-accelerometer-init )

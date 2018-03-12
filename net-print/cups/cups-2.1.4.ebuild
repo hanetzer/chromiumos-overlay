@@ -80,8 +80,6 @@ RDEPEND="${CDEPEND}
 	selinux? ( sec-policy/selinux-cups )
 "
 
-PDEPEND=">=net-print/cups-filters-1.0.43"
-
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
 	usb? ( threads )
