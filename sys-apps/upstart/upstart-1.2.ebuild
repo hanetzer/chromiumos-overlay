@@ -80,6 +80,9 @@ src_prepare() {
 	# directory encryption.
 	use direncryption && epatch "${FILESDIR}"/upstart-1.2-dircrypto.patch
 
+	# Require explicit import of environment variables into job classes.
+	epatch "${FILESDIR}"/upstart-1.2-import-env.patch
+
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
 	# will do it for us, and incorrectly too.
