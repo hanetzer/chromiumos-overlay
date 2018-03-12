@@ -61,6 +61,7 @@ ALL_BOARDS=(
 	beltino
 	betty
 	betty-arc64
+	betty-arcnext
 	bettyvirgl
 	blackwall
 	bob
