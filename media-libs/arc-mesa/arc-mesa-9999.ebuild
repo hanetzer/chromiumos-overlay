@@ -23,7 +23,7 @@ KEYWORDS="~*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="amdgpu radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} llvmpipe mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} llvmpipe mach64 mga nouveau powervr r128 savage sis vmware tdfx via freedreno virgl"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -157,6 +157,8 @@ multilib_src_configure() {
 
 		# Freedreno code
 		gallium_enable video_cards_freedreno freedreno
+
+		gallium_enable video_cards_virgl virgl
 	fi
 
 	if use vulkan; then
@@ -248,6 +250,9 @@ multilib_src_install_cheets() {
 		fi
 		if use video_cards_amdgpu; then
 			newexe $(get_libdir)/gallium/radeonsi_dri.so radeonsi_dri.so
+		fi
+		if use video_cards_virgl; then
+			newexe $(get_libdir)/gallium/virtio_gpu_dri.so virtio_gpu_dri.so
 		fi
 	fi
 
