@@ -1,0 +1,42 @@
+From 0244156a7e3539c39c6a7e4fbee81e38be438f28 Mon Sep 17 00:00:00 2001
+From: Sonny Sasaka <sonnysasaka@chromium.org>
+Date: Sat, 10 Mar 2018 01:05:12 -0800
+Subject: [PATCH] dbus: Filter signal by the sender we are interested in only.
+
+This adds sender='<name>' filter as the match rule for subscribing to
+signal in ObjectProxy. This is needed to reduce the unnecessary polluted
+log of rejecting some signals. The manual sender verification is still
+needed because as mentioned in
+https://bugs.chromium.org/p/chromium/issues/detail?id=507206#c14
+service_name_ might be empty and sender='' means to not filter by sender
+at all.
+
+BUG=chromium:812468
+TEST=Tested on device and checked that communications to D-Bus services
+(e.g. power, bluetooth) don't break
+---
+ dbus/object_proxy.cc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/dbus/object_proxy.cc b/dbus/object_proxy.cc
+index 1c0b3379e907..1c2a425a2ec9 100644
+--- a/dbus/object_proxy.cc
++++ b/dbus/object_proxy.cc
+@@ -463,10 +463,10 @@ bool ObjectProxy::ConnectToSignalInternal(const std::string& interface_name,
+       GetAbsoluteMemberName(interface_name, signal_name);
+ 
+   // Add a match rule so the signal goes through HandleMessage().
+-  const std::string match_rule =
+-      base::StringPrintf("type='signal', interface='%s', path='%s'",
+-                         interface_name.c_str(),
+-                         object_path_.value().c_str());
++  const std::string match_rule = base::StringPrintf(
++      "type='signal', sender='%s', interface='%s', path='%s'",
++      service_name_.c_str(), interface_name.c_str(),
++      object_path_.value().c_str());
+   return AddMatchRuleWithCallback(match_rule,
+                                   absolute_signal_name,
+                                   signal_callback);
+-- 
+2.16.2.660.g709887971b-goog
+

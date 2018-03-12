@@ -57,6 +57,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-dbus-Property-Add-type-specializations.patch
 	epatch "${FILESDIR}"/${P}-dbus-add-new-style-FD-bindings.patch
 	epatch "${FILESDIR}"/${P}-Replace-std-unordered_map-with-std-map-for-dbus-Prop.patch
+	epatch "${FILESDIR}"/${P}-dbus-Filter-signal-by-the-sender-we-are-interested-i.patch
 	# Disable custom memory allocator when asan is used.
 	# https://crbug.com/807685
 	use asan && epatch "${FILESDIR}"/${P}-Disable-memory-allocator.patch
