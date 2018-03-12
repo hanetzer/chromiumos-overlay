@@ -30,6 +30,9 @@ DEPEND="${RDEPEND}
 src_install() {
 	dobin "${OUT}"/newblued
 
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.Bluetooth.conf
+
 	insinto /etc/init
 	doins init/upstart/newblued.conf
 
