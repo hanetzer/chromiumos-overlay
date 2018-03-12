@@ -106,12 +106,11 @@ pkg_postinst() {
 		"${ROOT}${CONTAINER_ROOTFS}/android-data/data" \
 		|| true
 
-	# master also needs /data/cache.
-	if use android-container-master-arc-dev; then
-		install -d --mode=0555 --owner=root --group=root \
-			"${ROOT}${CONTAINER_ROOTFS}/android-data/data/cache" \
-			|| true
-	fi
+	# master also needs /data/cache as a mount point. To make images look
+	# similar, do the same for N too.
+	install -d --mode=0555 --owner=root --group=root \
+		"${ROOT}${CONTAINER_ROOTFS}/android-data/data/cache" \
+		|| true
 
 	# Create /data/dalvik-cache/<arch> directory so that we can start zygote
 	# for the login screen.
