@@ -43,9 +43,9 @@ please check your chromeos-config-bsp ebuild"
 
 	# Create a .dts file with all the includes.
 	cat "${FILESDIR}/skeleton.dts" >"${dts}"
-	cros_config_host_py write-target-dirs >"${schema_info}" \
+	cros_config_host write-target-dirs >"${schema_info}" \
 		|| die "Failed to write directory targets"
-	cros_config_host_py write-phandle-properties >>"${schema_info}" \
+	cros_config_host write-phandle-properties >>"${schema_info}" \
 		|| die "Failed to write phandle properties"
 	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${schema_info}"; do
 		einfo "Adding ${dtsi}"
