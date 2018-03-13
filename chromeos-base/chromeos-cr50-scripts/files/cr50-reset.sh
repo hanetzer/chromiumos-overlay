@@ -7,12 +7,10 @@
 # qrcode from the challenge string returned by gsctool. The cr50
 # is reset when a valid authorization code is entered.
 
-# gsctool exit code.
-EXIT_CODE_ALL_UPDATED=1
-
 # RMA Reset Authorization parameters.
 # - URL of Reset Authorization Server.
-RMA_SERVER="https://google.com/chromeos/cr50resetauth/request?challenge="
+RMA_SERVER="https://www.google.com/chromeos/partner/console/cr50reset/"
+RMA_SERVER="${RMA_SERVER}request?challenge="
 # - Number of retries before giving up.
 MAX_RETRIES=3
 # - Time in seconds to delay before generating another qrcode.
@@ -78,19 +76,12 @@ cr50_reset() {
     read -p "Enter authorization code: " ac
 
     # Test authorization code.
-    gsctool -t -r "${ac}"
-    status=$?
+    if gsctool -t -r "${ac}"; then
+      return 0
+    fi
 
-    case "${status}" in
-      ${EXIT_CODE_ALL_UPDATED})
-        read -p "Press [ENTER] to continue"
-        return 0
-        ;;
-      *)
-        echo "Invalid authorization code. Please try again."
-        echo
-        ;;
-    esac
+    echo "Invalid authorization code. Please try again."
+    echo
 
     : $(( n += 1 ))
     if [ ${n} -eq ${MAX_RETRIES} ]; then
