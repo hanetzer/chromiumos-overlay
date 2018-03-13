@@ -67,7 +67,7 @@ CDEPEND="
 	dmapi? ( sys-apps/dmapi )
 	fam? ( virtual/fam )
 	gnutls? ( dev-libs/libgcrypt:0
-		>=net-libs/gnutls-1.4.0 )
+		>=net-libs/gnutls-1.4.0:= )
 	ldap? ( net-nds/openldap[${MULTILIB_USEDEP}] )
 	system-mitkrb5? ( app-crypt/mit-krb5[${MULTILIB_USEDEP}] )
 	!system-mitkrb5? ( >=app-crypt/heimdal-1.5[-ssl,${MULTILIB_USEDEP}] )
