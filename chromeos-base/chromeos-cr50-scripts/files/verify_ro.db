@@ -301,5 +301,21 @@ e:h:0:8000:
 571d24410c840395f7ac1fa580acb459417ee2cbda161e1a66e0e9e3a93d3d2d:
 df81f0c2419feb55034d0322ef7b8827a5e8b0bcff0843d98911206c646eddc6
 
+# This works around parser deficiency where it can not process two
+# adjacent sections for the same board.
+SKIP
+
+# Section for invariant areas of Eve GBB.
+ZZAF
+
+# Gbb header up to HWID digest
+a:h:c11000:30:
+45ea07a4d82967d865363aaabed02cb2f7ddf324d34a44239df79b36afcf7a6f
+
+# Skip HWID 32 bytes of hash at offset 0x30, 48 bytes of GBB header padding
+# and 256 bytes allocated for HWID, add GBB Header above HWID space.
+a:h:c11180:2000:
+4362c6f739aaa0bba46f75a2d841952d8df20e2c1d83d3417cc3c68dff5bf5d9
+
 DONE
 
