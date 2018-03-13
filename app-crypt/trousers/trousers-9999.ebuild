@@ -15,10 +15,13 @@ KEYWORDS="~*"
 SLOT="0"
 IUSE="asan doc mocktpm systemd tss_trace"
 
-RDEPEND=">=dev-libs/openssl-0.9.7"
-
-DEPEND="${RDEPEND}
+COMMON_DEPEND="
 	chromeos-base/metrics
+	>=dev-libs/openssl-0.9.7"
+
+RDEPEND="${COMMON_DEPEND}"
+
+DEPEND="${COMMON_DEPEND}
 	dev-util/pkgconfig"
 
 ## TODO: Check if this patch is useful for us.
