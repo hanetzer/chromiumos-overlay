@@ -54,6 +54,10 @@ src_install() {
 
 	dosbin arc/scripts/android-sh
 	dobin arc/scripts/collect-cheets-logs
+
+	# Install exception file for FIFO blocking policy on stateful partition.
+	insinto /usr/share/cros/startup/fifo_exceptions
+	doins arc/container-bundle/master/arc-fifo-exceptions.txt
 }
 
 pkg_preinst() {
