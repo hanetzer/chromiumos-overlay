@@ -6,8 +6,8 @@ EAPI=5
 inherit cmake-utils
 
 DESCRIPTION="a userland driver for IPP-over-USB class USB devices."
-HOMEPAGE="https://github.com/tillkamppeter/ippusbxd"
-SRC_URI="https://github.com/tillkamppeter/ippusbxd/${P}.tar.gz"
+HOMEPAGE="https://github.com/OpenPrinting/ippusbxd"
+SRC_URI="https://github.com/OpenPrinting/ippusbxd/${P}.tar.gz"
 
 KEYWORDS="*"
 LICENSE="Apache-2.0"
@@ -21,7 +21,6 @@ DEPEND="
 S="${WORKDIR}/${P}/src"
 
 PATCHES=(
-	"${FILESDIR}/ippusbxd-1.31-fix-syslog.patch"
 	"${FILESDIR}/unix-socket.patch"
 )
 
