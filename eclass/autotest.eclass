@@ -313,8 +313,6 @@ autotest_src_compile() {
 		find . -name "${mask}" -delete
 	done
 
-	autotest_run_packager "tar_only" ${AUTOTEST_WORKDIR} "${TESTS}"
-
 	popd 1> /dev/null
 }
 
@@ -391,57 +389,6 @@ autotest_src_install() {
 	chmod -R a+x "${D}"${AUTOTEST_BASE}/*
 }
 
-# Routine to run packager.py with its two different configurations.
-# Argument 1: Action type (tar_only / upload).
-# Argument 2: The directory in which to look for profiler names.
-#             Based on the stage of the build, this can be different.
-# Argument 3: Test names(if any).
-autotest_run_packager() {
-	local action=$1
-	local profiler_dir=$2
-	local tests=$3
-
-	local test_opt dep_opt prof_opt
-	local root_autotest_dir="${SYSROOT}${AUTOTEST_BASE}"
-
-	if [[ -n "${tests}" && "${tests}" != "myfaketest" ]]; then
-		test_opt="--test=$(pythonify_test_list ${tests})"
-	fi
-
-	if [[ -n "${AUTOTEST_DEPS_LIST}" ]]; then
-		dep_opt="--dep=$(pythonify_test_list ${AUTOTEST_DEPS_LIST})"
-	fi
-
-	# For *, we must generate the list of profilers.
-	if [[ "${AUTOTEST_PROFILERS_LIST}" == "*" ]]; then
-		AUTOTEST_PROFILERS_LIST=$(
-			print_test_dirs "${profiler_dir}/client/profilers" yes | sort -u)
-	fi
-
-	if [[ -n "${AUTOTEST_PROFILERS_LIST}" ]]; then
-		prof_opt="--profiler=$(pythonify_test_list ${AUTOTEST_PROFILERS_LIST})"
-	fi
-
-	if [[ -n "${test_opt}" || -n "${dep_opt}" || -n "${prof_opt}" ]]; then
-		einfo "Running packager(${action}) for: ${test_opt}, ${dep_opt}, ${prof_opt}"
-		if [[ "${action}" == "upload" ]]; then
-			local logfile=${root_autotest_dir}/packages/${CATEGORY}_${PN}.log
-		else
-			local logfile=${AUTOTEST_WORKDIR}/${CATEGORY}_${PN}.log
-		fi
-		flock "${root_autotest_dir}/packages" \
-				python -B "${root_autotest_dir}/utils/packager.py" \
-				-r "${root_autotest_dir}/packages" \
-				"${test_opt}" "${dep_opt}" "${prof_opt}" \
-				-a "${action}" -o "${AUTOTEST_WORKDIR}" && \
-				echo "${CATEGORY}/${PN}" > "${logfile}" && \
-				echo "${action} ${test_opt} ${dep_opt} ${prof_opt}" >> "${logfile}"
-	else
-		einfo "Packager(${ACTION}) not run as nothing was found to package."
-	fi
-
-}
-
 autotest_pkg_postinst() {
 	are_we_used || return 0
 	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
@@ -462,7 +409,36 @@ autotest_pkg_postinst() {
 			print_test_dirs "${path_to_image}/${dir}" yes
 		done | sort -u)
 
-	autotest_run_packager "upload" "${path_to_image}" "${client_tests}"
+	if [ -n "${client_tests}" ] && [ "${client_tests}" != "myfaketest" ]; then
+		test_opt="--test=$(pythonify_test_list ${client_tests})"
+	fi
+
+	if [ -n "${AUTOTEST_DEPS_LIST}" ]; then
+		dep_opt="--dep=$(pythonify_test_list ${AUTOTEST_DEPS_LIST})"
+	fi
+
+	# For *, we must generate the list of profilers.
+	if [ "${AUTOTEST_PROFILERS_LIST}" = "*" ]; then
+		AUTOTEST_PROFILERS_LIST=$(\
+			print_test_dirs "${path_to_image}/client/profilers" yes | sort -u)
+	fi
+
+	if [ -n "${AUTOTEST_PROFILERS_LIST}" ]; then
+		prof_opt="--profiler=$(pythonify_test_list ${AUTOTEST_PROFILERS_LIST})"
+	fi
+
+	if [ -n "${test_opt}" -o -n "${dep_opt}" -o -n "${prof_opt}" ]; then
+		einfo "Running packager with options ${test_opt} ${dep_opt} ${prof_opt}"
+		local logfile=${root_autotest_dir}/packages/${CATEGORY}_${PN}.log
+		flock "${root_autotest_dir}/packages" \
+			-c "python -B ${root_autotest_dir}/utils/packager.py \
+				-r ${root_autotest_dir}/packages \
+				${test_opt} ${dep_opt} ${prof_opt} -a upload && \
+				echo ${CATEGORY}/${PN} > ${logfile} && \
+				echo ${test_opt} ${dep_opt} ${prof_opt} >> ${logfile}"
+	else
+		einfo "Packager not run as nothing was found to package."
+	fi
 }
 
 if [[ "${CROS_WORKON_PROJECT}" == "chromiumos/third_party/autotest" ]]; then
