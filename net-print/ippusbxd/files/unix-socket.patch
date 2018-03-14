@@ -23,23 +23,8 @@ index e6809b5..b59f3da 100644
  )
  target_link_libraries(ippusbxd ${CMAKE_THREAD_LIBS_INIT})
  target_link_libraries(ippusbxd ${LIBUSB_LIBRARIES})
-diff --git a/src/http.c b/src/http.c
-index a2c897b..f49054a 100644
---- a/src/http.c
-+++ b/src/http.c
-@@ -25,7 +25,9 @@
- #include "http.h"
- #include "logging.h"
- 
--#define BUFFER_STEP (1 << 12)
-+// Changing maximum buffer size to 65535 as some printers will send larger
-+// packets than expected which can result in a buffer overflow.
-+#define BUFFER_STEP (1 << 16)
- 
- struct http_message_t *http_message_new()
- {
 diff --git a/src/ippusbxd.c b/src/ippusbxd.c
-index 580e42d..d1d4f4c 100644
+index ead0670..f5cbd63 100644
 --- a/src/ippusbxd.c
 +++ b/src/ippusbxd.c
 @@ -19,6 +19,7 @@
@@ -163,6 +148,17 @@ index 580e42d..d1d4f4c 100644
  	   pkt->filled_size,
  	   hexdump(pkt->buffer, (int)pkt->filled_size));
        /* In no-printer mode we simply ignore passing the
+@@ -228,9 +272,9 @@ static void *service_connection(void *arg_void)
+     if (g_options.terminate)
+       goto cleanup_subconn;
+ 
+-
+     /* Server's response */
+     server_msg = http_message_new();
++
+     if (server_msg == NULL) {
+       ERR("Thread #%d: Failed to create server message",
+ 	  thread_num);
 @@ -263,7 +307,10 @@ static void *service_connection(void *arg_void)
  	/* End the TCP connection, so that a
  	   web browser does not wait for more data */
@@ -196,7 +192,15 @@ index 580e42d..d1d4f4c 100644
        }
        if (usb != NULL)
  	NOTE("Thread #%d: M %p P %p: Interface #%d: Server pkt done",
-@@ -297,9 +346,11 @@ static void *service_connection(void *arg_void)
+@@ -286,6 +335,7 @@ static void *service_connection(void *arg_void)
+       else
+ 	NOTE("Thread #%d: M %p P %p: Server pkt done",
+ 	     thread_num, server_msg, pkt);
++
+       packet_free(pkt);
+     }
+     if (usb != NULL)
+@@ -297,9 +347,11 @@ static void *service_connection(void *arg_void)
  	   thread_num, server_msg);
  
    cleanup_subconn:
@@ -211,7 +215,7 @@ index 580e42d..d1d4f4c 100644
        usb_conn_release(usb);
        usb = NULL;
      }
-@@ -311,7 +362,10 @@ static void *service_connection(void *arg_void)
+@@ -311,7 +363,10 @@ static void *service_connection(void *arg_void)
  
    NOTE("Thread #%d: Closing, %s", thread_num,
         g_options.terminate ? "shutdown requested" : "communication thread terminated");
@@ -223,7 +227,7 @@ index 580e42d..d1d4f4c 100644
    free(arg);
  
    /* Execute clean-up handler */
-@@ -320,6 +374,31 @@ static void *service_connection(void *arg_void)
+@@ -320,6 +375,31 @@ static void *service_connection(void *arg_void)
    pthread_exit(NULL);
  }
  
@@ -255,14 +259,10 @@ index 580e42d..d1d4f4c 100644
  static void start_daemon()
  {
    /* Capture USB device if not in no-printer mode */
-@@ -332,47 +411,39 @@ static void start_daemon()
-     usb_sock = usb_open();
-     if (usb_sock == NULL)
-       goto cleanup_usb;
--  } else
-+  } else {
-     usb_sock = NULL;
--
+@@ -337,44 +417,35 @@ static void start_daemon()
+     g_options.device_id = "MFG:Acme;MDL:LaserStar 2000;CMD:AppleRaster,PWGRaster;CLS:PRINTER;DES:Acme LaserStar 2000;SN:001;";
+   }
+ 
 -  /* Capture a socket */
 -  uint16_t desired_port = g_options.desired_port;
 -  g_options.tcp_socket = NULL;
@@ -282,9 +282,19 @@ index 580e42d..d1d4f4c 100644
 -	 https://en.wikipedia.org/wiki/Ephemeral_port */
 -      desired_port = 49152;
 -    NOTE("Access to desired port failed, trying alternative port %d", desired_port);
-   }
+-  }
 -  if (g_options.tcp_socket == NULL && g_options.tcp6_socket == NULL)
 -    goto cleanup_tcp;
++  if (g_options.unix_socket_mode) {
++    g_options.uds_socket = uds_open(g_options.unix_socket_path);
++    if (g_options.uds_socket == NULL)
++      goto cleanup_connections;
++    NOTE("Opened unix socket %s", g_options.unix_socket_path);
++  } else {
++    /* Capture a socket */
++    uint16_t desired_port = open_tcp_socket();
++    if (g_options.tcp_socket == NULL && g_options.tcp6_socket == NULL)
++      goto cleanup_connections;
  
 -  if (g_options.tcp_socket)
 -    g_options.real_port = tcp_port_number_get(g_options.tcp_socket);
@@ -298,22 +308,13 @@ index 580e42d..d1d4f4c 100644
 -  }
 -  printf("%u|", g_options.real_port);
 -  fflush(stdout);
-+  if (g_options.unix_socket_mode) {
-+    g_options.uds_socket = uds_open(g_options.unix_socket_path);
-+    if (g_options.uds_socket == NULL)
-+      goto cleanup_connections;
-+    NOTE("Opened unix socket %s", g_options.unix_socket_path);
-+  } else {
-+    /* Capture a socket */
-+    uint16_t desired_port = open_tcp_socket();
-+    if (g_options.tcp_socket == NULL && g_options.tcp6_socket == NULL)
-+      goto cleanup_connections;
-+
 +    if (g_options.tcp_socket)
 +      g_options.real_port = tcp_port_number_get(g_options.tcp_socket);
 +    else
 +      g_options.real_port = tcp_port_number_get(g_options.tcp6_socket);
-+
+ 
+-  NOTE("Port: %d, IPv4 %savailable, IPv6 %savailable",
+-       g_options.real_port, g_options.tcp_socket ? "" : "not ", g_options.tcp6_socket ? "" : "not ");
 +    if (desired_port != 0 && g_options.only_desired_port == 1 &&
 +        desired_port != g_options.real_port) {
 +      ERR("Received port number did not match requested port number."
@@ -322,9 +323,7 @@ index 580e42d..d1d4f4c 100644
 +    }
 +    printf("%u|", g_options.real_port);
 +    fflush(stdout);
- 
--  NOTE("Port: %d, IPv4 %savailable, IPv6 %savailable",
--       g_options.real_port, g_options.tcp_socket ? "" : "not ", g_options.tcp6_socket ? "" : "not ");
++
 +    NOTE("Port: %d, IPv4 %savailable, IPv6 %savailable", g_options.real_port,
 +         g_options.tcp_socket ? "" : "not ",
 +         g_options.tcp6_socket ? "" : "not ");
@@ -332,16 +331,16 @@ index 580e42d..d1d4f4c 100644
  
    /* Lose connection to caller */
    uint16_t pid;
-@@ -413,7 +484,7 @@ static void start_daemon()
+@@ -415,7 +486,7 @@ static void start_daemon()
       that cups-browsed and ippfind will discover it */
-   if (usb_sock && g_options.nobroadcast == 0) {
+   if (g_options.nobroadcast == 0) {
      if (dnssd_init() == -1)
 -      goto cleanup_tcp;
 +      goto cleanup_connections;
    }
  
    /* Main loop */
-@@ -428,17 +499,33 @@ static void start_daemon()
+@@ -430,17 +501,33 @@ static void start_daemon()
        goto cleanup_thread;
      }
  
@@ -383,7 +382,7 @@ index 580e42d..d1d4f4c 100644
      }
  
      pthread_mutex_lock(&thread_register_mutex);
-@@ -463,12 +550,14 @@ static void start_daemon()
+@@ -465,12 +552,14 @@ static void start_daemon()
      if (args != NULL) {
        if (args->tcp != NULL)
  	tcp_conn_close(args->tcp);
@@ -399,7 +398,7 @@ index 580e42d..d1d4f4c 100644
    /* Stop DNS-SD advertising of the printer */
    if (g_options.dnssd_data != NULL)
      dnssd_shutdown();
-@@ -494,6 +583,10 @@ static void start_daemon()
+@@ -496,6 +585,10 @@ static void start_daemon()
    if (g_options.tcp6_socket!= NULL)
      tcp_close(g_options.tcp6_socket);
  
@@ -410,7 +409,7 @@ index 580e42d..d1d4f4c 100644
   cleanup_usb:
    /* USB clean-up and final reset of the printer */
    if (usb_sock != NULL)
-@@ -531,6 +624,7 @@ int main(int argc, char *argv[])
+@@ -533,6 +626,7 @@ int main(int argc, char *argv[])
      {"from-port",    required_argument, 0,  'P' },
      {"only-port",    required_argument, 0,  'p' },
      {"interface",    required_argument, 0,  'i' },
@@ -418,7 +417,7 @@ index 580e42d..d1d4f4c 100644
      {"logging",      no_argument,       0,  'l' },
      {"debug",        no_argument,       0,  'd' },
      {"verbose",      no_argument,       0,  'q' },
-@@ -548,6 +642,7 @@ int main(int argc, char *argv[])
+@@ -551,6 +645,7 @@ int main(int argc, char *argv[])
    g_options.product_id = 0;
    g_options.bus = 0;
    g_options.device = 0;
@@ -426,7 +425,7 @@ index 580e42d..d1d4f4c 100644
  
    while ((c = getopt_long(argc, argv, "qnhdp:P:i:s:lv:m:NB",
  			  long_options, &option_index)) != -1) {
-@@ -628,6 +723,10 @@ int main(int argc, char *argv[])
+@@ -631,6 +726,10 @@ int main(int argc, char *argv[])
      case 'B':
        g_options.nobroadcast = 1;
        break;
@@ -774,7 +773,7 @@ index 0000000..15be0c6
 +
 +int uds_packet_send(struct uds_conn_t *conn, struct http_packet_t *pkt);
 diff --git a/src/usb.c b/src/usb.c
-index f746039..0c0a09d 100644
+index 51fdc68..b472a29 100644
 --- a/src/usb.c
 +++ b/src/usb.c
 @@ -498,6 +498,10 @@ static int LIBUSB_CALL usb_exit_on_unplug(libusb_context *context,
