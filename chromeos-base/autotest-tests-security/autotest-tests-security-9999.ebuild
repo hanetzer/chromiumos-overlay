@@ -67,6 +67,7 @@ IUSE_TESTS="
 	containers? ( +tests_security_RunOci )
 	+tests_security_RuntimeExecStack
 	+tests_security_SandboxedServices
+	+tests_security_StatefulPartitionHardening
 	+tests_security_StatefulPermissions
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
