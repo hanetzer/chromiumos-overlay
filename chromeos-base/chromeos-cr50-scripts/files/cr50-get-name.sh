@@ -28,9 +28,16 @@ cr50_get_name() {
   # Determine the type of the Cr50 image to use based on the H1's board ID
   # flags. The hexadecimal value of flags is reported by 'gsctool -i' in the
   # last element of a colon separated string of values.
+  #
+  # Depending on the interface used, gsctool -i output could be a muli line
+  # text, make sure to pay attention to the relevant line only, which is
+  # guaranteed to be the last and contains text formatted as follows:
+  #
+  # Board ID space: 5a5a4146:a5a5beb9:00007f80
+  #
   exit_status=0
   output=$(${updater} -i 2>&1) || exit_status="$?"
-  board_id="$(echo "${output}" | sed 's/.*: //')"
+  board_id="$(echo "${output}" | awk '/Board ID/ {gsub(/.*: /,""); print}')"
   board_flags="0x$(echo "${board_id}" | sed 's/.*://')"
 
   if [ "${exit_status}" != "0" ]; then
