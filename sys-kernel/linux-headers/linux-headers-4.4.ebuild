@@ -1,7 +1,7 @@
 # Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="5"
 
 ETYPE="headers"
 H_SUPPORTEDARCH="alpha amd64 arc arm arm64 avr32 bfin cris frv hexagon hppa ia64 m32r m68k metag microblaze mips mn10300 nios2 openrisc ppc ppc64 s390 score sh sparc tile x86 xtensa"
@@ -51,6 +51,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0022-BACKPORT-Use-upstream-USBDEVFS_DROP_PRIVILEGES.patch"
 	epatch "${FILESDIR}/0023-FROMLIST-media-rkisp1-Add-user-space-ABI-definitions.patch"
 	epatch "${FILESDIR}/0024-FROMLIST-media-videodev2.h-v4l2-ioctl-add-rkisp1-met.patch"
+	epatch "${FILESDIR}/0025-BACKPORT-add-qrtr-header-file.patch"
 }
 
 src_install() {
