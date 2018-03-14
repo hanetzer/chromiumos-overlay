@@ -7,9 +7,7 @@ CROS_WORKON_INCREMENTAL_BUILD="1"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
-CROS_WORKON_SUBTREE="common-mk arc/container-bundle"
-
-PLATFORM_SUBDIR="arc/container-bundle"
+CROS_WORKON_SUBTREE="common-mk arc/container-bundle arc/scripts"
 
 inherit cros-workon user
 
@@ -28,6 +26,9 @@ IUSE="
 	android-container-pi
 	"
 
+RDEPEND="!<chromeos-base/chromeos-cheets-scripts-0.0.3"
+DEPEND="${RDEPEND}"
+
 CONTAINER_ROOTFS="/opt/google/containers/android/rootfs"
 
 src_install() {
@@ -42,6 +43,17 @@ src_install() {
 		echo "Unknown container version" >&2
 		exit 1
 	fi
+
+	# Install scripts.
+	insinto /etc/init
+	doins arc/scripts/arc-setfattr.conf
+	doins arc/scripts/arc-stale-directory-remover.conf
+
+	insinto /etc/sysctl.d
+	doins arc/scripts/01-sysctl-arc.conf
+
+	dosbin arc/scripts/android-sh
+	dobin arc/scripts/collect-cheets-logs
 }
 
 pkg_preinst() {
