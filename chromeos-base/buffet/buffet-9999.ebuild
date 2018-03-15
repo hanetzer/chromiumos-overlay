@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="5"
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
@@ -18,16 +18,11 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
-IUSE="wifi_bootstrapping"
+IUSE=""
 
 COMMON_DEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/libweave
-	wifi_bootstrapping? (
-		chromeos-base/apmanager
-		chromeos-base/peerd
-		chromeos-base/webserver
-	)
 "
 
 RDEPEND="
@@ -44,11 +39,6 @@ pkg_preinst() {
 	# Create user and group for buffet.
 	enewuser "buffet"
 	enewgroup "buffet"
-	# Additional groups to put buffet into.
-	if use wifi_bootstrapping ; then
-		enewgroup "apmanager"
-		enewgroup "peerd"
-	fi
 }
 
 src_install() {
@@ -64,10 +54,8 @@ src_install() {
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
-	if ! use wifi_bootstrapping ; then
-		sed -i 's/\(BUFFET_DISABLE_PRIVET=\).*$/\1true/g' \
-			"${ED}"/etc/init/buffet.conf
-	fi
+	sed -i 's/\(BUFFET_DISABLE_PRIVET=\).*$/\1true/g' \
+		"${ED}"/etc/init/buffet.conf
 }
 
 platform_pkg_test() {
