@@ -25,6 +25,7 @@ KEYWORDS="~*"
 IUSE="
 	android-container-master-arc-dev
 	android-container-nyc
+	android-container-pi
 	"
 
 CONTAINER_ROOTFS="/opt/google/containers/android/rootfs"
@@ -33,6 +34,8 @@ src_install() {
 	insinto /opt/google/containers/android
 	if use android-container-master-arc-dev; then
 		doins arc/container-bundle/master/config.json
+	elif use android-container-pi; then
+		doins arc/container-bundle/pi/config.json
 	elif use android-container-nyc; then
 		doins arc/container-bundle/nyc/config.json
 	else
