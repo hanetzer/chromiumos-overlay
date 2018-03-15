@@ -125,6 +125,7 @@ IUSE_TESTS=(
 	+tests_platform_LogoutPerf
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
+	+tests_policy_AudioOutputAllowed
 	+tests_policy_ChromeOsLockOnIdleSuspend
 	+tests_policy_CookiesAllowedForUrls
 	+tests_policy_CookiesBlockedForUrls
