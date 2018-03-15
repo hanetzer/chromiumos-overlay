@@ -122,6 +122,10 @@ src_unpack() {
 	mkdir -p "${MY_BUILDDIR}"
 }
 
+src_prepare() {
+	epatch "${FILESDIR}/${P}-sht_relr.patch"
+}
+
 toolchain-binutils_bugurl() {
 	printf "http://code.google.com/p/chromium-os/issues/entry"
 }
