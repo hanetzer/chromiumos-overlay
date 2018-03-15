@@ -9,12 +9,13 @@ DESCRIPTION="Ebuild for per-sysroot arc-build components."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="android-container-nyc android-container-master-arc-dev"
-REQUIRED_USE="^^ ( android-container-nyc android-container-master-arc-dev )"
+IUSE="android-container-nyc android-container-pi android-container-master-arc-dev"
+REQUIRED_USE="^^ ( android-container-nyc android-container-pi android-container-master-arc-dev )"
 
 # The RDEPEND setting reflects what is installed into the SYSROOT.
 RDEPEND="!!chromeos-base/arc-build-master
 	!!chromeos-base/arc-build-nyc
+	!!chromeos-base/arc-build-pi
 	!!chromeos-base/arc-build"
 DEPEND=""
 
@@ -61,6 +62,8 @@ install_pc_file() {
 multilib_src_install() {
 	if use android-container-nyc; then
 		PC_SRC_DIR="${FILESDIR}/nyc"
+	elif use android-container-pi; then
+		PC_SRC_DIR="${FILESDIR}/pi"
 	elif use android-container-master-arc-dev; then
 		PC_SRC_DIR="${FILESDIR}/master"
 	fi
