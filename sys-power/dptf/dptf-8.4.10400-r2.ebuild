@@ -4,7 +4,7 @@
 
 EAPI="5"
 
-inherit cmake-utils
+inherit cmake-utils toolchain-funcs
 
 DESCRIPTION="Intel(R) Dynamic Platform & Thermal Framework"
 HOMEPAGE="https://01.org/dptf/"
@@ -31,6 +31,10 @@ DEPEND="unibuild? ( chromeos-base/chromeos-config )
 RDEPEND="${DEPEND}"
 
 src_configure() {
+	# Append '--no-experimental-use-relr' to gold flags to workaround an issue with
+	# some relative relocations pointing at odd offsets (http://crbug.com/820290).
+	tc-ld-is-gold && append-ldflags "-Wl,--no-experimental-use-relr"
+
 	# cmake configuration for DPTF policy shared libraries
 	local mycmakeargs=( -DCHROMIUM_BUILD=YES )
 	use x86 && mycmakeargs+=( -DBUILD_ARCH=32bit )
