@@ -184,6 +184,7 @@ eblit-src_prepare-post() {
 	epatch "${FILESDIR}"/local/glibc-2.23-dlopen.patch
 	epatch "${FILESDIR}"/local/glibc-2.23-bits-socket-linux-4.6.patch
 	epatch "${FILESDIR}"/local/glibc-2.23-bits-socket-linux-4.7.patch
+	epatch "${FILESDIR}"/local/glibc-2.23-sht_relr.patch
 	epatch "${FILESDIR}"/2.19/${PN}-2.19-ia64-gcc-4.8-reloc-hack.patch #503838
 
 	if use hardened ; then
