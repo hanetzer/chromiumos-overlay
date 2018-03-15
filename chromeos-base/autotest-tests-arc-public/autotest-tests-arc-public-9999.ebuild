@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest/files
@@ -15,8 +15,14 @@ SLOT="0"
 KEYWORDS="~*"
 
 CLIENT_TESTS="
-	+tests_cheets_Midis
-	+tests_cheets_StartAndroid
+	android-container-nyc? (
+		+tests_cheets_Midis
+		+tests_cheets_StartAndroid
+	)
+	android-container-master-arc-dev? (
+		+tests_cheets_Midis_P
+		+tests_cheets_StartAndroid_P
+	)
 	+tests_graphics_Gralloc
 "
 
@@ -32,6 +38,8 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE="
+	android-container-nyc
+	android-container-master-arc-dev
 	+autotest
 	${IUSE_TESTS}
 "

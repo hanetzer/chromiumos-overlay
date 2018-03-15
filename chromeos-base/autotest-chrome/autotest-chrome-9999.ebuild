@@ -1,7 +1,7 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -16,6 +16,8 @@ KEYWORDS="~*"
 # Enable autotest by default.
 IUSE="
 	${IUSE}
+	android-container-nyc
+	android-container-master-arc-dev
 	+autotest
 	+cellular
 	+shill
@@ -72,7 +74,6 @@ IUSE_TESTS=(
 	tests_desktopui_CameraApp
 	+tests_desktopui_ChromeSanity
 	tests_desktopui_ConnectivityDiagnostics
-	+tests_desktopui_ExitOnSupervisedUserCrash
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_MashLogin
 	+tests_desktopui_MediaAudioFeedback
@@ -88,7 +89,6 @@ IUSE_TESTS=(
 	+tests_enterprise_KioskEnrollment
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
-	+tests_graphics_Idle
 	+tests_graphics_Sanity
 	+tests_graphics_Stress
 	+tests_graphics_VTSwitch
@@ -157,12 +157,10 @@ IUSE_TESTS=(
 	+tests_power_VideoDetector
 	+tests_power_VideoSuspend
 	+tests_security_BundledExtensions
-	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_SandboxLinuxUnittests
 	+tests_security_SandboxStatus
 	+tests_telemetry_AFDOGenerateClient
-	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_telemetry_UnitTestsServer
 	+tests_touch_MouseScroll
@@ -228,11 +226,24 @@ IUSE_TESTS_TPM="
 	tpm2? ( +tests_platform_Pkcs11InitOnLogin )
 "
 
+# TODO(ihf): unify N and P tests once they pass reliably.
 IUSE_TESTS="
 	${IUSE_TESTS[*]}
 	${IUSE_TESTS_CELLULAR}
 	${IUSE_TESTS_SHILL}
 	${IUSE_TESTS_TPM}
+	android-container-nyc? (
+		+tests_desktopui_ExitOnSupervisedUserCrash
+		+tests_graphics_Idle
+		+tests_security_NetworkListeners
+		+tests_telemetry_LoginTest
+	)
+	android-container-master-arc-dev? (
+		+tests_desktopui_ExitOnSupervisedUserCrash_P
+		+tests_graphics_Idle_P
+		+tests_security_NetworkListeners_P
+		+tests_telemetry_LoginTest_P
+	)
 "
 
 IUSE="
