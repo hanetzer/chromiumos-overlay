@@ -1,0 +1,164 @@
+# Changes the usb library to hold all of the ippusb interfaces of the
+# printer during the lifetime of the program. Originally at the time of
+# communication with the printer a thread would claim an interface and
+# release it once it was completed. Unfortunately some printers would
+# misbehave if one interface was closed while another interface was in
+# the process of transferring data.
+#
+# Once this patch has been reviewed and finalized it will also be sent
+# upstream.
+
+From 65ddaf116b03cff15086afc5225fc494dd146169 Mon Sep 17 00:00:00 2001
+From: DavieV <davidvalleau@gmail.com>
+Date: Mon, 12 Mar 2018 11:34:18 -0700
+Subject: [PATCH 2/2] Changing usb code to hold all ippusb interfaces
+
+Some printers behave unexpectedly when an interface is released while
+another interface is still in the process of transferring data. So
+instead of claiming and releasing interfaces on each connection, simply
+hold all of the interfaces while the program is running.
+---
+ src/usb.c | 106 +++++++++++++++++++++++++++++-------------------------
+ 1 file changed, 57 insertions(+), 49 deletions(-)
+
+diff --git a/src/usb.c b/src/usb.c
+index b472a29..050343b 100644
+--- a/src/usb.c
++++ b/src/usb.c
+@@ -168,6 +168,46 @@ int get_device_id(struct libusb_device_handle *handle,
+   return (0);
+ }
+ 
++static void try_detach_kernel_driver(struct usb_sock_t *usb,
++                                     struct usb_interface *uf) {
++  /* Make kernel release interface */
++  if (libusb_kernel_driver_active(usb->printer, uf->libusb_interface_index) ==
++      1) {
++    /* Only linux supports this
++       other platforms will fail
++       thus we ignore the error code
++       it either works or it does not */
++    libusb_detach_kernel_driver(usb->printer, uf->libusb_interface_index);
++  }
++}
++
++static int try_claim_usb_interface(struct usb_sock_t *usb,
++                                   struct usb_interface *uf) {
++  /* Claim the whole interface */
++  int status = 0;
++  do {
++    /* Spinlock-like
++       Libusb does not offer a blocking call
++       so we're left with a spinlock */
++    status = libusb_claim_interface(usb->printer, uf->libusb_interface_index);
++    if (status)
++      NOTE("Failed to claim interface %d, retrying",
++           uf->libusb_interface_index);
++    switch (status) {
++      case LIBUSB_ERROR_NOT_FOUND:
++        ERR("USB Interface did not exist");
++        return -1;
++      case LIBUSB_ERROR_NO_DEVICE:
++        ERR("Printer was removed");
++        return -1;
++      default:
++        break;
++    }
++  } while (status != 0 && !g_options.terminate);
++
++  return 0;
++}
++
+ struct usb_sock_t *usb_open()
+ {
+   int status_lock;
+@@ -372,6 +412,23 @@ struct usb_sock_t *usb_open()
+ 	goto error;
+       }
+ 
++      /* Try to make the kernel release the usb interface */
++      try_detach_kernel_driver(usb, uf);
++
++      /* Try to claim the usb interface */
++      if (try_claim_usb_interface(usb, uf)) {
++        ERR("Failed to claim usb interface #%d", uf->interface_number);
++        goto error;
++      }
++
++      /* Select the IPP-USB alt setting of the interface */
++      if (libusb_set_interface_alt_setting(
++              usb->printer, uf->libusb_interface_index, uf->interface_alt)) {
++        ERR("Failed to set alt setting for interface #%d",
++            uf->interface_number);
++        goto error;
++      }
++
+       break;
+     }
+   }
+@@ -647,45 +704,6 @@ struct usb_conn_t *usb_conn_acquire(struct usb_sock_t *usb)
+       goto acquire_error;
+     }
+ 
+-    /* Make kernel release interface */
+-    if (libusb_kernel_driver_active(usb->printer,
+-				    uf->libusb_interface_index) == 1) {
+-      /* Only linux supports this
+-	 other platforms will fail
+-	 thus we ignore the error code
+-	 it either works or it does not */
+-      libusb_detach_kernel_driver(usb->printer,
+-				  uf->libusb_interface_index);
+-    }
+-
+-    /* Claim the whole interface */
+-    int status = 0;
+-    do {
+-      /* Spinlock-like
+-	 Libusb does not offer a blocking call
+-	 so we're left with a spinlock */
+-      status = libusb_claim_interface(usb->printer, uf->libusb_interface_index);
+-      if (status) NOTE("Failed to claim interface %d, retrying", conn->interface_index);
+-      switch (status) {
+-      case LIBUSB_ERROR_NOT_FOUND:
+-	ERR("USB Interface did not exist");
+-	goto acquire_error;
+-      case LIBUSB_ERROR_NO_DEVICE:
+-	ERR("Printer was removed");
+-	goto acquire_error;
+-      default:
+-	break;
+-      }
+-    } while (status != 0 && !g_options.terminate);
+-
+-    if (g_options.terminate)
+-      goto acquire_error;
+-
+-    /* Select the IPP-USB alt setting of the interface */
+-    libusb_set_interface_alt_setting(usb->printer,
+-				     uf->libusb_interface_index,
+-				     uf->interface_alt);
+-
+     /* Take successfully acquired interface from the pool */
+     usb->num_taken++;
+     usb->num_avail--;
+@@ -705,16 +723,6 @@ void usb_conn_release(struct usb_conn_t *conn)
+   struct usb_sock_t *usb = conn->parent;
+   sem_wait(&usb->pool_manage_lock);
+   {
+-    int status = 0;
+-    do {
+-      /* Spinlock-like
+-	 libusb does not offer a blocking call
+-	 so we're left with a spinlock */
+-      status = libusb_release_interface(usb->printer,
+-					conn->interface->libusb_interface_index);
+-      if (status) NOTE("Failed to release interface %d, retrying", conn->interface_index);
+-    } while (status != 0 && !g_options.terminate);
+-
+     /* Return usb interface to pool */
+     usb->num_taken--;
+     usb->num_avail++;
+-- 
+2.16.2.804.g6dcf76e118-goog
+

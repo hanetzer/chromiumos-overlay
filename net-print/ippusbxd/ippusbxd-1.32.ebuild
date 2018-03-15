@@ -22,6 +22,7 @@ S="${WORKDIR}/${P}/src"
 
 PATCHES=(
 	"${FILESDIR}/unix-socket.patch"
+	"${FILESDIR}/hold-usb-interfaces.patch"
 )
 
 src_install() {
