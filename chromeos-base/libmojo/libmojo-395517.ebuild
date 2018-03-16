@@ -13,8 +13,7 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tgz"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
+IUSE="-asan"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
