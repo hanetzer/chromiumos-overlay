@@ -10,7 +10,6 @@ PYTHON_COMPAT=( python2_7 python3_{3,4,5,6} )
 CROS_WORKON_LOCALNAME="../aosp/system/update_engine"
 CROS_WORKON_PROJECT="aosp/platform/system/update_engine"
 CROS_WORKON_OUTOFTREE_BUILD="1"
-CROS_WORKON_BLACKLIST=1
 
 inherit cros-workon python-r1
 

@@ -9,7 +9,6 @@ CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
 CROS_WORKON_USE_VCSID=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_SUBTREE=("common-mk" "")
-CROS_WORKON_BLACKLIST=1
 
 PLATFORM_SUBDIR="update_engine"
 
