@@ -124,6 +124,7 @@ src_unpack() {
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-sht_relr.patch"
+	epatch "${FILESDIR}/${P}-smallpie.patch"
 	epatch "${FILESDIR}/${P}-apply_dynamic_relocs.patch"
 }
 
