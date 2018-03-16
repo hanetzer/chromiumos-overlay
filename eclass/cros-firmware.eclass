@@ -81,11 +81,15 @@ DEPEND="
 	>=sys-apps/flashrom-0.9.4-r269
 	sys-apps/mosys
 	"
+RDEPEND=""
 
 # For unibuild we need EAPI 5 for the sub-slot dependency feature.
 case "${EAPI:-0}" in
 5|6)
 	DEPEND+=" unibuild? (
+			chromeos-base/chromeos-config:=
+		) "
+	RDEPEND+=" unibuild? (
 			chromeos-base/chromeos-config:=
 		) "
 	;;
@@ -107,7 +111,7 @@ DEPEND="$DEPEND
 # matching change in the factory_installer ebuild.
 #
 # TODO(hungte) remove gzip/tar if we have busybox
-RDEPEND="
+RDEPEND="${RDEPEND}
 	app-arch/gzip
 	app-arch/sharutils
 	app-arch/tar

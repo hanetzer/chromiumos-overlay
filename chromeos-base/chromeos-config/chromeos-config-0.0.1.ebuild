@@ -18,6 +18,7 @@ KEYWORDS="*"
 DEPEND="
 	virtual/chromeos-config-bsp:=
 "
+RDEPEND="${DEPEND}"
 
 # This ebuild creates the Chrome OS master configuration file stored in
 # ${UNIBOARD_DTB}. See go/cros-unified-builds-design for more information.
