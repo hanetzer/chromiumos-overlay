@@ -30,6 +30,7 @@ IUSE="
 	dptf
 	eclog
 	+fonts
+	fuzzer
 	gobi
 	hammerd
 	ime
@@ -220,6 +221,7 @@ CROS_COMMON_RDEPEND+="
 		app-i18n/japanese-input
 		app-i18n/hangul-input
 	)
+	fuzzer? ( virtual/target-fuzzers )
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
