@@ -70,6 +70,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-225-60-persistent-storage.rules-add-nvme-id-model.patch
 	"${FILESDIR}"/${PN}-225-udev-rules-all-values-can-contain-escaped-double-quotes-now.patch
 	"${FILESDIR}"/${PN}-225-udevadm-trigger-add-settle.patch
+	"${FILESDIR}"/${PN}-225-v4l_id-check-mplane-video-capture-and-output-capaili.patch
 )
 
 check_default_rules() {
