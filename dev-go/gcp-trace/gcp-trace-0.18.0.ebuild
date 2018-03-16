@@ -32,6 +32,7 @@ IUSE=""
 RESTRICT="binchecks strip"
 
 DEPEND="
+	dev-go/cmp
 	dev-go/gapi-option
 	dev-go/gapi-transport
 	dev-go/gax
