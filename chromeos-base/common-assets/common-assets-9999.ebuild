@@ -129,9 +129,6 @@ src_install() {
 	doins -r "${S}"/text/boot_messages
 	dosbin "${S}"/text/display_boot_message
 
-	insinto /usr/share/chromeos-assets/input_methods
-	doins "${S}"/input_methods/*
-
 	mkdir "${S}"/connectivity_diagnostics_launcher_deploy
 	pushd "${S}"/connectivity_diagnostics_launcher_deploy > /dev/null
 	unpack ./../connectivity_diagnostics_launcher/connectivity_diagnostics_launcher.zip
