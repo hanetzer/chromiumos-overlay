@@ -18,10 +18,10 @@ HOMEPAGE=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+seccomp"
+IUSE="+seccomp asan fuzzer"
 
 RDEPEND="
-	chromeos-base/libbrillo
+	chromeos-base/libbrillo[asan?,fuzzer?]
 	chromeos-base/libmojo
 "
 
@@ -53,6 +53,8 @@ src_install() {
 	# Install seccomp policy file.
 	insinto /usr/share/policy
 	use seccomp && newins "seccomp/midis-seccomp-${ARCH}.policy" midis-seccomp.policy
+
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/midis_seq_handler_fuzzer
 }
 
 pkg_preinst() {
