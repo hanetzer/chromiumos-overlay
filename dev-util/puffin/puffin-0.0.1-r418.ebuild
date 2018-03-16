@@ -49,7 +49,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	doins libpuffdiff.pc libpuffpatch.pc
 
-	platform_fuzzer_install "${OUT}"/puffin_fuzzer
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/puffin_fuzzer
 }
 
 platform_pkg_test() {

@@ -142,10 +142,19 @@ platform_test() {
 # @DESCRIPTION:
 # Installs fuzzer targets in one common location for all fuzzing projects.
 platform_fuzzer_install() {
+	[[ $# -lt 2 ]] && die "usage: ${FUNCNAME} <OWNERS> <programs>"
+
+	local f owners=$1
+	shift
+
 	if use fuzzer; then
 		(
+			insinto "/usr/libexec/fuzzers"
 			exeinto "/usr/libexec/fuzzers"
-			doexe "$@"
+			for f in "$@"; do
+				doexe "${f}"
+				newins "${owners}" "${f##*/}.owners"
+			done
 		)
 	fi
 }
