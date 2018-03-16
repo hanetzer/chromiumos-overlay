@@ -53,6 +53,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	tpm2? ( chromeos-base/trunks[test?] )
+	chromeos-base/bootlockbox-client
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 "

@@ -30,9 +30,7 @@ DEPEND="
 	chromeos-base/libbrillo
 "
 
-RDEPEND="
-	chromeos-base/cryptohome
-"
+RDEPEND=""
 
 src_install() {
 	# Install DBus client library.
