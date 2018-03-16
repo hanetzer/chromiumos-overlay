@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="a641e2eefab5c2acaf51557c2827a10d6c914201"
-CROS_WORKON_TREE="6c70598e872d1728e49fc2724a2f1c95304710a6"
+CROS_WORKON_COMMIT="f09a19c98edab2419dbf385b040a431bcb8c008e"
+CROS_WORKON_TREE="c40ec8ff777de0739985ceef6b456a3b840b8ab3"
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
@@ -130,9 +130,6 @@ src_install() {
 	insinto /usr/share/chromeos-assets/text
 	doins -r "${S}"/text/boot_messages
 	dosbin "${S}"/text/display_boot_message
-
-	insinto /usr/share/chromeos-assets/input_methods
-	doins "${S}"/input_methods/*
 
 	mkdir "${S}"/connectivity_diagnostics_launcher_deploy
 	pushd "${S}"/connectivity_diagnostics_launcher_deploy > /dev/null
