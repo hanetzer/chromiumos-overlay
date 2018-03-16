@@ -35,6 +35,7 @@ IUSE="
 	app_shell
 	asan
 	+authpolicy
+	build_native_assistant
 	+build_tests
 	+chrome_debug
 	cfi
@@ -59,7 +60,6 @@ IUSE="
 	lld
 	mojo
 	+nacl
-	native_assistant
 	neon
 	opengl
 	opengles
@@ -384,7 +384,7 @@ set_build_args() {
 	# Only add the args when use flag is on. This is to avoid conflicting
 	# with future finch based release. At that time, these build args will
 	# be default true.
-	if use "native_assistant"; then
+	if use "build_native_assistant"; then
 		BUILD_ARGS+=(
 			enable_cros_assistant=true
 			enable_cros_libassistant=true
