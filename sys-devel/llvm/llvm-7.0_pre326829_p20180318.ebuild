@@ -39,24 +39,24 @@ EGIT_REPO_URIS=(
 		"5383c119dd185d9c4ef1707f0c89697f76ba87eb" # EGIT_COMMIT r326809
 )
 else
-# llvm:r321490 https://critique.corp.google.com/#review/181250307
+# llvm:r326829 https://critique.corp.google.com/#review/188273767
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"7e6fcc775f56cdeeae061f6f8071f5c103087330" # EGIT_COMMIT r321490
+		"195a164675af86f390f9816e53291013d1b551d7" # EGIT_COMMIT r326829
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" # EGIT_COMMIT r321485
+		"6a52b697d564699d511de92bce88e15bf6fc56b8" # EGIT_COMMIT r326768
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"7e0bf617fb110ad1e246f7cb09e20e293d3b429e" # EGIT_COMMIT r321487
+		"860fc25e85a105ef1fa9de717bb974231fab80ba" # EGIT_COMMIT r326827
 	"clang-tidy"
 		"tools/clang/tools/extra"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm-clang-tools-extra.git"
-		"057470116210d2e6bf5e726361e641c8c5de9b35" # EGIT_COMMIT r321412
+		"5383c119dd185d9c4ef1707f0c89697f76ba87eb" # EGIT_COMMIT r326809
 )
 fi
 
@@ -201,7 +201,8 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 0d816739a82da29748caf88570affb9715e18b69" # r323155
+	CHERRIES+=" 8fdc88794b44e70bdb93c6cf04baf3c1e3251d8b" # r327192
+	CHERRIES+=" c28eb6d02c5cedd40b02aa7c496f13a71763312e" # r327229
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -210,15 +211,8 @@ pick_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 1e7ad1c95ade6d20d3e0544772e55e45d2e6edb9" # r321510
-	CHERRIES+=" fd5a8723ce9f2a6b250e85972ef859e4253ea95d" # r323155
-	CHERRIES+=" 771594b9ab02241dec7c254f490eb701b62de070" # r323759
-	CHERRIES+=" 61c5605f601c14b58d9697c7b625f2082daed65d" # r323813
-	CHERRIES+=" e4eed790f8967cc92fc03fa2cf9183c6b03b3428" # r323915
-	CHERRIES+=" 59b64490fda69d29bb42cfdf7eec37bcc31ff833" # r324449
-	CHERRIES+=" 43849be6e44493d485401aac5b62484e36bd2864" # r324645
-	CHERRIES+=" 197917a303a397db80df6f71246490ad5cf23228" # r325049
-	CHERRIES+=" d09d7393dda2a6afe77b58a3db0bf046f8d2c2b3" # r325085
+	CHERRIES+=" 824eedb9eb4888575924b1ed80c4250dddd5b59b" # r327198
+	CHERRIES+=" 2755819705e9c2116f4ef72e1273303c6a56c520" # r327761
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -237,9 +231,9 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	pushd "${S}"/tools/clang >/dev/null || die
 	CHERRIES+=" 8fdc88794b44e70bdb93c6cf04baf3c1e3251d8b" # r327192
 	CHERRIES+=" c28eb6d02c5cedd40b02aa7c496f13a71763312e" # r327229
+	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
 	done

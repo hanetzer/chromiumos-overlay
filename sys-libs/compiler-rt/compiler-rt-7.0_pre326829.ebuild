@@ -26,11 +26,11 @@ src_unpack() {
 	# For this version of the ebuild, llvm and llvm-next are the same until we roll
 	# a new version of llvm-next.
 	if use llvm-next; then
-		# llvm:r324073 https://critique.corp.google.com/#review/188273767
+		# llvm:r326829 https://critique.corp.google.com/#review/188273767
 		EGIT_COMMIT="6a52b697d564699d511de92bce88e15bf6fc56b8" #r326768
 	else
-		# llvm:r321485 https://critique.corp.google.com/#review/180179552
-		EGIT_COMMIT="3bd6c8e44cf530bbf8c0e57b571f4bfc7d48b698" #r321485
+		# llvm:r326829 https://critique.corp.google.com/#review/188273767
+		EGIT_COMMIT="6a52b697d564699d511de92bce88e15bf6fc56b8" #r326768
 	fi
 	git-2_src_unpack
 }
@@ -121,7 +121,7 @@ src_install() {
 	rm -f "${ED}"${libdir}/clang/*/dfsan_abilist.txt || die
 	rm -f "${ED}"${libdir}/clang/*/*/dfsan_abilist.txt || die
 
-	# This section can be removed once prebuilds for 324073 have been created.
+	# This section can be removed once prebuilds for 326829 have been created.
 	local llvm_version=$(llvm-config --version)
 	local clang_version=${llvm_version%svn*}
 	clang_version=${clang_version%git*}
