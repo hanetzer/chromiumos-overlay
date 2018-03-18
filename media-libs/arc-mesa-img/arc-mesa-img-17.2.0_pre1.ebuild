@@ -155,7 +155,7 @@ src_configure() {
 		#
 
 		# FIXME(tfiga): Could inherit arc-build invoke this implicitly?
-		arc-build-select-gcc
+		arc-build-select-clang
 
 		# Use llvm-config coming from ARC++ build.
 		# TODO(b/65414758): Switch to locally built LLVM when it's ready.
