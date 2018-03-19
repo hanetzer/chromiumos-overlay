@@ -160,9 +160,9 @@ declare -A AFDO_FILE_EXP2
 
 # The following entries into the AFDO_FILE* dictionaries are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3374.0_rc-r1.afdo"
-AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3374.0_rc-r1.afdo"
-AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3374.0_rc-r1.afdo"
+AFDO_FILE_LLVM["amd64"]="chromeos-chrome-amd64-67.0.3375.0_rc-r1.afdo"
+AFDO_FILE_LLVM["x86"]="chromeos-chrome-amd64-67.0.3375.0_rc-r1.afdo"
+AFDO_FILE_LLVM["arm"]="chromeos-chrome-amd64-67.0.3375.0_rc-r1.afdo"
 
 AFDO_FILE_EXP1["amd64"]="R67-3359.10-1520851675.afdo"
 AFDO_FILE_EXP1["x86"]="R67-3359.10-1520851675.afdo"
