@@ -41,7 +41,7 @@ RDEPEND="
 DEPEND="
 	${COMMON_DEPEND}
 	chromeos-base/protofiles
-	chromeos-base/system_api
+	dbus? ( chromeos-base/system_api )
 	dev-libs/modp_b64
 "
 
