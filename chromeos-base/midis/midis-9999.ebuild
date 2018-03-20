@@ -21,6 +21,7 @@ KEYWORDS="~*"
 IUSE="+seccomp asan fuzzer"
 
 RDEPEND="
+	media-libs/alsa-lib
 	chromeos-base/libbrillo[asan?,fuzzer?]
 	chromeos-base/libmojo
 "
