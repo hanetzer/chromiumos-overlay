@@ -141,6 +141,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/17.3-virgl-handle-getting-new-capsets.patch
 	epatch "${FILESDIR}"/17.3-virgl-reduce-some-default-capset-limits.patch
 	epatch "${FILESDIR}"/17.3-virgl-add-offset-alignment-values-to-to-v2-caps-stru.patch
+	epatch "${FILESDIR}"/17.3-virgl-Implement-seamless-cube-maps.patch
 	base_src_prepare
 
 	eautoreconf
