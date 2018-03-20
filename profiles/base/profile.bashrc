@@ -105,6 +105,12 @@ cros_setup_hooks
 # the cached values ourselves and since we know these are going through
 # autoconf, we can leverage ${libdir} that econf sets up automatically.
 cros_pre_src_unpack_python_multilib_setup() {
+	# We don't need this hack in the sdk itself.  Drop it to unblock multitarget
+	# in the sdk.  We'll need to revisit for boards.  https://crbug.com/736322
+	if [[ $(cros_target) == "cros_host" ]] ; then
+		return
+	fi
+
 	# Avoid executing multiple times in a single build.
 	[[ ${am_cv_python_version:+set} == "set" ]] && return
 
