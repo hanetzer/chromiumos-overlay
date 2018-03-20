@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="aace272d58d38fc208e74e96382133a76071b676"
-CROS_WORKON_TREE="19e56ee4a2c51709e43eddda7cf591303d312934"
+CROS_WORKON_COMMIT="f685d346d6a09aa507f81a759acc26deb01832c5"
+CROS_WORKON_TREE="9ae3016c5b081e856cc3846f27540b28729db361"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest/files
 
@@ -218,6 +218,7 @@ SERVER_IUSE_TESTS="
 	+tests_kernel_MemoryRamoop
 	+tests_logging_GenerateCrashFiles
 	moblab? ( +tests_moblab_RunSuite )
+	+tests_moblab_Setup
 	cros_p2p? ( +tests_p2p_EndToEndTest )
 	+tests_network_FirewallHolePunchServer
 	+tests_platform_ActivateDate
@@ -269,5 +270,3 @@ AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 src_configure() {
 	cros-workon_src_configure
 }
-
-
