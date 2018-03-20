@@ -4,57 +4,57 @@ https://crbug.com/812425
 
 --- a/perf_parser_test.cc
 +++ b/perf_parser_test.cc
-@@ -659,7 +659,7 @@ class RunInMountNamespaceThread : public quipper::Thread {
+@@ -641,7 +641,7 @@ class RunInMountNamespaceThread : public quipper::Thread {
  // (Not tried):            /proc/<pid>/root/<path>
  // (Not tried): /<path>
  // Expected buildid for <path>: "deadbeef"
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
-@@ -797,7 +797,7 @@ class RunInMountNamespaceProcess {
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
+@@ -776,7 +776,7 @@ class RunInMountNamespaceProcess {
  // Accept:                 /proc/<pid2>/root/<path>
  // (Not tried): /<path>
  // Expected buildid for <path>: "deadbeef"
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesOwningProcess) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace_TriesOwningProcess) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
-@@ -885,7 +885,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesOwningProcess) {
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
+@@ -862,7 +862,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesOwningProcess) {
  // Reject (doesn't exist): /proc/<pid+10>/root/<path>
  // Accept (same inode): /<path>
  // Expected buildid for <path>: "deadbeef"
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFs) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace_TriesRootFs) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
 @@ -972,7 +972,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFs) {
  // Reject (wrong inode): /proc/<pid>/root/<path>
  // Reject (wrong inode): /<path>
  // Expected buildid for <path>: ""
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsRejectsInode) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace_TriesRootFsRejectsInode) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
-@@ -1063,7 +1063,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsRejectsInode) {
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
+@@ -1036,7 +1036,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsRejectsInode) {
  // Reject (not found): /proc/<pid+10>/root/<path>
  // Accept (falsely): /<path>
  // Expected buildid for <path>: "baadf00d" (even though incorrect)
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsNoInodeToReject) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace_TriesRootFsNoInodeToReject) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
-@@ -1162,7 +1162,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsNoInodeToReject) {
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
+@@ -1133,7 +1133,7 @@ TEST(PerfParserTest, ReadsBuildidsInMountNamespace_TriesRootFsNoInodeToReject) {
  // A better thing to do might be to track a
  // map<tuple<maj,min,ino,path>, DSOInfo>, but even so, it will be impossible
  // to store unambiguously in perf.data.
 -TEST(PerfParserTest, ReadsBuildidsInMountNamespace_DifferentDevOrIno) {
 +TEST(PerfParserTest, DISABLED_ReadsBuildidsInMountNamespace_DifferentDevOrIno) {
-   if (!HaveCapability(CAP_SYS_ADMIN))
-     return;  // Skip test.
+   if (!HaveCapability(CAP_SYS_ADMIN)) return;  // Skip test.
    ScopedTempDir tmpdir("/tmp/quipper_tmp.");
+   ScopedTempDir mntdir("/tmp/quipper_mnt.");
