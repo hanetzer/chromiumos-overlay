@@ -22,4 +22,5 @@ S="${WORKDIR}"
 src_install() {
 	insinto /usr/share/arc-cache-builder
 	doins org.chromium.arc.cachebuilder.jar
+	dobin "${FILESDIR}/arc_generate_packages_cache"
 }

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Copyright 2018 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -e
+
+# Print usage string
+usage() {
+  cat <<EOF
+Usage: $PROG /path/to/mount/system/image/dir \
+/path/to/mount/vendor/image/dir \
+/path/to/output/file
+
+Generate packages cache for the provided system and vendor images.
+
+EOF
+  if [[ $# -gt 0 ]]; then
+    echo "$*" 1>&2
+    exit 1
+  fi
+  exit 0
+}
+
+main() {
+  local system_mnt=$1
+  local vendor_mnt=$2
+  local output_file=$3
+
+  if [[ $# -ne 3 ]]; then
+    usage "command takes exactly 3 args"
+  fi
+
+  java -cp \
+    /usr/share/arc-cache-builder/org.chromium.arc.cachebuilder.jar \
+    org.chromium.arc.cachebuilder.CacheGenerator \
+    --system-root "${system_mnt}" \
+    --vendor-root "${vendor_mnt}" \
+    --output "${output_file}"
+}
+
+main "$@"
