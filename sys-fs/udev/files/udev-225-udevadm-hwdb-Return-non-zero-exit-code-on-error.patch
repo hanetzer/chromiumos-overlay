@@ -1,0 +1,93 @@
+From 5e06c9f517e6755556b86ded366eb2084a7bcfde Mon Sep 17 00:00:00 2001
+From: Nicolas Boichat <drinkcat@google.com>
+Date: Tue, 20 Mar 2018 13:36:58 +0800
+Subject: [PATCH] udevadm/hwdb: Return non-zero exit code on error
+
+Upstream PR: https://github.com/systemd/systemd/pull/8520
+
+---
+ src/udev/udevadm-hwdb.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/src/udev/udevadm-hwdb.c b/src/udev/udevadm-hwdb.c
+index dc3ae7484..6565de70b 100644
+--- a/src/udev/udevadm-hwdb.c
++++ b/src/udev/udevadm-hwdb.c
+@@ -461,6 +461,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+         FILE *f;
+         char line[LINE_MAX];
+         struct udev_list match_list;
++        int r = 0, err;
+ 
+         udev_list_init(udev, &match_list, false);
+ 
+@@ -494,6 +495,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+ 
+                         if (line[0] == ' ') {
+                                 log_error("Error, MATCH expected but got '%s' in '%s':", line, filename);
++                                r = -EINVAL;
+                                 break;
+                         }
+ 
+@@ -505,6 +507,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+                 case HW_MATCH:
+                         if (len == 0) {
+                                 log_error("Error, DATA expected but got empty line in '%s':", filename);
++                                r = -EINVAL;
+                                 state = HW_NONE;
+                                 udev_list_cleanup(&match_list);
+                                 break;
+@@ -518,7 +521,9 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+ 
+                         /* first data */
+                         state = HW_DATA;
+-                        insert_data(trie, &match_list, line, filename);
++                        err = insert_data(trie, &match_list, line, filename);
++                        if (err < 0)
++                                r = err;
+                         break;
+ 
+                 case HW_DATA:
+@@ -531,19 +536,23 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+ 
+                         if (line[0] != ' ') {
+                                 log_error("Error, DATA expected but got '%s' in '%s':", line, filename);
++                                r = -EINVAL;
+                                 state = HW_NONE;
+                                 udev_list_cleanup(&match_list);
+                                 break;
+                         }
+ 
+-                        insert_data(trie, &match_list, line, filename);
++                        err = insert_data(trie, &match_list, line, filename);
++                        if (err < 0)
++                                r = err;
+                         break;
+                 };
+         }
+ 
++  out:
+         fclose(f);
+         udev_list_cleanup(&match_list);
+-        return 0;
++        return r;
+ }
+ 
+ static void help(void) {
+@@ -646,9 +655,12 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+                 }
+                 STRV_FOREACH(f, files) {
+                         log_debug("reading file '%s'", *f);
+-                        import_file(udev, trie, *f);
++                        if (import_file(udev, trie, *f) < 0)
++                            rc = EXIT_FAILURE;
+                 }
+                 strv_free(files);
++                if (rc != EXIT_SUCCESS)
++                    goto out;
+ 
+                 strbuf_complete(trie->strings);
+ 
+-- 
+2.17.0.rc0.231.g781580f067-goog
+

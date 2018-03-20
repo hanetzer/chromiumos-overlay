@@ -71,6 +71,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-225-udev-rules-all-values-can-contain-escaped-double-quotes-now.patch
 	"${FILESDIR}"/${PN}-225-udevadm-trigger-add-settle.patch
 	"${FILESDIR}"/${PN}-225-v4l_id-check-mplane-video-capture-and-output-capaili.patch
+	"${FILESDIR}"/${PN}-225-udevadm-hwdb-Return-non-zero-exit-code-on-error.patch
 )
 
 check_default_rules() {
