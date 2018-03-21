@@ -90,6 +90,7 @@ IUSE_TESTS=(
 	+tests_enterprise_KioskEnrollment
 	+tests_enterprise_PowerManagement
 	+tests_enterprise_RemoraRequisition
+	+tests_enterprise_RemoraRequisitionDisplayUsage
 	+tests_graphics_Sanity
 	+tests_graphics_Stress
 	+tests_graphics_VTSwitch
