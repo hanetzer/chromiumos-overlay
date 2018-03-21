@@ -106,6 +106,7 @@ _arc-build-select-common() {
 
 	# Set up flags for the android sysroot.
 	append-flags --sysroot="${ARC_SYSROOT}"
+	append-cppflags --sysroot="${ARC_SYSROOT}"
 	local android_version=$(printf "0x%04x" \
 		$(((ARC_VERSION_MAJOR << 8) + ARC_VERSION_MINOR)))
 	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
