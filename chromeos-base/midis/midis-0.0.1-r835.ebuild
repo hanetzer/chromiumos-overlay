@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="41a5ab129ba7ccb7e9caf6c83a38d97a8c534906"
+CROS_WORKON_COMMIT="32d45290ea8b81fa3c55c0078c8c7f6ca408d004"
 CROS_WORKON_TREE=("49286d8b2b9af4d6c1632fbe46a8778220775f6c" "a975ffb9ffc5a2056713ef26d1ae03b5b05ff2fc")
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -23,6 +23,7 @@ KEYWORDS="*"
 IUSE="+seccomp asan fuzzer"
 
 RDEPEND="
+	media-libs/alsa-lib
 	chromeos-base/libbrillo[asan?,fuzzer?]
 	chromeos-base/libmojo
 "
