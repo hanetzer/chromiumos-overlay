@@ -10,4 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="virtual/chromium-os-fuzzers"
+RDEPEND="
+	virtual/implicit-system
+	virtual/chromium-os-fuzzers
+"
