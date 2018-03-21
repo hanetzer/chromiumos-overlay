@@ -37,7 +37,6 @@ DEPEND="
 src_install() {
 	if use kvm_host; then
 		dobin "${OUT}"/maitred_client
-		dobin "${OUT}"/vm_launcher
 		dobin "${OUT}"/vmlog_forwarder
 		dobin "${OUT}"/vsh
 		dobin "${OUT}"/vm_concierge
