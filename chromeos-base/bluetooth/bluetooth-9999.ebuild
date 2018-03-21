@@ -28,24 +28,24 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api"
 
 src_install() {
-	dobin "${OUT}"/newblued
+	dobin "${OUT}"/btdispatch
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.Bluetooth.conf
 
 	insinto /etc/init
-	doins init/upstart/newblued.conf
+	doins init/upstart/btdispatch.conf
 
 	if use seccomp; then
 		# Install seccomp policy files.
 		insinto /usr/share/policy
-		newins "seccomp_filters/newblued-seccomp-${ARCH}.policy" newblued-seccomp.policy
+		newins "seccomp_filters/btdispatch-seccomp-${ARCH}.policy" btdispatch-seccomp.policy
 	else
 		# Remove seccomp flags from minijail parameters.
-		sed -i '/^env seccomp_flags=/s:=.*:="":' "${ED}"/etc/init/newblued.conf || die
+		sed -i '/^env seccomp_flags=/s:=.*:="":' "${ED}"/etc/init/btdispatch.conf || die
 	fi
 }
 
 platform_pkg_test() {
-	platform_test "run" "${OUT}/newblued_test"
+	platform_test "run" "${OUT}/btdispatch_test"
 }
