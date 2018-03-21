@@ -30,8 +30,8 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/system_api-0.0.1-r3259
-	>=sys-kernel/linux-headers-4.4-r10
+	kvm_host? ( >=chromeos-base/system_api-0.0.1-r3259 )
+	!kvm_host? ( >=sys-kernel/linux-headers-4.4-r10 )
 "
 
 src_install() {
