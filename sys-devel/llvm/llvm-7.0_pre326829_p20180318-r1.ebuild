@@ -63,18 +63,11 @@ fi
 LICENSE="UoI-NCSA"
 SLOT="0/${PV%%_*}"
 KEYWORDS="-* amd64"
-IUSE="clang debug +default-compiler-rt +default-libcxx doc gold libedit +libffi
-	lldb multitarget ncurses ocaml python +static-analyzer llvm-next llvm-tot
-	test xml video_cards_radeon kernel_Darwin"
+IUSE="debug +default-compiler-rt +default-libcxx doc libedit +libffi multitarget
+	ncurses ocaml python llvm-next llvm-tot test xml video_cards_radeon"
 
 COMMON_DEPEND="
 	sys-libs/zlib:0=
-	clang? (
-		static-analyzer? ( dev-lang/perl:* )
-		xml? ( dev-libs/libxml2:2=[${MULTILIB_USEDEP}] )
-		${PYTHON_DEPS}
-	)
-	gold? ( >=sys-devel/binutils-2.22:*[cxx] )
 	libedit? ( dev-libs/libedit:0=[${MULTILIB_USEDEP}] )
 	libffi? ( >=virtual/libffi-3.0.13-r1:0=[${MULTILIB_USEDEP}] )
 	ncurses? ( >=sys-libs/ncurses-5.9-r3:5=[${MULTILIB_USEDEP}] )
@@ -92,25 +85,18 @@ DEPEND="${COMMON_DEPEND}
 		( >=sys-freebsd/freebsd-lib-9.1-r10 sys-libs/libcxx )
 	)
 	|| ( >=sys-devel/binutils-2.18 >=sys-devel/binutils-apple-5.1 )
-	kernel_Darwin? ( sys-libs/libcxx )
-	clang? ( xml? ( virtual/pkgconfig ) )
 	doc? ( dev-python/sphinx )
-	gold? ( sys-libs/binutils-libs )
 	libffi? ( virtual/pkgconfig )
-	lldb? ( dev-lang/swig )
 	!!<dev-python/configparser-3.3.0.2
 	ocaml? ( test? ( dev-ml/ounit ) )
 	${PYTHON_DEPS}"
 RDEPEND="${COMMON_DEPEND}
-	clang? ( !<=sys-devel/clang-${PV}-r99 )
 	abi_x86_32? ( !<=app-emulation/emul-linux-x86-baselibs-20130224-r2
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)] )"
-PDEPEND="clang? ( =sys-devel/clang-${PV}-r100 )"
 
 # pypy gives me around 1700 unresolved tests due to open file limit
 # being exceeded. probably GC does not close them fast enough.
-REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	lldb? ( clang xml )"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 pkg_pretend() {
 	# in megs
@@ -124,7 +110,6 @@ pkg_pretend() {
 	#  clang  debug  multitarget -O0 -g  14G
 
 	local build_size=550
-	use clang && build_size=1200
 
 	if use debug; then
 		ewarn "USE=debug is known to increase the size of package considerably"
@@ -286,33 +271,6 @@ src_prepare() {
 	# https://llvm.org/bugs/show_bug.cgi?id=28681
 	epatch "${FILESDIR}"/clang-6.0-enable-libgcc-with-compiler-rt.patch
 
-	if use clang; then
-		# Automatically select active system GCC's libraries, bugs #406163 and #417913
-		epatch "${FILESDIR}"/clang-3.5-gentoo-runtime-gcc-detection-v3.patch
-
-		# Install clang runtime into /usr/lib/clang
-		# https://llvm.org/bugs/show_bug.cgi?id=23792
-		epatch "${FILESDIR}"/cmake/clang-0001-Install-clang-runtime-into-usr-lib-without-suffix-3.8.patch
-		epatch "${FILESDIR}"/cmake/compiler-rt-0001-cmake-Install-compiler-rt-into-usr-lib-without-suffi.patch
-
-		# Make it possible to override CLANG_LIBDIR_SUFFIX
-		# (that is used only to find LLVMgold.so)
-		# https://llvm.org/bugs/show_bug.cgi?id=23793
-		epatch "${FILESDIR}"/cmake/clang-0002-cmake-Make-CLANG_LIBDIR_SUFFIX-overridable.patch
-
-		# Fix WX sections, bug #421527
-		find "${S}"/projects/compiler-rt/lib/builtins -type f -name \*.S -exec sed \
-			-e '$a\\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,"",%progbits\n#endif' \
-			-i {} \; || die
-	fi
-
-	if use lldb; then
-		# Do not install dummy readline.so module from
-		# https://llvm.org/bugs/show_bug.cgi?id=18841
-		sed -e 's/add_subdirectory(readline)/#&/' \
-			-i tools/lldb/scripts/Python/modules/CMakeLists.txt || die
-	fi
-
 	python_setup
 
 	# User patches
@@ -379,23 +337,6 @@ multilib_src_configure() {
 		-DCLANG_DEFAULT_RTLIB=$(usex default-compiler-rt compiler-rt "")
 	)
 
-	if use clang; then
-		mycmakeargs+=(
-			-DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=$(usex !xml)
-			# libgomp support fails to find headers without explicit -I
-			# furthermore, it provides only syntax checking
-			-DCLANG_DEFAULT_OPENMP_RUNTIME=libomp
-		)
-	fi
-
-	if use lldb; then
-		mycmakeargs+=(
-			-DLLDB_DISABLE_LIBEDIT=$(usex !libedit)
-			-DLLDB_DISABLE_CURSES=$(usex !ncurses)
-			-DLLDB_ENABLE_TERMINFO=$(usex ncurses)
-		)
-	fi
-
 	if ! multilib_is_native_abi || ! use ocaml; then
 		mycmakeargs+=(
 			-DOCAMLFIND=NO
@@ -418,59 +359,7 @@ multilib_src_configure() {
 			-DSPHINX_WARNINGS_AS_ERRORS=OFF
 			-DLLVM_INSTALL_UTILS=ON
 		)
-
-		if use clang; then
-			mycmakeargs+=(
-				-DCLANG_INSTALL_HTML="${EPREFIX}/usr/share/doc/${PF}/clang"
-			)
-		fi
-
-		if use gold; then
-			mycmakeargs+=(
-				-DLLVM_BINUTILS_INCDIR="${EPREFIX}"/usr/include
-			)
-		fi
-
-		if use lldb; then
-			mycmakeargs+=(
-				-DLLDB_DISABLE_PYTHON=$(usex !python)
-			)
-		fi
-
-	else
-		if use clang; then
-			mycmakeargs+=(
-				# disable compiler-rt on non-native ABI because:
-				# 1. it fails to configure because of -m32
-				# 2. it is shared between ABIs so no point building
-				# it multiple times
-				-DLLVM_EXTERNAL_COMPILER_RT_BUILD=OFF
-				-DLLVM_EXTERNAL_CLANG_TOOLS_EXTRA_BUILD=OFF
-			)
-		fi
-		if use lldb; then
-			mycmakeargs+=(
-				# only run swig on native abi
-				-DLLDB_DISABLE_PYTHON=ON
-			)
-		fi
 	fi
-
-	if use clang; then
-		mycmakeargs+=(
-			-DCLANG_ENABLE_ARCMT=$(usex static-analyzer)
-			-DCLANG_ENABLE_STATIC_ANALYZER=$(usex static-analyzer)
-			-DCLANG_LIBDIR_SUFFIX="${NATIVE_LIBDIR#lib}"
-		)
-
-		# -- not needed when compiler-rt is built with host compiler --
-		# cmake passes host C*FLAGS to compiler-rt build
-		# which is performed using clang, so we need to filter out
-		# some flags clang does not support
-		# (if you know some more flags that don't work, let us know)
-		#filter-flags -msahf -frecord-gcc-switches
-	fi
-
 	cmake-utils_src_configure
 }
 
@@ -494,8 +383,6 @@ multilib_src_test() {
 	# respect TMPDIR!
 	local -x LIT_PRESERVES_TMP=1
 	local test_targets=( check )
-	# clang tests won't work on non-native ABI because we skip compiler-rt
-	multilib_is_native_abi && use clang && test_targets+=( check-clang )
 	cmake-utils_src_make "${test_targets[@]}"
 }
 
@@ -509,76 +396,11 @@ src_install() {
 		/usr/include/llvm/Config/llvm-config.h
 	)
 
-	if use clang; then
-		# note: magic applied in multilib_src_install()!
-		CLANG_VERSION=3.8
-
-		MULTILIB_CHOST_TOOLS+=(
-			/usr/bin/clang
-			/usr/bin/clang++
-			/usr/bin/clang-cl
-			/usr/bin/clang-${CLANG_VERSION}
-			/usr/bin/clang++-${CLANG_VERSION}
-			/usr/bin/clang-cl-${CLANG_VERSION}
-		)
-
-		MULTILIB_WRAPPED_HEADERS+=(
-			/usr/include/clang/Config/config.h
-		)
-	fi
-
 	multilib-minimal_src_install
 }
 
 multilib_src_install() {
 	cmake-utils_src_install
-
-	if multilib_is_native_abi; then
-		# Install docs.
-		#use doc && dohtml -r "${S}"/docs/_build/html/
-
-		# Symlink the gold plugin.
-		if use gold; then
-			dodir "/usr/${CHOST}/binutils-bin/lib/bfd-plugins"
-			dosym "../../../../$(get_libdir)/LLVMgold.so" \
-				"/usr/${CHOST}/binutils-bin/lib/bfd-plugins/LLVMgold.so"
-		fi
-	fi
-
-	# apply CHOST and CLANG_VERSION to clang executables
-	# they're statically linked so we don't have to worry about the lib
-	if use clang; then
-		local clang_tools=( clang clang++ clang-cl )
-		local i
-
-		# cmake gives us:
-		# - clang-X.Y
-		# - clang -> clang-X.Y
-		# - clang++, clang-cl -> clang
-		# we want to have:
-		# - clang-X.Y
-		# - clang++-X.Y, clang-cl-X.Y -> clang-X.Y
-		# - clang, clang++, clang-cl -> clang*-X.Y
-		# so we need to fix the two tools
-		for i in "${clang_tools[@]:1}"; do
-			rm "${ED%/}/usr/bin/${i}" || die
-			dosym "clang-${CLANG_VERSION}" "/usr/bin/${i}-${CLANG_VERSION}"
-			dosym "${i}-${CLANG_VERSION}" "/usr/bin/${i}"
-		done
-
-		# now prepend ${CHOST} and let the multilib-build.eclass symlink it
-		if ! multilib_is_native_abi; then
-			# non-native? let's replace it with a simple wrapper
-			for i in "${clang_tools[@]}"; do
-				rm "${ED%/}/usr/bin/${i}-${CLANG_VERSION}" || die
-				cat > "${T}"/wrapper.tmp <<-_EOF_
-					#!${EPREFIX}/bin/sh
-					exec "${i}-${CLANG_VERSION}" $(get_abi_CFLAGS) "\${@}"
-				_EOF_
-				newbin "${T}"/wrapper.tmp "${i}-${CLANG_VERSION}"
-			done
-		fi
-	fi
 
 	local wrapper_script=clang_host_wrapper
 	cat "${FILESDIR}/clang_host_wrapper.header" \
@@ -602,33 +424,4 @@ multilib_src_install_all() {
 	# some users may find it useful
 	dodoc utils/vim/vimrc
 	dobin "${S}/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py"
-
-	if use clang; then
-		pushd tools/clang >/dev/null || die
-
-		if use python ; then
-			pushd bindings/python/clang >/dev/null || die
-
-			python_moduleinto clang
-			python_domodule *.py
-
-			popd >/dev/null || die
-		fi
-
-		# AddressSanitizer symbolizer (currently separate)
-		dobin "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
-
-		popd >/dev/null || die
-
-		python_fix_shebang "${ED}"
-		if use static-analyzer; then
-			python_optimize "${ED}"usr/share/scan-view
-		fi
-	fi
-}
-
-pkg_postinst() {
-	if use clang && ! has_version 'sys-libs/libomp'; then
-		elog "To enable OpenMP support in clang, install sys-libs/libomp."
-	fi
 }

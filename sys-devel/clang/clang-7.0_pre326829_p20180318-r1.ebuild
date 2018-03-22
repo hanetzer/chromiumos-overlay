@@ -13,9 +13,9 @@ SRC_URI=""
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="-* amd64"
-IUSE="debug multitarget python +static-analyzer"
+IUSE="debug multitarget python"
 
-RDEPEND="~sys-devel/llvm-${PV}[debug=,multitarget?,python?,static-analyzer,${MULTILIB_USEDEP}]"
+RDEPEND="~sys-devel/llvm-${PV}[debug=,multitarget?,python?,${MULTILIB_USEDEP}]"
 
 # Please keep this package around since it's quite likely that we'll
 # return to separate LLVM & clang ebuilds when the cmake build system
