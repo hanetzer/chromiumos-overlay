@@ -36,7 +36,9 @@ RDEPEND="
 	chromeos-base/libbrillo
 	chromeos-base/metrics
 	chromeos-base/minijail
+	chromeos-base/swap-init
 	sys-libs/libselinux
+	dev-libs/dbus-glib
 	dev-libs/protobuf"
 
 DEPEND="${RDEPEND}

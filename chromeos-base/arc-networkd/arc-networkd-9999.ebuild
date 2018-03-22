@@ -26,7 +26,11 @@ COMMON_DEPEND="
 	net-libs/libndp
 "
 
-RDEPEND="${COMMON_DEPEND}"
+RDEPEND="
+	${COMMON_DEPEND}
+	chromeos-base/chromeos-nat-init
+	net-misc/bridge-utils
+"
 
 DEPEND="
 	${COMMON_DEPEND}

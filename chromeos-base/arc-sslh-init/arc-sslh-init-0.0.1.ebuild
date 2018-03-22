@@ -14,7 +14,10 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-RDEPEND="!<chromeos-base/chromeos-sshd-init-0.0.2"
+RDEPEND="!<chromeos-base/chromeos-sshd-init-0.0.2
+	chromeos-base/minijail
+"
+
 DEPEND="${RDEPEND}"
 
 S="${WORKDIR}"
