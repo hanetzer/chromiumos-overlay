@@ -3,19 +3,19 @@
 
 EAPI=5
 CROS_WORKON_PROJECT=(
-	"chromiumos/platform/tast"
 	"chromiumos/platform/tast-tests"
+	"chromiumos/platform/tast"
 )
 CROS_WORKON_LOCALNAME=(
-	"tast"
 	"tast-tests"
+	"tast"
 )
 CROS_WORKON_DESTDIR=(
 	"${S}"
-	"${S}/tast-tests"
+	"${S}/tast-base"
 )
 # TODO(derat): Delete this hack after https://crbug.com/812032 is addressed.
-CROS_GO_WORKSPACE="${S}:${S}/tast-tests"
+CROS_GO_WORKSPACE="${S}:${S}/tast-base"
 
 CROS_GO_TEST=(
 	# Test support packages that live above local/bundles/.
