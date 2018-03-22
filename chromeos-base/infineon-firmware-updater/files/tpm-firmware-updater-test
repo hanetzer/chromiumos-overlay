@@ -85,6 +85,7 @@ mock_tpmc() {
       kv_list "tpmc_${cmd}" | tr '=' ' '
       ;;
   esac
+  return $(kv_get "tpmc_exit_status" "${cmd}")
 }
 
 mock_vpd() {
@@ -237,6 +238,8 @@ setUp() {
 
   kv_set tpmc_getownership Owned "no"
 
+  kv_set tpmc_exit_status checkownerauth 1
+
   kv_set power_status line_power_connected "1"
   kv_set power_status battery_present "1"
   kv_set power_status battery_percent "100.00"
@@ -292,6 +295,13 @@ test_success_dry_run() {
   run_updater "${EXIT_CODE_SUCCESS}"
   assertTrue "flag set" "kv_is_set updater dry_run"
   assertEquals "vpd dryrun" "1" "$(kv_get vpd_param dryrun)"
+}
+
+test_success_owner_auth() {
+  kv_set tpmc_getownership Owned "yes"
+  kv_set tpmc_exit_status checkownerauth 0
+  run_updater "${EXIT_CODE_SUCCESS}"
+  assertEquals "auth mechanism" "tpm12-ownerauth" "$(kv_get updater update)"
 }
 
 test_success_developer() {

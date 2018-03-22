@@ -82,11 +82,14 @@ verify_tpm_state() {
       echo "tpm12-PP"
       ;;
     normal|developer)
-      if [ "$(tpmc getownership)" != "Owned: no" ]; then
+      if [ "$(tpmc getownership)" = "Owned: no" ]; then
+        echo "tpm12-takeownership"
+      elif tpmc checkownerauth; then
+        echo "tpm12-ownerauth"
+      else
         dlog "TPM already owned, will not update."
         return 1
       fi
-      echo "tpm12-takeownership"
       ;;
     *)
       dlog "Unsupported boot mode: ${mainfw_type}"
@@ -150,7 +153,7 @@ prepare_tpm() {
     # Request another TPM reset to take place after installing the update. This
     # is important because owner-authorized update carries over some state
     # (notably the SRK) which we specifically don't want to happen.
-    tpm12-takeownership)
+    tpm12-takeownership|tpm12-ownerauth)
       crossystem clear_tpm_owner_request=1
       ;;
 
