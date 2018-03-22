@@ -18,7 +18,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND="chromeos-base/mount-passthrough"
+RDEPEND="chromeos-base/mount-passthrough
+	!<chromeos-base/chromeos-cheets-scripts-0.0.2-r470
+"
 
 CONTAINER_DIR="/opt/google/containers/arc-removable-media"
 
