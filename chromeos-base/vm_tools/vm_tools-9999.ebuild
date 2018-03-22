@@ -71,6 +71,7 @@ platform_pkg_test() {
 		)
 	else
 		tests+=(
+			garcon_desktop_file_test
 			maitred_service_test
 			maitred_syslog_test
 		)
