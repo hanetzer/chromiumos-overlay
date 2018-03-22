@@ -1,11 +1,11 @@
-DEFINED_PHASES=info install setup unpack
+DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Chromium OS build utilities
+DESCRIPTION=Intel processor C-state and P-state reporting tool
 EAPI=4
-HOMEPAGE=http://www.chromium.org/chromium-os
-IUSE=cros_host cros_workon_tree_c33d7bbfb27f3de6499a06a3086b6c0c542d6407 profiling
+HOMEPAGE=https://www.kernel.org/
+IUSE=-asan cros_host cros_workon_tree_bedfe4e3b00f275e5a873c3c087bdc1236421598 profiling
 KEYWORDS=*
-LICENSE=BSD-Google
+LICENSE=GPL-2
 SLOT=0
 _eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=5db1871e1b7eb93d166e56f86416f028
+_md5_=202d143744e617dbfc816b1440017839
