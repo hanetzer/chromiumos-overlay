@@ -216,6 +216,7 @@ add_afdo_files
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	app-crypt/mit-krb5
+	app-misc/edid-decode
 	authpolicy? ( chromeos-base/authpolicy )
 	fonts? ( chromeos-base/chromeos-fonts )
 	dev-libs/nspr
