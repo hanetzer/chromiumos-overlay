@@ -9,6 +9,9 @@
 	<flag name='linux_firmware_adsp_cnl'>
 		Install CNL static firmware binary for audio
 	</flag>
+	<flag name='linux_firmware_adsp_glk'>
+		Install GLK static firmware binary for audio
+	</flag>
 	<flag name='linux_firmware_adsp_kbl'>
 		Install KBL static firmware binary for audio
 	</flag>
