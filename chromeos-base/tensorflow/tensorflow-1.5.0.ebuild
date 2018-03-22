@@ -15,7 +15,6 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 	http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gemmlowp-7c7c744640ddc3d0af18fb245b4d23228813a71b.zip
 	http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nsync-8502189abfa44c249c01c2cad64e6ed660a9a668.tar.gz
 	http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/oourafft-20061228.tgz
-	http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/absl-720c017e30339fd1786ce4aac68bc8559736e53f.tar.gz
 "
 
 LICENSE="Apache-2.0"
@@ -58,7 +57,6 @@ src_unpack() {
 	mkdir "${DOWNLOADS_DIR}/eigen" && mv eigen*/* "${DOWNLOADS_DIR}/eigen" || die
 	mkdir "${DOWNLOADS_DIR}/nsync" && mv nsync*/* "${DOWNLOADS_DIR}/nsync" || die
 	mkdir "${DOWNLOADS_DIR}/fft2d" && mv fft*/* "${DOWNLOADS_DIR}/fft2d" || die
-	mkdir "${DOWNLOADS_DIR}/absl" && mv abseil*/* "${DOWNLOADS_DIR}/absl" || die
 	mkdir "${DOWNLOADS_DIR}/gemmlowp" && mv gemmlowp*/* "${DOWNLOADS_DIR}/gemmlowp/" || die
 }
 
