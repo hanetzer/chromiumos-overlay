@@ -17,7 +17,7 @@ KEYWORDS="~*"
 IUSE="
 	${IUSE}
 	android-container-nyc
-	android-container-master-arc-dev
+	android-container-pi
 	+autotest
 	+cellular
 	+shill
@@ -239,7 +239,7 @@ IUSE_TESTS="
 		+tests_security_NetworkListeners
 		+tests_telemetry_LoginTest
 	)
-	android-container-master-arc-dev? (
+	android-container-pi? (
 		+tests_desktopui_ExitOnSupervisedUserCrash_P
 		+tests_graphics_Idle_P
 		+tests_security_NetworkListeners_P

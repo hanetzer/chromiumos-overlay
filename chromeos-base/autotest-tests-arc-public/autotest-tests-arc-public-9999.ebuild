@@ -19,7 +19,7 @@ CLIENT_TESTS="
 		+tests_cheets_Midis
 		+tests_cheets_StartAndroid
 	)
-	android-container-master-arc-dev? (
+	android-container-pi? (
 		+tests_cheets_Midis_P
 		+tests_cheets_StartAndroid_P
 	)
@@ -39,7 +39,7 @@ DEPEND="${RDEPEND}"
 
 IUSE="
 	android-container-nyc
-	android-container-master-arc-dev
+	android-container-pi
 	+autotest
 	${IUSE_TESTS}
 "
