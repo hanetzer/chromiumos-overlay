@@ -42,6 +42,7 @@ RDEPEND="
 	sys-apps/ethtool
 	vaapi? ( x11-libs/libva )
 	tests_graphics_Sanity? ( x11-libs/libdrm )
+	tests_graphics_WebGLAquarium? ( app-benchmarks/microbenchmarks dev-util/memory-eater-locked )
 "
 
 DEPEND="${RDEPEND}"
