@@ -493,3 +493,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for generating and testing update payloads
 RDEPEND="${RDEPEND}
 	chromeos-base/update_payload"
+
+# Needed to compile moblab mobmonitor ui
+RDEPEND="${RDEPEND}
+	net-libs/nodejs"
