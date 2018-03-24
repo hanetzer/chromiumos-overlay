@@ -43,3 +43,21 @@ CROS_FIRMWARE_EC_IMAGE=""
 # and directory names to include, delimited by semicolon.
 
 cros-firmware_setup_source
+
+# Remove/Adapt script below here when using the template.
+src_unpack() {
+	einfo "Dummy implementation to replace cros-firmware.eclass"
+	cros-workon_src_unpack
+}
+
+src_compile() {
+	einfo "Dummy implementation to replace cros-firmware.eclass"
+}
+
+src_install() {
+	elog "Dummy implementation to replace cros-firmware.eclass"
+}
+
+src_test() {
+	echo "Dummy implementation to replace cros-firmware.eclass"
+}
