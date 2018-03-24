@@ -176,7 +176,6 @@ EOF
 		file="${FILESDIR}/configs/fwserial.default"
 	fi
 	cat "${file}" >> "${CONFIG_SERIAL}" || die
-	echo "CONFIG_GBB_FLAG_ENABLE_SERIAL=y" >> "${CONFIG_SERIAL}"
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
 }
