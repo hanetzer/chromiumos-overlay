@@ -1,9 +1,0 @@
-DEFINED_PHASES=-
-DEPEND=apl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_apl] ) cnl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_cnl] ) kbl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_kbl] ) media-libs/lpe-support-topology media-libs/lpe-support-blacklist skl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_skl] )
-DESCRIPTION=Ebuild which pulls in any necessary ebuilds as dependencies or portage actions.
-EAPI=4
-IUSE=skl_lpe apl_lpe kbl_lpe cnl_lpe
-KEYWORDS=-* amd64 x86
-RDEPEND=apl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_apl] ) cnl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_cnl] ) kbl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_kbl] ) media-libs/lpe-support-topology media-libs/lpe-support-blacklist skl_lpe? ( sys-kernel/linux-firmware[linux_firmware_adsp_skl] )
-SLOT=0
-_md5_=bc94203b397a1b998e35adacba38b77d
