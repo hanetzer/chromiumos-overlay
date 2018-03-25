@@ -23,6 +23,11 @@ KEYWORDS="*"
 
 RDEPEND="dev-libs/protobuf"
 
+# We don't depend on the Eigen package since TensorFlow requires functionality
+# from the (non-stable) Eigen branch 3.3.90. Instead we download, compile with,
+# and install this branch as part of the TensorFlow package.
+# TODO(martis): once a release branch of Eigen supports the required
+#               functionality, uprev and use the Eigen package instead.
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	dev-libs/re2
