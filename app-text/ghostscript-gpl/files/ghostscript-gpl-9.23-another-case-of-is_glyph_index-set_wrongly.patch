@@ -1,0 +1,31 @@
+From 8ec5c5ded5fc19cabd95dad385b22a506e59acaf Mon Sep 17 00:00:00 2001
+From: Chris Liddell <chris.liddell@artifex.com>
+Date: Mon, 26 Mar 2018 14:35:09 +0100
+Subject: zfapi.c: another case of is_glyph_index set wrongly
+
+This is related to freetype now a) automatically selecting a Unicode cmap for
+every font, if one is available, and b) automatically generating a Unicode cmap
+for every font when one is not available.
+
+Logic that we had pushed down to the FAPI/FT interface layer, we now need to
+apply earlier.
+---
+ psi/zfapi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/psi/zfapi.c b/psi/zfapi.c
+index a3e734e7f..074cae0e7 100644
+--- a/psi/zfapi.c
++++ b/psi/zfapi.c
+@@ -2087,7 +2087,7 @@ ps_get_glyphname_or_cid(gs_text_enum_t *penum,
+                     Map = &CIDMap->value.bytes[c_code * gdb];
+                 }
+                 cr->char_codes[0] = 0;
+-
++                is_glyph_index = true;
+                 if (code >= 0) {
+                     for (i = 0; i < gdb; i++) {
+                         cr->char_codes[0] = (cr->char_codes[0] << 8) + Map[i];
+-- 
+2.17.0.rc0.231.g781580f067-goog
+
