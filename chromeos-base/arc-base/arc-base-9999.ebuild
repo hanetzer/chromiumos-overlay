@@ -57,11 +57,11 @@ src_install() {
 
 	# Install exception file for FIFO blocking policy on stateful partition.
 	insinto /usr/share/cros/startup/fifo_exceptions
-	doins arc/container-bundle/master/arc-fifo-exceptions.txt
+	doins arc/container-bundle/arc-fifo-exceptions.txt
 
 	# Install exception file for symlink blocking policy on stateful partition.
 	insinto /usr/share/cros/startup/symlink_exceptions
-	doins arc/container-bundle/master/arc-symlink-exceptions.txt
+	doins arc/container-bundle/arc-symlink-exceptions.txt
 }
 
 pkg_preinst() {
