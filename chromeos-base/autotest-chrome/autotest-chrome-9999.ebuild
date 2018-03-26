@@ -83,6 +83,7 @@ IUSE_TESTS=(
 	+tests_desktopui_SimpleLogin
 	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_display_ClientChameleonConnection
+	+tests_display_DisplayContainEdid
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_CFM_USBPeripheralDetect
 	+tests_enterprise_CFM_VolumeChangeClient
