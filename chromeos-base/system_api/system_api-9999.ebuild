@@ -3,6 +3,10 @@
 
 EAPI=5
 
+CROS_GO_PACKAGES=(
+	"chromiumos/system_api/vm_concierge"
+)
+
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=(
 	"platform2"
@@ -23,7 +27,7 @@ CROS_WORKON_SUBTREE=(
 
 PLATFORM_SUBDIR="system_api"
 
-inherit cros-workon toolchain-funcs platform
+inherit cros-go cros-workon toolchain-funcs platform
 
 DESCRIPTION="Chrome OS system API (D-Bus service names, etc.)"
 HOMEPAGE="http://www.chromium.org/"
@@ -46,6 +50,7 @@ src_unpack() {
 	# The platform eclass will look for system_api in src/platform2.
 	# This forces it to look in src/platform.
 	S="${s}/platform/system_api"
+	CROS_GO_WORKSPACE="${OUT}/gen/go"
 }
 
 src_install() {
@@ -86,4 +91,6 @@ src_install() {
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
 	done
+
+	cros-go_src_install
 }
