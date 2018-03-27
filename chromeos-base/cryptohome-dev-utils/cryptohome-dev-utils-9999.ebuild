@@ -39,6 +39,7 @@ RDEPEND="
 	chromeos-base/secure-erase-file
 	dev-libs/openssl:=
 	dev-libs/protobuf:=
+	sys-fs/ecryptfs-utils
 "
 
 DEPEND="${RDEPEND}"
