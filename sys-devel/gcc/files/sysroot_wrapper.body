@@ -239,6 +239,9 @@ def main():
   myargs = sys.argv[1:]
   update_flags(arch, myargs)
 
+  # Get clang binary location.
+  clang_bin = os.path.join(get_relocatable_root(), 'usr/bin/clang')
+
   # If -clang-syntax is present or the command line uses clang instead
   # of GCC.
   invoke_clang = False
@@ -302,6 +305,17 @@ def main():
           clang_cmdline.append(opt)
           # No need to add to gcc_cmdline.
           continue
+        elif flag.startswith('-Xclang-path='):
+          import subprocess
+          # Use clang installed at the given path.  But use the resource directory
+          # for the main clang since the custom clang installation won't have
+          # the cross-target libraries.
+          resource_path = subprocess.check_output([clang_bin,
+                                                   '--print-resource-dir'])
+          clang_cmdline.append('-resource-dir=%s' % resource_path.strip())
+          clang_path = flag.partition('=')[2]
+          clang_bin = os.path.join(clang_path, 'clang')
+          continue
         elif flag in GCC_TO_CLANG.keys():
           clang_cmdline.append(GCC_TO_CLANG[flag])
         elif flag not in CLANG_ARM_OPTIONS_TO_BE_DISCARDED:
@@ -354,8 +368,7 @@ def main():
   gcc_cmdline.insert(0, '--sysroot=%s' % sysroot)
 
   if invoke_clang and not skip_clang:
-    clang_comp = os.environ.get(
-        'CLANG', os.path.join(get_relocatable_root(), 'usr/bin/clang'))
+    clang_comp = os.environ.get('CLANG', clang_bin)
     clang_tidy_bin = clang_comp + '-tidy'
 
     # Check for clang or clang++.

@@ -58,12 +58,6 @@ def main(argv):
 
   # Get the clang binary location relative to the wrapper.
   clang_bin = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clang')
-  clang_tidy_bin = clang_bin + '-tidy'
-  clang_comp = os.environ.get('CLANG', clang_bin)
-
-  # Check for clang or clang++.
-  if sys.argv[0].endswith('++'):
-    clang_comp += '++'
 
   for flag in cmdline:
     if not (flag in CLANG_UNSUPPORTED or
@@ -72,10 +66,27 @@ def main(argv):
       if flag.startswith('-Xclang-only='):
         opt = flag.partition('=')[2]
         clang_cmdline.append(opt)
+      elif flag.startswith('-Xclang-path='):
+        import subprocess
+        # Use clang installed at the given path.  But use the resource directory
+        # for the main clang since the custom clang installation won't have
+        # the cross-target libraries.
+        resource_path = subprocess.check_output([clang_bin,
+                                                 '--print-resource-dir'])
+        clang_cmdline.append('-resource-dir=%s' % resource_path.strip())
+        clang_path = flag.partition('=')[2]
+        clang_bin = os.path.join(clang_path, 'clang')
       elif flag in GCC_TO_CLANG.keys():
         clang_cmdline.append(GCC_TO_CLANG[flag])
       elif not flag in CLANG_ARM_OPTIONS_TO_BE_DISCARDED:
         clang_cmdline.append(flag)
+
+  clang_tidy_bin = clang_bin + '-tidy'
+  clang_comp = os.environ.get('CLANG', clang_bin)
+
+  # Check for clang or clang++.
+  if sys.argv[0].endswith('++'):
+    clang_comp += '++'
 
   execargs = []
   argv0 = clang_comp
