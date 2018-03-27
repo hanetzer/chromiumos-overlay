@@ -1,0 +1,31 @@
+This is a workaround to keep LLVM from incorrectly removing stores in rare
+cases. It has not yet been committed, and -- due to the direction we seem to
+want to take MSSA in -- probably never will be.
+
+It should be sufficient to work around the problem until we agree on a good way
+forward.
+
+Additional context: https://reviews.llvm.org/D43269
+
+This is rebased to r327695 by gbiv@chromium.org.
+
+diff --git a/lib/Analysis/MemorySSA.cpp b/lib/Analysis/MemorySSA.cpp
+index ce8504b87a7..9ff7aa316b1 100644
+--- a/lib/Analysis/MemorySSA.cpp
++++ b/lib/Analysis/MemorySSA.cpp
+@@ -246,13 +246,13 @@ static ClobberAlias instructionClobbersQuery(MemoryDef *MD,
+ 
+   if (const IntrinsicInst *II = dyn_cast<IntrinsicInst>(DefInst)) {
+     // These intrinsics will show up as affecting memory, but they are just
+-    // markers.
++    // markers, mostly.
+     switch (II->getIntrinsicID()) {
+     case Intrinsic::lifetime_start:
+       if (UseCS)
+         return {false, NoAlias};
+       AR = AA.alias(MemoryLocation(II->getArgOperand(1)), UseLoc);
+-      return {AR == MustAlias, AR};
++      return {AR != NoAlias, AR};
+     case Intrinsic::lifetime_end:
+     case Intrinsic::invariant_start:
+     case Intrinsic::invariant_end:

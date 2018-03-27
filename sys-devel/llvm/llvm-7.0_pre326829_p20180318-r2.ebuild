@@ -19,24 +19,24 @@ LICENSE="UoI-NCSA"
 
 if use llvm-next; then
 
-# llvm:r326829 https://critique.corp.google.com/#review/188273767
+# llvm:r327695 https://critique.corp.google.com/#review/190289741
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"195a164675af86f390f9816e53291013d1b551d7" # EGIT_COMMIT r326829
+		"547e2f8dcc12f8beb934fded97aa4ef6c2732612" # EGIT_COMMIT r327695
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"6a52b697d564699d511de92bce88e15bf6fc56b8" # EGIT_COMMIT r326768
+		"8b6780e6f14939eeeeb343395b349310c5eb9cc7" # EGIT_COMMIT r327678
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"860fc25e85a105ef1fa9de717bb974231fab80ba" # EGIT_COMMIT r326827
+		"290cc27fe21bfce479d30a3194a20045b90afb0e" # EGIT_COMMIT r327694
 	"clang-tidy"
 		"tools/clang/tools/extra"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm-clang-tools-extra.git"
-		"5383c119dd185d9c4ef1707f0c89697f76ba87eb" # EGIT_COMMIT r326809
+		"414ad1ebb317a66111ef521aadbfe97f6c1faf3b" # EGIT_COMMIT r327629
 )
 else
 # llvm:r326829 https://critique.corp.google.com/#review/188273767
@@ -216,8 +216,6 @@ pick_cherries() {
 pick_next_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 8fdc88794b44e70bdb93c6cf04baf3c1e3251d8b" # r327192
-	CHERRIES+=" c28eb6d02c5cedd40b02aa7c496f13a71763312e" # r327229
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -226,7 +224,6 @@ pick_next_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 824eedb9eb4888575924b1ed80c4250dddd5b59b" # r327198
 	CHERRIES+=" 2755819705e9c2116f4ef72e1273303c6a56c520" # r327761
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
@@ -249,7 +246,8 @@ src_prepare() {
 		use llvm-next && pick_next_cherries
 	fi
 	epatch "${FILESDIR}"/llvm-6.0-gnueabihf.patch
-	epatch "${FILESDIR}"/llvm-6.0-mssa-bugfix.patch
+	use llvm-next || epatch "${FILESDIR}"/llvm-6.0-mssa-bugfix.patch
+	use llvm-next && epatch "${FILESDIR}"/llvm-7.0-mssa-bugfix.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 

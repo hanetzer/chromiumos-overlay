@@ -52,7 +52,7 @@ src_unpack() {
 	EGIT_COMMIT="dccbfb9702292285a5f8507b8dd0eb5b23ea72c6" #r326813
 
 	if use llvm-next && has_version --host-root 'sys-devel/llvm[llvm-next]'; then
-		EGIT_COMMIT="dccbfb9702292285a5f8507b8dd0eb5b23ea72c6" #r326813
+		EGIT_COMMIT="cf299ba395d3d857adae0caafd7be6dfff78f9fb" #r327688
 	fi
 
 	git-r3_fetch
