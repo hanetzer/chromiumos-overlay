@@ -10,6 +10,7 @@ CROS_WORKON_USE_VCSID="1"
 # TODO(hungte) When "tweaking ebuilds by source repository" is implemented, we
 # can generate this list by some script inside source repo.
 CROS_BOARDS=(
+	atlas
 	auron_paine
 	auron_yuna
 	banjo

@@ -40,7 +40,7 @@ IUSE="${IUSE} +bmpblk cros_ec +intel_mrc pd_sync qca-framework quiet unibuild ve
 IUSE="${IUSE} amd_cpu coreboot-sdk"
 
 PER_BOARD_BOARDS=(
-	bayleybay beltino bolt butterfly chell cyan daisy eve falco
+	atlas bayleybay beltino bolt butterfly chell cyan daisy eve falco
 	fizz fox glados glkrvp grunt kahlee kunimitsu link lumpy nami
 	nyan octopus panther parrot peppy poppy rambi samus sklrvp slippy
 	stout stout32 strago stumpy urara variant-peach-pit
