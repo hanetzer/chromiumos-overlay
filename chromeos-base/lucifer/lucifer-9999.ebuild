@@ -23,6 +23,7 @@ IUSE=""
 RESTRICT="binchecks strip"
 
 DEPEND="
+	dev-go/luci-tsmon
 	dev-go/opencensus
 "
 RDEPEND=""

@@ -6,7 +6,7 @@ EAPI=5
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit hash manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="d89af98d7c6bba047c5a2622f36bc14b8766df85"
+CROS_WORKON_COMMIT="fdc9e635145ae97e6c2cb777c48305600cf515cb"
 CROS_WORKON_REPO="https://go.googlesource.com"
 CROS_WORKON_PROJECT="oauth2"
 CROS_WORKON_DESTDIR="${S}/src/golang.org/x/oauth2"
