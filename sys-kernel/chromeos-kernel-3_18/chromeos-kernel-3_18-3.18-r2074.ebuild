@@ -2,22 +2,22 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="ba71520086fe8dc160df1cde78bb66890047420f"
-CROS_WORKON_TREE="6871c852213dae4223c7d4d78e32d0efeb3f78e1"
+CROS_WORKON_COMMIT="0ebd8dadc3e9d54fcbd16552d30a16872f0e3e9b"
+CROS_WORKON_TREE="aed9277abe0533a1c9a405661d181d9d86162e4c"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v4.4"
+CROS_WORKON_LOCALNAME="kernel/v3.18"
 
 # AFDO_PROFILE_VERSION is the build on which the profile is collected.
 # This is required by kernel_afdo.
 #
 # TODO: Allow different versions for different CHROMEOS_KERNEL_SPLITCONFIGs
-AFDO_PROFILE_VERSION="R67-10452.22-1522059579"
+AFDO_PROFILE_VERSION="R67-10452.22-1522061767"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 4.4"
+DESCRIPTION="Chrome OS Linux Kernel 3.18"
 KEYWORDS="*"
 
 # Change the following (commented out) number to the next prime number

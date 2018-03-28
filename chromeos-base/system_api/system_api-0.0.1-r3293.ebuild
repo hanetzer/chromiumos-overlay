@@ -3,8 +3,12 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT=("b5ae437466fd65f669b8b88a8f9c3f535093a17c" "3290a8e598f2bd2aecac0fbb25fc410b04d6b3c4")
-CROS_WORKON_TREE=("5e90f79dec6430d855d27326141abc48491d5a63" "fc17989146b978f1e61dc21bb57c5ba79f3b1f1f")
+CROS_WORKON_COMMIT=("b5ae437466fd65f669b8b88a8f9c3f535093a17c" "8d6a9e161bfbefd3339620fd0934b08cda27fed6")
+CROS_WORKON_TREE=("5e90f79dec6430d855d27326141abc48491d5a63" "836d37bfad6490300f13461fa79cc06c8c0c93d5")
+CROS_GO_PACKAGES=(
+	"chromiumos/system_api/vm_concierge"
+)
+
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=(
 	"platform2"
@@ -25,7 +29,7 @@ CROS_WORKON_SUBTREE=(
 
 PLATFORM_SUBDIR="system_api"
 
-inherit cros-workon toolchain-funcs platform
+inherit cros-go cros-workon toolchain-funcs platform
 
 DESCRIPTION="Chrome OS system API (D-Bus service names, etc.)"
 HOMEPAGE="http://www.chromium.org/"
@@ -48,6 +52,7 @@ src_unpack() {
 	# The platform eclass will look for system_api in src/platform2.
 	# This forces it to look in src/platform.
 	S="${s}/platform/system_api"
+	CROS_GO_WORKSPACE="${OUT}/gen/go"
 }
 
 src_install() {
@@ -88,4 +93,6 @@ src_install() {
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
 	done
+
+	cros-go_src_install
 }
