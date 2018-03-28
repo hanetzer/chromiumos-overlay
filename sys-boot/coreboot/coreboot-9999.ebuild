@@ -38,6 +38,10 @@ KEYWORDS="~*"
 IUSE="em100-mode fastboot fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk cros_ec +intel_mrc pd_sync qca-framework quiet unibuild verbose"
 IUSE="${IUSE} amd_cpu coreboot-sdk"
+# coreboot's build system handles stripping the binaries and producing a
+# separate .debug file with the symbols. This flag prevents portage from
+# stripping the .debug symbols
+RESTRICT="strip"
 
 PER_BOARD_BOARDS=(
 	atlas bayleybay beltino bolt butterfly chell cyan daisy eve falco
