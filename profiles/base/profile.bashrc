@@ -122,6 +122,23 @@ cros_pre_src_unpack_python_multilib_setup() {
 	export am_cv_python_pyexecdir=${am_cv_python_pythondir}
 }
 
+# If we ran clang-tidy during the compile phase, we need to capture the build
+# logs, which contain the actual clang-tidy warnings.
+cros_pre_src_install_tidy_setup() {
+	if [[ -v WITH_TIDY ]] ; then
+		if [[ ${WITH_TIDY} -eq 1 ]] ; then
+			if [[ $(hostname -d) != "golo.chromium.org" ]] ; then
+				clang_tidy_logs_dir="/tmp/clang-tidy-logs/${BOARD}"
+				mkdir -p ${clang_tidy_logs_dir}
+				cp ${PORTAGE_LOG_FILE} ${clang_tidy_logs_dir}
+				sudo chmod 644 ${clang_tidy_logs_dir}/*
+			else
+				echo "*** This build log contains clang-tidy warnings ***"
+			fi
+		fi
+	fi
+}
+
 # Since we're storing the wrappers in a board sysroot, make sure that
 # is actually in our PATH.
 cros_pre_pkg_setup_sysroot_build_bin_dir() {
