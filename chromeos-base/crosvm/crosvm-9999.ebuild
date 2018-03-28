@@ -78,6 +78,7 @@ src_install() {
 	local seccomp_arch="unknown"
 	case ${ARCH} in
 		amd64) seccomp_arch=x86_64;;
+		arm) seccomp_arch=aarch64;;
 	esac
 
 	# cargo doesn't know how to install cross-compiled binaries.  It will
