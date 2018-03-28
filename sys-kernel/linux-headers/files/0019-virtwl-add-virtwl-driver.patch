@@ -34,7 +34,6 @@ index c2e5d6cb34e3..c038d0525943 100644
  header-y += vt.h
  header-y += wait.h
 diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_ids.h
-index 77925f587b15..2c32cdee7667 100644
 --- a/include/uapi/linux/virtio_ids.h
 +++ b/include/uapi/linux/virtio_ids.h
 @@ -41,5 +41,6 @@
@@ -46,10 +45,9 @@ index 77925f587b15..2c32cdee7667 100644
  #endif /* _LINUX_VIRTIO_IDS_H */
 diff --git a/include/uapi/linux/virtio_wl.h b/include/uapi/linux/virtio_wl.h
 new file mode 100644
-index 000000000000..b3cdadc0409e
 --- /dev/null
 +++ b/include/uapi/linux/virtio_wl.h
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,89 @@
 +#ifndef _LINUX_VIRTIO_WL_H
 +#define _LINUX_VIRTIO_WL_H
 +/* This header is BSD licensed so anyone can use the definitions to implement
@@ -80,6 +78,8 @@ index 000000000000..b3cdadc0409e
 +	VIRTIO_WL_CMD_VFD_SEND, /* virtio_wl_ctrl_vfd_send + data */
 +	VIRTIO_WL_CMD_VFD_RECV, /* virtio_wl_ctrl_vfd_recv + data */
 +	VIRTIO_WL_CMD_VFD_NEW_CTX, /* virtio_wl_ctrl_vfd */
++	VIRTIO_WL_CMD_VFD_NEW_CTX, /* virtio_wl_ctrl_vfd_new */
++	VIRTIO_WL_CMD_VFD_NEW_PIPE, /* virtio_wl_ctrl_vfd_new */
 +
 +	VIRTIO_WL_RESP_OK = 0x1000,
 +	VIRTIO_WL_RESP_VFD_NEW = 0x1001, /* virtio_wl_ctrl_vfd_new */
@@ -88,6 +88,8 @@ index 000000000000..b3cdadc0409e
 +	VIRTIO_WL_RESP_OUT_OF_MEMORY,
 +	VIRTIO_WL_RESP_INVALID_ID,
 +	VIRTIO_WL_RESP_INVALID_TYPE,
++	VIRTIO_WL_RESP_INVALID_FLAGS,
++	VIRTIO_WL_RESP_INVALID_CMD,
 +};
 +
 +struct virtio_wl_ctrl_hdr {
@@ -96,9 +98,8 @@ index 000000000000..b3cdadc0409e
 +};
 +
 +enum virtio_wl_vfd_flags {
-+	VIRTIO_WL_VFD_WRITE = 0x1, /* indicates if mapped area is writable */
-+	VIRTIO_WL_VFD_MAP = 0x2, /* indicates a fixed size and mapping into a pfn range */
-+	VIRTIO_WL_VFD_CONTROL = 0x4, /* indicates if send/recv can transmit VFDs */
++	VIRTIO_WL_VFD_WRITE = 0x1, /* intended to be written by guest */
++	VIRTIO_WL_VFD_READ = 0x2, /* intended to be read by guest */
 +};
 +
 +struct virtio_wl_ctrl_vfd {
@@ -141,7 +142,7 @@ new file mode 100644
 index 000000000000..e65264a78afd
 --- /dev/null
 +++ b/include/uapi/linux/virtwl.h
-@@ -0,0 +1,39 @@
+@@ -0,0 +4,41 @@
 +#ifndef _LINUX_VIRTWL_H
 +#define _LINUX_VIRTWL_H
 +
@@ -159,6 +160,8 @@ index 000000000000..e65264a78afd
 +enum virtwl_ioctl_new_type {
 +	VIRTWL_IOCTL_NEW_CTX, /* open a new wayland connection context */
 +	VIRTWL_IOCTL_NEW_ALLOC, /* create a new virtwl shm allocation */
++	VIRTWL_IOCTL_NEW_PIPE_READ, /* create a new virtwl pipe that is readable via the returned fd */
++	VIRTWL_IOCTL_NEW_PIPE_WRITE, /* create a new virtwl pipe that is writable via the returned fd */
 +};
 +
 +struct virtwl_ioctl_new {
