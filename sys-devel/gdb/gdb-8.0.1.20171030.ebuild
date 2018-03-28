@@ -4,7 +4,7 @@
 EAPI=5
 PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
-inherit flag-o-matic eutils python-single-r1 toolchain-funcs versionator
+inherit flag-o-matic eutils python-single-r1 versionator
 
 GIT_SHAI="3b4e21d2318bc1b6547e45f3393514e7b0be7df2"
 SRC_URI="https://android.googlesource.com/toolchain/gdb/+archive/${GIT_SHAI}.tar.gz -> ${P}.tar.gz"
@@ -94,10 +94,6 @@ gdb_branding() {
 
 src_configure() {
 	strip-unsupported-flags
-
-	# Append '--no-experimental-use-relr' to gold flags to workaround an issue with
-	# some relative relocations pointing at odd offsets (http://crbug.com/822053).
-	tc-ld-is-gold && append-ldflags "-Wl,--no-experimental-use-relr"
 
 	local myconf=(
 		--with-pkgversion="$(gdb_branding)"

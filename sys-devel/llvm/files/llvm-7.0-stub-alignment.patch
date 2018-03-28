@@ -1,0 +1,20 @@
+Align stubs for external and common global variables to pointer size.
+
+This patch fixes PR36885: clang++ generates unaligned stub symbol
+holding a pointer (https://bugs.llvm.org/show_bug.cgi?id=36885).
+
+For https://bugs.chromium.org/p/chromium/issues/detail?id=824983
+and https://bugs.chromium.org/p/chromium/issues/detail?id=822053
+
+Differential Revision (upstream): https://reviews.llvm.org/D44848
+
+--- lib/CodeGen/AsmPrinter/AsmPrinter.cpp
++++ lib/CodeGen/AsmPrinter/AsmPrinter.cpp
+@@ -1336,6 +1336,7 @@ bool AsmPrinter::doFinalization(Module &M) {
+       OutStreamer->SwitchSection(TLOF.getDataSection());
+       const DataLayout &DL = M.getDataLayout();
+ 
++      EmitAlignment(Log2_32(DL.getPointerSize()));
+       for (const auto &Stub : Stubs) {
+         OutStreamer->EmitLabel(Stub.first);
+         OutStreamer->EmitSymbolValue(Stub.second.getPointer(),

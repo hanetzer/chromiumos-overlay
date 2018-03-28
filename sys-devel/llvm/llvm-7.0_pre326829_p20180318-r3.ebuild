@@ -251,6 +251,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 
+	# crbug/824983 and crbug/822053
+	# Convert to cherry-pick once https://reviews.llvm.org/D44848 is merged.
+	epatch "${FILESDIR}"/llvm-7.0-stub-alignment.patch
+
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 
