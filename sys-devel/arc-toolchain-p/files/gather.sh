@@ -39,8 +39,8 @@
 
 set -e
 
-# 1. Location of the android nyc-arc branch tree.
-: "${ANDROID_TREE:="${HOME}/android"}"
+# 1. Location of the android pi-arc-dev branch tree.
+: "${ANDROID_TREE:="${HOME}/android-p"}"
 
 # ARCH names used in sysroot.
 ARC_ARCH=('amd64' 'arm' 'amd64')
@@ -266,10 +266,10 @@ done
 ### 5. Copy compiler over.
 
 ### 5.1 clang.
-runcmd mkdir -p "${TO_DIR_BASE}/arc-llvm/5.0"
+runcmd mkdir -p "${TO_DIR_BASE}/arc-llvm/6.0"
 runcmd cp -pPr \
-	"${ANDROID_TREE}/prebuilts/clang/host/linux-x86/clang-4053586"/* \
-	"${TO_DIR_BASE}/arc-llvm/5.0"
+	"${ANDROID_TREE}/prebuilts/clang/host/linux-x86/clang-4639204"/* \
+	"${TO_DIR_BASE}/arc-llvm/6.0"
 
 ### 5.2 gcc.
 runcmd mkdir -p "${TO_DIR_BASE}/arc-gcc"
