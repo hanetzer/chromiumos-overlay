@@ -4,8 +4,8 @@
 
 # The tarball contains the arc-cache-builder.jar. It is compiled in ARC NYC by
 # mmma vendor/google_arc/tools/ArcCacheBuilder/
-# Current version 0.2.0 is built from commit
-# e40259730d9c0422d81f022d2e04767dc28ca946
+# Current version 0.2.2 is built from commit
+# 2be15cdb321ef7cae33f4534cbcdbaa81f57d347
 
 EAPI="5"
 
