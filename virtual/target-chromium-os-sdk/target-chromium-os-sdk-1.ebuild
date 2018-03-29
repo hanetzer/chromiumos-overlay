@@ -190,6 +190,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/setproctitle
+	!dev-python/socksipy
 	dev-python/tempita
 	dev-python/ws4py
 	dev-util/bazel

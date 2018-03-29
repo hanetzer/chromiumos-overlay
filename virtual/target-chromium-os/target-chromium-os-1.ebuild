@@ -220,6 +220,7 @@ CROS_COMMON_RDEPEND+="
 		app-i18n/hangul-input
 	)
 	fuzzer? ( virtual/target-fuzzers )
+	!dev-python/socksipy
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
