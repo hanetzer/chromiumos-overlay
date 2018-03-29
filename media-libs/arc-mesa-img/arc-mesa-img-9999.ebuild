@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/mesa/mesa-7.9.ebuild,v 1.3 2010/12/05 17:19:14 arfrever Exp $
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa-img"
 CROS_WORKON_LOCALNAME="mesa-img"
@@ -131,7 +131,7 @@ src_configure() {
 
 	# TODO(drinkcat): We should provide a pkg-config file for this.
 	export PVR_CFLAGS="-I${SYSROOT}${ARC_PREFIX}/vendor/include"
-	export PVR_LIBS="-L${SYSROOT}${ARC_PREFIX}/vendor/lib -lcutils -lpvr_dri_support "
+	export PVR_LIBS="-L${SYSROOT}${ARC_PREFIX}/vendor/lib -lcutils -llog -lpvr_dri_support "
 
 	econf \
 		${EXTRA_ARGS} \
