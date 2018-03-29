@@ -17,6 +17,8 @@ IUSE="-asan"
 RDEPEND=""
 
 DEPEND="${RDEPEND}
+	chromeos-base/libmojo
+	media-libs/cros-camera-libcamera_metadata
 	virtual/pkgconfig"
 
 src_configure() {
