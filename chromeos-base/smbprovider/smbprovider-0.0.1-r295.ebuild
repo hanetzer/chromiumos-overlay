@@ -3,8 +3,8 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="fe0428beb48be86b6d6f5af48ab2232c16b7edfa"
-CROS_WORKON_TREE=("002caee8ca3d7e4d62832d5d0af29f55128e4379" "66a9c692d9bdfb0c328a9862df8e6427fb42c323")
+CROS_WORKON_COMMIT="0bcd9fc0d5b839a367e5a94cae8f22d29fd100ce"
+CROS_WORKON_TREE=("002caee8ca3d7e4d62832d5d0af29f55128e4379" "867b8513c50e9d3882b571fdfb158c0c459e042f")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -42,13 +42,15 @@ pkg_preinst() {
 
 src_install() {
 	dosbin "${OUT}"/smbproviderd
-	newbin smbproviderd-jailed.sh smbproviderd-jailed
 
 	insinto /etc/dbus-1/system.d
 	doins etc/dbus-1/org.chromium.SmbProvider.conf
 
 	insinto /usr/share/dbus-1/system-services
 	doins org.chromium.SmbProvider.service
+
+	insinto /etc/init
+	doins etc/init/smbproviderd.conf
 }
 
 platform_pkg_test() {

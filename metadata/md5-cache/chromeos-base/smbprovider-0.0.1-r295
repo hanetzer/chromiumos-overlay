@@ -3,11 +3,11 @@ DEPEND=chromeos-base/libbrillo >=net-fs/samba-4.5.3-r6 sys-apps/dbus chromeos-ba
 DESCRIPTION=Provides access to Samba file share
 EAPI=5
 HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform2/+/master/smbprovider/
-IUSE=cros_host cros_workon_tree_002caee8ca3d7e4d62832d5d0af29f55128e4379_66a9c692d9bdfb0c328a9862df8e6427fb42c323 profiling cros-debug cros_host cros_workon_tree_002caee8ca3d7e4d62832d5d0af29f55128e4379_66a9c692d9bdfb0c328a9862df8e6427fb42c323 profiling cros-debug asan cros_host fuzzer test
+IUSE=cros_host cros_workon_tree_002caee8ca3d7e4d62832d5d0af29f55128e4379_867b8513c50e9d3882b571fdfb158c0c459e042f profiling cros-debug cros_host cros_workon_tree_002caee8ca3d7e4d62832d5d0af29f55128e4379_867b8513c50e9d3882b571fdfb158c0c459e042f profiling cros-debug asan cros_host fuzzer test
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=chromeos-base/libbrillo >=net-fs/samba-4.5.3-r6 sys-apps/dbus chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
 REQUIRED_USE=fuzzer? ( asan )
 SLOT=0
 _eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	dc0c70f1115ee6d5888042f1a6da3869	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	user	c8f947561e8797a300801d0dd3625448
-_md5_=af35110ba8b51ac352d553636df35b04
+_md5_=d645c260e43b8e8441da9a2e35a11b15
