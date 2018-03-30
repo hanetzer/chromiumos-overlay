@@ -2,10 +2,10 @@ DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=python_targets_python2_7? ( >=dev-lang/python-2.7.5-r2:2.7 ) >=dev-lang/python-exec-2:=[python_targets_python2_7(-)?,-python_single_target_python2_7(-)] dev-python/jsonrpclib dev-python/pyyaml dev-python/protobuf-python virtual/chromeos-bsp-factory virtual/chromeos-regions dev-vcs/git
 DESCRIPTION=Subset of factory software to be installed in test images
 EAPI=5
-IUSE=cros_host cros_workon_tree_db8a6b071c4a8feb9af490574ea78c52c4c119db profiling python_targets_python2_7
+IUSE=cros_host cros_workon_tree_a0a6de15e04f83014fa14934e3641c9748515369 profiling python_targets_python2_7
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=!chromeos-base/chromeos-factory-mini
 SLOT=0
 _eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	python-r1	9f6eda21d15d6a8f665d7996a4e0f4e3	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
-_md5_=e44eae434549de42bd7a066395364d00
+_md5_=14a9a3a583441e9bdcc84f503deaa5a8
