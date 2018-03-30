@@ -111,7 +111,7 @@ src_install() {
 		doman ${i}/${i}.8
 		dosbin ${i}/${i}
 	done
-	fperms u+s-w /usr/sbin/pppd
+	fperms -w /usr/sbin/pppd
 
 	# Install pppd header files
 	emake -C pppd INSTROOT="${D}" install-devel
