@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install preinst setup test unpack
+DEPEND=app-arch/unrar chromeos-base/libbrillo chromeos-base/metrics chromeos-base/minijail chromeos-base/session_manager-client sys-apps/rootdev sys-apps/util-linux sys-fs/avfs sys-fs/dosfstools sys-fs/exfat-utils sys-fs/fuse-exfat sys-fs/ntfs3g virtual/udev chromeos-base/system_api dev-vcs/git dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] test? ( dev-cpp/gmock ) dev-cpp/gtest sys-apps/baselayout
+DESCRIPTION=Disk mounting daemon for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=chromeless_tty +seccomp cros_host cros_workon_tree_61b4b0c05e003fddaa705031945fece7f560c7d7_25c524bfdcc5f9d4a8280b7db4449e42a7a01319_413888b8ea9a5695763b620c5ed048a20960333b profiling cros-debug cros_host cros_workon_tree_61b4b0c05e003fddaa705031945fece7f560c7d7_25c524bfdcc5f9d4a8280b7db4449e42a7a01319_413888b8ea9a5695763b620c5ed048a20960333b profiling cros-debug asan cros_host fuzzer test
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=app-arch/unrar chromeos-base/libbrillo chromeos-base/metrics chromeos-base/minijail chromeos-base/session_manager-client sys-apps/rootdev sys-apps/util-linux sys-fs/avfs sys-fs/dosfstools sys-fs/exfat-utils sys-fs/fuse-exfat sys-fs/ntfs3g virtual/udev chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+REQUIRED_USE=fuzzer? ( asan )
+SLOT=0
+_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	dc0c70f1115ee6d5888042f1a6da3869	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	user	c8f947561e8797a300801d0dd3625448
+_md5_=8998cc646c3e81901ab82a1e7f90cdf5
