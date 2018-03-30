@@ -123,6 +123,7 @@ IUSE_TESTS=(
 	+tests_platform_InputScreenshot
 	+tests_platform_InputVolume
 	+tests_platform_LogoutPerf
+	+tests_platform_MemoryPressure
 	+tests_platform_OSLimits
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_policy_AudioOutputAllowed
