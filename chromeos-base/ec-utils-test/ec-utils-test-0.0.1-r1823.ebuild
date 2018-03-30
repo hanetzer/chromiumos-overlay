@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=6
 CROS_WORKON_COMMIT="7c46ac84e1e64c283a9981451cb4fecd6549a54c"
 CROS_WORKON_TREE="3985aebbd5d3f0ae13c888e137fac8ca5bd3b75b"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
@@ -31,6 +31,7 @@ src_compile() {
 }
 
 src_install() {
+	dobin "util/battery_temp"
 	dosbin "util/inject-keys.py"
 
 	if use cr50_onboard; then
