@@ -102,29 +102,34 @@ _install_model_files() {
 	local prefix="$1"
 	local files
 
-	# Support a shared base file that can be imported from a baseboard ebuild
-	if [[ -e "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" ]]; then
-		files+=( "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" )
+	_unibuild_find_configs "${FILESDIR}" ".dtsi"
+	if [ -n "$files" ]; then
+		files=()
+		# Support a shared base file that can be imported from a baseboard ebuild
+		if [[ -e "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" ]]; then
+			files+=( "${SYSROOT}/${UNIBOARD_DTS_BASEBOARD}" )
+		fi
+		_unibuild_find_configs "${FILESDIR}" ".dtsi"
+
+
+		einfo "Validating ${#files[@]} files:"
+		validate_config -p "${files[@]}" || die "Validation failed"
+
+		einfo "Installing ${#files[@]} files to ${UNIBOARD_DTS_DIR}"
+
+		# Avoid polluting callers with our newins.
+		(
+			insinto "${UNIBOARD_DTS_DIR}"
+			for file in "${files[@]}"; do
+				local dest="${file%/*}"
+				dest="${prefix}${dest##*/}.dtsi"
+
+				einfo "Installing ${dest}"
+				newins "${file}" "${dest}"
+			done
+		)
 	fi
 
-	_unibuild_find_configs "${FILESDIR}" ".dtsi"
-
-	einfo "Validating ${#files[@]} files:"
-	validate_config -p "${files[@]}" || die "Validation failed"
-
-	einfo "Installing ${#files[@]} files to ${UNIBOARD_DTS_DIR}"
-
-	# Avoid polluting callers with our newins.
-	(
-		insinto "${UNIBOARD_DTS_DIR}"
-		for file in "${files[@]}"; do
-			local dest="${file%/*}"
-			dest="${prefix}${dest##*/}.dtsi"
-
-			einfo "Installing ${dest}"
-			newins "${file}" "${dest}"
-		done
-	)
 
 	files=()
 	_unibuild_find_configs "${FILESDIR}" ".yaml"
@@ -170,33 +175,39 @@ install_model_files() {
 	_install_model_files ""
 }
 
-# @FUNCTION: unibuild_get_dtb_data
+# @FUNCTION: cros_config_host_local
 # @USAGE:
 # @DESCRIPTION:
-# Internal function to compile the device tree file on-the-fly and output a
-# file suitable for piping into "cros_config -c -".
-# TODO(crbug.com/771187): Move this to cros_config.
-unibuild_get_dtb_data() {
+# Invokes cros_config_host using the config directly from
+# chromeos-config-bsp/files
+# Args:
+#   $1: Command to pass to cros_config_host
+cros_config_host_local() {
 	# This function is called before FILESDIR is set so figure it out from
 	# the ebuild filename.
 	local basedir="$(dirname "${EBUILD}")/.."
 	local configdir="${basedir}/chromeos-config-bsp/files"
 	local files
 
-	# We are not allowed to access the ROOT directory here, so compile the
-	# model fragment on the fly and pull out the value we want.
-
-	# We cannot die here if there are no config files as this function is
-	# called by non-unibuild boards. We just need to output an empty
-	# config. But do skip this if there is no config BSP directory at all.
 	if [[ -d "${configdir}" ]]; then
-		_unibuild_find_configs "${configdir}" ".dtsi"
+		if [[ -e "${configdir}/model.yaml" ]]; then
+			echo $(cros_config_host -c "${configdir}/model.yaml" "$1")
+		else
+			# We are not allowed to access the ROOT directory here, so compile the
+			# model fragment on the fly and pull out the value we want.
+			_unibuild_find_configs "${configdir}" ".dtsi"
+			echo $(echo "/dts-v1/; / { chromeos { family: family { }; " \
+				"models: models { }; }; };" |
+				cat "-" "${files[@]}" |
+				dtc -O dtb -Wno-unit_address_vs_reg |
+				cros_config_host -c - "$1")
+		fi
+	else
+		# We cannot die here if there are no config files as this function is
+		# called by non-unibuild boards. We just need to output an empty
+		# config. But do skip this if there is no config BSP directory at all.
+		echo ""
 	fi
-
-	echo "/dts-v1/; / { chromeos { family: family { }; " \
-		"models: models { }; }; };" |
-		cat "-" "${files[@]}" |
-		dtc -O dtb -Wno-unit_address_vs_reg
 }
 
 # @FUNCTION: _unibuild_common_install
@@ -297,15 +308,4 @@ unibuild_install_arc_files() {
 		newins "${FILESDIR}/${source}" "$(basename "${dest}")"
 		chmod 755 "${D}/${dest}"
 	done
-}
-
-# @FUNCTION: cros-unibuild-setup_bsp_source
-# @USAGE:
-# @DESCRIPTION:
-# Set up SRC_URI to include all BCS files required by the BSP ebuild.
-cros-unibuild-setup_bsp_source() {
-	local uri_list
-
-	uri_list="$(unibuild_get_dtb_data | cros_config_host -c - get-bsp-uris)"
-	SRC_URI+=" ${uri_list}"
 }
