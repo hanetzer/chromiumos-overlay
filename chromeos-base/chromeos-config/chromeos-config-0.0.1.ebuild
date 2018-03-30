@@ -37,42 +37,40 @@ src_compile() {
 	local files=( "${SYSROOT}${UNIBOARD_DTS_DIR}/"*.dtsi )
 	local schema_info="${WORKDIR}/_dir_targets.dtsi"
 
-	if [[ "${#files[@]}" -eq 0 ]]; then
-		die "No .dtsi files found in ${SYSROOT}${UNIBOARD_DTS_DIR}: \
-please check your chromeos-config-bsp ebuild"
+	if [[ "${#files[@]}" -gt 0 ]]; then
+		# Create a .dts file with all the includes.
+		cat "${FILESDIR}/skeleton.dts" >"${dts}"
+		cros_config_host write-target-dirs >"${schema_info}" \
+			|| die "Failed to write directory targets"
+		cros_config_host write-phandle-properties >>"${schema_info}" \
+			|| die "Failed to write phandle properties"
+		for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${schema_info}"; do
+			einfo "Adding ${dtsi}"
+			[[ "${dtsi}" != "${schema_info}" ]] && cp "${dtsi}" "${WORKDIR}"
+			# Drop the directory path from ${dtsi} in the #include.
+			echo "#include \"${dtsi##*/}\"" >> "${dts}"
+			: $((added++))
+		done
+		einfo "${added} files found"
+
+		# Use the preprocessor to handle the #include directives.
+		$(tc-getCPP) -P -x assembler-with-cpp "${dts}" -o "${dts}.tmp" \
+			|| die "Preprocessor failed"
+
+		# Compile it to produce the requird output file.
+		dtc -I dts -O dtb -Wno-unit_address_vs_reg -o "${dtb}" "${dts}.tmp" \
+			|| die "Device-tree compilation failed"
+
+		# Validate the config.
+		einfo "Validating config:"
+		validate_config "${dtb}" || die "Validation failed"
+		einfo "- OK"
 	fi
 
-	# Create a .dts file with all the includes.
-	cat "${FILESDIR}/skeleton.dts" >"${dts}"
-	cros_config_host write-target-dirs >"${schema_info}" \
-		|| die "Failed to write directory targets"
-	cros_config_host write-phandle-properties >>"${schema_info}" \
-		|| die "Failed to write phandle properties"
-	for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${schema_info}"; do
-		einfo "Adding ${dtsi}"
-		[[ "${dtsi}" != "${schema_info}" ]] && cp "${dtsi}" "${WORKDIR}"
-		# Drop the directory path from ${dtsi} in the #include.
-		echo "#include \"${dtsi##*/}\"" >> "${dts}"
-		: $((added++))
-	done
-	einfo "${added} files found"
-
-	# Use the preprocessor to handle the #include directives.
-	$(tc-getCPP) -P -x assembler-with-cpp "${dts}" -o "${dts}.tmp" \
-		|| die "Preprocessor failed"
-
-	# Compile it to produce the requird output file.
-	dtc -I dts -O dtb -Wno-unit_address_vs_reg -o "${dtb}" "${dts}.tmp" \
-		|| die "Device-tree compilation failed"
-
-	# Validate the config.
-	einfo "Validating config:"
-	validate_config "${dtb}" || die "Validation failed"
-	einfo "- OK"
 
 	# YAML config support.
 	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*.yaml )
-	local yaml="${WORKDIR}/config.yaml"
+	local yaml="${SYSROOT}${UNIBOARD_YAML_CONFIG}"
 	local json="${WORKDIR}/config.json"
 	if [[ "${files[0]}" =~ .*[a-z_]+\.yaml$ ]]; then
 		echo "# YAML generated from: ${files[*]}" > "${yaml}"

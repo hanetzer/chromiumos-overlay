@@ -271,10 +271,17 @@ cros-firmware_src_compile() {
 		"${root}/firmware/utils:${root}/usr/sbin:${root}/usr/bin"
 	_add_param ext_cmd --script "${CROS_FIRMWARE_SCRIPT}"
 	if use unibuild; then
-		image_cmd+=(
-			-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
-			-i "${DISTDIR}"
-		)
+		if [[ -e "${SYSROOT}/${UNIBOARD_YAML_CONFIG}" ]]; then
+			image_cmd+=(
+				-c "${SYSROOT}/${UNIBOARD_YAML_CONFIG}"
+				-i "${DISTDIR}"
+			)
+		else
+			image_cmd+=(
+				-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
+				-i "${DISTDIR}"
+			)
+		fi
 		einfo "Build ${BOARD_USE} firmware updater:" \
 			"${image_cmd[*]} ${ext_cmd[*]}"
 		./pack_firmware.py "${image_cmd[@]}" "${ext_cmd[@]}" \
@@ -282,10 +289,17 @@ cros-firmware_src_compile() {
 			die "Cannot pack firmware."
 
 		if use bootimage; then
-			image_cmd=(
-				-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
-				-i "${DISTDIR}"
-			)
+			if [[ -e "${SYSROOT}/${UNIBOARD_YAML_CONFIG}" ]]; then
+				image_cmd+=(
+					-c "${SYSROOT}/${UNIBOARD_YAML_CONFIG}"
+					-i "${DISTDIR}"
+				)
+			else
+				image_cmd+=(
+					-c "${SYSROOT}/${UNIBOARD_DTB_INSTALL_PATH}"
+					-i "${DISTDIR}"
+				)
+			fi
 
 			einfo "Updater for local fw"
 			# Tell pack_firmware.py where to find the files.

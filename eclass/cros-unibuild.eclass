@@ -34,6 +34,11 @@ UNIBOARD_DTS_BASEBOARD="${CROS_MODELS_DIR}/baseboard/model.dtsi"
 #  This is the installation directory of the yaml source files.
 UNIBOARD_YAML_DIR="${UNIBOARD_CROS_CONFIG_DIR}/yaml"
 
+# @ECLASS-VARIABLE: UNIBOARD_YAML_CONFIG
+# @DESCRIPTION:
+#  This is the installation directory of the yaml source files.
+UNIBOARD_YAML_CONFIG="${UNIBOARD_YAML_DIR}/config.yaml"
+
 # @ECLASS-VARIABLE: UNIBOARD_CROS_CONFIG_FILES_DIR
 # @DESCRIPTION:
 #  This is the installation directory of files referenced in the model.dtsi.
