@@ -281,7 +281,7 @@ unibuild_install_touch_files() {
 	( while read -r source; do
 		read -r dest
 		read -r symlink
-		_unibuild_install_fw "${source}" "${dest}" "${symlink}"
+		_unibuild_install_fw "${FILESDIR}/${source}" "${dest}" "${symlink}"
 	done ) || die "Failed to read config"
 }
 
