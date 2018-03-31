@@ -7,5 +7,5 @@ IUSE=-moblab
 KEYWORDS=*
 LICENSE=BSD
 SLOT=0
-_eclasses_=cros-constants	bff2e60998898d47ed40153d31657335
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda
 _md5_=1a29400bc1efd85db279a02503ee0a19
