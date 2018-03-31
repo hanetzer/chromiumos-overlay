@@ -188,11 +188,7 @@ CROS_COMMON_RDEPEND+="
 	pam? ( sys-auth/pam_pwdfile )
 	watchdog? ( sys-apps/daisydog )
 	mtd? ( sys-fs/mtd-utils )
-	cups? (
-		net-print/cups
-		net-print/cups-filters
-		postscript? ( net-print/hplip )
-	)
+	cups? ( virtual/chromium-os-printing )
 	touchview? ( chromeos-base/chromeos-accelerometer-init )
 	system_locales? ( chromeos-base/system-locales )
 	eclog? ( chromeos-base/timberslide )
