@@ -17,7 +17,7 @@ S="${WORKDIR}"
 
 RDEPEND=""
 DEPEND="
-	chromeos-base/vm_tools[-kvm_host]
+	chromeos-base/vm_guest_tools
 	dev-libs/grpc
 	dev-libs/protobuf:=
 "
