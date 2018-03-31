@@ -132,6 +132,10 @@ src_install() {
 	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
 	udev_dorules "${FILESDIR}/99-bluetooth-quirks.rules"
 
+	# Install the common config file.
+	insinto "/etc/bluetooth"
+	doins "${S}"/src/main_common.conf
+
 	# We don't preserve /var/lib in images, so nuke anything we preseed.
 	rm -rf "${D}"/var/lib/bluetooth
 
