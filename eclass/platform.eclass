@@ -183,6 +183,7 @@ platform_src_configure() {
 	cros-debug-add-NDEBUG
 	append-lfs-flags
 	asan-setup-env
+	fuzzer-setup-env
 	platform_configure "${S}/${PLATFORM_GYP_FILE}" "$@"
 }
 

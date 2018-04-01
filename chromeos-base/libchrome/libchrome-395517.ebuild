@@ -21,7 +21,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="${PV}"
 KEYWORDS="*"
-IUSE="asan cros_host +crypto +dbus +timers"
+IUSE="asan cros_host +crypto +dbus fuzzer +timers"
 
 # TODO(avakulenko): Put dev-libs/nss behind a USE flag to make sure NSS is
 # pulled only into the configurations that require it.
@@ -69,6 +69,7 @@ src_prepare() {
 
 src_configure() {
 	asan-setup-env
+	fuzzer-setup-env
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 }

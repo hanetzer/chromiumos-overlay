@@ -13,7 +13,7 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tgz"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan"
+IUSE="-asan fuzzer"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -26,6 +26,8 @@ src_compile() {
 	if [[ "${PV}" != "${LIBCHROME_VERS}" ]]; then
 		die "Version mismatch"
 	fi
+	asan-setup-env
+	fuzzer-setup-env
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake templates

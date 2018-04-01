@@ -1025,4 +1025,19 @@ asan-setup-env() {
 	append-ldflags "${asan_flags[@]}"
 }
 
+# Build a package with fuzzer coverage flags. Safe to use with packages that
+# do not build a fuzzer binary e.g. packages that produce shared libraries etc.
+fuzzer-setup-env() {
+	use fuzzer || return 0
+	append-flags "-fsanitize=fuzzer-no-link"
+}
+
+# This function must be called only for ebuilds that only produce
+# a fuzzer binary.
+fuzzer-setup-binary() {
+	use fuzzer || return 0
+	fuzzer-setup-env
+	append-ldflags "-fsanitize=fuzzer"
+}
+
 fi
