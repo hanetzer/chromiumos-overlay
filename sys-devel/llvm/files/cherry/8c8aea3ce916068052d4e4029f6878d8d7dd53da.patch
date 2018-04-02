@@ -1,0 +1,104 @@
+commit 8c8aea3ce916068052d4e4029f6878d8d7dd53da
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Thu Mar 29 21:11:15 2018 +0000
+
+    [AArch64]: Add support for parsing rN registers.
+    
+    Summary:
+    Allow rN registers to be simply parsed as correspoing xN registers.
+    The "register ... asm("rN")" is an command to the
+    compiler's register allocator, not an operand to any individual assembly
+    instruction. GCC documents this syntax as "...the name of the register
+    that should be used."
+    
+    This is needed to support the changes in Linux kernel (see
+    https://lkml.org/lkml/2018/3/1/268 )
+    
+    Note: This will add support only for the limited use case of
+    register ... asm("rN"). Any other uses that make rN leak into assembly
+    are not supported.
+    
+    Reviewers: kristof.beyls, rengolin, peter.smith, t.p.northover
+    
+    Reviewed By: peter.smith
+    
+    Subscribers: javed.absar, eraman, cfe-commits, srhines
+    
+    Differential Revision: https://reviews.llvm.org/D44815
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@328829 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Basic/Targets/AArch64.cpp b/lib/Basic/Targets/AArch64.cpp
+index b042d4e3ca..394be5a9f1 100644
+--- a/lib/Basic/Targets/AArch64.cpp
++++ b/lib/Basic/Targets/AArch64.cpp
+@@ -308,7 +308,40 @@ ArrayRef<const char *> AArch64TargetInfo::getGCCRegNames() const {
+ }
+ 
+ const TargetInfo::GCCRegAlias AArch64TargetInfo::GCCRegAliases[] = {
+-    {{"w31"}, "wsp"}, {{"x29"}, "fp"}, {{"x30"}, "lr"}, {{"x31"}, "sp"},
++    {{"w31"}, "wsp"},
++    {{"x31"}, "sp"},
++    // GCC rN registers are aliases of xN registers.
++    {{"r0"}, "x0"},
++    {{"r1"}, "x1"},
++    {{"r2"}, "x2"},
++    {{"r3"}, "x3"},
++    {{"r4"}, "x4"},
++    {{"r5"}, "x5"},
++    {{"r6"}, "x6"},
++    {{"r7"}, "x7"},
++    {{"r8"}, "x8"},
++    {{"r9"}, "x9"},
++    {{"r10"}, "x10"},
++    {{"r11"}, "x11"},
++    {{"r12"}, "x12"},
++    {{"r13"}, "x13"},
++    {{"r14"}, "x14"},
++    {{"r15"}, "x15"},
++    {{"r16"}, "x16"},
++    {{"r17"}, "x17"},
++    {{"r18"}, "x18"},
++    {{"r19"}, "x19"},
++    {{"r20"}, "x20"},
++    {{"r21"}, "x21"},
++    {{"r22"}, "x22"},
++    {{"r23"}, "x23"},
++    {{"r24"}, "x24"},
++    {{"r25"}, "x25"},
++    {{"r26"}, "x26"},
++    {{"r27"}, "x27"},
++    {{"r28"}, "x28"},
++    {{"r29", "x29"}, "fp"},
++    {{"r30", "x30"}, "lr"},
+     // The S/D/Q and W/X registers overlap, but aren't really aliases; we
+     // don't want to substitute one of these for a different-sized one.
+ };
+diff --git a/test/CodeGen/aarch64-inline-asm.c b/test/CodeGen/aarch64-inline-asm.c
+index a1078f1bab..264df9d5fc 100644
+--- a/test/CodeGen/aarch64-inline-asm.c
++++ b/test/CodeGen/aarch64-inline-asm.c
+@@ -54,3 +54,23 @@ void test_constraint_Q(void) {
+     asm("ldxr %0, %1" : "=r"(val) : "Q"(var));
+ // CHECK: call i32 asm "ldxr $0, $1", "=r,*Q"(i64* @var)
+ }
++
++void test_gcc_registers(void) {
++    register unsigned long reg0 asm("r0") = 0;
++    register unsigned long reg1 asm("r1") = 1;
++    register unsigned int  reg29 asm("r29") = 2;
++    register unsigned int  reg30 asm("r30") = 3;
++
++    // Test remapping register names in register ... asm("rN") statments.
++    // rN register operands in these two inline assembly lines
++    // should get renamed to valid AArch64 registers.
++    asm volatile("hvc #0" : : "r" (reg0), "r" (reg1));
++    // CHECK: call void asm sideeffect "hvc #0", "{x0},{x1}"
++    asm volatile("hvc #0" : : "r" (reg29), "r" (reg30));
++    // CHECK: call void asm sideeffect "hvc #0", "{fp},{lr}"
++
++    // rN registers when used without register ... asm("rN") syntax
++    // should not be remapped.
++    asm volatile("mov r0, r1\n");
++    // CHECK: call void asm sideeffect "mov r0, r1\0A", ""()
++}
