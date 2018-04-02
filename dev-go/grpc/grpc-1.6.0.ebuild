@@ -14,6 +14,7 @@ CROS_WORKON_DESTDIR="${S}/src/google.golang.org/grpc"
 
 CROS_GO_PACKAGES=(
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/benchmark/stats"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
