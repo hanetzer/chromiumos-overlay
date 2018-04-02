@@ -127,14 +127,9 @@ cros_pre_src_unpack_python_multilib_setup() {
 cros_pre_src_install_tidy_setup() {
 	if [[ -v WITH_TIDY ]] ; then
 		if [[ ${WITH_TIDY} -eq 1 ]] ; then
-			if [[ $(hostname -d) != "golo.chromium.org" ]] ; then
-				clang_tidy_logs_dir="/tmp/clang-tidy-logs/${BOARD}"
-				mkdir -p ${clang_tidy_logs_dir}
-				cp ${PORTAGE_LOG_FILE} ${clang_tidy_logs_dir}
-				sudo chmod 644 ${clang_tidy_logs_dir}/*
-			else
-				echo "*** This build log contains clang-tidy warnings ***"
-			fi
+			mkdir -p ${clang_tidy_logs_dir}
+			cp ${PORTAGE_LOG_FILE} ${clang_tidy_logs_dir}
+			sudo chmod 644 ${clang_tidy_logs_dir}/*
 		fi
 	fi
 }
