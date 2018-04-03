@@ -7,5 +7,5 @@ KEYWORDS=*
 LICENSE=BSD
 RDEPEND=!<chromeos-base/chromeos-bsp-spring-private-0.0.1-r15 !<chromeos-base/chromeos-bsp-pit-private-0.0.1-r11 !<chromeos-base/chromeos-bsp-daisy-private-0.0.1-r26 !<chromeos-base/chromeos-bsp-alex-0.0.1-r11 !<chromeos-base/chromeos-bsp-lumpy-private-0.0.5-r22 !<chromeos-base/chromeos-bsp-lumpy-0.0.5-r14 !<chromeos-base/chromeos-bsp-stumpy-0.0.3-r8
 SLOT=0
-_eclasses_=multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=af18c6e1be2efe2a943aaa08a778f512

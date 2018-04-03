@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=slp? ( net-libs/openslp ) virtual/udev sys-apps/util-linux chromeos-base/chromeos-init
 SLOT=0
 SRC_URI=http://www.open-iscsi.org/bits/open-iscsi-2.0-873.tar.gz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=074b6c3f989e244c3a8984f5926c1140

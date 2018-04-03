@@ -6,5 +6,5 @@ KEYWORDS=*
 LICENSE=ISC
 SLOT=0
 SRC_URI=http://www.kernel.org/pub/software/network/wireless-regdb/wireless-regdb-2013.11.27.tar.xz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=716e2abdbd3d7d7b3b8fa819ff51041b

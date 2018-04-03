@@ -10,5 +10,5 @@ RDEPEND=>=dev-lang/python-2.7.5-r2:2.7 >=dev-lang/python-exec-2:=[python_targets
 REQUIRED_USE=python_targets_python2_7
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/grit-i18n-5b56593a81a883b49509e2e51a779aefd8df3148.tar.gz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=8de43fa7113734397860909c992d0481

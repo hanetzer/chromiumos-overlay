@@ -7,5 +7,5 @@ KEYWORDS=*
 LICENSE=LGPL-2.1
 SLOT=0
 SRC_URI=https://github.com/DisplayLink/evdi/archive/v1.5.0.tar.gz -> evdi-1.5.0.tar.gz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=ffd13b5f41af8e09517c22172d9dac06

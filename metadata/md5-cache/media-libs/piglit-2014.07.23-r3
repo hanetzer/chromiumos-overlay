@@ -10,5 +10,5 @@ RDEPEND=dev-python/mako dev-python/numpy >=dev-lang/python-2.7 waffle? ( >=media
 REQUIRED_USE=opengles? ( waffle )
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/piglit-2014.07.23.tar.bz2
-_eclasses_=cmake-utils	625ac0250848368bad285a1d1de242cf	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=cmake-utils	625ac0250848368bad285a1d1de242cf	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=1c23140afeef2d451ad553c52f1c4dc3

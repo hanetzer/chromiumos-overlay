@@ -8,5 +8,5 @@ KEYWORDS=*
 LICENSE=BSD
 RDEPEND=input_devices_synaptics? ( chromeos-base/rmi4utils ) input_devices_wacom? ( chromeos-base/wacom_fw_flash ) input_devices_st? ( chromeos-base/st_flash ) input_devices_weida? ( chromeos-base/weida_wdt_util ) input_devices_goodix? ( chromeos-base/gdix_hid_firmware_update ) sys-apps/mosys
 SLOT=0
-_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=601d6b27905766f2752779350f734774

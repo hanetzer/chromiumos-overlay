@@ -10,5 +10,5 @@ RDEPEND=cairo? ( x11-libs/cairo:= ) fontconfig? ( media-libs/fontconfig:1.0[abi_
 REQUIRED_USE=introspection? ( glib )
 SLOT=0/0.9.18
 SRC_URI=https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-1.7.5.324.tar.bz2
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	multilib-build	8fe2e81aeb36cdf8a6cc5f50443879cc	multilib-minimal	0224dee31c0f98405d572e14ad6dee65	python-any-r1	8eb13cdf35f6e43c48107b911900b2cc	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	multilib-build	8fe2e81aeb36cdf8a6cc5f50443879cc	multilib-minimal	0224dee31c0f98405d572e14ad6dee65	python-any-r1	8eb13cdf35f6e43c48107b911900b2cc	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=534573a508b9416d36fae5fbf60adebf

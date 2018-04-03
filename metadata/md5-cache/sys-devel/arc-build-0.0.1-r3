@@ -7,5 +7,5 @@ LICENSE=BSD-Google
 RDEPEND=!!chromeos-base/arc-build-master !!chromeos-base/arc-build-nyc !!chromeos-base/arc-build-pi !!chromeos-base/arc-build
 REQUIRED_USE=^^ ( android-container-nyc android-container-pi android-container-master-arc-dev )
 SLOT=0
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	multilib-build	8fe2e81aeb36cdf8a6cc5f50443879cc	multilib-minimal	0224dee31c0f98405d572e14ad6dee65	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multibuild	742139c87a9fa3766f0c2b155e5522bf	multilib	97f470f374f2e94ccab04a2fb21d811e	multilib-build	8fe2e81aeb36cdf8a6cc5f50443879cc	multilib-minimal	0224dee31c0f98405d572e14ad6dee65	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=a1bc5aed16eb18b574a68c46b8280ac3

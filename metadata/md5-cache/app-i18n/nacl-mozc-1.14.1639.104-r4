@@ -8,5 +8,5 @@ LICENSE=BSD-Google
 RESTRICT=mirror
 SLOT=0
 SRC_URI=!internal? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nacl-mozc-1.14.1639.104.tgz ) internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.15.1800.4.tgz )
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=fc1d7da6f22d41a51c2ddae517bbf1d8

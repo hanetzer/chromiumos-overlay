@@ -7,5 +7,5 @@ KEYWORDS=*
 LICENSE=BSD-Google
 REQUIRED_USE=|| ( rk32 rk3399 )
 SLOT=0
-_eclasses_=multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	udev	d91cac2c73b94629cad2daea66e0d182
+_eclasses_=multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	udev	d91cac2c73b94629cad2daea66e0d182
 _md5_=af798b327fe536d2881fe27e5a04012b

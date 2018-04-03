@@ -10,5 +10,5 @@ RDEPEND=audit? ( sys-process/audit ) demangle? ( sys-devel/binutils:= ) gtk? ( x
 REQUIRED_USE=python? ( python_targets_python2_7 )
 SLOT=0
 SRC_URI=mirror://kernel/linux/kernel/v4.x/linux-4.14.tar.xz
-_eclasses_=bash-completion-r1	8e447753aaf658afa609fbf961d80ab7	eutils	06133990e861be0fe60c2b428fd025d9	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=bash-completion-r1	8e447753aaf658afa609fbf961d80ab7	eutils	06133990e861be0fe60c2b428fd025d9	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	python-single-r1	b5dad7f67cf34a3328b6083f0339f36b	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=2e89a96d760bb2e46bc0f198cb8298f2

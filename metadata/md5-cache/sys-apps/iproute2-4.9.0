@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=!net-misc/arpd !minimal? ( net-libs/libmnl ) iptables? ( >=net-firewall/iptables-1.4.20:= ) berkdb? ( sys-libs/db:= ) atm? ( net-dialup/linux-atm ) selinux? ( sys-libs/libselinux )
 SLOT=0
 SRC_URI=mirror://kernel/linux/utils/net/iproute2/iproute2-4.9.0.tar.xz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=46b4a115d5b5bdf9d7400ae93bba5c16

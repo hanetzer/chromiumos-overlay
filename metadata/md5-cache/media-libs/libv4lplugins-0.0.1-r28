@@ -10,5 +10,5 @@ RDEPEND=media-libs/libv4l
 REQUIRED_USE=^^ ( rockchip rockchip_v2 )
 SLOT=0
 SRC_URI=http://linuxtv.org/downloads/v4l-utils/v4l-utils-1.6.0.tar.bz2
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=2e88a7032f3b85f2c11b62e96ce7941c

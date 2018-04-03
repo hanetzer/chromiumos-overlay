@@ -9,5 +9,5 @@ LICENSE=BSD GPL-2
 RDEPEND=activefilter? ( net-libs/libpcap ) atm? ( net-dialup/linux-atm ) pam? ( virtual/pam ) gtk? ( x11-libs/gtk+:2 ) eap-tls? ( net-misc/curl dev-libs/openssl )
 SLOT=0/2.4.6
 SRC_URI=ftp://ftp.samba.org/pub/ppp/ppp-2.4.6.tar.gz http://dev.gentoo.org/~pinkbyte/distfiles/patches/ppp-2.4.6-patches-4.tar.xz http://www.netservers.net.uk/gpl/ppp-dhcpc.tgz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=ff1cfacaed9be553cc9dd22f55b5a1de

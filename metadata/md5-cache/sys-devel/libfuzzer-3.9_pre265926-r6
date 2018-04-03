@@ -6,5 +6,5 @@ HOMEPAGE=http://llvm.org/docs/LibFuzzer.html
 KEYWORDS=*
 LICENSE=UoI-NCSA
 SLOT=0/3.9_pre265926
-_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	bdc17905455f1449a612dacbae5f5d4b
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
 _md5_=db9c5b951c999394d740ee4167f005d0
