@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="~*"
 VIDEO_CARDS="
 	amdgpu exynos intel marvell mediatek msm
-	radeon radeonsi rockchip tegra virgl
+	radeon radeonsi rockchip tegra vc4 virgl
 "
 IUSE="-asan"
 for card in ${VIDEO_CARDS}; do
@@ -50,6 +50,7 @@ src_configure() {
 	use video_cards_radeonsi && append-cppflags -DDRV_RADEON && export DRV_RADEON=1
 	use video_cards_rockchip && append-cppflags -DDRV_ROCKCHIP && export DRV_ROCKCHIP=1
 	use video_cards_tegra && append-cppflags -DDRV_TEGRA && export DRV_TEGRA=1
+	use video_cards_vc4 && append-cppflags -DDRV_VC4 && export DRV_VC4=1
 	use video_cards_virgl && append-cppflags -DDRV_VIRGL && export DRV_VIRGL=1
 	cros-workon_src_configure
 }
