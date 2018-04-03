@@ -66,6 +66,7 @@ src_test() {
 			--exclude kvm_sys \
 			--exclude net_util -v \
 			--exclude qcow \
+			--exclude aarch64 \
 			--target="${CHOST}" -- --test-threads=1 \
 			|| die "cargo test failed"
 		# Plugin tests all require /dev/kvm, but we want to make sure they build
