@@ -86,7 +86,7 @@ src_install() {
 		doins dbus/"${dir}"/dbus-constants.h
 	done
 
-	dirs=( authpolicy biod chaps cryptohome login_manager power_manager smbprovider system_api vm_concierge )
+	dirs=( authpolicy biod chaps cryptohome login_manager power_manager smbprovider system_api vm_applications vm_concierge )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
