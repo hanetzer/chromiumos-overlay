@@ -1,0 +1,209 @@
+diff --git a/include/llvm/LTO/Config.h b/include/llvm/LTO/Config.h
+index 4bd981c090b..21ad781ad95 100644
+--- a/include/llvm/LTO/Config.h
++++ b/include/llvm/LTO/Config.h
+@@ -73,6 +73,12 @@ struct Config {
+   /// Sample PGO profile path.
+   std::string SampleProfile;
+ 
++  /// The directory to store .dwo files.
++  std::string DwoDir;
++
++  /// The objcopy binary used to extract dwo files.
++  std::string Objcopy;
++
+   /// Optimization remarks file path.
+   std::string RemarksFilename = "";
+ 
+diff --git a/lib/LTO/LTO.cpp b/lib/LTO/LTO.cpp
+index e9ac314e7c8..ec46af2a759 100644
+--- a/lib/LTO/LTO.cpp
++++ b/lib/LTO/LTO.cpp
+@@ -136,6 +136,8 @@ static void computeCacheKey(
+   AddString(Conf.AAPipeline);
+   AddString(Conf.OverrideTriple);
+   AddString(Conf.DefaultTriple);
++  if (!Conf.DwoDir.empty())
++    AddString(Conf.DwoDir);
+ 
+   // Include the hash for the current module
+   auto ModHash = Index.getModuleHash(ModuleID);
+diff --git a/lib/LTO/LTOBackend.cpp b/lib/LTO/LTOBackend.cpp
+index 074a3986015..991e2f380a8 100644
+--- a/lib/LTO/LTOBackend.cpp
++++ b/lib/LTO/LTOBackend.cpp
+@@ -30,6 +30,10 @@
+ #include "llvm/Passes/PassBuilder.h"
+ #include "llvm/Support/Error.h"
+ #include "llvm/Support/FileSystem.h"
++#include "llvm/Support/MemoryBuffer.h"
++#include "llvm/Support/Path.h"
++#include "llvm/Support/Program.h"
++#include "llvm/Support/raw_ostream.h"
+ #include "llvm/Support/TargetRegistry.h"
+ #include "llvm/Support/ThreadPool.h"
+ #include "llvm/Target/TargetMachine.h"
+@@ -279,11 +283,74 @@ bool opt(Config &Conf, TargetMachine *TM, unsigned Task, Module &Mod,
+   return !Conf.PostOptModuleHook || Conf.PostOptModuleHook(Task, Mod);
+ }
+ 
++void codegenWithSplitDwarf(Config &Conf, TargetMachine *TM,
++                           AddStreamFn AddStream, unsigned Task, Module &Mod) {
++  SmallString<128> TempFile;
++  int FD = -1;
++  if (auto EC =
++      sys::fs::createTemporaryFile("lto-llvm-fission", "o", FD, TempFile))
++    report_fatal_error("Could not create temporary file " +
++        TempFile.str() + ": " + EC.message());
++  llvm::raw_fd_ostream OS(FD, true);
++  SmallString<1024> DwarfFile(Conf.DwoDir);
++  std::string DwoName = sys::path::filename(Mod.getModuleIdentifier()).str() +
++      "-" + std::to_string(Task) + "-";
++  size_t index = TempFile.str().rfind("lto-llvm-fission");
++  StringRef TempID = TempFile.str().substr(index + 17, 6);
++  DwoName += TempID.str() + ".dwo";
++  sys::path::append(DwarfFile, DwoName);
++  TM->Options.MCOptions.SplitDwarfFile = DwarfFile.str().str();
++
++  legacy::PassManager CodeGenPasses;
++  if (TM->addPassesToEmitFile(CodeGenPasses, OS, Conf.CGFileType))
++    report_fatal_error("Failed to setup codegen");
++  CodeGenPasses.run(Mod);
++
++  if (auto EC = llvm::sys::fs::create_directories(Conf.DwoDir))
++    report_fatal_error("Failed to create directory " +
++		       Conf.DwoDir + ": " + EC.message());
++
++  SmallVector<const char*, 5> ExtractArgs, StripArgs;
++  ExtractArgs.push_back(Conf.Objcopy.c_str());
++  ExtractArgs.push_back("--extract-dwo");
++  ExtractArgs.push_back(TempFile.c_str());
++  ExtractArgs.push_back(TM->Options.MCOptions.SplitDwarfFile.c_str());
++  ExtractArgs.push_back(nullptr);
++  StripArgs.push_back(Conf.Objcopy.c_str());
++  StripArgs.push_back("--strip-dwo");
++  StripArgs.push_back(TempFile.c_str());
++  StripArgs.push_back(nullptr);
++
++  if (auto Ret = sys::ExecuteAndWait(Conf.Objcopy, ExtractArgs.data())) {
++    report_fatal_error("Failed to extract dwo from " + TempFile.str() +
++        ". Exit code " + std::to_string(Ret));
++  }
++  if (auto Ret = sys::ExecuteAndWait(Conf.Objcopy, StripArgs.data())) {
++    report_fatal_error("Failed to strip dwo from " + TempFile.str() +
++        ". Exit code " + std::to_string(Ret));
++  }
++
++  auto Stream = AddStream(Task);
++  auto Buffer = MemoryBuffer::getFile(TempFile);
++  if (auto EC = Buffer.getError())
++    report_fatal_error("Failed to load file " +
++                       TempFile.str() + ": " + EC.message());
++  *Stream->OS << Buffer.get()->getBuffer();
++  if (auto EC = sys::fs::remove(TempFile))
++    report_fatal_error("Failed to delete file " +
++                       TempFile.str() + ": " + EC.message());
++}
++
+ void codegen(Config &Conf, TargetMachine *TM, AddStreamFn AddStream,
+              unsigned Task, Module &Mod) {
+   if (Conf.PreCodeGenModuleHook && !Conf.PreCodeGenModuleHook(Task, Mod))
+     return;
+ 
++  if (!Conf.DwoDir.empty()) {
++    codegenWithSplitDwarf(Conf, TM, AddStream, Task, Mod);
++    return;
++  }
++
+   auto Stream = AddStream(Task);
+   legacy::PassManager CodeGenPasses;
+   if (TM->addPassesToEmitFile(CodeGenPasses, *Stream->OS, Conf.CGFileType))
+diff --git a/tools/gold/gold-plugin.cpp b/tools/gold/gold-plugin.cpp
+index 19804a1ff12..08a872e9176 100644
+--- a/tools/gold/gold-plugin.cpp
++++ b/tools/gold/gold-plugin.cpp
+@@ -185,6 +185,10 @@ namespace options {
+   static std::string sample_profile;
+   // New pass manager
+   static bool new_pass_manager = false;
++  // Objcopy to debug fission.
++  static std::string objcopy;
++  // Directory to store the .dwo files.
++  static std::string dwo_dir;
+ 
+   static void process_plugin_option(const char *opt_)
+   {
+@@ -243,10 +247,14 @@ namespace options {
+     } else if (opt == "disable-verify") {
+       DisableVerify = true;
+     } else if (opt.startswith("sample-profile=")) {
+-      sample_profile= opt.substr(strlen("sample-profile="));
++      sample_profile = opt.substr(strlen("sample-profile="));
+     } else if (opt == "new-pass-manager") {
+       new_pass_manager = true;
+-    } else {
++    } else if (opt.startswith("objcopy=")) {
++      objcopy = opt.substr(strlen("objcopy="));
++    } else if (opt.startswith("dwo_dir=")) {
++      dwo_dir = opt.substr(strlen("dwo_dir="));
++    }else {
+       // Save this option to pass to the code generator.
+       // ParseCommandLineOptions() expects argv[0] to be program name. Lazily
+       // add that.
+@@ -803,6 +811,12 @@ static std::unique_ptr<LTO> createLTO(IndexWriteCallback OnIndexWrite,
+   if (!options::sample_profile.empty())
+     Conf.SampleProfile = options::sample_profile;
+ 
++  if (!options::dwo_dir.empty())
++    Conf.DwoDir = options::dwo_dir;
++
++  if (!options::objcopy.empty())
++    Conf.Objcopy = options::objcopy;
++
+   // Use new pass manager if set in driver
+   Conf.UseNewPM = options::new_pass_manager;
+ 
+--- a/tools/clang/docs/ClangCommandLineReference.rst
++++ b/tools/clang/docs/ClangCommandLineReference.rst
+@@ -2587,6 +2587,8 @@ Debug information flags
+ 
+ .. option:: -gstrict-dwarf, -gno-strict-dwarf
+ 
++.. option:: -glto-dwo-dir=<arg>
++
+ .. option:: -gz
+ 
+ DWARF debug sections compression type
+diff --git a/include/clang/Driver/Options.td b/include/clang/Driver/Options.td
+index 6925157d2e..83a4f5bc86 100644
+--- a/tools/clang/include/clang/Driver/Options.td
++++ b/tools/clang/include/clang/Driver/Options.td
+@@ -1700,6 +1700,7 @@ def gno_strict_dwarf : Flag<["-"], "gno-strict-dwarf">, Group<g_flags_Group>;
+ def gcolumn_info : Flag<["-"], "gcolumn-info">, Group<g_flags_Group>, Flags<[CoreOption]>;
+ def gno_column_info : Flag<["-"], "gno-column-info">, Group<g_flags_Group>, Flags<[CoreOption]>;
+ def gsplit_dwarf : Flag<["-"], "gsplit-dwarf">, Group<g_flags_Group>;
++def glto_dwo_dir_EQ : Joined<["-"], "glto-dwo-dir=">, Group<g_flags_Group>;
+ def ggnu_pubnames : Flag<["-"], "ggnu-pubnames">, Group<g_flags_Group>, Flags<[CC1Option]>;
+ def gdwarf_aranges : Flag<["-"], "gdwarf-aranges">, Group<g_flags_Group>;
+ def gmodules : Flag <["-"], "gmodules">, Group<gN_Group>,
+diff --git a/lib/Driver/ToolChains/CommonArgs.cpp b/lib/Driver/ToolChains/CommonArgs.cpp
+index 17ab82e97c..67992a655e 100644
+--- a/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
++++ b/tools/clang/lib/Driver/ToolChains/CommonArgs.cpp
+@@ -415,6 +415,16 @@ void tools::AddGoldPlugin(const ToolChain &ToolChain, const ArgList &Args,
+   if (IsThinLTO)
+     CmdArgs.push_back("-plugin-opt=thinlto");
+ 
++  if (Arg *A = Args.getLastArg(options::OPT_glto_dwo_dir_EQ)) {
++    const char *Objcopy =
++        Args.MakeArgString(ToolChain.GetProgramPath(CLANG_DEFAULT_OBJCOPY));
++    CmdArgs.push_back(
++        Args.MakeArgString(Twine("-plugin-opt=objcopy=") + Objcopy));
++    StringRef DWO_Dir = A->getValue();
++    CmdArgs.push_back(
++        Args.MakeArgString(Twine("-plugin-opt=dwo_dir=") + DWO_Dir));
++  }
++
+   if (unsigned Parallelism = getLTOParallelism(Args, D))
+     CmdArgs.push_back(
+         Args.MakeArgString("-plugin-opt=jobs=" + Twine(Parallelism)));

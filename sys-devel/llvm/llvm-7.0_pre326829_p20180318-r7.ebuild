@@ -257,6 +257,12 @@ src_prepare() {
 	# Convert to cherry-pick once https://reviews.llvm.org/D44848 is merged.
 	epatch "${FILESDIR}"/llvm-7.0-stub-alignment.patch
 
+	# This is need by thinlto on ARM.
+	# Convert to cherry-picks once
+	# https://reviews.llvm.org/D44792 and
+	# https://reviews.llvm.org/D44788 are merged.
+	epatch "${FILESDIR}"/llvm-7.0-flto-fission.patch
+
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 
