@@ -11,10 +11,6 @@ chromeos-base/chromeos-chrome smbprovider
 # doesn't compile for arm yet.
 chromeos-base/chromeos-chrome authpolicy
 
-# Yunlian Jiang <yunlian@chromium.org> (10 Jan 2018)
-# ThinLTO does not work on arm because the unstripped binary size exceeds 4GB.
-chromeos-base/chromeos-chrome thinlto
-
 # Markus Meier <maekke@gentoo.org> (27 Sep 2009)
 # mask media-gfx/imagemagick[autotrace] as autotrace is not keyworded
 media-gfx/imagemagick autotrace
