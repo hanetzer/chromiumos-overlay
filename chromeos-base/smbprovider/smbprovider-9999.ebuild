@@ -31,6 +31,7 @@ DEPEND="
 	${RDEPEND}
 	chromeos-base/protofiles:=
 	chromeos-base/system_api
+	chromeos-base/libpasswordprovider
 "
 
 pkg_preinst() {
