@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages required for the Chromium OS Printing subsystem
+EAPI=5
+HOMEPAGE=http://dev.chromium.org/
+IUSE=postscript
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=net-print/cups net-print/cups-filters postscript? ( net-print/hplip )
+SLOT=0
+_md5_=5591719e7d17edec028c0a4b6f8db951
