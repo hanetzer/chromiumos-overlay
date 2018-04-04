@@ -29,16 +29,25 @@ RDEPEND="
 	chromeos-base/minijail
 	dev-libs/grpc
 	dev-libs/protobuf:=
+	media-libs/minigbm
+	x11-base/xwayland
+	x11-libs/libxkbcommon
+	x11-libs/pixman
 "
 DEPEND="
 	${RDEPEND}
-	>=sys-kernel/linux-headers-4.4-r10
+	>=sys-kernel/linux-headers-4.4-r16
 "
 
+src_configure() {
+	platform_src_configure "vm_tools/sommelier/sommelier.gyp"
+}
+
 src_install() {
+	dobin "${OUT}"/garcon
+	dobin "${OUT}"/sommelier
 	dobin "${OUT}"/virtwl_guest_proxy
 	dobin "${OUT}"/vm_syslog
-	dobin "${OUT}"/garcon
 	dosbin "${OUT}"/vshd
 
 	into /
