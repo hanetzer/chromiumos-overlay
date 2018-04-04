@@ -20,13 +20,19 @@ DEPEND="
 	chromeos-base/vm_guest_tools
 	dev-libs/grpc
 	dev-libs/protobuf:=
+	x11-apps/xkbcomp
+	x11-base/xwayland
 "
 
 src_install() {
 	"${CHROMITE_BIN_DIR}"/lddtree --root="${SYSROOT}" --bindir=/bin \
 			--libdir=/lib --generate-wrappers \
-			--copy-to-tree="${WORKDIR}"/garcon_pkg/ /usr/bin/garcon
-	insinto /opt/google/garcon
+			--copy-to-tree="${WORKDIR}"/container_pkg/ \
+			/usr/bin/garcon \
+			/usr/bin/sommelier \
+			/usr/bin/Xwayland \
+			/usr/bin/xkbcomp
+	insinto /opt/google/cros-containers
 	insopts -m0755
-	doins -r "${WORKDIR}"/garcon_pkg/*
+	doins -r "${WORKDIR}"/container_pkg/*
 }
