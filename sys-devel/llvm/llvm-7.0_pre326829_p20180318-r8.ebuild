@@ -199,6 +199,7 @@ pick_cherries() {
 	CHERRIES=""
 	CHERRIES+=" 824eedb9eb4888575924b1ed80c4250dddd5b59b" # r327198
 	CHERRIES+=" 2755819705e9c2116f4ef72e1273303c6a56c520" # r327761
+	CHERRIES+=" aa2d256782e57f9dc5a4421cef1d01444bb7fbb1" # r329030
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -227,6 +228,7 @@ pick_next_cherries() {
 	# llvm
 	CHERRIES=""
 	CHERRIES+=" 2755819705e9c2116f4ef72e1273303c6a56c520" # r327761
+	CHERRIES+=" aa2d256782e57f9dc5a4421cef1d01444bb7fbb1" # r329030
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -252,10 +254,6 @@ src_prepare() {
 	use llvm-next && epatch "${FILESDIR}"/llvm-7.0-mssa-bugfix.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
-
-	# crbug/824983 and crbug/822053
-	# Convert to cherry-pick once https://reviews.llvm.org/D44848 is merged.
-	epatch "${FILESDIR}"/llvm-7.0-stub-alignment.patch
 
 	# This is need by thinlto on ARM.
 	# Convert to cherry-picks once

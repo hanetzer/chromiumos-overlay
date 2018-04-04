@@ -1,12 +1,15 @@
-Align stubs for external and common global variables to pointer size.
+commit aa2d256782e57f9dc5a4421cef1d01444bb7fbb1
+Author: Rafael Espindola <rafael.espindola@gmail.com>
+Date:   2018-04-02
 
-This patch fixes PR36885: clang++ generates unaligned stub symbol
-holding a pointer (https://bugs.llvm.org/show_bug.cgi?id=36885).
-
-For https://bugs.chromium.org/p/chromium/issues/detail?id=824983
-and https://bugs.chromium.org/p/chromium/issues/detail?id=822053
-
-Differential Revision (upstream): https://reviews.llvm.org/D44848
+    Align stubs for external and common global variables to pointer size.
+    
+    This patch fixes PR36885: clang++ generates unaligned stub symbol
+    holding a pointer.
+    
+    Patch by Rahul Chaudhry!
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@329030 91177308-0d34-0410-b5e6-96231b3b80d8
 
 --- lib/CodeGen/AsmPrinter/AsmPrinter.cpp
 +++ lib/CodeGen/AsmPrinter/AsmPrinter.cpp
