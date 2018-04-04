@@ -46,7 +46,7 @@ src_install() {
 
 	# Install init scripts.
 	if use systemd; then
-		local units=("mosys-info.service" "firmware-version.service")
+		local units=("firmware-version.service")
 		systemd_dounit init/*.service
 		for unit in "${units[@]}"; do
 			systemd_enable_service system-services.target ${unit}
