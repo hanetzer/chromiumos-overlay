@@ -1,0 +1,27 @@
+diff --git a/chromiumos-wide-profiling/perf_parser.cc b/chromiumos-wide-profiling/perf_parser.cc
+index 33ddbe2..79e4a89 100644
+--- a/chromiumos-wide-profiling/perf_parser.cc
++++ b/chromiumos-wide-profiling/perf_parser.cc
+@@ -188,7 +188,7 @@ bool PerfParser::ProcessEvents() {
+         break;
+       default:
+         LOG(ERROR) << "Unknown event type: " << event.header.type;
+-        return false;
++        break;
+     }
+   }
+   // Print stats collected from parsing.
+@@ -231,6 +231,13 @@ void PerfParser::MaybeSortParsedEvents() {
+       continue;
+     }
+ 
++    if (!reader_.IsSupportedEventType(parsed_event.raw_event->header.type) &&
++        parsed_event.raw_event->header.type != PERF_RECORD_READ) {
++      LOG(ERROR) << "Skipping sorting for unknown event type: " <<
++                    parsed_event.raw_event->header.type;
++      continue;
++    }
++
+     std::unique_ptr<EventAndTime> event_and_time(new EventAndTime);
+ 
+     // Store the timestamp and event pointer in an array.

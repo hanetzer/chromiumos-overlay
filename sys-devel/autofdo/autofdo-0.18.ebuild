@@ -21,6 +21,9 @@ DEPEND="dev-libs/openssl
 RDEPEND="${DEPEND}"
 
 src_prepare() {
+	# Changes to perf introduce new events. Ignore unknown ones.
+	epatch "${FILESDIR}/autofdo-0.18-unsupported_perf_events.patch"
+
 	# The upstream tarball does not have aclocal.m4, and the upstream
 	# Makefile.in is generated from automake 1.15. We are still using
 	# automake 1.14. This mismatch makes the build fail.
