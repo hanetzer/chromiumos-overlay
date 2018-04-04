@@ -30,7 +30,6 @@ RDEPEND="
 	chromeos-base/metrics
 	chromeos-base/nsswitch
 	wimax? ( chromeos-base/wimax_manager )
-	dev-libs/dbus-c++
 	cellular? ( net-dialup/ppp )
 	pppoe? ( net-dialup/ppp )
 	vpn? ( net-dialup/ppp )
@@ -49,7 +48,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/permission_broker-client
 	chromeos-base/shill-client
 	chromeos-base/power_manager-client
 	chromeos-base/system_api
