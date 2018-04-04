@@ -50,7 +50,7 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD vulkan xlib-glx X"
+	shared-glapi kernel_FreeBSD vulkan wayland xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 
@@ -81,6 +81,7 @@ DEPEND="${RDEPEND}
 	sys-devel/flex
 	virtual/pkgconfig
 	>=x11-proto/dri2proto-2.6
+	wayland? ( >=dev-libs/wayland-protocols-1.8 )
 	X? (
 		>=x11-proto/glproto-1.4.11
 		>=x11-proto/xextproto-7.0.99.1
@@ -193,6 +194,19 @@ src_configure() {
 		LLVM_ENABLE="--enable-llvm"
 	fi
 
+	local egl_platforms=""
+	if use egl; then
+		egl_platforms="--with-platforms=surfaceless"
+
+		if use X; then
+			egl_platforms="${egl_platforms},x11"
+		fi
+
+		if use wayland; then
+			egl_platforms="${egl_platforms},wayland"
+		fi
+	fi
+
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
 	econf \
 		--disable-option-checking \
@@ -223,7 +237,8 @@ src_configure() {
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
 		${LLVM_ENABLE} \
-		$(use egl && echo "--with-platforms=surfaceless")
+		"${egl_platforms}"
+
 }
 
 src_install() {
