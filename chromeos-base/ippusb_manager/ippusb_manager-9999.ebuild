@@ -23,6 +23,7 @@ IUSE=""
 RDEPEND="
 	chromeos-base/minijail
 	chromeos-base/libbrillo
+	net-print/ippusbxd
 	virtual/libusb:1=
 "
 
