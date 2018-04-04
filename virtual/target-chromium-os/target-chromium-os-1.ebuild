@@ -11,6 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os instead.
 IUSE="
+	android-container-pi
 	biod
 	bluetooth
 	bootchart
@@ -176,6 +177,7 @@ CROS_COMMON_RDEPEND+="
 	power_management? ( chromeos-base/power_manager )
 	!chromeos-base/platform2
 	profile? ( chromeos-base/quipper )
+	android-container-pi? ( chromeos-base/selinux-policy )
 	shill? ( chromeos-base/shill )
 	chromeos-base/update_engine
 	vpn? ( chromeos-base/vpn-manager )
