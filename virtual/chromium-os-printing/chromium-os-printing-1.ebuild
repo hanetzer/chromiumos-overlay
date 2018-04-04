@@ -13,6 +13,7 @@ KEYWORDS="*"
 IUSE="postscript"
 
 RDEPEND="
+	chromeos-base/ippusb_manager
 	net-print/cups
 	net-print/cups-filters
 	postscript? ( net-print/hplip )
