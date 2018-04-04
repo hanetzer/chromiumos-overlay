@@ -41,6 +41,9 @@
 	<flag name='linux_firmware_i915_cnl'>
 		Install CNL firmware files for i915 driver
 	</flag>
+	<flag name='linux_firmware_i915_glk'>
+		Install GLK firmware files for i915 driver
+	</flag>
 	<flag name='linux_firmware_i915_kbl'>
 		Install KBL firmware files for i915 driver
 	</flag>

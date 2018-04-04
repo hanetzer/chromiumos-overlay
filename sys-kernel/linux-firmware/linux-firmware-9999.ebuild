@@ -62,6 +62,7 @@ IUSE_LINUX_FIRMWARE=(
 	fw_sst2
 	i915_bxt
 	i915_cnl
+	i915_glk
 	i915_kbl
 	i915_skl
 	ibt_9260
@@ -100,6 +101,7 @@ LICENSE="
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_i915_bxt? ( LICENSE.i915 )
 	linux_firmware_i915_cnl? ( LICENSE.i915 )
+	linux_firmware_i915_glk? ( LICENSE.i915 )
 	linux_firmware_i915_kbl? ( LICENSE.i915 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_ipu3_fw? ( LICENSE.ipu3_firmware )
@@ -186,6 +188,7 @@ src_install() {
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw i915_bxt && doins_subdir i915/bxt*
 	use_fw i915_cnl && doins_subdir i915/cnl*
+	use_fw i915_glk && doins_subdir i915/glk*
 	use_fw i915_kbl && doins_subdir i915/kbl*
 	use_fw i915_skl && doins_subdir i915/skl*
 	# ipu3-fw.bin is a symlink to irci_*.bin
