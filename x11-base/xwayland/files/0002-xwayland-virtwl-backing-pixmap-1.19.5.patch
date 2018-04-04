@@ -1,0 +1,188 @@
+From 4a6fbe6f31426f6bd5a51466be477ff86a2a94c8 Mon Sep 17 00:00:00 2001
+From: Stephen Barber <smbarber@chromium.org>
+Date: Fri, 6 Apr 2018 17:00:06 -0700
+Subject: [PATCH] xwayland virtwl backing pixmap 1.19.5
+
+---
+ hw/xwayland/xwayland-cursor.c |  3 +-
+ hw/xwayland/xwayland-shm.c    | 97 +++++++++--------------------------
+ include/scrnintstr.h          |  2 +
+ 3 files changed, 27 insertions(+), 75 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-cursor.c b/hw/xwayland/xwayland-cursor.c
+index f334f1ca5..294dd7e2f 100644
+--- a/hw/xwayland/xwayland-cursor.c
++++ b/hw/xwayland/xwayland-cursor.c
+@@ -66,7 +66,8 @@ xwl_realize_cursor(DeviceIntPtr device, ScreenPtr screen, CursorPtr cursor)
+     PixmapPtr pixmap;
+ 
+     pixmap = xwl_shm_create_pixmap(screen, cursor->bits->width,
+-                                   cursor->bits->height, 32, 0);
++                                   cursor->bits->height, 32,
++                                   CREATE_PIXMAP_USAGE_CURSOR);
+     dixSetPrivate(&cursor->devPrivates, &xwl_cursor_private_key, pixmap);
+ 
+     return TRUE;
+diff --git a/hw/xwayland/xwayland-shm.c b/hw/xwayland/xwayland-shm.c
+index 452d1f509..17618ac60 100644
+--- a/hw/xwayland/xwayland-shm.c
++++ b/hw/xwayland/xwayland-shm.c
+@@ -32,6 +32,7 @@
+ 
+ #include "xwayland.h"
+ 
++#include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+@@ -40,13 +41,14 @@
+ #include <string.h>
+ #include <stdlib.h>
+ 
++#include <linux/virtwl.h>
++
+ struct xwl_pixmap {
+     struct wl_buffer *buffer;
+     void *data;
+     size_t size;
+ };
+ 
+-#ifndef HAVE_MKOSTEMP
+ static int
+ set_cloexec_or_close(int fd)
+ {
+@@ -68,27 +70,6 @@ set_cloexec_or_close(int fd)
+     close(fd);
+     return -1;
+ }
+-#endif
+-
+-static int
+-create_tmpfile_cloexec(char *tmpname)
+-{
+-    int fd;
+-
+-#ifdef HAVE_MKOSTEMP
+-    fd = mkostemp(tmpname, O_CLOEXEC);
+-    if (fd >= 0)
+-        unlink(tmpname);
+-#else
+-    fd = mkstemp(tmpname);
+-    if (fd >= 0) {
+-        fd = set_cloexec_or_close(fd);
+-        unlink(tmpname);
+-    }
+-#endif
+-
+-    return os_move_fd(fd);
+-}
+ 
+ /*
+  * Create a new, unique, anonymous file of the given size, and
+@@ -114,62 +95,29 @@ create_tmpfile_cloexec(char *tmpname)
+ static int
+ os_create_anonymous_file(off_t size)
+ {
+-    static const char template[] = "/xwayland-shared-XXXXXX";
+-    const char *path;
+-    char *name;
+-    int fd;
+-    int ret;
+-
+-    path = getenv("XDG_RUNTIME_DIR");
+-    if (!path) {
+-        errno = ENOENT;
+-        return -1;
+-    }
+-
+-    name = malloc(strlen(path) + sizeof(template));
+-    if (!name)
+-        return -1;
++	struct virtwl_ioctl_new virtwl_ioctl_new = {
++		.type = VIRTWL_IOCTL_NEW_ALLOC,
++		.fd = -1,
++		.flags = 0,
++		.size = size
++	};
++	int wl_fd = -1;
++	int fd;
++	int ret;
+ 
+-    strcpy(name, path);
+-    strcat(name, template);
++	wl_fd = open("/dev/wl0", O_RDWR);
++	if (wl_fd < 0)
++		return -1;
+ 
+-    fd = create_tmpfile_cloexec(name);
+-
+-    free(name);
+-
+-    if (fd < 0)
+-        return -1;
++	ret = ioctl(wl_fd, VIRTWL_IOCTL_NEW, &virtwl_ioctl_new);
++	close(wl_fd);
+ 
+-#ifdef HAVE_POSIX_FALLOCATE
+-    /*
+-     * posix_fallocate does an explicit rollback if it gets EINTR.
+-     * Temporarily block signals to allow the call to succeed on
+-     * slow systems where the smart scheduler's SIGALRM prevents
+-     * large allocation attempts from ever succeeding.
+-     */
+-    OsBlockSignals();
+-    do {
+-        ret = posix_fallocate(fd, 0, size);
+-    } while (ret == EINTR);
+-    OsReleaseSignals();
+-
+-    if (ret != 0) {
+-        close(fd);
+-        errno = ret;
+-        return -1;
+-    }
+-#else
+-    do {
+-        ret = ftruncate(fd, size);
+-    } while (ret == -1 && errno == EINTR);
++	if (ret)
++		return -1;
+ 
+-    if (ret < 0) {
+-        close(fd);
+-        return -1;
+-    }
+-#endif
++	fd = set_cloexec_or_close(virtwl_ioctl_new.fd);
+ 
+-    return fd;
++	return fd;
+ }
+ 
+ static uint32_t
+@@ -201,7 +149,8 @@ xwl_shm_create_pixmap(ScreenPtr screen,
+     uint32_t format;
+     int fd;
+ 
+-    if (hint == CREATE_PIXMAP_USAGE_GLYPH_PICTURE ||
++    if ((hint != CREATE_PIXMAP_USAGE_BACKING_PIXMAP &&
++         hint != CREATE_PIXMAP_USAGE_CURSOR) ||
+         (width == 0 && height == 0) || depth < 15)
+         return fbCreatePixmap(screen, width, height, depth, hint);
+ 
+diff --git a/include/scrnintstr.h b/include/scrnintstr.h
+index f898392fe..8ee244acb 100644
+--- a/include/scrnintstr.h
++++ b/include/scrnintstr.h
+@@ -185,6 +185,8 @@ typedef void (*ClipNotifyProcPtr) (WindowPtr /*pWindow */ ,
+ #define CREATE_PIXMAP_USAGE_GLYPH_PICTURE               3
+ /* pixmap will be shared */
+ #define CREATE_PIXMAP_USAGE_SHARED                      4
++/* pixmap will be backing pixmap for a cursor */
++#define CREATE_PIXMAP_USAGE_CURSOR                      5
+ 
+ typedef PixmapPtr (*CreatePixmapProcPtr) (ScreenPtr /*pScreen */ ,
+                                           int /*width */ ,
+-- 
+2.17.0.484.g0c8726318c-goog
+
