@@ -24,7 +24,8 @@ CROS_GO_TEST=(
 	#Flaky: "golang.org/x/oauth2/internal"
 	"golang.org/x/oauth2/jws"
 	"golang.org/x/oauth2/jwt"
-	"golang.org/x/oauth2/google"
+	# Needs to import "google.golang.org/appengine", which we don't have.
+	# "golang.org/x/oauth2/google"
 )
 
 inherit cros-workon cros-go
