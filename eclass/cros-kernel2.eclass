@@ -51,6 +51,7 @@ IUSE="
 	tpm2
 	-kernel_afdo
 	test
+	-criu
 "
 REQUIRED_USE="
 	fit_compression_kernel_lz4? ( !fit_compression_kernel_lzma )
@@ -115,6 +116,7 @@ CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
 	cifs
+	criu
 	cros_ec_mec
 	devdebug
 	dm_snapshot
@@ -203,6 +205,23 @@ CONFIG_SND_HDA_DSP_LOADER=y
 cifs_desc="Samba/CIFS Support"
 cifs_config="
 CONFIG_CIFS=m
+"
+
+criu_desc="Flags required if you wish to use the criu python library"
+criu_config="
+CONFIG_CHECKPOINT_RESTORE=y
+CONFIG_EPOLL=y
+CONFIG_EVENTFD=y
+CONFIG_FHANDLE=y
+CONFIG_IA32_EMULATION=y
+CONFIG_INET_DIAG=y
+CONFIG_INET_UDP_DIAG=y
+CONFIG_INOTIFY_USER=y
+CONFIG_NAMESPACES=y
+CONFIG_NETLINK_DIAG=y
+CONFIG_PACKET_DIAG=y
+CONFIG_PID_NS=y
+CONFIG_UNIX_DIAG=y
 "
 
 cros_ec_mec_desc="LPC Support for Microchip Embedded Controller"
@@ -1327,8 +1346,8 @@ cros-kernel2_src_test() {
 	local build_dir="$(cros-workon_get_build_dir)"
 	local no_line_numbers_file="${build_dir}/no_line_numbers.log"
 	sed -r -e "s/(:[0-9]+){1,2}//" \
-	       -e "s/\(see line [0-9]+\)//" \
-	       "${SMATCH_ERROR_FILE}" > "${no_line_numbers_file}"
+			-e "s/\(see line [0-9]+\)//" \
+			"${SMATCH_ERROR_FILE}" > "${no_line_numbers_file}"
 
 	# For every smatch error that came up during the build, check if it is
 	# in the error database file.
@@ -1337,7 +1356,7 @@ cros-kernel2_src_test() {
 	while read line; do
 		local no_line_num=$(echo "${line}" | \
 			sed -r -e "s/(:[0-9]+){1,2}//" \
-			       -e "s/\(see line [0-9]+\)//")
+					-e "s/\(see line [0-9]+\)//")
 		if ! fgrep -q "${no_line_num}" "${no_line_numbers_file}"; then
 			eerror "Non-whitelisted error found: \"${line}\""
 			: $(( ++num_unknown_errors ))
