@@ -3,7 +3,7 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT=("e456795c0641818a345caad05834efcb9b8f8132" "b6c5d439009df6f539dca2ec53199ad504f9330a")
+CROS_WORKON_COMMIT=("d743bf70e4f4d8eb7659aff5853f3d3ded28bfc8" "b6c5d439009df6f539dca2ec53199ad504f9330a")
 CROS_WORKON_TREE=("61b4b0c05e003fddaa705031945fece7f560c7d7" "5a4e7fbc67fba27d1ca48e72ee716e33ccdd6c8c")
 CROS_GO_PACKAGES=(
 	"chromiumos/system_api/vm_concierge"
@@ -88,7 +88,7 @@ src_install() {
 		doins dbus/"${dir}"/dbus-constants.h
 	done
 
-	dirs=( authpolicy biod chaps cryptohome login_manager power_manager smbprovider system_api vm_concierge )
+	dirs=( authpolicy biod chaps cryptohome login_manager power_manager smbprovider system_api vm_applications vm_concierge )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
