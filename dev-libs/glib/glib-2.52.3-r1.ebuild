@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 # Until bug #537330 glib is a reverse dependency of pkgconfig and, then
@@ -15,11 +15,11 @@ inherit autotools bash-completion-r1 epunt-cxx flag-o-matic gnome2 libtool linux
 	multilib multilib-minimal pax-utils python-r1 toolchain-funcs versionator virtualx
 
 DESCRIPTION="The GLib library of C routines"
-HOMEPAGE="http://www.gtk.org/"
+HOMEPAGE="https://www.gtk.org/"
 SRC_URI="${SRC_URI}
 	https://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz" # pkg.m4 for eautoreconf
 
-LICENSE="LGPL-2+"
+LICENSE="LGPL-2.1+"
 SLOT="2"
 IUSE="cros_host dbus debug doc fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
 REQUIRED_USE="
@@ -51,12 +51,10 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}
-	doc? (
-		app-text/docbook-xml-dtd:4.1.2
-		>=dev-libs/libxslt-1.0
-		>=dev-util/gtk-doc-am-1.20
-	)
+	app-text/docbook-xml-dtd:4.1.2
+	>=dev-libs/libxslt-1.0
 	>=sys-devel/gettext-0.11
+	>=dev-util/gtk-doc-am-1.20
 	systemtap? ( >=dev-util/systemtap-1.3 )
 	test? (
 		sys-devel/gdb
@@ -118,9 +116,6 @@ src_prepare() {
 		# Don't build tests, also prevents extra deps, bug #512022
 		sed -i -e 's/ tests//' {.,gio,glib}/Makefile.am || die
 	fi
-
-	# Fix tests with timezone-data-2017a and newer
-	epatch "${FILESDIR}"/${P}-fix-gdatetime-tests.patch
 
 	# gdbus-codegen is a separate package
 	epatch "${FILESDIR}"/${PN}-2.50.0-external-gdbus-codegen.patch
@@ -188,10 +183,9 @@ multilib_src_configure() {
 		$(use_enable static-libs static) \
 		$(use_enable systemtap dtrace) \
 		$(use_enable systemtap systemtap) \
-		$(use_enable doc man) \
-		$(use_enable doc gtk-doc-html) \
 		$(multilib_native_use_enable utils libelf) \
 		--disable-compile-warnings \
+		--enable-man \
 		--with-pcre=system \
 		--with-xml-catalog="${EPREFIX}/etc/xml/catalog"
 
