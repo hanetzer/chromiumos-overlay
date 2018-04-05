@@ -23,7 +23,8 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
-RESTRICT="binchecks strip"
+# Unittests cannot be run from emerge as it overrides ${HOME}.
+RESTRICT="binchecks test strip"
 
 DEPEND=""
 RDEPEND="${DEPEND}"
