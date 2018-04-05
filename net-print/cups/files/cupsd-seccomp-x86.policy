@@ -126,5 +126,3 @@ unlinkat: 1
 wait4: 1
 waitpid: 1
 write: 1
-# TODO(https://crbug.com/816789): Remove when gnutls is upgraded.
-writev: 1
