@@ -53,6 +53,8 @@ platform_pkg_test() {
 		fake_cros_config_unittest
 		cros_config_unittest
 		cros_config_main_unittest
+		cros_config_json_unittest
+		cros_config_main_json_unittest
 	)
 
 	local test_bin
