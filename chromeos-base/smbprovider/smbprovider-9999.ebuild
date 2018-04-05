@@ -49,6 +49,9 @@ src_install() {
 
 	insinto /etc/init
 	doins etc/init/smbproviderd.conf
+
+	insinto /usr/share/policy
+	newins seccomp_filters/smbprovider-seccomp-"${ARCH}".policy smbprovider-seccomp.policy
 }
 
 platform_pkg_test() {
