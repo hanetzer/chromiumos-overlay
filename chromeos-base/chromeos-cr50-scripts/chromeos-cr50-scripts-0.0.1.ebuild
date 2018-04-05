@@ -19,24 +19,30 @@ RDEPEND="
 S="${WORKDIR}"
 
 src_install() {
-	local cros_files
+	local files
 	local f
 
 	insinto /etc/init
-	doins "${FILESDIR}/"cr50-update.conf
-	doins "${FILESDIR}"/cr50-result.conf
+	files=(
+		cr50-metrics.conf
+		cr50-result.conf
+		cr50-update.conf
+	)
+	for f in "${files[@]}"; do
+		doins "${FILESDIR}/${f}"
+	done
 
 	udev_dorules "${FILESDIR}"/99-cr50.rules
 
 	exeinto /usr/share/cros
-	cros_files=(
+	files=(
 		cr50-get-name.sh
 		cr50-reset.sh
 		cr50-set-board-id.sh
 		cr50-update.sh
 		cr50-verify-ro.sh
 	)
-	for f in "${cros_files[@]}"; do
+	for f in "${files[@]}"; do
 		doexe "${FILESDIR}/${f}"
 	done
 
