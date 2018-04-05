@@ -23,10 +23,6 @@ CROS_GO_PACKAGES=(
 	"go.chromium.org/luci/common/tsmon/types"
 )
 
-CROS_GO_TEST=(
-	"${CROS_GO_PACKAGES[@]}"
-)
-
 inherit cros-workon cros-go
 
 DESCRIPTION="LUCI Go tsmon library"
@@ -36,7 +32,8 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
-RESTRICT="binchecks strip"
+# Tests import "github.com/smartystreets/goconvey/convey", which we don't have.
+RESTRICT="binchecks test strip"
 
 DEPEND="
 	dev-go/luci-auth
