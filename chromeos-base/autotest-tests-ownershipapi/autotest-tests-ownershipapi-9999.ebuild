@@ -18,6 +18,7 @@ IUSE="+xset +tpmtools"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
+	chromeos-base/autotest-deps-dbus
 	chromeos-base/autotest-deps-policy
 	chromeos-base/chromeos-chrome
 	chromeos-base/telemetry
