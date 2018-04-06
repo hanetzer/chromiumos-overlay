@@ -33,6 +33,7 @@ VA_INSTALL="src/gallium/targets/va/"
 
 src_prepare() {
 	epatch "${FILESDIR}"/17.2.3-config-make-error-as-warning-for-drm.patch
+	epatch "${FILESDIR}"/17.2.3-st-va-Make-the-vendor-string-more-descriptive.patch
 	eautoreconf
 }
 
