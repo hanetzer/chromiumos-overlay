@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure info install postinst postrm prepare setup test unpack
+DEPEND=dev-libs/libpthread-stubs udev? ( virtual/udev ) video_cards_amdgpu? ( dev-util/cunit ) video_cards_intel? ( >=x11-libs/libpciaccess-0.10 ) !<x11-libs/libdrm-tests-2.4.58-r3 !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 x86-interix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) ppc-aix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) x86-winnt? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.18 >=media-fonts/font-util-1.2.0 ) virtual/pkgconfig dev-vcs/git
+DESCRIPTION=X.Org libdrm library
+EAPI=4
+HOMEPAGE=http://dri.freedesktop.org/
+IUSE=video_cards_amdgpu video_cards_exynos video_cards_freedreno video_cards_intel video_cards_nouveau video_cards_omap video_cards_radeon video_cards_vc4 video_cards_vmware libkms manpages +udev static-libs cros_host cros_workon_tree_7aa946aa6f13958fd6a7cf6491123f5bcbd801c7 profiling
+KEYWORDS=*
+LICENSE=|| ( MIT X )
+RDEPEND=dev-libs/libpthread-stubs udev? ( virtual/udev ) video_cards_amdgpu? ( dev-util/cunit ) video_cards_intel? ( >=x11-libs/libpciaccess-0.10 ) !<x11-libs/libdrm-tests-2.4.58-r3
+REQUIRED_USE=video_cards_exynos? ( libkms )
+RESTRICT=test
+SLOT=0
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	autotools-utils	3727db64c7b960903d5033280f108080	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	xorg-2	50dd640df6d0554c259daa81531ed3ee
+_md5_=200b99f742873fbc88af235f8841d626
