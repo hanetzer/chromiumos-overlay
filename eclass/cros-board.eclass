@@ -215,6 +215,7 @@ ALL_BOARDS=(
 	nefario
 	newbie
 	ninja
+	nocturne
 	novato
 	novato-arc64
 	nyan
