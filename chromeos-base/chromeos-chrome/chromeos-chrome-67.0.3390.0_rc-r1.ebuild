@@ -272,6 +272,7 @@ AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
 AUTOTEST_DEPS_LIST="chrome_test page_cycler_dep perf_data_dep telemetry_dep"
 
+DWO_FILE_DIR="dwo_file_dir"
 IUSE="${IUSE} +autotest"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
@@ -849,6 +850,9 @@ setup_compile_flags() {
 		elif use lld; then
 			EBUILD_LDFLAGS+=( "-Wl,-mllvm,-import-instr-limit=30" )
 		fi
+		if use arm; then
+			append-ldlfags -flto-dwo-dir=${DWO_FILE_DIR}
+		fi
 	fi
 
 	# Enable std::vector []-operator bounds checking.
@@ -1413,6 +1417,7 @@ src_install() {
 			fi
 			${DWP} -e "${FROM}/${source}" -o "${D}/usr/lib/debug/${CHROME_DIR}/${i}.dwp"
 		done < <(scanelf -BRyF '%F' ".")
+		rm -rf ${DWO_FILE_DIR}
 	fi
 
 	if use build_tests; then
