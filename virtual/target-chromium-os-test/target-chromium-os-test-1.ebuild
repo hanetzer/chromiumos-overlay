@@ -12,7 +12,8 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
 IUSE="-chromeless_tests chromeless_tty cr50_onboard cros_ec cros_embedded
-	hammerd opengl opengles ozone p2p peerd +shill +tpm vaapi"
+	hammerd opengl opengles ozone p2p peerd +shill +tpm vaapi
+	wifi_testbed_ap"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -62,6 +63,9 @@ CROS_COMMON_RDEPEND="
 		!chromeless_tests? (
 			>=dev-cpp/gflags-2.0
 		)
+	)
+	wifi_testbed_ap? (
+		dev-python/btsocket
 	)
 	dev-lang/python
 	p2p? ( dev-python/dpkt )
