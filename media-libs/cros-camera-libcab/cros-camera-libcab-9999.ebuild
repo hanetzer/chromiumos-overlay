@@ -2,10 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build common include mojo"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="common/libcab.gyp"
+
+inherit cros-camera cros-workon
 
 DESCRIPTION="Camera algorithm bridge library for proprietary camera algorithm
 isolation"
@@ -14,42 +30,31 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND="!media-libs/arc-camera3-libcab"
+RDEPEND="
+	!media-libs/arc-camera3-libcab
+	media-libs/cros-camera-libcamera_common"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libmojo
-	media-libs/cros-camera-libcamera_common
 	media-libs/cros-camera-libcamera_ipc"
 
-src_configure() {
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcab
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include/cros-camera"
-	local LIB_DIR="/usr/$(get_libdir)"
+	dobin "${OUT}/cros_camera_algo"
 
-	dobin common/cros_camera_algo
+	dolib.a "${OUT}/libcab.pic.a"
 
-	dolib common/libcab.pic.a
+	cros-camera_doheader include/cros-camera/camera_algorithm.h \
+		include/cros-camera/camera_algorithm_bridge.h
 
-	insinto "${INCLUDE_DIR}"
-	doins include/cros-camera/camera_algorithm.h
-	doins include/cros-camera/camera_algorithm_bridge.h
-
-	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
-		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		"common/libcab.pc.template" > "common/libcab.pc"
-	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcab.pc
+	cros-camera_dopc common/libcab.pc.template
 
 	insinto /etc/init
 	doins common/init/cros-camera-algo.conf
 
 	insinto "/usr/share/policy"
-	newins common/cros-camera-algo-${ARCH}.policy cros-camera-algo.policy
+	newins "common/cros-camera-algo-${ARCH}.policy" cros-camera-algo.policy
 }

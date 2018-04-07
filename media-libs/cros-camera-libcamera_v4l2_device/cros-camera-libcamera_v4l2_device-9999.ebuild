@@ -2,44 +2,46 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build common/v4l2_device include"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="common/v4l2_device/libcamera_v4l2_device.gyp"
+
+inherit cros-camera cros-workon
 
 DESCRIPTION="Chrome OS camera HAL v3 V4L2 device utility."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
 RDEPEND=""
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_v4l2_device
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include/cros-camera"
-	local LIB_DIR="/usr/$(get_libdir)"
+	dolib.so "${OUT}/lib/libcamera_v4l2_device.so"
 
-	dolib.a common/v4l2_device/libcamera_v4l2_device.pic.a
+	cros-camera_doheader include/cros-camera/v4l2_device.h
 
-	insinto "${INCLUDE_DIR}"
-	doins include/cros-camera/v4l2_device.h
-
-	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
-		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/v4l2_device/libcamera_v4l2_device.pc.template > common/v4l2_device/libcamera_v4l2_device.pc
-	insinto "${LIB_DIR}/pkgconfig"
-	doins common/v4l2_device/libcamera_v4l2_device.pc
+	cros-camera_dopc common/v4l2_device/libcamera_v4l2_device.pc.template
 }

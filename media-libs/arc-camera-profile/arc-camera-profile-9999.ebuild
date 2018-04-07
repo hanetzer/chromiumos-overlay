@@ -2,10 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build hal/usb include tools"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="tools/generate_camera_profile.gyp"
+
+inherit cros-camera cros-workon
 
 DESCRIPTION="Runtime detect the number of cameras on device to generate
 corresponding media_profiles.xml."
@@ -13,24 +29,18 @@ corresponding media_profiles.xml."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
 RDEPEND="
-	chromeos-base/libbrillo"
+	chromeos-base/libbrillo
+	media-libs/cros-camera-libcamera_timezone"
 
 DEPEND="${RDEPEND}
-	media-libs/cros-camera-libcamera_timezone
 	virtual/pkgconfig"
 
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} camera_profile
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	dobin tools/generate_camera_profile
+	dobin "${OUT}/generate_camera_profile"
 }

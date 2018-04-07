@@ -2,17 +2,33 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build common include"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="common/libcbm.gyp"
+CROS_CAMERA_TESTS="cbm_unittest"
 
-DESCRIPTION="Chrome OS HAL buffer manager."
+inherit cros-camera cros-workon
+
+DESCRIPTION="Chrome OS camera HAL buffer manager."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
 RDEPEND="
 	!media-libs/arc-camera3-libcbm
@@ -23,36 +39,14 @@ DEPEND="${RDEPEND}
 	media-libs/cros-camera-android-headers
 	virtual/pkgconfig"
 
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcbm
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include/cros-camera"
-	local LIB_DIR="/usr/$(get_libdir)"
+	dolib.so "${OUT}/lib/libcbm.so"
 
-	dolib common/libcbm.so
+	cros-camera_doheader include/cros-camera/camera_buffer_manager.h
 
-	insinto "${INCLUDE_DIR}"
-	doins include/cros-camera/camera_buffer_manager.h
-
-	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
-		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcbm.pc.template > common/libcbm.pc
-	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcbm.pc
-}
-
-src_test() {
-	emake BASE_VER=${LIBCHROME_VERS} tests
-
-	if use x86 || use amd64; then
-		./common/camera_buffer_manager_unittest || \
-			die "camera_buffer_manager unit tests failed!"
-	fi
+	cros-camera_dopc common/libcbm.pc.template
 }

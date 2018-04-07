@@ -2,10 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-constants cros-debug cros-workon libchrome toolchain-funcs user
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build common hal_adapter include mojo"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="hal_adapter/cros_camera_service.gyp"
+
+inherit cros-camera cros-constants cros-workon user
 
 DESCRIPTION="Chrome OS camera service. The service is in charge of accessing
 camera device. It uses unix domain socket to build a synchronous channel."
@@ -13,12 +29,14 @@ camera device. It uses unix domain socket to build a synchronous channel."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan cheets +cros-camera-algo-sandbox"
+IUSE="cheets +cros-camera-algo-sandbox"
 
 RDEPEND="
 	chromeos-base/libbrillo
 	!media-libs/arc-camera3
 	cros-camera-algo-sandbox? ( media-libs/cros-camera-libcab )
+	media-libs/cros-camera-libcamera_common
+	media-libs/cros-camera-libcamera_metadata
 	media-libs/libsync
 	virtual/cros-camera-hal
 	virtual/cros-camera-hal-configs"
@@ -26,34 +44,23 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/libmojo
 	media-libs/cros-camera-android-headers
-	media-libs/cros-camera-libcamera_common
-	media-libs/cros-camera-libcamera_ipc
-	media-libs/cros-camera-libcamera_metadata
 	media-libs/minigbm
 	virtual/pkgconfig
 	x11-libs/libdrm"
 
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cw_emake BASE_VER=${LIBCHROME_VERS} hal_adapter
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include/arc"
-	local LIB_DIR="/usr/$(get_libdir)"
-
-	dobin hal_adapter/cros_camera_service
+	dobin "${OUT}/cros_camera_service"
 
 	insinto /etc/init
 	doins hal_adapter/init/cros-camera.conf
 
 	# Install seccomp policy file.
 	insinto /usr/share/policy
-	newins hal_adapter/seccomp_filter/cros-camera-${ARCH}.policy cros-camera.policy
+	newins "hal_adapter/seccomp_filter/cros-camera-${ARCH}.policy" cros-camera.policy
 
 	if use cheets; then
 		insinto "${ARC_VENDOR_DIR}/etc/init"

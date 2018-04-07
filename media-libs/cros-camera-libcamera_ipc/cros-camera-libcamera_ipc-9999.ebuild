@@ -2,55 +2,49 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build common include mojo"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="common/libcamera_ipc.gyp"
+
+inherit cros-camera cros-workon
 
 DESCRIPTION="Chrome OS HAL IPC util."
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
-RDEPEND=""
+RDEPEND="media-libs/cros-camera-libcamera_metadata"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libmojo
-	media-libs/cros-camera-libcamera_metadata
 	virtual/pkgconfig"
 
-src_configure() {
-	cros-workon_src_configure
-}
-
-src_compile() {
-	asan-setup-env
-	cw_emake BASE_VER=${LIBCHROME_VERS} libcamera_ipc
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
-	local INCLUDE_DIR="/usr/include/cros-camera"
-	local LIB_DIR="/usr/$(get_libdir)"
+	dolib.a "${OUT}/libcamera_ipc.pic.a"
 
-	dolib.a common/libcamera_ipc.pic.a
-	# install all mojom header files to the relative directories.
-	local mojom_headers=`find mojo/ -name "*.h" -type f`
-	for f in ${mojom_headers}
-	do
-		local dir=`dirname $f`
-		insinto "/usr/include/${dir}"
-		doins $f
-	done
+	cros-camera_doheader \
+		include/cros-camera/camera_mojo_channel_manager.h \
+		include/cros-camera/ipc_util.h
 
-	insinto "${INCLUDE_DIR}"
-	doins include/cros-camera/camera_mojo_channel_manager.h
-	doins include/cros-camera/ipc_util.h
-
-	sed -e "s|@INCLUDE_DIR@|${INCLUDE_DIR}|" -e "s|@LIB_DIR@|${LIB_DIR}|" \
-		-e "s|@LIBCHROME_VERS@|${LIBCHROME_VERS}|" \
-		common/libcamera_ipc.pc.template > common/libcamera_ipc.pc
-	insinto "${LIB_DIR}/pkgconfig"
-	doins common/libcamera_ipc.pc
+	cros-camera_dopc common/libcamera_ipc.pc.template
 }

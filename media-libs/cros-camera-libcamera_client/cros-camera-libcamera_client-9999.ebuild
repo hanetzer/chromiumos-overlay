@@ -2,31 +2,42 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_PROJECT="chromiumos/platform/arc-camera"
-CROS_WORKON_LOCALNAME="../platform/arc-camera"
 
-inherit cros-debug cros-workon toolchain-funcs
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/arc-camera"
+	"chromiumos/platform2"
+)
+CROS_WORKON_LOCALNAME=(
+	"../platform/arc-camera"
+	"../platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${S}/platform/arc-camera"
+	"${S}/platform2"
+)
+CROS_WORKON_SUBTREE=(
+	"build android"
+	"common-mk"
+)
+PLATFORM_GYP_FILE="android/libcamera_client/libcamera_client.gyp"
+
+inherit cros-camera cros-workon
 
 DESCRIPTION="Android libcamera_client"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan"
 
-RDEPEND="!media-libs/arc-camera3-libcamera_client"
+RDEPEND="
+	!media-libs/arc-camera3-libcamera_client
+	media-libs/cros-camera-libcamera_metadata"
 
 DEPEND="${RDEPEND}
 	media-libs/cros-camera-android-headers"
 
-src_configure() {
-	asan-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cd android
-	cw_emake libcamera_client
+src_unpack() {
+	cros-camera_src_unpack
 }
 
 src_install() {
@@ -34,7 +45,7 @@ src_install() {
 	local LIB_DIR="/usr/$(get_libdir)"
 	local SRC_DIR="android/libcamera_client"
 
-	dolib "${SRC_DIR}/libcamera_client.pic.a"
+	dolib.so "${OUT}/lib/libcamera_client.so"
 
 	insinto "${INCLUDE_DIR}/camera"
 	doins "${SRC_DIR}/include/camera"/*.h
