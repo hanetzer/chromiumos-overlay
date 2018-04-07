@@ -4,5 +4,5 @@ EAPI=5
 KEYWORDS=*
 LICENSE=BSD-Google
 SLOT=0
-SRC_URI=gs://chromeos-localmirror/distfiles/arc-cache-builder-0.2.2.tbz2
-_md5_=e0dccbeda8c253cb31d820c0c16a60a8
+SRC_URI=gs://chromeos-localmirror/distfiles/arc-cache-builder-0.2.5.tbz2
+_md5_=50a28a8e37c48bca1116526492a9e801
