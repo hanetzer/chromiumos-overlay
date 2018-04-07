@@ -22,6 +22,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libbrillo
+	sys-apps/keyutils
 "
 
 DEPEND="${RDEPEND}"
