@@ -18,7 +18,10 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/vm_too
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="kvm_guest"
+
+# This ebuild should only be used on VM guest boards.
+REQUIRED_USE="kvm_guest"
 
 RDEPEND="
 	!!chromeos-base/vm_tools
