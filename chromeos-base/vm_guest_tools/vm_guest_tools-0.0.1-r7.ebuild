@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="292bb2649b27998312b7227f13aa3fa0dcf85ee8"
-CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "569592c5038c64140945ea86181735d4a005b7ff")
+CROS_WORKON_COMMIT="20efa696b99c56cfd1008ef5f26c7fbed6a862dc"
+CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "3a5757a31e0e58416f9ce40dba0653356c4a7c50")
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -12,20 +12,18 @@ CROS_WORKON_SUBTREE="common-mk vm_tools"
 
 PLATFORM_SUBDIR="vm_tools"
 
-inherit cros-workon platform udev user
+inherit cros-workon platform user
 
-DESCRIPTION="VM host tools for Chrome OS"
+DESCRIPTION="VM guest tools for Chrome OS"
 HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/master/vm_tools"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+kvm_host"
-REQUIRED_USE="kvm_host"
+IUSE=""
 
 RDEPEND="
 	!!chromeos-base/vm_tools
-	chromeos-base/crosvm
 	chromeos-base/libbrillo
 	chromeos-base/minijail
 	dev-libs/grpc
@@ -33,29 +31,24 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	>=chromeos-base/system_api-0.0.1-r3259
+	>=sys-kernel/linux-headers-4.4-r10
 "
 
 src_install() {
-	dobin "${OUT}"/maitred_client
-	dobin "${OUT}"/vmlog_forwarder
-	dobin "${OUT}"/vsh
-	dobin "${OUT}"/vm_concierge
-	dobin "${OUT}"/concierge_client
+	dobin "${OUT}"/virtwl_guest_proxy
+	dobin "${OUT}"/vm_syslog
+	dobin "${OUT}"/garcon
+	dosbin "${OUT}"/vshd
 
-	insinto /etc/init
-	doins init/*.conf
-
-	insinto /etc/dbus-1/system.d
-	doins dbus/org.chromium.VmConcierge.conf
-
-	udev_dorules udev/99-vm.rules
+	into /
+	newsbin "${OUT}"/maitred init
 }
 
 platform_pkg_test() {
 	local tests=(
-		concierge_test
-		syslog_forwarder_test
+		garcon_desktop_file_test
+		maitred_service_test
+		maitred_syslog_test
 	)
 
 	local test_bin
