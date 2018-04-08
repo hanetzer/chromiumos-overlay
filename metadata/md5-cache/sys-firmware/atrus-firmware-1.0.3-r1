@@ -6,5 +6,5 @@ KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=chromeos-base/atrusctl
 SLOT=0
-SRC_URI=gs://chromeos-localmirror/distfiles/atrus-firmware-1.0.2.tgz
+SRC_URI=gs://chromeos-localmirror/distfiles/atrus-firmware-1.0.3.tgz
 _md5_=615006fb2da32e60a6b4cbcd91de1b71
