@@ -12,6 +12,7 @@ SRC_URI="${MY_P}.tar.bz2"
 DESCRIPTION="XWayland"
 SLOT="0/${PV}"
 KEYWORDS="*"
+IUSE="kvm_guest"
 
 # This ebuild and source is based on x11-base/xorg-server so conflicts may occur
 # depending on USE flags.
@@ -84,13 +85,18 @@ src_configure() {
 		--sysconfdir="${EPREFIX}"/etc/X11
 		--localstatedir="${EPREFIX}"/var
 		--with-fontrootdir="${EPREFIX}"/usr/share/fonts
-		--with-xkb-bin-directory="/opt/google/cros-containers/bin"
 		--with-xkb-output="${EPREFIX}"/var/lib/xkb
 		--without-dtrace
 		--without-fop
 		--with-os-vendor=Gentoo
 		--with-sha1=libcrypto
 	)
+
+	if use kvm_guest; then
+		XORG_CONFIGURE_OPTIONS+=(
+			--with-xkb-bin-directory="/opt/google/cros-containers/bin"
+		)
+	fi
 
 	xorg-2_src_configure
 }
