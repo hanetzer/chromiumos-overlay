@@ -132,6 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0508-FROMLIST-egl-dri2-Implement-swapInterval-fallback-in.patch
 	epatch "${FILESDIR}"/0509-UPSTREAM-i965-miptree-Set-supports_fast_clear-false-.patch
 	epatch "${FILESDIR}"/0510-UPSTREAM-i965-Only-call-create_for_planar_image-for-.patch
+	epatch "${FILESDIR}"/0511-UPSTREAM-egl-android-Provide-an-option-for-the-backe.patch
 
 	# Android/IMG patches
 	epatch "${FILESDIR}"/0601-mesa-img-Android-build-fixups.patch

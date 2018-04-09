@@ -1,0 +1,74 @@
+From 1f900da4e884a4192bf62fa05cc248ce77d76b8d Mon Sep 17 00:00:00 2001
+From: Harish Krupo <harish.krupo.kps@intel.com>
+Date: Fri, 8 Dec 2017 21:29:39 +0530
+Subject: [PATCH] UPSTREAM: egl/android: Provide an option for the backend to
+ expose KHR_image
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From android cts 8.0_r4, a new test case checks if all the required egl
+extensions are exposed. In the current implementation we expose KHR_image
+if KHR_image_base and KHR_image_pixmap are supported but KHR_image spec
+does not mandate the existence of both the extensions.
+This patch preserves the current check and also provides the backend
+with an option to expose the KHR_image extension.
+
+Test: run cts -m CtsOpenGLTestCases -t \
+android.opengl.cts.OpenGlEsVersionTest#testRequiredEglExtensions
+
+Signed-off-by: Harish Krupo <harish.krupo.kps@intel.com>
+Reviewed-by: Tapani Pälli <tapani.palli@intel.com>
+Reviewed-by: Eric Engestrom <eric.engestrom@imgtec.com>
+Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+(cherry picked from commit 96fc5fbf232b6bc7f3db0b5037df9f120704980f)
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+
+Change-Id: I02e54054cddc07fae9a2c4e33b506ca634237211
+---
+ src/egl/drivers/dri2/platform_android.c | 1 +
+ src/egl/main/eglapi.c                   | 3 ++-
+ src/egl/main/egldisplay.h               | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
+index d1fb6aa4eda..bcbfc57ec44 100644
+--- a/src/egl/drivers/dri2/platform_android.c
++++ b/src/egl/drivers/dri2/platform_android.c
+@@ -1320,6 +1320,7 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
+ #if ANDROID_API_LEVEL >= 23
+    dpy->Extensions.KHR_partial_update = EGL_TRUE;
+ #endif
++   dpy->Extensions.KHR_image = EGL_TRUE;
+ 
+    /* Fill vtbl last to prevent accidentally calling virtual function during
+     * initialization.
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 0375a33c844..d3c5d3c5d80 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -503,7 +503,8 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
+    _EGL_CHECK_EXTENSION(KHR_gl_texture_3D_image);
+    _EGL_CHECK_EXTENSION(KHR_gl_texture_cubemap_image);
+    if (dpy->Extensions.KHR_image_base && dpy->Extensions.KHR_image_pixmap)
+-      _eglAppendExtension(&exts, "EGL_KHR_image");
++      dpy->Extensions.KHR_image = EGL_TRUE;
++   _EGL_CHECK_EXTENSION(KHR_image);
+    _EGL_CHECK_EXTENSION(KHR_image_base);
+    _EGL_CHECK_EXTENSION(KHR_image_pixmap);
+    _EGL_CHECK_EXTENSION(KHR_no_config_context);
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index 0733a397993..792d7831ac9 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -115,6 +115,7 @@ struct _egl_extensions
+    EGLBoolean KHR_gl_texture_2D_image;
+    EGLBoolean KHR_gl_texture_3D_image;
+    EGLBoolean KHR_gl_texture_cubemap_image;
++   EGLBoolean KHR_image;
+    EGLBoolean KHR_image_base;
+    EGLBoolean KHR_image_pixmap;
+    EGLBoolean KHR_no_config_context;
+-- 
+2.17.0.484.g0c8726318c-goog
+
