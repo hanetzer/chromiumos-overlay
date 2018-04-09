@@ -54,7 +54,7 @@ RDEPEND="
 		)
 	selinux? ( sec-policy/selinux-wireshark )
 	smi? ( net-libs/libsmi )
-	ssl? ( net-libs/gnutls )
+	ssl? ( net-libs/gnutls:= )
 	zlib? ( sys-libs/zlib !=sys-libs/zlib-1.2.4 )
 "
 
