@@ -36,8 +36,13 @@ UNIBOARD_YAML_DIR="${UNIBOARD_CROS_CONFIG_DIR}/yaml"
 
 # @ECLASS-VARIABLE: UNIBOARD_YAML_CONFIG
 # @DESCRIPTION:
-#  This is the installation directory of the yaml source files.
+#  This is the installation path to the YAML source file.
 UNIBOARD_YAML_CONFIG="${UNIBOARD_YAML_DIR}/config.yaml"
+
+# @ECLASS-VARIABLE: UNIBOARD_C_CONFIG
+# @DESCRIPTION:
+#  This is the installation path to the C source file.
+UNIBOARD_C_CONFIG="${UNIBOARD_YAML_DIR}/config.c"
 
 # @ECLASS-VARIABLE: UNIBOARD_CROS_CONFIG_FILES_DIR
 # @DESCRIPTION:

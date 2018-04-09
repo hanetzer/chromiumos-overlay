@@ -70,17 +70,22 @@ src_compile() {
 
 	# YAML config support.
 	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*.yaml )
-	local yaml="${SYSROOT}${UNIBOARD_YAML_CONFIG}"
+	local yaml="${WORKDIR}/config.yaml"
+	local c_file="${WORKDIR}/config.c"
 	local json="${WORKDIR}/config.json"
 	if [[ "${files[0]}" =~ .*[a-z_]+\.yaml$ ]]; then
+		einfo "Merging source YAML from ${files} to ${yaml}"
 		echo "# YAML generated from: ${files[*]}" > "${yaml}"
 		# This needs to be smarter eventually where it makes sure the
 		# common YAML file is inserted first before the model-specific
 		# YAML files.
 		# This hasn't been fully vetted yet, so punting until then.
 		cat "${files[@]}" >> "${yaml}"
-		cros_config_schema -c "${yaml}" -o "${json}" -f "True" \
+		cros_config_schema -c "${yaml}" -o "${json}" -g "${c_file}" -f "True" \
 			|| echo "Warning: Validation failed"
+	else
+		einfo "Emitting empty c interface config for mosys."
+		cp "${FILESDIR}/empty_config.c" "${c_file}"
 	fi
 }
 
@@ -91,5 +96,10 @@ src_install() {
 
 	if [[ -e "${WORKDIR}/config.json" ]]; then
 		doins config.json
+	fi
+	insinto "${UNIBOARD_YAML_DIR}"
+	doins config.c
+	if [[ -e "${WORKDIR}/config.yaml" ]]; then
+		doins config.yaml
 	fi
 }
