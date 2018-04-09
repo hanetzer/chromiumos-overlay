@@ -62,6 +62,8 @@ src_configure() {
 	if use unibuild; then
 		cp "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
 			lib/cros_config/config.dtb
+		cp "${SYSROOT}${UNIBOARD_C_CONFIG}" \
+			lib/cros_config/cros_config_data.c
 		echo "CONFIG_CROS_CONFIG=y" >>.config
 	fi
 }
