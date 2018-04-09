@@ -1,0 +1,185 @@
+commit abb490ec962c6db7c2071ba9d1bd0cd60b4a1b3a
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Thu Apr 5 15:29:52 2018 +0000
+
+    Disable -fmerge-all-constants as default.
+    
+    Summary:
+    "-fmerge-all-constants" is a non-conforming optimization and should not
+    be the default. It is also causing miscompiles when building Linux
+    Kernel (https://lkml.org/lkml/2018/3/20/872).
+    
+    Fixes PR18538.
+    
+    Reviewers: rjmccall, rsmith, chandlerc
+    
+    Reviewed By: rsmith, chandlerc
+    
+    Subscribers: srhines, cfe-commits
+    
+    Differential Revision: https://reviews.llvm.org/D45289
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@329300 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/include/clang/Driver/Options.td b/include/clang/Driver/Options.td
+index abec5edddf..c72bb39ec5 100644
+--- a/include/clang/Driver/Options.td
++++ b/include/clang/Driver/Options.td
+@@ -1133,7 +1133,8 @@ def fthinlto_index_EQ : Joined<["-"], "fthinlto-index=">,
+   HelpText<"Perform ThinLTO importing using provided function summary index">;
+ def fmacro_backtrace_limit_EQ : Joined<["-"], "fmacro-backtrace-limit=">,
+                                 Group<f_Group>, Flags<[DriverOption, CoreOption]>;
+-def fmerge_all_constants : Flag<["-"], "fmerge-all-constants">, Group<f_Group>;
++def fmerge_all_constants : Flag<["-"], "fmerge-all-constants">, Group<f_Group>,
++  Flags<[CC1Option]>, HelpText<"Allow merging of constants">;
+ def fmessage_length_EQ : Joined<["-"], "fmessage-length=">, Group<f_Group>;
+ def fms_extensions : Flag<["-"], "fms-extensions">, Group<f_Group>, Flags<[CC1Option, CoreOption]>,
+   HelpText<"Accept some non-standard constructs supported by the Microsoft compiler">;
+@@ -1282,7 +1283,7 @@ def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>, Flags<[CC1Option]>,
+ def fno_lax_vector_conversions : Flag<["-"], "fno-lax-vector-conversions">, Group<f_Group>,
+   HelpText<"Disallow implicit conversions between vectors with a different number of elements or different element types">, Flags<[CC1Option]>;
+ def fno_merge_all_constants : Flag<["-"], "fno-merge-all-constants">, Group<f_Group>,
+-    Flags<[CC1Option]>, HelpText<"Disallow merging of constants">;
++  HelpText<"Disallow merging of constants">;
+ def fno_modules : Flag <["-"], "fno-modules">, Group<f_Group>,
+   Flags<[DriverOption]>;
+ def fno_implicit_module_maps : Flag <["-"], "fno-implicit-module-maps">, Group<f_Group>,
+diff --git a/lib/AST/ExprConstant.cpp b/lib/AST/ExprConstant.cpp
+index 6de55f10dc..4725b1b569 100644
+--- a/lib/AST/ExprConstant.cpp
++++ b/lib/AST/ExprConstant.cpp
+@@ -8596,9 +8596,6 @@ bool IntExprEvaluator::VisitBinaryOperator(const BinaryOperator *E) {
+             (LHSValue.Base && isZeroSized(RHSValue)))
+           return Error(E);
+         // Pointers with different bases cannot represent the same object.
+-        // (Note that clang defaults to -fmerge-all-constants, which can
+-        // lead to inconsistent results for comparisons involving the address
+-        // of a constant; this generally doesn't matter in practice.)
+         return Success(E->getOpcode() == BO_NE, E);
+       }
+ 
+diff --git a/lib/Driver/ToolChains/Clang.cpp b/lib/Driver/ToolChains/Clang.cpp
+index a86c5376e4..8e11e872d4 100644
+--- a/lib/Driver/ToolChains/Clang.cpp
++++ b/lib/Driver/ToolChains/Clang.cpp
+@@ -3361,9 +3361,9 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
+ 
+   Args.AddLastArg(CmdArgs, options::OPT_fveclib);
+ 
+-  if (!Args.hasFlag(options::OPT_fmerge_all_constants,
+-                    options::OPT_fno_merge_all_constants))
+-    CmdArgs.push_back("-fno-merge-all-constants");
++  if (Args.hasFlag(options::OPT_fmerge_all_constants,
++                   options::OPT_fno_merge_all_constants, false))
++    CmdArgs.push_back("-fmerge-all-constants");
+ 
+   // LLVM Code Generator Options.
+ 
+diff --git a/lib/Frontend/CompilerInvocation.cpp b/lib/Frontend/CompilerInvocation.cpp
+index 734349eed7..45546ac3bc 100644
+--- a/lib/Frontend/CompilerInvocation.cpp
++++ b/lib/Frontend/CompilerInvocation.cpp
+@@ -605,7 +605,7 @@ static bool ParseCodeGenArgs(CodeGenOptions &Opts, ArgList &Args, InputKind IK,
+       Args.hasFlag(OPT_ffine_grained_bitfield_accesses,
+                    OPT_fno_fine_grained_bitfield_accesses, false);
+   Opts.DwarfDebugFlags = Args.getLastArgValue(OPT_dwarf_debug_flags);
+-  Opts.MergeAllConstants = !Args.hasArg(OPT_fno_merge_all_constants);
++  Opts.MergeAllConstants = Args.hasArg(OPT_fmerge_all_constants);
+   Opts.NoCommon = Args.hasArg(OPT_fno_common);
+   Opts.NoImplicitFloat = Args.hasArg(OPT_no_implicit_float);
+   Opts.OptimizeSize = getOptimizationLevelSize(Args);
+diff --git a/test/CodeGen/array-init.c b/test/CodeGen/array-init.c
+index fa54994acc..62e87edc29 100644
+--- a/test/CodeGen/array-init.c
++++ b/test/CodeGen/array-init.c
+@@ -1,8 +1,11 @@
+-// RUN: %clang_cc1 %s -O0 -triple x86_64-unknown-linux-gnu -emit-llvm -o - | FileCheck %s
++// RUN: %clang_cc1 %s -O0 -triple x86_64-unknown-linux-gnu -emit-llvm -o - | FileCheck -check-prefix=CHECK-NO-MERGE-CONSTANTS %s
++// RUN: %clang_cc1 %s -O0 -triple x86_64-unknown-linux-gnu -fmerge-all-constants -emit-llvm -o - | FileCheck -check-prefix=CHECK-MERGE-CONSTANTS %s
+ 
+-// CHECK: @{{.*}}.a1 = internal constant [5 x i32] [i32 0, i32 1, i32 2, i32 0, i32 0]
+-// CHECK: @{{.*}}.a2 = internal constant [5 x i32] zeroinitializer
+-// CHECK: @{{.*}}.a3 = internal constant [5 x i32] zeroinitializer
++// CHECK-NO-MERGE-CONSTANTS: @{{.*}}.a1 = private unnamed_addr constant [5 x i32] [i32 0, i32 1, i32 2, i32 0, i32 0]
++
++// CHECK-MERGE-CONSTANTS: @{{.*}}.a1 = internal constant [5 x i32] [i32 0, i32 1, i32 2, i32 0, i32 0]
++// CHECK-MERGE-CONSTANTS: @{{.*}}.a2 = internal constant [5 x i32] zeroinitializer
++// CHECK-MERGE-CONSTANTS: @{{.*}}.a3 = internal constant [5 x i32] zeroinitializer
+ 
+ void testConstArrayInits(void)
+ {
+diff --git a/test/CodeGen/decl.c b/test/CodeGen/decl.c
+index ffee1e3cef..d62629c7fb 100644
+--- a/test/CodeGen/decl.c
++++ b/test/CodeGen/decl.c
+@@ -1,4 +1,4 @@
+-// RUN: %clang_cc1 -w -emit-llvm < %s | FileCheck %s
++// RUN: %clang_cc1 -w -fmerge-all-constants -emit-llvm < %s | FileCheck %s
+ 
+ // CHECK: @test1.x = internal constant [12 x i32] [i32 1
+ // CHECK: @test2.x = private unnamed_addr constant [13 x i32] [i32 1,
+diff --git a/test/CodeGenCXX/const-init-cxx11.cpp b/test/CodeGenCXX/const-init-cxx11.cpp
+index c4962bc08a..801d7b1e19 100644
+--- a/test/CodeGenCXX/const-init-cxx11.cpp
++++ b/test/CodeGenCXX/const-init-cxx11.cpp
+@@ -1,4 +1,4 @@
+-// RUN: %clang_cc1 -w -triple x86_64-elf-gnu -emit-llvm -o - %s -std=c++11 | FileCheck %s
++// RUN: %clang_cc1 -w -fmerge-all-constants -triple x86_64-elf-gnu -emit-llvm -o - %s -std=c++11 | FileCheck %s
+ 
+ // FIXME: The padding in all these objects should be zero-initialized.
+ namespace StructUnion {
+diff --git a/test/CodeGenCXX/cxx0x-initializer-references.cpp b/test/CodeGenCXX/cxx0x-initializer-references.cpp
+index 318c8ea0d7..595d27ca2e 100644
+--- a/test/CodeGenCXX/cxx0x-initializer-references.cpp
++++ b/test/CodeGenCXX/cxx0x-initializer-references.cpp
+@@ -1,4 +1,4 @@
+-// RUN: %clang_cc1 -std=c++11 -S -triple armv7-none-eabi -emit-llvm -o - %s | FileCheck %s
++// RUN: %clang_cc1 -std=c++11 -S -triple armv7-none-eabi -fmerge-all-constants -emit-llvm -o - %s | FileCheck %s
+ 
+ namespace reference {
+   struct A {
+diff --git a/test/CodeGenCXX/cxx0x-initializer-stdinitializerlist.cpp b/test/CodeGenCXX/cxx0x-initializer-stdinitializerlist.cpp
+index e1c18169a8..3299763997 100644
+--- a/test/CodeGenCXX/cxx0x-initializer-stdinitializerlist.cpp
++++ b/test/CodeGenCXX/cxx0x-initializer-stdinitializerlist.cpp
+@@ -1,5 +1,5 @@
+-// RUN: %clang_cc1 -std=c++11 -triple x86_64-none-linux-gnu -emit-llvm -o - %s | FileCheck -check-prefixes=X86,CHECK %s
+-// RUN: %clang_cc1 -std=c++11 -triple amdgcn-amd-amdhsa -DNO_TLS -emit-llvm -o - %s | FileCheck -check-prefixes=AMDGCN,CHECK %s
++// RUN: %clang_cc1 -std=c++11 -triple x86_64-none-linux-gnu -fmerge-all-constants -emit-llvm -o - %s | FileCheck -check-prefixes=X86,CHECK %s
++// RUN: %clang_cc1 -std=c++11 -triple amdgcn-amd-amdhsa -DNO_TLS -fmerge-all-constants -emit-llvm -o - %s | FileCheck -check-prefixes=AMDGCN,CHECK %s
+ 
+ namespace std {
+   typedef decltype(sizeof(int)) size_t;
+diff --git a/test/CodeGenObjCXX/arc-cxx11-init-list.mm b/test/CodeGenObjCXX/arc-cxx11-init-list.mm
+index c3723c619a..af607654e1 100644
+--- a/test/CodeGenObjCXX/arc-cxx11-init-list.mm
++++ b/test/CodeGenObjCXX/arc-cxx11-init-list.mm
+@@ -1,4 +1,4 @@
+-// RUN: %clang_cc1 -triple armv7-ios5.0 -std=c++11 -fobjc-arc -Os -emit-llvm -o - %s | FileCheck %s
++// RUN: %clang_cc1 -triple armv7-ios5.0 -std=c++11 -fmerge-all-constants -fobjc-arc -Os -emit-llvm -o - %s | FileCheck %s
+ 
+ // CHECK: @[[STR0:.*]] = private unnamed_addr constant [5 x i8] c"str0\00", section "__TEXT,__cstring,cstring_literals"
+ // CHECK: @[[UNNAMED_CFSTRING0:.*]] = private global %struct.__NSConstantString_tag { i32* getelementptr inbounds ([0 x i32], [0 x i32]* @__CFConstantStringClassReference, i32 0, i32 0), i32 1992, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @[[STR0]], i32 0, i32 0), i32 4 }, section "__DATA,__cfstring"
+diff --git a/test/Driver/clang_f_opts.c b/test/Driver/clang_f_opts.c
+index 9c90f0e58f..2b2a7e7b98 100644
+--- a/test/Driver/clang_f_opts.c
++++ b/test/Driver/clang_f_opts.c
+@@ -276,6 +276,7 @@
+ // RUN:     -fno-inline-small-functions -finline-small-functions              \
+ // RUN:     -fno-fat-lto-objects -ffat-lto-objects                            \
+ // RUN:     -fno-merge-constants -fmerge-constants                            \
++// RUN:     -fno-merge-all-constants -fmerge-all-constants                    \
+ // RUN:     -fno-caller-saves -fcaller-saves                                  \
+ // RUN:     -fno-reorder-blocks -freorder-blocks                              \
+ // RUN:     -fno-schedule-insns2 -fschedule-insns2                            \
+@@ -522,3 +523,10 @@
+ // RUN: %clang -### -S -fno-discard-value-names %s 2>&1 | FileCheck -check-prefix=CHECK-NO-DISCARD-NAMES %s
+ // CHECK-DISCARD-NAMES: "-discard-value-names"
+ // CHECK-NO-DISCARD-NAMES-NOT: "-discard-value-names"
++//
++// RUN: %clang -### -S -fmerge-all-constants %s 2>&1 | FileCheck -check-prefix=CHECK-MERGE-ALL-CONSTANTS %s
++// RUN: %clang -### -S -fno-merge-all-constants %s 2>&1 | FileCheck -check-prefix=CHECK-NO-MERGE-ALL-CONSTANTS %s
++// RUN: %clang -### -S -fmerge-all-constants -fno-merge-all-constants %s 2>&1 | FileCheck -check-prefix=CHECK-NO-MERGE-ALL-CONSTANTS %s
++// RUN: %clang -### -S -fno-merge-all-constants -fmerge-all-constants %s 2>&1 | FileCheck -check-prefix=CHECK-MERGE-ALL-CONSTANTS %s
++// CHECK-NO-MERGE-ALL-CONSTANTS-NOT: "-fmerge-all-constants"
++// CHECK-MERGE-ALL-CONSTANTS: "-fmerge-all-constants"

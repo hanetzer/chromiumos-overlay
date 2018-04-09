@@ -1,0 +1,297 @@
+commit 6f11d411da7302cfb1d049928a8222c649eef441
+Author: Manoj Gupta <manojgupta@google.com>
+Date:   Sat Apr 7 19:59:58 2018 +0000
+
+    [Driver] Update GCC libraries detection logic for Gentoo.
+    
+    Summary:
+    1. Find GCC's LDPATH from the actual GCC config file.
+    2. Avoid picking libraries from a similar named tuple if the exact
+       tuple is installed.
+    
+    Reviewers: mgorny, chandlerc, thakis, rnk
+    
+    Reviewed By: mgorny, rnk
+    
+    Subscribers: cfe-commits, mgorny
+    
+    Differential Revision: https://reviews.llvm.org/D45233
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@329512 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Driver/ToolChains/Gnu.cpp b/lib/Driver/ToolChains/Gnu.cpp
+index f961dc1dd7..e10e14fb23 100644
+--- a/lib/Driver/ToolChains/Gnu.cpp
++++ b/lib/Driver/ToolChains/Gnu.cpp
+@@ -1676,18 +1676,21 @@ void Generic_GCC::GCCInstallationDetector::init(
+   // in /usr. This avoids accidentally enforcing the system GCC version
+   // when using a custom toolchain.
+   if (GCCToolchainDir == "" || GCCToolchainDir == D.SysRoot + "/usr") {
+-    for (StringRef CandidateTriple : ExtraTripleAliases) {
+-      if (ScanGentooGccConfig(TargetTriple, Args, CandidateTriple))
+-        return;
+-    }
+-    for (StringRef CandidateTriple : CandidateTripleAliases) {
+-      if (ScanGentooGccConfig(TargetTriple, Args, CandidateTriple))
+-        return;
+-    }
+-    for (StringRef CandidateTriple : CandidateBiarchTripleAliases) {
+-      if (ScanGentooGccConfig(TargetTriple, Args, CandidateTriple, true))
+-        return;
+-    }
++    SmallVector<StringRef, 16> GentooTestTriples;
++    // Try to match an exact triple as target triple first.
++    // e.g. crossdev -S x86_64-gentoo-linux-gnu will install gcc libs for
++    // x86_64-gentoo-linux-gnu. But "clang -target x86_64-gentoo-linux-gnu"
++    // may pick the libraries for x86_64-pc-linux-gnu even when exact matching
++    // triple x86_64-gentoo-linux-gnu is present.
++    GentooTestTriples.push_back(TargetTriple.str());
++    // Check rest of triples.
++    GentooTestTriples.append(ExtraTripleAliases.begin(),
++                             ExtraTripleAliases.end());
++    GentooTestTriples.append(CandidateTripleAliases.begin(),
++                             CandidateTripleAliases.end());
++    if (ScanGentooConfigs(TargetTriple, Args, GentooTestTriples,
++                          CandidateBiarchTripleAliases))
++      return;
+   }
+ 
+   // Loop over the various components which exist and select the best GCC
+@@ -1700,6 +1703,9 @@ void Generic_GCC::GCCInstallationDetector::init(
+       const std::string LibDir = Prefix + Suffix.str();
+       if (!D.getVFS().exists(LibDir))
+         continue;
++      // Try to match the exact target triple first.
++      ScanLibDirForGCCTriple(TargetTriple, Args, LibDir, TargetTriple.str());
++      // Try rest of possible triples.
+       for (StringRef Candidate : ExtraTripleAliases) // Try these first.
+         ScanLibDirForGCCTriple(TargetTriple, Args, LibDir, Candidate);
+       for (StringRef Candidate : CandidateTripleAliases)
+@@ -2193,6 +2199,22 @@ void Generic_GCC::GCCInstallationDetector::ScanLibDirForGCCTriple(
+   }
+ }
+ 
++bool Generic_GCC::GCCInstallationDetector::ScanGentooConfigs(
++    const llvm::Triple &TargetTriple, const ArgList &Args,
++    const SmallVectorImpl<StringRef> &CandidateTriples,
++    const SmallVectorImpl<StringRef> &CandidateBiarchTriples) {
++  for (StringRef CandidateTriple : CandidateTriples) {
++    if (ScanGentooGccConfig(TargetTriple, Args, CandidateTriple))
++      return true;
++  }
++
++  for (StringRef CandidateTriple : CandidateBiarchTriples) {
++    if (ScanGentooGccConfig(TargetTriple, Args, CandidateTriple, true))
++      return true;
++  }
++  return false;
++}
++
+ bool Generic_GCC::GCCInstallationDetector::ScanGentooGccConfig(
+     const llvm::Triple &TargetTriple, const ArgList &Args,
+     StringRef CandidateTriple, bool NeedsBiarchSuffix) {
+@@ -2205,23 +2227,53 @@ bool Generic_GCC::GCCInstallationDetector::ScanGentooGccConfig(
+     for (StringRef Line : Lines) {
+       Line = Line.trim();
+       // CURRENT=triple-version
+-      if (Line.consume_front("CURRENT=")) {
+-        const std::pair<StringRef, StringRef> ActiveVersion =
+-          Line.rsplit('-');
+-        // Note: Strictly speaking, we should be reading
+-        // /etc/env.d/gcc/${CURRENT} now. However, the file doesn't
+-        // contain anything new or especially useful to us.
+-        const std::string GentooPath = D.SysRoot + "/usr/lib/gcc/" +
+-                                       ActiveVersion.first.str() + "/" +
+-                                       ActiveVersion.second.str();
++      if (!Line.consume_front("CURRENT="))
++        continue;
++      // Process the config file pointed to by CURRENT.
++      llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> ConfigFile =
++          D.getVFS().getBufferForFile(D.SysRoot + "/etc/env.d/gcc/" +
++                                      Line.str());
++      std::pair<StringRef, StringRef> ActiveVersion = Line.rsplit('-');
++      // List of paths to scan for libraries.
++      SmallVector<StringRef, 4> GentooScanPaths;
++      // Scan the Config file to find installed GCC libraries path.
++      // Typical content of the GCC config file:
++      // LDPATH="/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x:/usr/lib/gcc/
++      // (continued from previous line) x86_64-pc-linux-gnu/4.9.x/32"
++      // MANPATH="/usr/share/gcc-data/x86_64-pc-linux-gnu/4.9.x/man"
++      // INFOPATH="/usr/share/gcc-data/x86_64-pc-linux-gnu/4.9.x/info"
++      // STDCXX_INCDIR="/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4"
++      // We are looking for the paths listed in LDPATH=... .
++      if (ConfigFile) {
++        SmallVector<StringRef, 2> ConfigLines;
++        ConfigFile.get()->getBuffer().split(ConfigLines, "\n");
++        for (StringRef ConfLine : ConfigLines) {
++          ConfLine = ConfLine.trim();
++          if (ConfLine.consume_front("LDPATH=")) {
++            // Drop '"' from front and back if present.
++            ConfLine.consume_back("\"");
++            ConfLine.consume_front("\"");
++            // Get all paths sperated by ':'
++            ConfLine.split(GentooScanPaths, ':', -1, /*AllowEmpty*/ false);
++          }
++        }
++      }
++      // Test the path based on the version in /etc/env.d/gcc/config-{tuple}.
++      std::string basePath = "/usr/lib/gcc/" + ActiveVersion.first.str() + "/"
++          + ActiveVersion.second.str();
++      GentooScanPaths.push_back(StringRef(basePath));
++
++      // Scan all paths for GCC libraries.
++      for (const auto &GentooScanPath : GentooScanPaths) {
++        std::string GentooPath = D.SysRoot + std::string(GentooScanPath);
+         if (D.getVFS().exists(GentooPath + "/crtbegin.o")) {
+           if (!ScanGCCForMultilibs(TargetTriple, Args, GentooPath,
+                                    NeedsBiarchSuffix))
+-            return false;
++            continue;
+ 
+           Version = GCCVersion::Parse(ActiveVersion.second);
+           GCCInstallPath = GentooPath;
+-          GCCParentLibPath = GentooPath + "/../../..";
++          GCCParentLibPath = GentooPath + std::string("/../../..");
+           GCCTriple.setTriple(ActiveVersion.first);
+           IsValid = true;
+           return true;
+diff --git a/lib/Driver/ToolChains/Gnu.h b/lib/Driver/ToolChains/Gnu.h
+index 9bad560c4d..cc9b4a3345 100644
+--- a/lib/Driver/ToolChains/Gnu.h
++++ b/lib/Driver/ToolChains/Gnu.h
+@@ -265,6 +265,11 @@ public:
+                                 StringRef CandidateTriple,
+                                 bool NeedsBiarchSuffix = false);
+ 
++    bool ScanGentooConfigs(const llvm::Triple &TargetTriple,
++                           const llvm::opt::ArgList &Args,
++                           const SmallVectorImpl<StringRef> &CandidateTriples,
++                           const SmallVectorImpl<StringRef> &BiarchTriples);
++
+     bool ScanGentooGccConfig(const llvm::Triple &TargetTriple,
+                              const llvm::opt::ArgList &Args,
+                              StringRef CandidateTriple,
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/config-x86_64-pc-linux-gnu b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/config-x86_64-pc-linux-gnu
+new file mode 100644
+index 0000000000..5ef56a33a6
+--- /dev/null
++++ b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/config-x86_64-pc-linux-gnu
+@@ -0,0 +1 @@
++CURRENT=x86_64-pc-linux-gnu-4.9.3
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/x86_64-pc-linux-gnu-4.9.3 b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/x86_64-pc-linux-gnu-4.9.3
+new file mode 100644
+index 0000000000..5805b7f4fd
+--- /dev/null
++++ b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/env.d/gcc/x86_64-pc-linux-gnu-4.9.3
+@@ -0,0 +1,10 @@
++PATH="/usr/x86_64-pc-linux-gnu/gcc-bin/4.9.x"
++ROOTPATH="/usr/x86_64-pc-linux-gnu/gcc-bin/4.9.x"
++GCC_PATH="/usr/x86_64-pc-linux-gnu/gcc-bin/4.9.x"
++LDPATH="/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x:/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/32:/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/x32"
++MANPATH="/usr/share/gcc-data/x86_64-pc-linux-gnu/4.9.x/man"
++INFOPATH="/usr/share/gcc-data/x86_64-pc-linux-gnu/4.9.x/info"
++STDCXX_INCDIR="g++-v4"
++CTARGET="x86_64-pc-linux-gnu"
++GCC_SPECS=""
++MULTIOSDIRS="../lib64:../lib32"
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/gentoo-release b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/gentoo-release
+new file mode 100644
+index 0000000000..5f0944f7d9
+--- /dev/null
++++ b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/etc/gentoo-release
+@@ -0,0 +1 @@
++Gentoo Base System release 2.3
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/include/.keep b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/include/.keep
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/32/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/32/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/.keep b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/.keep
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/x32/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/x32/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/32/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/32/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/include/g++-v5.4.0/.keep b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/include/g++-v5.4.0/.keep
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/x32/crtbegin.o b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/lib/gcc/x86_64-pc-linux-gnu/5.4.0/x32/crtbegin.o
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/x86_64-pc-linux-gnu/lib/.keep b/test/Driver/Inputs/gentoo_linux_gcc_4.9.x_tree/usr/x86_64-pc-linux-gnu/lib/.keep
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/Driver/linux-header-search.cpp b/test/Driver/linux-header-search.cpp
+index 274895fb4f..9ae57b797c 100644
+--- a/test/Driver/linux-header-search.cpp
++++ b/test/Driver/linux-header-search.cpp
+@@ -343,6 +343,59 @@
+ // CHECK-GENTOO-4-9-3-32: "-internal-externc-isystem" "[[SYSROOT]]/include"
+ // CHECK-GENTOO-4-9-3-32: "-internal-externc-isystem" "[[SYSROOT]]/usr/include"
+ //
++// Test support for parsing Gentoo's gcc-config -- clang should parse the
++// /etc/env.d/gcc/config-x86_64-pc-linux-gnu file to find CURRENT gcc used.
++// Then should pick the multilibs from version 4.9.x specified in
++// /etc/env.d/gcc/x86_64-pc-linux-gnu-4.9.3.
++// RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
++// RUN:     -target x86_64-unknown-linux-gnu -stdlib=libstdc++ \
++// RUN:     --sysroot=%S/Inputs/gentoo_linux_gcc_4.9.x_tree \
++// RUN:     --gcc-toolchain="" \
++// RUN:   | FileCheck --check-prefix=CHECK-GENTOO-4-9-X %s
++//
++// CHECK-GENTOO-4-9-X: "{{.*}}clang{{.*}}" "-cc1"
++// CHECK-GENTOO-4-9-X: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
++// CHECK-GENTOO-4-9-X: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-GENTOO-4-9-X: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3"
++// CHECK-GENTOO-4-9-X: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/x86_64-pc-linux-gnu"
++// CHECK-GENTOO-4-9-X: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/backward"
++// CHECK-GENTOO-4-9-X: "-internal-isystem" "[[SYSROOT]]/usr/local/include"
++// CHECK-GENTOO-4-9-X: "-internal-isystem" "[[RESOURCE_DIR]]{{/|\\\\}}include"
++// CHECK-GENTOO-4-9-X: "-internal-externc-isystem" "[[SYSROOT]]/include"
++// CHECK-GENTOO-4-9-X: "-internal-externc-isystem" "[[SYSROOT]]/usr/include"
++//
++// RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
++// RUN:     -target x86_64-unknown-linux-gnux32 -stdlib=libstdc++ \
++// RUN:     --sysroot=%S/Inputs/gentoo_linux_gcc_4.9.x_tree \
++// RUN:     --gcc-toolchain="" \
++// RUN:   | FileCheck --check-prefix=CHECK-GENTOO-4-9-X-X32 %s
++// CHECK-GENTOO-4-9-X-X32: "{{.*}}clang{{.*}}" "-cc1"
++// CHECK-GENTOO-4-9-X-X32: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
++// CHECK-GENTOO-4-9-X-X32: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-GENTOO-4-9-X-X32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3"
++// CHECK-GENTOO-4-9-X-X32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/x86_64-pc-linux-gnu/x32"
++// CHECK-GENTOO-4-9-X-X32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/backward"
++// CHECK-GENTOO-4-9-X-X32: "-internal-isystem" "[[SYSROOT]]/usr/local/include"
++// CHECK-GENTOO-4-9-X-X32: "-internal-isystem" "[[RESOURCE_DIR]]{{/|\\\\}}include"
++// CHECK-GENTOO-4-9-X-X32: "-internal-externc-isystem" "[[SYSROOT]]/include"
++// CHECK-GENTOO-4-9-X-X32: "-internal-externc-isystem" "[[SYSROOT]]/usr/include"
++//
++// RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
++// RUN:     -target i386-unknown-linux-gnu -stdlib=libstdc++ \
++// RUN:     --sysroot=%S/Inputs/gentoo_linux_gcc_4.9.x_tree \
++// RUN:     --gcc-toolchain="" \
++// RUN:   | FileCheck --check-prefix=CHECK-GENTOO-4-9-X-32 %s
++// CHECK-GENTOO-4-9-X-32: "{{.*}}clang{{.*}}" "-cc1"
++// CHECK-GENTOO-4-9-X-32: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
++// CHECK-GENTOO-4-9-X-32: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-GENTOO-4-9-X-32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3"
++// CHECK-GENTOO-4-9-X-32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/x86_64-pc-linux-gnu/32"
++// CHECK-GENTOO-4-9-X-32: "-internal-isystem" "[[SYSROOT]]/usr/lib/gcc/x86_64-pc-linux-gnu/4.9.x/include/g++-v4.9.3/backward"
++// CHECK-GENTOO-4-9-X-32: "-internal-isystem" "[[SYSROOT]]/usr/local/include"
++// CHECK-GENTOO-4-9-X-32: "-internal-isystem" "[[RESOURCE_DIR]]{{/|\\\\}}include"
++// CHECK-GENTOO-4-9-X-32: "-internal-externc-isystem" "[[SYSROOT]]/include"
++// CHECK-GENTOO-4-9-X-32: "-internal-externc-isystem" "[[SYSROOT]]/usr/include"
++//
+ // Check header search on Debian 6 / MIPS64
+ // RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
+ // RUN:     -target mips64-unknown-linux-gnuabi64 -stdlib=libstdc++ \

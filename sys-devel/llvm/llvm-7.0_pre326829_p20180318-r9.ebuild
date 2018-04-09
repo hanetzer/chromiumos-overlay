@@ -219,6 +219,8 @@ pick_next_cherries() {
 	# clang
 	local CHERRIES=""
 	CHERRIES+=" 8c8aea3ce916068052d4e4029f6878d8d7dd53da" # r328829
+	CHERRIES+=" abb490ec962c6db7c2071ba9d1bd0cd60b4a1b3a" # r329300
+	CHERRIES+=" 6f11d411da7302cfb1d049928a8222c649eef441" # r329512
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
