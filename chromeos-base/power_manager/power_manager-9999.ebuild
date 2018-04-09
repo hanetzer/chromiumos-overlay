@@ -8,7 +8,6 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 # TODO(crbug.com/809389): Avoid directly including headers from other packages.
 CROS_WORKON_SUBTREE="common-mk buffet chromeos-config metrics power_manager"
-CROS_BOARDS=(kip)
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="power_manager"
@@ -21,14 +20,12 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als buffet cellular +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup unibuild"
+IUSE="-als buffet +cras cros_embedded +display_backlight -has_keyboard_backlight -keyboard_includes_side_buttons -legacy_power_button -mosys_eventlog +powerknobs systemd +touchpad_wakeup -touchscreen_wakeup unibuild"
 
 RDEPEND="
-	cellular? (
-		board_use_kip? ( chromeos-base/ec-utils )
-	)
 	unibuild? ( chromeos-base/chromeos-config )
 	chromeos-base/chromeos-config-tools
+	chromeos-base/ec-utils
 	chromeos-base/metrics
 	dev-libs/libnl
 	dev-libs/protobuf
