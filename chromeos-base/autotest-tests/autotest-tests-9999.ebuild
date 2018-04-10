@@ -83,6 +83,7 @@ CLIENT_IUSE_TESTS="
 	+tests_sleeptest
 	+tests_kernel_sysrq_info
 	+tests_unixbench
+	+tests_autoupdate_Backoff
 	+tests_autoupdate_BadMetadata
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_autoupdate_DisconnectReconnectNetwork
