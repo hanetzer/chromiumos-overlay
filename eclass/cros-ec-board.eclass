@@ -74,6 +74,7 @@ EC_BOARD_NAMES=(
 	nautilus
 	nefario
 	nocturne
+	nocturne_fp
 	oak
 	oak_pd
 	octopus
