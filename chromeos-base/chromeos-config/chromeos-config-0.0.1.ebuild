@@ -69,11 +69,11 @@ src_compile() {
 
 
 	# YAML config support.
-	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*.yaml )
+	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*files.yaml )
 	local yaml="${WORKDIR}/config.yaml"
 	local c_file="${WORKDIR}/config.c"
 	local json="${WORKDIR}/config.json"
-	if [[ "${files[0]}" =~ .*[a-z_]+\.yaml$ ]]; then
+	if [[ "${files[0]}" =~ .*[a-z_]+files\.yaml$ ]]; then
 		einfo "Merging source YAML from ${files} to ${yaml}"
 		echo "# YAML generated from: ${files[*]}" > "${yaml}"
 		# This needs to be smarter eventually where it makes sure the
@@ -95,6 +95,7 @@ src_install() {
 	doins config.dtb
 
 	if [[ -e "${WORKDIR}/config.json" ]]; then
+		insinto "${UNIBOARD_JSON_INSTALL_PATH%/*}"
 		doins config.json
 	fi
 	insinto "${UNIBOARD_YAML_DIR}"

@@ -17,6 +17,11 @@ UNIBOARD_CROS_CONFIG_DIR="/usr/share/chromeos-config"
 #  This is the filename of the master configuration for use with doins.
 UNIBOARD_DTB_INSTALL_PATH="${UNIBOARD_CROS_CONFIG_DIR}/config.dtb"
 
+# @ECLASS-VARIABLE: UNIBOARD_JSON_INSTALL_PATH
+# @DESCRIPTION:
+#  This is the filename of the master configuration for use with doins.
+UNIBOARD_JSON_INSTALL_PATH="${UNIBOARD_CROS_CONFIG_DIR}/config.json"
+
 # @ECLASS-VARIABLE: UNIBOARD_DTS_DIR
 # @DESCRIPTION:
 #  This is the installation directory of the device-tree source files.
