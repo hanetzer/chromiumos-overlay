@@ -17,10 +17,9 @@ IUSE="debug doc +gmp +readline"
 RDEPEND=">=net-libs/libmnl-1.0.3:0=
 	gmp? ( dev-libs/gmp:0= )
 	readline? ( sys-libs/readline:0= )
-	>=net-libs/libnftnl-1.0.8:0="
+	>=net-libs/libnftnl-1.0.9:0="
 
 DEPEND="${RDEPEND}
-	>=app-text/docbook2X-0.8.8-r4
 	doc? ( >=app-text/dblatex-0.3.7 )
 	sys-devel/bison
 	sys-devel/flex
