@@ -29,6 +29,11 @@ DEPEND="virtual/chromeos-bsp-factory
 
 BUILD_DIR="${WORKDIR}/build"
 
+src_prepare() {
+	# Need the lddtree from the chromite dir.
+	export PATH="${CHROMITE_BIN_DIR}:${PATH}"
+}
+
 src_configure() {
 	default
 	cros-workon_src_configure
