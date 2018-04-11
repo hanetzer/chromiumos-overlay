@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure info install setup unpack
+DEPEND=virtual/chromeos-bsp-factory virtual/chromeos-regions dev-python/enum34 dev-python/jsonrpclib dev-python/pyyaml dev-python/protobuf-python dev-vcs/git
+DESCRIPTION=Chrome OS Factory Software Platform
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_c442b9f5998ac1eceee07084f7d25073ece84930 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror//distfiles/webgl-aquarium-20130524.tar.bz2
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-factory	6cadc320ecdff6115cb819b722fa80fe	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	python	efc1c55fc44c5b7272fc2ffba73c3e6f	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_md5_=d69cb92a5c042ff162758e084d598cfe
