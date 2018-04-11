@@ -112,8 +112,20 @@ _arc-build-select-common() {
 	append-cppflags -DANDROID -DANDROID_VERSION=${android_version}
 }
 
-# Set up the compiler settings for GCC.
+# DEPRECATED. Do not use unless you have a really good reason.
+# We do not support GCC builds anymore, so if your package fails to build
+# with Clang, please try to fix it before considering to use GCC.
+# See b/65189615 for reasons and changes that we did to switch other ebuilds.
 arc-build-select-gcc() {
+	if [[ -z $MY_ARC_EBUILD_IS_BROKEN_AND_I_REALLY_NEED_GCC ]]; then
+		eerror "arc-build-select-gcc is not supported anymore."
+		eerror "Please read eclass/arc-build.eclass, if you want to know more."
+		die "arc-build-select-gcc is not supported anymore."
+	fi
+
+	ewarn "arc-build-select-gcc is not supported anymore, you're on your own."
+	ewarn "Using GCC for now, as forced by the ebuild, but please fix your package..."
+
 	_arc-build-select-common
 
 	append-cxxflags -I${ARC_SYSROOT}/usr/include/c++/4.9 -lc++
