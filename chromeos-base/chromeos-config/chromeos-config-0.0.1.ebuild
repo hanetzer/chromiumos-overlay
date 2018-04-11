@@ -37,13 +37,15 @@ src_compile() {
 	local files=( "${SYSROOT}${UNIBOARD_DTS_DIR}/"*.dtsi )
 	local schema_info="${WORKDIR}/_dir_targets.dtsi"
 
-	if [[ "${#files[@]}" -gt 0 ]]; then
-		# Create a .dts file with all the includes.
-		cat "${FILESDIR}/skeleton.dts" >"${dts}"
-		cros_config_host write-target-dirs >"${schema_info}" \
-			|| die "Failed to write directory targets"
-		cros_config_host write-phandle-properties >>"${schema_info}" \
-			|| die "Failed to write phandle properties"
+	# Create a .dts file with all the includes.
+	cp "${FILESDIR}/skeleton.dts" "${dts}"
+	cros_config_host write-target-dirs >"${schema_info}" \
+		|| die "Failed to write directory targets"
+	cros_config_host write-phandle-properties >>"${schema_info}" \
+		|| die "Failed to write phandle properties"
+	# For YAML cases, we still need to generate a shell DTB file for
+	# now since mosys still attempts to link it in.
+	if [[ "${files[0]}" =~ .*[a-z_]+\.dtsi$ ]]; then
 		for dtsi in "${SYSROOT}${UNIBOARD_DTS_DIR}"/*.dtsi "${schema_info}"; do
 			einfo "Adding ${dtsi}"
 			[[ "${dtsi}" != "${schema_info}" ]] && cp "${dtsi}" "${WORKDIR}"
@@ -52,35 +54,35 @@ src_compile() {
 			: $((added++))
 		done
 		einfo "${added} files found"
-
-		# Use the preprocessor to handle the #include directives.
-		$(tc-getCPP) -P -x assembler-with-cpp "${dts}" -o "${dts}.tmp" \
-			|| die "Preprocessor failed"
-
-		# Compile it to produce the requird output file.
-		dtc -I dts -O dtb -Wno-unit_address_vs_reg -o "${dtb}" "${dts}.tmp" \
-			|| die "Device-tree compilation failed"
-
-		# Validate the config.
-		einfo "Validating config:"
-		validate_config "${dtb}" || die "Validation failed"
-		einfo "- OK"
 	fi
+
+	# Use the preprocessor to handle the #include directives.
+	$(tc-getCPP) -P -x assembler-with-cpp "${dts}" -o "${dts}.tmp" \
+		|| die "Preprocessor failed"
+
+	# Compile it to produce the requird output file.
+	dtc -I dts -O dtb -Wno-unit_address_vs_reg -o "${dtb}" "${dts}.tmp" \
+		|| die "Device-tree compilation failed"
+
+	# Validate the config.
+	einfo "Validating config:"
+	validate_config "${dtb}" || die "Validation failed"
+	einfo "- OK"
 
 
 	# YAML config support.
-	local files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*files.yaml )
+	local yaml_files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*-files.yaml )
 	local yaml="${WORKDIR}/config.yaml"
 	local c_file="${WORKDIR}/config.c"
 	local json="${WORKDIR}/config.json"
-	if [[ "${files[0]}" =~ .*[a-z_]+files\.yaml$ ]]; then
-		einfo "Merging source YAML from ${files} to ${yaml}"
-		echo "# YAML generated from: ${files[*]}" > "${yaml}"
+	if [[ "${yaml_files[0]}" =~ .*[a-z_]+-files\.yaml$ ]]; then
+		einfo "Merging source YAML from ${yaml_files} to ${yaml}"
+		echo "# YAML generated from: ${yaml_files[*]}" > "${yaml}"
 		# This needs to be smarter eventually where it makes sure the
 		# common YAML file is inserted first before the model-specific
 		# YAML files.
 		# This hasn't been fully vetted yet, so punting until then.
-		cat "${files[@]}" >> "${yaml}"
+		cat "${yaml_files[@]}" >> "${yaml}"
 		cros_config_schema -c "${yaml}" -o "${json}" -g "${c_file}" -f "True" \
 			|| echo "Warning: Validation failed"
 	else
@@ -91,8 +93,10 @@ src_compile() {
 
 src_install() {
 	# Get the directory name only, and use that as the install directory.
-	insinto "${UNIBOARD_DTB_INSTALL_PATH%/*}"
-	doins config.dtb
+	if [[ -e "${WORKDIR}/config.dtb" ]]; then
+		insinto "${UNIBOARD_DTB_INSTALL_PATH%/*}"
+		doins config.dtb
+	fi
 
 	if [[ -e "${WORKDIR}/config.json" ]]; then
 		insinto "${UNIBOARD_JSON_INSTALL_PATH%/*}"
