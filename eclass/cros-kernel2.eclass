@@ -132,7 +132,6 @@ CONFIG_FRAGMENTS=(
 	goldfish
 	highmem
 	i2cdev
-	intelwifi38
 	iscsi
 	kasan
 	kcov
@@ -300,12 +299,6 @@ CONFIG_HIGHMEM64G=y
 i2cdev_desc="I2C device interface"
 i2cdev_config="
 CONFIG_I2C_CHARDEV=y
-"
-
-intelwifi38_desc="Intel wifi with Intel-provided cfg80211 on 3.8"
-intelwifi38_config="
-# CONFIG_CFG80211 is not set
-CONFIG_IWL7000=m
 "
 
 iscsi_desc="iSCSI initiator and target drivers"
