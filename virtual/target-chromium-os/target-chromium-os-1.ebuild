@@ -197,7 +197,6 @@ CROS_COMMON_RDEPEND+="
 	kvm_host? (
 		chromeos-base/chromeos-termina-scripts
 		chromeos-base/vm_host_tools
-		net-fs/nfs-ganesha
 	)
 	sys-kernel/linux-firmware
 	virtual/chromeos-bsp
