@@ -33,6 +33,10 @@ src_install() {
 	# Install seccomp policy file.
 	insinto /usr/share/policy
 	newins "seccomp/ml_service-seccomp-${ARCH}.policy" ml_service-seccomp.policy
+
+	# Install D-Bus configuration file
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.Ml.conf
 }
 
 pkg_preinst() {
