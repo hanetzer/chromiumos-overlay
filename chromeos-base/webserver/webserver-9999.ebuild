@@ -29,6 +29,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/permission_broker-client
 "
 
 pkg_preinst() {
