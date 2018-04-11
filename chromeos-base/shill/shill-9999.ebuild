@@ -60,6 +60,8 @@ pkg_preinst() {
 	enewuser "shill-scripts"
 	enewgroup "nfqueue"
 	enewuser "nfqueue"
+	enewgroup "shill"
+	enewuser "shill"
 }
 
 get_dependent_services() {
