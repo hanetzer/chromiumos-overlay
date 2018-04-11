@@ -1,0 +1,22 @@
+diff --git a/dbus/Upstart.conf b/dbus/Upstart.conf
+index 501fdf3..2003a68 100644
+--- a/dbus/Upstart.conf
++++ b/dbus/Upstart.conf
+@@ -23,6 +23,17 @@
+ 	   send_interface="com.ubuntu.Upstart0_6.Instance" />
+   </policy>
+ 
++  <!-- Permit the shill user to invoke the EmitEvent method on Upstart, and to
++       get and set properties. -->
++  <policy user="shill">
++    <allow send_destination="com.ubuntu.Upstart"
++	   send_interface="org.freedesktop.DBus.Properties" />
++
++    <allow send_destination="com.ubuntu.Upstart"
++	   send_interface="com.ubuntu.Upstart0_6"
++	   send_type="method_call" send_member="EmitEvent" />
++  </policy>
++
+   <!-- Allow any user to introspect Upstart's interfaces, to obtain the
+        values of properties (but not set them) and to invoke selected
+        methods on Upstart and its jobs that are used to walk information. -->

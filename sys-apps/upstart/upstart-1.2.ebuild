@@ -83,6 +83,9 @@ src_prepare() {
 	# Require explicit import of environment variables into job classes.
 	epatch "${FILESDIR}"/upstart-1.2-import-env.patch
 
+	# Allow shill to call Upstart over DBUS.
+	epatch "${FILESDIR}"/upstart-1.2-shill-dbus-perms.patch
+
 	# The selinux patch changes makefile.am and configure.ac
 	# so we need to run autoreconf, and if we don't the system
 	# will do it for us, and incorrectly too.
