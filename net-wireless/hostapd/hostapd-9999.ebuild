@@ -4,7 +4,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
-CROS_WORKON_LOCALNAME=../third_party/wpa_supplicant
+CROS_WORKON_LOCALNAME="../third_party/wpa_supplicant-2.6"
 
 inherit cros-workon eutils toolchain-funcs
 
