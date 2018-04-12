@@ -16,10 +16,9 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="dev u_boot_netboot profiling smdk5420-u-boot"
+IUSE="dev u_boot_netboot profiling"
 
 DEPEND="!sys-boot/x86-firmware-fdts
-	!sys-boot/exynos-u-boot
 	"
 
 RDEPEND="${DEPEND}
@@ -34,8 +33,6 @@ U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
 	beaglebone
 	coreboot
-	daisy
-	peach
 )
 IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
 
@@ -49,10 +46,6 @@ REQUIRED_USE="${REQUIRED_USE} ^^ ( ${IUSE_CONFIGS} )"
 # signifying which version to use.
 get_current_u_boot_config() {
 	local use_config
-	if use smdk5420-u-boot; then
-		echo 'smdk5420_config'
-		return
-	fi
 	for use_config in ${IUSE_CONFIGS}; do
 		if use ${use_config}; then
 			echo "chromeos_${use_config#${U_BOOT_CONFIG_USE_PREFIX}}_config"
@@ -167,16 +160,6 @@ src_install() {
 	local f
 
 	insinto "${inst_dir}"
-
-	# Daisy, peach and their variants need an SPL binary.
-	if use u_boot_config_use_daisy || use u_boot_config_use_peach ; then
-		local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
-		local spl_bin="spl/${ub_board}-spl.bin"
-		local spl_map="spl/System.spl.map"
-
-		newins "${UB_BUILD_DIR}/${spl_bin}" u-boot-spl.wrapped.bin
-		newins "${UB_BUILD_DIR}/${spl_map}" System.spl.map
-	fi
 
 	for f in "${files_to_copy[@]}"; do
 		[[ -f "${UB_BUILD_DIR}/${f}" ]] &&
