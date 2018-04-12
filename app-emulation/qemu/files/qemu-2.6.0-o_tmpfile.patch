@@ -1,0 +1,70 @@
+From 5f9cee46cd4ec4600e1a2fdcca20adcf30348f9e Mon Sep 17 00:00:00 2001
+From: Riku Voipio <riku.voipio@linaro.org>
+Date: Tue, 8 Aug 2017 16:01:19 +0300
+Subject: [PATCH] linux-user: fix O_TMPFILE handling
+
+Since O_TMPFILE might differ between guest and host,
+add it to the bitmask_transtbl. While at it, fix the definitions
+of O_DIRECTORY etc which should arm32 according to kernel sources.
+
+This fixes open14 and openat03 ltp testcases. Fixes:
+
+https://bugs.launchpad.net/qemu/+bug/1709170
+---
+ linux-user/strace.c       | 4 ++++
+ linux-user/syscall.c      | 3 +++
+ linux-user/syscall_defs.h | 8 +++++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
+
+diff -Naurp qemu-2.6.0_original/linux-user/strace.c qemu-2.6.0/linux-user/strace.c
+--- qemu-2.6.0_original/linux-user/strace.c	2018-04-11 19:40:47.527112805 -0700
++++ qemu-2.6.0/linux-user/strace.c	2018-04-11 19:45:27.283558606 -0700
+@@ -384,6 +384,10 @@ UNUSED static struct flags open_flags[]
+ #ifdef O_PATH
+     FLAG_TARGET(O_PATH),
+ #endif
++#ifdef O_TMPFILE
++    FLAG_TARGET(O_TMPFILE),
++    FLAG_TARGET(__O_TMPFILE),
++#endif
+     FLAG_END,
+ };
+ 
+diff -Naurp qemu-2.6.0_original/linux-user/syscall.c qemu-2.6.0/linux-user/syscall.c
+--- qemu-2.6.0_original/linux-user/syscall.c	2018-04-11 19:40:47.523112799 -0700
++++ qemu-2.6.0/linux-user/syscall.c	2018-04-11 19:45:27.287558613 -0700
+@@ -281,6 +281,9 @@ static bitmask_transtbl fcntl_flags_tbl[
+ #if defined(O_PATH)
+   { TARGET_O_PATH,      TARGET_O_PATH,      O_PATH,      O_PATH       },
+ #endif
++#if defined(O_TMPFILE)
++  { TARGET_O_TMPFILE,   TARGET_O_TMPFILE,   O_TMPFILE,   O_TMPFILE    },
++#endif
+   /* Don't terminate the list prematurely on 64-bit host+guest.  */
+ #if TARGET_O_LARGEFILE != 0 || O_LARGEFILE != 0
+   { TARGET_O_LARGEFILE, TARGET_O_LARGEFILE, O_LARGEFILE, O_LARGEFILE, },
+diff -Naurp qemu-2.6.0_original/linux-user/syscall_defs.h qemu-2.6.0/linux-user/syscall_defs.h
+--- qemu-2.6.0_original/linux-user/syscall_defs.h	2018-04-11 19:40:47.519112793 -0700
++++ qemu-2.6.0/linux-user/syscall_defs.h	2018-04-11 19:46:29.307657433 -0700
+@@ -2168,7 +2168,7 @@ struct target_statfs64 {
+ #define TARGET_O_CLOEXEC     010000000
+ #define TARGET___O_SYNC      020000000
+ #define TARGET_O_PATH        040000000
+-#elif defined(TARGET_ARM) || defined(TARGET_M68K)
++#elif defined(TARGET_ARM) || defined(TARGET_M68K) || defined(TARGET_AARCH64)
+ #define TARGET_O_DIRECTORY      040000 /* must be a directory */
+ #define TARGET_O_NOFOLLOW      0100000 /* don't follow links */
+ #define TARGET_O_DIRECT        0200000 /* direct disk access hint */
+@@ -2265,6 +2265,12 @@ struct target_statfs64 {
+ #ifndef TARGET_O_PATH
+ #define TARGET_O_PATH        010000000
+ #endif
++#ifndef TARGET___O_TMPFILE
++#define TARGET___O_TMPFILE   020000000
++#endif
++#ifndef TARGET_O_TMPFILE
++#define TARGET_O_TMPFILE     (TARGET___O_TMPFILE | TARGET_O_DIRECTORY)
++#endif
+ #ifndef TARGET_O_NDELAY
+ #define TARGET_O_NDELAY  TARGET_O_NONBLOCK
+ #endif
