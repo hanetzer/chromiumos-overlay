@@ -59,7 +59,7 @@ src_prepare() {
 			modules.cfg || die "unable to disable module $1"
 	}
 
-	epatch "${FILESDIR}"/${PN}-2.9-4a03f17.patch
+	epatch "${FILESDIR}"/${PN}-2.9-bd9400b.patch
 	epatch "${FILESDIR}"/${PN}-2.9-libtool.patch
 	epatch "${FILESDIR}"/${PN}-2.4.11-sizeof-types.patch # 459966
 
