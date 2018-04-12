@@ -19,6 +19,7 @@ KEYWORDS="~*"
 IUSE="dev u_boot_netboot profiling"
 
 DEPEND="!sys-boot/x86-firmware-fdts
+	chromeos-base/chromeos-config-host
 	"
 
 RDEPEND="${DEPEND}
@@ -29,29 +30,11 @@ UB_BUILD_DIR="${WORKDIR}/build"
 UB_BUILD_DIR_NB="${UB_BUILD_DIR%/}_nb"
 UB_BUILD_DIR_RO="${UB_BUILD_DIR%/}_ro"
 
-U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
-ALL_CONFIGS=(
-	coreboot
-)
-IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
-
-IUSE="${IUSE} ${IUSE_CONFIGS}"
-
-REQUIRED_USE="${REQUIRED_USE} ^^ ( ${IUSE_CONFIGS} )"
-
 # @FUNCTION: get_current_u_boot_config
 # @DESCRIPTION:
-# Finds the config for the current board by searching USE for an entry
-# signifying which version to use.
+# Finds the config for the current board by checking the master configuration.
 get_current_u_boot_config() {
-	local use_config
-	for use_config in ${IUSE_CONFIGS}; do
-		if use ${use_config}; then
-			echo "chromeos_${use_config#${U_BOOT_CONFIG_USE_PREFIX}}_config"
-			return
-		fi
-	done
-	die "Unable to determine current U-Boot config."
+	cros_config_host get-firmware-build-targets u-boot || die
 }
 
 # @FUNCTION: get_config_var
@@ -84,8 +67,9 @@ src_configure() {
 	export LDFLAGS=$(raw-ldflags)
 	tc-export BUILD_CC
 
-	CROS_U_BOOT_CONFIG="$(get_current_u_boot_config)"
-	elog "Using U-Boot config: ${CROS_U_BOOT_CONFIG}"
+	config="$(get_current_u_boot_config)"
+	[[ -n "${config}" ]] || die "No U-Boot config selected"
+	elog "Using U-Boot config: ${config}"
 
 	# Firmware related binaries are compiled with 32-bit toolchain
 	# on 64-bit platforms
@@ -127,7 +111,7 @@ src_configure() {
 	)
 
 	umake "${BUILD_FLAGS[@]}" distclean
-	umake "${BUILD_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
+	umake "${BUILD_FLAGS[@]}" "${config}_defconfig"
 
 	if use u_boot_netboot; then
 		BUILD_NB_FLAGS=(
@@ -135,7 +119,7 @@ src_configure() {
 			BUILD_FACTORY_IMAGE=1
 		)
 		umake "${BUILD_NB_FLAGS[@]}" distclean
-		umake "${BUILD_NB_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
+		umake "${BUILD_NB_FLAGS[@]}" "${config}_defconfig"
 	fi
 }
 
