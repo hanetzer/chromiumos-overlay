@@ -74,6 +74,7 @@ def main(argv):
         resource_path = subprocess.check_output([clang_bin,
                                                  '--print-resource-dir'])
         clang_cmdline.append('-resource-dir=%s' % resource_path.strip())
+        clang_cmdline.append('--gcc-toolchain=/usr')
         clang_path = flag.partition('=')[2]
         clang_bin = os.path.join(clang_path, 'clang')
       elif flag in GCC_TO_CLANG.keys():
