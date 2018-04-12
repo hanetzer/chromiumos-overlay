@@ -16,11 +16,10 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="dalmore dev u_boot_netboot profiling smdk5420-u-boot"
+IUSE="dev u_boot_netboot profiling smdk5420-u-boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
-	!sys-boot/tegra2-public-firmware-fdts
 	"
 
 RDEPEND="${DEPEND}
@@ -37,10 +36,6 @@ ALL_CONFIGS=(
 	coreboot
 	daisy
 	peach
-	seaboard
-	venice
-	venice2
-	waluigi
 )
 IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
 
@@ -56,22 +51,6 @@ get_current_u_boot_config() {
 	local use_config
 	if use smdk5420-u-boot; then
 		echo 'smdk5420_config'
-		return
-	fi
-	# Dalmore support is implemented as a subprofile within the puppy
-	# overlay (which supports venice by default).  To distinguish
-	# between venice and dalmore, we see if the "dalmore" USE flag
-	# is present.
-	# We can't simply use U_BOOT_CONFIG_USE for dalmore because portage
-	# appears to accumulate U_BOOT_CONFIG_USE with the base (venice)
-	# and dalmore profiles, resulting in both venice and dalmore being
-	# set in U_BOOT_CONFIG_USE and violating the exclusitivity described
-	# in REQUIRED_USE of this ebuild.  Therefore, we have a special
-	# case for dalmore using the "dalmore" USE flag.
-	# When we don't care about dalmore anymore, we can refactor this
-	# special case out.
-	if use dalmore; then
-		echo 'chromeos_dalmore_config'
 		return
 	fi
 	for use_config in ${IUSE_CONFIGS}; do
@@ -203,11 +182,6 @@ src_install() {
 		[[ -f "${UB_BUILD_DIR}/${f}" ]] &&
 			doins "${f/#/${UB_BUILD_DIR}/}"
 	done
-
-	# u-boot-nodtb-tegra.bin has prepended SPL but no appended DTB.
-	if use u_boot_config_use_venice || use u_boot_config_use_venice2; then
-		newins "${UB_BUILD_DIR}/u-boot-nodtb-tegra.bin" u-boot.bin
-	fi
 
 	if use u_boot_netboot; then
 		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
