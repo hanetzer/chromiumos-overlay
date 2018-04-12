@@ -55,6 +55,7 @@ SERVER_IUSE_TESTS="
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Cellular
 	+tests_autoupdate_ForcedOOBEUpdate
+	+tests_autoupdate_Interruptions
 	+tests_autoupdate_NonBlockingOOBEUpdate
 	+tests_autoupdate_OmahaResponse
 	+tests_autoupdate_P2P
