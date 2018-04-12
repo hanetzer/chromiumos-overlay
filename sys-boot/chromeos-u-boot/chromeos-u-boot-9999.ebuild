@@ -31,7 +31,6 @@ UB_BUILD_DIR_RO="${UB_BUILD_DIR%/}_ro"
 
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
-	beaglebone
 	coreboot
 )
 IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
@@ -155,7 +154,6 @@ src_install() {
 		u-boot
 		u-boot.bin
 		u-boot.img
-		$(usex u_boot_config_use_beaglebone MLO)
 	)
 	local f
 
@@ -170,8 +168,6 @@ src_install() {
 		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
 	fi
 
-	if ! use u_boot_config_use_beaglebone; then
-		insinto "${inst_dir}/dtb"
-		doins "${UB_BUILD_DIR}/dts/"*.dtb
-	fi
+	insinto "${inst_dir}/dtb"
+	doins "${UB_BUILD_DIR}/dts/"*.dtb
 }
