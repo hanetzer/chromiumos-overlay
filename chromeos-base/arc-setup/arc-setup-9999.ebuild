@@ -78,12 +78,13 @@ enable_clear_app_executables_after_ota() {
 
 src_install() {
 	dosbin "${OUT}"/arc-setup
+	dosbin arc_setup_wrapper.sh
 
 	insinto /etc/init
 	doins etc/arc-boot-continue.conf
 	doins etc/arc-kmsg-logger.conf
+	doins etc/arc-lifetime.conf
 	doins etc/arc-sensor.conf
-	doins etc/arc-setup-for-login-screen.conf
 	doins etc/arc-start-sysctl.conf
 	doins etc/arc-stop-sysctl.conf
 	doins etc/arc-system-mount.conf
