@@ -3,8 +3,8 @@
 
 EAPI="5"
 
-CROS_WORKON_COMMIT=("62568d83740f6fbcaeaf1d8d7d7f63cfb63abf60" "6adc15777253046573104e6cb7bc78ab7d9abb3c")
-CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "cdfb29a58d50cb133ba39d5270df90ecfcc6bae7")
+CROS_WORKON_COMMIT=("7330a309f8defdb5522cb034c8256cd838c728c8" "c41540a9535d36424cdebbdc5e5b626883e1e2bc")
+CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "b759ef889f1ee4c2e76c85462aaf4edcbeb06d52")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform2"
 	"chromiumos/platform/mosys"
@@ -26,8 +26,9 @@ CROS_WORKON_SUBTREE=(
 )
 
 PLATFORM_SUBDIR="mosys"
+MESON_AUTO_DEPEND=no
 
-inherit flag-o-matic toolchain-funcs cros-unibuild cros-workon platform
+inherit flag-o-matic meson toolchain-funcs cros-unibuild cros-workon platform
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
@@ -55,39 +56,35 @@ src_unpack() {
 }
 
 src_configure() {
-	# Generate a default .config for our target architecture.
-	einfo "using default configuration for $(tc-arch)"
-	ARCH=$(tc-arch) emake defconfig
-	tc-export AR CC LD PKG_CONFIG
-	export LDFLAGS="$(raw-ldflags)"
-
 	if use unibuild; then
 		cp "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
 			lib/cros_config/config.dtb
 		cp "${SYSROOT}${UNIBOARD_C_CONFIG}" \
 			lib/cros_config/cros_config_data.c
-		echo "CONFIG_CROS_CONFIG=y" >>.config
 	fi
+
+	local emesonargs=(
+		-Duse_cros_config=$(usex unibuild true false)
+		-Darch=$(tc-arch)
+		-Dstatic=$(usex static true false)
+	)
+	meson_src_configure
 }
 
 src_compile() {
-	emake
+	meson_src_compile
 }
 
 platform_pkg_test() {
-	if use unibuild; then
-		echo "CONFIG_TEST=y" >>.config
-		ARCH=$(tc-arch) emake simple_tests
-
-		platform_test "run" "${S}/simple_tests"
-	fi
+	meson_src_test
 }
 
 src_install() {
-	dosbin mosys
+	meson_src_install
 
-	# Install the optional static binary if supported.
-	use static && dosbin mosys_s
+	if ! use static; then
+		rm "${D}/usr/sbin/mosys_s"
+	fi
 
 	dodoc README TODO
 }
