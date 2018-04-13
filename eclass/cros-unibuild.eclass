@@ -63,15 +63,16 @@ UNIBOARD_CROS_CONFIG_FILES_DIR="/usr/share/chromeos-config/files"
 install_private_model_file() {
 	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
 
-	local dest="private-model.dtsi"
+	if [[ -e "${FILESDIR}/model.dtsi" ]]; then
+		local dest="private-model.dtsi"
 
-	einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
-
-	# Avoid polluting callers with our insinto.
-	(
-		insinto "${UNIBOARD_DTS_DIR}"
-		newins ${FILESDIR}/model.dtsi "${dest}"
-	)
+		einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
+		# Avoid polluting callers with our insinto.
+		(
+			insinto "${UNIBOARD_DTS_DIR}"
+			newins ${FILESDIR}/model.dtsi "${dest}"
+		)
+	fi
 
 	if [[ -e "${FILESDIR}/model.yaml" ]]; then
 		local dest="private-model.yaml"
