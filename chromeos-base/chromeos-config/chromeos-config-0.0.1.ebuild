@@ -71,18 +71,19 @@ src_compile() {
 
 
 	# YAML config support.
-	local yaml_files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*-files.yaml )
+	local yaml_files=( "${SYSROOT}${UNIBOARD_YAML_DIR}/"*.yaml )
 	local yaml="${WORKDIR}/config.yaml"
 	local c_file="${WORKDIR}/config.c"
 	local json="${WORKDIR}/config.json"
-	if [[ "${yaml_files[0]}" =~ .*[a-z_]+-files\.yaml$ ]]; then
-		einfo "Merging source YAML from ${yaml_files} to ${yaml}"
-		echo "# YAML generated from: ${yaml_files[*]}" > "${yaml}"
-		# This needs to be smarter eventually where it makes sure the
-		# common YAML file is inserted first before the model-specific
-		# YAML files.
-		# This hasn't been fully vetted yet, so punting until then.
-		cat "${yaml_files[@]}" >> "${yaml}"
+	local gen_yaml="${SYSROOT}${UNIBOARD_YAML_DIR}/config.yaml"
+	if [[ "${yaml_files[0]}" =~ .*[a-z_]+\.yaml$ ]]; then
+		echo "# Generated YAML config file" > "${yaml}"
+		for source_yaml in "${yaml_files[@]}"; do
+			if [[ "${source_yaml}" != "${gen_yaml}" ]]; then
+				einfo "Adding source YAML file ${source_yaml}"
+				cat "${source_yaml}" >> "${yaml}"
+			fi
+		done
 		cros_config_schema -c "${yaml}" -o "${json}" -g "${c_file}" -f "True" \
 			|| echo "Warning: Validation failed"
 	else
