@@ -34,10 +34,3 @@ src_unpack() {
     cros-workon_src_unpack
     S+="/chromeos-config"
 }
-
-src_compile() {
-	distutils-r1_src_compile
-	einfo "Validating master configuration binding"
-	python -m cros_config_host.validate_config README.md ||
-		die "Validation failed"
-}
