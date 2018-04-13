@@ -1,0 +1,124 @@
+commit d8ad1e8b8544eb135135984fd7d35499214dd232
+Author: Richard Smith <richard-llvm@metafoo.co.uk>
+Date:   Thu Apr 5 00:34:54 2018 +0000
+
+    Revert r328680 ("[ObjC] Make C++ triviality type traits available to non-trivial C structs.")
+    
+    It unintentionally caused the values of the __has_* type traits to change in
+    C++ for trivially-copyable classes with volatile members.
+    
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@329247 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/include/clang/Basic/TokenKinds.def b/include/clang/Basic/TokenKinds.def
+index 56f3a6929a..f18e06f5b7 100644
+--- a/include/clang/Basic/TokenKinds.def
++++ b/include/clang/Basic/TokenKinds.def
+@@ -433,12 +433,12 @@ TYPE_TRAIT_1(__has_nothrow_assign, HasNothrowAssign, KEYCXX)
+ TYPE_TRAIT_1(__has_nothrow_move_assign, HasNothrowMoveAssign, KEYCXX)
+ TYPE_TRAIT_1(__has_nothrow_copy, HasNothrowCopy, KEYCXX)
+ TYPE_TRAIT_1(__has_nothrow_constructor, HasNothrowConstructor, KEYCXX)
+-TYPE_TRAIT_1(__has_trivial_assign, HasTrivialAssign, KEYALL)
+-TYPE_TRAIT_1(__has_trivial_move_assign, HasTrivialMoveAssign, KEYALL)
+-TYPE_TRAIT_1(__has_trivial_copy, HasTrivialCopy, KEYALL)
+-TYPE_TRAIT_1(__has_trivial_constructor, HasTrivialDefaultConstructor, KEYALL)
+-TYPE_TRAIT_1(__has_trivial_move_constructor, HasTrivialMoveConstructor, KEYALL)
+-TYPE_TRAIT_1(__has_trivial_destructor, HasTrivialDestructor, KEYALL)
++TYPE_TRAIT_1(__has_trivial_assign, HasTrivialAssign, KEYCXX)
++TYPE_TRAIT_1(__has_trivial_move_assign, HasTrivialMoveAssign, KEYCXX)
++TYPE_TRAIT_1(__has_trivial_copy, HasTrivialCopy, KEYCXX)
++TYPE_TRAIT_1(__has_trivial_constructor, HasTrivialDefaultConstructor, KEYCXX)
++TYPE_TRAIT_1(__has_trivial_move_constructor, HasTrivialMoveConstructor, KEYCXX)
++TYPE_TRAIT_1(__has_trivial_destructor, HasTrivialDestructor, KEYCXX)
+ TYPE_TRAIT_1(__has_virtual_destructor, HasVirtualDestructor, KEYCXX)
+ TYPE_TRAIT_1(__is_abstract, IsAbstract, KEYCXX)
+ TYPE_TRAIT_1(__is_aggregate, IsAggregate, KEYCXX)
+diff --git a/lib/Sema/SemaExprCXX.cpp b/lib/Sema/SemaExprCXX.cpp
+index 849fc3c3cf..56b95c45aa 100644
+--- a/lib/Sema/SemaExprCXX.cpp
++++ b/lib/Sema/SemaExprCXX.cpp
+@@ -4521,8 +4521,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+     // does not correctly compute triviality in the presence of multiple special
+     // members of the same kind. Revisit this once the g++ bug is fixed.
+   case UTT_HasTrivialDefaultConstructor:
+-    if (T.isNonTrivialToPrimitiveDefaultInitialize())
+-      return false;
+     // http://gcc.gnu.org/onlinedocs/gcc/Type-Traits.html:
+     //   If __is_pod (type) is true then the trait is true, else if type is
+     //   a cv class or union type (or array thereof) with a trivial default
+@@ -4534,8 +4532,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+              !RD->hasNonTrivialDefaultConstructor();
+     return false;
+   case UTT_HasTrivialMoveConstructor:
+-    if (T.isNonTrivialToPrimitiveDestructiveMove())
+-      return false;
+     //  This trait is implemented by MSVC 2012 and needed to parse the
+     //  standard library headers. Specifically this is used as the logic
+     //  behind std::is_trivially_move_constructible (20.9.4.3).
+@@ -4545,8 +4541,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+       return RD->hasTrivialMoveConstructor() && !RD->hasNonTrivialMoveConstructor();
+     return false;
+   case UTT_HasTrivialCopy:
+-    if (T.isNonTrivialToPrimitiveCopy())
+-      return false;
+     // http://gcc.gnu.org/onlinedocs/gcc/Type-Traits.html:
+     //   If __is_pod (type) is true or type is a reference type then
+     //   the trait is true, else if type is a cv class or union type
+@@ -4559,8 +4553,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+              !RD->hasNonTrivialCopyConstructor();
+     return false;
+   case UTT_HasTrivialMoveAssign:
+-    if (T.isNonTrivialToPrimitiveDestructiveMove())
+-      return false;
+     //  This trait is implemented by MSVC 2012 and needed to parse the
+     //  standard library headers. Specifically it is used as the logic
+     //  behind std::is_trivially_move_assignable (20.9.4.3)
+@@ -4570,8 +4562,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+       return RD->hasTrivialMoveAssignment() && !RD->hasNonTrivialMoveAssignment();
+     return false;
+   case UTT_HasTrivialAssign:
+-    if (T.isNonTrivialToPrimitiveCopy())
+-      return false;
+     // http://gcc.gnu.org/onlinedocs/gcc/Type-Traits.html:
+     //   If type is const qualified or is a reference type then the
+     //   trait is false. Otherwise if __is_pod (type) is true then the
+@@ -4642,8 +4632,6 @@ static bool EvaluateUnaryTypeTrait(Sema &Self, TypeTrait UTT,
+     return true;
+ 
+   case UTT_HasTrivialDestructor:
+-    if (T.isDestructedType() == QualType::DK_nontrivial_c_struct)
+-      return false;
+     // http://gcc.gnu.org/onlinedocs/gcc/Type-Traits.html
+     //   If __is_pod (type) is true or type is a reference type
+     //   then the trait is true, else if type is a cv class or union
+diff --git a/test/SemaObjC/non-trivial-struct-traits.m b/test/SemaObjC/non-trivial-struct-traits.m
+deleted file mode 100644
+index db918d8e43..0000000000
+--- a/test/SemaObjC/non-trivial-struct-traits.m
++++ /dev/null
+@@ -1,25 +0,0 @@
+-// RUN: %clang_cc1 -fsyntax-only -fobjc-arc -verify %s
+-
+-// expected-no-diagnostics
+-
+-struct Trivial {
+-  int x;
+-};
+-
+-struct NonTrivial {
+-  id x;
+-};
+-
+-int trivial_assign[__has_trivial_assign(struct Trivial) ? 1 : -1];
+-int trivial_move_assign[__has_trivial_move_assign(struct Trivial) ? 1 : -1];
+-int trivial_copy_constructor[__has_trivial_copy(struct Trivial) ? 1 : -1];
+-int trivial_move_constructor[__has_trivial_move_constructor(struct Trivial) ? 1 : -1];
+-int trivial_constructor[__has_trivial_constructor(struct Trivial) ? 1 : -1];
+-int trivial_destructor[__has_trivial_destructor(struct Trivial) ? 1 : -1];
+-
+-int non_trivial_assign[__has_trivial_assign(struct NonTrivial) ? -1 : 1];
+-int non_trivial_move_assign[__has_trivial_move_assign(struct NonTrivial) ? -1 : 1];
+-int non_trivial_copy_constructor[__has_trivial_copy(struct NonTrivial) ? -1 : 1];
+-int non_trivial_move_constructor[__has_trivial_move_constructor(struct NonTrivial) ? -1 : 1];
+-int non_trivial_constructor[__has_trivial_constructor(struct NonTrivial) ? -1 : 1];
+-int non_trivial_destructor[__has_trivial_destructor(struct NonTrivial) ? -1 : 1];

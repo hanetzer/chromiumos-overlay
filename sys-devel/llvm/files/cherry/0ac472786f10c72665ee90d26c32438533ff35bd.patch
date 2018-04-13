@@ -1,0 +1,280 @@
+commit 0ac472786f10c72665ee90d26c32438533ff35bd
+Author: Artem Belevich <tra@google.com>
+Date:   Tue Apr 3 18:29:31 2018 +0000
+
+    Revert "Set calling convention for CUDA kernel"
+    
+    This reverts r328795 which introduced an issue with referencing __global__
+    function templates. More details in the original review D44747.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@329099 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/include/clang/Basic/Specifiers.h b/include/clang/Basic/Specifiers.h
+index c5d2e26ecf..377534baab 100644
+--- a/include/clang/Basic/Specifiers.h
++++ b/include/clang/Basic/Specifiers.h
+@@ -231,24 +231,23 @@ namespace clang {
+ 
+   /// \brief CallingConv - Specifies the calling convention that a function uses.
+   enum CallingConv {
+-    CC_C,             // __attribute__((cdecl))
+-    CC_X86StdCall,    // __attribute__((stdcall))
+-    CC_X86FastCall,   // __attribute__((fastcall))
+-    CC_X86ThisCall,   // __attribute__((thiscall))
++    CC_C,           // __attribute__((cdecl))
++    CC_X86StdCall,  // __attribute__((stdcall))
++    CC_X86FastCall, // __attribute__((fastcall))
++    CC_X86ThisCall, // __attribute__((thiscall))
+     CC_X86VectorCall, // __attribute__((vectorcall))
+-    CC_X86Pascal,     // __attribute__((pascal))
+-    CC_Win64,         // __attribute__((ms_abi))
+-    CC_X86_64SysV,    // __attribute__((sysv_abi))
+-    CC_X86RegCall,    // __attribute__((regcall))
+-    CC_AAPCS,         // __attribute__((pcs("aapcs")))
+-    CC_AAPCS_VFP,     // __attribute__((pcs("aapcs-vfp")))
+-    CC_IntelOclBicc,  // __attribute__((intel_ocl_bicc))
+-    CC_SpirFunction,  // default for OpenCL functions on SPIR target
+-    CC_OpenCLKernel,  // inferred for OpenCL kernels
+-    CC_Swift,         // __attribute__((swiftcall))
+-    CC_PreserveMost,  // __attribute__((preserve_most))
+-    CC_PreserveAll,   // __attribute__((preserve_all))
+-    CC_CUDAKernel,    // inferred for CUDA kernels
++    CC_X86Pascal,   // __attribute__((pascal))
++    CC_Win64,       // __attribute__((ms_abi))
++    CC_X86_64SysV,  // __attribute__((sysv_abi))
++    CC_X86RegCall, // __attribute__((regcall))
++    CC_AAPCS,       // __attribute__((pcs("aapcs")))
++    CC_AAPCS_VFP,   // __attribute__((pcs("aapcs-vfp")))
++    CC_IntelOclBicc, // __attribute__((intel_ocl_bicc))
++    CC_SpirFunction, // default for OpenCL functions on SPIR target
++    CC_OpenCLKernel, // inferred for OpenCL kernels
++    CC_Swift,        // __attribute__((swiftcall))
++    CC_PreserveMost, // __attribute__((preserve_most))
++    CC_PreserveAll,  // __attribute__((preserve_all))
+   };
+ 
+   /// \brief Checks whether the given calling convention supports variadic
+diff --git a/lib/AST/ItaniumMangle.cpp b/lib/AST/ItaniumMangle.cpp
+index 0f22bf275c..d42d705d09 100644
+--- a/lib/AST/ItaniumMangle.cpp
++++ b/lib/AST/ItaniumMangle.cpp
+@@ -2628,7 +2628,6 @@ StringRef CXXNameMangler::getCallingConvQualifierName(CallingConv CC) {
+   case CC_OpenCLKernel:
+   case CC_PreserveMost:
+   case CC_PreserveAll:
+-  case CC_CUDAKernel:
+     // FIXME: we should be mangling all of the above.
+     return "";
+ 
+diff --git a/lib/AST/Type.cpp b/lib/AST/Type.cpp
+index c2733f2563..cca5ddc1e4 100644
+--- a/lib/AST/Type.cpp
++++ b/lib/AST/Type.cpp
+@@ -2748,7 +2748,6 @@ StringRef FunctionType::getNameForCallConv(CallingConv CC) {
+   case CC_Swift: return "swiftcall";
+   case CC_PreserveMost: return "preserve_most";
+   case CC_PreserveAll: return "preserve_all";
+-  case CC_CUDAKernel: return "cuda_kernel";
+   }
+ 
+   llvm_unreachable("Invalid calling convention.");
+diff --git a/lib/AST/TypePrinter.cpp b/lib/AST/TypePrinter.cpp
+index fe67f4e3b2..d46f8d3348 100644
+--- a/lib/AST/TypePrinter.cpp
++++ b/lib/AST/TypePrinter.cpp
+@@ -780,10 +780,6 @@ void TypePrinter::printFunctionAfter(const FunctionType::ExtInfo &Info,
+     case CC_OpenCLKernel:
+       // Do nothing. These CCs are not available as attributes.
+       break;
+-    case CC_CUDAKernel:
+-      // ToDo: print this before the function.
+-      OS << " __global__";
+-      break;
+     case CC_Swift:
+       OS << " __attribute__((swiftcall))";
+       break;
+diff --git a/lib/CodeGen/CGCall.cpp b/lib/CodeGen/CGCall.cpp
+index c0451fb97b..b01926e1ca 100644
+--- a/lib/CodeGen/CGCall.cpp
++++ b/lib/CodeGen/CGCall.cpp
+@@ -64,7 +64,6 @@ unsigned CodeGenTypes::ClangCallConvToLLVMCallConv(CallingConv CC) {
+   case CC_PreserveMost: return llvm::CallingConv::PreserveMost;
+   case CC_PreserveAll: return llvm::CallingConv::PreserveAll;
+   case CC_Swift: return llvm::CallingConv::Swift;
+-  case CC_CUDAKernel: return CGM.getTargetCodeGenInfo().getCUDAKernelCallingConv();
+   }
+ }
+ 
+diff --git a/lib/CodeGen/CGDebugInfo.cpp b/lib/CodeGen/CGDebugInfo.cpp
+index b6d336a2e8..c72a5e58b4 100644
+--- a/lib/CodeGen/CGDebugInfo.cpp
++++ b/lib/CodeGen/CGDebugInfo.cpp
+@@ -1022,9 +1022,6 @@ static unsigned getDwarfCC(CallingConv CC) {
+     return llvm::dwarf::DW_CC_LLVM_PreserveAll;
+   case CC_X86RegCall:
+     return llvm::dwarf::DW_CC_LLVM_X86RegCall;
+-  case CC_CUDAKernel:
+-    // ToDo: Add llvm::dwarf::DW_CC_LLVM_CUDAKernel;
+-    return 0;
+   }
+   return 0;
+ }
+diff --git a/lib/CodeGen/TargetInfo.cpp b/lib/CodeGen/TargetInfo.cpp
+index 68edb32582..f98faeb7ee 100644
+--- a/lib/CodeGen/TargetInfo.cpp
++++ b/lib/CodeGen/TargetInfo.cpp
+@@ -431,10 +431,6 @@ unsigned TargetCodeGenInfo::getOpenCLKernelCallingConv() const {
+   return llvm::CallingConv::SPIR_KERNEL;
+ }
+ 
+-unsigned TargetCodeGenInfo::getCUDAKernelCallingConv() const {
+-  return llvm::CallingConv::C;
+-}
+-
+ llvm::Constant *TargetCodeGenInfo::getNullPointer(const CodeGen::CodeGenModule &CGM,
+     llvm::PointerType *T, QualType QT) const {
+   return llvm::ConstantPointerNull::get(T);
+@@ -7639,7 +7635,6 @@ public:
+   void setTargetAttributes(const Decl *D, llvm::GlobalValue *GV,
+                            CodeGen::CodeGenModule &M) const override;
+   unsigned getOpenCLKernelCallingConv() const override;
+-  unsigned getCUDAKernelCallingConv() const override;
+ 
+   llvm::Constant *getNullPointer(const CodeGen::CodeGenModule &CGM,
+       llvm::PointerType *T, QualType QT) const override;
+@@ -7727,10 +7722,6 @@ unsigned AMDGPUTargetCodeGenInfo::getOpenCLKernelCallingConv() const {
+   return llvm::CallingConv::AMDGPU_KERNEL;
+ }
+ 
+-unsigned AMDGPUTargetCodeGenInfo::getCUDAKernelCallingConv() const {
+-  return llvm::CallingConv::AMDGPU_KERNEL;
+-}
+-
+ // Currently LLVM assumes null pointers always have value 0,
+ // which results in incorrectly transformed IR. Therefore, instead of
+ // emitting null pointers in private and local address spaces, a null
+diff --git a/lib/CodeGen/TargetInfo.h b/lib/CodeGen/TargetInfo.h
+index ab463c5dc6..533e14514f 100644
+--- a/lib/CodeGen/TargetInfo.h
++++ b/lib/CodeGen/TargetInfo.h
+@@ -223,9 +223,6 @@ public:
+   /// Get LLVM calling convention for OpenCL kernel.
+   virtual unsigned getOpenCLKernelCallingConv() const;
+ 
+-  /// Get LLVM calling convention for CUDA kernel.
+-  virtual unsigned getCUDAKernelCallingConv() const;
+-
+   /// Get target specific null pointer.
+   /// \param T is the LLVM type of the null pointer.
+   /// \param QT is the clang QualType of the null pointer.
+diff --git a/lib/Sema/SemaExpr.cpp b/lib/Sema/SemaExpr.cpp
+index c5f581f423..0e097daa61 100644
+--- a/lib/Sema/SemaExpr.cpp
++++ b/lib/Sema/SemaExpr.cpp
+@@ -25,7 +25,6 @@
+ #include "clang/AST/ExprObjC.h"
+ #include "clang/AST/ExprOpenMP.h"
+ #include "clang/AST/RecursiveASTVisitor.h"
+-#include "clang/AST/Type.h"
+ #include "clang/AST/TypeLoc.h"
+ #include "clang/Basic/PartialDiagnostic.h"
+ #include "clang/Basic/SourceManager.h"
+@@ -1659,16 +1658,6 @@ Sema::BuildDeclRefExpr(ValueDecl *D, QualType Ty, ExprValueKind VK,
+       isa<VarDecl>(D) &&
+       NeedToCaptureVariable(cast<VarDecl>(D), NameInfo.getLoc());
+ 
+-  // Drop CUDA kernel calling convention since it is invisible to the user
+-  // in DRE.
+-  if (const auto *FT = Ty->getAs<FunctionType>()) {
+-    if (FT->getCallConv() == CC_CUDAKernel) {
+-      FT = Context.adjustFunctionType(FT,
+-                                      FT->getExtInfo().withCallingConv(CC_C));
+-      Ty = QualType(FT, Ty.getQualifiers().getAsOpaqueValue());
+-    }
+-  }
+-
+   DeclRefExpr *E;
+   if (isa<VarTemplateSpecializationDecl>(D)) {
+     VarTemplateSpecializationDecl *VarSpec =
+diff --git a/lib/Sema/SemaOverload.cpp b/lib/Sema/SemaOverload.cpp
+index e917bcc1cc..dea1c2efe9 100644
+--- a/lib/Sema/SemaOverload.cpp
++++ b/lib/Sema/SemaOverload.cpp
+@@ -1481,6 +1481,7 @@ bool Sema::IsFunctionConversion(QualType FromType, QualType ToType,
+                  .getTypePtr());
+       Changed = true;
+     }
++
+     // Convert FromFPT's ExtParameterInfo if necessary. The conversion is valid
+     // only if the ExtParameterInfo lists of the two function prototypes can be
+     // merged and the merged list is identical to ToFPT's ExtParameterInfo list.
+diff --git a/lib/Sema/SemaType.cpp b/lib/Sema/SemaType.cpp
+index 7bcc5b66fb..00bb21ff30 100644
+--- a/lib/Sema/SemaType.cpp
++++ b/lib/Sema/SemaType.cpp
+@@ -3316,18 +3316,6 @@ getCCForDeclaratorChunk(Sema &S, Declarator &D,
+   CallingConv CC = S.Context.getDefaultCallingConvention(FTI.isVariadic,
+                                                          IsCXXInstanceMethod);
+ 
+-  // Attribute AT_CUDAGlobal affects the calling convention for AMDGPU targets.
+-  // This is the simplest place to infer calling convention for CUDA kernels.
+-  if (S.getLangOpts().CUDA && S.getLangOpts().CUDAIsDevice) {
+-    for (const AttributeList *Attr = D.getDeclSpec().getAttributes().getList();
+-         Attr; Attr = Attr->getNext()) {
+-      if (Attr->getKind() == AttributeList::AT_CUDAGlobal) {
+-        CC = CC_CUDAKernel;
+-        break;
+-      }
+-    }
+-  }
+-
+   // Attribute AT_OpenCLKernel affects the calling convention for SPIR
+   // and AMDGPU targets, hence it cannot be treated as a calling
+   // convention attribute. This is the simplest place to infer
+diff --git a/test/CodeGenCUDA/kernel-amdgcn.cu b/test/CodeGenCUDA/kernel-amdgcn.cu
+deleted file mode 100644
+index a7369f901b..0000000000
+--- a/test/CodeGenCUDA/kernel-amdgcn.cu
++++ /dev/null
+@@ -1,29 +0,0 @@
+-// RUN: %clang_cc1 -triple amdgcn -fcuda-is-device -emit-llvm %s -o - | FileCheck %s
+-#include "Inputs/cuda.h"
+-
+-// CHECK: define amdgpu_kernel void @_ZN1A6kernelEv
+-class A {
+-public:
+-  static __global__ void kernel(){}
+-};
+-
+-// CHECK: define void @_Z10non_kernelv
+-__device__ void non_kernel(){}
+-
+-// CHECK: define amdgpu_kernel void @_Z6kerneli
+-__global__ void kernel(int x) {
+-  non_kernel();
+-}
+-
+-// CHECK: define amdgpu_kernel void @_Z15template_kernelI1AEvT_
+-template<class T>
+-__global__ void template_kernel(T x) {}
+-
+-void launch(void *f);
+-
+-int main() {
+-  launch((void*)A::kernel);
+-  launch((void*)kernel);
+-  launch((void*)template_kernel<A>);
+-  return 0;
+-}
+diff --git a/tools/libclang/CXType.cpp b/tools/libclang/CXType.cpp
+index 25bbde0c8a..dfc0152477 100644
+--- a/tools/libclang/CXType.cpp
++++ b/tools/libclang/CXType.cpp
+@@ -626,7 +626,6 @@ CXCallingConv clang_getFunctionTypeCallingConv(CXType X) {
+       TCALLINGCONV(PreserveAll);
+     case CC_SpirFunction: return CXCallingConv_Unexposed;
+     case CC_OpenCLKernel: return CXCallingConv_Unexposed;
+-    case CC_CUDAKernel: return CXCallingConv_Unexposed;
+       break;
+     }
+ #undef TCALLINGCONV

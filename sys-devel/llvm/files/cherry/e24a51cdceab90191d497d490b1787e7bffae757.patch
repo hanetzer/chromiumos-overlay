@@ -1,0 +1,180 @@
+commit e24a51cdceab90191d497d490b1787e7bffae757
+Author: Eric Christopher <echristo@gmail.com>
+Date:   Mon Apr 2 18:33:47 2018 +0000
+
+    Temporarily revert r328404:
+    
+    commit 519b97132a4c960e8dedbfe4290d86970d92e995
+    Author: Richard Trieu <rtrieu@google.com>
+    Date:   Sat Mar 24 00:52:44 2018 +0000
+    
+        [ODRHash] Support pointer and reference types.
+    
+        git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@328404 91177308-0d34-0410-b5e6-96231b3b80d8
+    
+    As it's breaking some tests. I've communicated with Richard offline about testcases.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/cfe/trunk@329001 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/AST/ODRHash.cpp b/lib/AST/ODRHash.cpp
+index 57745f27b2..528e32aaba 100644
+--- a/lib/AST/ODRHash.cpp
++++ b/lib/AST/ODRHash.cpp
+@@ -642,24 +642,6 @@ public:
+     VisitFunctionType(T);
+   }
+ 
+-  void VisitPointerType(const PointerType *T) {
+-    AddQualType(T->getPointeeType());
+-    VisitType(T);
+-  }
+-
+-  void VisitReferenceType(const ReferenceType *T) {
+-    AddQualType(T->getPointeeTypeAsWritten());
+-    VisitType(T);
+-  }
+-
+-  void VisitLValueReferenceType(const LValueReferenceType *T) {
+-    VisitReferenceType(T);
+-  }
+-
+-  void VisitRValueReferenceType(const RValueReferenceType *T) {
+-    VisitReferenceType(T);
+-  }
+-
+   void VisitTypedefType(const TypedefType *T) {
+     AddDecl(T->getDecl());
+     QualType UnderlyingType = T->getDecl()->getUnderlyingType();
+diff --git a/test/Modules/odr_hash.cpp b/test/Modules/odr_hash.cpp
+index fc193fa8d8..5991dd0a73 100644
+--- a/test/Modules/odr_hash.cpp
++++ b/test/Modules/odr_hash.cpp
+@@ -2287,128 +2287,6 @@ Invalid1 i1;
+ }  // namespace BaseClass
+ 
+ 
+-namespace PointersAndReferences {
+-#if defined(FIRST) || defined(SECOND)
+-template<typename> struct Wrapper{};
+-#endif
+-
+-#if defined(FIRST)
+-struct S1 {
+-  Wrapper<int*> x;
+-};
+-#elif defined(SECOND)
+-struct S1 {
+-  Wrapper<float*> x;
+-};
+-#else
+-S1 s1;
+-// expected-error@first.h:* {{PointersAndReferences::S1::x' from module 'FirstModule' is not present in definition of 'PointersAndReferences::S1' in module 'SecondModule'}}
+-// expected-note@second.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#if defined(FIRST)
+-struct S2 {
+-  Wrapper<int &&> x;
+-};
+-#elif defined(SECOND)
+-struct S2 {
+-  Wrapper<float &&> x;
+-};
+-#else
+-S2 s2;
+-// expected-error@first.h:* {{PointersAndReferences::S2::x' from module 'FirstModule' is not present in definition of 'PointersAndReferences::S2' in module 'SecondModule'}}
+-// expected-note@second.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#if defined(FIRST)
+-struct S3 {
+-  Wrapper<int *> x;
+-};
+-#elif defined(SECOND)
+-struct S3 {
+-  Wrapper<float *> x;
+-};
+-#else
+-S3 s3;
+-// expected-error@first.h:* {{PointersAndReferences::S3::x' from module 'FirstModule' is not present in definition of 'PointersAndReferences::S3' in module 'SecondModule'}}
+-// expected-note@second.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#if defined(FIRST)
+-struct S4 {
+-  Wrapper<int &> x;
+-};
+-#elif defined(SECOND)
+-struct S4 {
+-  Wrapper<float &> x;
+-};
+-#else
+-S4 s4;
+-// expected-error@first.h:* {{PointersAndReferences::S4::x' from module 'FirstModule' is not present in definition of 'PointersAndReferences::S4' in module 'SecondModule'}}
+-// expected-note@second.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#if defined(FIRST)
+-struct S5 {
+-  Wrapper<S5 *> x;
+-};
+-#elif defined(SECOND)
+-struct S5 {
+-  Wrapper<const S5 *> x;
+-};
+-#else
+-S5 s5;
+-// expected-error@second.h:* {{'PointersAndReferences::S5::x' from module 'SecondModule' is not present in definition of 'PointersAndReferences::S5' in module 'FirstModule'}}
+-// expected-note@first.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#if defined(FIRST)
+-struct S6 {
+-  Wrapper<int &> x;
+-};
+-#elif defined(SECOND)
+-struct S6 {
+-  Wrapper<const int &> x;
+-};
+-#else
+-S6 s6;
+-// expected-error@first.h:* {{PointersAndReferences::S6::x' from module 'FirstModule' is not present in definition of 'PointersAndReferences::S6' in module 'SecondModule'}}
+-// expected-note@second.h:* {{declaration of 'x' does not match}}
+-#endif
+-
+-#define DECLS                \
+-  Wrapper<int *> x1;         \
+-  Wrapper<float *> x2;       \
+-  Wrapper<const float *> x3; \
+-  Wrapper<int &> x4;         \
+-  Wrapper<int &&> x5;        \
+-  Wrapper<const int &> x6;   \
+-  Wrapper<S1 *> x7;          \
+-  Wrapper<S1 &> x8;          \
+-  Wrapper<S1 &&> x9;
+-
+-#if defined(FIRST) || defined(SECOND)
+-struct Valid1 {
+-  DECLS
+-};
+-#else
+-Valid1 v1;
+-#endif
+-
+-#if defined(FIRST) || defined(SECOND)
+-struct Invalid1 {
+-  DECLS
+-  ACCESS
+-};
+-#else
+-Invalid1 i1;
+-// expected-error@second.h:* {{'PointersAndReferences::Invalid1' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
+-// expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
+-#endif
+-#undef DECLS
+-}  // namespace PointersAndReferences
+-
+-
+ // Collection of interesting cases below.
+ 
+ // Naive parsing of AST can lead to cycles in processing.  Ensure
