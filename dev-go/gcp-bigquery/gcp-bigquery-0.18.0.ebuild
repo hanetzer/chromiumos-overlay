@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Copyright 2018 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2.
 
 EAPI=5
@@ -13,11 +13,7 @@ CROS_WORKON_PROJECT="external/github.com/GoogleCloudPlatform/google-cloud-go"
 CROS_WORKON_DESTDIR="${S}/src/cloud.google.com/go"
 
 CROS_GO_PACKAGES=(
-	"cloud.google.com/go/internal"
-	"cloud.google.com/go/internal/atomiccache"
-	"cloud.google.com/go/internal/fields"
-	"cloud.google.com/go/internal/optional"
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/bigquery"
 )
 
 CROS_GO_TEST=(
@@ -36,12 +32,14 @@ IUSE=""
 RESTRICT="binchecks strip"
 
 DEPEND="
+	dev-go/gapi-bigquery
 	dev-go/gapi-googleapi
 	dev-go/gapi-iterator
+	dev-go/gapi-option
+	dev-go/gapi-storage
 	dev-go/gapi-transport
-	dev-go/grpc
-	dev-go/gax
+	dev-go/gcp-civil
+	dev-go/gcp-internal
 	dev-go/genproto
-	dev-go/net
 "
 RDEPEND="${DEPEND}"

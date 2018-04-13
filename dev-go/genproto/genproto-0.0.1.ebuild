@@ -17,6 +17,7 @@ CROS_GO_PACKAGES=(
 	"google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
+	"google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"

@@ -13,8 +13,7 @@ CROS_WORKON_PROJECT="external/github.com/google/google-api-go-client"
 CROS_WORKON_DESTDIR="${S}/src/google.golang.org/api"
 
 CROS_GO_PACKAGES=(
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/iterator/testing"
+	"google.golang.org/api/bigquery/v2"
 )
 
 CROS_GO_TEST=(
@@ -32,5 +31,9 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="binchecks strip"
 
-DEPEND="dev-go/net"
+DEPEND="
+	dev-go/gapi-gensupport
+	dev-go/gapi-googleapi
+	dev-go/net
+"
 RDEPEND="${DEPEND}"
