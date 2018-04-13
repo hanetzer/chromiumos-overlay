@@ -28,6 +28,7 @@ RDEPEND="
 	dev-python/pytest
 	dev-python/python-uinput
 	media-sound/sox
+	sys-apps/ethtool
 	vaapi? ( x11-libs/libva )
 	virtual/autotest-tests
 "
