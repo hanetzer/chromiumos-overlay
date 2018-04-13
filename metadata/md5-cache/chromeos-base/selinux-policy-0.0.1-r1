@@ -1,0 +1,9 @@
+DEFINED_PHASES=compile install
+DEPEND=chromeos-base/android-container-pi:0=
+DESCRIPTION=Chrome OS SELinux Policy Package
+EAPI=5
+IUSE=cheets_local_img
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=a203ff5fd1e0d772d87aa022a6c7736d
