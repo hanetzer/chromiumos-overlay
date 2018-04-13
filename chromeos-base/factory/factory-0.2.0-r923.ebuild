@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="4bb5771b7678fcaf6be23043f2d197846d12b962"
-CROS_WORKON_TREE="983a6a59ddb79ab160495b3045a51b18fd851495"
+CROS_WORKON_COMMIT="3de26373f417869bfc5eca403108f772ccd33c2c"
+CROS_WORKON_TREE="ade4103b34ef0ca13168d16ed49085c816c00c65"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -30,6 +30,11 @@ DEPEND="virtual/chromeos-bsp-factory
 "
 
 BUILD_DIR="${WORKDIR}/build"
+
+src_prepare() {
+	# Need the lddtree from the chromite dir.
+	export PATH="${CHROMITE_BIN_DIR}:${PATH}"
+}
 
 src_configure() {
 	default
