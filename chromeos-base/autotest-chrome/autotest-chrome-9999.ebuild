@@ -39,6 +39,7 @@ RDEPEND="
 	dev-python/mkvparse
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/telemetry
+	sys-apps/ethtool
 	vaapi? ( x11-libs/libva )
 	tests_graphics_Sanity? ( x11-libs/libdrm )
 "
