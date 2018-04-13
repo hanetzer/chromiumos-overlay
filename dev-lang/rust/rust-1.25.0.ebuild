@@ -25,7 +25,7 @@ fi
 
 STAGE0_VERSION="1.$(($(get_version_component_range 2) - 1)).0"
 STAGE0_VERSION_CARGO="0.$(($(get_version_component_range 2))).0"
-STAGE0_DATE="2018-01-04"
+STAGE0_DATE="2018-02-15"
 RUST_STAGE0_amd64="rustc-${STAGE0_VERSION}-x86_64-unknown-linux-gnu"
 
 DESCRIPTION="Systems programming language from Mozilla"
@@ -43,6 +43,7 @@ RESTRICT="binchecks strip"
 REQUIRED_USE="amd64"
 
 DEPEND="${PYTHON_DEPS}
+	>=dev-libs/libxml2-2.9.6
 	>=dev-lang/perl-5.0
 "
 
@@ -75,7 +76,7 @@ src_prepare() {
 	# One of the patches changes a vendored library, thereby changing the
 	# checksum.
 	pushd src/vendor/cc || die
-	sed -i 's:164a360f504c7614be1f51dd9c76ef84bf8195e94ea5f1a914a90c1a036db6b8:517952ae22648c61ef8c83a73ccf7d720387211dc267d1f99f2c80f97a84c472:g' \
+	sed -i 's:996b650e19d5ccd6e64e741789427017c913644e980862a7286ec4ed53c14a17:ba9a3ee0614027d99fbbe8a69e0d6d9e8275b80fdf7a47f5a164c82acf1e367e:g' \
 		.cargo-checksum.json
 	popd
 
@@ -131,9 +132,9 @@ channel = "${SLOT%%/*}"
 codegen-units = 0
 
 [target.x86_64-unknown-linux-gnu]
-cc = "x86_64-cros-linux-gnu-clang"
-cxx = "x86_64-cros-linux-gnu-clang++"
-linker = "x86_64-cros-linux-gnu-clang++"
+cc = "x86_64-pc-linux-gnu-clang"
+cxx = "x86_64-pc-linux-gnu-clang++"
+linker = "x86_64-pc-linux-gnu-clang++"
 
 [target.armv7a-cros-linux-gnueabi]
 cc = "armv7a-cros-linux-gnueabi-clang"
@@ -158,4 +159,5 @@ src_install() {
 	dobin src/etc/rust-gdb src/etc/rust-lldb
 	insinto "/usr/$(get_libdir)"
 	doins -r "${obj}/lib/"*
+	doins -r "${obj}/lib64/"*
 }
