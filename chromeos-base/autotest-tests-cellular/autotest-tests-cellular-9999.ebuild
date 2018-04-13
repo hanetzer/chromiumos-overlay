@@ -22,6 +22,7 @@ RDEPEND="
 	chromeos-base/shill-test-scripts
 	dev-python/pygobject
 	dev-python/pyusb
+	sys-apps/ethtool
 "
 DEPEND="${RDEPEND}"
 
