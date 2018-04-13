@@ -62,7 +62,7 @@ ALL_BOARDS=(
 	betty
 	betty-arc64
 	betty-arcnext
-	bettyvirgl
+	#bettyvirgl
 	blackwall
 	bob
 	bobcat
