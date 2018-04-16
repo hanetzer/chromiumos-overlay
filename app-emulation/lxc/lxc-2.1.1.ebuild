@@ -106,6 +106,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.0.6-bash-completion.patch
 	#558854
 	epatch "${FILESDIR}"/${PN}-2.0.5-omit-sysconfig.patch
+	epatch "${FILESDIR}"/${PN}-3.0.0-seccomp-handle-arch-inversion.patch
+	epatch "${FILESDIR}"/${PN}-3.0.0-seccomp-handle-all-errors.patch
 	epatch_user
 	eautoreconf
 }
