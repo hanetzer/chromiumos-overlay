@@ -39,12 +39,14 @@ src_compile() {
 
 src_install() {
 	# TODO(fqj): remove the if.
-	if [[ ! -f "${SYSROOT}/etc/selinux/arc/policy/${SEPOLICY_FILENAME}" ]]; then
-		insinto /etc/selinux/arc/policy
-		doins "${SEPOLICY_FILENAME}"
+	if [[ ! -f "${SYSROOT}/etc/selinux/config" ]]; then
+		insinto /etc/selinux/
+		newins "${FILESDIR}"/selinux_config config
 	else
-		ewarn "${SEPOLICY_FILENAME} already existed in ${SYSROOT}."
+		ewarn "config already existed in ${SYSROOT}"
 	fi
-}
 
+	insinto /etc/selinux/arc/policy
+	doins "${SEPOLICY_FILENAME}"
+}
 
