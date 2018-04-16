@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="d58ab3c9f0e27af9461c90c0580a2feabc50cac7"
+CROS_WORKON_COMMIT="c6d15bfd281a98105df3976214a09ce6e8eec575"
 CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "35209e91913a5824ef12e4ca26401c5bb6550cc1")
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -35,6 +35,10 @@ src_install() {
 	# Install seccomp policy file.
 	insinto /usr/share/policy
 	newins "seccomp/ml_service-seccomp-${ARCH}.policy" ml_service-seccomp.policy
+
+	# Install D-Bus configuration file
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.Ml.conf
 }
 
 pkg_preinst() {
