@@ -35,16 +35,22 @@ src_compile() {
 			"${SEPATH}/vendor_sepolicy.cil" \
 			-f /dev/null || die "fail to build sepolicy"
 	fi
+
+	cat "${FILESDIR}/chromeos_file_contexts" \
+		"${SYSROOT}/etc/selinux/intermediates/arc_file_contexts" > file_contexts
 }
 
 src_install() {
 	# TODO(fqj): remove the if.
-	if [[ ! -f "${SYSROOT}/etc/selinux/config" ]]; then
-		insinto /etc/selinux/
-		newins "${FILESDIR}"/selinux_config config
+	if [[ ! -f "${SYSROOT}/etc/selinux/arc/contexts/files/file_contexts" ]]; then
+		insinto /etc/selinux/arc/contexts/files/
+		doins file_contexts
 	else
-		ewarn "config already existed in ${SYSROOT}"
+		ewarn "file_contexts already existed in ${SYSROOT}"
 	fi
+
+	insinto /etc/selinux/
+	newins "${FILESDIR}"/selinux_config config
 
 	insinto /etc/selinux/arc/policy
 	doins "${SEPOLICY_FILENAME}"
