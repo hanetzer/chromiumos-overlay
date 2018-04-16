@@ -52,6 +52,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0023-FROMLIST-media-rkisp1-Add-user-space-ABI-definitions.patch"
 	epatch "${FILESDIR}/0024-FROMLIST-media-videodev2.h-v4l2-ioctl-add-rkisp1-met.patch"
 	epatch "${FILESDIR}/0025-BACKPORT-add-qrtr-header-file.patch"
+	epatch "${FILESDIR}/0026-sync-nl80211-v4.16.patch"
 }
 
 src_install() {
