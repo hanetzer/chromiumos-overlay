@@ -245,6 +245,7 @@ RDEPEND="${RDEPEND}
 		sys-libs/libcxx
 	)
 	smbprovider? ( chromeos-base/smbprovider )
+	build_native_assistant? ( chromeos-base/chromeos-libassistant )
 	"
 
 DEPEND="${DEPEND}
