@@ -1,13 +1,13 @@
 DEFINED_PHASES=configure install postinst prepare setup
-DEPEND=>=net-libs/libmnl-1.0.3:0= gmp? ( dev-libs/gmp:0= ) readline? ( sys-libs/readline:0= ) >=net-libs/libnftnl-1.0.8:0= >=app-text/docbook2X-0.8.8-r4 doc? ( >=app-text/dblatex-0.3.7 ) sys-devel/bison sys-devel/flex virtual/pkgconfig !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 virtual/pkgconfig
+DEPEND=>=net-libs/libmnl-1.0.3:0= gmp? ( dev-libs/gmp:0= ) readline? ( sys-libs/readline:0= ) >=net-libs/libnftnl-1.0.9:0= doc? ( >=app-text/dblatex-0.3.7 ) sys-devel/bison sys-devel/flex virtual/pkgconfig !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 virtual/pkgconfig
 DESCRIPTION=Linux kernel (3.13+) firewall, NAT and packet mangling tools
 EAPI=6
 HOMEPAGE=https://netfilter.org/projects/nftables/
 IUSE=debug doc +gmp +readline
 KEYWORDS=*
 LICENSE=GPL-2
-RDEPEND=>=net-libs/libmnl-1.0.3:0= gmp? ( dev-libs/gmp:0= ) readline? ( sys-libs/readline:0= ) >=net-libs/libnftnl-1.0.8:0=
+RDEPEND=>=net-libs/libmnl-1.0.3:0= gmp? ( dev-libs/gmp:0= ) readline? ( sys-libs/readline:0= ) >=net-libs/libnftnl-1.0.9:0=
 SLOT=0
 SRC_URI=https://git.netfilter.org/nftables/snapshot/v0.8.tar.gz -> nftables-0.8.tar.gz
 _eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=cb1db9f6b16f7d210b92c77e5bb0e1bd
+_md5_=ab866536631a456e2b8396adcebb5b85
