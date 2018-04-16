@@ -207,10 +207,9 @@ check_json_file_from_yaml() {
 	local existing_cksum="$(cksum "$2" | cut -d ' ' -f 1)"
 	einfo "Checksums: $tmp_cksum  $existing_cksum"
 	if [[ "$tmp_cksum" -ne "$existing_cksum" ]]; then
-		eerror "YAML has been updated, but JSON is out of date.\n"\
+		ewarn "YAML has been updated, but JSON is out of date.\n"\
 			"To fix, run:\n"\
 			"cros_config_schema -c "$1" -o "$2""
-		die
 	fi
 }
 
