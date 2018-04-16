@@ -160,6 +160,7 @@ IUSE_TESTS=(
 	+tests_power_Idle
 	+tests_power_IdleSuspend
 	+tests_power_LoadTest
+	+tests_power_LowMemorySuspend
 	+tests_power_UiResume
 	+tests_power_VideoDetector
 	+tests_power_VideoSuspend
