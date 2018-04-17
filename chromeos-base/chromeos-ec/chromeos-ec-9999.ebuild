@@ -176,8 +176,11 @@ src_install() {
 		board_install "${target}" "/firmware/${target}"  \
 			|| die  "Couldn't install ${target}"
 	done
-	board_install "${EC_BOARDS[0]}" /firmware || die \
-		"Couldn't install main firmware"
+	# Unibuild platforms don't have "main" EC firmware.
+	if ! use unibuild; then
+		board_install "${EC_BOARDS[0]}" /firmware || die \
+			"Couldn't install main firmware"
+	fi
 }
 
 src_test() {

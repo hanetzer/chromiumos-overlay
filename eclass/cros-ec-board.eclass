@@ -17,7 +17,7 @@
 #  For samus, EC_BOARDS = [ "samus", "samus_pd" ]
 #
 #  The firmware for these ECs can be found in platform/ec/build
-#  The first item of the array is always the main ec.
+#  When not using unibuild, the first item of the array is always the main ec.
 
 # Check for EAPI 4+
 case "${EAPI:-0}" in
