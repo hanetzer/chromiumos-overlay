@@ -10,7 +10,7 @@ PACKAGE="uiautomator"
 
 DESCRIPTION="Ebuild that installs cheets autotest-dep package into dep directory"
 HOMEPAGE="https://github.com/xiaocong/uiautomator"
-GIT_HASH="0e927d06f855d78d58e26fcff8119258e97fb276"
+GIT_HASH="57ba9333186cc2c748fce8596dd31593a28019a9"
 SRC_URI="https://github.com/xiaocong/uiautomator/archive/${GIT_HASH}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD-Google"
