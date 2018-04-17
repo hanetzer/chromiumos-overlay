@@ -22,12 +22,18 @@ RDEPEND="x11-libs/libva:1
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
+PATCHES=(
+	"${FILESDIR}/${P}-respect-wayland-configure-flags.patch"
+)
+
 src_prepare() {
 	# pkgconfig files are named libva1
 	sed -e 's/\(PKG_CONFIG.*libva\)/\11/g' -i configure.ac || die
 	sed -e 's/\(PKG_CHECK_MODULES.*libva\)/\11/g' -i configure.ac || die
 	# headers are in /usr/include/va1
 	sed -e 's/#include <va\//#include <va1\/va\//g' -i $(find -name *.[ch]) || die
+
+	epatch "${PATCHES[@]}"
 	eautoreconf
 }
 

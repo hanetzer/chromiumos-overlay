@@ -22,7 +22,12 @@ RDEPEND="x11-libs/libva:0
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
+PATCHES=(
+	"${FILESDIR}/${P}-respect-wayland-configure-flags.patch"
+)
+
 src_prepare() {
+	epatch "${PATCHES[@]}"
 	eautoreconf
 }
 
