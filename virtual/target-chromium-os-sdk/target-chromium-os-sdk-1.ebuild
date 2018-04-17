@@ -164,6 +164,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/m17n-lib
 	dev-libs/protobuf
 	dev-libs/protobuf-c
+	dev-libs/wayland
 	dev-python/cffi
 	dev-python/cherrypy
 	dev-python/ctypesgen
