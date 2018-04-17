@@ -54,38 +54,6 @@ UNIBOARD_C_CONFIG="${UNIBOARD_YAML_DIR}/config.c"
 #  This is the installation directory of files referenced in the model.dtsi.
 UNIBOARD_CROS_CONFIG_FILES_DIR="/usr/share/chromeos-config/files"
 
-# @FUNCTION: install_private_model_file
-# @USAGE:
-# @DESCRIPTION:
-# Installs the .dtsi/.yaml file for the current board. This is intended to be
-# called from the chromeos-config-<board> private ebuild. The file is named
-# "private-model.dtsi/.yaml".
-install_private_model_file() {
-	[[ $# -eq 0 ]] || die "${FUNCNAME}: takes no arguments"
-
-	if [[ -e "${FILESDIR}/model.dtsi" ]]; then
-		local dest="private-model.dtsi"
-
-		einfo "Installing ${dest} to ${UNIBOARD_DTS_DIR}"
-		# Avoid polluting callers with our insinto.
-		(
-			insinto "${UNIBOARD_DTS_DIR}"
-			newins ${FILESDIR}/model.dtsi "${dest}"
-		)
-	fi
-
-	if [[ -e "${FILESDIR}/model.yaml" ]]; then
-		local dest="private-model.yaml"
-
-		einfo "Installing ${dest} to ${UNIBOARD_YAML_DIR}"
-
-		(
-			insinto "${UNIBOARD_YAML_DIR}"
-			newins ${FILESDIR}/model.yaml "${dest}"
-		)
-	fi
-}
-
 # @FUNCTION: _unibuild_find_configs
 # @USAGE: [directory] [extension]
 # @INTERNAL
