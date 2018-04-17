@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-inherit eutils linux-info systemd user
+inherit eutils linux-info systemd user flag-o-matic
 
 DESCRIPTION="IPsec-based VPN solution focused on security and ease of use, supporting IKEv1/IKEv2 and MOBIKE"
 HOMEPAGE="http://www.strongswan.org/"
@@ -98,11 +98,12 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-fix-cve-2017-11185.patch"
+	epatch "${FILESDIR}/${P}-start-non-root.patch"
 	epatch_user
 }
 
 src_configure() {
-	local myconf=""
+	append-flags "-DSTARTER_ALLOW_NON_ROOT" "-DSKIP_KERNEL_IPSEC_MODPROBES"
 
 	if use non-root; then
 		myconf="${myconf} --with-user=${UGID} --with-group=${UGID}"

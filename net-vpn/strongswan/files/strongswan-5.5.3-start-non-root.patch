@@ -1,0 +1,156 @@
+From 2ccad66ce8907cafd62a4bd139fc4ed11f2a82aa Mon Sep 17 00:00:00 2001
+From: Micah Morton <mortonm@chromium.org>
+Date: Tue, 17 Apr 2018 13:29:03 -0700
+Subject: [PATCH] Allow strongSwan to be spawned as non-root user.
+
+This patch allows for giving strongSwan only the runtime capabilities it
+needs, rather than full root privileges.
+
+Adds preprocessor directives which allow strongSwan to be configured to
+ 1) start up as a non-root user
+ 2) avoid modprobe()'ing IPsec kernel modules into the kernel, which
+    would normally require root or CAP_SYS_MODULE
+
+Additionally, some small mods to charon/libstrongswan ensure that charon
+supports starting as a non-root user.
+
+Tested with strongSwan 5.5.3.
+---
+ src/charon/charon.c                                        | 13 ++++++++++---
+ src/libstrongswan/networking/streams/stream_service_unix.c | 12 ++++++++----
+ src/libstrongswan/utils/capabilities.c                     |  5 ++++-
+ src/libstrongswan/utils/capabilities.h                     |  4 ++++
+ src/starter/starter.c                                      |  7 ++++---
+ 5 files changed, 30 insertions(+), 11 deletions(-)
+
+diff --git a/src/charon/charon.c b/src/charon/charon.c
+index 520cb3c..dffa0a5 100644
+--- a/src/charon/charon.c
++++ b/src/charon/charon.c
+@@ -224,9 +224,16 @@ static bool check_pidfile()
+ 			DBG1(DBG_LIB, "setting FD_CLOEXEC for '"PID_FILE"' failed: %s",
+ 				 strerror(errno));
+ 		}
+-		ignore_result(fchown(fileno(pidfile),
+-							 lib->caps->get_uid(lib->caps),
+-							 lib->caps->get_gid(lib->caps)));
++		/* Only fchown() the pidfile if we have CAP_CHOWN. Otherwise, socket
++		 * directory permissions should allow pidfile to be accessed
++		 * by the UID/GID under which the charon deamon will run.
++		 */
++		if (lib->caps->check(lib->caps, CAP_CHOWN))
++		{
++			ignore_result(fchown(fileno(pidfile),
++							lib->caps->get_uid(lib->caps),
++							lib->caps->get_gid(lib->caps)));
++		}
+ 		fprintf(pidfile, "%d\n", getpid());
+ 		fflush(pidfile);
+ 	}
+diff --git a/src/libstrongswan/networking/streams/stream_service_unix.c b/src/libstrongswan/networking/streams/stream_service_unix.c
+index 1ed27c4..0e4187d 100644
+--- a/src/libstrongswan/networking/streams/stream_service_unix.c
++++ b/src/libstrongswan/networking/streams/stream_service_unix.c
+@@ -39,8 +39,9 @@ stream_service_t *stream_service_create_unix(char *uri, int backlog)
+ 	}
+ 	if (!lib->caps->check(lib->caps, CAP_CHOWN))
+ 	{	/* required to chown(2) service socket */
+-		DBG1(DBG_NET, "socket '%s' requires CAP_CHOWN capability", uri);
+-		return NULL;
++		DBG1(DBG_NET, "cannot change ownership of socket '%s' without \
++		CAP_CHOWN capability. socket directory should be accessible to \
++		UID/GID under which deamon will run", uri);
+ 	}
+ 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
+ 	if (fd == -1)
+@@ -58,12 +59,15 @@ stream_service_t *stream_service_create_unix(char *uri, int backlog)
+ 		return NULL;
+ 	}
+ 	umask(old);
+-	if (chown(addr.sun_path, lib->caps->get_uid(lib->caps),
+-			  lib->caps->get_gid(lib->caps)) != 0)
++	/* Only attempt to chown() socket if we have CAP_CHOWN */
++	if (lib->caps->check(lib->caps, CAP_CHOWN) &&
++		chown(addr.sun_path, lib->caps->get_uid(lib->caps),
++		lib->caps->get_gid(lib->caps)) != 0)
+ 	{
+ 		DBG1(DBG_NET, "changing socket permissions for '%s' failed: %s",
+ 			 uri, strerror(errno));
+ 	}
++
+ 	if (listen(fd, backlog) < 0)
+ 	{
+ 		DBG1(DBG_NET, "listen on socket '%s' failed: %s", uri, strerror(errno));
+diff --git a/src/libstrongswan/utils/capabilities.c b/src/libstrongswan/utils/capabilities.c
+index ce5f550..bd74e7c 100644
+--- a/src/libstrongswan/utils/capabilities.c
++++ b/src/libstrongswan/utils/capabilities.c
+@@ -422,7 +422,10 @@ METHOD(capabilities_t, drop, bool,
+ {
+ #ifndef WIN32
+ #ifdef HAVE_PRCTL
+-	prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
++	if (has_capability(this, CAP_SETPCAP, NULL))
++	{
++		prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
++	}
+ #endif
+ 
+ 	if (this->uid && !init_supplementary_groups(this))
+diff --git a/src/libstrongswan/utils/capabilities.h b/src/libstrongswan/utils/capabilities.h
+index 20c1855..6b17119 100644
+--- a/src/libstrongswan/utils/capabilities.h
++++ b/src/libstrongswan/utils/capabilities.h
+@@ -47,6 +47,10 @@ typedef struct capabilities_t capabilities_t;
+ #ifndef CAP_DAC_OVERRIDE
+ # define CAP_DAC_OVERRIDE 1
+ #endif
++#ifndef CAP_SETPCAP
++# define CAP_SETPCAP 8
++#endif
++
+ 
+ /**
+  * POSIX capability dropping abstraction layer.
+diff --git a/src/starter/starter.c b/src/starter/starter.c
+index 51a42a5..22f0fc5 100644
+--- a/src/starter/starter.c
++++ b/src/starter/starter.c
+@@ -477,6 +477,7 @@ int main (int argc, char **argv)
+ 		}
+ 	}
+ 
++#ifndef STARTER_ALLOW_NON_ROOT
+ 	/* verify that we can start */
+ 	if (getuid() != 0)
+ 	{
+@@ -484,7 +485,7 @@ int main (int argc, char **argv)
+ 		cleanup();
+ 		exit(LSB_RC_NOT_ALLOWED);
+ 	}
+-
++#endif
+ 	if (check_pid(pid_file))
+ 	{
+ 		DBG1(DBG_APP, "%s is already running (%s exists) -- skipping daemon start",
+@@ -519,7 +520,7 @@ int main (int argc, char **argv)
+ 		cleanup();
+ 		exit(LSB_RC_INVALID_ARGUMENT);
+ 	}
+-
++#ifndef SKIP_KERNEL_IPSEC_MODPROBES
+ 	/* determine if we have a native netkey IPsec stack */
+ 	if (!starter_netkey_init())
+ 	{
+@@ -530,7 +531,7 @@ int main (int argc, char **argv)
+ 			DBG1(DBG_APP, "no known IPsec stack detected, ignoring!");
+ 		}
+ 	}
+-
++#endif
+ 	last_reload = time_monotonic(NULL);
+ 
+ 	if (check_pid(starter_pid_file))
+-- 
+2.13.5
+
