@@ -41,6 +41,7 @@ IUSE="
 	has_diamond_key
 	has_hdd
 	highdpi
+	instant_tethering
 	internal_stylus
 	kevin
 	legacy_keyboard
