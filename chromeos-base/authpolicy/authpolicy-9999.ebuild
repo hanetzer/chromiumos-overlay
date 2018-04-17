@@ -20,11 +20,11 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+samba"
+IUSE="+samba asan fuzzer"
 
 RDEPEND="
 	app-crypt/mit-krb5
-	chromeos-base/libbrillo
+	chromeos-base/libbrillo[asan?,fuzzer?]
 	chromeos-base/metrics
 	>=chromeos-base/minijail-0.0.1-r1477
 	dev-libs/protobuf
@@ -56,6 +56,19 @@ src_install() {
 	doins etc/init/authpolicyd.conf
 	insinto /usr/share/policy
 	doins seccomp_filters/*.policy
+
+	# TODO(olsen): Use helper functions like platform_fuzzer_install to insert
+	# the fuzzer corpus and fuzzer dict, once these helper functions exist.
+	# See chromium:831877
+	if use fuzzer; then
+		insinto /usr/libexec/fuzzers
+		newins "${S}"/policy/testdata/preg_parser_fuzzer_seed_corpus.zip \
+			preg_parser_fuzzer_seed_corpus.zip
+		newins "${S}"/policy/testdata/preg_parser_fuzzer.dict \
+			preg_parser_fuzzer.dict
+	fi
+
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/preg_parser_fuzzer
 }
 
 platform_pkg_test() {
@@ -67,4 +80,6 @@ platform_pkg_test() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}"
 	done
+
+	platform_fuzzer_test "${OUT}"/preg_parser_fuzzer
 }

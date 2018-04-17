@@ -11,6 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
+	chromeos-base/authpolicy[fuzzer]
 	chromeos-base/midis[fuzzer]
 	dev-util/bsdiff[fuzzer]
 	dev-util/puffin[fuzzer]
