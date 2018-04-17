@@ -36,7 +36,7 @@ SRC_URI="$(cargo_crate_uris ${CRATES})"
 LICENSE="BSD-Google BSD-2 Apache-2.0 MIT"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="debug"
+IUSE="debug -crosvm-plugin"
 
 RDEPEND="chromeos-base/minijail
 	!chromeos-base/crosvm-bin
@@ -47,6 +47,17 @@ src_unpack() {
 	# Unpack both the project and dependency source code
 	cargo_src_unpack
 	cros-workon_src_unpack
+}
+
+src_compile() {
+	export CARGO_HOME="${ECARGO_HOME}"
+	export TARGET_CC="$(tc-getCC)"
+	export CARGO_TARGET_DIR="${WORKDIR}"
+
+	cargo build -v --target="${CHOST}" \
+				$(usex debug "" --release) \
+				$(usex crosvm-plugin --features=plugin "") \
+		|| die "cargo build failed"
 }
 
 src_test() {
@@ -84,7 +95,8 @@ src_install() {
 	# cargo doesn't know how to install cross-compiled binaries.  It will
 	# always install native binaries for the host system.  Manually install
 	# crosvm instead.
-	dobin "${WORKDIR}/${CHOST}/$(usex debug debug release)/crosvm"
+	local build_dir="${WORKDIR}/${CHOST}/$(usex debug debug release)"
+	dobin "${build_dir}/crosvm"
 
 	# Install seccomp policy files.
 	local seccomp_path="${S}/seccomp/${seccomp_arch}"
@@ -94,7 +106,7 @@ src_install() {
 	fi
 
 	# Install qcow utils library, header, and pkgconfig files.
-	dolib.so "${WORKDIR}/${CHOST}/$(usex debug debug release)/libqcow_utils.so"
+	dolib.so "${build_dir}/libqcow_utils.so"
 
 	local include_dir="/usr/include/crosvm"
 
@@ -105,6 +117,13 @@ src_install() {
 
 	insinto "${include_dir}"
 	doins "${S}"/qcow_utils/src/qcow_utils.h
+
+	# Install plugin library, when requested.
+	if use crosvm-plugin ; then
+		insinto "${include_dir}"
+		doins "${S}/crosvm_plugin/crosvm.h"
+		dolib.so "${build_dir}/libcrosvm_plugin.so"
+	fi
 }
 
 pkg_preinst() {
