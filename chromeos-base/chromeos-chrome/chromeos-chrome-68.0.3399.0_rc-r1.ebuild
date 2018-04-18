@@ -168,8 +168,8 @@ AFDO_LOCATION["broadwell"]=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
 declare -A AFDO_FILE
 # MODIFIED BY PFQ, DON' TOUCH....
-AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3397.0_rc-r1.afdo"
-AFDO_FILE["silvermont"]="R67-3383.0-1523269841.afdo"
+AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3399.0_rc-r1.afdo"
+AFDO_FILE["silvermont"]="R67-3383.0-1523875031.afdo"
 AFDO_FILE["airmont"]="R67-3383.0-1523269841.afdo"
 AFDO_FILE["haswell"]="R67-3383.0-1523269841.afdo"
 AFDO_FILE["broadwell"]="R67-3383.0-1523269841.afdo"
@@ -827,7 +827,7 @@ setup_compile_flags() {
 			EBUILD_LDFLAGS+=( "-Wl,-mllvm,-import-instr-limit=30" )
 		fi
 		if use arm; then
-			append-ldflags -flto-dwo-dir=${DWO_FILE_DIR}
+			append-ldflags -glto-dwo-dir=${DWO_FILE_DIR}
 		fi
 	fi
 
