@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile install postinst prepare unpack
+DESCRIPTION=Ebuild that installs cheets autotest-dep package into dep directory
+EAPI=4
+HOMEPAGE=https://github.com/xiaocong/uiautomator
+IUSE=+autotest +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+SRC_URI=https://github.com/xiaocong/uiautomator/archive/57ba9333186cc2c748fce8596dd31593a28019a9.tar.gz -> autotest-deps-uiautomator-0.0.3.tar.gz
+_eclasses_=autotest	dab5e9c4c56400e64334c094393ae194	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	autotest-external-dep	f1a21cd720cbb70b488bedaaf1b64777	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda
+_md5_=13fd55131d0f9a19f417b1e485ec73a3
