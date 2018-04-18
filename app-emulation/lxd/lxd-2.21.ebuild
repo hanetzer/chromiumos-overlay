@@ -94,6 +94,11 @@ RDEPEND="
 	)
 "
 
+src_prepare() {
+	cd "src/${EGO_PN}" || die "can't cd into ${S}/src/${EGO_PN}"
+	epatch "${FILESDIR}/2.21-unprivileged-only.patch"
+}
+
 src_compile() {
 	CROS_GO_BINARIES=(
 		"${EGO_PN}/lxc"
