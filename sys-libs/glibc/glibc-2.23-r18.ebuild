@@ -168,8 +168,9 @@ eblit-src_unpack-pre() {
 }
 
 eblit-src_prepare-post() {
+	cd "${WORKDIR}/extra"
+	epatch "${FILESDIR}"/local/glibc-2.23-nsswitch_config.patch
 	cd "${S}"
-
 	epatch "${FILESDIR}"/local/glibc-2.23-file-mangle.patch
 	epatch "${FILESDIR}"/local/glibc-2.19-arm-memcpy.patch
 	epatch "${FILESDIR}"/local/glibc-2.23-set-ld.patch
