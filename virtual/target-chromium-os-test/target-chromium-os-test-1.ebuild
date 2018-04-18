@@ -170,6 +170,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sci-geosciences/gpsd
 	sys-apps/coreutils
 	sys-apps/dtc
+	sys-apps/ethtool
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
