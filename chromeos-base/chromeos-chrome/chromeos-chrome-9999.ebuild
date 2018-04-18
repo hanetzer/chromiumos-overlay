@@ -827,7 +827,7 @@ setup_compile_flags() {
 			EBUILD_LDFLAGS+=( "-Wl,-mllvm,-import-instr-limit=30" )
 		fi
 		if use arm; then
-			append-ldflags -flto-dwo-dir=${DWO_FILE_DIR}
+			append-ldflags -glto-dwo-dir=${DWO_FILE_DIR}
 		fi
 	fi
 
