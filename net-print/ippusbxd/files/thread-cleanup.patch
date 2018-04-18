@@ -1,0 +1,92 @@
+From b2829e3b352234dd2b7ddd683dc61b9c24329090 Mon Sep 17 00:00:00 2001
+From: DavieV <davidvalleau@gmail.com>
+Date: Tue, 17 Apr 2018 15:41:11 -0700
+Subject: [PATCH 4/4] Changing unregister_service_thread to deallocate removed
+ thread params
+
+The service_thread_param parameter for a communication thread was being
+unallocated before calling to the thread cleanup handler. This sometimes
+would result in an error as the entry in the service_threads list would
+become invalid causing problems when attempting to unregister threads.
+
+To fix this problem, the thread cleanup handler
+(unregister_service_thread()) has been changed to also take care of
+freeing the memory associated with the service_thread_param which was
+removed.
+---
+ src/ippusbxd.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/src/ippusbxd.c b/src/ippusbxd.c
+index 5ef5d17..b655eb3 100644
+--- a/src/ippusbxd.c
++++ b/src/ippusbxd.c
+@@ -143,18 +143,27 @@ static int unregister_service_thread(
+   int i;
+ 
+   NOTE("Unregistering thread #%u", thread_num);
++  /* Search |service_threads| for an element with a matching thread number. */
+   for (i = 0; i < *num_service_threads; i ++)
+     if ((*service_threads)[i]->thread_num == thread_num)
+       break;
++
+   if (i >= *num_service_threads) {
+     ERR("Unregistering thread #%u: Cannot unregister, not found", thread_num);
+     return -1;
+   }
++
+   (*num_service_threads) --;
++  struct service_thread_param *removed_thread = (*service_threads)[i];
++  /* Shift the contents after |removed_thread| down. */
+   for (; i < *num_service_threads; i ++)
+     (*service_threads)[i] = (*service_threads)[i + 1];
+-  *service_threads = realloc(*service_threads,
+-			     *num_service_threads * sizeof(void*));
++
++  free(removed_thread);
++
++  *service_threads =
++      realloc(*service_threads, *num_service_threads * sizeof(void *));
++
+   if (*num_service_threads == 0)
+     *service_threads = NULL;
+   else if (*service_threads == NULL) {
+@@ -162,6 +171,7 @@ static int unregister_service_thread(
+ 	thread_num);
+     return -1;
+   }
++
+   return 0;
+ }
+ 
+@@ -325,6 +335,8 @@ static void *service_connection(void *params_void)
+   if (setup_communication_thread(&service_printer_connection, printer_params))
+     goto cleanup;
+ 
++  pthread_t printer_params_thread_handle = printer_params->thread_handle;
++
+   /* This function will run until the socket has been closed. When this function
+      returns it means that the communication has been completed. */
+   service_socket_connection(params);
+@@ -335,8 +347,8 @@ static void *service_connection(void *params_void)
+   
+   /* Wait for the printer thread to exit. */
+   NOTE("Thread #%u: Waiting for thread #%u to complete", thread_num,
+-       printer_params->thread_num);
+-  if (pthread_join(printer_params->thread_handle, NULL))
++       thread_num + 1);
++  if (pthread_join(printer_params_thread_handle, NULL))
+     ERR("Thread #%u: Something went wrong trying to join the printer thread",
+         thread_num);
+ 
+@@ -355,7 +367,6 @@ cleanup:
+     uds_conn_close(params->uds);
+   else
+     tcp_conn_close(params->tcp);
+-  free(params);
+ 
+   /* Execute clean-up handler. */
+   pthread_cleanup_pop(1);
+-- 
+2.17.0.484.g0c8726318c-goog
+
