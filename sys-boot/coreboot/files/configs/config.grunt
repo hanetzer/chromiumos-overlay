@@ -20,3 +20,6 @@ CONFIG_RO_REGION_ONLY="apu/amdfw"
 CONFIG_AGESA_BINARY_PI_AS_STAGE=y
 CONFIG_AGESA_BINARY_PI_FILE="/build/grunt/firmware/coreboot-private/3rdparty/blobs/pi/amd/00670F00/FT4/AGESA.elf"
 CONFIG_AGESA_SPLIT_MEMORY_FILES=y
+# TODO(b/78293873): Remove once a better fallback has been implemented or once
+# daughter boards are common.
+CONFIG_GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC=y
