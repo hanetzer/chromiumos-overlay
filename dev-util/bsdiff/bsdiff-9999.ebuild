@@ -26,7 +26,6 @@ SRC_URI=""
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host"
 
 RDEPEND="
 	app-arch/brotli
@@ -43,10 +42,15 @@ src_install() {
 
 	insinto /usr/include/bsdiff
 	doins include/bsdiff/*.h
+
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/bspatch_fuzzer
 }
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/bsdiff_unittest"
+
+	# Run fuzzer.
+	platform_fuzzer_test "${OUT}"/bspatch_fuzzer
 }
 
 pkg_preinst() {

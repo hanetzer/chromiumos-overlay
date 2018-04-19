@@ -12,5 +12,6 @@ KEYWORDS="*"
 
 RDEPEND="
 	chromeos-base/midis[fuzzer]
+	dev-util/bsdiff[fuzzer]
 	dev-util/puffin[fuzzer]
 "

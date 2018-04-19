@@ -4,8 +4,8 @@
 
 EAPI="5"
 
-CROS_WORKON_COMMIT=("d9bac6ba40b5df848de9c5847496fa28ab436f9a" "a65e5485c955499ec98cb052f7b1b00693dadae8")
-CROS_WORKON_TREE=("61b4b0c05e003fddaa705031945fece7f560c7d7" "f6bf65963ae87d2908aad3513e75df08b0eedc3f")
+CROS_WORKON_COMMIT=("cee4ef405247c36491dd6b221854a1a5114eb3bf" "c82a7587b850ae43ba4bdb1d317e697642896215")
+CROS_WORKON_TREE=("99d4f98c0151c7e25437bb625f114bde347170d5" "291a056bd99eae78f5517625e32d6feabdedebd4")
 inherit cros-constants
 
 # cros-workon expects the repo to be in src/third_party, but is in src/aosp.
@@ -28,7 +28,6 @@ SRC_URI=""
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_host"
 
 RDEPEND="
 	app-arch/brotli
@@ -45,10 +44,15 @@ src_install() {
 
 	insinto /usr/include/bsdiff
 	doins include/bsdiff/*.h
+
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/bspatch_fuzzer
 }
 
 platform_pkg_test() {
 	platform_test "run" "${OUT}/bsdiff_unittest"
+
+	# Run fuzzer.
+	platform_fuzzer_test "${OUT}"/bspatch_fuzzer
 }
 
 pkg_preinst() {
