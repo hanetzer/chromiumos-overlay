@@ -134,6 +134,7 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 
 # For compilation/local chrome
+DEPOT_TOOLS=/mnt/host/depot_tools
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -168,7 +169,7 @@ AFDO_LOCATION["broadwell"]=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
 declare -A AFDO_FILE
 # MODIFIED BY PFQ, DON' TOUCH....
-AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3399.0_rc-r1.afdo"
+AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3399.0_rc-r2.afdo"
 AFDO_FILE["silvermont"]="R67-3383.0-1523875031.afdo"
 AFDO_FILE["airmont"]="R67-3383.0-1523269841.afdo"
 AFDO_FILE["haswell"]="R67-3383.0-1523269841.afdo"
@@ -514,6 +515,9 @@ set_build_args() {
 }
 
 unpack_chrome() {
+	# Add depot_tools to PATH, local chroot builds fail otherwise.
+	export PATH=${PATH}:${DEPOT_TOOLS}
+
 	local cmd=( "${CHROMITE_BIN_DIR}"/sync_chrome )
 	use chrome_internal && cmd+=( --internal )
 	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
@@ -564,8 +568,8 @@ sandboxless_ensure_directory() {
 src_unpack() {
 	tc-export CC CXX
 	local WHOAMI=$(whoami)
-	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
-	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
+	export EGCLIENT="${EGCLIENT:-${DEPOT_TOOLS}/gclient}"
+	export ENINJA="${ENINJA:-${DEPOT_TOOLS}/ninja}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -905,7 +909,7 @@ src_configure() {
 	setup_compile_flags
 
 	export BOTO_CONFIG=/home/$(whoami)/.boto
-	export PATH=${PATH}:/home/$(whoami)/depot_tools
+	export PATH=${PATH}:${DEPOT_TOOLS}
 
 	export DEPOT_TOOLS_GSUTIL_BIN_DIR="${CHROME_CACHE_DIR}/gsutil_bin"
 	# The venv logic seems to misbehave when cross-compiling.  Since our SDK
@@ -999,7 +1003,7 @@ chrome_make() {
 		pwd > "${GLOG_log_dir}/ninja_cwd"
 		echo "${command[@]}" > "${GLOG_log_dir}/ninja_command"
 	fi
-	PATH=${PATH}:/home/$(whoami)/depot_tools "${command[@]}"
+	PATH=${PATH}:${DEPOT_TOOLS} "${command[@]}"
 	local ret=$?
 	if use_goma_log; then
 		echo "${ret}" > "${GLOG_log_dir}/ninja_exit"
