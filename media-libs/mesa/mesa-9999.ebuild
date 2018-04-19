@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/mesa/mesa-7.9.ebuild,v 1.3 2010/12/05 17:19:14 arfrever Exp $
 
-EAPI=4
+EAPI=5
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -190,7 +190,7 @@ src_configure() {
 
 	LLVM_ENABLE="--disable-llvm"
 	if use llvm && use !video_cards_softpipe; then
-		export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
+		export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 		LLVM_ENABLE="--enable-llvm"
 	fi
 

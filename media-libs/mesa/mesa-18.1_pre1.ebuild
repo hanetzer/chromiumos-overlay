@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/mesa/mesa-7.9.ebuild,v 1.3 2010/12/05 17:19:14 arfrever Exp $
 
-EAPI=4
+EAPI=5
 
 CROS_WORKON_COMMIT="131e871385b343467d3f8be0a8f3ccf09ab81075"
 CROS_WORKON_TREE="92f454a7dcbc7ce8cb20ca3ec3439b67794fc314"
@@ -190,7 +190,7 @@ src_configure() {
 
 	LLVM_ENABLE="--disable-llvm"
 	if use llvm && use !video_cards_softpipe; then
-		export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
+		export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 		LLVM_ENABLE="--enable-llvm"
 	fi
 

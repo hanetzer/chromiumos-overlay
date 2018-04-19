@@ -38,7 +38,7 @@ src_prepare() {
 }
 
 src_configure() {
-	export LLVM_CONFIG=${SYSROOT}/usr/lib/llvm/bin/llvm-config-host
+	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 
 	econf \
 		--disable-option-checking \
