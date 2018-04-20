@@ -41,13 +41,8 @@ src_compile() {
 }
 
 src_install() {
-	# TODO(fqj): remove the if.
-	if [[ ! -f "${SYSROOT}/etc/selinux/arc/contexts/files/file_contexts" ]]; then
-		insinto /etc/selinux/arc/contexts/files/
-		doins file_contexts
-	else
-		ewarn "file_contexts already existed in ${SYSROOT}"
-	fi
+	insinto /etc/selinux/arc/contexts/files/
+	doins file_contexts
 
 	insinto /etc/selinux/
 	newins "${FILESDIR}"/selinux_config config
