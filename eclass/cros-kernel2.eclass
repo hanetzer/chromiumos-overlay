@@ -803,6 +803,9 @@ get_build_cfg() {
 	echo "$(cros-workon_get_build_dir)/.config"
 }
 
+# Get architecture to be used for
+# - "<arch>_defconfig" if there is no splitconfig
+# - "chromiumos-<arch>" if CHROMEOS_KERNEL_SPLITCONFIG is not defined
 get_build_arch() {
 	if [ "${ARCH}" = "arm" ] ; then
 		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
@@ -834,6 +837,8 @@ get_build_arch() {
 				echo "x86"
 				;;
 		esac
+	elif [ "${ARCH}" = "amd64" ] ; then
+		echo "x86_64"
 	elif [ "${ARCH}" = "mips" ] ; then
 		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
 			*pistachio*)
