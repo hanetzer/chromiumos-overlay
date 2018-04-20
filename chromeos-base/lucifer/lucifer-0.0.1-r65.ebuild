@@ -27,6 +27,7 @@ RESTRICT="binchecks strip"
 
 DEPEND="
 	dev-go/gcp-bigquery
+	dev-go/luci-swarming
 	dev-go/luci-tsmon
 	dev-go/opencensus
 "
