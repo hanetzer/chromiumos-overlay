@@ -28,8 +28,6 @@ fi
 SLOT="0"
 KEYWORDS="~*"
 IUSE="
-	afdo_chrome_exp1
-	afdo_chrome_exp2
 	afdo_use
 	+accessibility
 	app_shell
@@ -81,8 +79,6 @@ REQUIRED_USE="
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
-	afdo_chrome_exp1? ( afdo_use )
-	afdo_chrome_exp2? ( afdo_use )
 	"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
