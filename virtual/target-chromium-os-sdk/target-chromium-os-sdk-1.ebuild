@@ -480,8 +480,9 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-util/boost-build"
 
-# Host dependency for managing SELinux labels
+# Host dependency for managing SELinux
 RDEPEND="${RDEPEND}
+	sys-apps/checkpolicy
 	sys-apps/restorecon
 	sys-apps/secilc"
 
