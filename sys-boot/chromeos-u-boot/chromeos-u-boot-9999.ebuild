@@ -16,7 +16,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="dev u_boot_netboot profiling"
+IUSE="dev u_boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	chromeos-base/chromeos-config-host
@@ -102,33 +102,16 @@ src_configure() {
 		)
 	fi
 
-	if use profiling; then
-		COMMON_MAKE_FLAGS+=( VBOOT_PERFORMANCE=1 )
-	fi
-
 	BUILD_FLAGS=(
 		"O=${UB_BUILD_DIR}"
 	)
 
 	umake "${BUILD_FLAGS[@]}" distclean
 	umake "${BUILD_FLAGS[@]}" "${config}_defconfig"
-
-	if use u_boot_netboot; then
-		BUILD_NB_FLAGS=(
-			"O=${UB_BUILD_DIR_NB}"
-			BUILD_FACTORY_IMAGE=1
-		)
-		umake "${BUILD_NB_FLAGS[@]}" distclean
-		umake "${BUILD_NB_FLAGS[@]}" "${config}_defconfig"
-	fi
 }
 
 src_compile() {
 	umake "${BUILD_FLAGS[@]}" all
-
-	if use u_boot_netboot; then
-		umake "${BUILD_NB_FLAGS[@]}" all
-	fi
 }
 
 src_install() {
@@ -147,10 +130,6 @@ src_install() {
 		[[ -f "${UB_BUILD_DIR}/${f}" ]] &&
 			doins "${f/#/${UB_BUILD_DIR}/}"
 	done
-
-	if use u_boot_netboot; then
-		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
-	fi
 
 	insinto "${inst_dir}/dtb"
 	doins "${UB_BUILD_DIR}/dts/"*.dtb
