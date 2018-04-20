@@ -65,7 +65,7 @@ src_configure()
 		--prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
-		--rundir=/var/run/dhcpcd \
+		--rundir=/run/dhcpcd \
 		$(use_enable embedded) \
 		$(use_enable ipv6) \
 		$(use_enable dbus) \
