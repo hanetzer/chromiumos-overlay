@@ -21,18 +21,20 @@ inherit cros-constants git-2
 EGIT_REPO_URIS=(
 	"cloud/policy"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy.git"
-	"47a46bf0e9d1347c362c1aae24994d4c2e5e7fb1"
+	"45189fb36603504b00facef335883c7fbb50c114"
 
 	# If you uprev these repos, please also:
 	# - Update files/VERSION to the corresponding revision of
 	#   chromium/src/chrome/VERSION in the Chromium code base.
 	#   Only the MAJOR version matters, really. This is necessary so policy
 	#   code builders have the right set of policies.
-	# - Keep the revisions of policy.git and proto.git in sync.
-	#   A failure to do so might result in broken unit tests.
 	# - Update authpolicy/policy/device_policy_encoder[_unittest].cc to
 	#   include new device policies. The unit test tells you missing ones:
 	#     cros_run_unit_tests --board=$BOARD --packages authpolicy
+	#   If you see unrelated test failures, make sure to rebuild the
+	#   authpolicy package and its dependencies (in particular, libbrillo
+	#   which provides libpolicy for accessing device policy) against the
+	#   updated protofiles package.
 	#   User policy is generated and doesn't have to be updated manually.
 	# - Bump the package version:
 	#     git mv protofiles-0.0.N.ebuild protofiles-0.0.N+1.ebuild
