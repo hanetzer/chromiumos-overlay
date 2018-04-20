@@ -16,7 +16,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="vboot"
 
 DEPEND=""
 
@@ -56,15 +56,19 @@ src_configure() {
 
 	COMMON_MAKE_FLAGS=(
 		"CROSS_COMPILE=${CROSS_PREFIX}"
-		"VBOOT_SOURCE=${VBOOT_REFERENCE_DESTDIR}"
 		DEV_TREE_SEPARATE=1
 		"HOSTCC=${BUILD_CC}"
 		HOSTSTRIP=true
-		USE_STDINT=1
-		VBOOT_DEBUG=1
 		QEMU_ARCH=
 		WERROR=y
 	)
+	if use vboot; then
+		COMMON_MAKE_FLAGS+=(
+			USE_STDINT=1
+			"VBOOT_SOURCE=${VBOOT_REFERENCE_DESTDIR}"
+			VBOOT_DEBUG=1
+		)
+	fi
 	if use dev; then
 		# Avoid hiding the errors and warnings
 		COMMON_MAKE_FLAGS+=(
