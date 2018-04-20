@@ -3,30 +3,12 @@
 
 EAPI="5"
 
-CROS_WORKON_PROJECT=(
-	"chromiumos/platform2"
-	"chromiumos/platform/mosys"
-)
+CROS_WORKON_PROJECT="chromiumos/platform/mosys"
+CROS_WORKON_LOCALNAME="../platform/mosys"
 
-CROS_WORKON_LOCALNAME=(
-	"../platform2"
-	"../platform/mosys"
-)
-
-CROS_WORKON_DESTDIR=(
-	"${S}/platform2"
-	"${S}/platform/mosys"
-)
-
-CROS_WORKON_SUBTREE=(
-	"common-mk"
-	""
-)
-
-PLATFORM_SUBDIR="mosys"
 MESON_AUTO_DEPEND=no
 
-inherit flag-o-matic meson toolchain-funcs cros-unibuild cros-workon platform
+inherit flag-o-matic meson toolchain-funcs cros-unibuild cros-workon
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
@@ -45,14 +27,6 @@ RDEPEND="unibuild? (
 	>=sys-apps/flashmap-0.3-r4"
 DEPEND="${RDEPEND}"
 
-src_unpack() {
-	local s="${S}"
-	platform_src_unpack
-	# The platform eclass will look for mosys in src/platform2 This forces it
-	# to look in src/platform.
-	S="${s}/platform/mosys"
-}
-
 src_configure() {
 	if use unibuild; then
 		cp "${SYSROOT}${UNIBOARD_DTB_INSTALL_PATH}" \
@@ -62,19 +36,11 @@ src_configure() {
 	fi
 
 	local emesonargs=(
-		-Duse_cros_config=$(usex unibuild true false)
+		$(meson_use unibuild use_cros_config)
 		-Darch=$(tc-arch)
-		-Dstatic=$(usex static true false)
+		$(meson_use static)
 	)
 	meson_src_configure
-}
-
-src_compile() {
-	meson_src_compile
-}
-
-platform_pkg_test() {
-	meson_src_test
 }
 
 src_install() {
