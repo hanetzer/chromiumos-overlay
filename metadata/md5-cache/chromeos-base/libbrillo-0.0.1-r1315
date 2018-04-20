@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/minijail dbus? ( dev-libs/dbus-glib ) dev-libs/openssl dev-libs/protobuf:= net-misc/curl sys-apps/rootdev chromeos-base/protofiles dbus? ( chromeos-base/system_api ) dev-libs/modp_b64 dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] test? ( dev-cpp/gmock ) dev-cpp/gtest
+DESCRIPTION=Base library for Chromium OS
+EAPI=5
+HOMEPAGE=http://dev.chromium.org/chromium-os/platform
+IUSE=cros_host +dbus cros_host cros_workon_tree_99d4f98c0151c7e25437bb625f114bde347170d5_80cb41fd8434f6222164fe16264a2c45d3a404df profiling cros-debug cros-debug cros_host cros_workon_tree_99d4f98c0151c7e25437bb625f114bde347170d5_80cb41fd8434f6222164fe16264a2c45d3a404df profiling cros-debug asan cros_host fuzzer test
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/minijail dbus? ( dev-libs/dbus-glib ) dev-libs/openssl dev-libs/protobuf:= net-misc/curl sys-apps/rootdev !cros_host? ( chromeos-base/libchromeos-use-flags ) chromeos-base/chromeos-ca-certificates !chromeos-base/libchromeos chromeos-base/libchrome:395517[cros-debug=] chromeos-base/libchrome:395517[cros-debug=]
+REQUIRED_USE=fuzzer? ( asan )
+SLOT=0/0.0.1.0
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	70ff40a724f6068c4bedd7d93f328a69	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_md5_=fffda7be3f9d955472a8a1e6cb0e75b7
