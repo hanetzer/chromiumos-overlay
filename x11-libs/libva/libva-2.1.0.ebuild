@@ -63,8 +63,7 @@ PDEPEND="video_cards_nvidia? ( >=x11-libs/libva-vdpau-driver-0.7.4-r1 )
 		)
 	video_cards_intel? ( ~x11-libs/libva-intel-driver-2.1.0 )
 	video_cards_i965? ( ~x11-libs/libva-intel-driver-2.1.0 )
-	utils? ( media-video/libva-utils )
-	x11-libs/libva:1"
+	utils? ( media-video/libva-utils )"
 
 REQUIRED_USE="|| ( drm wayland X )
 		opengl? ( X )"

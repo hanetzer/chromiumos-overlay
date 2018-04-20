@@ -15,7 +15,7 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 
-RDEPEND="x11-libs/libva:0
+RDEPEND="x11-libs/libva
 	x11-libs/libdrm
 	media-libs/cmrt"
 

@@ -34,7 +34,7 @@ IUSE="+drm wayland X hybrid_codec"
 
 RDEPEND=">=x11-libs/libva-2.1.0[X?,wayland?,drm?]
 	>=x11-libs/libdrm-2.4.46[video_cards_intel]
-	hybrid_codec? ( media-libs/intel-hybrid-driver:0 )
+	hybrid_codec? ( media-libs/intel-hybrid-driver )
 	wayland? ( >=media-libs/mesa-9.1.6[egl] >=dev-libs/wayland-1.0.6 )"
 
 DEPEND="${RDEPEND}
