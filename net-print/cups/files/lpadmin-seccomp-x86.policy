@@ -16,6 +16,7 @@ getegid32: 1
 geteuid32: 1
 getgid32: 1
 getpeername: 1
+getrandom: 1
 getrusage: 1
 gettimeofday: 1
 getuid32: 1
