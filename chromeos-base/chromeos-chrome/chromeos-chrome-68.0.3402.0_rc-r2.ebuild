@@ -28,8 +28,6 @@ fi
 SLOT="0"
 KEYWORDS="*"
 IUSE="
-	afdo_chrome_exp1
-	afdo_chrome_exp2
 	afdo_use
 	+accessibility
 	app_shell
@@ -81,8 +79,6 @@ REQUIRED_USE="
 	libcxx? ( clang )
 	thinlto? ( clang || ( gold lld ) )
 	afdo_use? ( clang )
-	afdo_chrome_exp1? ( afdo_use )
-	afdo_chrome_exp2? ( afdo_use )
 	"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
@@ -169,7 +165,7 @@ AFDO_LOCATION["broadwell"]=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
 declare -A AFDO_FILE
 # MODIFIED BY PFQ, DON' TOUCH....
-AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3402.0_rc-r1.afdo"
+AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3402.0_rc-r2.afdo"
 AFDO_FILE["silvermont"]="R67-3383.0-1523875031.afdo"
 AFDO_FILE["airmont"]="R67-3383.0-1523269841.afdo"
 AFDO_FILE["haswell"]="R67-3383.0-1523269841.afdo"
