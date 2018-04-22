@@ -9,5 +9,5 @@ LICENSE=GPL-2 RSA DES
 RDEPEND=!net-misc/openswan !net-misc/strongswan gmp? ( >=dev-libs/gmp-4.1.5:= ) gcrypt? ( dev-libs/libgcrypt:0 ) caps? ( sys-libs/libcap ) curl? ( net-misc/curl ) ldap? ( net-nds/openldap ) openssl? ( >=dev-libs/openssl-0.9.8:=[-bindist] ) mysql? ( virtual/mysql ) sqlite? ( >=dev-db/sqlite-3.3.1 ) networkmanager? ( net-misc/networkmanager ) pam? ( sys-libs/pam ) strongswan_plugins_unbound? ( net-dns/unbound net-libs/ldns ) virtual/logger sys-apps/iproute2 !net-vpn/libreswan selinux? ( sec-policy/selinux-ipsec ) sys-apps/baselayout
 SLOT=0
 SRC_URI=http://download.strongswan.org/strongswan-5.5.3.tar.bz2
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	user	c34e477e48e0fab7c78667707d7fa6a7	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	linux-info	e60da1ae009f60d1c79c5af918dfd844	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	user	c8f947561e8797a300801d0dd3625448	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=0b1471bb4eaa7a71ed47d500b0cedb66
