@@ -1,9 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=List of packages that should be fuzzed
-EAPI=5
-HOMEPAGE=http://dev.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=chromeos-base/midis[fuzzer] dev-util/puffin[fuzzer]
-SLOT=0
-_md5_=56d36560852092af6d1b3fbd23804129
