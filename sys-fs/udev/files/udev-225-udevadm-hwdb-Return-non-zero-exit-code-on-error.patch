@@ -1,19 +1,25 @@
-From 5e06c9f517e6755556b86ded366eb2084a7bcfde Mon Sep 17 00:00:00 2001
+From c93375ef43f4d51b4d4faf151c31551921101c3d Mon Sep 17 00:00:00 2001
 From: Nicolas Boichat <drinkcat@google.com>
 Date: Tue, 20 Mar 2018 13:36:58 +0800
-Subject: [PATCH] udevadm/hwdb: Return non-zero exit code on error
+Subject: [PATCH] udevadm/hwdb: Return non-zero exit code on error when
+ --strict is used
 
-Upstream PR: https://github.com/systemd/systemd/pull/8520
+ - Add a new flag --strict to tell udevadm hwdb to return a
+   non-zero code on error.
+ - Make udevadm hwdb --update return an error when any parsing
+   error occurs (only if strict flag is set).
 
+(cherry picked from commit dd6f840e36a0beb6bb99e7a9e3037cfcb4b67876)
+[ Minor help string/options conflicts in src/udev/udevadm-hwdb.c ]
 ---
- src/udev/udevadm-hwdb.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ src/udev/udevadm-hwdb.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
 diff --git a/src/udev/udevadm-hwdb.c b/src/udev/udevadm-hwdb.c
-index dc3ae7484..6565de70b 100644
+index 00609e31b..2ed58a3b4 100644
 --- a/src/udev/udevadm-hwdb.c
 +++ b/src/udev/udevadm-hwdb.c
-@@ -461,6 +461,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+@@ -452,6 +452,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
          FILE *f;
          char line[LINE_MAX];
          struct udev_list match_list;
@@ -21,7 +27,7 @@ index dc3ae7484..6565de70b 100644
  
          udev_list_init(udev, &match_list, false);
  
-@@ -494,6 +495,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+@@ -485,6 +486,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
  
                          if (line[0] == ' ') {
                                  log_error("Error, MATCH expected but got '%s' in '%s':", line, filename);
@@ -29,7 +35,7 @@ index dc3ae7484..6565de70b 100644
                                  break;
                          }
  
-@@ -505,6 +507,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+@@ -496,6 +498,7 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
                  case HW_MATCH:
                          if (len == 0) {
                                  log_error("Error, DATA expected but got empty line in '%s':", filename);
@@ -37,7 +43,7 @@ index dc3ae7484..6565de70b 100644
                                  state = HW_NONE;
                                  udev_list_cleanup(&match_list);
                                  break;
-@@ -518,7 +521,9 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+@@ -509,7 +512,9 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
  
                          /* first data */
                          state = HW_DATA;
@@ -48,7 +54,7 @@ index dc3ae7484..6565de70b 100644
                          break;
  
                  case HW_DATA:
-@@ -531,19 +536,23 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+@@ -522,24 +527,28 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
  
                          if (line[0] != ' ') {
                                  log_error("Error, DATA expected but got '%s' in '%s':", line, filename);
@@ -66,7 +72,6 @@ index dc3ae7484..6565de70b 100644
                  };
          }
  
-+  out:
          fclose(f);
          udev_list_cleanup(&match_list);
 -        return 0;
@@ -74,20 +79,51 @@ index dc3ae7484..6565de70b 100644
  }
  
  static void help(void) {
-@@ -646,9 +655,12 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+         printf("Usage: udevadm hwdb OPTIONS\n"
+                "  -u,--update          update the hardware database\n"
++               "  -s --strict          When updating, return non-zero exit value on any parsing error\n"
+                "  --usr                generate in " UDEVLIBEXECDIR " instead of /etc/udev\n"
+                "  -t,--test=MODALIAS   query database and print result\n"
+                "  -r,--root=PATH       alternative root path in the filesystem\n"
+@@ -554,6 +563,7 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+         static const struct option options[] = {
+                 { "update", no_argument,       NULL, 'u' },
+                 { "usr",    no_argument,       NULL, ARG_USR },
++                { "strict", no_argument,       NULL, 's' },
+                 { "test",   required_argument, NULL, 't' },
+                 { "root",   required_argument, NULL, 'r' },
+                 { "help",   no_argument,       NULL, 'h' },
+@@ -566,8 +576,9 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+         struct trie *trie = NULL;
+         int err, c;
+         int rc = EXIT_SUCCESS;
++        bool strict = false;
+ 
+-        while ((c = getopt_long(argc, argv, "ut:r:h", options, NULL)) >= 0)
++        while ((c = getopt_long(argc, argv, "ust:r:h", options, NULL)) >= 0)
+                 switch(c) {
+                 case 'u':
+                         update = true;
+@@ -575,6 +586,9 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+                 case ARG_USR:
+                         hwdb_bin_dir = UDEVLIBEXECDIR;
+                         break;
++                case 's':
++                        strict = true;
++                        break;
+                 case 't':
+                         test = optarg;
+                         break;
+@@ -628,7 +642,8 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
                  }
                  STRV_FOREACH(f, files) {
                          log_debug("reading file '%s'", *f);
 -                        import_file(udev, trie, *f);
-+                        if (import_file(udev, trie, *f) < 0)
-+                            rc = EXIT_FAILURE;
++                        if (import_file(udev, trie, *f) < 0 && strict)
++                                rc = EXIT_FAILURE;
                  }
                  strv_free(files);
-+                if (rc != EXIT_SUCCESS)
-+                    goto out;
- 
-                 strbuf_complete(trie->strings);
  
 -- 
-2.17.0.rc0.231.g781580f067-goog
+2.17.0.484.g0c8726318c-goog
 
