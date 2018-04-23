@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: toolchain-funcs.eclass
@@ -40,7 +40,13 @@ _tc-getPROG() {
 	export ${var}="${prog[*]}"
 	echo "${!var}"
 }
-tc-getBUILD_PROG() { _tc-getPROG CBUILD "BUILD_$1 $1_FOR_BUILD HOST$1" "${@:2}"; }
+tc-getBUILD_PROG() {
+	local vars="BUILD_$1 $1_FOR_BUILD HOST$1"
+	# respect host vars if not cross-compiling
+	# https://bugs.gentoo.org/630282
+	tc-is-cross-compiler || vars+=" $1"
+	_tc-getPROG CBUILD "${vars}" "${@:2}"
+}
 tc-getPROG() { _tc-getPROG CHOST "$@"; }
 
 # @FUNCTION: tc-getAR
@@ -572,7 +578,7 @@ tc-endian() {
 	case ${host} in
 		aarch64*be)	echo big;;
 		aarch64)	echo little;;
-		alpha*)		echo big;;
+		alpha*)		echo little;;
 		arm*b*)		echo big;;
 		arm*)		echo little;;
 		cris*)		echo little;;
@@ -789,6 +795,73 @@ gcc-specs-stack-check() {
 	local directive
 	directive=$(gcc-specs-directive cc1)
 	[[ "${directive/\{!fno-stack-check:}" != "${directive}" ]]
+}
+
+
+# @FUNCTION: tc-enables-pie
+# @RETURN: Truth if the current compiler generates position-independent code (PIC) which can be linked into executables
+# @DESCRIPTION:
+# Return truth if the current compiler generates position-independent code (PIC)
+# which can be linked into executables.
+tc-enables-pie() {
+	local ret="$($(tc-getCC) ${CPPFLAGS} ${CFLAGS} -E -P - <<-EOF 2> /dev/null | grep '^true$'
+		#if defined(__PIE__)
+		true
+		#endif
+		EOF
+	)"
+	[[ ${ret} == true ]]
+}
+
+# @FUNCTION: tc-enables-ssp
+# @RETURN: Truth if the current compiler enables stack smashing protection (SSP) on at least minimal level
+# @DESCRIPTION:
+# Return truth if the current compiler enables stack smashing protection (SSP)
+# on level corresponding to any of the following options:
+#  -fstack-protector
+#  -fstack-protector-strong
+#  -fstack-protector-all
+tc-enables-ssp() {
+	local ret="$($(tc-getCC) ${CPPFLAGS} ${CFLAGS} -E -P - <<-EOF 2> /dev/null | grep '^true$'
+		#if defined(__SSP__) || defined(__SSP_STRONG__) || defined(__SSP_ALL__)
+		true
+		#endif
+		EOF
+	)"
+	[[ ${ret} == true ]]
+}
+
+# @FUNCTION: tc-enables-ssp-strong
+# @RETURN: Truth if the current compiler enables stack smashing protection (SSP) on at least middle level
+# @DESCRIPTION:
+# Return truth if the current compiler enables stack smashing protection (SSP)
+# on level corresponding to any of the following options:
+#  -fstack-protector-strong
+#  -fstack-protector-all
+tc-enables-ssp-strong() {
+	local ret="$($(tc-getCC) ${CPPFLAGS} ${CFLAGS} -E -P - <<-EOF 2> /dev/null | grep '^true$'
+		#if defined(__SSP_STRONG__) || defined(__SSP_ALL__)
+		true
+		#endif
+		EOF
+	)"
+	[[ ${ret} == true ]]
+}
+
+# @FUNCTION: tc-enables-ssp-all
+# @RETURN: Truth if the current compiler enables stack smashing protection (SSP) on maximal level
+# @DESCRIPTION:
+# Return truth if the current compiler enables stack smashing protection (SSP)
+# on level corresponding to any of the following options:
+#  -fstack-protector-all
+tc-enables-ssp-all() {
+	local ret="$($(tc-getCC) ${CPPFLAGS} ${CFLAGS} -E -P - <<-EOF 2> /dev/null | grep '^true$'
+		#if defined(__SSP_ALL__)
+		true
+		#endif
+		EOF
+	)"
+	[[ ${ret} == true ]]
 }
 
 
