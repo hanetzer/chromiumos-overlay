@@ -1259,6 +1259,22 @@ src_install() {
 	LS=$(ls -alhS ${FROM})
 	einfo "CHROME_DIR after build\n${LS}"
 
+	# Check that chrome was built with ICF (Identical Code Folding) enabled.
+	# For both amd64 and arm, when ICF is enabled, there is ~170,000 drop in
+	# the number of unique addresses of text symbols.
+	# We check here that the drop is at least 100,000.
+	local ntext=$($(tc-getNM) ${FROM}/chrome \
+		| egrep -o "^[0-9a-f]+[ ]+[tT] " \
+		| wc -l)
+	local ntext_unique=$($(tc-getNM) ${FROM}/chrome \
+		| egrep -o "^[0-9a-f]+[ ]+[tT] " \
+		| sort -u \
+		| wc -l)
+	if [[ $((ntext - ntext_unique)) -lt 100000 ]]; then
+		eerror "Number of unique text symbols in chrome got suspiciously large."
+		die "Chrome not built with ICF (Identical Code Folding) enabled."
+	fi
+
 	insinto /etc/dbus-1/system.d
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
