@@ -20,7 +20,9 @@ CROS_WORKON_SUBTREE=(
 	"common-mk"
 )
 PLATFORM_GYP_FILE="common/libcbm.gyp"
-CROS_CAMERA_TESTS="cbm_unittest"
+CROS_CAMERA_TESTS=(
+	"cbm_unittest"
+)
 
 inherit cros-camera cros-workon
 

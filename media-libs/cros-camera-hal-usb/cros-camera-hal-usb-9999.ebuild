@@ -20,7 +20,9 @@ CROS_WORKON_SUBTREE=(
 	"common-mk"
 )
 PLATFORM_GYP_FILE="hal/usb/libcamera_hal.gyp"
-CROS_CAMERA_TESTS="image_processor_unittest"
+CROS_CAMERA_TESTS=(
+	"image_processor_unittest"
+)
 
 inherit cros-camera cros-workon
 
