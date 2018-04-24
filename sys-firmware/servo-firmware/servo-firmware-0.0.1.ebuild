@@ -6,8 +6,8 @@ EAPI="5"
 DESCRIPTION="Firmware for tools based on Chromium OS EC"
 HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
-SERVO_MICRO_NAME="servo_micro-R57-9040.17.0"
-SERVO_V4_NAME="servo_v4-R57-9040.5.0"
+SERVO_MICRO_NAME="servo_micro-R57-9040.21.0"
+SERVO_V4_NAME="servo_v4-R57-9040.21.0"
 UPDATER_PATH="/usr/share/servo_updater/firmware"
 
 MIRROR_PATH="gs://chromeos-localmirror/distfiles/"
