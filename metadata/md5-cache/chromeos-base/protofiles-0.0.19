@@ -1,0 +1,10 @@
+DEFINED_PHASES=install unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Protobuf installer for the device policy proto definitions.
+EAPI=5
+HOMEPAGE=http://chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0/0.0.19
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	git-2	d8721ae80a433d74914c59b01337e601
+_md5_=d22fc8e1f4f0a2c5cade168be8fbea69
