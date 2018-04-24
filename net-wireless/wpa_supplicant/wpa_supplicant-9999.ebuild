@@ -163,6 +163,7 @@ src_configure() {
 	Kconfig_style_config IEEE80211R
 	Kconfig_style_config IEEE80211N
 	Kconfig_style_config IEEE80211AC
+	Kconfig_style_config WNM
 
 	# Basic authentication methods
 	# NOTE: we don't set GPSK or SAKE as they conflict
