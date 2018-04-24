@@ -141,30 +141,69 @@ platform_test() {
 # @FUNCTION: platform_fuzzer_install
 # @DESCRIPTION:
 # Installs fuzzer targets in one common location for all fuzzing projects.
-# @USAGE: [owners file] [fuzzer_binary] [extra files ...]
+# @USAGE: <owners file> <fuzzer binary> [--dict dict_file] [--seed_corpus corpus_path] \
+#	[--options options_file] [extra files ...]
 platform_fuzzer_install() {
-	[[ $# -lt 2 ]] && die "usage: ${FUNCNAME} <OWNERS> <program> <extra files>"
+	[[ $# -lt 2 ]] && die "usage: ${FUNCNAME} <OWNERS> <program> [options]" \
+		"[extra files...]"
+	# Don't do anything without USE="fuzzer"
+	! use fuzzer && return 0
 
 	local owners=$1
 	local prog=$2
-	local f
-	shift
-	shift
+	local name="${prog##*/}"
+	shift 2
 
-	if use fuzzer; then
-		(
-			#Install fuzzer program.
-			exeinto "/usr/libexec/fuzzers"
-			doexe "${prog}"
-			# Install owners file.
-			insinto "/usr/libexec/fuzzers"
-			newins "${owners}" "${prog##*/}.owners"
-			# Install other files (fuzzer dict etc.)
-			for f in "$@"; do
-				doins "${f}"
-			done
-		)
-	fi
+	# Fuzzer option strings.
+	local opt_corpus="seed_corpus"
+	local opt_dict="dict"
+	local opt_option="options"
+
+	(
+		# Install fuzzer program.
+		exeinto "/usr/libexec/fuzzers"
+		doexe "${prog}"
+		# Install owners file.
+		insinto "/usr/libexec/fuzzers"
+		newins "${owners}" "${name}.owners"
+
+		# Install other fuzzer files (dict, seed corpus etc.) if provided.
+		[[ $# -eq 0 ]] && return 0
+		# Parse the arguments.
+		local opts=$(getopt -o '' -l "${opt_corpus}:,${opt_dict}:,${opt_option}:" -- "$@")
+		[[ $? -ne 0 ]] && die "platform_fuzzer_install: Incorrect options: $*"
+		eval set -- "${opts}"
+
+		while [[ $# -gt 0 ]]; do
+			case "$1" in
+				"--${opt_corpus}")
+					if [[ -f "$2" ]]; then
+						# Do a direct install if seed corpus is a file.
+						[[ "$2" != *.zip ]] && die "Not a zip file: $2"
+						newins "$2" "${name}_seed_corpus.zip"
+					elif [[ -d "$2" ]]; then
+						# Zip and install the seed corpus directory.
+						pushd "$2" >/dev/null || die
+						zip -rj - . | newins - "${name}_seed_corpus.zip"
+						popd >/dev/null || die
+					else
+						die "Invalid seed corpus location $2"
+					fi
+					shift 2 ;;
+				"--${opt_dict}")
+					newins "$2" "${name}.dict"
+					shift 2 ;;
+				"--${opt_option}")
+					newins "$2" "${name}.options"
+					shift 2 ;;
+				--)
+					shift ;;
+				*)
+					doins "$1"
+					shift ;;
+			esac
+		done
+	)
 }
 
 # @FUNCTION: platform_fuzzer_test
