@@ -57,18 +57,9 @@ src_install() {
 	insinto /usr/share/policy
 	doins seccomp_filters/*.policy
 
-	# TODO(olsen): Use helper functions like platform_fuzzer_install to insert
-	# the fuzzer corpus and fuzzer dict, once these helper functions exist.
-	# See chromium:831877
-	if use fuzzer; then
-		insinto /usr/libexec/fuzzers
-		newins "${S}"/policy/testdata/preg_parser_fuzzer_seed_corpus.zip \
-			preg_parser_fuzzer_seed_corpus.zip
-		newins "${S}"/policy/testdata/preg_parser_fuzzer.dict \
-			preg_parser_fuzzer.dict
-	fi
-
-	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/preg_parser_fuzzer
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/preg_parser_fuzzer \
+		--seed_corpus "${S}"/policy/testdata/preg_parser_fuzzer_seed_corpus.zip \
+		--dict "${S}"/policy/testdata/preg_parser_fuzzer.dict
 }
 
 platform_pkg_test() {
