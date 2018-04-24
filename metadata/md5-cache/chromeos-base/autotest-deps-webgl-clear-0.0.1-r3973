@@ -8,5 +8,5 @@ KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
-_eclasses_=autotest	dab5e9c4c56400e64334c094393ae194	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=autotest	dab5e9c4c56400e64334c094393ae194	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=70a9d9f03fb7bd80bb5100313b48d705

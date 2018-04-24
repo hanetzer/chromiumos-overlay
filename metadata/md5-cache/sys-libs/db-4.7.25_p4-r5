@@ -9,5 +9,5 @@ LICENSE=Sleepycat
 RDEPEND=tcl? ( dev-lang/tcl ) java? ( >=virtual/jre-1.5 ) java? ( >=dev-java/java-config-2.2.0-r3 )
 SLOT=4.7
 SRC_URI=http://download.oracle.com/berkeley-db/db-4.7.25.tar.gz
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	6207477a739f6f25d13da27b9cc00160	db	1135d23301373966b04d357a4397bc9a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	java-pkg-opt-2	be255db325e3af8fbf3506cf63998341	java-utils-2	1971a6927fcd7ec839f7e12b28a24bdd	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	6207477a739f6f25d13da27b9cc00160	db	1135d23301373966b04d357a4397bc9a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	java-pkg-opt-2	be255db325e3af8fbf3506cf63998341	java-utils-2	1971a6927fcd7ec839f7e12b28a24bdd	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=3de30c2d8cd88a237bd6975483b08455

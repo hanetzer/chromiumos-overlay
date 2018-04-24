@@ -8,5 +8,5 @@ LICENSE=BSD-Google
 RDEPEND=chromeos-base/libchrome:395517[cros-debug=]
 SLOT=0
 SRC_URI=gs://chromeos-localmirror/distfiles/libmojo-395517.tgz
-_eclasses_=cros-debug	d2750757005d6a444f8eb12bb9eb9944	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=cros-debug	d2750757005d6a444f8eb12bb9eb9944	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=71af1f85b75db28444ff86b53b0a645c

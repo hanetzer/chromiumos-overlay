@@ -8,5 +8,5 @@ LICENSE=LGPL-2.1
 RDEPEND=virtual/libintl
 SLOT=0
 SRC_URI=mirror://gentoo/m17n-db-1.6.1.tar.gz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=6252750b57100d71e5b43e383b111356

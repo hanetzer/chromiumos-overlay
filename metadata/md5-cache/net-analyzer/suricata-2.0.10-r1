@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=>=dev-libs/jansson-2.2 dev-libs/libpcre dev-libs/libyaml net-libs/libnet:* net-libs/libnfnetlink dev-libs/nspr dev-libs/nss net-libs/libpcap sys-apps/file cuda? ( dev-util/nvidia-cuda-toolkit ) geoip? ( dev-libs/geoip ) lua? ( dev-lang/lua:* ) luajit? ( dev-lang/luajit:* ) nflog? ( net-libs/libnetfilter_log ) nfqueue? ( net-libs/libnetfilter_queue ) sys-apps/baselayout
 SLOT=0
 SRC_URI=http://www.openinfosecfoundation.org/download/suricata-2.0.10.tar.gz
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	user	c8f947561e8797a300801d0dd3625448
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	user	c8f947561e8797a300801d0dd3625448
 _md5_=82aa487aa62154205f074e7e988128e7

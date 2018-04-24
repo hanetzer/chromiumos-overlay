@@ -8,5 +8,5 @@ LICENSE=Apache-2.0
 RESTRICT=strip binchecks
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/croscorefonts-1.31.0.tar.bz2
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=0e83654acdb6638d939863dd3f60150e

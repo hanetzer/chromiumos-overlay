@@ -8,5 +8,5 @@ LICENSE=LGPL-2
 RDEPEND=>=dev-embedded/libftdi-0.19 dev-libs/confuse
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/ftdi_eeprom-0.4_rc1.tar.gz
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=5ae88b325ebe097da461933662574597

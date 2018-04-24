@@ -7,5 +7,5 @@ KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=dev-python/psutil
 SLOT=0
-_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	multilib	97f470f374f2e94ccab04a2fb21d811e	python	efc1c55fc44c5b7272fc2ffba73c3e6f	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	multilib	97f470f374f2e94ccab04a2fb21d811e	python	efc1c55fc44c5b7272fc2ffba73c3e6f	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=ea6ca25ea0e3dc6fe5036c40b921b0f2

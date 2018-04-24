@@ -9,5 +9,5 @@ LICENSE=|| ( GPL-2 FIPL-1.0 )
 RDEPEND=sys-libs/zlib jpeg? ( virtual/jpeg ) jpeg2k? ( media-libs/openjpeg ) mng? ( media-libs/libmng ) openexr? ( media-libs/openexr ) png? ( media-libs/libpng ) raw? ( media-libs/libraw ) tiff? ( media-libs/ilmbase media-libs/tiff )
 SLOT=0
 SRC_URI=mirror://sourceforge/freeimage/FreeImage3153.zip mirror://sourceforge/freeimage/FreeImage3153.pdf
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=4cfe72a6d8f2c3c4e296a81287ea85c8

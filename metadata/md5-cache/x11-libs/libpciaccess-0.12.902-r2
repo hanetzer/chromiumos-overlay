@@ -9,5 +9,5 @@ LICENSE=MIT
 RDEPEND=!<x11-base/xorg-server-1.5 zlib? ( sys-libs/zlib )
 SLOT=0
 SRC_URI=http://xorg.freedesktop.org/releases/individual/lib/libpciaccess-0.12.902.tar.bz2
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	autotools-utils	3727db64c7b960903d5033280f108080	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2	xorg-2	50dd640df6d0554c259daa81531ed3ee
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	autotools-utils	3727db64c7b960903d5033280f108080	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	xorg-2	50dd640df6d0554c259daa81531ed3ee
 _md5_=918700521a873a5baf731d974e0b6c69

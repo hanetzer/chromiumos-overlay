@@ -8,5 +8,5 @@ LICENSE=BSD-Infineon LICENSE.infineon-firmware-updater-TCG
 RDEPEND=dev-libs/openssl tpm_slb9655_v4_31? ( chromeos-base/ec-utils )
 SLOT=0
 SRC_URI=gs://chromeos-localmirror/distfiles/infineon-firmware-updater-1.1.2459.0.tar.gz
-_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	7e6df249c735dcc1372cc05daba175b2
+_eclasses_=eutils	06133990e861be0fe60c2b428fd025d9	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
 _md5_=193059140f29f778238b2e8d7aec4dc8
