@@ -21,7 +21,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="containers"
+IUSE="cfm_enabled_device containers"
 
 RDEPEND="
 	chromeos-base/libbrillo
