@@ -24,6 +24,7 @@ IUSE="
 	asan
 	background_blur
 	big_little
+	biod
 	caroline
 	cheets
 	cfm_enabled_device
