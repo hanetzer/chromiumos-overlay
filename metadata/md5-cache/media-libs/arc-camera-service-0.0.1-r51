@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure info install preinst setup unpack
+DEPEND=!chromeos-base/arc-camera-service chromeos-base/libbrillo chromeos-base/libmojo virtual/pkgconfig dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+DESCRIPTION=ARC camera service. The service is in charge of accessing camera device. It uses linux domain socket (/run/camera/camera.sock) to build a synchronous channel.
+EAPI=5
+IUSE=-asan cros-debug cros_host cros_workon_tree_e181b9eea1218c4e3057094c336cc34e6e26647f profiling cros-debug
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!chromeos-base/arc-camera-service chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+SLOT=0
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	user	c8f947561e8797a300801d0dd3625448
+_md5_=20b98c9914e47a6f0d33e1728346dae7

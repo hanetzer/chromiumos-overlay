@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure info install preinst prepare setup test unpack
+DEPEND=>=dev-libs/glib-2.36 >=sys-apps/dbus-1.2 dev-libs/dbus-glib net-dialup/ppp mbim? ( net-libs/libmbim ) qmi? ( net-libs/libqmi ) !net-misc/modemmanager virtual/libgudev dev-util/pkgconfig dev-util/intltool >=dev-util/gtk-doc-1.13 !net-misc/modemmanager-next-interfaces !net-misc/modemmanager !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 dev-vcs/git virtual/pkgconfig virtual/pkgconfig sys-apps/baselayout
+DESCRIPTION=Modem and mobile broadband management libraries
+EAPI=4
+HOMEPAGE=http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.html
+IUSE=-asan doc gobi mbim systemd qmi cros_host cros_workon_tree_73096fb7a35d680b908eb33ffb5372b588de777c profiling
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=>=dev-libs/glib-2.36 >=sys-apps/dbus-1.2 dev-libs/dbus-glib net-dialup/ppp mbim? ( net-libs/libmbim ) qmi? ( net-libs/libqmi ) !net-misc/modemmanager sys-apps/baselayout
+SLOT=0
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	97f470f374f2e94ccab04a2fb21d811e	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	udev	d91cac2c73b94629cad2daea66e0d182	user	c8f947561e8797a300801d0dd3625448
+_md5_=0af015f2bbfce774429ab3f8aa7f20de
