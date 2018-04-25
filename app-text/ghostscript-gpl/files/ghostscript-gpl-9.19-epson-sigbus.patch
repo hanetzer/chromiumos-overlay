@@ -1,0 +1,37 @@
+Fix SIGBUS from ghostscipt.
+
+Picking patch (git hash: 8197eaf98c552991a0b7f8068ff3fcce56c07803)
+from upstream.
+
+Found via printing to Epson printers from ARMv8 aarch64 chromebooks.
+
+From: Luum Habtemariam <luum@chromium.org>
+Bug:  https://bugs.chromium.org/p/chromium/issues/detail?id=825537
+diff --git a/base/gxclist.c b/base/gxclist.c
+index e5526c5..249bfc4 100644
+--- a/base/gxclist.c
++++ b/base/gxclist.c
+@@ -401,6 +401,7 @@ clist_init_data(gx_device * dev, byte * init_data, uint data_size)
+     gx_device_memory bdev;
+     gx_device *pbdev = (gx_device *)&bdev;
+     int code;
++    int align = 1 << (target->log2_align_mod > log2_align_bitmap_mod ? target->log2_align_mod : log2_align_bitmap_mod);
+ 
+     /* the clist writer has its own color info that depends upon the
+        transparency group color space (if transparency exists).  The data that is
+@@ -444,6 +445,7 @@ clist_init_data(gx_device * dev, byte * init_data, uint data_size)
+                 return_error(gs_error_rangecheck);
+             }
+             bits_size = min(band_space - band_data_size, data_size >> 1);
++            bits_size = ROUND_DOWN(bits_size, align);
+         } else {
+             int adjusted;
+             /*
+@@ -452,6 +454,7 @@ clist_init_data(gx_device * dev, byte * init_data, uint data_size)
+              */
+             bits_size = clist_tile_cache_size(target, band_space);
+             bits_size = min(bits_size, data_size >> 1);
++            bits_size = ROUND_UP(bits_size, align);
+             band_height = gdev_mem_max_height(&bdev, band_width,
+                               band_space - bits_size, page_uses_transparency);
+             if (band_height == 0) {

@@ -114,6 +114,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-clang-fortify.patch"
 	epatch "${FILESDIR}/${PN}-have-eqproc-check-its-parameters.patch"
 	epatch "${FILESDIR}/${PN}-have-rsdparams-check-its-parameters.patch"
+	epatch "${FILESDIR}/${PN}-9.19-epson-sigbus.patch"
 
 	if use djvu ; then
 		unpack gsdjvu-${GSDJVU_PV}.tar.gz
