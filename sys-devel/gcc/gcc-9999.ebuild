@@ -176,6 +176,7 @@ src_configure() {
 		--disable-libmudflap
 		--disable-libquadmath
 		--disable-libssp
+		--disable-libsanitizer
 
 		# Enable frame pointer by default for all the boards.
 		# originally only enabled for i686 for chromium-os:23321.
