@@ -165,11 +165,11 @@ AFDO_LOCATION["broadwell"]=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
 declare -A AFDO_FILE
 # MODIFIED BY PFQ, DON' TOUCH....
-AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3405.0_rc-r1.afdo"
+AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3405.0_rc-r2.afdo"
 AFDO_FILE["silvermont"]="R68-3383.0-1524480987.afdo"
-AFDO_FILE["airmont"]="R68-3383.0-1524480987.afdo"
-AFDO_FILE["haswell"]="R67-3383.0-1523269841.afdo"
-AFDO_FILE["broadwell"]="R68-3383.0-1524480987.afdo"
+AFDO_FILE["airmont"]="R68-3383.0-1524480988.afdo"
+AFDO_FILE["haswell"]="R68-3383.0-1524480987.afdo"
+AFDO_FILE["broadwell"]="R68-3383.0-1524480988.afdo"
 # ....MODIFIED BY PFQ, DON' TOUCH
 
 # This dictionary can be used to manually override the setting for the
@@ -1258,6 +1258,22 @@ src_install() {
 	einfo "PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS}"
 	LS=$(ls -alhS ${FROM})
 	einfo "CHROME_DIR after build\n${LS}"
+
+	# Check that chrome was built with ICF (Identical Code Folding) enabled.
+	# For both amd64 and arm, when ICF is enabled, there is ~170,000 drop in
+	# the number of unique addresses of text symbols.
+	# We check here that the drop is at least 100,000.
+	local ntext=$($(tc-getNM) ${FROM}/chrome \
+		| egrep -o "^[0-9a-f]+[ ]+[tT] " \
+		| wc -l)
+	local ntext_unique=$($(tc-getNM) ${FROM}/chrome \
+		| egrep -o "^[0-9a-f]+[ ]+[tT] " \
+		| sort -u \
+		| wc -l)
+	if [[ $((ntext - ntext_unique)) -lt 100000 ]]; then
+		eerror "Number of unique text symbols in chrome got suspiciously large."
+		die "Chrome not built with ICF (Identical Code Folding) enabled."
+	fi
 
 	insinto /etc/dbus-1/system.d
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
