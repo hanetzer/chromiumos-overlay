@@ -45,6 +45,7 @@ src_install() {
 	dolib.so "${OUT}/lib/libcamera_common.so"
 
 	cros-camera_doheader include/cros-camera/common.h \
+		include/cros-camera/constants.h \
 		include/cros-camera/export.h \
 		include/cros-camera/future.h \
 		include/cros-camera/future_internal.h \
