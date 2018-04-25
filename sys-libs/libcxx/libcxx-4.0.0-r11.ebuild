@@ -60,6 +60,8 @@ src_prepare() {
 	rm "include/__cxxabi_config.h"
 	# Link with libgcc_eh when compiler-rt is used.
 	epatch "${FILESDIR}"/libcxx-use-libgcc_eh.patch
+	# Remove "#inluce xlocale.h" to make glibc 2.26 and after happy.
+	epatch "${FILESDIR}/${PN}-4.0-xlocale.patch"
 }
 
 pkg_setup() {
