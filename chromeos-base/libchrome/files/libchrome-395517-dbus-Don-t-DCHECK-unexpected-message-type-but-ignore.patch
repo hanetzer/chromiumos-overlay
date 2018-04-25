@@ -1,0 +1,37 @@
+From 230b089ee91f78a96fab02bbeb6e3e382f05cf7f Mon Sep 17 00:00:00 2001
+From: Sonny Sasaka <sonnysasaka@chromium.org>
+Date: Tue, 24 Apr 2018 18:17:42 -0700
+Subject: [PATCH] dbus: Don't DCHECK unexpected message type, but ignore it
+
+In dbus::ExportedObject, an assumption was made that no signal could be
+received for an exported object, so DCHECK was put there. Now that there
+is a use case of D-Bus forwarding by Bluetooth dispatcher, it is fine
+that an exported object receives D-Bus signal messages as it is a
+property change signal that is handled by dbus::ObjectManager. So we can
+just ignore message types other than method in dbus::ExportedObject
+rather than DCHECK it.
+
+BUG=835457
+---
+ dbus/exported_object.cc | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/dbus/exported_object.cc b/dbus/exported_object.cc
+index aa6a7c8d383a..47c70ffa3ce2 100644
+--- a/dbus/exported_object.cc
++++ b/dbus/exported_object.cc
+@@ -191,7 +191,10 @@ DBusHandlerResult ExportedObject::HandleMessage(
+     DBusConnection* connection,
+     DBusMessage* raw_message) {
+   bus_->AssertOnDBusThread();
+-  DCHECK_EQ(DBUS_MESSAGE_TYPE_METHOD_CALL, dbus_message_get_type(raw_message));
++  // ExportedObject only handles method calls. Ignore other message types (e.g.
++  // signal).
++  if (dbus_message_get_type(raw_message) != DBUS_MESSAGE_TYPE_METHOD_CALL)
++    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+ 
+   // raw_message will be unrefed on exit of the function. Increment the
+   // reference so we can use it in MethodCall.
+-- 
+2.17.0.441.gb46fe60e1d-goog
+
