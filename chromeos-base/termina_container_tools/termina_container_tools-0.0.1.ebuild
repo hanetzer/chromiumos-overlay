@@ -15,7 +15,9 @@ IUSE=""
 
 S="${WORKDIR}"
 
-RDEPEND=""
+RDEPEND="
+	x11-themes/cros-adapta
+"
 DEPEND="
 	chromeos-base/vm_guest_tools
 	dev-libs/grpc
@@ -23,7 +25,6 @@ DEPEND="
 	media-libs/mesa
 	x11-apps/xkbcomp
 	x11-base/xwayland
-	x11-themes/cros-adapta
 "
 
 src_install() {
