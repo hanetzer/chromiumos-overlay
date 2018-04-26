@@ -24,6 +24,7 @@ KEYWORDS="~*"
 IUSE="+seccomp"
 
 RDEPEND="
+	chromeos-base/libbrillo
 	chromeos-base/minijail"
 
 DEPEND="${RDEPEND}"
