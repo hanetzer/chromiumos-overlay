@@ -237,23 +237,27 @@ IUSE_TESTS_TPM="
 "
 
 # TODO(ihf): unify N and P tests once they pass reliably.
-IUSE_TESTS="
-	${IUSE_TESTS[*]}
-	${IUSE_TESTS_CELLULAR}
-	${IUSE_TESTS_SHILL}
-	${IUSE_TESTS_TPM}
-	android-container-nyc? (
-		+tests_desktopui_ExitOnSupervisedUserCrash
-		+tests_graphics_Idle
-		+tests_security_NetworkListeners
-		+tests_telemetry_LoginTest
-	)
+IUSE_TESTS_ARC="
 	android-container-pi? (
 		+tests_desktopui_ExitOnSupervisedUserCrash_P
 		+tests_graphics_Idle_P
 		+tests_security_NetworkListeners_P
 		+tests_telemetry_LoginTest_P
 	)
+	!android-container-pi? (
+		+tests_desktopui_ExitOnSupervisedUserCrash
+		+tests_graphics_Idle
+		+tests_security_NetworkListeners
+		+tests_telemetry_LoginTest
+	)
+"
+
+IUSE_TESTS="
+	${IUSE_TESTS[*]}
+	${IUSE_TESTS_CELLULAR}
+	${IUSE_TESTS_SHILL}
+	${IUSE_TESTS_TPM}
+	${IUSE_TESTS_ARC}
 "
 
 IUSE="
