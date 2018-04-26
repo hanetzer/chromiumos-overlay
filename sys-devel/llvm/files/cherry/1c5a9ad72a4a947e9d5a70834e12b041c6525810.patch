@@ -1,0 +1,47 @@
+commit 1c5a9ad72a4a947e9d5a70834e12b041c6525810
+Author: Craig Topper <craig.topper@intel.com>
+Date:   Wed Apr 11 01:09:10 2018 +0000
+
+    [X86] In X86FlagsCopyLowering, when rewriting a memory setcc we need to emit an explicit MOV8mr instruction.
+    
+    Previously the code only knew how to handle setcc to a register.
+    
+    This should fix a crash in the chromium build.
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@329771 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Target/X86/X86FlagsCopyLowering.cpp b/lib/Target/X86/X86FlagsCopyLowering.cpp
+index 1f4bd7fd501..a101f6b7127 100644
+--- a/lib/Target/X86/X86FlagsCopyLowering.cpp
++++ b/lib/Target/X86/X86FlagsCopyLowering.cpp
+@@ -727,8 +727,27 @@ void X86FlagsCopyLoweringPass::rewriteSetCC(MachineBasicBlock &TestMBB,
+   if (!CondReg)
+     CondReg = promoteCondToReg(TestMBB, TestPos, TestLoc, Cond);
+ 
+-  // Rewriting this is trivial: we just replace the register and remove the
+-  // setcc.
+-  MRI->replaceRegWith(SetCCI.getOperand(0).getReg(), CondReg);
++  // Rewriting a register def is trivial: we just replace the register and
++  // remove the setcc.
++  if (!SetCCI.mayStore()) {
++    assert(SetCCI.getOperand(0).isReg() &&
++           "Cannot have a non-register defined operand to SETcc!");
++    MRI->replaceRegWith(SetCCI.getOperand(0).getReg(), CondReg);
++    SetCCI.eraseFromParent();
++    return;
++  }
++
++  // Otherwise, we need to emit a store.
++  auto MIB = BuildMI(*SetCCI.getParent(), SetCCI.getIterator(),
++                     SetCCI.getDebugLoc(), TII->get(X86::MOV8mr));
++  // Copy the address operands.
++  for (int i = 0; i < X86::AddrNumOperands; ++i)
++    MIB.add(SetCCI.getOperand(i));
++
++  MIB.addReg(CondReg);
++
++  MIB->setMemRefs(SetCCI.memoperands_begin(), SetCCI.memoperands_end());
++
+   SetCCI.eraseFromParent();
++  return;
+ }

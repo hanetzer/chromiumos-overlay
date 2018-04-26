@@ -39,24 +39,24 @@ EGIT_REPO_URIS=(
 		"96f2a40217bb32f63ccd4a7c34a4645066c10c89" # EGIT_COMMIT r328819
 )
 else
-# llvm:r326829 https://critique.corp.google.com/#review/188273767
+# llvm:r328903 https://critique.corp.google.com/#review/191960518
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"195a164675af86f390f9816e53291013d1b551d7" # EGIT_COMMIT r326829
+		"95561668f063fbcb8195bde05ecede721ece4ba4" # EGIT_COMMIT r328901
 	"compiler-rt"
 		"projects/compiler-rt"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"6a52b697d564699d511de92bce88e15bf6fc56b8" # EGIT_COMMIT r326768
+		"13c69d3bcd85a38da14fd28322b0b2f8b675d943" # EGIT_COMMIT r328849
 	"clang"
 		"tools/clang"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"860fc25e85a105ef1fa9de717bb974231fab80ba" # EGIT_COMMIT r326827
+		"e7408fe366bb18923fa360b069b4e4566203f34f" # EGIT_COMMIT r328903
 	"clang-tidy"
 		"tools/clang/tools/extra"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm-clang-tools-extra.git"
-		"5383c119dd185d9c4ef1707f0c89697f76ba87eb" # EGIT_COMMIT r326809
+		"96f2a40217bb32f63ccd4a7c34a4645066c10c89" # EGIT_COMMIT r328819
 )
 fi
 
@@ -186,9 +186,11 @@ src_unpack() {
 pick_cherries() {
 	# clang
 	local CHERRIES=""
-	CHERRIES+=" 8fdc88794b44e70bdb93c6cf04baf3c1e3251d8b" # r327192
-	CHERRIES+=" c28eb6d02c5cedd40b02aa7c496f13a71763312e" # r327229
-	CHERRIES+=" 8c8aea3ce916068052d4e4029f6878d8d7dd53da" # r328829
+	CHERRIES+=" e24a51cdceab90191d497d490b1787e7bffae757" # r329001
+	CHERRIES+=" 0ac472786f10c72665ee90d26c32438533ff35bd" # r329099
+	CHERRIES+=" d8ad1e8b8544eb135135984fd7d35499214dd232" # r329247
+	CHERRIES+=" abb490ec962c6db7c2071ba9d1bd0cd60b4a1b3a" # r329300
+	CHERRIES+=" 6f11d411da7302cfb1d049928a8222c649eef441" # r329512
 	pushd "${S}"/tools/clang >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -197,9 +199,14 @@ pick_cherries() {
 
 	# llvm
 	CHERRIES=""
-	CHERRIES+=" 824eedb9eb4888575924b1ed80c4250dddd5b59b" # r327198
-	CHERRIES+=" 2755819705e9c2116f4ef72e1273303c6a56c520" # r327761
+	CHERRIES+=" 4804b20184409ec68e3e1c029e23264147c997f6" # r328944
 	CHERRIES+=" aa2d256782e57f9dc5a4421cef1d01444bb7fbb1" # r329030
+	CHERRIES+=" 21a0c18174343502c9f2b546a01333d1c351d9c0" # r329657 (Modified to resolve conflicts)
+	CHERRIES+=" 9f8f7c5e8ab12afcc92f51d0ed596ac0867eb0fa" # r329673 (Modified to resolve conflicts)
+	CHERRIES+=" 1c5a9ad72a4a947e9d5a70834e12b041c6525810" # r329771
+	CHERRIES+=" 1a785071aa52843bb70082c6b5acb1057bd67066" # r329822
+	CHERRIES+=" 4c208ab0d79745e51886b3b14b97c3a1abd526f9" # r330264
+	CHERRIES+=" bb1ae438ca59097e3e6106b1b4e715631150f419" # r330269
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -235,7 +242,10 @@ pick_next_cherries() {
 	CHERRIES+=" aa2d256782e57f9dc5a4421cef1d01444bb7fbb1" # r329030
 	CHERRIES+=" 21a0c18174343502c9f2b546a01333d1c351d9c0" # r329657 (Modified to resolve conflicts)
 	CHERRIES+=" 9f8f7c5e8ab12afcc92f51d0ed596ac0867eb0fa" # r329673 (Modified to resolve conflicts)
+	CHERRIES+=" 1c5a9ad72a4a947e9d5a70834e12b041c6525810" # r329771
 	CHERRIES+=" 1a785071aa52843bb70082c6b5acb1057bd67066" # r329822
+	CHERRIES+=" 4c208ab0d79745e51886b3b14b97c3a1abd526f9" # r330264
+	CHERRIES+=" bb1ae438ca59097e3e6106b1b4e715631150f419" # r330269
 	pushd "${S}" >/dev/null || die
 	for cherry in ${CHERRIES}; do
 		epatch "${FILESDIR}/cherry/${cherry}.patch"
@@ -257,8 +267,7 @@ src_prepare() {
 		use llvm-next && pick_next_cherries
 	fi
 	epatch "${FILESDIR}"/llvm-6.0-gnueabihf.patch
-	use llvm-next || epatch "${FILESDIR}"/llvm-6.0-mssa-bugfix.patch
-	use llvm-next && epatch "${FILESDIR}"/llvm-7.0-mssa-bugfix.patch
+	epatch "${FILESDIR}"/llvm-7.0-mssa-bugfix.patch
 	epatch "${FILESDIR}"/llvm-next-leak-whitelist.patch
 	epatch "${FILESDIR}"/clang-4.0-asan-default-path.patch
 

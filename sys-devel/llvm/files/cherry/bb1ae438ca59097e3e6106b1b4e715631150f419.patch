@@ -1,0 +1,32 @@
+commit bb1ae438ca59097e3e6106b1b4e715631150f419
+Author: Chandler Carruth <chandlerc@gmail.com>
+Date:   Wed Apr 18 15:52:50 2018 +0000
+
+    [x86] Switch EFLAGS copy lowering to use reg-reg form of testing for
+    a zero register.
+    
+    Previously I tried this and saw LLVM unable to transform this to fold
+    with memory operands such as spill slot rematerialization. However, it
+    clearly works as shown in this patch. We turn these into `cmpb $0,
+    <mem>` when useful for folding a memory operand without issue. This form
+    has no disadvantage compared to `testb $-1, <mem>`. So overall, this is
+    likely no worse and may be slightly smaller in some cases due to the
+    `testb %reg, %reg` form.
+    
+    Differential Revision: https://reviews.llvm.org/D45475
+    
+    git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@330269 91177308-0d34-0410-b5e6-96231b3b80d8
+
+diff --git a/lib/Target/X86/X86FlagsCopyLowering.cpp b/lib/Target/X86/X86FlagsCopyLowering.cpp
+index d06388f5daf..fea5ce68766 100644
+--- a/lib/Target/X86/X86FlagsCopyLowering.cpp
++++ b/lib/Target/X86/X86FlagsCopyLowering.cpp
+@@ -636,7 +636,7 @@ void X86FlagsCopyLoweringPass::insertTest(MachineBasicBlock &MBB,
+   // also allow us to select a shorter encoding of `testb %reg, %reg` when that
+   // would be equivalent.
+   auto TestI =
+-      BuildMI(MBB, Pos, Loc, TII->get(X86::TEST8ri)).addReg(Reg).addImm(-1);
++      BuildMI(MBB, Pos, Loc, TII->get(X86::TEST8rr)).addReg(Reg).addReg(Reg);
+   (void)TestI;
+   DEBUG(dbgs() << "    test cond: "; TestI->dump());
+   ++NumTestsInserted;
