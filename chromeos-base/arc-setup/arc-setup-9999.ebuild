@@ -53,6 +53,9 @@ set_density_scale() {
 		betty*|caroline*|chell|eve*|kevin*|newbie|novato*|samus*|scarlet*|soraka*) # 2x HiDPI
 			density=240
 			scale=200 ;;
+		nautilus*) # 1.6x. Among the standard Android dpi, the closest value 213 is chosen.
+			density=213
+			scale=160 ;;
 		cave*|elm*|gru*) # 1.25x default scaling
 			density=160
 			scale=125 ;;
