@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=unibuild? ( chromeos-base/chromeos-config sys-apps/dtc ) sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 dev-vcs/git
+DESCRIPTION=Utility for obtaining various bits of low-level system info
+EAPI=5
+HOMEPAGE=http://mosys.googlecode.com/
+IUSE=static unibuild cros_host cros_workon_tree_45ce2917f89975bbafff61ece330942c8eaa0ef8 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=unibuild? ( chromeos-base/chromeos-config sys-apps/dtc ) sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
+SLOT=0
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-unibuild	c2c964f37f024dc8f9d773e2a7c6679e	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	meson	2f134d2f30cea8587be3c5587419cfb0	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	ninja-utils	ebb2eaddc6331c4fa000b8eb8f6fe074	python-utils-r1	ec7e05a608c9ab8ae4d180d10bd61600	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7
+_md5_=acd1e6d2a4f10666718f024e97ec6999
