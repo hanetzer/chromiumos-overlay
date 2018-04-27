@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install preinst setup test unpack
+DEPEND=chromeos-base/bootstat unibuild? ( chromeos-base/chromeos-config ) chromeos-base/chromeos-config-tools chromeos-base/minijail chromeos-base/cryptohome chromeos-base/libbrillo chromeos-base/libchromeos-ui chromeos-base/libcontainer chromeos-base/libpasswordprovider chromeos-base/metrics dev-libs/nss dev-libs/protobuf sys-apps/util-linux chromeos-base/protofiles chromeos-base/system_api chromeos-base/vboot_reference dev-vcs/git dev-vcs/git chromeos-base/libchrome:395517[cros-debug=] test? ( dev-cpp/gmock ) dev-cpp/gtest virtual/pkgconfig sys-apps/baselayout
+DESCRIPTION=Login manager for Chromium OS.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cheets systemd unibuild cros_host cros_workon_tree_94a1336ddfc584b23df58564be093463f801d558_6a84f9c28a71ee8f8ba22eef9c733f0a451017fb_19022894c92a17f20d28edcddbeec5a655255b81_c9231ae7ce0207c2d6e5733bf2643b33fa7ad010_7198e8f1c1bb979088f90444abc0977eab51cd10_413888b8ea9a5695763b620c5ed048a20960333b profiling cros-debug cros_host cros_workon_tree_94a1336ddfc584b23df58564be093463f801d558_6a84f9c28a71ee8f8ba22eef9c733f0a451017fb_19022894c92a17f20d28edcddbeec5a655255b81_c9231ae7ce0207c2d6e5733bf2643b33fa7ad010_7198e8f1c1bb979088f90444abc0977eab51cd10_413888b8ea9a5695763b620c5ed048a20960333b profiling cros-debug asan cros_host fuzzer test
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/bootstat unibuild? ( chromeos-base/chromeos-config ) chromeos-base/chromeos-config-tools chromeos-base/minijail chromeos-base/cryptohome chromeos-base/libbrillo chromeos-base/libchromeos-ui chromeos-base/libcontainer chromeos-base/libpasswordprovider chromeos-base/metrics dev-libs/nss dev-libs/protobuf sys-apps/util-linux chromeos-base/libchrome:395517[cros-debug=] sys-apps/baselayout
+REQUIRED_USE=fuzzer? ( asan )
+SLOT=0
+_eclasses_=cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	b52d05e71fc666d335a6d65c29d19a88	multilib	97f470f374f2e94ccab04a2fb21d811e	multiprocessing	e32940a7b2a9992ad217eccddb84d548	platform	96f0cf0017bc45bfb6cd055ff6170c40	systemd	8f5286f89e265842f5b5189666eae88b	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	user	c8f947561e8797a300801d0dd3625448
+_md5_=f3688eb74abbad4af2edc96c860a595a
