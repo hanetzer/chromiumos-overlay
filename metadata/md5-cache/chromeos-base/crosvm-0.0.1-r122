@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install preinst setup test unpack
+DEPEND=chromeos-base/minijail !chromeos-base/crosvm-bin arm? ( sys-apps/dtc ) >=dev-util/cargo-0.13.0 dev-vcs/git sys-apps/baselayout
+DESCRIPTION=Utility for running Linux VMs on Chrome OS
+EAPI=5
+IUSE=debug -crosvm-plugin debug cros_host cros_workon_tree_9e679fc1d31f11346998d2be645157cefdef1625 profiling
+KEYWORDS=*
+LICENSE=BSD-Google BSD-2 Apache-2.0 MIT
+RDEPEND=chromeos-base/minijail !chromeos-base/crosvm-bin arm? ( sys-apps/dtc ) sys-apps/baselayout
+SLOT=0
+SRC_URI=https://crates.io/api/v1/crates/bitflags/1.0.1/download -> bitflags-1.0.1.crate https://crates.io/api/v1/crates/byteorder/1.1.0/download -> byteorder-1.1.0.crate https://crates.io/api/v1/crates/cfg-if/0.1.2/download -> cfg-if-0.1.2.crate https://crates.io/api/v1/crates/fuchsia-zircon/0.3.3/download -> fuchsia-zircon-0.3.3.crate https://crates.io/api/v1/crates/fuchsia-zircon-sys/0.3.3/download -> fuchsia-zircon-sys-0.3.3.crate https://crates.io/api/v1/crates/gcc/0.3.54/download -> gcc-0.3.54.crate https://crates.io/api/v1/crates/libc/0.2.34/download -> libc-0.2.34.crate https://crates.io/api/v1/crates/log/0.4.1/download -> log-0.4.1.crate https://crates.io/api/v1/crates/protobuf/1.4.3/download -> protobuf-1.4.3.crate https://crates.io/api/v1/crates/protoc/1.4.3/download -> protoc-1.4.3.crate https://crates.io/api/v1/crates/protoc-rust/1.4.3/download -> protoc-rust-1.4.3.crate https://crates.io/api/v1/crates/rand/0.3.20/download -> rand-0.3.20.crate https://crates.io/api/v1/crates/rand/0.4.2/download -> rand-0.4.2.crate https://crates.io/api/v1/crates/tempdir/0.3.5/download -> tempdir-0.3.5.crate https://crates.io/api/v1/crates/winapi/0.3.4/download -> winapi-0.3.4.crate https://crates.io/api/v1/crates/winapi-i686-pc-windows-gnu/0.4.0/download -> winapi-i686-pc-windows-gnu-0.4.0.crate https://crates.io/api/v1/crates/winapi-x86_64-pc-windows-gnu/0.4.0/download -> winapi-x86_64-pc-windows-gnu-0.4.0.crate
+_eclasses_=cargo	67bc1406261f1619856f6c6d3b230ffe	cros-constants	bf71cd1168b6441b64a8cdbc06c36eda	cros-workon	cfcfc48d82610b9c36a91a8a3b11da0a	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	97f470f374f2e94ccab04a2fb21d811e	toolchain-funcs	4c726f6edcd64ed3ba475e6d749c76a7	user	c8f947561e8797a300801d0dd3625448
+_md5_=bf747494c38e768b77d1690fccf0577c
