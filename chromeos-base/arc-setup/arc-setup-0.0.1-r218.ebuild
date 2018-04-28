@@ -3,7 +3,7 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="c07e07b511d8388d6780b2d428c44a104f33499c"
+CROS_WORKON_COMMIT="fb446791eecb02b9b3fefd9ea9eecbc142df73b9"
 CROS_WORKON_TREE=("94a1336ddfc584b23df58564be093463f801d558" "9130ff43a14d964dd6db121cc46de625ec9aa065" "6a84f9c28a71ee8f8ba22eef9c733f0a451017fb" "413888b8ea9a5695763b620c5ed048a20960333b")
 CROS_WORKON_INCREMENTAL_BUILD="1"
 CROS_WORKON_LOCALNAME="platform2"
@@ -55,6 +55,9 @@ set_density_scale() {
 		betty*|caroline*|chell|eve*|kevin*|newbie|novato*|samus*|scarlet*|soraka*) # 2x HiDPI
 			density=240
 			scale=200 ;;
+		nautilus*) # 1.6x. Among the standard Android dpi, the closest value 213 is chosen.
+			density=213
+			scale=160 ;;
 		cave*|elm*|gru*) # 1.25x default scaling
 			density=160
 			scale=125 ;;
