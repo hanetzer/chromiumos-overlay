@@ -9,8 +9,8 @@ EAPI="4"
 
 # These are used to find the project sources. Since the gcc-libs sources are
 # within the gcc source tree, we leave these "gcc" rather than "gcc-libs".
-CROS_WORKON_COMMIT="2cdcfd30c27f0d836cc477f2ae9f456287fd6b1b"
-CROS_WORKON_TREE="0a687778c96865d73a7c6dbcd9ec580a02daa3a0"
+CROS_WORKON_COMMIT="71959ce8f47f676a26bb21da7117101d9d73867e"
+CROS_WORKON_TREE="c9c8f11d31a4a22bb04fa5798311919929ffafb0"
 CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_PROJECT="toolchain/gcc"
 CROS_WORKON_LOCALNAME=../aosp/toolchain/gcc
