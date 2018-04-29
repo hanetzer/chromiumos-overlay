@@ -848,9 +848,6 @@ setup_compile_flags() {
 		if use libcxx; then
 			append-cxxflags "-stdlib=libc++"
 			append-ldflags "-stdlib=libc++"
-			# Explcitly add libc++ and libm to link flags.
-			# https://crbug.com/837794
-			append-ldflags "-lc++ -lm"
 		fi
 	fi
 
