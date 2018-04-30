@@ -165,11 +165,11 @@ AFDO_LOCATION["broadwell"]=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
 declare -A AFDO_FILE
 # MODIFIED BY PFQ, DON' TOUCH....
-AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3405.0_rc-r1.afdo"
+AFDO_FILE["benchmark"]="chromeos-chrome-amd64-68.0.3414.0_rc-r1.afdo"
 AFDO_FILE["silvermont"]="R68-3383.0-1524480987.afdo"
-AFDO_FILE["airmont"]="R68-3383.0-1524480987.afdo"
-AFDO_FILE["haswell"]="R67-3383.0-1523269841.afdo"
-AFDO_FILE["broadwell"]="R68-3383.0-1524480987.afdo"
+AFDO_FILE["airmont"]="R68-3383.0-1524480988.afdo"
+AFDO_FILE["haswell"]="R68-3383.0-1524480987.afdo"
+AFDO_FILE["broadwell"]="R68-3383.0-1524480988.afdo"
 # ....MODIFIED BY PFQ, DON' TOUCH
 
 # This dictionary can be used to manually override the setting for the
@@ -245,6 +245,7 @@ RDEPEND="${RDEPEND}
 		sys-libs/libcxx
 	)
 	smbprovider? ( chromeos-base/smbprovider )
+	build_native_assistant? ( chromeos-base/chromeos-libassistant )
 	"
 
 DEPEND="${DEPEND}
@@ -747,6 +748,7 @@ setup_test_lists() {
 	TEST_FILES=(
 		jpeg_decode_accelerator_unittest
 		media_unittests
+		ozone_gl_unittests
 		sandbox_linux_unittests
 		video_decode_accelerator_unittest
 		video_encode_accelerator_unittest
@@ -846,6 +848,9 @@ setup_compile_flags() {
 		if use libcxx; then
 			append-cxxflags "-stdlib=libc++"
 			append-ldflags "-stdlib=libc++"
+			# Explcitly add libc++ and libm to link flags.
+			# https://crbug.com/837794
+			append-ldflags "-lc++ -lm"
 		fi
 	fi
 
