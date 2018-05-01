@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="3cd416592833ca805eca78f582ff659ac935b570"
-CROS_WORKON_TREE="9dc9fad6c26d13410ceda04a48f0589f2ab885ee"
+CROS_WORKON_COMMIT="668e762e36fa4c3cb67ee8700b6cacd7a73e7201"
+CROS_WORKON_TREE="5f8bede181de50e6bae4b24231bad5452de39bd5"
 CROS_WORKON_LOCALNAME="cros-adapta"
 CROS_WORKON_PROJECT="chromiumos/third_party/cros-adapta"
 
