@@ -3,7 +3,7 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="238c73fdf6322dc703e42b794f1622e3fcfc94cf"
+CROS_WORKON_COMMIT="e00f7c3bc1df3facd1751e94dda150e94723ab3e"
 CROS_WORKON_TREE=("94a1336ddfc584b23df58564be093463f801d558" "9ae6ed6ebab952fe9e22b3eda31ad05d9f284033" "413888b8ea9a5695763b620c5ed048a20960333b")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME="platform2"
@@ -59,18 +59,9 @@ src_install() {
 	insinto /usr/share/policy
 	doins seccomp_filters/*.policy
 
-	# TODO(olsen): Use helper functions like platform_fuzzer_install to insert
-	# the fuzzer corpus and fuzzer dict, once these helper functions exist.
-	# See chromium:831877
-	if use fuzzer; then
-		insinto /usr/libexec/fuzzers
-		newins "${S}"/policy/testdata/preg_parser_fuzzer_seed_corpus.zip \
-			preg_parser_fuzzer_seed_corpus.zip
-		newins "${S}"/policy/testdata/preg_parser_fuzzer.dict \
-			preg_parser_fuzzer.dict
-	fi
-
-	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/preg_parser_fuzzer
+	platform_fuzzer_install "${S}"/OWNERS "${OUT}"/preg_parser_fuzzer \
+		--seed_corpus "${S}"/policy/testdata/preg_parser_fuzzer_seed_corpus.zip \
+		--dict "${S}"/policy/testdata/preg_parser_fuzzer.dict
 }
 
 platform_pkg_test() {
